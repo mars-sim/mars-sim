@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.vehicle;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.medical.MedicalAid;
 import java.io.Serializable;
 import java.util.*;
 
@@ -24,7 +25,7 @@ public abstract class Vehicle extends Unit implements Serializable {
     public final static String MOVING = "Moving";
     public final static String MECHANICAL_FAILURE = "Mechanical Failure";
     public final static String MAINTENANCE = "Periodic Maintenance";
-	
+
     // Data members
     private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
@@ -41,7 +42,7 @@ public abstract class Vehicle extends Unit implements Serializable {
     private double maintenanceWork = 0; // Work done for vehicle maintenance.
     private double totalMaintenanceWork; // Total amount of work necessary for vehicle maintenance.
     private HashMap potentialFailures; // A table of potential failures in the vehicle. (populated by child classes)
-    private MechanicalFailure mechanicalFailure; // Vehicle's current mechanical failure. 
+    private MechanicalFailure mechanicalFailure; // Vehicle's current mechanical failure.
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
 
@@ -119,7 +120,7 @@ public abstract class Vehicle extends Unit implements Serializable {
 	        else status = MOVING;
 	    }
 	}
-	    
+
         return status;
     }
 
@@ -411,7 +412,17 @@ public abstract class Vehicle extends Unit implements Serializable {
         return totalMaintenanceWork;
     }
 
-    /** 
+    /**
+     * Returns a MedicalAid that is available in this Vehicle. This implementation
+     * return null sinc eby default Vehicles do not carry medical facilities.
+     * This should be overridden by subclasses that support medical facilities.
+     * @return Location medical facility.
+     */
+    public MedicalAid getMedicalFacility() {
+        return null;
+    }
+
+    /**
      * Returns a string describing the vehicle.
      * @return string describing vehicle
      */
