@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResearchScience.java
- * @version 2.76 2004-05-19
+ * @version 2.76 2004-05-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -98,8 +98,8 @@ public abstract class ResearchScience extends Task implements Serializable {
 		if (consumesResources) inv.removeResource(resourceType, researchTime * resourceRate);
 	
 		// Add experience to science skill.
-		// (1 base experience point per 100 millisols of research time spent)
-		double experience = researchTime / 100D;
+		// (1 base experience point per 25 millisols of research time spent)
+		double experience = researchTime / 25D;
 		
 		// Experience points adjusted by person's "Academic Aptitude" attribute.
 		int academicAptitude = person.getNaturalAttributeManager().getAttribute("Academic Aptitude");
