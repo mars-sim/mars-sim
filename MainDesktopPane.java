@@ -18,10 +18,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	private Vector toolWindows;     // List of tool windows.
 	private MainWindow mainWindow;  // The main window frame.
 	
-	private ImageIcon backgroundImageIcon;
-	private JLabel backgroundLabel;
-	private JLabel logoLabel;
-	private boolean firstDisplay;
+	private ImageIcon backgroundImageIcon;  // ImageIcon that contains the tiled background.
+	private JLabel backgroundLabel;         // Label that contains the tiled background.
+	private JLabel logoLabel;               // Label that has the centered logo for the project.
+	private boolean firstDisplay;           // True if this MainDesktopPane hasn't been displayed yet.
 	
 	// Constructor
 
@@ -72,7 +72,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		firstDisplay = true;
 	}
 	
+	// Implement ComponentListener interface.
 	
+	// Create background tile when MainDesktopPane is first displayed.
+	// Recenter logoLabel on MainWindow and set backgroundLabel to the size of MainDesktopPane.
 	
 	public void componentResized(ComponentEvent e) {
 		
@@ -110,6 +113,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		int Ypos = ((mainWindow.getHeight() - logoLabel.getHeight()) / 2) - 45;
 		logoLabel.setLocation(Xpos, Ypos);
 	}
+	
+	// Additional Component Listener methods implemented but not used.
 	
 	public void componentMoved(ComponentEvent e) {}
 	public void componentShown(ComponentEvent e) {}
