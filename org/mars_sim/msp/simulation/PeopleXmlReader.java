@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeopleXmlReader.java
- * @version 2.73 2001-11-18
+ * @version 2.73 2001-11-22
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ class PeopleXmlReader extends MspXmlReader {
 
     // Data members
     private int elementType; // The current element type being parsed
-    private Vector people; // The vector of created settlements
+    private PersonCollection people; // The collection of created people
     private VirtualMars mars; // The virtual Mars instance
     private UnitManager manager; // The unit manager
     private String currentName; // The current person name parsed
@@ -53,10 +53,10 @@ class PeopleXmlReader extends MspXmlReader {
         this.mars = mars;
     }
 
-    /** Returns the vector of people created from the XML file
-     *  @return the vector of people
+    /** Returns the collection of people created from the XML file
+     *  @return the collection of people
      */
-    public Vector getPeople() {
+    public PersonCollection getPeople() {
         return people;
     }
 
@@ -70,7 +70,7 @@ class PeopleXmlReader extends MspXmlReader {
 
         if (name.equals("PEOPLE_LIST")) {
             elementType = PEOPLE_LIST;
-            people = new Vector();
+            people = new PersonCollection();
         }
         if (name.equals("PERSON")) {
             elementType = PERSON;
@@ -147,7 +147,7 @@ class PeopleXmlReader extends MspXmlReader {
         }
         if (elementType == PERSON) {
             Person person = createPerson();
-            if (person != null) people.addElement(person);
+            if (person != null) people.add(person);
             elementType = PEOPLE_LIST;
             return;
         }
@@ -162,7 +162,7 @@ class PeopleXmlReader extends MspXmlReader {
         String data = new String(ch, start, length).trim();
 
         if (elementType == NAME) currentName = data;
-        if (elementType == SETTLEMENT) currentSettlement = manager.getSettlement(data);
+        if (elementType == SETTLEMENT) currentSettlement = manager.getSettlements().getSettlement(data);
         if (elementType == SKILL_NAME) currentSkillName = data;
         if (elementType == SKILL_LEVEL) currentSkillLevel = Integer.parseInt(data);
         if (elementType == ATTRIBUTE_NAME) currentAttributeName = data;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTableModel.java
- * @version 2.72 2001-07-22
+ * @version 2.73 2001-11-25
  * @author Barry Evans
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.standard;
 import org.mars_sim.msp.simulation.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.swing.table.*;
 
 /**
@@ -20,7 +21,7 @@ abstract public class UnitTableModel extends AbstractTableModel {
 
     // Data members
     private ArrayList units;        // Collection of units
-    private String name;             // Model name
+    private String name;            // Model name
 
 
     /** Constructs a UnitTableModel object
@@ -44,9 +45,9 @@ abstract public class UnitTableModel extends AbstractTableModel {
      * Add the Units specified in the array to the current model.
      * @param units Units to add.
      */
-    public void add(UnitUIProxy units[]) {
-        for(int i = 0; i < units.length; i++) {
-           add(units[i]);
+    public void add(Iterator i) {
+        while (i.hasNext()) {
+            add((UnitUIProxy) i.next());
         }
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonCollection.java
- * @version 2.73 2001-10-24
+ * @version 2.73 2001-10-25
  * @author Edgar Crisostomo 
  */
 
@@ -18,30 +18,29 @@ public class PersonCollection {
     private ArrayList elements;  // Used internally to hold elements.
 
     // inner class to implement our type-safe iterator
-    private class Iterator implements PersonIterator {
+    private class ThisIterator implements PersonIterator {
         private Iterator iterator;
 
-        /**
-         *  Constructor
-         */
-        Iterator(PersonCollection collection) {
+        /** Constructor */
+        ThisIterator(Collection collection) {
             iterator = collection.iterator();
         } 
 
+        /** Returns the next element in the interation.
+         *  @return the next element in the interation
+         */
         public Person next() {
             return (Person) iterator.next();
         }
   
-        /**
-         *  Returns true if the iteration has more elements.
+        /** Returns true if the iteration has more elements.
          *  @return true if the iterator has more elements.
          */
         public boolean hasNext() {
             return iterator.hasNext();
         }
   
-        /**
-         *  Removes from the underlying collection the 
+        /** Removes from the underlying collection the 
          *  last element returned by the iterator.
          */
         public void remove() {
@@ -62,7 +61,7 @@ public class PersonCollection {
      */
     public PersonCollection(PersonCollection collection) {
         elements = new ArrayList();
-        Iterator iterator = collection.iterator();
+        PersonIterator iterator = collection.iterator();
         while(iterator.hasNext()) elements.add(iterator.next());
     }
 
@@ -96,8 +95,8 @@ public class PersonCollection {
      *  Returns an iterator over the elements in this collection.
      *  @return an Iterator over the elements in this collection
      */
-    public Iterator iterator() {
-        return new Iterator(this);
+    public PersonIterator iterator() {
+        return new ThisIterator(elements);
     }
 
 
@@ -125,5 +124,30 @@ public class PersonCollection {
      */
     public void clear() {
         elements.clear();
+    }
+    
+    /** Sort by name
+     *  @return person collection sorted by name
+     */
+    public PersonCollection sortByName() {
+        PersonCollection sortedPeople = new PersonCollection();
+        PersonIterator outer = iterator();
+        while (outer.hasNext()) {
+            outer.next();
+            String leastName = "ZZZZZZZZZZZZZZZZZZZ";
+            Person leastPerson = null;
+            PersonIterator inner = iterator();
+            while (inner.hasNext()) {
+                Person tempPerson = inner.next();
+                String name = tempPerson.getName();
+                if ((name.compareTo(leastName) < 0) && !sortedPeople.contains(tempPerson)) {
+                    leastName = name;
+                    leastPerson = tempPerson;
+                }
+            }
+            sortedPeople.add(leastPerson);
+        }
+        
+        return sortedPeople;
     }
 }

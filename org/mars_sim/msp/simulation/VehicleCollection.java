@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleCollection.java
- * @version 2.73 2001-10-24
+ * @version 2.73 2001-10-25
  * @author Scott Davis 
  */
 
@@ -18,30 +18,29 @@ public class VehicleCollection {
     private ArrayList elements;  // Used internally to hold elements.
 
     // inner class to implement our type-safe iterator
-    private class Iterator implements VehicleIterator {
+    private class ThisIterator implements VehicleIterator {
         private Iterator iterator;
 
-        /**
-         *  Constructor
-         */
-        Iterator(VehicleCollection collection) {
+        /** Constructor */
+        ThisIterator(Collection collection) {
             iterator = collection.iterator();
         } 
 
+        /** Returns the next element in the interation.
+         *  @return the next element in the interation
+         */
         public Vehicle next() {
             return (Vehicle) iterator.next();
         }
   
-        /**
-         *  Returns true if the iteration has more elements.
+        /** Returns true if the iteration has more elements.
          *  @return true if the iterator has more elements.
          */
         public boolean hasNext() {
             return iterator.hasNext();
         }
   
-        /**
-         *  Removes from the underlying collection the 
+        /** Removes from the underlying collection the 
          *  last element returned by the iterator.
          */
         public void remove() {
@@ -62,7 +61,7 @@ public class VehicleCollection {
      */
     public VehicleCollection(VehicleCollection collection) {
         elements = new ArrayList();
-        Iterator iterator = collection.iterator();
+        VehicleIterator iterator = collection.iterator();
         while(iterator.hasNext()) elements.add(iterator.next());
     }
 
@@ -96,8 +95,8 @@ public class VehicleCollection {
      *  Returns an iterator over the elements in this collection.
      *  @return an Iterator over the elements in this collection
      */
-    public Iterator iterator() {
-        return new Iterator(this);
+    public VehicleIterator iterator() {
+        return new ThisIterator(elements);
     }
 
 
@@ -125,5 +124,30 @@ public class VehicleCollection {
      */
     public void clear() {
         elements.clear();
+    }
+    
+    /** Sort by name
+     *  @return vehicle collection sorted by name
+     */
+    public VehicleCollection sortByName() {
+        VehicleCollection sortedVehicles = new VehicleCollection();
+        VehicleIterator outer = iterator();
+        while (outer.hasNext()) {
+            outer.next();
+            String leastName = "ZZZZZZZZZZZZZZZZZZZ";
+            Vehicle leastVehicle = null;
+            VehicleIterator inner = iterator();
+            while (inner.hasNext()) {
+                Vehicle tempVehicle = inner.next();
+                String name = tempVehicle.getName();
+                if ((name.compareTo(leastName) < 0) && !sortedVehicles.contains(tempVehicle)) {
+                    leastName = name;
+                    leastVehicle = tempVehicle;
+                }
+            }
+            sortedVehicles.add(leastVehicle);
+        }
+        
+        return sortedVehicles;
     }
 }

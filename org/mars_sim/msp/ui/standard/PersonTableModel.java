@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.72 2001-07-22
+ * @version 2.73 2001-11-25
  * @author Barry Evans
  */
 
@@ -52,7 +52,7 @@ public class PersonTableModel extends UnitTableModel {
      * model
      */
     public void addAll() {
-        add(proxyManager.getOrderedPeopleProxies());
+        add(proxyManager.getOrderedPersonProxies());
     }
 
     /**

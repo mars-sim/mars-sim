@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclesXmlReader.java
- * @version 2.73 2001-11-18
+ * @version 2.73 2001-11-22
  * @author Scott Davis
  */
 
@@ -25,7 +25,7 @@ class VehiclesXmlReader extends MspXmlReader {
     // Data members
     private int elementType; // The current element type being parsed
     private int vehicleType; // The current vehicle type being parsed
-    private Vector vehicles; // The vector of created settlements
+    private VehicleCollection vehicles; // The collection of created settlements
     private VirtualMars mars; // The virtual Mars instance
     private UnitManager manager; // The unit manager
     private String currentName; // The current vehicle's name
@@ -42,10 +42,10 @@ class VehiclesXmlReader extends MspXmlReader {
         this.mars = mars;
     }
 
-    /** Returns the vector of vehicles created from the XML file.
-     *  @return the vector of vehicles
+    /** Returns the collection of vehicles created from the XML file.
+     *  @return the collection of vehicles
      */
-    public Vector getVehicles() {
+    public VehicleCollection getVehicles() {
         return vehicles;
     }
 
@@ -59,7 +59,7 @@ class VehiclesXmlReader extends MspXmlReader {
 
         if (name.equals("VEHICLES_LIST")) {
             elementType = VEHICLES_LIST;
-            vehicles = new Vector();
+            vehicles = new VehicleCollection();
         }
         if (name.equals("ROVER")) {
             elementType = ROVER;
@@ -89,7 +89,7 @@ class VehiclesXmlReader extends MspXmlReader {
         }
         if (elementType == ROVER) {
             Rover rover = createRover();
-            if (rover != null) vehicles.addElement(rover);
+            if (rover != null) vehicles.add(rover);
             elementType = VEHICLES_LIST;
             return;
         }
@@ -104,7 +104,7 @@ class VehiclesXmlReader extends MspXmlReader {
         String data = new String(ch, start, length).trim();
 
         if (elementType == NAME) currentName = data;
-        if (elementType == SETTLEMENT) currentSettlement = manager.getSettlement(data);
+        if (elementType == SETTLEMENT) currentSettlement = manager.getSettlements().getSettlement(data);
     }
     
     /** Creates a rover object 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.73 2001-11-15
+ * @version 2.73 2001-11-22
  * @author Scott Davis
  */
 
@@ -49,12 +49,11 @@ public class Person extends Unit {
         // Use Unit constructor
         super(name, new Coordinates(0D, 0D), mars);
 
-        Vector settlements = manager.getSettlements();
         Settlement leastPeople = null;
         int least = Integer.MAX_VALUE;
-        Iterator i = settlements.iterator();
+        SettlementIterator i = manager.getSettlements().iterator();
         while (i.hasNext()) {
-            Settlement settlement = (Settlement) i.next();
+            Settlement settlement = i.next();
             if (settlement.getAvailablePopulationCapacity() > 0) {
                 if (settlement.getPeopleNum() < least) {
                     least = settlement.getPeopleNum();

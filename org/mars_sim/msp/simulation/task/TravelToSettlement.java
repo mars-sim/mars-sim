@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.73 2001-11-14
+ * @version 2.73 2001-11-22
  * @author Scott Davis
  */
 
@@ -263,41 +263,21 @@ class TravelToSettlement extends Mission {
         UnitManager unitManager = startingSettlement.getUnitManager();
         Settlement result = null;
 
-        Vector settlements = unitManager.getSettlements();
+        SettlementCollection settlements = unitManager.getSettlements();
 
-        // Create vector of valid destination settlements.
-        Iterator iterator = settlements.iterator();
+        // Create collection of valid destination settlements.
+        SettlementIterator iterator = settlements.iterator();
         while (iterator.hasNext()) {
-            Settlement tempSettlement = (Settlement) iterator.next();
+            Settlement tempSettlement = iterator.next();
             if ((tempSettlement == startingSettlement) || (getSettlementCapacity(tempSettlement) < people.size())) 
                 iterator.remove();
         }
 
-        // Sort valid settlements by distance from current settlement.
-        Coordinates currentLocation = startingSettlement.getCoordinates(); 
-        Vector sortedSettlements = new Vector();
-        iterator = settlements.iterator();
-        while (iterator.hasNext()) {
-            iterator.next();
-            double closestDistance = Double.MAX_VALUE;
-            Settlement closestSettlement = null;
-            Iterator inner = settlements.iterator();
-            while (inner.hasNext()) {
-                Settlement tempSettlement = (Settlement) inner.next();
-                double distance = currentLocation.getDistance(tempSettlement.getCoordinates());
-                if ((distance < closestDistance) && !sortedSettlements.contains(tempSettlement)) {
-                    closestDistance = distance;
-                    closestSettlement = tempSettlement;
-                }
-            }
-            sortedSettlements.addElement(closestSettlement);
-        }
+        // Get settlements sorted by proximity to current settlement.
+        SettlementCollection sortedSettlements = settlements.sortByProximity(startingSettlement.getCoordinates());
 
         // Randomly determine settlement with closer settlements being more likely. 
-        if (sortedSettlements.size() > 0) {
-            int chosenSettlementNum = RandomUtil.getRandomRegressionInteger(sortedSettlements.size());
-            result = (Settlement) sortedSettlements.elementAt(chosenSettlementNum - 1);
-        }
+        result = sortedSettlements.getRandomRegressionSettlement();
     
         return result;
     }
@@ -313,11 +293,12 @@ class TravelToSettlement extends Mission {
         result = settlement.getPopulationCapacity() - settlement.getCurrentPopulation();
         
         // Subtract number of people currently traveling to settlement.
-        Vehicle[] vehicles = mars.getUnitManager().getVehicles();
-        for (int x=0; x < vehicles.length; x++) {
-            Settlement tempSettlement = vehicles[x].getDestinationSettlement();
+        VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
+        while (i.hasNext()) {
+            Vehicle tempVehicle = i.next();
+            Settlement tempSettlement = tempVehicle.getDestinationSettlement();
             if ((tempSettlement != null) && (tempSettlement == settlement))
-                result -= vehicles[x].getPassengerNum();
+                result -= tempVehicle.getPassengerNum();
         }
 
         return result;

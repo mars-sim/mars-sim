@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.71 2000-10-22
+ * @version 2.73 2001-11-25
  * @author Scott Davis
  */
 
@@ -23,9 +23,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
     // Data members
     private MainDesktopPane desktop; // Desktop pane
-    private UnitUIProxy[] peopleProxies; // List of person UI proxies
-    private UnitUIProxy[] settlementProxies; // List of settlement UI proxies
-    private UnitUIProxy[] vehicleProxies; // List of vehicle proxies
+    private UIProxyManager proxyManager; // UI proxy manager
     private JComboBox searchForSelect; // Category selecter
     private JList unitList; // List of selectable units
     private DefaultListModel unitListModel; // Model for unit select list
@@ -60,12 +58,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Initialize data members
         this.desktop = desktop;
-
-        // Initialize unit UI proxy lists
-        UIProxyManager proxyManager = desktop.getProxyManager();
-        peopleProxies = proxyManager.getOrderedPeopleProxies();
-        settlementProxies = proxyManager.getOrderedSettlementProxies();
-        vehicleProxies = proxyManager.getOrderedVehicleProxies();
+        proxyManager = desktop.getProxyManager();
 
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
@@ -99,8 +92,11 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Create unit list
         unitListModel = new DefaultListModel();
-        for (int x = 0; x < peopleProxies.length; x++)
-            unitListModel.addElement(peopleProxies[x].getUnit().getName());
+        Iterator peopleProxies = proxyManager.getOrderedPersonProxies();
+        while (peopleProxies.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) peopleProxies.next();
+            unitListModel.addElement(proxy.getUnit().getName());
+        }
         unitList = new JList(unitListModel);
         unitList.setSelectedIndex(0);
         unitList.addMouseListener(this);
@@ -147,24 +143,24 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Search for named unit when button is pushed.
         // Retrieve info on all units of selected category.
-        UnitUIProxy[] unitProxies = new UnitUIProxy[0];
+        Iterator unitProxies = null;
         String category = (String) searchForSelect.getSelectedItem();
         if (category.equals("People"))
-            unitProxies = peopleProxies;
+            unitProxies = proxyManager.getOrderedPersonProxies();
         if (category.equals("Settlements"))
-            unitProxies = settlementProxies;
+            unitProxies = proxyManager.getOrderedSettlementProxies();
         if (category.equals("Vehicles"))
-            unitProxies = vehicleProxies;
+            unitProxies = proxyManager.getOrderedVehicleProxies();
 
         // If entered text equals the name of a unit in this category, take appropriate action.
         boolean foundUnit = false;
-        for (int x = 0; x < unitProxies.length; x++) {
-            if (selectTextField.getText().equalsIgnoreCase(unitProxies[x].getUnit().getName())) {
+        while (unitProxies.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) unitProxies.next();
+            if (selectTextField.getText().equalsIgnoreCase(proxy.getUnit().getName())) {
                 foundUnit = true;
-                if (openWindowCheck.isSelected())
-                    desktop.openUnitWindow(unitProxies[x]);
+                if (openWindowCheck.isSelected()) desktop.openUnitWindow(proxy);
                 if (centerMapCheck.isSelected())
-                    desktop.centerMapGlobe(unitProxies[x].getUnit().getCoordinates());
+                    desktop.centerMapGlobe(proxy.getUnit().getCoordinates());
             }
         }
 
@@ -184,19 +180,20 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Change unitList to the appropriate category list
         unitListModel.clear();
-        UnitUIProxy[] unitProxies = new UnitUIProxy[0];
-
+        Iterator unitProxies = null;
         String category = (String) searchForSelect.getSelectedItem();
         if (category.equals("People"))
-            unitProxies = peopleProxies;
+            unitProxies = proxyManager.getOrderedPersonProxies();
         if (category.equals("Settlements"))
-            unitProxies = settlementProxies;
+            unitProxies = proxyManager.getOrderedSettlementProxies();
         if (category.equals("Vehicles"))
-            unitProxies = vehicleProxies;
+            unitProxies = proxyManager.getOrderedVehicleProxies();
 
         lockUnitList = true;
-        for (int x = 0; x < unitProxies.length; x++)
-            unitListModel.addElement(unitProxies[x].getUnit().getName());
+        while (unitProxies.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) unitProxies.next();
+            unitListModel.addElement(proxy.getUnit().getName());
+        }
         unitList.setSelectedIndex(0);
         unitList.ensureIndexIsVisible(0);
         lockUnitList = false;
@@ -239,8 +236,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
             int fitIndex = 0;
             boolean goodFit = false;
             for (int x = unitListModel.size() - 1; x > -1; x--) {
-                String unitString =
-                        ((String) unitListModel.elementAt(x)).toLowerCase();
+                String unitString = ((String) unitListModel.elementAt(x)).toLowerCase();
                 if (unitString.startsWith(searchText)) {
                     fitIndex = x;
                     goodFit = true;

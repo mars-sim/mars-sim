@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.73 2001-11-15
+ * @version 2.73 2001-11-25
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ public class Settlement extends Structure {
 
     // Default population capacity for a settlement
     private static int DEFAULT_POPULATION_CAPACITY = 20;
+    private static Random rand = new Random();
     
     // Data members
     Vector people; // List of inhabitants
@@ -53,7 +54,8 @@ public class Settlement extends Structure {
         super(name, new Coordinates(0D, 0D), mars);
         
         // Determine random location of settlement, adjust so it will be less likely to be near the poles
-        double settlementPhi = (new Random().nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
+        double settlementPhi = (rand.nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
+        // double settlementPhi = (new Random().nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
         if (settlementPhi > Math.PI) settlementPhi = Math.PI;
         if (settlementPhi < 0D) settlementPhi = 0D;
         double settlementTheta = (double)(Math.random() * (2D * Math.PI));

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.72 2001-05-20
+ * @version 2.73 2001-11-25
  * @author Scott Davis
  */
 
@@ -289,37 +289,38 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  @param g graphics context
      */
     private void drawUnits(Graphics g) {
-        UnitUIProxy[] proxies = proxyManager.getUIProxies();
-        for (int x = 0; x < proxies.length; x++) {
-            if (proxies[x].isMapDisplayed()) {
-                Coordinates unitCoords = proxies[x].getUnit().getCoordinates();
+        Iterator i = proxyManager.getUIProxies();
+        while (i.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) i.next();
+            if (proxy.isMapDisplayed()) {
+                Coordinates unitCoords = proxy.getUnit().getCoordinates();
                 double angle = 0D;
                 if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
                 else angle = HALF_MAP_ANGLE_STANDARD;
 
                 if (centerCoords.getAngle(unitCoords) < angle) {
                     IntPoint rectLocation = getUnitRectPosition(unitCoords);
-                    Image positionImage = proxies[x].getSurfMapIcon().getImage();
+                    Image positionImage = proxy.getSurfMapIcon().getImage();
                     IntPoint imageLocation =
                             getUnitDrawLocation(rectLocation, positionImage);
 
                     if (topo) {
-                        g.drawImage(proxies[x].getTopoMapIcon().getImage(),
+                        g.drawImage(proxy.getTopoMapIcon().getImage(),
                                 imageLocation.getiX(), imageLocation.getiY(), this);
                     } else {
-                        g.drawImage(proxies[x].getSurfMapIcon().getImage(),
+                        g.drawImage(proxy.getSurfMapIcon().getImage(),
                                 imageLocation.getiX(), imageLocation.getiY(), this);
                     }
 
                     if (labels) {
                         if (topo)
-                            g.setColor(proxies[x].getTopoMapLabelColor());
+                            g.setColor(proxy.getTopoMapLabelColor());
                         else
-                            g.setColor(proxies[x].getSurfMapLabelColor());
-                        g.setFont(proxies[x].getMapLabelFont());
+                            g.setColor(proxy.getSurfMapLabelColor());
+                        g.setFont(proxy.getMapLabelFont());
                         IntPoint labelLocation =
                                 getLabelLocation(rectLocation, positionImage);
-                        g.drawString(proxies[x].getUnit().getName(),
+                        g.drawString(proxy.getUnit().getName(),
                                 labelLocation.getiX() + labelHorizOffset,
                                 labelLocation.getiY());
                     }
@@ -341,17 +342,18 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 (double)(event.getY() - HALF_MAP - 1), rho);
         boolean unitsClicked = false;
 
-        UnitUIProxy[] proxies = proxyManager.getUIProxies();
+        Iterator i = proxyManager.getUIProxies();
 
         // Open window if unit is clicked on the map
-        for (int x = 0; x < proxies.length; x++) {
-            if (proxies[x].isMapDisplayed()) {
-                Coordinates unitCoords = proxies[x].getUnit().getCoordinates();
+        while (i.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) i.next();
+            if (proxy.isMapDisplayed()) {
+                Coordinates unitCoords = proxy.getUnit().getCoordinates();
                 double clickRange = unitCoords.getDistance(clickedPosition);
-                double unitClickRange = proxies[x].getMapClickRange();
+                double unitClickRange = proxy.getMapClickRange();
                 if (useUSGSMap && !topo) unitClickRange *= .1257D;
                 if (clickRange < unitClickRange) {
-                    navWindow.openUnitWindow(proxies[x]);
+                    navWindow.openUnitWindow(proxy);
                     unitsClicked = true;
                 }
             }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.73 2001-11-15
+ * @version 2.73 2001-11-22
  * @author Scott Davis
  */
 
@@ -73,11 +73,11 @@ public abstract class Vehicle extends Unit {
 
         if (manager.getSettlementNum() == 0) throw new Exception("No available settlements");
         
-        Iterator i = manager.getSettlements().iterator();
         Settlement leastVehicles = null;
         int least = Integer.MAX_VALUE;
+        SettlementIterator i = manager.getSettlements().iterator();
         while (i.hasNext()) {
-            Settlement settlement = (Settlement) i.next();
+            Settlement settlement = i.next();
             if (settlement.getVehicleNum() < least) {
                 least = settlement.getVehicleNum();
                 leastVehicles = settlement;

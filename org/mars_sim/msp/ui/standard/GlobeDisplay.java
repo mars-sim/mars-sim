@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.72 2001-05-16
+ * @version 2.73 2001-11-25
  * @author Scott Davis
  */
 
@@ -195,13 +195,14 @@ class GlobeDisplay extends JComponent implements Runnable {
      *  @param g graphics context
      */
     protected void drawUnits(Graphics g) {
-        UnitUIProxy[] proxies = proxyManager.getUIProxies();
-        for (int x = 0; x < proxies.length; x++) {
-            if (proxies[x].isGlobeDisplayed()) {
-                Coordinates unitCoords = proxies[x].getUnit().getCoordinates();
+        Iterator i = proxyManager.getUIProxies();
+        while (i.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) i.next();
+            if (proxy.isGlobeDisplayed()) {
+                Coordinates unitCoords = proxy.getUnit().getCoordinates();
                 if (centerCoords.getAngle(unitCoords) < HALF_PI) {
-                    if (topo) g.setColor(proxies[x].getTopoGlobeColor());
-                    else g.setColor(proxies[x].getSurfGlobeColor());
+                    if (topo) g.setColor(proxy.getTopoGlobeColor());
+                    else g.setColor(proxy.getSurfGlobeColor());
                     IntPoint tempLocation = getUnitDrawLocation(unitCoords);
                     g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
                 }

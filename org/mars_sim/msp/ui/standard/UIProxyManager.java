@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIProxyManager.java
- * @version 2.71 2000-10-23
+ * @version 2.73 2001-11-25
  * @author Scott Davis
  */
 
@@ -15,48 +15,39 @@ import javax.swing.*;
 public class UIProxyManager {
 
     // Data members
-    private UnitUIProxy[] unitUIProxies;
+    private ArrayList proxies; // Collection of UnitUIProxies
 
     /** Constructs a UIProxyManager object 
      *  @units array of units
      */
-    public UIProxyManager(Unit[] units) {
+    public UIProxyManager(UnitCollection units) {
+        proxies = new ArrayList();
 
-        Vector proxies = new Vector();
-
-        for (int x = 0; x < units.length; x++) {
-
-            Unit unit = units[x];
+        UnitIterator i = units.iterator();
+        while (i.hasNext()) {
+            Unit unit = i.next();
 
             if (unit instanceof Person)
-                proxies.addElement(new PersonUIProxy((Person) unit, this));
+                proxies.add(new PersonUIProxy((Person) unit, this));
 
             if (unit instanceof Settlement)
-                proxies.addElement(new SettlementUIProxy((Settlement) unit, this));
+                proxies.add(new SettlementUIProxy((Settlement) unit, this));
 
             if (unit instanceof GroundVehicle) {
                 if (unit instanceof Rover) {
                     ImageIcon roverIcon = new ImageIcon("images/RoverIcon.gif");
-                    proxies.addElement(
-                            new GroundVehicleUIProxy((GroundVehicle) unit, this,
-                            roverIcon));
+                    proxies.add(new GroundVehicleUIProxy((GroundVehicle) unit, this, roverIcon));
                 }
             }
         }
-
-        unitUIProxies = new UnitUIProxy[proxies.size()];
-        for (int x = 0; x < unitUIProxies.length; x++)
-            unitUIProxies[x] = (UnitUIProxy) proxies.elementAt(x);
     }
     
-    /** Gets an array of all the UnitUIProxy objects 
-     *  @return an array of unit UI proxies
+    /** Gets an iterator to a collection of all the UnitUIProxies.
+     *  @return an iterator to a collection of unit UI proxies
      */
-    public UnitUIProxy[] getUIProxies() {
-        UnitUIProxy[] result = new UnitUIProxy[unitUIProxies.length];
-        for (int x = 0; x < unitUIProxies.length; x++)
-            result[x] = unitUIProxies[x];
-        return result;
+    public Iterator getUIProxies() {
+        ArrayList newProxies = new ArrayList(proxies);
+        return newProxies.iterator();
     }
 
     /** Gets the UnitUIProxy for a given unit 
@@ -65,77 +56,82 @@ public class UIProxyManager {
      */
     public UnitUIProxy getUnitUIProxy(Unit unit) {
         UnitUIProxy result = null;
-        for (int x = 0; x < unitUIProxies.length; x++) {
-            if (unitUIProxies[x].getUnit() == unit)
-                result = unitUIProxies[x];
+        Iterator i = proxies.iterator();
+        while (i.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) i.next();
+            if (proxy.getUnit() == unit) result = proxy;
         }
         return result;
     }
 
-    /** Gets an ordered array of people UI proxies 
-     *  @return an ordered array of people UI proxies
+    /** Gets an ordered iterator of person UI proxies.
+     *  @return an iterator of a collection of person UI proxies
      */
-    public UnitUIProxy[] getOrderedPeopleProxies() {
-        Vector peopleProxies = new Vector();
-
-        for (int x = 0; x < unitUIProxies.length; x++) {
-            if (unitUIProxies[x] instanceof PersonUIProxy)
-                peopleProxies.addElement(unitUIProxies[x]);
+    public Iterator getOrderedPersonProxies() {
+        ArrayList personProxies = new ArrayList();
+        
+        Iterator i = proxies.iterator();
+        while (i.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) i.next();
+            if (proxy instanceof PersonUIProxy) personProxies.add(proxy);
         }
 
-        return sortProxies(peopleProxies);
+        return sortProxies(personProxies);
     }
 
-    /** Gets an ordered array of settlement UI proxies 
-     *  @return an ordered array of settlement UI proxies
+    /** Gets an ordered iterator of settlement UI proxies.
+     *  @return an iterator of a collection of settlement UI proxies
      */
-    public UnitUIProxy[] getOrderedSettlementProxies() {
-        Vector settlementProxies = new Vector();
+    public Iterator getOrderedSettlementProxies() {
+        ArrayList settlementProxies = new ArrayList();
 
-        for (int x = 0; x < unitUIProxies.length; x++) {
-            if (unitUIProxies[x] instanceof SettlementUIProxy)
-                settlementProxies.addElement(unitUIProxies[x]);
+        Iterator i = proxies.iterator();
+        while (i.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) i.next();
+            if (proxy instanceof SettlementUIProxy) settlementProxies.add(proxy);
         }
 
         return sortProxies(settlementProxies);
     }
 
-    /** Gets an ordered array of vehicle UI proxies 
-     *  @return an ordered array of vehicle UI proxies
+    /** Gets an ordered iterator of vehicle UI proxies.
+     *  @return an iterator of a collection of vehicle UI proxies
      */
-    public UnitUIProxy[] getOrderedVehicleProxies() {
-        Vector vehicleProxies = new Vector();
+    public Iterator getOrderedVehicleProxies() {
+        ArrayList vehicleProxies = new ArrayList();
 
-        for (int x = 0; x < unitUIProxies.length; x++) {
-            if (unitUIProxies[x] instanceof VehicleUIProxy)
-                vehicleProxies.addElement(unitUIProxies[x]);
+        Iterator i = proxies.iterator();
+        while (i.hasNext()) {
+            UnitUIProxy proxy = (UnitUIProxy) i.next();
+            if (proxy instanceof VehicleUIProxy) vehicleProxies.add(proxy);
         }
 
         return sortProxies(vehicleProxies);
     }
 
-    /** Sorts a vector of UI proxies and returns them in an array 
-     *  @param unsortedProxies unsorted vector of UI proxies
-     *  @return sorted array of UI proxies
+    /** Sorts a collection of unit UI proxies by name.
+     *  @param proxyCollection the collection to be sorted
+     *  @return an iterator to a collection of sorted unit UI proxies
      */
-    private UnitUIProxy[] sortProxies(Vector unsortedProxies) {
-
-        UnitUIProxy sorterProxy = null;
-        UnitUIProxy[] sortedProxies = new UnitUIProxy[unsortedProxies.size()];
-
-        for (int x = 0; x < sortedProxies.length; x++) {
-            sorterProxy = (UnitUIProxy) unsortedProxies.elementAt(0);
-            for (int y = 0; y < unsortedProxies.size(); y++) {
-                UnitUIProxy tempProxy = (UnitUIProxy) unsortedProxies.elementAt(y);
-                if (tempProxy.getUnit().getName().compareTo(
-                        sorterProxy.getUnit().getName()) <= 0) {
-                    sorterProxy = tempProxy;
+    public Iterator sortProxies(Collection proxyCollection) {
+        ArrayList sortedCollection = new ArrayList();
+        Iterator outer = proxyCollection.iterator();
+        while (outer.hasNext()) {
+            outer.next();
+            String leastName = "ZZZZZZZZZZZZZZZZZZZ";
+            UnitUIProxy leastProxy = null;
+            Iterator inner = proxyCollection.iterator();
+            while (inner.hasNext()) {
+                UnitUIProxy proxy = (UnitUIProxy) inner.next();
+                String name = proxy.getUnit().getName();
+                if ((name.compareTo(leastName) < 0) && !sortedCollection.contains(proxy)) {
+                    leastName = name;
+                    leastProxy = proxy;
                 }
             }
-            sortedProxies[x] = sorterProxy;
-            unsortedProxies.removeElement(sorterProxy);
+            sortedCollection.add(leastProxy);
         }
-
-        return sortedProxies;
+        
+        return sortedCollection.iterator();
     }
 }

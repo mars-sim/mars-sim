@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementsXmlReader.java
- * @version 2.73 2001-11-18
+ * @version 2.73 2001-11-22
  * @author Scott Davis
  */
 
@@ -27,7 +27,7 @@ class SettlementsXmlReader extends MspXmlReader {
 
     // Data members
     private int elementType; // The current element type being parsed
-    private Vector settlements; // The vector of created settlements
+    private SettlementCollection settlements; // The collection of created settlements
     private VirtualMars mars; // The virtual Mars instance
     private String currentName; // The current settlement name parsed
     private String currentLatitude; // The current latitude string parsed
@@ -44,10 +44,10 @@ class SettlementsXmlReader extends MspXmlReader {
         this.mars = mars;
     }
 
-    /** Returns the vector of settlements created from the XML file.
-     *  @return the vector of settlements
+    /** Returns the collection of settlements created from the XML file.
+     *  @return the collection of settlements
      */
-    public Vector getSettlements() {
+    public SettlementCollection getSettlements() {
         return settlements; 
     }
 
@@ -61,7 +61,7 @@ class SettlementsXmlReader extends MspXmlReader {
 
         if (name.equals("SETTLEMENTS_LIST")) {
             elementType = SETTLEMENTS_LIST;
-            settlements = new Vector();
+            settlements = new SettlementCollection();
         }
         if (name.equals("SETTLEMENT")) {
             elementType = SETTLEMENT;
@@ -108,7 +108,7 @@ class SettlementsXmlReader extends MspXmlReader {
             return;
         }
         if (elementType == SETTLEMENT) {
-            settlements.addElement(createSettlement());    
+            settlements.add(createSettlement());    
             elementType = SETTLEMENTS_LIST;
             return;
         }

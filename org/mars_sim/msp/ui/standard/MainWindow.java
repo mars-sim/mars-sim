@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.73 2001-09-12
+ * @version 2.73 2001-11-23
  * @author Scott Davis
  */
 
@@ -48,8 +48,7 @@ public class MainWindow extends JFrame implements WindowListener {
 	    }
 
         // Create unit UI proxy manager.
-        Unit[] units = mars.getUnitManager().getUnits();
-        proxyManager = new UIProxyManager(units);
+        proxyManager = new UIProxyManager(mars.getUnitManager().getUnits());
         
         // Prepare frame
         setVisible(false);
