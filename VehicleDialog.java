@@ -1,5 +1,5 @@
 //************************** Vehicle Detail Window **************************
-// Last Modified: 8/27/00
+// Last Modified: 8/31/00
 
 // The VehicleDialog class is an abstract detail window for a vehicle.
 // It displays information about the vehicle as well as its current status.
@@ -29,6 +29,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	protected JLabel destinationLongitudeLabel; // Destination longitude label
 	protected JLabel distanceDestinationLabel;  // Distance to destination label
 	protected JLabel speedLabel;                // Speed label
+	protected JLabel fuelLabel;                 // Fuel label
 	protected JPanel driverButtonPane;          // Driver pane
 	protected JButton driverButton;             // Driver button
 	protected JList crewList;                   // List of passengers
@@ -47,6 +48,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	protected Coordinates destination;          // Cached destination of vehicle
 	protected int distance;                     // Cached distance to destination
 	protected float speed;                      // Cached speed of vehicle.
+	protected double fuel;                      // Cached fuel stores in vehicle
 	protected Vector crewInfo;                  // Cached list of crewmembers.
 	protected double distanceTraveled;          // Cached total distance traveled by vehicle.
 	protected double distanceMaint;             // Cached distance traveled by vehicle since last maintenance.
@@ -80,6 +82,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			updateLocation();
 			updateDestination();
 			updateSpeed();
+			updateFuel();
 			updateCrew();
 			updateOdometer();
 			updateMechanicalFailure();
@@ -272,14 +275,24 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		navigationInfoPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		navigationPane.add(navigationInfoPane);
 
+		// Prepare speed/fuel pane
+		
+		JPanel speedFuelPane = new JPanel(new GridLayout(1,2, 0, 0));
+		navigationInfoPane.add(speedFuelPane);
+
 		// Prepare speed label
 
 		int tempSpeed = (int) Math.round(vehicle.getSpeed());
 		speedLabel = new JLabel("Speed: " + tempSpeed + " kph.", JLabel.LEFT);
 		speedLabel.setForeground(Color.black);
-		JPanel speedLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		speedLabelPane.add(speedLabel);
-		navigationInfoPane.add(speedLabelPane);
+		speedFuelPane.add(speedLabel);
+
+		// Prepare fuel label
+		
+		fuel = (double) (Math.round(vehicle.getFuel() * 100D) / 100D);
+		fuelLabel = new JLabel("Fuel: " + fuel, JLabel.LEFT);
+		fuelLabel.setForeground(Color.black);
+		speedFuelPane.add(fuelLabel);
 
 		// Return navigation pane
 		
@@ -295,6 +308,18 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		JPanel crewPane = new JPanel();
 		crewPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		crewPane.setLayout(new BoxLayout(crewPane, BoxLayout.Y_AXIS));
+
+		// Prepare maximum crew capacity pane
+		
+		JPanel maxCrewPane = new JPanel(new BorderLayout());
+		maxCrewPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+		crewPane.add(maxCrewPane);
+
+		// Prepare maximum crew capacity label
+		
+		JLabel maxCrewLabel = new JLabel("Maximum Crew Capacity: " + vehicle.getMaxPassengers(), JLabel.CENTER);
+		maxCrewLabel.setForeground(Color.black);
+		maxCrewPane.add(maxCrewLabel, "Center");
 
 		// Prepare driver pane
 
@@ -586,6 +611,18 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		if (speed != (float) ((int) Math.round(vehicle.getSpeed() * 100D) / 100D)) {
 			speed = (float) ((int) Math.round(vehicle.getSpeed() * 100D) / 100D);
 			speedLabel.setText("Speed: " + speed + " kph.");
+		}
+	}
+	
+	// Update fuel info
+	
+	protected void updateFuel() {
+		
+		// Update fuel label
+		
+		if (fuel != (double) (Math.round(vehicle.getFuel() * 100D) / 100D)) {
+			fuel = (double) (Math.round(vehicle.getFuel() * 100D) / 100D);
+			fuelLabel.setText("Fuel: " + fuel);
 		}
 	}
 
