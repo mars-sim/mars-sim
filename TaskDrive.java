@@ -1,5 +1,5 @@
 //************************** TaskDrive **************************
-// Last Modified: 7/10/00
+// Last Modified: 8/23/00
 
 // The TaskDrive class is a task for driving a ground vehicle.  It has the phases, "Embarking", "Driving" and "Disembarking".
 // If the task is called as part of a larger task, embarking and/or disembarking may be ignored by setting the proper constructor parameters.
@@ -92,6 +92,9 @@ class TaskDrive extends Task {
 	
 	public void doTask(int seconds) {
 		
+		super.doTask(seconds);
+		if (subTask != null) return;
+		
 		if (phase.equals("")) {
 			if (embark) phase = new String("Embarking");
 			else phase = new String("Driving");
@@ -118,15 +121,15 @@ class TaskDrive extends Task {
 		
 		// Initialize subPhase if necessary
 		
-		if (subPhase.equals("")) subPhase = new String("Reserve Vehicle");
+		if (subPhase.equals("")) subPhase = new String("Determine Destination");
+	
+		// Determine the destination
+		
+		if (subPhase.equals("Determine Destination")) seconds -= determineDestination(seconds);
 		
 		// Reserve a vehicle
 		
 		if (subPhase.equals("Reserve Vehicle")) seconds -= reserveVehicle(seconds);
-		
-		// Determine the destination
-		
-		if (subPhase.equals("Determine Destination")) seconds -= determineDestination(seconds);
 		
 		// Invite passengers
 		
@@ -149,39 +152,6 @@ class TaskDrive extends Task {
 		}
 		
 		return seconds;		
-	}
-	
-	// Reserve a vehicle so that no one else can take it (10 seconds).
-	// Get unreserved vehicle if at settlement.
-	// If settlement has no free vehicles, end task.
-	// If task already defines a vehicle, move on.
-	
-	private int reserveVehicle(int seconds) {
-
-		if (vehicle != null) {
-			subPhase = new String("Determine Destination");
-			return seconds;
-		}
-		else if (doSubPhase(seconds, 10)) {
-			boolean foundVehicle = false;
-			
-			if (embarkingSettlement != null) {
-				for (int x=0; x < embarkingSettlement.getVehicleNum(); x++) {
-					Vehicle tempVehicle = embarkingSettlement.getVehicle(x);
-					if (!tempVehicle.isReserved() && !foundVehicle && GroundVehicle.class.isInstance(tempVehicle)) {
-						vehicle = (GroundVehicle) tempVehicle;
-						vehicle.setReserved(true);
-						foundVehicle = true;
-					}
-				}
-			
-				if (foundVehicle) subPhase = new String("Determine Destination");
-				else isDone = true;
-			}
-			else isDone = true;
-			return 10;
-		}
-		else return seconds;
 	}
 	
 	// Determine destination if there isn't already one. (0 seconds)
@@ -214,17 +184,51 @@ class TaskDrive extends Task {
 			}
 		}
 		
-		if (destinationType.equals("Settlement")) {
-			vehicle.setDestinationSettlement(destinationSettlement);
-			destinationCoordinates = destinationSettlement.getCoordinates();
-		}
-		else {
-			if (destinationType.equals("Coordinates")) vehicle.setDestination(destinationCoordinates); 
-		}
+		if (destinationType.equals("Settlement")) destinationCoordinates = destinationSettlement.getCoordinates();
 				
-		subPhase = new String("Invite Passengers");
+		subPhase = new String("Reserve Vehicle");
 		
 		return 0;
+	}
+	
+	// Reserve a vehicle so that no one else can take it (10 seconds).
+	// Get unreserved vehicle if at settlement.
+	// If settlement has no free vehicles, end task.
+	// If task already defines a vehicle, move on.
+	
+	private int reserveVehicle(int seconds) {
+
+		if (vehicle != null) {
+			subPhase = new String("Invite Passengers");
+			if (destinationType.equals("Settlement")) vehicle.setDestinationSettlement(destinationSettlement);
+			else if (destinationType.equals("Coordinates")) vehicle.setDestination(destinationCoordinates); 
+			return seconds;
+		}
+		else if (doSubPhase(seconds, 10)) {
+			boolean foundVehicle = false;
+			
+			if (embarkingSettlement != null) {
+				for (int x=0; x < embarkingSettlement.getVehicleNum(); x++) {
+					Vehicle tempVehicle = embarkingSettlement.getVehicle(x);
+					MaintenanceGarageFacility garage = (MaintenanceGarageFacility) embarkingSettlement.getFacilityManager().getFacility("Maintenance Garage");
+					if (!tempVehicle.isReserved() && !garage.vehicleInGarage(tempVehicle)) {
+						if (!foundVehicle && GroundVehicle.class.isInstance(tempVehicle)) {
+							vehicle = (GroundVehicle) tempVehicle;
+							vehicle.setReserved(true);
+							if (destinationType.equals("Settlement")) vehicle.setDestinationSettlement(destinationSettlement);
+							else if (destinationType.equals("Coordinates")) vehicle.setDestination(destinationCoordinates); 
+							foundVehicle = true;
+						}
+					}
+				}
+			
+				if (foundVehicle) subPhase = new String("Invite Passengers");
+				else isDone = true;
+			}
+			else isDone = true;
+			return 10;
+		}
+		else return seconds;
 	}
 	
 	// Invite other people in current settlement to come along on the trip. (0 seconds)
@@ -436,6 +440,7 @@ class TaskDrive extends Task {
 		person.getSkillManager().addExperience("Driving", newPoints);
 		
 		// If vehicle is at destination, end driving phase and prepare for disembarking.
+		// Otherwise check for vehicle breakdown.
 
 		if (endingLocation.equals(destinationCoordinates)) {
 			phase = new String("Disembarking");
@@ -443,6 +448,7 @@ class TaskDrive extends Task {
 			vehicle.setSpeed(0D);
 			vehicle.setDestinationType("None");
 		}
+		else checkMechanicalBreakdown();
 		
 		return 0;
 	}
@@ -504,6 +510,65 @@ class TaskDrive extends Task {
 		if (speed < 0D) speed = 0D;
 		
 		return speed;
+	}
+	
+	// Checks for vehicle breakdown to mechanical failure.
+	
+	private void checkMechanicalBreakdown() {
+		
+		// Base .1% of breakdown average 1 turn of driving.
+		
+		double percentChance = .1D;
+		
+		// Modify by total distance vehicle has traveled.
+		
+		double distanceModifier = .1D * (vehicle.getTotalDistanceTraveled() / 10000D);
+		
+		// Modify by distance since last maintenance if over 5,000 km.
+		
+		double maintenanceModifier = 0D;
+		if (vehicle.getDistanceLastMaintenance() > 5000D) {
+			maintenanceModifier = .3D * (vehicle.getDistanceLastMaintenance() / 5000D);
+		}
+		
+		// Modify by driver's skill level.
+		
+		int skillLevel = 0;
+		if (person.getSkillManager().hasSkill("Driving")) skillLevel = person.getSkillManager().getSkillLevel("Driving");
+		double skillModifier = .1D * (double) skillLevel;
+		
+		// Modify by terrain.
+		
+		double terrainModifier = .5D * Math.sin(vehicle.getTerrainGrade());
+		
+		// Modify by terrain handling capability of vehicle.
+		
+		double terrainHandlingModifier = .1D * vehicle.getTerrainHandlingCapability();
+		
+		// Modify by what phase the driving task is in.
+		
+		double subPhaseModifier = 0;
+		if (subPhase.equals("Avoiding Obstacle")) subPhaseModifier = .1D;
+		if (subPhase.equals("Backing Up")) subPhaseModifier = .2D;
+		if (subPhase.equals("Winching Stuck Vehicle")) subPhaseModifier = .3D;
+		
+		// Total up modifications with base chance of failure.
+		
+		percentChance += distanceModifier + maintenanceModifier - skillModifier + terrainModifier - terrainHandlingModifier + subPhaseModifier;
+		
+		// Determine if failure happens and, if so, have the crew fix the failure.
+		
+		if ((Math.random() * 100D) <= percentChance) {
+			vehicle.setStatus("Broken Down");
+			vehicle.setSpeed(0);
+			vehicle.newMechanicalFailure();
+			
+			for (int x=0; x < vehicle.getPassengerNum(); x++) {
+				Person crewmember = vehicle.getPassenger(x);
+				crewmember.getTaskManager().addSubTask(new TaskMechanic(crewmember, mars, vehicle.getMechanicalFailure()));
+			}
+			// System.out.println(vehicle.getName() + " failure chance: " + percentChance);
+		}
 	}
 	
 	// This subphase allows all the passengers to exit and returns the vehicle to parked status. (100 seconds)
