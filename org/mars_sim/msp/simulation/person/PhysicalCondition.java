@@ -108,7 +108,8 @@ public class PhysicalCondition implements Serializable {
             while(newIter.hasNext()) {
                 Complaint illness = (Complaint)newIter.next();
                 if (!problems.containsKey(illness)) {
-                    problems.put(illness, new HealthProblem(illness, person));
+                    problems.put(illness, new HealthProblem(illness, person,
+                                                            person.getAccessibleAid()));
                 }
             }
         }
@@ -121,7 +122,8 @@ public class PhysicalCondition implements Serializable {
             if ((randomComplaint != null) &&
                         !problems.containsKey(randomComplaint)) {
                 problems.put(randomComplaint,
-                                new HealthProblem(randomComplaint, person));
+                                new HealthProblem(randomComplaint, person,
+                                                  person.getAccessibleAid()));
                 recalculate = true;
             }
         }
@@ -199,7 +201,8 @@ public class PhysicalCondition implements Serializable {
         boolean newProblem = false;
 
         if (actual < required) {
-            problems.put(complaint, new HealthProblem(complaint, person));
+            problems.put(complaint, new HealthProblem(complaint, person,
+                                                      person.getAccessibleAid()));
             newProblem = true;
         }
         else {
@@ -289,7 +292,7 @@ public class PhysicalCondition implements Serializable {
     /**
      * This Person is now dead.
      */
-    void setDead() {
+    public void setDead() {
         fatigue = 0;
         hunger = 0;
         isAlive = false;
