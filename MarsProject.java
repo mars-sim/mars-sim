@@ -24,22 +24,58 @@ public class MarsProject {
         SplashWindow splashWindow = new SplashWindow();
         
         // create virtual mars
-        File loadFile = null;
-        if (args.length == 1) {
-            loadFile = new File(args[0]);
-        }
+        boolean usage = false;
         VirtualMars mars = null;
-        try {
-            mars = VirtualMars.load(loadFile);
-        }
-        catch (Exception e) {
-            System.out.println("Problem loading default " + e);
+        if (args.length == 1) {
+            if (args[0].equals("-new")) {
+                mars = new VirtualMars();
+            }
+            else {
+                usage = true;
+            }
         }
 
-        // If no loaded simulation, create a new one.
-        if (mars == null) {
-            System.out.println("Constructing new simulation");
-            mars = new VirtualMars();
+        else if (args.length == 2) {
+            // Load a previous simulation
+            if (args[0].equals("-load")) {
+                File loadFile = new File(args[1]);
+                try {
+                    mars = VirtualMars.load(loadFile);
+                }
+                catch (Exception e) {
+                    System.err.println("Problem loading existing simulation " +
+                                        e);
+                    return;
+                }
+            }
+            else {
+                usage = true;
+            }
+        }
+
+        // Load a the default simulation
+        else if (args.length == 0) {
+            try {
+                mars = VirtualMars.load(null);
+            }
+            catch (Exception e) {
+                System.err.println("Problem loading default simulation " + e);
+                return;
+            }
+
+            // If no default, then create a new one
+            if (mars == null) {
+                mars = new VirtualMars();
+            }
+        }
+        else {
+            usage = true;
+        }
+        
+        // Is the command line correct
+        if (usage) {
+            System.err.println("MarsProject [-new | -load file]");
+            System.exit(0);
         }
         mars.start();
 
