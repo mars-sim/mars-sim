@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * PieChartView.java
- * @version 2.75 2003-11-20
+ * @version 2.75 2003-11-27
  * @author Barry Evans
  */
 
@@ -49,19 +49,17 @@ class PieChartTab extends MonitorTab {
 
         private TableModel model;
         private int column;
-        private HashMap dataMap;
+        private Map dataMap;
 
         public TablePieDataset(TableModel model, int column) {
             this.column = column;
-            dataMap = new HashMap();
+            dataMap = new LinkedHashMap();
             setModel(model);
         }
 
         /**
          * Examines the associated model and recreates the internal hashmap of
-         * values according to the values in one column. Any values which are
-         * less than OTHERPERC are combined into a single entry.
-         *
+         * values according to the values in one column.
          */
         void calculate() {
             
