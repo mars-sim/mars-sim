@@ -33,6 +33,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected JLabel latitudeLabel; // Latitude label
     protected JLabel longitudeLabel; // Longitude label
     protected JPanel destinationLabelPane; // Destination label pane
+    protected JButton destinationCenterMapButton; // Destination center map button
     protected JLabel destinationLabel; // Destination label
     protected JButton destinationButton; // Destination settlement button
     protected JLabel destinationLatitudeLabel; // Destination latitude label
@@ -132,6 +133,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         super.actionPerformed(event);
         
         Object button = event.getSource();
+
+        // If destination center map button, center map on destination
+	if (button == destinationCenterMapButton) 
+            parentDesktop.centerMapGlobe(vehicle.getDestination());
 
         // If location button, open window for selected unit
         if ((button == locationButton) && (vehicle.getStatus().equals("Parked") ||
@@ -235,6 +240,12 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         destinationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
         destinationPane.add(destinationLabelPane, "North");
 
+        // Prepare destination center map button
+	destinationCenterMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
+	destinationCenterMapButton.setMargin(new Insets(1, 1, 1, 1));
+	destinationCenterMapButton.addActionListener(this);
+	destinationLabelPane.add(destinationCenterMapButton);
+	
         // Prepare destination label
         destinationLabel = new JLabel("Destination: ", JLabel.LEFT);
         if (vehicle.getDestinationType().equals("Coordinates")) destinationLabel.setText("Destination: Coordinates");
@@ -638,18 +649,24 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     /** Update destination info */
     protected void updateDestination() {
 
+        Coordinates destinationCoords = vehicle.getDestination();
+
+	// Update destination center map button
+	if (destinationCoords == null) destinationCenterMapButton.setVisible(false);
+	else destinationCenterMapButton.setVisible(true);
+	    
         String destinationType = vehicle.getDestinationType();
 
         // Update destination button
         if (destinationType.equals("Settlement")) {
             if (!destinationButton.getText().equals(vehicle.getDestinationSettlement().getName()))
                 destinationButton.setText(vehicle.getDestinationSettlement().getName());
-            if (destinationLabelPane.getComponentCount() == 1) {
+            if (destinationLabelPane.getComponentCount() == 2) {
                 destinationLabel.setText("Destination: ");
                 destinationLabelPane.add(destinationButton);
             }
         } else {
-            if (destinationLabelPane.getComponentCount() > 1) 
+            if (destinationLabelPane.getComponentCount() > 2) 
                 destinationLabelPane.remove(destinationButton);
             if (destinationType.equals("Coordinates"))
                 destinationLabel.setText("Destination: Coordinates");
