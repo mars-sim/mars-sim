@@ -164,9 +164,7 @@ public class VehicleTableModel extends UnitTableModel {
 
             case MALFUNCTION: {
                 Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
-                if ((failure != null) && !failure.isFixed()) {
-                    result = failure.getName();
-                }
+                if (failure != null) result = failure.getName();
             } break;
 
             case LOCATION : {
