@@ -12,7 +12,6 @@ import java.util.Iterator;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /** The TendGreenhouse class is a task for tending the greenhouse in a settlement.
