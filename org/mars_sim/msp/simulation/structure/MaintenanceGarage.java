@@ -20,6 +20,8 @@ import java.util.Vector;
  */
 public class MaintenanceGarage extends Facility implements Serializable {
 
+    public final static String NAME = "Maintenance Garage";
+	
     // Data members
     private double vehicleCapacity; // The total mass (kg) of vehicles the garage can accomidate.
     private VehicleCollection vehicles; // A collection of vehicles currently in the garage.
@@ -30,7 +32,7 @@ public class MaintenanceGarage extends Facility implements Serializable {
     MaintenanceGarage(FacilityManager manager) {
 
         // Use Facility's constructor.
-        super(manager, "Maintenance Garage");
+        super(manager, NAME);
 
         // Add scope string to malfunction manager.
 	malfunctionManager.addScopeString("MaintenanceGarage");

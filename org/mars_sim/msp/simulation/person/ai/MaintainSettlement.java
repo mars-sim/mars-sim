@@ -85,11 +85,11 @@ class MaintainSettlement extends Task implements Serializable {
 	// since last maintenance for the settlement and all of its facilities.
 	Settlement settlement = person.getSettlement();
 	if (settlement != null) {
-            result += (settlement.getMalfunctionManager().getTimeSinceLastMaintenance() / 100D);
+            result += (settlement.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
 	    Iterator i = settlement.getFacilityManager().getFacilities();
 	    while (i.hasNext()) {
 	        Facility facility = (Facility) i.next();
-		result += (facility.getMalfunctionManager().getTimeSinceLastMaintenance() / 100D);
+		result += (facility.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
 	    }
 	}
 		
@@ -142,8 +142,29 @@ class MaintainSettlement extends Task implements Serializable {
         // Keep track of the duration of the task.
 	timeCompleted += time;
 	if (timeCompleted >= duration) done = true;
+
+        // Check if an accident happens during maintenance.
+	checkForAccident(time);
 	
 	return 0D;
     }
-}
 
+    /**
+     * Check for accident during maintenance.
+     * @param time the amount of time working (in millisols)
+     */
+    private void checkForAccident(double time) {
+    
+        double chance = .01D;
+
+        // Mechanic skill modification.
+	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        if (skill <= 3) chance *= (4 - skill);
+        else chance /= (skill - 2);
+
+        if (RandomUtil.lessThanRandPercent(chance * time)) {
+            System.out.println(person.getName() + " has accident while performing maintenance on " + entity.getName() + ".");
+            entity.getMalfunctionManager().accident();
+        }
+    }
+}

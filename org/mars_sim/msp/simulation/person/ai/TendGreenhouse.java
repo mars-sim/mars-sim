@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-23
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ class TendGreenhouse extends Task implements Serializable {
         // Initialize data members
 	description = "Tending Greenhouse at " + person.getSettlement().getName();
         this.settlement = person.getSettlement();
-        this.greenhouse = (Greenhouse) settlement.getFacilityManager().getFacility("Greenhouse");
+        this.greenhouse = (Greenhouse) settlement.getFacilityManager().getFacility(Greenhouse.NAME);
 
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
@@ -44,7 +44,7 @@ class TendGreenhouse extends Task implements Serializable {
 	    
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Greenhouse greenhouse =
-                   (Greenhouse) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
+                   (Greenhouse) person.getSettlement().getFacilityManager().getFacility(Greenhouse.NAME);
             if ((greenhouse.getPhase().equals("Growing")) &&
                     (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
                 result = 0D;
@@ -93,7 +93,29 @@ class TendGreenhouse extends Task implements Serializable {
                 50D) / 100D);
         person.getSkillManager().addExperience("Greenhouse Farming", experience);
 
+        // Check for accident in greenhouse.
+	checkForAccident(time);
+	
         return 0D;
+    }
+
+    /**
+     * Check for accident in greenhouse.
+     * @param time the amount of time working (in millisols)
+     */
+    private void checkForAccident(double time) {
+
+        double chance = .01D;
+
+	// Greenhouse farming skill modification.
+	int skill = person.getSkillManager().getEffectiveSkillLevel("Greenhouse Farming");
+        if (skill <= 3) chance *= (4 - skill);
+        else chance /= (skill - 2);
+
+        if (RandomUtil.lessThanRandPercent(chance * time)) {
+            System.out.println(person.getName() + " has accident while tending the greenhouse.");
+            greenhouse.getMalfunctionManager().accident();
+        }
     }
 }
 

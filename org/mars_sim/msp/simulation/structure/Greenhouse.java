@@ -17,6 +17,8 @@ import java.io.Serializable;
 
 public class Greenhouse extends Facility implements Serializable {
 
+    public final static String NAME = "Greenhouse";
+	
     // Data members
     private double workLoad; // Amount of work time (in millisols) tending greenhouse required during growth period for full harvest.
     private double growingWork; // Amount of work time (in millisols) completed for growing phase.
@@ -30,7 +32,7 @@ public class Greenhouse extends Facility implements Serializable {
     public Greenhouse(FacilityManager manager) {
 
         // Use Facility's constructor.
-        super(manager, "Greenhouse");
+        super(manager, NAME);
 
         // Add scope string to malfunction manager.
 	malfunctionManager.addScopeString("Greenhouse");

@@ -17,6 +17,8 @@ import java.util.*;
  */
 public class Laboratory extends Facility implements Lab, Serializable {
 
+    public final static String NAME = "Research Laboratories";
+	
     // Data members
     private int laboratorySize; // Number of researchers supportable at any given time. 
     private int technologyLevel; // How advanced the laboratories are (units defined later)
@@ -30,7 +32,7 @@ public class Laboratory extends Facility implements Lab, Serializable {
     Laboratory(FacilityManager manager) {
 
         // Use Facility's constructor.
-        super(manager, "Research Laboratories");
+        super(manager, NAME);
 
         // Add scope string to malfunction manager.
 	malfunctionManager.addScopeString("Laboratory");

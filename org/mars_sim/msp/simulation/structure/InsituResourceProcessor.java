@@ -18,13 +18,15 @@ import java.io.Serializable;
 public class InsituResourceProcessor extends Facility 
                 implements Serializable {
 
+    public final static String NAME = "INSITU Resource Processor";
+			
     /** Constructs a InsituResourceProcessor object.
      *  @param manager the manager of the processor facility.
      */
     public InsituResourceProcessor(FacilityManager manager) {
         
         // User Facility's constructor
-        super(manager, "INSITU Resource Processor");
+        super(manager, NAME);
 
 	// Add scope string to malfunction manager.
 	malfunctionManager.addScopeString("InsituResourceProcessor");

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-23
  * @author Scott Davis
  */
 
@@ -40,7 +40,7 @@ class StudyRockSamples extends Task implements Serializable {
 	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 	    Settlement settlement = person.getSettlement();
             inv = settlement.getInventory();
-            lab = (Laboratory) settlement.getFacilityManager().getFacility("Research Laboratories");
+            lab = (Laboratory) settlement.getFacilityManager().getFacility(Laboratory.NAME);
 	    lab.addResearcher();
 	}
 	else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
@@ -67,7 +67,7 @@ class StudyRockSamples extends Task implements Serializable {
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
 	    Inventory inv = settlement.getInventory();
-	    Lab lab = (Laboratory) settlement.getFacilityManager().getFacility("Research Laboratories");
+	    Lab lab = (Laboratory) settlement.getFacilityManager().getFacility(Laboratory.NAME);
             if (inv.getResourceMass(Inventory.ROCK_SAMPLES) > 0D) {
 		if (lab.getResearcherNum() < lab.getLaboratorySize()) result = 25D;
 	    }
@@ -127,7 +127,37 @@ class StudyRockSamples extends Task implements Serializable {
             done = true;
 	    lab.removeResearcher();
 	}
+
+        // Check for lab accident.
+	checkForAccident(time);
 	
         return 0D;
+    }
+
+    /**
+     * Check for accident in laboratory.
+     * @param time the amount of time researching (in millisols)
+     */
+    private void checkForAccident(double time) {
+
+        double chance = .01D;
+
+	// Areology skill modification.
+	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        if (skill <= 3) chance *= (4 - skill);
+        else chance /= (skill - 2);
+
+        if (RandomUtil.lessThanRandPercent(chance * time)) {
+            System.out.println(person.getName() + " has a lab accident while researching rock samples.");
+	    
+            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+                Settlement settlement = person.getSettlement();
+	        Facility facility = settlement.getFacilityManager().getFacility(Laboratory.NAME);
+		facility.getMalfunctionManager().accident();
+	    }
+	    else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+	        person.getVehicle().getMalfunctionManager().accident(); 
+	    }
+        }
     }
 }

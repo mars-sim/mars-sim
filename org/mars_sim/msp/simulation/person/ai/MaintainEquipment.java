@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainEquipment.java
- * @version 2.74 2002-03-23
+ * @version 2.74 2002-04-23
  * @author Scott Davis
  */
 
@@ -110,7 +110,7 @@ class MaintainEquipment extends Task implements Serializable {
 	UnitIterator i = personEquipmentList.iterator();
 	while (i.hasNext()) {
 	    Equipment e = (Equipment) i.next();
-	    result += e.getMalfunctionManager().getTimeSinceLastMaintenance();
+	    result += (e.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
 	}
 	
 	// Sum up probabilities for equipment in container's inventory.
@@ -120,7 +120,7 @@ class MaintainEquipment extends Task implements Serializable {
 	    i = containerEquipmentList.iterator();
 	    while (i.hasNext()) {
 	        Equipment e = (Equipment) i.next();
-	        result += e.getMalfunctionManager().getTimeSinceLastMaintenance();
+	        result += (e.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
 	    }
 	}
 	    
@@ -173,8 +173,30 @@ class MaintainEquipment extends Task implements Serializable {
         // Keep track of the duration of the task.
 	timeCompleted += time;
 	if (timeCompleted >= duration) done = true;
+
+        // Check if an accident happens during maintenance.
+	checkForAccident(time);
 	
 	return 0D;
+    }
+
+    /**
+     * Check for accident with EVA suit during collection phase.
+     * @param time the amount of time on EVA (in millisols)
+     */
+    private void checkForAccident(double time) {
+
+        double chance = .01D;
+
+	// Mechanic skill modification.
+	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+	if (skill <= 3) chance *= (4 - skill);
+	else chance /= (skill - 2);
+
+        if (RandomUtil.lessThanRandPercent(chance * time)) {
+            System.out.println(person.getName() + " has accident while performing maintenance on " + equipment.getName() + ".");
+            equipment.getMalfunctionManager().accident();
+        }
     }
 }
 

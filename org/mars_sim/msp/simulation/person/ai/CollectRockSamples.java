@@ -99,6 +99,10 @@ class CollectRockSamples extends Task implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      */
     private double collectRocks(double time) {
+
+	// Check for an accident during the EVA operation.
+        checkForAccident(time);
+	    
         // Check if there is reason to cut the collection phase short and return
 	// to the rover.
 	if (shouldEndCollectionPhase()) {
@@ -244,5 +248,28 @@ class CollectRockSamples extends Task implements Serializable {
 	}
 	
 	return result;
+    }
+
+    /**
+     * Check for accident with EVA suit during collection phase.
+     * @param time the amount of time on EVA (in millisols)
+     */
+    private void checkForAccident(double time) {
+
+        EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
+	if (suit != null) {
+	    
+            double chance = .01D;
+
+	    // EVA operations skill modification.
+	    int skill = person.getSkillManager().getEffectiveSkillLevel("EVA Operations");
+	    if (skill <= 3) chance *= (4 - skill);
+	    else chance /= (skill - 2);
+
+	    if (RandomUtil.lessThanRandPercent(chance * time)) {
+	        System.out.println(person.getName() + " has accident during EVA operation.");
+	        suit.getMalfunctionManager().accident();
+            }
+	}
     }
 }

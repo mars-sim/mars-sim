@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-23
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.Infirmary;
 import org.mars_sim.msp.simulation.structure.FacilityManager;
@@ -61,7 +61,7 @@ public class MedicalAssistance extends Task implements Serializable {
             result = 50D * person.getPerformanceRating();
         }
 
-	    return result;
+        return result;
     }
 
     static private SickBay getSickbay(Person person) {
@@ -78,9 +78,12 @@ public class MedicalAssistance extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-	    // If person is incompacitated, end task.
+        // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) done = true;
 
+        // Check for accident in infirmary.
+	checkForAccident(time);
+	
         timeCompleted += time;
         if (timeCompleted > duration) {
             done = true;
@@ -96,5 +99,29 @@ public class MedicalAssistance extends Task implements Serializable {
         else {
             return 0;
         }
+    }
+
+    /**
+     * Check for accident in infirmary.
+     * @param time the amount of time working (in millisols)
+     */
+    private void checkForAccident(double time) {
+
+	Settlement settlement = person.getSettlement();
+	if (settlement != null) {
+	
+            double chance = .01D;
+	    
+            // Medical skill modification.
+	    int skill = person.getSkillManager().getEffectiveSkillLevel("Medical");
+	    if (skill <= 3) chance *= (4 - skill);
+	    else chance /= (skill - 2);
+
+	    if (RandomUtil.lessThanRandPercent(chance * time)) {
+	        System.out.println(person.getName() + " has accident during medical assistance in infirmary.");
+		FacilityManager mgr = settlement.getFacilityManager();
+		mgr.getFacility(Infirmary.NAME).getMalfunctionManager().accident();
+	    }
+	}
     }
 }

@@ -409,7 +409,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
 
     /**
      * Check if vehicle has had an accident.
-     * @param time the amount of time vehicle has been driven (millisols)
+     * @param time the amount of time vehicle is driven (millisols)
      */
     private void checkForAccident(double time) {
 

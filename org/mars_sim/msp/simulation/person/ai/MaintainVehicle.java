@@ -83,7 +83,7 @@ class MaintainVehicle extends Task implements Serializable {
 	    while (i.hasNext()) {
                 Vehicle vehicle = i.next();
 		if (!vehicle.isReserved()) 
-		    result += (vehicle.getMalfunctionManager().getTimeSinceLastMaintenance() / 100D);
+		    result += (vehicle.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
             }
         }
 
@@ -140,7 +140,36 @@ class MaintainVehicle extends Task implements Serializable {
         // Keep track of the duration of the task.
 	timeCompleted += time;
 	if (timeCompleted >= duration) done = true;
+
+        // Check if an accident happens during maintenance.
+	checkForAccident(time);
 	
         return 0D;
+    }
+
+    /**
+     * Check for accident during vehicle maintenance.
+     * @param time the amount of time working (in millisols)
+     */
+    private void checkForAccident(double time) {
+
+        double chance = .01D;
+	    
+        // Mechanic skill modification.
+	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        if (skill <= 3) chance *= (4 - skill);
+        else chance /= (skill - 2);
+
+	// 50% chance of accident with vehicle, 50% chance of accident with maintenance garage.
+	if (RandomUtil.lessThanRandPercent(chance * time)) {
+	    if (RandomUtil.lessThanRandPercent(50D)) {
+                System.out.println(person.getName() + " has accident while performing maintenance on " + vehicle.getName() + ".");
+                vehicle.getMalfunctionManager().accident();
+	    }
+	    else {
+	        System.out.println(person.getName() + " has accident while performing maintenance on " + vehicle.getName() + ".");
+		garage.getMalfunctionManager().accident();
+	    }
+        }
     }
 }
