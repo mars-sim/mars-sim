@@ -50,11 +50,11 @@ public class AudioPlayer {
 	{
 		this.startPlay(path, true);
 	}
-	public void stop()
-	{
-		clip.stop();
-	}
 
-	
+	public void stop() {
+		if (clip != null) {
+			clip.stop();
+		}
+	}
 }
 
