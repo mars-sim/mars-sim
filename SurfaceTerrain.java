@@ -1,5 +1,5 @@
 //************************** Surface Terrain Data Of Mars **************************
-// Last Modified: 2/20/00
+// Last Modified: 3/15/00
 
 // The SurfaceTerrain class represents the surface terrain of the virtual Mars.
 // It can provide information about elevation and terrain ruggedness at any location
@@ -12,9 +12,9 @@ public class SurfaceTerrain {
 	
 	// Data members
 	
-	RandomAccessFile map;    // File containing elevation data for virtual Mars.
-	int[] index;             // An cached array for row count indexing of the elevation data.
-	long[] sum;              // An cached array to help find rows of the elevation data.
+	private RandomAccessFile map;    // File containing elevation data for virtual Mars.
+	private int[] index;             // An cached array for row count indexing of the elevation data.
+	private long[] sum;              // An cached array to help find rows of the elevation data.
 	
 	// Constructor
 	
