@@ -33,7 +33,7 @@ public class SimulationProperties {
      */
     public int getInitPeople() {
 	if(initPeople == 0) {
-	    initPeople = propertiesReader.getInitSettlements();
+	    initPeople = propertiesReader.getInitSettlements() * 10;
 	}
 	return initPeople;
     }
@@ -48,7 +48,7 @@ public class SimulationProperties {
      */
     public int getInitVehicles() {
 	if(initVehicles == 0) {
-	    initVehicles = propertiesReader.getInitSettlements();
+	    initVehicles = propertiesReader.getInitSettlements() * 2;
 	}
 	return initVehicles;
     }
