@@ -106,7 +106,7 @@
 			<building type="Starting ERV Base" number="1" />
 			<vehicle type="Explorer Rover" number="1" />
 			<vehicle type="Transport Rover" number="1" />
-			<person  number="4" />
+			<person number="4" />
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
 		</resupply>

@@ -32,7 +32,7 @@ public abstract class HistoricalEvent {
      * @param category Category of event.
      * @param type Type of event.
      * @param source The object that has produced the event, if this is null
-     * then it is a global simulation event. It could be a Unit or a Facility.
+     * then it is a global simulation event. It could be a Unit or a Building.
      * @param description Long description of event.
      *
      * @see org.mars_sim.msp.simulation.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)

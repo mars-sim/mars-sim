@@ -1,25 +1,20 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 2.75 2004-01-16
+ * @version 2.76 2004-07-08
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.util.*;
 import javax.swing.table.AbstractTableModel;
-
-import org.mars_sim.msp.simulation.events.HistoricalEvent;
-import org.mars_sim.msp.simulation.events.HistoricalEventListener;
-import org.mars_sim.msp.simulation.events.HistoricalEventManager;
+import org.mars_sim.msp.simulation.events.*;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
  * provides a mean to display the Historical Event. This is actually an
  * Adapter onto the existing Event Manager.
  */
-
 public class EventTableModel extends AbstractTableModel
             implements MonitorModel, HistoricalEventListener {
 
@@ -57,6 +52,7 @@ public class EventTableModel extends AbstractTableModel
     private boolean displayMedical = true;
     private boolean displayMission = false;
     private boolean displayTask = false;
+    private boolean displaySupply = false;
 
     /**
      * Create a new Event model based on the specified event manager.
@@ -92,6 +88,9 @@ public class EventTableModel extends AbstractTableModel
 				cachedEvents.add(event);
 				
 			if (category.equals(HistoricalEventManager.TASK) && displayTask)
+				cachedEvents.add(event);
+				
+			if (category.equals(HistoricalEventManager.SUPPLY) && displaySupply)
 				cachedEvents.add(event);
 		}
 		
@@ -298,6 +297,23 @@ public class EventTableModel extends AbstractTableModel
      */
     public void setDisplayTask(boolean display) {
     	displayTask = display;
+    	updateCachedEvents();
+    }
+    
+    /**
+     * Checks if supply events are to be displayed.
+     * @return true if displayed
+     */
+    public boolean getDisplaySupply() {
+    	return displaySupply;
+    }
+    
+    /**
+     * Sets if supply events are to be displayed.
+     * @param display true if displayed
+     */
+    public void setDisplaySupply(boolean display) {
+    	displaySupply = display;
     	updateCachedEvents();
     }
 }

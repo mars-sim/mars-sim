@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EventTab.java
- * @version 2.75 2004-01-17
+ * @version 2.76 2004-07-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -25,7 +25,13 @@ public class EventFilter extends JInternalFrame implements ActionListener {
 	private JCheckBox medicalCheck;
 	private JCheckBox missionCheck;
 	private JCheckBox taskCheck;
+	private JCheckBox resupplyCheck;
 
+	/**
+	 * Constructor
+	 * @param model the event table model
+	 * @param desktop the main desktop
+	 */
 	public EventFilter(EventTableModel model, MainDesktopPane desktop) {
 		
 		// Use JInternalFrame constructor.
@@ -41,7 +47,7 @@ public class EventFilter extends JInternalFrame implements ActionListener {
 		setContentPane(mainPane);
 		
 		// Create category pane
-		JPanel categoryPane = new JPanel(new GridLayout(4, 1));
+		JPanel categoryPane = new JPanel(new GridLayout(5, 1));
 		categoryPane.setBorder(new MarsPanelBorder());
 		mainPane.add(categoryPane, BorderLayout.CENTER);
 		
@@ -69,6 +75,12 @@ public class EventFilter extends JInternalFrame implements ActionListener {
 		taskCheck.addActionListener(this);
 		categoryPane.add(taskCheck);
 		
+		// Create resupply events checkbox.
+		resupplyCheck = new JCheckBox(HistoricalEventManager.SUPPLY);
+		resupplyCheck.setSelected(model.getDisplaySupply());
+		resupplyCheck.addActionListener(this);
+		categoryPane.add(resupplyCheck);
+		
 		pack();
 		desktop.add(this);
 	}
@@ -90,5 +102,7 @@ public class EventFilter extends JInternalFrame implements ActionListener {
 			model.setDisplayMission(missionCheck.isSelected());
 		else if (check == taskCheck)
 			model.setDisplayTask(taskCheck.isSelected());
+		else if (check == resupplyCheck)
+			model.setDisplaySupply(resupplyCheck.isSelected());
 	}
 }

@@ -33,11 +33,11 @@ public class HistoricalEventManager {
 	public final static String MALFUNCTION = "Malfunction";
 	public final static String MISSION = "Mission";
 	public final static String TASK = "Task";
+	public final static String SUPPLY = "Supply";
 
     private List listeners = new ArrayList();
     private List events = new LinkedList();
     private MarsClock mainClock;
-    // private Mars mars;
 
     /**
      * Create a new EventManager that represnets a particular simulation.

@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.events.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.time.MarsClock;
@@ -90,9 +91,6 @@ public class Resupply implements Serializable {
 	 */
 	void deliverSupplies() throws Exception {
 		
-		System.out.println(getResupplyName());
-		System.out.println("Delivering supplies to " + settlement.getName());
-		
 		// Deliver buildings.
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		Iterator buildingI = newBuildings.iterator();
@@ -125,7 +123,9 @@ public class Resupply implements Serializable {
 			unitManager.addUnit(immigrant);
 		}
 		
-		// Send resupply delivery event. (add later)
+		// Send resupply delivery event.
+		HistoricalEvent newEvent = new ResupplyEvent(settlement, getResupplyName());
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);		
 		
 		// Set isDelivered to true;
 		isDelivered = true;
