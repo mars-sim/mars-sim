@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-12
  * @author Scott Davis
  */
 
@@ -18,11 +18,15 @@ package org.mars_sim.msp.simulation;
  */
 class MasterClock extends Thread {
 
+    // Data members
     private VirtualMars mars; // Virtual Mars
 
     /** sleep duration in milliseconds */
-    private static int sleepDuration = 1000;
+    private final static int SLEEP_DURATION = 1000;
 
+    /** Constructs a MasterClock object
+     *  @param mars the virtual mars that uses the clock
+     */
     public MasterClock(VirtualMars mars) {
         // Initialize data members
         this.mars = mars;

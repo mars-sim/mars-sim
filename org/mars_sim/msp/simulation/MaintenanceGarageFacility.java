@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarageFacility.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-12
  * @author Scott Davis
  */
 
@@ -15,15 +15,17 @@ import java.util.Vector;
  * Note: Any number or size of vehicles can always be parked outside a settlement.  The garage's
  * capacity only reflects those vehicles in the garage itself.
  */
-
 public class MaintenanceGarageFacility extends Facility {
 
+    // Data members
     private int maxVehicleSize; // The maximum size of vehicle the garage can accomidate.
     private int maxSizeCapacity; // The total size point sum of vehicles the garage can accomidate at any given time.
     private int currentSizeSum; // The current sum of vehicle size points in the garage.
     private Vector vehicles; // A list of vehicles currently in the garage.
 
-    /** Constructor for random creation. */
+    /** Constructor for random creation. 
+     *  @param manager the garage's facility manager
+     */
     MaintenanceGarageFacility(FacilityManager manager) {
 
         // Use Facility's constructor.
@@ -39,7 +41,11 @@ public class MaintenanceGarageFacility extends Facility {
         maxSizeCapacity = maxVehicleSize + (RandomUtil.getRandomInteger(4 * maxVehicleSize));
     }
 
-    /** Constructor for set values (used later when facilities can be built or upgraded.) */
+    /** Constructor for set values (used later when facilities can be built or upgraded.) 
+     *  @param manager the garage's facility manager
+     *  @param maxVehicleSize maximum size of vehicle the garage can accomidate
+     *  @param maxSiceCapacity total size point sum of vehicles the garage can accomidate at any given time
+     */
     MaintenanceGarageFacility(FacilityManager manager, int maxVehicleSize, int maxSizeCapacity) {
 
         // Use Facility's constructor.
@@ -51,17 +57,23 @@ public class MaintenanceGarageFacility extends Facility {
         this.maxSizeCapacity = maxSizeCapacity;
     }
 
-    /** Returns the maximum vehicle size the garage can accomidate. */
+    /** Returns the maximum vehicle size the garage can accomidate. 
+     *  @return the maximum vehicle size the garage can accomidate
+     */
     public int getMaxVehicleSize() {
         return maxVehicleSize;
     }
 
-    /** Returns the total size point sum of vehicles the garage can accomidate at any given time. */
+    /** Returns the total size point sum of vehicles the garage can accomidate at any given time. 
+     *  @return total size point sum of vehicles the garage can accomidate at any given time
+     */
     public int getMaxSizeCapacity() {
         return maxSizeCapacity;
     }
 
-    /** Returns the sum of vehicle sizes currently in the garage. */
+    /** Returns the sum of vehicle sizes currently in the garage. 
+     *  @return sum of vehicle sizes currently in the garage
+     */
     public int getTotalSize() {
         int result = 0;
         for (int x = 0; x < vehicles.size(); x++)
@@ -71,8 +83,8 @@ public class MaintenanceGarageFacility extends Facility {
     }
 
     /** Add vehicle to garage if there's room.
-      * Returns true if vehicle has been added successfully.
-      * Returns false if vehicle could not be added.
+      * @return true if vehicle has been added successfully.
+      * False if vehicle could not be added.
       */
     boolean addVehicle(Vehicle vehicle) {
         int vehicleSize = vehicle.getSize();
@@ -91,6 +103,7 @@ public class MaintenanceGarageFacility extends Facility {
 
     /** Removes a vehicle from the garage.
      *  If the vehicle is not in the garage, does nothing.
+     *  @param vehicle vehicle to be removed
      */
     void removeVehicle(Vehicle vehicle) {
         if (vehicleInGarage(vehicle)) {
@@ -101,6 +114,7 @@ public class MaintenanceGarageFacility extends Facility {
 
     /** Returns true if vehicle is currently in the garage.
      *  Returns false otherwise.
+     *  @return true if vehicle is currently in the garage
      */
     public boolean vehicleInGarage(Vehicle vehicle) {
         boolean result = false;
@@ -113,7 +127,9 @@ public class MaintenanceGarageFacility extends Facility {
         return result;
     }
 
-    /** Returns an array of vehicle names of the vehicles currently in the garage. */
+    /** Returns an array of vehicle names of the vehicles currently in the garage. 
+     *  @return array of vehicle names for vehicles currently in the garage
+     */
     public String[] getVehicleNames() {
         String[] result = new String[vehicles.size()];
 
@@ -123,7 +139,9 @@ public class MaintenanceGarageFacility extends Facility {
         return result;
     }
 
-    /** Returns an array of vehicles currently in the garage. */
+    /** Returns an array of vehicles currently in the garage. 
+     *  @return array of vehicles currently in the garage
+     */
     public Vehicle[] getVehicles() {
         Vehicle[] result = new Vehicle[vehicles.size()];
 
