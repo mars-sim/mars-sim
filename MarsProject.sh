@@ -1,1 +1,1 @@
-java -ms16m -mx128m -classpath .:jars/jcommon.jar:jars/jfreechart.jar:jars/aelfred.jar MarsProject
+java -ms32m -mx128m -classpath .:jars/jcommon.jar:jars/jfreechart.jar:jars/aelfred.jar MarsProject
