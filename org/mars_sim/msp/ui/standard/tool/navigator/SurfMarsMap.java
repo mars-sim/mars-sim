@@ -25,9 +25,7 @@ public class SurfMarsMap implements Map {
     private static final int MAP_WIDTH = 2880;
     private static final int DISPLAY_HEIGHT = 300;
     private static final int DISPLAY_WIDTH = 300;
-    private static final String MAP_DATA_DIRECTORY = "map_data";
     private static final String INDEX_FILE = "SurfaceMarsMap.index";
-    private static final String SUM_FILE = "SurfaceMarsMap.sum";
     private static final String MAP_FILE = "SurfaceMarsMap.dat";
     private static final double TWO_PI = Math.PI * 2D;
     
@@ -49,8 +47,7 @@ public class SurfMarsMap implements Map {
 
         try {
             int[] index = loadIndexData(INDEX_FILE);
-            long[] sum = loadSumData(SUM_FILE);
-            surfaceColors = loadMapData(MAP_FILE, index, sum);
+            surfaceColors = loadMapData(MAP_FILE, index);
         }
         catch (IOException e) {
             System.out.println("Could not find surface map data files.");
@@ -67,9 +64,9 @@ public class SurfMarsMap implements Map {
      */
     private int[] loadIndexData(String filename) throws IOException {
      
-        // Create file input stream.
+        // Load index data from map_data jar file.
         ClassLoader loader = getClass().getClassLoader();
-        InputStream indexStream = loader.getResourceAsStream(MAP_DATA_DIRECTORY + File.separator + filename);
+		InputStream indexStream = loader.getResourceAsStream(filename);
         if (indexStream == null) throw new IOException("Can not load " + filename);
 
         // Read stream into an array.
@@ -82,46 +79,20 @@ public class SurfMarsMap implements Map {
         
         return index;
     }
-        
-    /**
-     * Loads the sum data from a file.
-     *
-     * @param filename the sum data file
-     * @return array of sum data
-     * @throws IOException if file cannot be loaded.
-     */
-    private long[] loadSumData(String filename) throws IOException {
-        
-        // Create file input stream.
-        ClassLoader loader = getClass().getClassLoader();
-        InputStream sumStream = loader.getResourceAsStream(MAP_DATA_DIRECTORY + File.separator + filename);
-        if (sumStream == null) throw new IOException("Can not load " + filename);
-
-        // Read stream into an array.
-        BufferedInputStream sumBuff = new BufferedInputStream(sumStream);
-        DataInputStream sumReader = new DataInputStream(sumBuff);
-        long sum[] = new long[MAP_HEIGHT];
-        for (int x = 0; x < sum.length; x++) sum[x] = sumReader.readLong();
-        sumReader.close();
-        sumBuff.close();
-        
-        return sum;
-    }
      
     /** 
      * Loads the map data from a file.
      *
      * @param filename the map data file
      * @param index the index array
-     * @param sum the sum array
      * @return array list of map data
      * @throws IOException if map data cannot be loaded.
      */
-    private ArrayList loadMapData(String filename, int[] index, long[] sum) throws IOException {
+    private ArrayList loadMapData(String filename, int[] index) throws IOException {
      
-        // Load map data from file.
+        // Load map data from map_data jar file.
         ClassLoader loader = getClass().getClassLoader();
-        InputStream mapStream = loader.getResourceAsStream(MAP_DATA_DIRECTORY + File.separator + filename);
+		InputStream mapStream = loader.getResourceAsStream(filename);
         if (mapStream == null) throw new IOException("Can not load " + filename);
         
         // Read stream into an array.
@@ -165,14 +136,14 @@ public class SurfMarsMap implements Map {
         while (phi < 0) phi+= Math.PI;
         
         // Make sure theta is between 0 and 2 PI.
-        while (theta > (Math.PI * 2D)) theta-= (Math.PI * 2D);
-        while (theta < 0) theta+= (Math.PI * 2D);
+        while (theta > TWO_PI) theta-= TWO_PI;
+        while (theta < 0) theta+= TWO_PI;
         
         int row = (int) Math.round(phi * (MAP_HEIGHT / Math.PI));
         if (row == surfaceColors.size()) row--;
         
         int[] colorRow = (int[]) surfaceColors.get(row);
-        int column = (int) Math.round(theta * (colorRow.length / (2 * Math.PI)));
+        int column = (int) Math.round(theta * ((double) colorRow.length / TWO_PI));
         if (column == colorRow.length) column--;
         
         return colorRow[column];
@@ -194,11 +165,11 @@ public class SurfMarsMap implements Map {
         int[] mapArray = new int[DISPLAY_WIDTH * DISPLAY_HEIGHT];
         
         // Determine phi iteration angle.
-        double phiIterationPadding = 1.3D; //Derieved from testing.
+        double phiIterationPadding = 1.26D; //Derived from testing.
         double phiIterationAngle = Math.PI / ((double) MAP_HEIGHT * phiIterationPadding);
         
         // Determine phi range.
-        double phiPadding = 1.5D; // Derived from testing.
+        double phiPadding = 1.46D; // Derived from testing.
         double phiRange = ((double) DISPLAY_HEIGHT / (double) MAP_HEIGHT) * Math.PI * phiPadding;
         
         // Determine starting and ending phi values.
@@ -211,14 +182,14 @@ public class SurfMarsMap implements Map {
         for (double x = startPhi; x <= endPhi; x+= phiIterationAngle) {
             
             // Determine theta iteration angle.
-            double thetaIterationPadding = 1.45D; // Derived from testing.
+            double thetaIterationPadding = 1.46D; // Derived from testing.
             double thetaIterationAngle = TWO_PI / (((double) MAP_WIDTH * Math.sin(x) * thetaIterationPadding) + 1D);
             
             // Determine theta range.
-            double minThetaPadding = 1.2D;  // Derived from testing.
+            double minThetaPadding = 1.02D;  // Derived from testing.
             double minThetaDisplay = TWO_PI * ((double) DISPLAY_WIDTH / (double) MAP_WIDTH) * minThetaPadding;			
             double thetaRange = ((1D - Math.sin(x)) * TWO_PI) + minThetaDisplay;
-			double polarCapRange = Math.PI / 6D; // Polar cap phi values must display 2 PI theta range.
+			double polarCapRange = Math.PI / 6.54D; // Polar cap phi values must display 2 PI theta range. (derived from testing)
 			if ((x < polarCapRange) || (x > (Math.PI - polarCapRange))) thetaRange = TWO_PI;
             if (thetaRange > TWO_PI) thetaRange = TWO_PI;
             
@@ -234,7 +205,7 @@ public class SurfMarsMap implements Map {
                 while (yCorrected < 0) yCorrected+= TWO_PI;
                 while (yCorrected > TWO_PI) yCorrected-= TWO_PI;
                
-                // Determine if the rectangular position of the coordinate is within display area.
+                // Determine the rectangular offset of the pixel in the image.
 				IntPoint location = correctedCenter.findRectPosition(x, yCorrected, 1440D / Math.PI, 720, 720 - 150);
 				
 				// Determine the display x and y coordinates for the pixel in the image.
@@ -253,6 +224,7 @@ public class SurfMarsMap implements Map {
                     
                     // Put color in array at index.
                     if ((index >= 0) && (index < mapArray.length)) mapArray[index] = getRGBColor(x, yCorrected);
+					// if ((index >= 0) && (index < mapArray.length)) mapArray[index] = Color.WHITE.getRGB();
                 }
             }
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.72 2001-08-12
+ * @version 2.75 2003-12-18
  * @author Scott Davis
  */
 
@@ -288,8 +288,8 @@ public class Coordinates implements Serializable {
      */
     public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int half_map, int low_edge) {
         
-        double sin_offset = Math.sin(getPhi() + Math.PI);
-        double cos_offset = Math.cos(getPhi() + Math.PI);
+        double sin_offset = 0D - sinPhi;
+        double cos_offset = 0D - cosPhi;
         double col_correction = (Math.PI / -2D) - getTheta();
         double temp_col = newTheta + col_correction;
         double temp_buff_x = rho * Math.sin(newPhi);
