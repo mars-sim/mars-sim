@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-02-26
+ * @version 2.75 2003-03-04
  * @author Scott Davis
  */
  
@@ -78,6 +78,19 @@ public class LanderHab extends InhabitableBuilding
         inv.addResource(Resource.WATER, 500D);
         inv.addResource(Resource.OXYGEN, 500D);
         inv.addResource(Resource.FOOD, 500D);
+        
+        // Add scope string to malfunction manager.
+        malfunctionManager.addScopeString("Living Accommodations");
+        malfunctionManager.addScopeString("Research");
+        malfunctionManager.addScopeString("Communication");
+        malfunctionManager.addScopeString("EVA");
+        malfunctionManager.addScopeString("Recreation");
+        malfunctionManager.addScopeString("Dining");
+        malfunctionManager.addScopeString("Resource Processing");
+        malfunctionManager.addScopeString("Storage");
+        malfunctionManager.addScopeString("Power Generation");
+        malfunctionManager.addScopeString("Inhabitable Building");
+        malfunctionManager.addScopeString("Lander Hab");
     }
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.74 2002-05-06
+ * @version 2.75 2003-03-16
  * @author Scott Davis
  */
 
@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
+import java.util.Iterator;
 import java.io.Serializable;
 
 /** The EatMeal class is a task for eating a meal.
@@ -27,6 +30,31 @@ class EatMeal extends Task implements Serializable {
      */
     public EatMeal(Person person, Mars mars) {
         super("Eating a meal", person, false, mars);
+        
+        // If person is in a settlement, try to find a dining area.
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+            InhabitableBuilding diningBuilding = null;
+        
+            // Try to find an available recreation building.
+            Iterator i = buildingManager.getBuildings(InhabitableBuilding.class).iterator();
+            while (i.hasNext()) {
+                InhabitableBuilding building = (InhabitableBuilding) i.next();
+                if (building instanceof Dining) {
+                    if (building.getAvailableOccupancy() > 0) diningBuilding = building;
+                }
+            }
+            
+            if (diningBuilding != null) {
+                try {
+                    if (!diningBuilding.containsPerson(person))diningBuilding.addPerson(person);
+                }
+                catch (BuildingException e) {
+                    System.out.println("Trying to add " + person.getName() + " to " + 
+                        diningBuilding.getName() + " and person is already an occupant.");
+                }
+            }
+        }
     }
 
     /** Returns the weighted probability that a person might perform this task.

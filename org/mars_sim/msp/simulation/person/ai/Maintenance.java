@@ -31,41 +31,41 @@ public class Maintenance extends Task implements Serializable {
         super("Performing Maintenance", person, true, mars);
 
         // Randomly determine duration, from 0 - 500 millisols
-	duration = RandomUtil.getRandomDouble(500D);
+        duration = RandomUtil.getRandomDouble(500D);
 
         entity = null;
 	
-	// Determine entity to maintain.
-	double totalProbabilityWeight = 0D;
+        // Determine entity to maintain.
+        double totalProbabilityWeight = 0D;
 
-	// Total probabilities for all malfunctionable entities in person's local.
+        // Total probabilities for all malfunctionable entities in person's local.
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	while (i.hasNext()) {
+        while (i.hasNext()) {
             Malfunctionable e = (Malfunctionable) i.next();
-	    if (!(e instanceof Vehicle)) {
-	        MalfunctionManager manager = e.getMalfunctionManager();
-	        totalProbabilityWeight += manager.getTimeSinceLastMaintenance();
-	    }
-	}
+            if (!(e instanceof Vehicle)) {
+                MalfunctionManager manager = e.getMalfunctionManager();
+                totalProbabilityWeight += manager.getTimeSinceLastMaintenance();
+            }
+        }
 	
-	// Randomly determine a malfunctionable entity.
-	double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);
+        // Randomly determine a malfunctionable entity.
+        double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);
 
-	// Get the malfunctionable entity chosen.
+        // Get the malfunctionable entity chosen.
         i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	while (i.hasNext()) {
-	    Malfunctionable e = (Malfunctionable) i.next();
-	    double lastMaint = e.getMalfunctionManager().getTimeSinceLastMaintenance();
-	    if ((chance < lastMaint) && !(e instanceof Vehicle)) {
-	        entity = e;
-		description = "Performing maintenance on " + entity.getName();
-		// System.out.println(person.getName() + " " + description + " - " + lastMaint);
-		break;
-	    }
-	    else chance -= lastMaint;
-	}
+        while (i.hasNext()) {
+            Malfunctionable e = (Malfunctionable) i.next();
+            double lastMaint = e.getMalfunctionManager().getTimeSinceLastMaintenance();
+            if ((chance < lastMaint) && !(e instanceof Vehicle)) {
+                entity = e;
+                description = "Performing maintenance on " + entity.getName();
+                // System.out.println(person.getName() + " " + description + " - " + lastMaint);
+                break;
+            }
+            else chance -= lastMaint;
+        }
 	
-	if (entity == null) done = true;
+        if (entity == null) done = true;
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -79,17 +79,17 @@ public class Maintenance extends Task implements Serializable {
 
         // Total probabilities for all malfunctionable entities in person's local.
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	while (i.hasNext()) {
-	    Malfunctionable entity = (Malfunctionable) i.next();
-	    MalfunctionManager manager = entity.getMalfunctionManager();
-	    if (!manager.hasMalfunction() && !(entity instanceof Vehicle))
-	        result += (manager.getTimeSinceLastMaintenance() / 200D);
-	}
+        while (i.hasNext()) {
+            Malfunctionable entity = (Malfunctionable) i.next();
+            MalfunctionManager manager = entity.getMalfunctionManager();
+            if (!manager.hasMalfunction() && !(entity instanceof Vehicle))
+                result += (manager.getTimeSinceLastMaintenance() / 200D);
+        }
 	
         // Effort-driven task modifier.
-	result *= person.getPerformanceRating();
+        result *= person.getPerformanceRating();
 	
-	return result;
+        return result;
     }
 
     /** This task simply waits until the set duration of the task is complete, then ends the task.
@@ -102,19 +102,19 @@ public class Maintenance extends Task implements Serializable {
 
         MalfunctionManager manager = entity.getMalfunctionManager();
 	
-	// If person is incompacitated, end task.
+        // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) done = true;
 
         // Check if maintenance has already been completed.
-	if (manager.getTimeSinceLastMaintenance() == 0D) done = true;
+        if (manager.getTimeSinceLastMaintenance() == 0D) done = true;
 
         // If equipment has malfunction, end task.
-	if (manager.hasMalfunction()) done = true;
+        if (manager.hasMalfunction()) done = true;
 
-	if (done) return timeLeft;
+        if (done) return timeLeft;
 	
-	// Determine effective work time based on "Mechanic" skill.
-	double workTime = timeLeft;
+        // Determine effective work time based on "Mechanic" skill.
+        double workTime = timeLeft;
         int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
@@ -126,21 +126,21 @@ public class Maintenance extends Task implements Serializable {
         // (1 base experience point per 100 millisols of time spent)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = timeLeft / 100D;
-	NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("Mechanic", experience);
 
         // If maintenance is complete, task is done.
-	if (manager.getTimeSinceLastMaintenance() == 0D) done = true;
+        if (manager.getTimeSinceLastMaintenance() == 0D) done = true;
 
         // Keep track of the duration of the task.
-	timeCompleted += time;
-	if (timeCompleted >= duration) done = true;
+        timeCompleted += time;
+        if (timeCompleted >= duration) done = true;
 
         // Check if an accident happens during maintenance.
-	checkForAccident(timeLeft);
+        checkForAccident(timeLeft);
 	
-	return 0D;
+        return 0D;
     }
 
     /**
@@ -151,10 +151,10 @@ public class Maintenance extends Task implements Serializable {
 
         double chance = .001D;
 
-	// Mechanic skill modification.
-	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
-	if (skill <= 3) chance *= (4 - skill);
-	else chance /= (skill - 2);
+        // Mechanic skill modification.
+        int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        if (skill <= 3) chance *= (4 - skill);
+        else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // System.out.println(person.getName() + " has accident while performing maintenance on " + entity.getName() + ".");

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-02-16
+ * @version 2.75 2003-03-16
  * @author Scott Davis
  */
  
@@ -82,6 +82,13 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
             double capacity = ((Double) resourceStorageCapacity.get(resourceName)).doubleValue();
             inv.setResourceCapacity(resourceName, inv.getResourceCapacity(resourceName) + capacity);
         }
+        
+        // Add scope string to malfunction manager.
+        malfunctionManager.addScopeString("Farming");
+        malfunctionManager.addScopeString("Storage");
+        malfunctionManager.addScopeString("Resource Processing");
+        malfunctionManager.addScopeString("Inhabitable Building");
+        malfunctionManager.addScopeString("Inflatable Greenhouse");
     }
     
     /**

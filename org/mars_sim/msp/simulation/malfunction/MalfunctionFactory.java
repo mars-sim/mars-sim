@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 2.75 2002-06-08
+ * @version 2.75 2003-03-16
  * @author Scott Davis 
  */
 
@@ -26,8 +26,8 @@ public class MalfunctionFactory {
     public MalfunctionFactory() {
         malfunctions = new ArrayList();
 
-	MalfunctionXmlReader malfunctionReader = new MalfunctionXmlReader(this);
-	malfunctionReader.parse();
+        MalfunctionXmlReader malfunctionReader = new MalfunctionXmlReader(this);
+        malfunctionReader.parse();
     }
 
     /**
@@ -47,27 +47,27 @@ public class MalfunctionFactory {
 
         Malfunction result = null;
 
-	double totalProbability = 0D;
-	if (malfunctions.size() > 0) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction temp = (Malfunction) i.next();
-	        if (temp.unitScopeMatch(scope)) 
-	            totalProbability += temp.getProbability();
-	    }
-	}
+        double totalProbability = 0D;
+        if (malfunctions.size() > 0) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction temp = (Malfunction) i.next();
+    	        if (temp.unitScopeMatch(scope)) 
+                    totalProbability += temp.getProbability();
+            }
+        }
 
         double r = RandomUtil.getRandomDouble(totalProbability);
 	
         Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction temp = (Malfunction) i.next();
-	    double probability = temp.getProbability();
-	    if (temp.unitScopeMatch(scope) && (result == null)) {
-	        if (r < probability) result = temp.getClone();
+        while (i.hasNext()) {
+            Malfunction temp = (Malfunction) i.next();
+            double probability = temp.getProbability();
+            if (temp.unitScopeMatch(scope) && (result == null)) {
+                if (r < probability) result = temp.getClone();
                 else r -= probability;
-	    }
-	}
+            }
+        }
 
         return result;
     }
@@ -81,34 +81,34 @@ public class MalfunctionFactory {
         Collection entities = new ArrayList();
         String location = person.getLocationSituation();
 	
-	if (location.equals(Person.INSETTLEMENT)) {
-	    Settlement settlement = person.getSettlement();
-	    entities.add(settlement);
+        if (location.equals(Person.INSETTLEMENT)) {
+            Settlement settlement = person.getSettlement();
+            entities.add(settlement);
 
-	    Iterator i = settlement.getFacilityManager().getFacilities();
-	    while (i.hasNext()) entities.add(i.next());
-	}
+            Iterator i = settlement.getBuildingManager().getBuildings().iterator();
+            while (i.hasNext()) entities.add(i.next());
+        }
 
-	if (location.equals(Person.INVEHICLE)) entities.add(person.getVehicle());
+        if (location.equals(Person.INVEHICLE)) entities.add(person.getVehicle());
 
-	if (!location.equals(Person.OUTSIDE)) {
-	    UnitIterator i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
-	    while (i.hasNext()) {
+        if (!location.equals(Person.OUTSIDE)) {
+            UnitIterator i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
+            while (i.hasNext()) {
                 Unit unit = i.next();
-		if (unit instanceof Malfunctionable) entities.add(unit);
-	    }
-	}
+                if (unit instanceof Malfunctionable) entities.add(unit);
+            }
+        }
 
-	UnitCollection inventoryUnits = person.getInventory().getContainedUnits();
-	if (inventoryUnits.size() > 0) {
-	    UnitIterator i = inventoryUnits.iterator();
-	    while (i.hasNext()) {
+        UnitCollection inventoryUnits = person.getInventory().getContainedUnits();
+        if (inventoryUnits.size() > 0) {
+            UnitIterator i = inventoryUnits.iterator();
+            while (i.hasNext()) {
                 Unit unit = i.next();
-	        if (unit instanceof Malfunctionable) entities.add(unit);
-	    }
-	}
+                if (unit instanceof Malfunctionable) entities.add(unit);
+            }
+        }
 
-	return entities;
+        return entities;
     }
 
     /**
@@ -120,22 +120,22 @@ public class MalfunctionFactory {
 
         Collection entities = new ArrayList();
 
-	entities.add(entity);
+        entities.add(entity);
 
         if (entity instanceof Settlement) {
-	    Iterator i = ((Settlement) entity).getFacilityManager().getFacilities();
-	    while (i.hasNext()) entities.add(i.next());
-	}
+            Iterator i = ((Settlement) entity).getBuildingManager().getBuildings().iterator();
+            while (i.hasNext()) entities.add(i.next());
+        }
 
-	UnitCollection inventoryUnits = entity.getInventory().getContainedUnits();
-	if (inventoryUnits.size() > 0) {
-	    UnitIterator i = inventoryUnits.iterator();
-	    while (i.hasNext()) {
+        UnitCollection inventoryUnits = entity.getInventory().getContainedUnits();
+        if (inventoryUnits.size() > 0) {
+            UnitIterator i = inventoryUnits.iterator();
+            while (i.hasNext()) {
                 Unit unit = i.next();
-	        if (unit instanceof Malfunctionable) entities.add(unit);
-	    }
-	}
+                if (unit instanceof Malfunctionable) entities.add(unit);
+            }
+        }
 
-	return entities;
+        return entities;
     }
 }

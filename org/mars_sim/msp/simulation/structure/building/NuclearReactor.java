@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NuclearReactor.java
- * @version 2.75 2003-01-22
+ * @version 2.75 2003-03-04
  * @author Scott Davis
  */
  
@@ -25,6 +25,10 @@ public class NuclearReactor extends Building implements PowerGeneration {
     public NuclearReactor(BuildingManager manager) {
         // Use Bulding constructor
         super("Nuclear Reactor", manager);
+        
+        // Add scope string to malfunction manager.
+        malfunctionManager.addScopeString("Power Generation");
+        malfunctionManager.addScopeString("Nuclear Reactor");
     }
     
     /**

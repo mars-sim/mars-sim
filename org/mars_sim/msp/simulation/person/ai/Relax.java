@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2003-03-16
  * @author Scott Davis
  */
 
@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
+import java.util.Iterator;
 import java.io.Serializable;
 
 /** The Relax class is a simple task that implements resting and doing nothing for a while.
@@ -28,6 +31,31 @@ class Relax extends Task implements Serializable {
     public Relax(Person person, Mars mars) {
         super("Relaxing", person, false, mars);
 
+        // If person is in a settlement, try to find a place to relax.
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+            InhabitableBuilding relaxBuilding = null;
+        
+            // Try to find an available recreation building.
+            Iterator i = buildingManager.getBuildings(InhabitableBuilding.class).iterator();
+            while (i.hasNext()) {
+                InhabitableBuilding building = (InhabitableBuilding) i.next();
+                if (building instanceof Recreation) {
+                    if (building.getAvailableOccupancy() > 0) relaxBuilding = building;
+                }
+            }
+            
+            if (relaxBuilding != null) {
+                try {
+                    if (!relaxBuilding.containsPerson(person)) relaxBuilding.addPerson(person);
+                }
+                catch (BuildingException e) {
+                    System.out.println("Trying to add " + person.getName() + " to " + 
+                        relaxBuilding.getName() + " and person is already an occupant.");
+                }
+            }
+        }
+        
         duration = RandomUtil.getRandomInt(100);
     }
 

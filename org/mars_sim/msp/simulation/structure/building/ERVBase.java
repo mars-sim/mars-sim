@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ERVBase.java
- * @version 2.75 2003-02-22
+ * @version 2.75 2003-03-04
  * @author Scott Davis
  */
  
@@ -87,6 +87,12 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
         
         // ERVBase starts with 6 tonnes of hydrogen.
         inv.addResource(Resource.HYDROGEN, 6000D);
+        
+        // Add scope string to malfunction manager.
+        malfunctionManager.addScopeString("Resource Processing");
+        malfunctionManager.addScopeString("Storage");
+        malfunctionManager.addScopeString("Power Generation");
+        malfunctionManager.addScopeString("ERV Base");
     }
     
     /**

@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * InhabitableBuilding.java
- * @version 2.75 2003-01-25
+ * @version 2.75 2003-03-16
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.util.*;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 
 /**
  * The InhabitableBuilding class is an abstract class representing a 
@@ -20,7 +20,7 @@ public abstract class InhabitableBuilding extends Building {
     private static final double LIFE_SUPPORT_OCCUPANT_POWER = 2D;
    
     protected int occupantCapacity;
-    protected Collection occupants;
+    protected PersonCollection occupants;
    
     /**
      * Constructor
@@ -35,11 +35,13 @@ public abstract class InhabitableBuilding extends Building {
         super(name, manager);
         
         this.occupantCapacity = occupantCapacity;
-        occupants = new ArrayList();
+        occupants = new PersonCollection();
     }
     
     /**
-     * Gets the occupant capacity of the building.
+     * Gets the building's occupant capacity.
+     * to do: If the number of occupants exceeds the occupant capacity,
+     * occupant stress levels will increase.
      *
      * @return occupant capacity
      */
@@ -52,28 +54,72 @@ public abstract class InhabitableBuilding extends Building {
      *
      * @return occupant number
      */
-    public int getCurrentOccupantNumber() {
+    public int getOccupantNumber() {
         return occupants.size();
     }
     
     /**
+     * Gets the available occupancy room.
+     *
+     * @return occupancy room
+     */
+    public int getAvailableOccupancy() {
+        int available = getOccupantCapacity() - getOccupantNumber();
+        if (available > 0) return available;
+        else return 0;
+    }
+    
+    /**
+     * Checks if the building contains a particular person.
+     *
+     * @return true if person is in building.
+     */
+    public boolean containsPerson(Person person) {
+        if (occupants.contains(person)) return true;
+        else return false;
+    }
+    
+    /**
+     * Gets a collection of occupants in the building.
+     *
+     * @return collection of occupants
+     */
+    public PersonCollection getOccupants() {
+        return new PersonCollection(occupants);
+    }
+    
+    /**
      * Adds a person to the building.
+     * Note: building occupant capacity can be exceeded but stress levels
+     * in the building will increase.
      *
      * @param person new person to add to building.
+     * @throws BuildingException if person is already building occupant.
      */
-    public void addPerson(Person person) {
-        if (!occupants.contains(person) && (occupants.size() < occupantCapacity)) 
+    public void addPerson(Person person) throws BuildingException {
+        if (!occupants.contains(person)) {
+            // Remove person from any other inhabitable building in the settlement.
+            Iterator i = manager.getBuildings(InhabitableBuilding.class).iterator();
+            while (i.hasNext()) {
+                InhabitableBuilding building = (InhabitableBuilding) i.next();
+                if (building.containsPerson(person)) building.removePerson(person);
+            }
+
+            // Add person to this building.            
             occupants.add(person);
+        }
+        else throw new BuildingException("Person already occupying building.");
     }
     
     /**
      * Removes a person from the building.
      *
      * @param person occupant to remove from building.
+     * @throws BuildingException if person is not building occupant.
      */
-    public void removePerson(Person person) {
-        if (occupants.contains(person))
-            occupants.remove(person);
+    public void removePerson(Person person) throws BuildingException {
+        if (occupants.contains(person)) occupants.remove(person);
+        else throw new BuildingException("Person does not occupy building.");
     }
     
     /**
@@ -91,4 +137,20 @@ public abstract class InhabitableBuilding extends Building {
     public double getPoweredDownPowerRequired() {
         return getLifeSupportPowerRequired();
     }   
+    
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        PersonCollection affectedPeople = super.getAffectedPeople();
+        
+        PersonIterator i = occupants.iterator();
+        while (i.hasNext()) {
+            Person occupant = i.next();
+            if (!affectedPeople.contains(occupant)) affectedPeople.add(occupant);
+        }
+        
+        return affectedPeople;
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.75 2003-20-20
+ * @version 2.75 2003-03-04
  * @author Scott Davis
  */
 
@@ -10,8 +10,10 @@ package org.mars_sim.msp.simulation.person.ai;
 import java.io.Serializable;
 import java.util.Iterator;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /** The TendGreenhouse class is a task for tending the greenhouse in a settlement.
@@ -32,12 +34,33 @@ public class TendGreenhouse extends Task implements Serializable {
         // Initialize data members
         description = "Tending Greenhouse at " + person.getSettlement().getName();
         this.settlement = person.getSettlement();
-        Iterator i = settlement.getBuildingManager().getBuildings(Farming.class).iterator();
+        Iterator i = settlement.getBuildingManager().getBuildings(InhabitableBuilding.class).iterator();
         while (i.hasNext()) {
-            Farming farm = (Farming) i.next();
-            if (farm.requiresWork()) greenhouse = farm;
+            InhabitableBuilding farm = (InhabitableBuilding) i.next();
+            if (farm instanceof Farming) {
+                boolean thisFarmWorkable = true;
+                if (!((Farming) farm).requiresWork()) thisFarmWorkable = false;
+                if (farm.getMalfunctionManager().hasMalfunction()) thisFarmWorkable = false;
+                if (farm.getOccupantNumber() >= farm.getOccupantCapacity()) thisFarmWorkable = false;
+                
+                if (thisFarmWorkable) greenhouse = (Farming) farm;
+            }
         }
 
+        if (greenhouse == null) done = true;
+        else {
+            if (greenhouse instanceof InhabitableBuilding) {
+                try {
+                    InhabitableBuilding inhabGreenhouse = (InhabitableBuilding) greenhouse;
+                    if (!inhabGreenhouse.containsPerson(person)) inhabGreenhouse.addPerson(person);
+                }
+                catch (BuildingException e) {
+                    System.out.println("Trying to add " + person.getName() + " to " + 
+                        ((Building) greenhouse).getName() + " and person is already an occupant.");
+                }
+            }
+        }
+        
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
     }
@@ -51,12 +74,17 @@ public class TendGreenhouse extends Task implements Serializable {
 	    
         boolean workableFarm = false;
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Iterator i = person.getSettlement().getBuildingManager().getBuildings(Farming.class).iterator();
+            Iterator i = person.getSettlement().getBuildingManager().getBuildings(InhabitableBuilding.class).iterator();
             while (i.hasNext()) {
-                Farming farm = (Farming) i.next();
-                if (farm.requiresWork()) workableFarm = true;
-                // Add later
-                // if (farm.getMalfunctionManager().hasMalfunction()) workableFarm = false;
+                InhabitableBuilding farm = (InhabitableBuilding) i.next();
+                if (farm instanceof Farming) {
+                    boolean thisFarmWorkable = true;
+                    if (!((Farming) farm).requiresWork()) thisFarmWorkable = false;
+                    if (farm.getMalfunctionManager().hasMalfunction()) thisFarmWorkable = false;
+                    if (farm.getOccupantNumber() >= farm.getOccupantCapacity()) thisFarmWorkable = false;
+                
+                    if (thisFarmWorkable) workableFarm = true;
+                }
             }
         }
 
@@ -132,8 +160,16 @@ public class TendGreenhouse extends Task implements Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // System.out.println(person.getName() + " has accident while tending the greenhouse.");
-            // Add later
-            // greenhouse.getMalfunctionManager().accident();
+            
+            ((Malfunctionable) greenhouse).getMalfunctionManager().accident();
         }
+    }
+    
+    /** 
+     * Gets the greenhouse the person is tending.
+     * @return greenhouse
+     */
+    public Farming getGreenhouse() {
+        return greenhouse;
     }
 }
