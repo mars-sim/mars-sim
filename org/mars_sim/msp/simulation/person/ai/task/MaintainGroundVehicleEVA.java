@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 
@@ -121,7 +121,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = time / 50D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
+        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
 		experience *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
         
@@ -178,7 +178,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = time / 100D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
+        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
         person.getSkillManager().addExperience(Skill.MECHANICS, experience);
 
         // Keep track of the duration of the task.

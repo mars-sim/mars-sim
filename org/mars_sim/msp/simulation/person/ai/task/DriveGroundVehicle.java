@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 
@@ -177,7 +177,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
         // Add experience points for driver's 'Driving' skill.
         // Add one point for every 100 millisols.
         double newPoints = time / 100D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
@@ -242,7 +243,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         // Add experience points for driver's 'Driving' skill.
         double newPoints = time / 100D;
         newPoints *= 4D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
@@ -282,7 +283,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
 
         // Add experience points for driver's 'Driving' skill.
         double newPoints = time / 100D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.DRIVING, newPoints);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Doctor.java
- * @version 2.76 2004-06-10
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -49,7 +49,7 @@ public class Doctor extends Job implements Serializable {
 		result = areologySkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute("Academic Aptitude");
+		int academicAptitude = attributes.getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
 		result+= result * ((academicAptitude - 50D) / 100D);
 		
 		return result;

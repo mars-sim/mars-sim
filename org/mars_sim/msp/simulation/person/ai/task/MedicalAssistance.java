@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-08-25
  * @author Barry Evans
  */
 
@@ -212,7 +212,7 @@ public class MedicalAssistance extends Task implements Serializable {
 			newPoints *= problem.getIllness().getRecoveryTreatment().getSkill();
             
             // Modify experience by experience aptitude.
-            int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
+            int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
             person.getSkillManager().addExperience(Skill.MEDICAL, newPoints);

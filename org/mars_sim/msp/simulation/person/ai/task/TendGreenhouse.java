@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -130,7 +130,7 @@ public class TendGreenhouse extends Task implements Serializable {
         // (1 base experience point per 100 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = timeLeft / 100D;
-        double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
+        double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
         experience += experience * ((experienceAptitude - 50D) / 100D);
         experience *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.BOTANY, experience);

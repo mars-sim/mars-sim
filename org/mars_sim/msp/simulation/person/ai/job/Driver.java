@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 2.77 2004-08-21
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -57,7 +57,7 @@ public class Driver extends Job implements Serializable {
 		result = areologySkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int experienceAptitude = attributes.getAttribute("Experience Aptitude");
+		int experienceAptitude = attributes.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 		
 		return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResearchScience.java
- * @version 2.76 2004-06-02
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -13,7 +13,7 @@ import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -100,7 +100,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 		double experience = researchTime / 25D;
 		
 		// Experience points adjusted by person's "Academic Aptitude" attribute.
-		int academicAptitude = person.getNaturalAttributeManager().getAttribute("Academic Aptitude");
+		int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
 		experience += experience * (((double) academicAptitude - 50D) / 100D);
 		experience *= getTeachingExperienceModifier();
 		person.getSkillManager().addExperience(science, experience);

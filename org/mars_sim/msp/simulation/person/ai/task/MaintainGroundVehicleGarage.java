@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 
@@ -127,7 +127,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = timeLeft / 100D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
+        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
 		experience *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.MECHANICS, experience);
 

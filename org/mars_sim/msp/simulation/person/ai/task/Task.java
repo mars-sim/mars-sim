@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.77 2004-08-17
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 
@@ -311,8 +311,8 @@ public abstract class Task implements Serializable, Comparable {
 		double result = 1D;
 		
 		if (hasTeacher()) {
-			int teachingModifier = teacher.getNaturalAttributeManager().getAttribute("Teaching");
-			int learningModifier = person.getNaturalAttributeManager().getAttribute("Academic Aptitude");
+			int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.TEACHING);
+			int learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
 			result+= (double) (teachingModifier + learningModifier) / 100D;
 		}
 		

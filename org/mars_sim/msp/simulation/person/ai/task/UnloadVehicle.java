@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -9,7 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -19,7 +19,7 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class UnloadVehicle extends Task implements Serializable {
 
-    // The amount of resources (kg) one person can unload per millisol.
+    // The amount of resources (kg) one person of average strength can unload per millisol.
     private static double UNLOAD_RATE = 10D;
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 
@@ -56,7 +56,9 @@ public class UnloadVehicle extends Task implements Serializable {
         if (person.getPerformanceRating() == 0D) endTask();
 	
         // Determine unload rate.
-        double amountUnloading = UNLOAD_RATE * time;
+		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
+		double strengthModifier = (double) strength / 50D;
+        double amountUnloading = UNLOAD_RATE * strengthModifier * time;
 
         // If vehicle is not in a garage, unload rate is reduced.
         Building garage = BuildingManager.getBuilding(vehicle);

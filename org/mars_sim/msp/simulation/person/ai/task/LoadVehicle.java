@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 
@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -23,7 +23,7 @@ public class LoadVehicle extends Task implements Serializable {
 
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 
-    // The amount of resources (kg) one person can load per millisol.
+    // The amount of resources (kg) one person of average strength can load per millisol.
     private static double LOAD_RATE = 10D;
 
     // Data members
@@ -57,7 +57,9 @@ public class LoadVehicle extends Task implements Serializable {
         if (person.getPerformanceRating() == 0D) endTask();
 	
         // Determine load rate.
-        double amountLoading = LOAD_RATE * time;
+        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
+        double strengthModifier = (double) strength / 50D;
+        double amountLoading = LOAD_RATE * strengthModifier * time;
         
         // If vehicle is not in a garage, load rate is reduced.
         Building garage = BuildingManager.getBuilding(vehicle);
