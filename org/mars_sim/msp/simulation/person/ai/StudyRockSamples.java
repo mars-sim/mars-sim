@@ -40,8 +40,6 @@ public class StudyRockSamples extends Task implements Serializable {
      */
     public StudyRockSamples(Person person, Mars mars) {
         super("Studying Rock Samples", person, true, mars);
-
-        System.out.println(person.getName() + " StudyRockSamples");
         
         // Find available lab for person.
         Lab lab = getAvailableLab(person);
@@ -54,6 +52,7 @@ public class StudyRockSamples extends Task implements Serializable {
                 try {     
                     if (!building.containsPerson(person)) building.addPerson(person);
                     lab.addResearcher();
+                    inv = person.getSettlement().getInventory();
                 }
                 catch (BuildingException e) {
                     System.out.println("StudyRockSamples: person is already in building.");
@@ -69,6 +68,7 @@ public class StudyRockSamples extends Task implements Serializable {
                 malfunctions = vehicle.getMalfunctionManager();
                 try {
                     lab.addResearcher();
+                    inv = vehicle.getInventory();
                 }
                 catch (Exception e) {
                     System.out.println("StudyRockSamples: rover lab is already full.");
