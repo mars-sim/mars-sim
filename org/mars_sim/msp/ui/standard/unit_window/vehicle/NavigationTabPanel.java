@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 2.75 2003-06-28
+ * @version 2.75 2003-07-08
  * @author Scott Davis
  */
 
@@ -272,7 +272,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         // Update latitude and longitude panels if necessary.
         boolean destinationChange = false;
-        if (destinationLocationCache != null) {
+        if (destinationLocationCache == null) {
             if (vehicle.getDestination() != null) destinationChange = true;
         }
         else if (!destinationLocationCache.equals(vehicle.getDestination())) destinationChange = true;

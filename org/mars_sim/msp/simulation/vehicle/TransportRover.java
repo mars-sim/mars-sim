@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.75 2003-05-06
+ * @version 2.75 2003-07-08
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -50,6 +50,9 @@ public class TransportRover extends Rover implements Serializable {
      */
     private void initTransportRoverData() {
 
+        // Set the description.
+        description = "Transport Rover";
+        
         // Add scope to malfunction manager.
 	    malfunctionManager.addScopeString("TransportRover");
 	    
@@ -69,14 +72,6 @@ public class TransportRover extends Rover implements Serializable {
 	    inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);
 
         sickBay = new SickBay(this, SICKBAY_LEVEL, SICKBAY_BEDS);
-    }
-
-    /**
-     * Returns a string describing the vehicle.
-     * @return string describing vehicle
-     */
-    public String getDescription() {
-        return "Long Range Transport Rover";
     }
 
     /**

@@ -1,20 +1,20 @@
 /**
  * Mars Simulation Project
- * VehicleWindow.java
+ * EquipmentWindow.java
  * @version 2.75 2003-07-08
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard.unit_window.vehicle;
+package org.mars_sim.msp.ui.standard.unit_window.equipment;
 
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.*;
 
 /**
- * The VehicleWindow is the window for displaying a vehicle.
+ * The EquipmentWindow is the window for displaying a piece of equipment.
  */
-public class VehicleWindow extends UnitWindow {
+public class EquipmentWindow extends UnitWindow {
     
     /**
      * Constructor
@@ -22,18 +22,15 @@ public class VehicleWindow extends UnitWindow {
      * @param desktop the main desktop panel.
      * @param proxy the unit UI proxy for this window.
      */
-    public VehicleWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
+    public EquipmentWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
         // Use UnitWindow constructor
         super(desktop, proxy, true);
         
-        Vehicle vehicle = (Vehicle) proxy.getUnit();
+        Equipment equipment = (Equipment) proxy.getUnit();
         
         // Add tab panels
-        addTabPanel(new NavigationTabPanel(proxy, desktop));
-        if (vehicle instanceof Crewable) addTabPanel(new CrewTabPanel(proxy, desktop));
         addTabPanel(new LocationTabPanel(proxy, desktop));
         addTabPanel(new InventoryTabPanel(proxy, desktop));
         addTabPanel(new MaintenanceTabPanel(proxy, desktop));
-        if (vehicle instanceof ExplorerRover) addTabPanel(new LaboratoryTabPanel(proxy, desktop));
     }
 }

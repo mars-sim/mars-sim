@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 2.75 2003-06-18
+ * @version 2.75 2003-07-08
  * @author Scott Davis
  */
 
@@ -32,8 +32,9 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
      *
      * @param desktop the main desktop panel.
      * @param proxy the unit UI proxy for this window.
+     * @param displayDescription true if unit description is to be displayed.
      */
-    public UnitWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
+    public UnitWindow(MainDesktopPane desktop, UnitUIProxy proxy, boolean displayDescription) {
         
         // Use JInternalFrame constructor
         super(proxy.getUnit().getName(), false, true, false, true);
@@ -49,15 +50,21 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
         setContentPane(mainPane);
         
         // Create name panel
-        JPanel namePanel = new JPanel();
+        JPanel namePanel = new JPanel(new BorderLayout(0, 0));
         mainPane.add(namePanel, BorderLayout.NORTH);
 
         // Create name label
         JLabel nameLabel = new JLabel(proxy.getUnit().getName(),
-                proxy.getButtonIcon(), JLabel.CENTER);
+            proxy.getButtonIcon(), JLabel.CENTER);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
-        namePanel.add(nameLabel);
+        namePanel.add(nameLabel, BorderLayout.NORTH);
+        
+        // Create description label if necessary.
+        if (displayDescription) {
+            JLabel descriptionLabel = new JLabel(proxy.getUnit().getDescription(), JLabel.CENTER);
+            namePanel.add(descriptionLabel, BorderLayout.SOUTH);
+        }
         
         // Create center panel
         centerPanel = new JTabbedPane();

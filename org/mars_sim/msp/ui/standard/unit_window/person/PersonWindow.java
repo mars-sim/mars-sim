@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonWindow.java
- * @version 2.75 2003-06-18
+ * @version 2.75 2003-07-08
  * @author Scott Davis
  */
 
@@ -26,7 +26,7 @@ public class PersonWindow extends UnitWindow {
      */
     public PersonWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
         // Use UnitWindow constructor
-        super(desktop, proxy);
+        super(desktop, proxy, false);
         
         // Add tab panels
         addTabPanel(new LocationTabPanel(proxy, desktop));

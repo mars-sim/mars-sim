@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 2.75 2003-05-19
+ * @version 2.75 2003-07-08
  * @author Scott Davis
  */
 
@@ -23,7 +23,7 @@ public class SettlementWindow extends UnitWindow {
      */
     public SettlementWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
         // Use UnitWindow constructor
-        super(desktop, proxy);
+        super(desktop, proxy, false);
         
         // Add tab panels
         SettlementUIProxy settlementProxy = (SettlementUIProxy) proxy;

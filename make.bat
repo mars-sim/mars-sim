@@ -18,6 +18,7 @@ set SOURCE=%SOURCE% org\mars_sim\msp\simulation\vehicle\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\monitor\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\*.java
+set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\equipment\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\person\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\vehicle\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\structure\*.java

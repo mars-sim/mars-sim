@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.75 2003-06-27
+ * @version 2.75 2003-07-08
  * @author Scott Davis
  */
 
@@ -327,12 +327,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public void setETA(MarsClock newETA) {
         this.estimatedTimeOfArrival = newETA;
     }
-
-    /**
-     * Returns a string describing the vehicle.
-     * @return string describing vehicle
-     */
-    public abstract String getDescription();
 
     /**
      * Gets the unit's malfunction manager.

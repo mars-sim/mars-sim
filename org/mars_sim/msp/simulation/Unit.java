@@ -17,6 +17,7 @@ public abstract class Unit implements Serializable {
     // Data members
     protected Coordinates location; // Unit location coordinates
     protected String name;          // Unit name
+    protected String description;   // Unit description
     protected Mars mars;            // The virtual Mars
     protected double baseMass;      // The mass of the unit without inventory
     protected Inventory inventory;  // The unit's inventory
@@ -33,6 +34,9 @@ public abstract class Unit implements Serializable {
         this.location = new Coordinates(location);
         this.mars = mars;
 	
+        // Set unit description (children can set it to something else).
+        description = name;
+    
 	    // Default base mass is effectively infinite.  Child classes can override.
 	    baseMass = Double.MAX_VALUE;
 
@@ -55,6 +59,15 @@ public abstract class Unit implements Serializable {
      */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * Gets the unit's description
+     *
+     * @return description
+     */
+    public String getDescription() {
+        return description;
     }
 
     /** Returns unit's location 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRover.java
- * @version 2.75 2003-02-27
+ * @version 2.75 2003-07-08
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -50,6 +50,9 @@ public class ExplorerRover extends Rover implements Serializable {
      */
     private void initExplorerRoverData() {
        
+       // Set the description.
+        description = "Explorer Rover";
+       
         // Add scope to malfunction manager.
 	    malfunctionManager.addScopeString("ExplorerRover");
 	    malfunctionManager.addScopeString("Laboratory");
@@ -73,14 +76,6 @@ public class ExplorerRover extends Rover implements Serializable {
 	    // Construct mobile lab.
 	    String[] techSpeciality = { "Aerology" };
 	    lab = new MobileLaboratory(1, 1, techSpeciality);
-    }
-
-    /** 
-     * Returns a string describing the vehicle.
-     * @return string describing vehicle
-     */
-    public String getDescription() {
-        return "Long Range Exploration Rover";
     }
 
     /**
