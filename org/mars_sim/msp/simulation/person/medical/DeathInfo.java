@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathInfo.java
- * @version 2.74 2002-05-18
+ * @version 2.75 2002-06-08
  * @author Barry Evans
  */
 
@@ -66,7 +66,7 @@ public class DeathInfo implements java.io.Serializable {
 	    taskPhase = taskMgr.getPhase();
 	}
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(person);
+	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	Malfunction mostSerious = null;
 	int severity = 0;
 	while (i.hasNext()) {

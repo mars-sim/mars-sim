@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.74 2002-05-05
+ * @version 2.75 2002-06-08
  * @author Scott Davis
  */
 
@@ -56,7 +56,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
    
         boolean result = false;
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(person);
+	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	while (i.hasNext()) {
 	    MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
 	    if (manager.hasEVAMalfunction()) result = true;
@@ -73,7 +73,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
    
         boolean result = false;
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(entity);
+	Iterator i = MalfunctionFactory.getMalfunctionables(entity).iterator();
 	while (i.hasNext()) {
 	    MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
 	    if (manager.hasEVAMalfunction()) result = true;
@@ -91,7 +91,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         double result = 0D;
 
         // Total probabilities for all malfunctionable entities in person's local.
-        Iterator i = MalfunctionFactory.getMalfunctionables(person);
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
             MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
             if (manager.hasEVAMalfunction()) result = 50D;
@@ -166,7 +166,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 	// Get a local malfunction.
 	Malfunction malfunction = null;
-        Iterator i = MalfunctionFactory.getMalfunctionables(airlocker2);
+        Iterator i = MalfunctionFactory.getMalfunctionables(airlocker2).iterator();
 	while (i.hasNext()) {
 	    Malfunctionable e = (Malfunctionable) i.next();
 	    MalfunctionManager manager = e.getMalfunctionManager();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.74 2002-05-02
+ * @version 2.75 2002-06-08
  * @author Scott Davis
  */
 
@@ -41,7 +41,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
    
         boolean result = false;
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(person);
+	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	while (i.hasNext()) {
 	    // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
 	    Malfunctionable entity = (Malfunctionable) i.next();
@@ -77,7 +77,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
 	// Get a local emergency malfunction.
 	Malfunction malfunction = null;
-        Iterator i = MalfunctionFactory.getMalfunctionables(person);
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	while (i.hasNext()) {
 	    Malfunctionable e = (Malfunctionable) i.next();
 	    MalfunctionManager manager = e.getMalfunctionManager();

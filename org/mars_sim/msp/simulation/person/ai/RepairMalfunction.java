@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.74 2002-05-05
+ * @version 2.75 2002-06-08
  * @author Scott Davis
  */
 
@@ -45,7 +45,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
    
         boolean result = false;
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(person);
+	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	while (i.hasNext()) {
 	    MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
 	    if (manager.hasNormalMalfunction()) result = true;
@@ -63,7 +63,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         double result = 0D;
 
         // Total probabilities for all malfunctionable entities in person's local.
-        Iterator i = MalfunctionFactory.getMalfunctionables(person);
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
             // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
 	    Malfunctionable entity = (Malfunctionable) i.next();
@@ -102,7 +102,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
 	// Get a local malfunction.
 	Malfunction malfunction = null;
-        Iterator i = MalfunctionFactory.getMalfunctionables(person);
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	while (i.hasNext()) {
 	    Malfunctionable e = (Malfunctionable) i.next();
 	    MalfunctionManager manager = e.getMalfunctionManager();

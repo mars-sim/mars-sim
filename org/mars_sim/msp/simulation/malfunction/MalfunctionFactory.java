@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 2.74 2002-05-06
+ * @version 2.75 2002-06-08
  * @author Scott Davis 
  */
 
@@ -48,16 +48,18 @@ public class MalfunctionFactory {
         Malfunction result = null;
 
 	double totalProbability = 0D;
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction temp = (Malfunction) i.next();
-	    if (temp.unitScopeMatch(scope)) 
-	        totalProbability += temp.getProbability();
+	if (malfunctions.size() > 0) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction temp = (Malfunction) i.next();
+	        if (temp.unitScopeMatch(scope)) 
+	            totalProbability += temp.getProbability();
+	    }
 	}
 
         double r = RandomUtil.getRandomDouble(totalProbability);
 	
-        i = malfunctions.iterator();
+        Iterator i = malfunctions.iterator();
 	while (i.hasNext()) {
 	    Malfunction temp = (Malfunction) i.next();
 	    double probability = temp.getProbability();
@@ -71,11 +73,10 @@ public class MalfunctionFactory {
     }
     
     /**
-     * Gets an iterator to a collection of malfunctionable entities
-     * local to the given person.
+     * Gets a collection of malfunctionable entities local to the given person.
      * @return collection iterator
      */
-    public static Iterator getMalfunctionables(Person person) {
+    public static Collection getMalfunctionables(Person person) {
 
         Collection entities = new ArrayList();
         String location = person.getLocationSituation();
@@ -98,21 +99,24 @@ public class MalfunctionFactory {
 	    }
 	}
 
-	UnitIterator i = person.getInventory().getContainedUnits().iterator();
-	while (i.hasNext()) {
-            Unit unit = i.next();
-	    if (unit instanceof Malfunctionable) entities.add(unit);
+	UnitCollection inventoryUnits = person.getInventory().getContainedUnits();
+	if (inventoryUnits.size() > 0) {
+	    UnitIterator i = inventoryUnits.iterator();
+	    while (i.hasNext()) {
+                Unit unit = i.next();
+	        if (unit instanceof Malfunctionable) entities.add(unit);
+	    }
 	}
 
-	return entities.iterator();
+	return entities;
     }
 
     /**
-     * Gets an iterator to a collection of malfunctionable entities
+     * Gets a collection of malfunctionable entities
      * local to the given malfunctionable entity.
      * @return collection iterator
      */
-    public static Iterator getMalfunctionables(Malfunctionable entity) {
+    public static Collection getMalfunctionables(Malfunctionable entity) {
 
         Collection entities = new ArrayList();
 
@@ -123,12 +127,15 @@ public class MalfunctionFactory {
 	    while (i.hasNext()) entities.add(i.next());
 	}
 
-	UnitIterator i = entity.getInventory().getContainedUnits().iterator();
-	while (i.hasNext()) {
-            Unit unit = i.next();
-	    if (unit instanceof Malfunctionable) entities.add(unit);
+	UnitCollection inventoryUnits = entity.getInventory().getContainedUnits();
+	if (inventoryUnits.size() > 0) {
+	    UnitIterator i = inventoryUnits.iterator();
+	    while (i.hasNext()) {
+                Unit unit = i.next();
+	        if (unit instanceof Malfunctionable) entities.add(unit);
+	    }
 	}
 
-	return entities.iterator();
+	return entities;
     }
 }

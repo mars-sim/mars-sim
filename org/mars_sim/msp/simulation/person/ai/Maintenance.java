@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.74 2002-05-11
+ * @version 2.75 2002-06-08
  * @author Scott Davis
  */
 
@@ -40,7 +40,7 @@ public class Maintenance extends Task implements Serializable {
 	double totalProbabilityWeight = 0D;
 
 	// Total probabilities for all malfunctionable entities in person's local.
-        Iterator i = MalfunctionFactory.getMalfunctionables(person);
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	while (i.hasNext()) {
             Malfunctionable e = (Malfunctionable) i.next();
 	    if (!(e instanceof Vehicle)) {
@@ -53,7 +53,7 @@ public class Maintenance extends Task implements Serializable {
 	double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);
 
 	// Get the malfunctionable entity chosen.
-        i = MalfunctionFactory.getMalfunctionables(person);
+        i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	while (i.hasNext()) {
 	    Malfunctionable e = (Malfunctionable) i.next();
 	    double lastMaint = e.getMalfunctionManager().getTimeSinceLastMaintenance();
@@ -79,7 +79,7 @@ public class Maintenance extends Task implements Serializable {
         double result = 0D;
 
         // Total probabilities for all malfunctionable entities in person's local.
-        Iterator i = MalfunctionFactory.getMalfunctionables(person);
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 	while (i.hasNext()) {
 	    Malfunctionable entity = (Malfunctionable) i.next();
 	    MalfunctionManager manager = entity.getMalfunctionManager();

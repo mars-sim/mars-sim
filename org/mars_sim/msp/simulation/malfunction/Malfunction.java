@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Malfunction.java
- * @version 2.74 2002-04-25
+ * @version 2.75 2002-06-06
  * @author Scott Davis
  */
 
@@ -188,13 +188,15 @@ public class Malfunction implements Serializable {
     public boolean unitScopeMatch(Collection unitScope) {
         boolean result = false;
 
-        Iterator i1 = scope.iterator();
-	while (i1.hasNext()) {
-	    String scopeString = (String) i1.next();
-	    Iterator i2 = unitScope.iterator();
-	    while (i2.hasNext()) {
-	        String unitScopeString = (String) i2.next();
-		if (scopeString.equals(unitScopeString)) result = true;
+	if ((scope.size() > 0) && (unitScope.size() > 0)) {
+            Iterator i1 = scope.iterator();
+	    while (i1.hasNext()) {
+	        String scopeString = (String) i1.next();
+	        Iterator i2 = unitScope.iterator();
+	        while (i2.hasNext()) {
+	            String unitScopeString = (String) i2.next();
+		    if (scopeString.equals(unitScopeString)) result = true;
+	        }
 	    }
 	}
 
