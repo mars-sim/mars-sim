@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2003-05-06
+ * @version 2.75 2003-11-27
  * @author Scott Davis
  */
 
@@ -243,8 +243,7 @@ public class Person extends Unit implements Serializable {
         }
         if (location.equals(Person.INVEHICLE)) {
             Vehicle vehicle = getVehicle();
-            if (vehicle instanceof TransportRover) 
-                found = ((TransportRover) vehicle).getMedicalFacility();
+            if (vehicle instanceof Medical) found = ((Medical) vehicle).getSickBay();
         }
 
         return found;

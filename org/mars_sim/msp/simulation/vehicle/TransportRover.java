@@ -1,21 +1,20 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2003-11-27
  */
 
 package org.mars_sim.msp.simulation.vehicle;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.person.medical.MedicalAid;
 import java.io.Serializable;
 
 /**
  * The TransportRover class is a rover designed for transporting people
  * from settlement to settlement.
  */
-public class TransportRover extends Rover implements Serializable {
+public class TransportRover extends Rover implements Medical, Serializable {
 
     // Static data members
     private static final double RANGE = 4000D; // Operating range of rover in km.
@@ -74,12 +73,10 @@ public class TransportRover extends Rover implements Serializable {
         sickBay = new SickBay(this, SICKBAY_LEVEL, SICKBAY_BEDS);
     }
 
-    /**
-     * Returns a MedicalAid that is available in this Vehicle. This implementation
-     * return a reference to the internal Sickbay.
-     * @return Sick Bay
-     */
-    public MedicalAid getMedicalFacility() {
-        return sickBay;
-    }
+	/**
+	 * @see org.mars_sim.msp.simulation.vehicle.Medical#getSickBay()
+	 */
+	public SickBay getSickBay() {
+		return sickBay;
+	}
 }

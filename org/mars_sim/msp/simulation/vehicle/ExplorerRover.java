@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRover.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2003-11-27
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -14,7 +14,7 @@ import java.io.Serializable;
  * The ExplorerRover class is a rover designed for exploration and collecting
  * rock samples.
  */
-public class ExplorerRover extends Rover implements Serializable {
+public class ExplorerRover extends Rover implements Medical, Serializable {
 	
     // Static data members
     private static final double RANGE = 3000D; // Operating range of rover in km.
@@ -25,9 +25,12 @@ public class ExplorerRover extends Rover implements Serializable {
     private static final double WATER_CAPACITY = 560D; // Water capacity of rover in kg.
     private static final double FOOD_CAPACITY = 210D; // Food capacity of rover in kg.
     private static final double ROCK_SAMPLES_CAPACITY = 2000; // Rock samples capacity of rover in kg.
+    private static final int SICKBAY_LEVEL = 1; // Treatment level of sickbay.
+    private static final int SICKBAY_BEDS = 1; // Number of beds in sickbay.
 
     // Data members
     private MobileLaboratory lab; // The rover's lab.
+    private SickBay sickBay; // The rover's sick bay.
     
     /** 
      * Constructs an ExplorerRover object at a given settlement.
@@ -76,6 +79,9 @@ public class ExplorerRover extends Rover implements Serializable {
 	    // Construct mobile lab.
 	    String[] techSpeciality = { "Aerology" };
 	    lab = new MobileLaboratory(1, 1, techSpeciality);
+        
+        // Construct sick bay.
+        sickBay = new SickBay(this, SICKBAY_LEVEL, SICKBAY_BEDS);
     }
 
     /**
@@ -85,4 +91,10 @@ public class ExplorerRover extends Rover implements Serializable {
     public MobileLaboratory getLab() {
         return lab; 
     }
+	/**
+	 * @see org.mars_sim.msp.simulation.vehicle.Medical#getSickBay()
+	 */
+	public SickBay getSickBay() {
+		return sickBay;
+	}
 }
