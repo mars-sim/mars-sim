@@ -123,10 +123,16 @@ public class SkillManager implements Serializable {
      *  @param experiencePoints the experience points to be added
      */
     public void addExperience(String skillName, double experiencePoints) {
+    	
+    	// int initialSkill = getSkillLevel(skillName);
+    	
         if (hasSkill(skillName)) ((Skill) skills.get(skillName)).addExperience(experiencePoints);
         else {
             addNewSkill(new Skill(skillName));
             addExperience(skillName, experiencePoints);
         }
+        
+        // int finalSkill = getSkillLevel(skillName);
+        // if (finalSkill > initialSkill) System.out.println(person.getName() + " increases " + skillName + " skill to " + finalSkill);
     }
 }
