@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StoreroomFacility.java
- * @version 2.72 2001-06-24
+ * @version 2.72 2001-07-11
  * @author Scott Davis
  */
 
@@ -88,7 +88,7 @@ public class StoreroomFacility extends Facility {
     /** Adds food to storage. 
      * @param amount the amount of food to be added (in units)
      */
-    void addFood(double amount) {
+    public void addFood(double amount) {
         foodStores += Math.abs(amount);
         if (foodStores > MAX_UNITS_STORAGE) foodStores = MAX_UNITS_STORAGE;
     }
@@ -118,7 +118,7 @@ public class StoreroomFacility extends Facility {
     /** Adds oxygen to storage. 
      *  @param amount the amount of oxygen to be added (in units)
      */
-    void addOxygen(double amount) {
+    public void addOxygen(double amount) {
         oxygenStores += Math.abs(amount);
         if (oxygenStores > MAX_UNITS_STORAGE) oxygenStores = MAX_UNITS_STORAGE;
     }
@@ -148,7 +148,7 @@ public class StoreroomFacility extends Facility {
     /** Adds water to storage. 
      *  @param amount the amount of water to be added (in units)
      */
-    void addWater(double amount) {
+    public void addWater(double amount) {
         waterStores += Math.abs(amount);
         if (waterStores > MAX_UNITS_STORAGE) waterStores = MAX_UNITS_STORAGE;
     }
@@ -178,7 +178,7 @@ public class StoreroomFacility extends Facility {
     /** Adds fuel to storage. 
      *  @param amount the amount of fuel to be added (in units)
      */
-    void addFuel(double amount) {
+    public void addFuel(double amount) {
         fuelStores += Math.abs(amount);
         if (fuelStores > MAX_UNITS_STORAGE) fuelStores = MAX_UNITS_STORAGE;
     }
@@ -208,7 +208,7 @@ public class StoreroomFacility extends Facility {
     /** Adds parts to storage. 
      *  @param amount the amount of parts to be added (in units)
      */
-    void addParts(double amount) {
+    public void addParts(double amount) {
         partsStores += Math.abs(amount);
         if (partsStores > MAX_UNITS_STORAGE) partsStores = MAX_UNITS_STORAGE;
     }

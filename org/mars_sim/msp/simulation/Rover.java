@@ -46,5 +46,8 @@ public class Rover extends GroundVehicle {
 
         // Set range of rover.
         range = 100D * getFuelCapacity() * .8D;
+ 
+        // Set base speed to 30kph.
+        setBaseSpeed(30D);
     }
 }

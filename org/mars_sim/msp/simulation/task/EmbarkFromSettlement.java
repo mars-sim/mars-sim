@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EmbarkFromSettlement.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-07-11
  * @author Scott Davis
  */
 
@@ -147,37 +147,34 @@ class EmbarkFromSettlement extends Task {
 
             // Fill vehicle with fuel.
             double neededFuel = vehicle.getFuelCapacity() - vehicle.getFuel();
-            if (neededFuel < storage.getFuelStores() - 50D) {
-                storage.removeFuel(neededFuel);
-                vehicle.addFuel(neededFuel);
-            }
-            else resourcesAvailable = false;
+            if (neededFuel > storage.getFuelStores() - 50D) resourcesAvailable = false; 
             
             // Fill vehicle with oxygen.
             double neededOxygen = vehicle.getOxygenCapacity() - vehicle.getOxygen();
-            if (neededOxygen < storage.getOxygenStores() - 50D) {
-                storage.removeOxygen(neededOxygen);
-                vehicle.addOxygen(neededOxygen);
-            }
-            else resourcesAvailable = false;
+            if (neededOxygen > storage.getOxygenStores() - 50D) resourcesAvailable = false; 
 
             // Fill vehicle with water.
             double neededWater = vehicle.getWaterCapacity() - vehicle.getWater();
-            if (neededWater < storage.getWaterStores() - 50D) {
-                storage.removeWater(neededWater);
-                vehicle.addWater(neededWater);
-            }
-            else resourcesAvailable = false;
+            if (neededWater > storage.getWaterStores() - 50D) resourcesAvailable = false;
             
             // Fill vehicle with food.
             double neededFood = vehicle.getFoodCapacity() - vehicle.getFood();
-            if (neededFood < storage.getFoodStores() - 50D) {
+            if (neededFood > storage.getFoodStores() - 50D) resourcesAvailable = false; 
+            
+            if (resourcesAvailable) {
+                // Remove resources from settlement stores.
+                storage.removeFuel(neededFuel);
+                storage.removeOxygen(neededOxygen);
+                storage.removeWater(neededWater);
                 storage.removeFood(neededFood);
+
+                // Load vehicle with resources.
+                vehicle.addFuel(neededFuel);
+                vehicle.addOxygen(neededOxygen);
+                vehicle.addWater(neededWater);
                 vehicle.addFood(neededFood);
             }
-            else resourcesAvailable = false;
-
-            if (!resourcesAvailable) { 
+            else { 
                 vehicle.setReserved(false);
                 isDone = true;
             }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-07-11
  * @author Scott Davis
  */
 
@@ -307,7 +307,7 @@ class DriveGroundVehicle extends Task {
         double handling = vehicle.getTerrainHandlingCapability();
 
         // Determine temp angle.
-        double angleModifier = handling + skillLevel - 4D;
+        double angleModifier = handling + skillLevel - 10D;
         if (angleModifier < 0D) angleModifier = Math.abs(1D / angleModifier);
         double tempAngle = terrainGrade / angleModifier;
         if (tempAngle > (Math.PI / 2D)) tempAngle = Math.PI / 2D;
@@ -315,7 +315,7 @@ class DriveGroundVehicle extends Task {
         // Modify base speed by driver's skill level.
         double skillModifier = 0D;
         double baseSpeed = vehicle.getBaseSpeed();
-        if (skillLevel < 5) skillModifier = 0D - ((baseSpeed / 2D) * ((double) skillLevel / 4D));
+        if (skillLevel <= 5) skillModifier = 0D - ((baseSpeed / 2D) * ((5D - skillLevel) / 5D));
         else if (skillLevel > 5) {
             double tempSpeed = baseSpeed;
             for (int x=0; x < skillLevel - 5; x++) {
@@ -324,7 +324,7 @@ class DriveGroundVehicle extends Task {
             }
         }   
 
-        double speed = vehicle.getBaseSpeed() * Math.cos(tempAngle);
+        double speed = (vehicle.getBaseSpeed() + skillModifier) * Math.cos(tempAngle);
         if (speed < 0D) speed = 0D;
 
         return speed;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DisembarkAtSettlement.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-07-11
  * @author Scott Davis
  */
 
@@ -55,7 +55,30 @@ class DisembarkAtSettlement extends Task {
                 passenger.setLocationSituation("In Settlement");
                 passenger.setSettlement(destinationSettlement);
             }
- 
+
+            // Unload vehicle stores to destination settlement storage. 
+            StoreroomFacility settlementStores = (StoreroomFacility) destinationSettlement.getFacilityManager().getFacility("Storerooms");
+
+            // Unload fuel
+            double fuel = vehicle.getFuel();
+            settlementStores.addFuel(fuel);
+            vehicle.consumeFuel(fuel);
+
+            // Unload oxygen
+            double oxygen = vehicle.getOxygen();
+            settlementStores.addOxygen(oxygen);
+            vehicle.removeOxygen(oxygen);
+
+            // Unload water
+            double water = vehicle.getWater();
+            settlementStores.addWater(water);
+            vehicle.removeWater(water);
+
+            // Unload food
+            double food = vehicle.getFood();
+            settlementStores.addFood(food);
+            vehicle.removeFood(food);
+
             isDone = true;
             return timeCompleted - timeRequired;
         }

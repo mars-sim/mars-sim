@@ -36,12 +36,12 @@ class TendGreenhouse extends Task {
      */
     public static double getProbability(Person person, VirtualMars mars) {
         if (person.getLocationSituation().equals("In Settlement")) {
-            GreenhouseFacility greenhouse =
-                    (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
-            if ((greenhouse.getPhase().equals("Growing")) &&
-                    (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
-                return 0D;
-            else
+            // GreenhouseFacility greenhouse =
+            //        (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
+            //if ((greenhouse.getPhase().equals("Growing")) &&
+            //        (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
+            //    return 0D;
+            //else
                 return 25D;
         } else
             return 0D;

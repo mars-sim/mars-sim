@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.72 2001-07-10
+ * @version 2.72 2001-07-11
  * @author Scott Davis
  */
 
@@ -18,7 +18,7 @@ public abstract class Vehicle extends Unit {
     // Data members
     private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
-    private double baseSpeed = 30; // Base speed of vehicle in kph (can be set in child class)
+    private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
     private String status; // Current status of vehicle ("Moving", "Parked") (other child-specific status allowed)
     private Settlement settlement; // The settlement which the vehicle is parked at
     private Vector passengers; // List of people who are passengers in vehicle

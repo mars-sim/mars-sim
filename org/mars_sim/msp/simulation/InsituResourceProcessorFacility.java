@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.72 2001-06-24
+ * @version 2.72 2001-07-11
  * @author Scott Davis
  */
 
@@ -30,9 +30,9 @@ public class InsituResourceProcessorFacility extends Facility {
         LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
         int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
-        int result = normalPop;
+        double result = normalPop;
         if (currentPop > normalPop) result = currentPop;
-        result *= 1000D;
+        result /= 1000D;
         return result;
     }
     
@@ -43,9 +43,9 @@ public class InsituResourceProcessorFacility extends Facility {
         LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
         int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
-        int result = normalPop;
+        double result = normalPop;
         if (currentPop > normalPop) result = currentPop;
-        result *= 1000D;
+        result /= 1000D;
         return result;
     }
     
@@ -56,16 +56,16 @@ public class InsituResourceProcessorFacility extends Facility {
         LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
         int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
-        int result = normalPop;
+        double result = normalPop;
         if (currentPop > normalPop) result = currentPop;
-        result *= 1000D;
+        result /= 1000D;
         return result;
     }
     
-    /** Override Facility's timePasses method to allow for resource processing.
+    /** Override Facility's timePassing method to allow for resource processing.
      *  @param amount of time passing (in millisols) 
      */
-    void timePasses(double time) {
+    void timePassing(double time) {
         StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
         stores.addOxygen(getOxygenRate() * time);
         stores.addWater(getWaterRate() * time);
