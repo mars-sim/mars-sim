@@ -1,18 +1,33 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2004-02-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window;
 
-import java.awt.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.BoundedRangeModel;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /** 
  * The MaintenanceTabPanel is a tab panel for unit maintenance information.
@@ -49,9 +64,9 @@ public class MaintenanceTabPanel extends TabPanel {
         maintenancePanel.add(maintenanceLabel);
         
         // Create lastCompletedLabel.
-        lastCompletedTime = (int) manager.getTimeSinceLastMaintenance();
+        lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
         lastCompletedLabel = new JLabel("Last Completed: " + lastCompletedTime + 
-            " millisols", JLabel.CENTER);
+            " sols", JLabel.CENTER);
         maintenancePanel.add(lastCompletedLabel);
         
         // Create maintenance progress bar panel.
@@ -113,10 +128,10 @@ public class MaintenanceTabPanel extends TabPanel {
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
     
         // Update last completed label.
-        int lastComplete = (int) manager.getTimeSinceLastMaintenance();
+        int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
         if (lastComplete != lastCompletedTime) {
             lastCompletedTime = lastComplete;
-            lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " millisols");
+            lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " sols");
         }
         
         // Update progress bar.

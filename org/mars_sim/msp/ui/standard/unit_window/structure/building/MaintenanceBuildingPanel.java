@@ -1,16 +1,23 @@
 /**
  * Mars Simulation Project
  * MaintenanceBuildingPanel.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2004-02-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
-import java.awt.*;
-import javax.swing.*;
-import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.simulation.structure.building.*;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
+import javax.swing.BoundedRangeModel;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**
@@ -47,7 +54,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         add(maintenanceLabel);
         
         // Create lastCompletedLabel.
-        lastCompletedTime = (int) manager.getTimeSinceLastMaintenance();
+        lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
         lastCompletedLabel = new JLabel("Last Completed: " + lastCompletedTime + 
             " millisols", JLabel.CENTER);
         add(lastCompletedLabel);
@@ -77,7 +84,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
     
         // Update last completed label.
-        int lastComplete = (int) manager.getTimeSinceLastMaintenance();
+        int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
         if (lastComplete != lastCompletedTime) {
             lastCompletedTime = lastComplete;
             lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " millisols");
