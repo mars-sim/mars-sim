@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 2.77 2004-09-09
+ * @version 2.77 2004-09-27
  * @author Scott Davis
  */
 
@@ -46,6 +46,10 @@ public class RelationshipManager implements Serializable {
 	
 	// The base personality diff modifier per millisol for relationship change.
 	private static final double PERSONALITY_DIFF_MODIFIER = .1D;
+	
+	// The base settler modifier per millisol as settlers are trained to get 
+	// along with each other.
+	private static final double SETTLER_MODIFIER = .02D;
 	
 	private Graph relationshipGraph; // The relationship graph
 	int count = 0;
@@ -267,6 +271,10 @@ public class RelationshipManager implements Serializable {
 				double personalityDiffModifier = (2D - (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
 				personalityDiffModifier*= PERSONALITY_DIFF_MODIFIER * time;
 				changeAmount+= RandomUtil.getRandomDouble(personalityDiffModifier);
+				
+				// Modify based on settlers being trained to get along with each other.
+				double settlerModifier = SETTLER_MODIFIER * time;
+				changeAmount+= RandomUtil.getRandomDouble(settlerModifier);
 				
 				// Modify magnitude based on the collective stress of the two people.
 				double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relationship.java
- * @version 2.77 2004-09-08
+ * @version 2.77 2004-09-27
  * @author Scott Davis
  */
 
@@ -21,6 +21,9 @@ public class Relationship implements Serializable {
 	// Types of starting relationships.
 	static final String FIRST_IMPRESSION = "First Impression";
 	static final String EXISTING_RELATIONSHIP = "Existing Relationship";
+	
+	// Relationship modifier for settlers since they are trained to get along with each other.
+	private static final double SETTLER_MODIFIER = 20D;
 
 	// Data members
 	private Person person1;
@@ -143,6 +146,9 @@ public class Relationship implements Serializable {
 		boolean oppositeGenders = (!impressioner.getGender().equals(impressionee.getGender()));
 		if (oppositeGenders) result+= RandomUtil.getRandomDouble(attractivenessModifier);
 		
+		// Modify as settlers are trained to try to get along with each other.
+		if (result < 50D) result+= RandomUtil.getRandomDouble(SETTLER_MODIFIER);
+		
 		return result;
 	}
 	
@@ -177,6 +183,9 @@ public class Relationship implements Serializable {
 		PersonalityType targetType = target.getMind().getPersonalityType();
 		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString())) * 50D;
 		result+= RandomUtil.getRandomDouble(personalityDiffModifier);
+		
+		// Modify as settlers are trained to try to get along with each other.
+		if (result < 50D) result+= RandomUtil.getRandomDouble(SETTLER_MODIFIER);
 		
 		return result;
 	}
