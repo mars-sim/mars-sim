@@ -8,22 +8,26 @@ package org.mars_sim.msp.simulation.vehicle;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.person.medical.MedicalAid;
+import org.mars_sim.msp.simulation.person.medical.SickBay;
 import java.io.Serializable;
 
 /**
- * The TransportRover class is a rover designed for transporting people 
+ * The TransportRover class is a rover designed for transporting people
  * from settlement to settlement.
  */
 public class TransportRover extends Rover implements Serializable {
-	
+
     // Static data members
     private static final int CREW_CAPACITY = 12; // Max number of crewmembers.
     private static final double FUEL_CAPACITY = 3750D; // Fuel capacity of rover in kg.
     private static final double OXYGEN_CAPACITY = 525D; // Oxygen capacity of rover in kg.
     private static final double WATER_CAPACITY = 2100D; // Water capacity of rover in kg.
     private static final double FOOD_CAPACITY = 787.5D; // Food capacity of rover in kg.
-	
-    /** 
+
+    private SickBay sickBay = null;
+
+    /**
      * Constructs an TransportRover object at a given settlement.
      * @param name the name of the rover
      * @param settlement the settlementt he rover is parked at
@@ -60,7 +64,7 @@ public class TransportRover extends Rover implements Serializable {
      * Initialize rover data
      */
     private void initTransportRoverData() {
-        
+
         // Set crew capacity
 	crewCapacity = CREW_CAPACITY;
 
@@ -69,13 +73,25 @@ public class TransportRover extends Rover implements Serializable {
 	inventory.setResourceCapacity(Inventory.OXYGEN, OXYGEN_CAPACITY);
 	inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
 	inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
+
+    sickBay = new SickBay("RoverSickBay", 2, mars);
     }
 
-    /** 
+    /**
      * Returns a string describing the vehicle.
      * @return string describing vehicle
      */
     public String getDescription() {
         return "Long Range Transport Rover";
     }
+
+    /**
+     * Returns a MedicalAid that is available in this Vehicle. This implementation
+     * return a reference to the internal Sickbay.
+     * @return Sick Bay
+     */
+    public MedicalAid getMedicalFacility() {
+        return sickBay;
+    }
+
 }
