@@ -17,6 +17,7 @@ public class SimulationProperties {
 
     // Property values
     private double timeRatio = 0D; // Simulation time / real time
+    private int initSettlements = 0;
 
     /** Constructor */
     public SimulationProperties() {
@@ -24,6 +25,21 @@ public class SimulationProperties {
         // Create a PropertiesXmlReader.
         propertiesReader = new PropertiesXmlReader();
         propertiesReader.parse();
+    }
+
+    /** Number of settlements when starting
+     */
+    public int getInitSettlements() {
+	if(initSettlements == 0) {
+	    initSettlements = propertiesReader.getInitSettlements();
+	}
+	return initSettlements;
+    }
+
+    /** Number of settlements when starting
+     */
+    public void setInitSettlements(int newValue) {
+	initSettlements = newValue;
     }
 
     /** Gets the time ratio property.

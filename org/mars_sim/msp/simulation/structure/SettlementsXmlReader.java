@@ -27,6 +27,7 @@ public class SettlementsXmlReader extends MspXmlReader {
     private static final int POP_CAPACITY = 7;
 
     // Data members
+    private int settlementMax; // Maximum number of settlements to initialize
     private int elementType; // The current element type being parsed
     private SettlementCollection settlements; // The collection of created settlements
     private Mars mars; // The virtual Mars instance
@@ -39,9 +40,9 @@ public class SettlementsXmlReader extends MspXmlReader {
     /** Constructor
      *  @param mars the virtual Mars instance
      */
-    public SettlementsXmlReader(Mars mars) {
+    public SettlementsXmlReader(SimulationProperties p, Mars mars) {
         super("conf/settlements.xml");
-
+	settlementMax = p.getInitSettlements();
         this.mars = mars;
     }
 
@@ -97,9 +98,11 @@ public class SettlementsXmlReader extends MspXmlReader {
             case LONGITUDE:
                 elementType = LOCATION;
                 break;
-            case SETTLEMENT: 
-                settlements.add(createSettlement());    
-                elementType = SETTLEMENTS_LIST;
+  	    case SETTLEMENT:
+		if(settlementMax == 0 || settlements.size() < settlementMax) {
+		    settlements.add(createSettlement());    
+		}
+		elementType = SETTLEMENTS_LIST;
                 break;
         }
     }

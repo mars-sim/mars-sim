@@ -41,6 +41,9 @@ class PropertiesXmlReader extends MspXmlReader {
     private static final int MIN_TEMPERATURE = 21;
     private static final int FREEZING_TIME = 22;
     private static final int AIRLOCK_CYCLE_TIME = 23;
+
+    private static final int INIT_PROPERTIES = 100;
+    private static final int INIT_SETTLEMENTS = 101;
     
     // Data members
     private int elementType; // The current element type being parsed
@@ -65,6 +68,8 @@ class PropertiesXmlReader extends MspXmlReader {
     private double settlementFuelStorageCapacity; // The settlement fuel storage capacity property
     private double greenhouseFullHarvest; // The greenhouse full harvest property
     private double greenhouseGrowingCycle; // The greenhouse growing cycle property
+
+    private int initSettlements; // settlements at the start of the sim
 
     /** Constructor */
     public PropertiesXmlReader() {
@@ -154,6 +159,13 @@ class PropertiesXmlReader extends MspXmlReader {
 	if (name.equals("FREEZING_TIME")) {
 	    elementType = FREEZING_TIME;
 	}
+
+	if (name.equals("INIT_PROPERTIES")) {
+	    elementType = INIT_PROPERTIES;
+	}
+	if (name.equals("INIT_SETTLEMENTS")) {
+	    elementType = INIT_SETTLEMENTS;
+	}
     }
 
     /** Handle the end of an element by printing an event.
@@ -203,6 +215,9 @@ class PropertiesXmlReader extends MspXmlReader {
             case FUEL_STORAGE_CAPACITY:
                 elementType = propertyCatagory;
                 break;
+	    case INIT_SETTLEMENTS:
+		elementType = INIT_PROPERTIES;
+		break;
         }
     }
 
@@ -266,6 +281,9 @@ class PropertiesXmlReader extends MspXmlReader {
                 break;
             case GREENHOUSE_GROWING_CYCLE:
                 greenhouseGrowingCycle = Double.parseDouble(data);
+                break;
+  	    case INIT_SETTLEMENTS:
+                initSettlements = Integer.parseInt(data);
                 break;
         }
     }
@@ -469,5 +487,15 @@ class PropertiesXmlReader extends MspXmlReader {
     public double getGreenhouseGrowingCycle() {
         if (greenhouseGrowingCycle < 0) greenhouseGrowingCycle = 10000D;
         return greenhouseGrowingCycle;
+    }
+
+    /** Gets the number of settlements when starting
+     *  Value must be >= 0.
+     *  Default value is 5.
+     *  @return the number of settlements when starting
+     */
+    public int getInitSettlements() {
+        if (initSettlements < 0) initSettlements = 5;
+        return initSettlements;
     }
 }

@@ -28,7 +28,7 @@ public class MarsProject {
         Mars mars = null;
         if (args.length == 1) {
             if (args[0].equals("-new")) {
-                mars = new Mars();
+                mars = new Mars(null);
             }
             else {
                 usage = true;
@@ -71,7 +71,7 @@ public class MarsProject {
 
             // If no default, then create a new one
             if (mars == null) {
-                mars = new Mars();
+                mars = new Mars(null);
             }
         }
         else {

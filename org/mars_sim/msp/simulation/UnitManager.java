@@ -29,7 +29,7 @@ public class UnitManager implements Serializable {
     /** Constructs a UnitManager object
      *  @param mars the virtual Mars
      */
-    UnitManager(Mars mars) {
+    UnitManager(SimulationProperties p, Mars mars) {
         // Initialize virtual mars to parameter
         this.mars = mars;
 
@@ -37,7 +37,7 @@ public class UnitManager implements Serializable {
         units = new UnitCollection();
 
         // Create settlements
-        createSettlements();
+        createSettlements(p);
 
         // Create vehicles
         createVehicles();
@@ -47,8 +47,9 @@ public class UnitManager implements Serializable {
     }
 
     /** Creates initial settlements from XML config file */
-    private void createSettlements() {
-        SettlementsXmlReader settlementsReader = new SettlementsXmlReader(mars);
+    private void createSettlements(SimulationProperties p) {
+        SettlementsXmlReader settlementsReader =
+	    new SettlementsXmlReader(p, mars);
         settlementsReader.parse();
         units.mergeSettlements(settlementsReader.getSettlements());
     }

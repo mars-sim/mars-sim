@@ -9,9 +9,10 @@ package org.mars_sim.msp.ui.standard;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Properties;
 import javax.swing.*;
 import javax.swing.event.*;
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.*;
 
 /** The MainWindowMenu class is the menu for the main window. 
  */
@@ -114,9 +115,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	    mainWindow.exitSimulation();
 	}
 	else if (selectedItem == newItem) {
-            Mars mars = new Mars();
-            mainWindow.setMars(mars);
-            mars.start();
+	    SimulationProperties p =
+		mainWindow.getMars().getSimulationProperties();
+	    NewDialog newDialog = new NewDialog(p, mainWindow);
+	    if(newDialog.getResult() == JOptionPane.OK_OPTION) {
+		Mars mars = new Mars(p);
+		mainWindow.setMars(mars);
+		mars.start();
+	    }
 	}
 		
         try{ 

@@ -29,7 +29,7 @@ public abstract class MspXmlReader extends HandlerBase {
             reader.close();
         }
         catch (Exception e) {
-            System.out.println(e.toString());
+	    e.printStackTrace();
         }
     }
 

@@ -43,10 +43,14 @@ public class Mars implements Serializable {
     private OrbitInfo orbitInfo; // Orbital information
 
     /** Constructs a Mars object */
-    public Mars() {
+    public Mars(SimulationProperties initProps) {
 
-        initialiseTransients();
-        setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
+	if(initProps == null) {
+	    initialiseTransients();
+	    setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
+	} else {
+	    properties = initProps;
+	}
 
         // Initialize the Medical conditions
         medicalManager = new MedicalManager(properties);
@@ -55,7 +59,7 @@ public class Mars implements Serializable {
         missionManager = new MissionManager(this);
 
         // Initialize all units
-        units = new UnitManager(this);
+        units = new UnitManager(properties, this);
 
         // Initialize orbit info
         orbitInfo = new OrbitInfo();
