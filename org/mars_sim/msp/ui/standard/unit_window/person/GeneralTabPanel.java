@@ -38,7 +38,7 @@ public class GeneralTabPanel extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 		
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(2, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		
@@ -50,6 +50,15 @@ public class GeneralTabPanel extends TabPanel {
 		String gender = person.getGender().substring(0, 1).toUpperCase() + person.getGender().substring(1);
 		JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
 		infoPanel.add(genderLabel);
+		
+		// Prepare personality name label
+		JLabel personalityNameLabel = new JLabel("Personality (MBTI)", JLabel.LEFT);
+		infoPanel.add(personalityNameLabel);
+		
+		// Prepare personality label
+		String personality = person.getMind().getPersonalityType().getTypeString();
+		JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
+		infoPanel.add(personalityLabel);
 	}
 
 	/**
