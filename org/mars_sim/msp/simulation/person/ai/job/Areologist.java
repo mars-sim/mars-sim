@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 2.77 2004-08-09
+ * @version 2.77 2004-08-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -32,6 +32,8 @@ public class Areologist extends Job implements Serializable {
 		// Add areologist-related tasks.
 		jobTasks.add(StudyRockSamples.class);
 		jobTasks.add(CollectResources.class);
+		jobTasks.add(EnterAirlock.class);
+		jobTasks.add(ExitAirlock.class);
 		
 		// Add areologist-related missions.
 		jobMissionStarts.add(Exploration.class);

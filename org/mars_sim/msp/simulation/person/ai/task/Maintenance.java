@@ -60,8 +60,13 @@ public class Maintenance extends Task implements Serializable {
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
             Malfunctionable entity = (Malfunctionable) i.next();
+            boolean isVehicle = (entity instanceof Vehicle);
+            boolean uninhabitableBuilding = false;
+            if (entity instanceof Building) 
+            	uninhabitableBuilding = !((Building) entity).hasFunction(LifeSupport.NAME);
             MalfunctionManager manager = entity.getMalfunctionManager();
-            if (!manager.hasMalfunction() && !(entity instanceof Vehicle)) {
+            boolean hasMalfunction = manager.hasMalfunction();
+            if (!hasMalfunction && !isVehicle && !uninhabitableBuilding) {
                 double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
                 if (entityProb > 100D) entityProb = 100D;
                 result += entityProb;
@@ -174,8 +179,13 @@ public class Maintenance extends Task implements Serializable {
 		Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
 		while (i.hasNext()) {
 			Malfunctionable e = (Malfunctionable) i.next();
-			if (!(e instanceof Vehicle)) {
-				MalfunctionManager manager = e.getMalfunctionManager();
+			boolean isVehicle = (e instanceof Vehicle);
+			boolean uninhabitableBuilding = false;
+			if (e instanceof Building) 
+				uninhabitableBuilding = !((Building) e).hasFunction(LifeSupport.NAME);
+			MalfunctionManager manager = e.getMalfunctionManager();
+			boolean hasMalfunction = manager.hasMalfunction();
+			if (!isVehicle && !uninhabitableBuilding && !hasMalfunction) {
 				double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
 				if (e instanceof Building) {
 					Building building = (Building) e;
@@ -193,24 +203,31 @@ public class Maintenance extends Task implements Serializable {
 		i = MalfunctionFactory.getMalfunctionables(person).iterator();
 		while (i.hasNext()) {
 			Malfunctionable malfunctionable = (Malfunctionable) i.next();
+			boolean isVehicle = (malfunctionable instanceof Vehicle);
+			boolean uninhabitableBuilding = false;
+			if (malfunctionable instanceof Building) 
+				uninhabitableBuilding = !((Building) malfunctionable).hasFunction(LifeSupport.NAME);
 			MalfunctionManager manager = malfunctionable.getMalfunctionManager();
-			double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
-			boolean inhabitableBuilding = false;
-			if (malfunctionable instanceof Building) {
-				Building building = (Building) malfunctionable;
-				if (building.hasFunction(LifeSupport.NAME)) {
-					inhabitableBuilding = true; 
-					entityWeight *= Task.getCrowdingProbabilityModifier(person, building);
+			boolean hasMalfunction = manager.hasMalfunction();
+			if (!isVehicle && !uninhabitableBuilding && !hasMalfunction) {
+				double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
+				boolean inhabitableBuilding = false;
+				if (malfunctionable instanceof Building) {
+					Building building = (Building) malfunctionable;
+					if (building.hasFunction(LifeSupport.NAME)) {
+						inhabitableBuilding = true; 
+						entityWeight *= Task.getCrowdingProbabilityModifier(person, building);
+					}
 				}
-			}
 			
-			if ((chance < entityWeight) && !(malfunctionable instanceof Vehicle)) {
-				result = malfunctionable;
-				description = "Performing maintenance on " + result.getName();
-				if (inhabitableBuilding) BuildingManager.addPersonToBuilding(person, (Building) result); 
-				break;
+				if (chance < entityWeight) {
+					result = malfunctionable;
+					description = "Performing maintenance on " + result.getName();
+					if (inhabitableBuilding) BuildingManager.addPersonToBuilding(person, (Building) result); 
+					break;
+				}
+				else chance -= entityWeight;
 			}
-			else chance -= entityWeight;
 		}
     	
     	return result;

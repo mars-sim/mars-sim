@@ -25,7 +25,7 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 /** 
  * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
  */
-class EnterAirlock extends Task implements Serializable {
+public class EnterAirlock extends Task implements Serializable {
 
 	// Static members
 	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.

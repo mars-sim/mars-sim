@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 2.76 2004-06-10
+ * @version 2.77 2004-08-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -26,10 +26,13 @@ public class Engineer extends Job implements Serializable {
 		
 		// Add engineer-related tasks.
 		jobTasks.add(Maintenance.class);
+		jobTasks.add(MaintenanceEVA.class);
 		jobTasks.add(MaintainGroundVehicleGarage.class);
 		jobTasks.add(MaintainGroundVehicleEVA.class);
 		jobTasks.add(RepairMalfunction.class);
 		jobTasks.add(RepairEVAMalfunction.class);
+		jobTasks.add(EnterAirlock.class);
+		jobTasks.add(ExitAirlock.class);
 		
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

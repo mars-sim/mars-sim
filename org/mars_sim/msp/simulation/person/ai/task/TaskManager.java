@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.77 2004-08-17
+ * @version 2.77 2004-08-23
  * @author Scott Davis
  */
 
@@ -42,7 +42,8 @@ public class TaskManager implements Serializable {
                                        Workout.class,
                                        ResearchBotany.class,
                                        ResearchMedicine.class,
-                                       Teach.class };
+                                       Teach.class,
+                                       MaintenanceEVA.class };
 
     /** 
      * Constructor

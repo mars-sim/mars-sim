@@ -68,7 +68,7 @@ public class Doctor extends Job implements Serializable {
 		int population = settlement.getCurrentPopulationNum();
 		result+= population / 2D;
 		
-		// Add (labspace * tech level) for all labs with areology specialities.
+		// Add (labspace * tech level) / 2 for all labs with areology specialities.
 		List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
 		Iterator i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
@@ -76,21 +76,21 @@ public class Doctor extends Job implements Serializable {
 			try {
 				Research lab = (Research) building.getFunction(Research.NAME);
 				if (lab.hasSpeciality(Skill.MEDICAL)) 
-					result += (lab.getResearcherNum() * lab.getTechnologyLevel());
+					result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
 			}
 			catch (BuildingException e) {
 				System.err.println("Doctor.getSettlementNeed(): " + e.getMessage());
 			}
 		}		
 		
-		// Add tech level for all medical infirmaries.
+		// Add (tech level / 2) for all medical infirmaries.
 		List medicalBuildings = settlement.getBuildingManager().getBuildings(MedicalCare.NAME);
 		Iterator j = medicalBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = (Building) j.next();
 			try {
 				MedicalCare infirmary = (MedicalCare) building.getFunction(MedicalCare.NAME);
-				result+= infirmary.getTechLevel();
+				result+= (double) infirmary.getTechLevel() / 2D;
 			}
 			catch (BuildingException e) {
 				System.err.println("Doctor.getSettlementNeed(): " + e.getMessage());

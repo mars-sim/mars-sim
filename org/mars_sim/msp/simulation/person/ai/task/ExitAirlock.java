@@ -18,7 +18,7 @@ import org.mars_sim.msp.simulation.person.*;
 /** 
  * The ExitAirlock class is a task for exiting a airlock from an EVA operation.
  */
-class ExitAirlock extends Task implements Serializable {
+public class ExitAirlock extends Task implements Serializable {
 
 	// Static members
 	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.

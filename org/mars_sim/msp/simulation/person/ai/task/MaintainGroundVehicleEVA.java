@@ -31,6 +31,10 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     private Airlock airlock; // Airlock to be used for EVA.
     private double duration; // Duration (in millisols) the person will perform this task.
     
+	/** 
+	 * Constructor
+	 * @param person the person to perform the task
+	 */
     public MaintainGroundVehicleEVA(Person person) {
         super("Performing Vehicle Maintenance", person);
    
@@ -198,8 +202,6 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         if (enteredAirlock) endTask();
         return time;
     }	
-    
-    
     
     /**
      * Ends the task and performs any final actions.
