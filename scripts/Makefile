@@ -1,7 +1,7 @@
 #
 # Mars Simulation Project
 # Java makefile by jpatokal
-# $Id: Makefile,v 1.4 2003-01-23 07:47:13 scud1 Exp $
+# $Id: Makefile,v 1.1 2004-02-10 06:03:23 scud1 Exp $
 #
 
 VERSION = 2.73
