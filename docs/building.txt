@@ -1,0 +1,58 @@
+The Mars Simulation Project can be built in several ways.
+
+** Ant build tool **
+
+The preferred way to build the project is using the Ant build tool and 
+the build.xml file in the scripts subdirectory.
+
+Ant can be freely downloaded here: http://ant.apache.org
+
+Ant can be used by going to the scripts subdirectory of the Mars Simulation 
+Project and typing: ant <target> 
+
+The following targets are available in the project's build.xml file:
+
+compile: Compiles the source code but doesn't build the JAR files.
+
+build: Compiles the source code and builds the JAR files.
+
+clean-build: Deletes all the old class and JAR files and builds the project.
+
+test: Performs a unit test on the project.  As of version 2.75, all unit tests
+      are just stubbed out.
+      
+document: Creates JavaDoc documentation for the project in the docs directory.
+
+
+** Windows batch files **
+
+On a Windows system, the following batch files are also available:
+
+make.bat: Compiles the source code and builds the JAR files.
+
+test.bat: Performs unit tests on the project. As of version 2.75, all unit tests
+          are just stubbed out.
+          
+document.bat: Creates JavaDoc documentation for the project in the docs directory.
+
+MarsProject.bat: Starts the project with the saved simulation if it exists and is valid,
+                 or starts a new simulation.
+                 
+        
+** Linux/Unix shell scripts **
+
+On a Linux/Unix system, the following shell scripts are available:
+
+make.sh: Compiles the source code.
+
+build_jars.sh: Builds the JAR files.
+
+test.sh: Performs unit tests on the project. As of version 2.75, all unit tests
+         are just stubbed out.
+          
+document.sh: Creates JavaDoc documentation for the project in the docs directory.
+
+MarsProject.sh: Starts the project with the saved simulation if it exists and is valid,
+                or starts a new simulation.
+                
+Makefile: Compiles the source code and builds the JAR files using the Unix make utility.

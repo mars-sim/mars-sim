@@ -1,17 +1,30 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.75 2002-06-06
+ * @version 2.75 2004-04-014
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.text.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.JViewport;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 
 /** The AboutDialog is an information window that is called from the
  *  "About The Mars Simulation Project" item in the MainWindowMenu.
@@ -52,28 +65,31 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 
         buf.append("Developers:\n");
         buf.append("  Scott Davis - Java programming, graphics\n");
+		buf.append("  Greg Whelan - Java programming, zoom map\n");
+		buf.append("  Barry Evans - Java Programming\n");
         buf.append("  James Barnard - 3D graphics\n");
-        buf.append("  Greg Whelan - Java programming, zoom map\n");
+		buf.append("  Jani Patokallio - Java Programming\n");
+		buf.append("  Dalen Kruse - Java Programming, debugging\n");
+		buf.append("  Brian Donovan - Java programming\n");
+		buf.append("  Jarred McCaffrey - Java programming\n");
         buf.append("  Cameron Riley - Ant script programming\n");
         buf.append("  Mike Jones - Orbital equations\n");
-        buf.append("  Brian Donovan - Java programming\n");
-        buf.append("  Jarred McCaffrey - Java programming\n");
-        buf.append("  Dalen Kruse - Java Programming, debugging\n");
         buf.append("  Daniel L. Thomas - Java Programming\n");
-        buf.append("  Barry Evans - Java Programming\n");
-        buf.append("  Jani Patokallio - Java Programming\n\n");
+		buf.append("  Hartmut Prochaska - Java Programming\n");
+		buf.append("  Mihaly Gyulai - Java Programming\n");
+		buf.append("  Kyur Thadeshwar - Java Programming\n");
+		buf.append("  Kent Primrose - Java Programming, JUnit tests\n\n");
 
         buf.append("Testing and Recommendations:\n");
         buf.append("  Paul Speed\n");
         buf.append("  Allen Bryan\n");
         buf.append("  Brian K. Smith\n");
-        buf.append("  Kent Primrose\n");
         buf.append("  Dan Sepanski\n");
         buf.append("  Joe Wagner\n");
         buf.append("  Tom Zanoni\n\n");
 
         buf.append("8xZoom map results courtesy of the USGS PDS Planetary Atlas:\n");
-	buf.append("http://pdsmaps.wr.usgs.gov/maps.html\n\n");
+		buf.append("http://pdsmaps.wr.usgs.gov/maps.html\n\n");
 	
         buf.append("Martian clock/calendar based on calendars by\n");
         buf.append("Shaun Moss: Areosynchronous Calendar\n(http://www.virtualmars.net/Calendar.asp)\n");

@@ -1,0 +1,36 @@
+The Mars Simulation Project can be configured by editing the 
+XML files in the conf subdirectory.  You can then select the "new"
+option in the project menu to start a new simulation that uses the 
+edited configuration.
+
+It is recommended that you make a backup of the original configuration
+file before editing it as XML errors in the file can cause the program
+to fail.
+
+The following files can be edited:
+
+buildings.xml:    Modify or create new buildings based on functional 
+                  components.
+               
+crops.xml:        Modify or add new crops that settlers can grow in 
+                  greenhouses.
+           
+landmarks.xml:    Landmarks are not currently used in the simulation, 
+                  but should be there in version 2.76.
+               
+malfunctions.xml: Modify or create new malfunctions that can occur
+                  in the simulation.
+                  
+medical.xml:      Modify or create new illnesses or treatments.
+
+people.xml:       Modify properties related to people, or add new 
+                  names to the person name list.
+                  
+settlements.xml:  Modify or create new settlement templates an
+                  define individual settlements.  Add new settlement
+                  names to the names list.
+                  
+simulation.xml:   Modify simulation properties.
+
+vehicles.xml:     Modify or create new rovers based on components.
+                  Add new rover names to the names list.
