@@ -85,6 +85,7 @@ public class PowerGrid implements Serializable {
         Iterator iUsed = buildings.iterator();
         while (iUsed.hasNext()) {
             Building building = (Building) iUsed.next();
+            building.setPowerMode(Building.FULL_POWER);
             powerRequired += building.getFullPowerRequired();
             // System.out.println(building.getName() + " full power used: " + building.getFullPowerRequired());
         }
@@ -102,7 +103,7 @@ public class PowerGrid implements Serializable {
             Iterator iLowPower = buildings.iterator();
             while (iLowPower.hasNext() && (neededPower > 0D)) {
                 Building building = (Building) iLowPower.next();
-                if (!(building instanceof PowerGeneration)) {
+                if (!powerSurplus(building, Building.FULL_POWER)) {
                     building.setPowerMode(Building.POWER_DOWN);
                     neededPower -= building.getFullPowerRequired() - 
                         building.getPoweredDownPowerRequired();
@@ -115,7 +116,7 @@ public class PowerGrid implements Serializable {
                 Iterator iNoPower = buildings.iterator();
                 while (iNoPower.hasNext() && (neededPower > 0D)) {
                     Building building = (Building) iNoPower.next();
-                    if (!(building instanceof PowerGeneration) && 
+                    if (!powerSurplus(building, Building.POWER_DOWN) && 
                         !(building instanceof InhabitableBuilding)) {
                         building.setPowerMode(Building.NO_POWER);
                         neededPower -= building.getPoweredDownPowerRequired();
@@ -129,7 +130,7 @@ public class PowerGrid implements Serializable {
                 Iterator iNoPower = buildings.iterator();
                 while (iNoPower.hasNext() && (neededPower > 0D)) {
                     Building building = (Building) iNoPower.next();
-                    if (!(building instanceof PowerGeneration) && 
+                    if (!powerSurplus(building, Building.POWER_DOWN) && 
                         building instanceof InhabitableBuilding) {
                         building.setPowerMode(Building.NO_POWER);
                         neededPower -= building.getPoweredDownPowerRequired();
@@ -138,4 +139,25 @@ public class PowerGrid implements Serializable {
             }
         }
     }  
+    
+    /**
+     * Checks if building generates more power 
+     * than it uses in a given power mode.
+     *
+     * @param building the building
+     * @param mode the building's power mode to check.
+     * @return true if building supplies more power than it uses.
+     */
+    private boolean powerSurplus(Building building, String mode) {
+        double generated = 0D;
+        if (building instanceof PowerGeneration) 
+            generated = ((PowerGeneration) building).getGeneratedPower();
+            
+        double used = 0D;
+        if (mode.equals(Building.FULL_POWER)) used = building.getFullPowerRequired();
+        else if (mode.equals(Building.POWER_DOWN)) used = building.getPoweredDownPowerRequired();
+        
+        if (generated > used) return true;
+        else return false;
+    }
 }
