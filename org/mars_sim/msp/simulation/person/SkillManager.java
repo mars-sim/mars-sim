@@ -99,15 +99,12 @@ public class SkillManager implements Serializable {
      *  @return the skill's effective level
      */
     public int getEffectiveSkillLevel(String skillName) {
-        int result = getSkillLevel(skillName);
+        int skill = getSkillLevel(skillName);
 
         // Modify for fatigue
         // - 1 skill level for every 1000 points of fatigue.
-        double fatigue = person.getPhysicalCondition().getFatigue();
-        if (fatigue > 1000D) {
-            result -= (int) Math.round(fatigue / 1000D);
-        }
-
+        double performance = person.getPerformanceRating();
+        int result = (int)Math.round(performance * skill);
         return result;
     }
 
