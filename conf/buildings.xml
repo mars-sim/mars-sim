@@ -31,6 +31,7 @@
 			<research tech-level="1" capacity="4">
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-speciality name="Areology" />
+				<research-speciality name="Medicine" />
 			</research>
 		
 			<!-- The building has communication capabilities. -->
@@ -134,6 +135,9 @@
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="3" power-required="6.0" />
+			<research tech-level="1" capacity="1">
+				<research-speciality name="Botany" />
+			</research>			
 			
 			<!-- The building is capable of growing plant crops. -->
 			<!-- crops: the number of different crops grown in the building. -->
