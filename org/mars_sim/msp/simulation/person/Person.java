@@ -158,8 +158,9 @@ public class Person extends Unit implements Serializable {
     public void setContainerUnit(Unit containerUnit) {
         super.setContainerUnit(containerUnit);
 
-	    if (containerUnit instanceof Settlement) {
-	        health.canStartRecovery(getAccessibleAid());
+        MedicalAid aid = getAccessibleAid();
+	    if (aid != null) {
+	        health.canStartTreatment(aid);
 	    }
     }
 
@@ -193,11 +194,6 @@ public class Person extends Unit implements Serializable {
      * this Person from any Task and remove the associated Mind.
      */
     void setDead() {
-	System.out.println("");
-	System.out.println(name + " is " + health.getHealthSituation());
-        System.out.println(name + " mission: " + mind.getMission().getDescription() + " - " + mind.getMission().getPhase());
-	System.out.println(name + " task: " + mind.getTaskManager().getTaskDescription() + " - " + mind.getTaskManager().getPhase());
-	System.out.println("");
         mind.setInactive();
     }
 
@@ -260,10 +256,15 @@ public class Person extends Unit implements Serializable {
     MedicalAid getAccessibleAid() {
         MedicalAid found = null;
         Unit topUnit = getTopContainerUnit();
-        if ((topUnit != null) && (topUnit instanceof Settlement)) {
-            Settlement settlement = (Settlement)topUnit;
-	        found =
+        if (topUnit != null) {
+            if (topUnit instanceof Settlement) {
+                Settlement settlement = (Settlement)topUnit;
+                found =
                 (Infirmary)settlement.getFacilityManager().getFacility(Infirmary.NAME);
+            }
+            else if (topUnit instanceof Vehicle) {
+                found = ((Vehicle)topUnit).getMedicalFacility();
+            }
         }
 
         return found;
@@ -314,6 +315,7 @@ public class Person extends Unit implements Serializable {
 	// If no life support units at all, return null.
 	return null;
     }
+
 
     /** Person consumes given amount of food
      *  @param amount amount of food to consume (in kg)
