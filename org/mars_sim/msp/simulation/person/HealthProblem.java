@@ -126,12 +126,13 @@ public class HealthProblem implements Serializable {
      */
     void startRecovery() {
         if (!isRecovering) {
-            duration = 0;
-
             // If no recovery period, then it's done.
             isRecovering = (illness.getRecoveryPeriod() > 0);
             if (!isRecovering) {
-                illness = null;
+                cured = true;
+            }
+            else {
+                duration = 0;
             }
         }
     }
@@ -187,12 +188,13 @@ public class HealthProblem implements Serializable {
             buffer.append(illness.getName());
             if (usedAid != null) {
                 buffer.append("; ");
-                buffer.append(usedAid);
+                buffer.append(illness.getRecoveryTreatment().getName());
             }
         }
         else {
             buffer.append(illness.getName());
         }
+        buffer.append(' ');
         buffer.append(getHealthRating());
         buffer.append('%');
 
