@@ -193,9 +193,12 @@ public class Person extends Unit implements Serializable {
      * this Person from any Task and remove the associated Mind.
      */
     void setDead() {
-
+	System.out.println("");
+	System.out.println(name + " is " + health.getHealthSituation());
+        System.out.println(name + " mission: " + mind.getMission().getDescription() + " - " + mind.getMission().getPhase());
+	System.out.println(name + " task: " + mind.getTaskManager().getTaskDescription() + " - " + mind.getTaskManager().getPhase());
+	System.out.println("");
         mind.setInactive();
-        System.out.println(name + " is dead");
     }
 
     /** Person can take action with time passing

@@ -274,7 +274,6 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	    if (collectedSamples >= SITE_SAMPLE_AMOUNT) {
 		// System.out.println("CollectRockSamplesMission: collecting phase ended.");
 		// System.out.println("CollectRockSamplesMission: collectedSamples: " + collectedSamples);
-		// System.out.println("CollectRockSamplesMission: SITE_SAMPLE_AMOUNT: " + SITE_SAMPLE_AMOUNT);
 		MarsClock currentTime = mars.getMasterClock().getMarsClock();
 		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
 		// System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
