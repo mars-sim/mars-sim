@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.75 2003-07-28
+ * @version 2.75 2003-08-03
  * @author Barry Evans
  */
 
-package org.mars_sim.msp.ui.standard.monitor;
+package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.awt.*;
 import java.awt.event.*;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CrewTabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  */
 
@@ -10,7 +10,7 @@ package org.mars_sim.msp.ui.standard.unit_window.vehicle;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.monitor.PersonTableModel;
+import org.mars_sim.msp.ui.standard.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 import java.awt.*;
 import java.awt.event.*;

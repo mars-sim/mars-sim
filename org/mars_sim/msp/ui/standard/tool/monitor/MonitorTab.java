@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * MonitorTab.java
- * @version 2.75 2003-07-20
+ * @version 2.75 2005-08-03
  * @author Barry Evans
  */
 
-package org.mars_sim.msp.ui.standard.monitor;
+package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.util.List;
 import java.util.Iterator;

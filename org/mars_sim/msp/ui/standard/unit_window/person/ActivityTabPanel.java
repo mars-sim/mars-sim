@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ActivityTabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.person.medical.DeathInfo;
 import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.monitor.*;
+import org.mars_sim.msp.ui.standard.tool.monitor.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
 /** 
