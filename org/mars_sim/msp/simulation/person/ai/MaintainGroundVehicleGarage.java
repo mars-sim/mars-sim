@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.75 2003-04-16
+ * @version 2.75 2003-04-24
  * @author Scott Davis
  */
 
@@ -13,8 +13,8 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
-import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
@@ -39,10 +39,11 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
-        if (vehicle != null) vehicle.setReserved(true);
+        if (vehicle != null) vehicle.setReservedForMaintenance(true);
         
         // Determine the garage it's in.
-        garage = getGarage(vehicle);
+        VehicleMaintenance building = BuildingManager.getBuilding(vehicle);
+        if (building instanceof GroundVehicleMaintenance) garage = (GroundVehicleMaintenance) building;
         
         // End task if vehicle or garage not available.
         if ((vehicle == null) || (garage == null)) endTask();    
@@ -117,7 +118,8 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         // If maintenance is complete, task is done.
         if (manager.getTimeSinceLastMaintenance() == 0D) {
             // System.out.println(person.getName() + " finished " + description);
-            done = true;
+            vehicle.setReservedForMaintenance(false);
+            endTask();
         }
 
         // Keep track of the duration of the task.
@@ -134,7 +136,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * Ends the task and performs any final actions.
      */
     public void endTask() {
-        if (vehicle != null) vehicle.setReserved(false);
         done = true;
     }
 
@@ -227,29 +228,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
             double probWeight = manager.getTimeSinceLastMaintenance();
             if (rand < probWeight) result = (GroundVehicle) vehicle;
             else rand -= probWeight;
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Gets the maintenance garage a vehicle is in.
-     * Returns null if vehicle is not in a garage.
-     *
-     * @param vehicle the ground vehicle
-     * @return GroundVehicleMaintenance garage
-     */
-    private GroundVehicleMaintenance getGarage(GroundVehicle vehicle) {
-        
-        GroundVehicleMaintenance result = null;
-        
-        Settlement settlement = vehicle.getSettlement();
-        if (settlement != null) {
-            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.class).iterator();
-            while (i.hasNext()) {
-                GroundVehicleMaintenance garage = (GroundVehicleMaintenance) i.next();
-                if (garage.containsVehicle(vehicle)) result = garage;
-            }
         }
         
         return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-04-24
  * @author Scott Davis
  */
 
@@ -77,7 +77,7 @@ class TravelToSettlement extends Mission implements Serializable {
             boolean possible = true;
 	    
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) {
-                if (ReserveRover.availableRovers(ReserveRover.TRANSPORT_ROVER, currentSettlement)) {
+                if (ReserveRover.availableRovers(TransportRover.class, currentSettlement)) {
 		            if (currentSettlement.getCurrentPopulationNum() > 1) result = 1D;
                 }
             }
@@ -150,7 +150,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // If a rover cannot be reserved, end mission.
         if (rover == null) {
             if (reserveRover == null) {
-                reserveRover = new ReserveRover(ReserveRover.TRANSPORT_ROVER, person, mars, 
+                reserveRover = new ReserveRover(TransportRover.class, person, mars, 
 		        destinationSettlement.getCoordinates());
                 assignTask(person, reserveRover);
                 return;

@@ -37,7 +37,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
    
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
-        if (vehicle != null) vehicle.setReserved(true);
+        if (vehicle != null) vehicle.setReservedForMaintenance(true);
         else endTask();
         
         // Get an available airlock.
@@ -133,8 +133,9 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     private double maintainVehicle(double time) {
         
         MalfunctionManager manager = vehicle.getMalfunctionManager();
-        boolean finishedMaintenance = (manager.getTimeSinceLastMaintenance() == 0D);
         boolean malfunction = manager.hasMalfunction();
+        boolean finishedMaintenance = (manager.getTimeSinceLastMaintenance() == 0D);
+        if (finishedMaintenance) vehicle.setReservedForMaintenance(false);
         
         if (finishedMaintenance || malfunction || shouldEndEVAOperation()) {
             phase = ENTER_AIRLOCK;

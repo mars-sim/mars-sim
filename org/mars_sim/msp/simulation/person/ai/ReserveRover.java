@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2003-04-24
  * @author Scott Davis
  */
 
@@ -18,16 +18,12 @@ import java.io.Serializable;
  *  The duration of the task is 50 millisols.
  */
 class ReserveRover extends Task implements Serializable {
-
-    // Rover types
-    public static final int EXPLORER_ROVER = 1;
-    public static final int TRANSPORT_ROVER = 2;
 	
     // Data members
     private double duration = 50D;   // The predetermined duration of task in millisols
     private Rover reservedRover;     // The reserved rover 
     private Coordinates destination; // The destination coordinates for the trip
-    private int roverType;           // The type of rover
+    private Class roverType;         // The type of rover
 
     /** Constructs a ReserveRover object with a destination.
      *  @param roverType the type of rover to be reserved
@@ -35,10 +31,10 @@ class ReserveRover extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @param destination the destination of the trip
      */
-    public ReserveRover(int roverType, Person person, Mars mars, Coordinates destination) {
+    public ReserveRover(Class roverType, Person person, Mars mars, Coordinates destination) {
         super("Reserving a rover", person, false, mars);
 
-	this.roverType = roverType;
+        this.roverType = roverType;
         this.destination = destination;
         reservedRover = null;
     }
@@ -48,10 +44,10 @@ class ReserveRover extends Task implements Serializable {
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public ReserveRover(int roverType, Person person, Mars mars) {
+    public ReserveRover(Class roverType, Person person, Mars mars) {
         super("Reserving a rover", person, false, mars);
 
-	this.roverType = roverType;
+        this.roverType = roverType;
         destination = null;
         reservedRover = null;
     }
@@ -66,72 +62,55 @@ class ReserveRover extends Task implements Serializable {
 
         timeCompleted += time;
         if (timeCompleted > duration) {
-
             Settlement settlement = person.getSettlement();
-            FacilityManager facilities = settlement.getFacilityManager();
-            MaintenanceGarage garage = (MaintenanceGarage) 
-	            facilities.getFacility("Maintenance Garage");
-
-	    VehicleIterator i = settlement.getParkedVehicles().iterator();
-	    while (i.hasNext()) {
-	        Vehicle tempVehicle = i.next();
-		boolean correctRoverType = false;
-		if ((roverType == EXPLORER_ROVER) && (tempVehicle instanceof ExplorerRover)) 
-		    correctRoverType = true;
-		if ((roverType == TRANSPORT_ROVER) && (tempVehicle instanceof TransportRover))
-		    correctRoverType = true;
-		if ((reservedRover == null) && correctRoverType) {
-                    boolean reservable = true;
-
-                    if (tempVehicle.isReserved()) reservable = false;
-                    if (garage.vehicleInGarage(tempVehicle)) reservable = false;
-                    if (destination != null) {
-                        if (tempVehicle.getRange() < person.getCoordinates().getDistance(destination)) 
-				reservable = false;
-                    }
-
-                    if (reservable) {
-                        reservedRover = (Rover) tempVehicle;
-                        reservedRover.setReserved(true);
-                    }
+            VehicleIterator i = settlement.getParkedVehicles().iterator();
+            while (i.hasNext()) {
+                Vehicle vehicle = i.next();
+                
+                boolean reservable = vehicle.getStatus().equals(Vehicle.PARKED);
+                
+                boolean correctRoverType = roverType.isInstance(vehicle);
+                
+                boolean inRange = false;
+                if (destination != null) {
+                    double distance = person.getCoordinates().getDistance(destination);
+                    inRange = vehicle.getRange() < distance;
+                }
+                
+                boolean supplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle);
+                
+                if ((reservedRover == null) && correctRoverType && reservable && inRange && supplies) {
+                    reservedRover = (Rover) vehicle;
+                    reservedRover.setReserved(true);
                 }
             }
 
-            done = true;
+            endTask();
             return timeCompleted - duration;
         }
         else return 0;
     }
 
-    /** Returns true if settlement has an available rover.
-     *  @param settlement
-     *  @return are there any available rovers 
+    /** 
+     * Returns true if settlement has an available rover.
+     *
+     * @param roverType the type of rover
+     * @param settlement
+     * @return are there any available rovers 
      */
-    public static boolean availableRovers(int roverType, Settlement settlement) {
+    public static boolean availableRovers(Class roverType, Settlement settlement) {
 
         boolean result = false;
 
-        FacilityManager facilities = settlement.getFacilityManager();
-        MaintenanceGarage garage = (MaintenanceGarage) 
-	        facilities.getFacility("Maintenance Garage");
-
-	VehicleIterator i = settlement.getParkedVehicles().iterator();
-	while (i.hasNext()) {
-	    Vehicle vehicle = i.next();
-	    boolean correctRoverType = false;
-	    if ((roverType == EXPLORER_ROVER) && (vehicle instanceof ExplorerRover)) 
-	        correctRoverType = true;
-	    if ((roverType == TRANSPORT_ROVER) && (vehicle instanceof TransportRover))
-	        correctRoverType = true;
-            if (correctRoverType) {
-                if (!vehicle.isReserved() && !garage.vehicleInGarage(vehicle)) {
-		    if (LoadVehicle.hasEnoughSupplies(settlement, vehicle)) {	
-		        result = true;
-		    }
-	        }
-            }
+        VehicleIterator i = settlement.getParkedVehicles().iterator();
+        while (i.hasNext()) {
+            Vehicle vehicle = i.next();
+            boolean parked = vehicle.getStatus().equals(Vehicle.PARKED);
+            boolean correctType = roverType.isInstance(vehicle);
+            boolean supplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle);
+            if (parked && correctType && supplies) result = true;
         }
-
+        
         return result;
     }
 

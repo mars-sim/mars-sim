@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.75 2003-03-01
+ * @version 2.75 2003-04-24
  * @author Scott Davis
  */
 
@@ -92,7 +92,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             if (mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) 
 	        possible = false;
 	    
-            if (!ReserveRover.availableRovers(ReserveRover.EXPLORER_ROVER, currentSettlement)) possible = false;
+            if (!ReserveRover.availableRovers(ExplorerRover.class, currentSettlement)) possible = false;
 
             double rocks = currentSettlement.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
             if (rocks >= 500D) possible = false;
@@ -156,7 +156,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If a rover cannot be reserved, end mission.
         if (rover == null) {
             if (reserveRover == null) {
-                reserveRover = new ReserveRover(ReserveRover.EXPLORER_ROVER, person, mars, 
+                reserveRover = new ReserveRover(ExplorerRover.class, person, mars, 
                 startingSettlement.getCoordinates());
                	assignTask(person, reserveRover);
                 return;

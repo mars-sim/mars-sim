@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.75 2003-01-19
+ * @version 2.75 2003-04-24
  * @author Scott Davis
  */
 
@@ -45,6 +45,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
     private ArrayList trail; // A collection of locations that make up the vehicle's trail.
+    private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
 
     /** Constructs a Vehicle object with a given settlement
      *  @param name the vehicle's name
@@ -79,10 +80,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 
         if (containerUnit != null) {
 	        if (containerUnit instanceof Settlement) {
-	            Settlement settlement = (Settlement) containerUnit;
-		        FacilityManager facilityManager = settlement.getFacilityManager();
-		        MaintenanceGarage garage = (MaintenanceGarage) facilityManager.getFacility("Maintenance Garage");
-		        if (garage.vehicleInGarage(this)) status = MAINTENANCE;
+                if (reservedForMaintenance) status = MAINTENANCE;
 		        else status = PARKED;
 	        }
 	        else status = PARKED;
@@ -108,11 +106,28 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     }
 
     /** Reserves a vehicle or cancels a reservation
-     *  @param status the vehicle's reserved status
+     *  @param reserved the vehicle's reserved status
      */
-    public void setReserved(boolean status) {
-        // System.out.println(getName() + " reserved: " + status);
-        isReserved = status;
+    public void setReserved(boolean reserved) {
+        isReserved = reserved;
+    }
+    
+    /**
+     * Checks if the vehicle is reserved for maintenance.
+     *
+     * @return true if reserved for maintenance.
+     */
+    public boolean isReservedForMaintenance() {
+        return reservedForMaintenance;
+    }
+    
+    /**
+     * Sets if the vehicle is reserved for maintenance or not.
+     *
+     * @param reserved true if reserved for maintenance
+     */
+    public void setReservedForMaintenance(boolean reserved) {
+        reservedForMaintenance = reserved;
     }
 
     /** Returns speed of vehicle
