@@ -1,20 +1,22 @@
 /**
  * Mars Simulation Project
  * LegendDisplay.java
- * @version 2.71 2000-10-22
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  * @author Greg Whelan
  */
 
-package org.mars_sim.msp.ui.standard;
+package org.mars_sim.msp.ui.standard.tool.navigator;
 
 import java.awt.*;
 import javax.swing.*;
+import org.mars_sim.msp.ui.standard.ImageLoader;
 
-/** The LegendDisplay class is a UI class that represents a map legend
- *  in the `Mars Navigator' tool. It can either show a distance
- *  legend, or a color chart indicating elevation for the
- *  topographical map.
+/** 
+ * The LegendDisplay class is a UI class that represents a map legend
+ * in the `Mars Navigator' tool. It can either show a distance
+ * legend, or a color chart indicating elevation for the
+ * topographical map.
  */
 public class LegendDisplay extends JLabel {
 

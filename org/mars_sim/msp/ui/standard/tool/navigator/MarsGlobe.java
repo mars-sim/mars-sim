@@ -1,21 +1,23 @@
 /**
  * Mars Simulation Project
  * MarsGlobe.java
- * @version 2.71 2000-10-22
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;
+package org.mars_sim.msp.ui.standard.tool.navigator;
 
-import org.mars_sim.msp.simulation.Coordinates;
 import java.awt.*;
 import java.awt.image.*;
-import java.util.*;
 import javax.swing.*;
+import java.util.*;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.ui.standard.ImageLoader;
 
-/** The MarsGlobe class generates the Martian globe for the
- *  GlobeDisplay object. It can center the globe at any set of
- *  coordinates.
+/** 
+ * The MarsGlobe class generates the Martian globe for the
+ * GlobeDisplay object. It can center the globe at any set of
+ * coordinates.
  */
 public class MarsGlobe {
 

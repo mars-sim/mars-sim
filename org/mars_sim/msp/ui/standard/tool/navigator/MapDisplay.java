@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2003-07-22
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;
+package org.mars_sim.msp.ui.standard.tool.navigator;
 
 import java.awt.*;
 import java.awt.image.*;

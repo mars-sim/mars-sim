@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.75 2003-07-29
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import javax.swing.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.monitor.*;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.standard.unit_window.*;

@@ -1,12 +1,12 @@
 /**
  * Mars Simulation Project
  * TopoMarsMap.java
- * @version 2.71 2000-10-23
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  * @author Greg Whelan
  */
 
-package org.mars_sim.msp.ui.standard;
+package org.mars_sim.msp.ui.standard.tool.navigator;
 
 import java.io.*;
 import java.net.URL;

@@ -1,17 +1,18 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.75 2003-07-28
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
+package org.mars_sim.msp.ui.standard.tool.navigator;  
   
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import org.mars_sim.msp.simulation.*;   
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
 /** 

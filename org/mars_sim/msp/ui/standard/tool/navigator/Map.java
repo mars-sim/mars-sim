@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * Map.java
- * @version 2.71 2000-10-22
+ * @version 2.75 2003-08-03
  * @author Greg Whelan
  */
 
-package org.mars_sim.msp.ui.standard;  
+package org.mars_sim.msp.ui.standard.tool.navigator; 
  
-import org.mars_sim.msp.simulation.Coordinates;  
 import java.awt.Image;
+import org.mars_sim.msp.simulation.Coordinates;  
 
 /** The Map interface represents a map usable by the MapDisplay class */
 public interface Map {

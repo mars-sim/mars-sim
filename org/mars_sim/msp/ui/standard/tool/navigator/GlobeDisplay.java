@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.75 2003-07-20
+ * @version 2.75 2003-08-03
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;
+package org.mars_sim.msp.ui.standard.tool.navigator;
  
 import java.awt.*;
 import java.awt.image.*;
@@ -14,8 +14,9 @@ import javax.swing.*;
 import org.mars_sim.msp.simulation.*;  
 import org.mars_sim.msp.ui.standard.unit_display_info.*;
 
-/** The Globe Display class displays a graphical globe of Mars in the
- *  "Mars Navigator" tool.
+/** 
+ * The Globe Display class displays a graphical globe of Mars in the
+ * Navigator tool.
  */
 class GlobeDisplay extends JComponent implements Runnable {
 
