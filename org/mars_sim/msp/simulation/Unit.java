@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.71 2000-09-25
+ * @version 2.71 2000-10-18
  * @author Scott Davis
  */
 
@@ -13,11 +13,18 @@ package org.mars_sim.msp.simulation;
  */
 public abstract class Unit {
 
+    // Data members
     Coordinates location; // Unit location coordinates
     String name; // Unit name
     VirtualMars mars; // The virtual Mars
     UnitManager manager; // Primary unit manager
 
+    /** Constructs a Unit object
+     *  @param name the name of the unit
+     *  @param location the unit's location
+     *  @param mars the virtual Mars
+     *  @param manager the unit's unit manager
+     */
     Unit(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
         // Initialize data members from parameters
         this.name = name;
@@ -26,28 +33,38 @@ public abstract class Unit {
         this.manager = manager;
     }
 
-    /** Returns unit's UnitManager */
+    /** Returns unit's UnitManager 
+     *  @return the unit's unit manager
+     */
     public UnitManager getUnitManager() {
         return manager;
     }
 
-    /** Returns unit's name */
+    /** Returns unit's name 
+     *  @return the unit's name
+     */
     public String getName() {
         return name;
     }
 
-    /** Returns unit's location */
+    /** Returns unit's location 
+     *  @return the unit's location
+     */
     public Coordinates getCoordinates() {
         return location;
     }
 
-    /** Sets unit's location coordinates */
+    /** Sets unit's location coordinates 
+     *  @param newLocation the new location of the unit
+     */
     void setCoordinates(Coordinates newLocation) {
         location.setCoords(newLocation);
     }
 
     // perhaps this should be moved into a seperate Time interface
-    /** the opportunity for a unit to handle time passing */
+    /** the opportunity for a unit to handle time passing 
+     *  @param seconds for action
+     */
     void timePasses(int seconds) {
     }
 }

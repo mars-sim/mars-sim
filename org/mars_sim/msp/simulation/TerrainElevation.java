@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TerrainElevation.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-18
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.io.*;
  */
 public class TerrainElevation {
 
+    // Data members
     private RandomAccessFile map; // File containing elevation data for virtual Mars.
     private int[] index; // An cached array for row count indexing of the elevation data.
     private long[] sum; // An cached array to help find rows of the elevation data.
@@ -23,6 +24,11 @@ public class TerrainElevation {
     // constants
     private final static int MAP_HEIGHT = 1440; // Height of source map in pixels.
 
+    /** Constructs a TerrainElevation object
+     *  @param topoData the file URL for the topographical map data
+     *  @param topoIndex the file URL for the topographical map index
+     *  @param topoSum the file URL for the topographical map sum
+     */
     TerrainElevation(String topoData, String topoIndex, String topoSum) {
         try {
             map = new RandomAccessFile(topoData, "r");
@@ -35,7 +41,10 @@ public class TerrainElevation {
         loadArrays(topoIndex, topoSum);
     }
 
-    /** note that this functionality is duplicated in TopoMarsMap.java */
+    /** note that this functionality is duplicated in TopoMarsMap.java 
+     *  @param indexFile the file URL for the topographical map index
+     *  @param sumFile the file URL for the topographical map sum
+     */
     private void loadArrays(String indexFile, String sumFile) {
         try {
             // Load index array
@@ -68,6 +77,9 @@ public class TerrainElevation {
 
     /** Returns terrain steepness angle from location by sampling 11.1
       *  km in given direction
+      *  @param currentLocation the coordinates of the current location
+      *  @param currentDirection the current direction (in radians)
+      *  @return terrain steepness angle (in radians)
       */
     public double determineTerrainDifficulty(Coordinates currentLocation, double currentDirection) {
         double newY = -1.5D * Math.cos(currentDirection);
@@ -79,7 +91,10 @@ public class TerrainElevation {
         return result;
     }
 
-    /** Returns elevation in km at the given location */
+    /** Returns elevation in km at the given location 
+     *  @param location the location in question
+     *  @return the elevation at the location (in km)
+     */
     public double getElevation(Coordinates location) {
         int red = 0;
         int green = 0;
@@ -126,4 +141,3 @@ public class TerrainElevation {
         return elevation;
     }
 }
-

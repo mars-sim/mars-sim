@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-17
  * @author Scott Davis
  */
 
@@ -14,9 +14,11 @@ import java.util.*;
  */
 public class NaturalAttributeManager {
 
+    // Data members
     private Hashtable attributeList; // List of the person's natural attributes keyed by unique name.
     private String[] attributeKeys; // List of the person's natural attributes by name.
 
+    /** Constructs a NaturalAttributeManager object **/
     NaturalAttributeManager() {
 
         attributeList = new Hashtable();
@@ -42,7 +44,10 @@ public class NaturalAttributeManager {
         addSettlerBonus("Experience Aptitude", 30);
     }
 
-    /** Adds a random bonus for Martian settlers in a given attribute. */
+    /** Adds a random bonus for Martian settlers in a given attribute. 
+     *  @param attributeName the name of the attribute
+     *  @param bonus the settler bonus to be added to the attribute
+     */
     private void addSettlerBonus(String attributeName, int bonus) {
         int newValue = getAttribute(attributeName) + RandomUtil.getRandomInteger(bonus);
         if (newValue > 100)
@@ -52,12 +57,16 @@ public class NaturalAttributeManager {
         attributeList.put(attributeName, new Integer(newValue));
     }
 
-    /** Returns the number of natural attributes. */
+    /** Returns the number of natural attributes. 
+     *  @return the number of natural attributes
+     */
     public int getAttributeNum() {
         return attributeKeys.length;
     }
 
-    /** Returns an array of the natural attribute names as strings. */
+    /** Returns an array of the natural attribute names as strings. 
+     *  @return an array of the natural attribute names
+     */
     public String[] getKeys() {
         String[] result = new String[attributeKeys.length];
 
@@ -68,8 +77,10 @@ public class NaturalAttributeManager {
     }
 
     /** Returns the integer value of a named natural attribute if it exists.
-      *  Returns 0 otherwise.
-         */
+     *  Returns 0 otherwise.
+     *  @param attributeName the name of the attribute
+     *  @return the value of the attribute
+     */
     public int getAttribute(String attributeName) {
         int result = 0;
         if (attributeList.containsKey(attributeName))
@@ -78,4 +89,3 @@ public class NaturalAttributeManager {
         return result;
     }
 }
-

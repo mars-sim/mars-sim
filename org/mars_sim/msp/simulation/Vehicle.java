@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-18
  * @author Scott Davis
  */
 
@@ -15,6 +15,7 @@ import java.util.*;
  */
 public abstract class Vehicle extends Unit {
 
+    // Data members
     private double direction = 0; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
     private double baseSpeed = 30; // Base speed of vehicle in kph (can be set in child class)
@@ -41,6 +42,12 @@ public abstract class Vehicle extends Unit {
     private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
     private boolean distanceMark = false;
 
+    /** Constructs a Vehicle object
+     *  @param name the vehicle's name
+     *  @param location the vehicle's location
+     *  @param mars the virtual Mars
+     *  @param manager the vehicle's unit manager
+     */
     Vehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
         // use Unit constructor
         super(name, location, mars, manager);
@@ -53,52 +60,72 @@ public abstract class Vehicle extends Unit {
         totalMaintenanceWork = 12 * 60 * 60; // (12 hours)
     }
 
-    /** Returns vehicle's current status */
+    /** Returns vehicle's current status 
+     *  @return the vehicle's current status
+     */
     public String getStatus() {
         return status;
     }
 
-    /** Sets vehicle's current status */
+    /** Sets vehicle's current status 
+     *  @param status the vehicle's current status
+     */
     void setStatus(String status) {
         this.status = status;
     }
 
-    /** Returns true if vehicle is reserved by someone */
+    /** Returns true if vehicle is reserved by someone 
+     *  @return true if vehicle is currently reserved by someone
+     */
     public boolean isReserved() {
         return isReserved;
     }
 
-    /** Reserves a vehicle or cancels a reservation */
+    /** Reserves a vehicle or cancels a reservation 
+     *  @param status the vehicle's reserved status
+     */
     void setReserved(boolean status) {
         isReserved = status;
     }
 
-    /** Returns speed of vehicle */
+    /** Returns speed of vehicle 
+     *  @return the vehicle's speed (in km/hr)
+     */
     public double getSpeed() {
         return speed;
     }
 
-    /** Sets the vehicle's current speed */
+    /** Sets the vehicle's current speed 
+     *  @param speed the vehicle's speed (in km/hr)
+     */
     void setSpeed(double speed) {
         this.speed = speed;
     }
 
-    /** Returns base speed of vehicle */
+    /** Returns base speed of vehicle 
+     *  @return the vehicle's base speed (in km/hr)
+     */
     public double getBaseSpeed() {
         return baseSpeed;
     }
 
-    /** Returns base speed of vehicle */
+    /** Sets the base speed of vehicle 
+     * @param speed the vehicle's base speed (in km/hr)
+     */
     public void setBaseSpeed(double speed) {
         baseSpeed = speed;
     }
 
-    /** Returns the current amount of fuel in the vehicle. */
+    /** Returns the current amount of fuel in the vehicle. 
+     *  @return the vehicle's fuel stores (in units)
+     */
     public double getFuel() {
         return fuel;
     }
 
-    /** Adds fuel to the vehicle. */
+    /** Adds fuel to the vehicle. 
+     *  @param addedFuel the amount of fuel to be added (in units)
+     */
     void addFuel(double addedFuel) {
         fuel += addedFuel;
         if (fuel > fuelCapacity) {
@@ -106,7 +133,9 @@ public abstract class Vehicle extends Unit {
         }
     }
 
-    /** Consumes a portion of the vehicle's fuel. */
+    /** Consumes a portion of the vehicle's fuel. 
+     *  @param consumedFuel the amount of fuel consumed (in units)
+     */
     void consumeFuel(double consumedFuel) {
         fuel -= consumedFuel;
         if (fuel < 0D) {
@@ -114,32 +143,44 @@ public abstract class Vehicle extends Unit {
         }
     }
 
-    /** Returns the fuel capacity of the vehicle. */
+    /** Returns the fuel capacity of the vehicle. 
+     *  @return the vehicle's fuel capacity
+     */
     public double getFuelCapacity() {
         return fuelCapacity;
     }
 
-    /** Returns the fuel capacity of the vehicle. */
+    /** Sets the fuel capacity of the vehicle. 
+     *  @param capacity the vehicle's fuel capacity
+     */
     void setFuelCapacity(double capacity) {
         fuelCapacity = capacity;
     }
 
-    /** Returns total distance traveled by vehicle (in km.) */
+    /** Returns total distance traveled by vehicle (in km.) 
+     *  @return the total distanced traveled by the vehicle (in km)
+     */
     public double getTotalDistanceTraveled() {
         return distanceTraveled;
     }
 
-    /** Adds a distance (in km.) to the vehicle's total distance traveled */
+    /** Adds a distance (in km.) to the vehicle's total distance traveled 
+     *  @param distance distance to add to total distance traveled (in km)
+     */
     void addTotalDistanceTraveled(double distance) {
         distanceTraveled += distance;
     }
 
-    /** Returns distance traveled by vehicle since last maintenance (in km.) */
+    /** Returns distance traveled by vehicle since last maintenance (in km.) 
+     *  @return distance traveled by vehicle since last maintenance (in km)
+     */
     public double getDistanceLastMaintenance() {
         return distanceMaint;
     }
 
-    /** Adds a distance (in km.) to the vehicle's distance since last maintenance */
+    /** Adds a distance (in km.) to the vehicle's distance since last maintenance 
+     *  @param distance distance to add (in km)
+     */
     void addDistanceLastMaintenance(double distance) {
         distanceMaint += distance;
         if ((distanceMaint > 5000D) && !distanceMark) {
@@ -152,32 +193,45 @@ public abstract class Vehicle extends Unit {
         distanceMaint = 0;
     }
 
-    /** Returns direction of vehicle (0 = north, clockwise in radians) */
+    /** Returns direction of vehicle (0 = north, clockwise in radians) 
+     *  @return the direction the vehicle is traveling (in radians)
+     */
     public double getDirection() {
         return direction;
     }
 
-    /** Sets the vehicle's facing direction (0 = north, clockwise in radians) */
+    /** Sets the vehicle's facing direction (0 = north, clockwise in radians) 
+     *  @param direction the direction the vehicle is travleling (in radians)
+     */
     void setDirection(double direction) {
         this.direction = direction;
     }
 
-    /** Returns the maximum passenger capacity of the vehicle (including the driver). */
+    /** Returns the maximum passenger capacity of the vehicle (including the driver). 
+     *  @return the maximum passenger capacity of the vehicle
+     */
     public int getMaxPassengers() {
         return maxPassengers;
     }
 
-    /** Returns the maximum passenger capacity of the vehicle (including the driver). */
+    /** Returns the maximum passenger capacity of the vehicle (including the driver). 
+     *  @param num the maximum passenger capacity of the vehicle
+     */
     void setMaxPassengers(int num) {
         maxPassengers = num;
     }
 
-    /** Returns number of passengers in vehicle */
+    /** Returns number of passengers in vehicle 
+     *  @return the current number of passengers
+     */
     public int getPassengerNum() {
         return passengers.size();
     }
 
-    /** Returns a particular passenger by vector index number */
+    /** Returns a particular passenger by vector index number 
+     *  @param index the passenger's index number
+     *  @return the passenger
+     */
     public Person getPassenger(int index) {
         Person result = null;
         if (index < passengers.size()) {
@@ -186,7 +240,10 @@ public abstract class Vehicle extends Unit {
         return result;
     }
 
-    /** Returns true if a given person is currently in the vehicle */
+    /** Returns true if a given person is currently in the vehicle 
+     *  @param person the person in question
+     *  @return true if person is a passenger in the vehicle
+     */
     public boolean isPassenger(Person person) {
 
         for (int x = 0; x < passengers.size(); x++) {
@@ -197,14 +254,18 @@ public abstract class Vehicle extends Unit {
         return false;
     }
 
-    /** Add a new passenger to the vehicle if enough capacity and person is not alreay aboard. */
+    /** Add a new passenger to the vehicle if enough capacity and person is not alreay aboard. 
+     *  @param passenger a new passenger
+     */
     void addPassenger(Person passenger) {
         if ((passengers.size() < maxPassengers) && !isPassenger(passenger)) {
             passengers.addElement(passenger);
         }
     }
 
-    /** Removes a passenger from a vehicle */
+    /** Removes a passenger from a vehicle 
+     *  @param passenger passenger leaving vehicle
+     */
     void removePassenger(Person passenger) {
         if (isPassenger(passenger)) {
             passengers.removeElement(passenger);
@@ -214,18 +275,24 @@ public abstract class Vehicle extends Unit {
         }
     }
 
-    /** Returns driver of the vehicle */
+    /** Returns driver of the vehicle 
+     *  @return the driver
+     */
     public Person getDriver() {
         return driver;
     }
 
-    /** Sets the driver of the vehicle */
+    /** Sets the driver of the vehicle 
+     *  @param driver the driver
+     */
     void setDriver(Person driver) {
         this.driver = driver;
     }
 
     /** Returns the current settlement vehicle is parked at.
-      *  Returns null if vehicle is not currently parked at a settlement. */
+     *  Returns null if vehicle is not currently parked at a settlement. 
+     *  @return the settlement the vehicle is parked at
+     */
     public Settlement getSettlement() {
         if ((status.equals("Parked") || status.equals("Periodic Maintenance")) && (settlement != null)) {
             return settlement;
@@ -234,7 +301,9 @@ public abstract class Vehicle extends Unit {
         }
     }
 
-    /** Sets the settlement which the vehicle is parked at */
+    /** Sets the settlement which the vehicle is parked at 
+     *  @param settlement the settlement the vehicle is parked at
+     */
     void setSettlement(Settlement settlement) {
         this.settlement = settlement;
         if (settlement != null) {
@@ -244,39 +313,53 @@ public abstract class Vehicle extends Unit {
     }
 
     /** Returns distance to destination in kilometers
-      *  Returns 0 if vehicle is not currently moving toward a destination */
+     *  Returns 0 if vehicle is not currently moving toward a destination 
+     *  @return the distance to the vehicle's destination
+     */
     public double getDistanceToDestination() {
         return distanceToDestination;
     }
 
-    /** Sets the vehicle's distance to its destination */
+    /** Sets the vehicle's distance to its destination 
+     *  @param distanceToDestination the distance to the vehicle's destination
+     */
     void setDistanceToDestination(double distanceToDestination) {
         this.distanceToDestination = distanceToDestination;
     }
 
-    /** Gets the type of destination for the vehicle */
+    /** Gets the type of destination for the vehicle 
+     *  @return the vehicle's destination type
+     */
     public String getDestinationType() {
         return destinationType;
     }
 
-    /** Sets the type of destination for the vehicle ("Coordinates", "Settlement" or "None") */
+    /** Sets the type of destination for the vehicle ("Coordinates", "Settlement" or "None") 
+     *  @param the vehicle's destination type
+     */
     void setDestinationType(String destinationType) {
         this.destinationType = destinationType;
     }
 
-    /** Sets the destination coordinates */
+    /** Sets the destination coordinates 
+     *  @param destinationCoords the vehicle's destination location
+     */
     void setDestination(Coordinates destinationCoords) {
         this.destinationCoords = destinationCoords;
         destinationType = "Coordinates";
     }
 
     /** Returns the destination coordinates.
-      *  (null if no destination). */
+     *  (null if no destination). 
+     *  @return the vehicle's destination location
+     */
     public Coordinates getDestination() {
         return destinationCoords;
     }
 
-    /** Sets the destination settlement */
+    /** Sets the destination settlement 
+     *  @param destinationSettlement the vehicle's destination settlement
+     */
     void setDestinationSettlement(Settlement destinationSettlement) {
         this.destinationSettlement = destinationSettlement;
         if (destinationSettlement != null) {
@@ -286,33 +369,44 @@ public abstract class Vehicle extends Unit {
     }
 
     /** Returns the destination settlement.
-      *  (null if no destination settlement). */
+     *  (null if no destination settlement). 
+     *  @return the vehicle's destination settlement
+     */
     public Settlement getDestinationSettlement() {
         return destinationSettlement;
     }
 
-    /** Returns the vehicle's size. */
+    /** Returns the vehicle's size. 
+     *  @return the vehicle's size
+     */
     public int getSize() {
         return vehicleSize;
     }
 
-    /** Sets the vehicle's size. */
+    /** Sets the vehicle's size. 
+     *  @param size the vehicle's size
+     */
     void setSize(int size) {
         vehicleSize = size;
     }
 
-    /** Adds a potensial failure for the vehicle. */
+    /** Adds a potential mechanical failure for the vehicle. 
+     *  @param failureName the name of the mechanical failure
+     */
     void addPotentialFailure(String failureName) {
         potentialFailures.put(failureName, new Integer(1));
     }
 
-    /** Returns a vector of the vehicle's current failures. */
+    /** Returns the vehicle's current mechanical failure. 
+     *  @return the vehicle's current mechanical failure
+     */
     public MechanicalFailure getMechanicalFailure() {
         return mechanicalFailure;
     }
 
     /** Creates a new mechanical failure for the vehicle from its list
-      *  of potential failures. */
+     *  of potential failures. 
+     */
     void newMechanicalFailure() {
         Object keys[] = potentialFailures.keySet().toArray();
 
@@ -339,7 +433,9 @@ public abstract class Vehicle extends Unit {
         // System.out.println(name + " has mechanical failure: " + mechanicalFailure.getName());
     }
 
-    /** Add work to periodic vehicle maintenance. */
+    /** Add work to periodic vehicle maintenance. 
+     *  @param seconds amount of work time added to vehicle maintenance (in seconds)
+     */
     void addWorkToMaintenance(int seconds) {
         // If vehicle has already been maintained, return.
         if (distanceMaint == 0D) {
@@ -356,12 +452,16 @@ public abstract class Vehicle extends Unit {
         }
     }
 
-    /** Returns the current amount of work towards maintenance. */
+    /** Returns the current amount of work towards maintenance. 
+     *  @return the current amount fo work towards maintenance
+     */
     public int getCurrentMaintenanceWork() {
         return maintenanceWork;
     }
 
-    /** Returns the total amount of work needed for maintenance. */
+    /** Returns the total amount of work needed for maintenance. 
+     *  @return the total amount of work needed for maintenance
+     */
     public int getTotalMaintenanceWork() {
         return totalMaintenanceWork;
     }

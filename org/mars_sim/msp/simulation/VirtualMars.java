@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-18
  * @author Scott Davis
  */
 
@@ -14,10 +14,12 @@ import java.util.*;
  */
 public class VirtualMars {
 
+    // Data members
     private TerrainElevation elevationMap; // Terrain elevation of Mars
     private UnitManager units; // Unit controller
     private MasterClock masterClock; // Master clock for virtual world
 
+    /** Constructs a VirtualMars object */
     public VirtualMars() {
         // Initialize terrain
         elevationMap =
@@ -32,17 +34,23 @@ public class VirtualMars {
         masterClock.start();
     }
 
-    /** Clock pulse from master clock */
+    /** Clock pulse from master clock 
+     *  @param seconds amount of time passing (in seconds)
+     */
     void clockPulse(int seconds) {
         units.takeAction(seconds);
     }
 
-    /** Returns terrain elevation object */
+    /** Returns terrain elevation
+     *  @return terrain elevation for virtual Mars
+     */
     public TerrainElevation getElevationMap() {
         return elevationMap;
     }
 
-    /** Returns the unit manager */
+    /** Returns the unit manager 
+     *  @return unit manager for virtual Mars
+     */
     public UnitManager getUnitManager() {
         return units;
     }

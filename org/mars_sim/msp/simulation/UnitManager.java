@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-18
  * @author Scott Davis
  */
 
@@ -18,6 +18,7 @@ import java.util.*;
  */
 public class UnitManager {
 
+    // Data members
     private VirtualMars mars; // Virtual Mars
     // should use collections here rather than Vector... (gregwhelan)
     private Vector unitVector; // Master list of all units
@@ -25,6 +26,9 @@ public class UnitManager {
     private Vector vehiclesVector; // List of vehicle units
     private Vector peopleVector; // List of people units
 
+    /** Constructs a UnitManager object
+     *  @param mars the virtual Mars
+     */
     UnitManager(VirtualMars mars) {
         // Initialize virtual mars to parameter
         this.mars = mars;
@@ -38,6 +42,7 @@ public class UnitManager {
         createEntities();
     }
 
+    /** Create the units */
     private void createEntities() {
         createSettlements();
         createVehicles();
@@ -67,6 +72,10 @@ public class UnitManager {
         }
     }
 
+    /** Creates a settlement
+     *  @param name the settlement's name
+     *  @param coords the settlement's location
+     */
     private void createSettlement(String name, Coordinates coords) {
         Settlement tempSettlement = new Settlement(name, coords, mars, this);
         // Add settlement to master unit and settlements vectors
@@ -90,6 +99,11 @@ public class UnitManager {
         }
     }
 
+    /** Creates a vehicle
+     *  @param name the vehicle's name
+     *  @param coords the vehicle's location
+     *  @param seti the vehicle's settlement
+     */
     void createVehicle(String name, Coordinates coords, Settlement seti) {
         Rover tempVehicle = new Rover(name, coords, mars, this);
         // Add rover to master unit and vehicles vectors
@@ -114,6 +128,11 @@ public class UnitManager {
         }
     }
 
+    /** Creates a person
+     *  @param name the person's name
+     *  @param coord the person's location
+     *  @param seti the person's settlement
+     */
     private void createPerson(String name, Coordinates coord, Settlement seti) {
         // Create a person with that name
         Person tempPerson = new Person(name, coord, mars, this);
@@ -125,36 +144,47 @@ public class UnitManager {
 
 
     /** Notify all the units that time has passed. Times they are a
-       *  changing.
-       */
+     *  changing.
+     *  @param seconds the time passing (in seconds)  
+     */
     void takeAction(int seconds) {
         for (int x = 0; x < unitVector.size(); x++) {
             ((Unit) unitVector.elementAt(x)).timePasses(seconds);
         }
     }
 
-    /** Get number of settlements */
+    /** Get number of settlements 
+     *  @return the number of settlements
+     */
     public int getSettlementNum() {
         return settlementsVector.size();
     }
 
-    /** Get number of vehicles */
+    /** Get number of vehicles 
+     *  @return the number of vehicles
+     */
     public int getVehicleNum() {
         return vehiclesVector.size();
     }
 
-    /** Get population */
+    /** Get population 
+     *  @return the number of people
+     */
     public int getPeopleNum() {
         return peopleVector.size();
     }
 
-    /** Get a random settlement */
+    /** Get a random settlement 
+     *  @return a random settlement
+     */
     Settlement getRandomSettlement() {
         int r = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
         return (Settlement) settlementsVector.elementAt(r);
     }
 
-    /** Get a random settlement other than given current one. */
+    /** Get a random settlement other than given current one. 
+     *  @return a random settlement
+     */
     Settlement getRandomSettlement(Settlement current) {
         Settlement newSettlement;
         do {
@@ -166,8 +196,9 @@ public class UnitManager {
     }
 
     /** Get a random settlement among the closest three settlements to
-       *   the given location.
-       */
+     *  the given location.
+     *  @return a random settlement  
+     */
     Settlement getRandomOfThreeClosestSettlements(Coordinates location) {
         Vector tempVector = new Vector();
         Vector resultVector = new Vector();
@@ -198,18 +229,23 @@ public class UnitManager {
     }
 
     /** Get a random settlement among the closest three settlements to
-       *  the given settlement
-       */
+     *  the given settlement
+     *  @return a random settlement  
+     */
     Settlement getRandomOfThreeClosestSettlements(Settlement current) {
         return getRandomOfThreeClosestSettlements(current.getCoordinates());
     }
 
-    /** The total number of units */
+    /** The total number of units 
+     *  @return the total number of units
+     */
     public int getUnitCount() {
         return unitVector.size();
     }
 
-    /** Returns an array of all the units. */
+    /** Returns an array of all the units. 
+     *  @return an array of all the units
+     */
     public Unit[] getUnits() {
         Unit[] units = new Unit[unitVector.size()];
         for (int x = 0; x < units.length; x++)

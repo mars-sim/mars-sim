@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskDrive.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-18
  * @author Scott Davis
  */
 
@@ -14,9 +14,9 @@ package org.mars_sim.msp.simulation;
  *  By default, the task randomly chooses a settlement to drive to, with
  *  the closest three settlements being the most likely.
  */
-
 class TaskDrive extends Task {
 
+    // Data members
     private GroundVehicle vehicle; // Vehicle that person is driving
     private Settlement embarkingSettlement; // The settlement which the person is embarking from.
     private Settlement destinationSettlement; // The destination settlement (if there is one)
@@ -30,6 +30,10 @@ class TaskDrive extends Task {
     private double backingUpDistance; // Distance vehicle has backed up to avoid an obstacle.
     private Coordinates startingLocation; // Current location of vehicle.
 
+    /** Constructs a new TaskDrive object
+     *  @param person the person performing the task
+     *  @param mars the virtual Mars
+     */
     public TaskDrive(Person person, VirtualMars mars) {
         super("Driving Ground Vehicle", person, mars);
         destinationType = new String("None");
@@ -41,7 +45,13 @@ class TaskDrive extends Task {
         obstacleTimeCount = 0;
     }
 
-    /** Constructor to drive to a specific settlement (called by another task) */
+    /** Constructor to drive to a specific settlement (called by another task) 
+     *  @param person the person performing the task
+     *  @param mars the virtual Mars
+     *  @param destinationSettlement the driving destination settlement
+     *  @param embark true if embarking proceedures should be used
+     *  @param disembark true if disembarking proceedures should be used
+     */
     TaskDrive(Person person, VirtualMars mars, Settlement destinationSettlement, boolean embark,
             boolean disembark) {
         this(person, mars);
@@ -52,7 +62,13 @@ class TaskDrive extends Task {
         this.disembark = disembark;
     }
 
-    /** Constructor to drive to a specific location (called by another task) */
+    /** Constructor to drive to a specific location (called by another task) 
+     *  @param person the person performing the task
+     *  @param mars the virtual Mars
+     *  @param destinationCoordinates the driving destination location
+     *  @param embark true if embarking proceedures should be used
+     *  @param disembark true if disembarking proceedures should be used
+     */
     TaskDrive(Person person, VirtualMars mars, Coordinates destinationCoordinates, boolean embark,
             boolean disembark) {
         this(person, mars);
@@ -62,14 +78,28 @@ class TaskDrive extends Task {
         this.disembark = disembark;
     }
 
-    /** Constructor to drive a specific vehicle to a specific settlement (called by another task) */
+    /** Constructor to drive a specific vehicle to a specific settlement (called by another task) 
+     *  @param person the person performing the task
+     *  @param mars the virtual Mars
+     *  @param destinationSettlement the driving destination settlement
+     *  @param embark true if embarking proceedures should be used
+     *  @param disembark true if disembarking proceedures should be used
+     *  @param vehicle vehicle to be driven
+     */
     TaskDrive(Person person, VirtualMars mars, Settlement destinationSettlement, boolean embark,
             boolean disembark, GroundVehicle vehicle) {
         this(person, mars, destinationSettlement, embark, disembark);
         this.vehicle = vehicle;
     }
 
-    /** Constructor to drive a specific vehicle to a specific location (called by another task) */
+    /** Constructor to drive a specific vehicle to a specific location (called by another task) 
+     *  @param person the person performing the task
+     *  @param mars the virtual Mars
+     *  @param destinationCoordinates the driving destination location
+     *  @param embark true if embarking proceedures should be used
+     *  @param disembark true if disembarking proceedures should be used
+     *  @param vehicle vehicle to be driven
+     */
     TaskDrive(Person person, VirtualMars mars, Coordinates destinationCoordinates, boolean embark,
             boolean disembark, GroundVehicle vehicle) {
         this(person, mars, destinationCoordinates, embark, disembark);
@@ -77,9 +107,12 @@ class TaskDrive extends Task {
     }
 
     /** Returns the weighted probability that a person might perform this task.
-      *  Returns a 5 probability if person is at a settlement with an available vehicle.
-      *  Returns a 0 if not.
-      */
+     *  Returns a 5 probability if person is at a settlement with an available vehicle.
+     *  Returns a 0 if not.
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     *  @return the weighted probability that a person might perform this task
+     */
     public static int getProbability(Person person, VirtualMars mars) {
         int result = 0;
 
@@ -96,7 +129,9 @@ class TaskDrive extends Task {
         return result;
     }
 
-    /** Performs the driving task for a given number of seconds. */
+    /** Performs the driving task for a given number of seconds. 
+     *  @param seconds the amount of time the task is performed (in seconds)
+     */
 
     void doTask(int seconds) {
         super.doTask(seconds);
@@ -124,8 +159,9 @@ class TaskDrive extends Task {
     }
 
     /** Prepare vehicle for travel
-      *  Returns any remaining seconds in action turn
-      */
+     *  Returns any remaining seconds in action turn
+     *  @return any remaining seconds in action turn
+     */
     private int embark(int seconds) {
         // If task is finished, return
         if (isDone)
@@ -166,10 +202,12 @@ class TaskDrive extends Task {
     }
 
     /** Determine destination if there isn't already one. (0 seconds)
-      *  Set the destination of the vehicle.
-      *  This phase only chooses settlements as destinations.
-      *  Use specific destination constructors to choose a specific settlement or non-settlement location.
-      */
+     *  Set the destination of the vehicle.
+     *  This phase only chooses settlements as destinations.
+     *  Use specific destination constructors to choose a specific settlement or non-settlement location.
+     *  @param seconds the seconds to perform this sub-phase
+     *  @return the seconds remaining for task
+     */
     private int determineDestination(int seconds) {
         if (destinationType.equals("None")) {
             destinationType = new String("Settlement");
@@ -204,10 +242,12 @@ class TaskDrive extends Task {
     }
 
     /** Reserve a vehicle so that no one else can take it (10 seconds).
-      *  Get unreserved vehicle if at settlement.
-      *  If settlement has no free vehicles, end task.
-      *  If task already defines a vehicle, move on.
-      */
+     *  Get unreserved vehicle if at settlement.
+     *  If settlement has no free vehicles, end task.
+     *  If task already defines a vehicle, move on.
+     *  @param seconds the seconds to perform this sub-phase
+     *  @return the seconds remaining for task 
+     */
     private int reserveVehicle(int seconds) {
         if (vehicle != null) {
             subPhase = new String("Invite Passengers");
@@ -249,8 +289,10 @@ class TaskDrive extends Task {
     }
 
     /** Invite other people in current settlement to come along on the trip. (0 seconds)
-      *  If not currently at a settlement, go to next phase;
-      */
+     *  If not currently at a settlement, go to next phase;
+     *  @param seconds the seconds to perform this sub-phase
+     *  @return the seconds remaining for task
+     */
     private int invitePassengers(int seconds) {
         if (embarkingSettlement != null) {
             for (int x = 0; x < embarkingSettlement.getPeopleNum(); x++) {
@@ -276,8 +318,10 @@ class TaskDrive extends Task {
     }
 
     /** Vehicle preparation checks here. (100 seconds)
-      *  Fill vehicle with fuel from settlement storage if applicable.
-      */
+     *  Fill vehicle with fuel from settlement storage if applicable.
+     *  @param seconds the seconds to perform this sub-phase
+     *  @return the seconds remaining for task
+     */
     private int prepareVehicle(int seconds) {
         if (doSubPhase(seconds, 100)) {
 
@@ -307,9 +351,11 @@ class TaskDrive extends Task {
     }
 
     /** Get in vehicle. (100 seconds)
-      *  Last sub-phase of embark phase.
-      *  Strap yourself in!
-      */
+     *  Last sub-phase of embark phase.
+     *  Strap yourself in!
+     *  @param seconds the seconds to perform this sub-phase
+     *  @return the seconds remaining for task
+     */
     private int getInVehicle(int seconds) {
         if (doSubPhase(seconds, 100)) {
             if (!vehicle.isPassenger(person))
@@ -340,7 +386,10 @@ class TaskDrive extends Task {
             return seconds;
     }
 
-    /** Driving phase */
+    /** Driving phase 
+     *  @param seconds the seconds to perform this phase
+     *  @return the seconds remaining for task
+     */
     private int drive(int seconds) {
         // Initialize if first time driving
         if (subPhase.equals("")) {
@@ -473,7 +522,9 @@ class TaskDrive extends Task {
         return 0;
     }
 
-    /** Determine direction for obstacle avoidance. */
+    /** Determine direction for obstacle avoidance. 
+     *  @return the direction for obstacle avoidance (in radians)
+     */
     private double avoidObstacle() {
         boolean foundGoodPath = false;
 
@@ -503,7 +554,10 @@ class TaskDrive extends Task {
         return resultDirection;
     }
 
-    /** Determine vehicle speed for given direction */
+    /** Determine vehicle speed for given direction 
+     *  @param direction the direction the vehice is traveling in
+     *  @return the speed of the vehicle (in km/hr)
+     */
     private double getSpeed(double direction) {
 
         // Determine the terrain grade in the vehicle's current direction
@@ -591,7 +645,10 @@ class TaskDrive extends Task {
         }
     }
 
-    /** This subphase allows all the passengers to exit and returns the vehicle to parked status. (100 seconds) */
+    /** This subphase allows all the passengers to exit and returns the vehicle to parked status. (100 seconds) 
+     *  @param seconds the seconds to perform this sub-phase
+     *  @return the seconds remaining for task
+     */
     private int disembark(int seconds) {
         subPhase = "";
         if (doSubPhase(seconds, 100)) {

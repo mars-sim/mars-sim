@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskRelax.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-18
  * @author Scott Davis
  */
 
@@ -15,15 +15,24 @@ package org.mars_sim.msp.simulation;
  */
 class TaskRelax extends Task {
 
+    // Data members
     private int duration; // The predetermined duration in seconds of the task
 
+    /** Constructs a TaskRelax object
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     */
     public TaskRelax(Person person, VirtualMars mars) {
         super("Relaxing", person, mars);
 
         duration = (int) Math.round(Math.random() * (8D * 60D * 60D));
     }
 
-    /** Constructor to relax for a given number of seconds. */
+    /** Constructor to relax for a given number of seconds. 
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     *  @param seconds the amount of time to relax (in seconds)
+     */
     TaskRelax(Person person, VirtualMars mars, int seconds) {
         this(person, mars);
 
@@ -31,13 +40,18 @@ class TaskRelax extends Task {
     }
 
     /** Returns the weighted probability that a person might perform this task.
-      * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-      */
+     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     *  @return the weighted probability that a person might perform this task
+     */
     public static int getProbability(Person person, VirtualMars mars) {
         return 50;
     }
 
-    /** This task simply waits until the set duration of the task is complete, then ends the task. */
+    /** This task simply waits until the set duration of the task is complete, then ends the task. 
+     *  @param seconds the number of seconds to perform the task
+     */
     void doTask(int seconds) {
         super.doTask(seconds);
         if (subTask != null)

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-17
  * @author Scott Davis
  */
 
@@ -12,6 +12,12 @@ package org.mars_sim.msp.simulation;
  */
 public class Rover extends GroundVehicle {
 
+    /** Constructs a Rover object 
+     *  @param name the name of the rover
+     *  @param location the location of the rover
+     *  @param mars the virtual Mars
+     *  @param manager the rover's unit manager
+     */
     Rover(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
         // Use GroundVehicle constructor

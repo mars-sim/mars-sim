@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskMechanic.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-18
  * @author Scott Davis
  */
 
@@ -15,12 +15,16 @@ import java.util.*;
  */
 class TaskMechanic extends Task {
 
+    // Data members
     private Vehicle vehicle; // Vehicle that person is performing the task on.
     private MaintenanceGarageFacility garage; // The maintenance garage at the settlement. (maintenance only)
     private Settlement settlement; // The settlement the person is at. (maintenance only)
     private MechanicalFailure failure; // The vehicle's mechanical failure. (repairing only)
 
-    /** Constructor for periodic vehicle maintenance in a garage. */
+    /** Constructor for periodic vehicle maintenance in a garage. 
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     */
     public TaskMechanic(Person person, VirtualMars mars) {
         super("Performing Maintenance on ", person, mars);
 
@@ -57,7 +61,11 @@ class TaskMechanic extends Task {
             isDone = true;
     }
 
-    /** Constructor for vehicle field repairs. */
+    /** Constructor for vehicle field repairs. 
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     *  @param failure the mechanical failure to repair
+     */
     TaskMechanic(Person person, VirtualMars mars, MechanicalFailure failure) {
         super("Repairing " + person.getVehicle().getName(), person, mars);
 
@@ -67,7 +75,11 @@ class TaskMechanic extends Task {
         phase = "Repairing " + failure.getName();
     }
 
-    /** Returns the weighted probability that a person might perform this task. */
+    /** Returns the weighted probability that a person might perform this task. 
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     *  @return the weighted probability that a person might perform this task
+     */
     public static int getProbability(Person person, VirtualMars mars) {
         int result = 0;
 
@@ -83,7 +95,9 @@ class TaskMechanic extends Task {
         return result;
     }
 
-    /** Performs the mechanic task for a given number of seconds. */
+    /** Performs the mechanic task for a given number of seconds. 
+     *  @param seconds the number of seconds to perform the task
+     */
     void doTask(int seconds) {
         super.doTask(seconds);
         if (subTask != null)
@@ -143,4 +157,3 @@ class TaskMechanic extends Task {
         }
     }
 }
-
