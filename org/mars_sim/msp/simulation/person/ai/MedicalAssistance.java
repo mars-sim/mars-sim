@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.75 2003-06-09
+ * @version 2.75 2003-06-12
  * @author Barry Evans
  */
 
@@ -209,7 +209,7 @@ public class MedicalAssistance extends Task implements Serializable {
         
         // Stop treatment.
         try {
-            medical.stopTreatment(problem);
+            if (!problem.getRecovering()) medical.stopTreatment(problem);
         }
         catch (Exception e) {
             System.out.println("MedicalAssistance.endTask(): " + e.getMessage());

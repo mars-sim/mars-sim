@@ -42,7 +42,7 @@ public abstract class Mission implements Serializable {
         // Initialize data members
         this.name = name;
         this.missionManager = missionManager;
-	description = name;
+        description = name;
         people = new PersonCollection();
         done = false;
         mars = missionManager.getMars();
@@ -187,7 +187,7 @@ public abstract class Mission implements Serializable {
      */
     protected void endMission() {
         done = true;
-	    Object p[] = people.toArray();
+        Object p[] = people.toArray();
         for(int i = 0; i < p.length; i++) {
             removePerson((Person)p[i]);
         }
@@ -207,6 +207,6 @@ public abstract class Mission implements Serializable {
         if (task.isEffortDriven() && (person.getPerformanceRating() < .5D))
             canPerformTask = false;
 
-	if (canPerformTask) person.getMind().getTaskManager().addTask(task);
+        if (canPerformTask) person.getMind().getTaskManager().addTask(task);
     }
 }
