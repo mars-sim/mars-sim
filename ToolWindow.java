@@ -1,5 +1,5 @@
 //***************** Tool Window *****************
-// Last Modified: 2/23/00
+// Last Modified: 4/2/00
 
 // The ToolWindow class is an abstract UI window for a tool.
 // Particular tool windows should be derived from this.
@@ -10,7 +10,8 @@ public abstract class ToolWindow extends JInternalFrame {
 
 	// Data members
 	
-	protected String toolName;  // The name of the tool the window is for.
+	protected String toolName;    // The name of the tool the window is for.
+	protected boolean notOpened; // True if window hasn't yet been opened.
 
 	// Constructor
 
@@ -23,11 +24,23 @@ public abstract class ToolWindow extends JInternalFrame {
 		// Initialize tool name
 		
 		this.toolName = new String(toolName);
+		
+		// Set notOpened to true
+		
+		notOpened = true;
 	}
 	
 	// Returns tool name
 	
 	public String getToolName() { return new String(toolName); }
+	
+	// Returns true if tool window has not previously been opened.
+	
+	public boolean hasNotBeenOpened() { return notOpened; }
+	
+	// Sets notOpened to false.
+	
+	public void setOpened() { notOpened = false; }
 }
 
 // Mars Simulation Project
