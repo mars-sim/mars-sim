@@ -151,5 +151,5 @@ public abstract class GroundVehicleDialog extends VehicleDialog {
     /** Set window size 
      *  @return the window's size
      */
-    protected Dimension setWindowSize() { return new Dimension(310, 435); }
+    protected Dimension setWindowSize() { return new Dimension(310, 455); }
 }

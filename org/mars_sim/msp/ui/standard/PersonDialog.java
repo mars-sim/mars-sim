@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.74 2002-05-18
+ * @version 2.74 2002-05-20
  * @author Scott Davis
  */
 
@@ -330,7 +330,7 @@ public class PersonDialog extends UnitDialog {
     /** Set window size
      *  @return the window's size
      */
-    protected Dimension setWindowSize() { return new Dimension(300, 375); }
+    protected Dimension setWindowSize() { return new Dimension(300, 380); }
 
     /** Prepare components */
     protected void setupComponents() {

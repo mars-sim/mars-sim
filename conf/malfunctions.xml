@@ -3,22 +3,48 @@
 <MALFUNCTION_LIST>
 
     <MALFUNCTION>
-        <NAME>Air Leak</NAME>
-        <SEVERITY>100</SEVERITY>
-        <PROBABILITY>10.0</PROBABILITY>
+        <!-- Full name of the malfunction (requried) -->
+	<NAME>Air Leak</NAME>
+	<!-- Relative severity of the malfunction (required) -->
+	<!-- Range 1 - 100 -->
+	<SEVERITY>100</SEVERITY>
+	<!-- Relative probability of the malfunction (required) -->
+	<PROBABILITY>10.0</PROBABILITY>
+	<!-- Emergency work time required to fix malfunction (optional) -->
+	<!-- Units of millisols -->
+	<!-- Default: 0.0 millisols -->
 	<EMERGENCY_WORK_TIME>10.0</EMERGENCY_WORK_TIME>
+	<!-- Normal work time required to fix malfunction (optional) -->
+	<!-- Units of millisols -->
+	<!-- Default: 0.0 millisols -->
         <WORK_TIME>100.0</WORK_TIME>
+	<!-- Extra Vehicular Activity) work time required to fix malfunction (optional) -->
+	<!-- Units of millisols -->
+	<!-- Default: 0.0 millisols -->
 	<EVA_WORK_TIME>0.0</EVA_WORK_TIME>
+	<!-- Entities that can have this malfunction (min 1 required) -->
         <SCOPE>
             <ENTITY>LifeSupport</ENTITY>
         </SCOPE>
-        <EFFECTS>
-            <RESOURCE>
-                <NAME>Oxygen</NAME>
+        <!-- Effects of the malfunction (optional) -->
+	<EFFECTS>
+            <!-- Resource Effect (optional) -->
+	    <RESOURCE>
+		<!-- Resource name (requried) -->
+		<NAME>Oxygen</NAME>
+		<!-- Rate of resource loss from inventory (required) -->
+		<!-- Rate is in kg/millisol -->
                 <CHANGE_RATE>-.01</CHANGE_RATE>
 	    </RESOURCE>
+	    <!-- Life Support effect (optional) -->
 	    <LIFE_SUPPORT>
+		<!-- Life support name (required) -->
 		<NAME>Oxygen</NAME>
+		<!-- Life support modifier (required) -->
+		<!-- Units in rate depending on life support type. -->
+		<!-- Oxygen and water are kg/millisol -->
+		<!-- Air Pressure is in atm/millisol -->
+		<!-- Temperature is in celsius/millisol -->
 		<CHANGE_RATE>-.01</CHANGE_RATE>
 	    </LIFE_SUPPORT>
 	    <LIFE_SUPPORT>
@@ -41,8 +67,11 @@
 	    <ENTITY>Vehicle</ENTITY>
 	    <ENTITY>EVASuit</ENTITY>
         </SCOPE>
+        <!-- Medical complaint started by malfunction (optional) -->
 	<MEDICAL_COMPLAINT>
-            <NAME>Minor Burns</NAME>
+            <!-- Name of medical complaint (see medical.xml) (required) -->
+	    <NAME>Minor Burns</NAME>
+	    <!-- Probability complaint will occur for each affected person (required) -->
             <PROBABILITY>5.0</PROBABILITY>
         </MEDICAL_COMPLAINT>
     </MALFUNCTION>

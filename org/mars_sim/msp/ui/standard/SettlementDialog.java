@@ -221,7 +221,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
      *  @return the window's size
      */
     protected Dimension setWindowSize() {
-        return new Dimension(300, 430);
+        return new Dimension(300, 455);
     }
 
     /** Prepare new components */

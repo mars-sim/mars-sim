@@ -193,8 +193,7 @@ implements Runnable {
         MonitorModel model = getSelected().getModel();
 
         // Show modal column selector
-        int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow(),
-                                                        model);
+        int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow(), model);
         if (columns.length > 0) {
             addTab(new BarChartTab(model, columns));
         }
@@ -204,8 +203,7 @@ implements Runnable {
         MonitorModel model = getSelected().getModel();
 
         // Show modal column selector
-        int column = ColumnSelector.createPieSelector(desktop.getMainWindow(),
-                                                        model);
+        int column = ColumnSelector.createPieSelector(desktop.getMainWindow(), model);
         if (column >= 0) {
             addTab(new PieChartTab(model, column));
         }
