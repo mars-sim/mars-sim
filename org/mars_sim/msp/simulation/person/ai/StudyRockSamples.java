@@ -24,8 +24,8 @@ class StudyRockSamples extends Task implements Serializable {
     private static final double RESEARCH_RATE = .01D;
 	
     // Data members
-    private Inventory inv;  // The inventory containing the rock samples. 
-    private Laboratory lab; // The laboratory the person is working in.
+    private Inventory inv;   // The inventory containing the rock samples. 
+    private Lab lab;         // The laboratory the person is working in.
     private double duration; // The duration (in millisols) the person will perform this task.
 
     /** 
@@ -37,10 +37,20 @@ class StudyRockSamples extends Task implements Serializable {
     public StudyRockSamples(Person person, Mars mars) {
         super("Studying Rock Samples", person, true, mars);
 
-	Settlement settlement = person.getSettlement();
-        inv = settlement.getInventory();
-        lab = (Laboratory) settlement.getFacilityManager().getFacility("Research Laboratories");
-	lab.addResearcher();
+	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+	    Settlement settlement = person.getSettlement();
+            inv = settlement.getInventory();
+            lab = (Laboratory) settlement.getFacilityManager().getFacility("Research Laboratories");
+	    lab.addResearcher();
+	}
+	else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+	    if (person.getVehicle() instanceof ExplorerRover) {
+	        ExplorerRover rover = (ExplorerRover) person.getVehicle();
+		inv = rover.getInventory();
+		lab = rover.getLab();
+		lab.addResearcher();
+	    }
+	}
 
 	// Randomly determine duration from 0 - 500 millisols.
 	duration = RandomUtil.getRandomDouble(500D);
@@ -57,9 +67,19 @@ class StudyRockSamples extends Task implements Serializable {
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
 	    Inventory inv = settlement.getInventory();
+	    Lab lab = (Laboratory) settlement.getFacilityManager().getFacility("Research Laboratories");
             if (inv.getResourceMass(Inventory.ROCK_SAMPLES) > 0D) {
-	        Laboratory lab = (Laboratory) settlement.getFacilityManager().getFacility("Research Laboratories");
 		if (lab.getResearcherNum() < lab.getLaboratorySize()) result = 25D;
+	    }
+	}
+	else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+	    if (person.getVehicle() instanceof ExplorerRover) {
+	        ExplorerRover rover = (ExplorerRover) person.getVehicle();
+		Inventory inv = rover.getInventory();
+		Lab lab = rover.getLab();
+                if (inv.getResourceMass(Inventory.ROCK_SAMPLES) > 0D) {
+		    if (lab.getResearcherNum() < lab.getLaboratorySize()) result = 25D;
+	        }
 	    }
 	}
 	    

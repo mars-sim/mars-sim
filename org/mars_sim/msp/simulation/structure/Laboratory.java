@@ -15,7 +15,7 @@ import java.util.*;
  * The Laboratory class represents the research laboratories
  * in a settlement. A settlement may or may not have laboratories.
  */
-public class Laboratory extends Facility implements Serializable {
+public class Laboratory extends Facility implements Lab, Serializable {
 
     // Data members
     private int laboratorySize; // Number of researchers supportable at any given time. 
@@ -109,6 +109,20 @@ public class Laboratory extends Facility implements Serializable {
 	    count ++;
 	}
         
+        return result;
+    }
+
+    /**
+     * Checks to see if the laboratory has a given tech speciality.
+     * @return true if lab has tech speciality
+     */
+    public boolean hasSpeciality(String speciality) {
+        boolean result = false;
+        Iterator i = techSpecialities.iterator();
+        while (i.hasNext()) {
+            if (speciality.equals((String) i.next())) result = true;
+        }
+
         return result;
     }
 

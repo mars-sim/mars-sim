@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRover.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-13
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -18,7 +18,10 @@ public class ExplorerRover extends Rover implements Serializable {
 	
     // Static data members
     private static final int CREW_CAPACITY = 6; // Max number of crewmembers.
-	
+
+    // Data members
+    private MobileLaboratory lab; // The rover's lab.
+    
     /** 
      * Constructs an ExplorerRover object at a given settlement.
      * @param name the name of the rover
@@ -59,6 +62,10 @@ public class ExplorerRover extends Rover implements Serializable {
         
         // Set crew capacity
 	crewCapacity = CREW_CAPACITY;
+
+	// Construct mobile lab.
+	String[] techSpeciality = { "Aerology" };
+	lab = new MobileLaboratory(1, 1, techSpeciality);
     }
 
     /** 
@@ -67,5 +74,13 @@ public class ExplorerRover extends Rover implements Serializable {
      */
     public String getDescription() {
         return "Long Range Exploration Rover";
+    }
+
+    /**
+     * Gets the explorer rover's lab.
+     * @return laboratory
+     */
+    public MobileLaboratory getLab() {
+        return lab; 
     }
 }
