@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.72 2001-05-10
+ * @version 2.72 2001-05-16
  * @author Scott Davis
  */
 
@@ -157,16 +157,11 @@ public class Coordinates {
      */
     public double getAngle(Coordinates otherCoords) {
 
-        double rho = HALF_CIRCUM_PIXELS / Math.PI;
-        double temp1 = Math.pow(rho * (phi - otherCoords.getPhi()), 2D);
-        double radius1 = rho * sinPhi;
-        double radius2 = rho * otherCoords.getSinPhi();
-        double averageR = (radius1 + radius2) / 2D;
-        double theta_difference = Math.abs(theta - otherCoords.getTheta());
-        if (theta_difference >= Math.PI)
-            theta_difference = TWO_PI - theta_difference;
-        double temp2 = Math.pow(averageR * theta_difference, 2D);
-        double angle = Math.sqrt(temp1 + temp2) / rho;
+        double temp1 = cosPhi * otherCoords.getCosPhi();
+        double temp2 = sinPhi * otherCoords.getSinPhi();
+        double temp3 = Math.cos(Math.abs(theta - otherCoords.getTheta()));
+        double temp4 = temp1 + (temp2 * temp3);
+        double angle = Math.acos(temp4);
 
         return angle;
     }
