@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation;
 import org.mars_sim.msp.simulation.person.ai.MissionManager;
 import org.mars_sim.msp.simulation.person.medical.MedicalManager;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.simulation.events.HistoricalEventManager;
 import java.util.*;
 import java.io.*;
 
@@ -34,6 +35,7 @@ public class Mars implements Serializable {
     private transient SurfaceFeatures surfaceFeatures; // Surface features
     private transient SimulationProperties properties; // The user-defined simulation properties
     private transient MalfunctionFactory malfunctionFactory; // The malfunction factory
+    private transient HistoricalEventManager eventManager; // All historical info.
     private transient Thread clockThread;
 
     // Persistent Data members
@@ -87,9 +89,12 @@ public class Mars implements Serializable {
 
         // Initialize malfunction factory
 	malfunctionFactory = new MalfunctionFactory();
-	
+
 	// Set state file
 	setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
+
+        // Create an event manager
+        eventManager = new HistoricalEventManager(this);
     }
 
     private void setStateFile(String fileName) {
@@ -207,7 +212,7 @@ public class Mars implements Serializable {
     public Weather getWeather() {
         return weather;
     }
-    
+
     /** Returns the unit manager
      *  @return unit manager for Mars
      */
@@ -229,13 +234,20 @@ public class Mars implements Serializable {
         return medicalManager;
     }
 
-    /** Returns the malfunction factory 
+    /** Returns the event manager
+     *  @return Event manager for Mars
+     */
+    public HistoricalEventManager getEventManager() {
+        return eventManager;
+    }
+
+    /** Returns the malfunction factory
      *  @return malfunction factory for Mars
      */
     public MalfunctionFactory getMalfunctionFactory() {
         return malfunctionFactory;
     }
-    
+
     /** Returns the master clock
      *  @return master clock instance
      */
