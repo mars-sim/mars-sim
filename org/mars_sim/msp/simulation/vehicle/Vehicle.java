@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -54,11 +54,10 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     /** Constructs a Vehicle object with a given settlement
      *  @param name the vehicle's name
      *  @param settlement the settlement the vehicle is parked at
-     *  @param mars the virtual Mars
      */
-    Vehicle(String name, Settlement settlement, Mars mars) {
+    Vehicle(String name, Settlement settlement) {
         // use Unit constructor
-        super(name, settlement.getCoordinates(), mars);
+        super(name, settlement.getCoordinates());
 
         settlement.getInventory().addUnit(this);
         initVehicleData();
@@ -68,7 +67,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private void initVehicleData() {
 
 	    // Initialize malfunction manager.
-	    malfunctionManager = new MalfunctionManager(this, mars);
+	    malfunctionManager = new MalfunctionManager(this);
 	    malfunctionManager.addScopeString("Vehicle");
 	    
         setDestinationType(NONE);
@@ -364,7 +363,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         PersonCollection people = new PersonCollection();
 
         // Check all people.
-        PersonIterator i = mars.getUnitManager().getPeople().iterator();
+        PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
         while (i.hasNext()) {
             Person person = i.next();
             Task task = person.getMind().getTaskManager().getTask();

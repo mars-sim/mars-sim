@@ -11,7 +11,6 @@ package org.mars_sim.msp.simulation;
 /** The Landmark class represents a surface landmark on virtual Mars.
  *  It contains information related to the landmark.
  */
-
 public class Landmark {
 
     // Data members
@@ -22,7 +21,6 @@ public class Landmark {
      *  @param name name of the landmark
      *  @param location location of the landmark
      */
-
     public Landmark(String name, Coordinates location) {
 
         this.landmarkName = name;
@@ -33,7 +31,6 @@ public class Landmark {
      *  Sets the landmark name.
      *  @param landmarkName name of the landmark
      */
-
     public void setLandmarkName(String landmarkName) {
         this.landmarkName = landmarkName;
     }
@@ -42,7 +39,6 @@ public class Landmark {
      *  Sets the landmark location.
      *  @param landmarkLocation location of the landmark
      */
-
     public void setLandmarkLocation(Coordinates landmarkLocation) {
         this.landmarkLocation = landmarkLocation;
     }
@@ -51,7 +47,6 @@ public class Landmark {
      *  Gets the landmark name.
      *  @return name of the landmark
      */
-
     public String getLandmarkName() {
         return landmarkName;
     }
@@ -60,7 +55,6 @@ public class Landmark {
      *  Gets the landmark location.
      *  @return location of the landmark
      */
-
     public Coordinates getLandmarkLocation() {
         return landmarkLocation;
     }

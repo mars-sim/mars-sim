@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.76 2004-05-17
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -30,8 +30,8 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     private Airlock airlock; // Airlock to be used for EVA.
     private double duration; // Duration (in millisols) the person will perform this task.
     
-    public MaintainGroundVehicleEVA(Person person, Mars mars) {
-        super("Performing Vehicle Maintenance", person, mars);
+    public MaintainGroundVehicleEVA(Person person) {
+        super("Performing Vehicle Maintenance", person);
    
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
@@ -55,10 +55,9 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * Returns the weighted probability that a person might perform this task.
      * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      * @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
@@ -75,8 +74,9 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         if (getAvailableAirlock(person) == null) result = 0D;
 
         // Check if it is night time.
-        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
-        	if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+        	if (!surface.inDarkPolarRegion(person.getCoordinates()))
         		result = 0D;
         } 
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.76 2004-05-12
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -12,8 +12,9 @@ import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
-/** The Rover class represents the rover type of ground vehicle.  It
- *  contains information about the rover.
+/** 
+ * The Rover class represents the rover type of ground vehicle.  It
+ * contains information about the rover.
  */
 public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable, Medical {
 
@@ -32,17 +33,17 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * Constructs a Rover object at a given settlement
      * @param name the name of the rover
      * @param settlement the settlement the rover is parked at
-     * @param mars the virtual Mars
      * @throws Exception if rover could not be constructed.
      */
-    public Rover(String name, String description, Settlement settlement, Mars mars) throws Exception {
+    public Rover(String name, String description, Settlement settlement) throws Exception {
         // Use GroundVehicle constructor
-        super(name, settlement, mars);
+        super(name, settlement);
 
 		this.description = description;
 		
 		// Get vehicle configuration.
-		VehicleConfig config = mars.getSimulationConfiguration().getVehicleConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		VehicleConfig config = simConfig.getVehicleConfiguration();
 		
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString("Rover");
@@ -92,9 +93,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		
 		// Add EVA suits to inventory.
 		try {
-			int suitNum = mars.getSimulationConfiguration().getVehicleConfiguration().getEvaSuits(description);
+			int suitNum = config.getEvaSuits(description);
 			for (int x=0; x < suitNum; x++) 
-			inventory.addUnit(new EVASuit(location, mars));
+			inventory.addUnit(new EVASuit(location));
 		}
 		catch (Exception e) {
 			throw new Exception("Could not add EVA suits.: " + e.getMessage());
@@ -189,7 +190,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public double getAirPressure() {
         double result = NORMAL_AIR_PRESSURE * 
 	        (malfunctionManager.getAirPressureModifier() / 100D);
-        double ambient = mars.getWeather().getAirPressure(location);
+        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(location);
         if (result < ambient) return ambient;
         else return result;
     }
@@ -200,7 +201,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public double getTemperature() {
         double result = NORMAL_TEMP *
 	        (malfunctionManager.getTemperatureModifier() / 100D);
-        double ambient = mars.getWeather().getTemperature(location);
+        double ambient = Simulation.instance().getMars().getWeather().getTemperature(location);
         if (result < ambient) return ambient;
         else return result;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.75 2003-04-25
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -30,11 +30,10 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     /** Constructs a GroundVehicle object at a given settlement
      *  @param name name of the ground vehicle
      *  @param settlement settlement the ground vehicle is parked at
-     *  @param mars simulated Mars
      */
-    GroundVehicle(String name, Settlement settlement, Mars mars) {
+    GroundVehicle(String name, Settlement settlement) {
         // use Vehicle constructor
-        super(name, settlement, mars);
+        super(name, settlement);
 
         initGroundVehicleData();
         
@@ -53,7 +52,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	    
         setTerrainHandlingCapability(0D); // Default terrain capability
         setTerrainGrade(0D);
-        elevation = mars.getSurfaceFeatures().getSurfaceTerrain().getElevation(location);
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        elevation = surface.getSurfaceTerrain().getElevation(location);
     }
 
     /** Returns vehicle's current status

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.76 2004-05-10
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -9,7 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -29,10 +29,9 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
     /**
      * Constructs a RepairEmergencyMalfunction object.
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      */
-    public RepairEmergencyMalfunction(Person person, Mars mars) {
-        super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER, mars);
+    public RepairEmergencyMalfunction(Person person) {
+        super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER);
 
         claimMalfunction();
 
@@ -49,7 +48,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		// Create starting task event if needed.
 		if (getCreateEvents()) {
 			TaskEvent startingEvent = new TaskEvent(person, this, TaskEvent.START, "");
-			mars.getEventManager().registerNewEvent(startingEvent);
+			Simulation.instance().getEventManager().registerNewEvent(startingEvent);
 		}
 
         // if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));

@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 2.75 2004-03-31
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
  
 import java.io.Serializable;
 import java.util.*;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.medical.*;
@@ -31,14 +32,13 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		// Use Function constructor.
 		super(NAME, building);
 		
-		BuildingConfig config = building.getBuildingManager().getSettlement()
-			.getMars().getSimulationConfiguration().getBuildingConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		BuildingConfig config = simConfig.getBuildingConfiguration();
+		
 		try {
 			int techLevel = config.getMedicalCareTechLevel(building.getName());
 			int beds = config.getMedicalCareBeds(building.getName());
-		
-			MedicalManager manager = building.getBuildingManager().getSettlement().getMars().getMedicalManager();
-			medicalStation = new MedicalStation(techLevel, beds, manager);
+			medicalStation = new MedicalStation(techLevel, beds);
 		}
 		catch (Exception e) {
 			throw new BuildingException("MedicalCare.constructor: " + e.getMessage());

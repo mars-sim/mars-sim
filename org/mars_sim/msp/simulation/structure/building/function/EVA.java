@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * EVA.java
- * @version 2.75 2004-04-13
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -31,8 +33,8 @@ public class EVA extends Function implements Serializable {
 		super(NAME, building);
 		
 		try {
-			BuildingConfig config = building.getBuildingManager().getSettlement()
-				.getMars().getSimulationConfiguration().getBuildingConfiguration();
+			SimulationConfig simConfig = Simulation.instance().getSimConfig();
+			BuildingConfig config = simConfig.getBuildingConfiguration();
 			
 			// Add a building airlock.
 			int airlockCapacity = config.getAirlockCapacity(building.getName());
@@ -42,7 +44,7 @@ public class EVA extends Function implements Serializable {
 			int evaSuitNum = config.getEVASuitNumber(building.getName());
 			Settlement settlement = building.getBuildingManager().getSettlement();
 			for (int x=0; x < evaSuitNum; x++) 
-				building.getInventory().addUnit(new EVASuit(settlement.getCoordinates(), settlement.getMars()));
+				building.getInventory().addUnit(new EVASuit(settlement.getCoordinates()));
 		}
 		catch (Exception e) {
 			throw new BuildingException("EVA.constructor: " + e.getMessage());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.76 2004-05-23
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
  
@@ -9,25 +9,26 @@ package org.mars_sim.msp.simulation;
 
 import java.util.*;
 
-/** SurfaceFeatures represents the surface terrain and landmarks of the virtual Mars. */
+/** 
+ * SurfaceFeatures represents the surface terrain and landmarks of the virtual Mars. 
+ */
 public class SurfaceFeatures {
     
     // Data members 
     private TerrainElevation surfaceTerrain;
-    private Mars mars;
     private List landmarks;
     
     /** 
      * Constructor 
      * @throws Exception when error in creating surface features.
      */
-    public SurfaceFeatures(Mars mars) throws Exception {
+    public SurfaceFeatures() throws Exception {
         
-        this.mars = mars;
         surfaceTerrain = new TerrainElevation();
 
 		try {
-			landmarks = mars.getSimulationConfiguration().getLandmarkConfiguration().getLandmarkList();
+			SimulationConfig simConfig = Simulation.instance().getSimConfig();
+			landmarks = simConfig.getLandmarkConfiguration().getLandmarkList();
 		}
 		catch (Exception e) {
 			throw new Exception("Landmarks could not be loaded: " + e.getMessage());
@@ -52,6 +53,7 @@ public class SurfaceFeatures {
      */
     public double getSurfaceSunlight(Coordinates location) {
         
+		Mars mars = Simulation.instance().getMars();
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         double angleFromSun = sunDirection.getAngle(location);
 
@@ -79,6 +81,7 @@ public class SurfaceFeatures {
         
         boolean result = false;
 
+		Mars mars = Simulation.instance().getMars();
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         double sunPhi = sunDirection.getPhi();
         double darkPhi = 0D;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.76 2004-05-10
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
  
@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.structure.building;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
@@ -34,8 +36,10 @@ public class BuildingManager implements Serializable {
         
         // Construct all buildings at settlement based on template.
         buildings = new ArrayList();
-        SettlementConfig config = settlement.getMars().
-        	getSimulationConfiguration().getSettlementConfiguration();
+        
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+        SettlementConfig config = simConfig.getSettlementConfiguration();
+        
         Iterator i = config.getTemplateBuildingTypes(settlement.getTemplate()).iterator();
         while (i.hasNext()) {
         	String buildingType = (String) i.next();

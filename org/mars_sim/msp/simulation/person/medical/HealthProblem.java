@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * HealthProblem.java
- * @version 2.76 2004-05-24
+ * @version 2.76 2004-06-01
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 
@@ -52,7 +53,7 @@ public class HealthProblem implements Serializable {
         
         // Create medical event for health problem.
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, MedicalEvent.STARTS);
-		sufferer.getMars().getEventManager().registerNewEvent(newEvent);
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
         
         // If no degrade period & no treatment, then can do self heel
         if ((duration == 0D) && (treatment == null)) {
@@ -209,7 +210,7 @@ public class HealthProblem implements Serializable {
         
         // Create medical event for treatment.
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, MedicalEvent.TREATED);
-		sufferer.getMars().getEventManager().registerNewEvent(treatedEvent);
+		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
     }
     
     /**
@@ -227,7 +228,7 @@ public class HealthProblem implements Serializable {
     	
     	// Create medical event for degrading.
 		MedicalEvent degradingEvent = new MedicalEvent(sufferer, this, MedicalEvent.DEGRADES);
-		sufferer.getMars().getEventManager().registerNewEvent(degradingEvent);
+		Simulation.instance().getEventManager().registerNewEvent(degradingEvent);
     }
 
     /**
@@ -254,7 +255,7 @@ public class HealthProblem implements Serializable {
             	
             	// Create medical event for recovering.
 				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, MedicalEvent.RECOVERY);
-				sufferer.getMars().getEventManager().registerNewEvent(recoveringEvent);
+				Simulation.instance().getEventManager().registerNewEvent(recoveringEvent);
             } 
             else setCured();
         }
@@ -265,7 +266,7 @@ public class HealthProblem implements Serializable {
     	
     	// Create medical event for cured.
 		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, MedicalEvent.CURED);
-		sufferer.getMars().getEventManager().registerNewEvent(curedEvent);
+		Simulation.instance().getEventManager().registerNewEvent(curedEvent);
     }
 
     /**
@@ -359,6 +360,6 @@ public class HealthProblem implements Serializable {
      * @return true if environmental problem.
      */
     public boolean isEnvironmentalProblem() {
-        return sufferer.getMars().getMedicalManager().isEnvironmentalComplaint(illness);
+        return Simulation.instance().getMedicalManager().isEnvironmentalComplaint(illness);
     }
 }

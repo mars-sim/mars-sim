@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.75 2004-04-01
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
  
@@ -27,7 +27,6 @@ public class Crop implements Serializable {
     private CropType cropType; // The type of crop.
     private double maxHarvest; // Maximum possible food harvest for crop. (kg)
     private Farming farm; // Farm crop being grown in.
-    private Mars mars; // The planet Mars.
     private Settlement settlement; // The settlement the crop is located at.
     private String phase; // Current phase of crop.
     private double plantingWorkRequired; // Required work time for planting (millisols)
@@ -44,14 +43,12 @@ public class Crop implements Serializable {
      * @param maxHarvest - Maximum possible food harvest for crop. (kg)
      * @param growingPeiod - Length of growing phase for crop. (millisols)
      * @param farm - Farm crop being grown in.
-     * @param mars - planet Mars.
      * @param settlement - the settlement the crop is located at.
      */
-    public Crop(CropType cropType, double maxHarvest, Farming farm, Mars mars, Settlement settlement) {
+    public Crop(CropType cropType, double maxHarvest, Farming farm, Settlement settlement) {
         this.cropType = cropType;
         this.maxHarvest = maxHarvest;
         this.farm = farm;
-        this.mars = mars;
         this.settlement = settlement;
         
         // Determine work required.
@@ -141,8 +138,7 @@ public class Crop implements Serializable {
             if (currentPhaseWorkCompleted >= plantingWorkRequired) {
                 remainingWorkTime = currentPhaseWorkCompleted - plantingWorkRequired;
                 currentPhaseWorkCompleted = 0D;
-                currentSol = farm.getBuilding().getBuildingManager().getSettlement()
-                    .getMars().getMasterClock().getMarsClock().getSolOfMonth();
+                currentSol = Simulation.instance().getMasterClock().getMarsClock().getSolOfMonth();
                 phase = GROWING;
             }
             else {
@@ -192,7 +188,7 @@ public class Crop implements Serializable {
             }
             else {
                 // Modify actual harvest amount based on daily tending work.
-                int newSol = mars.getMasterClock().getMarsClock().getSolOfMonth();
+                int newSol = Simulation.instance().getMasterClock().getMarsClock().getSolOfMonth();
                 if (newSol != currentSol) {
                     double maxDailyHarvest = maxHarvest / (cropType.getGrowingTime() / 1000D);
                     double dailyWorkCompleted = currentPhaseWorkCompleted / dailyTendingWorkRequired;
@@ -205,7 +201,8 @@ public class Crop implements Serializable {
                 double harvestModifier = 1D;
                 
                 // Determine harvest modifier by amount of sunlight.
-                double sunlight = (double) mars.getSurfaceFeatures().getSurfaceSunlight(settlement.getCoordinates());
+                SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                double sunlight = (double) surface.getSurfaceSunlight(settlement.getCoordinates());
                 harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
                     
                 // Determine harvest modifier by amount of waste water available.

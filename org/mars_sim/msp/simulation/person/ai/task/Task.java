@@ -1,28 +1,28 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.76 2004-05-10
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 
-/** The Task class is an abstract parent class for tasks that allow people to do various things.
- *  A person's TaskManager keeps track of one current task for the person, but a task may use other
- *  tasks internally to accomplish things.
+/** 
+ * The Task class is an abstract parent class for tasks that allow people to do various things.
+ * A person's TaskManager keeps track of one current task for the person, but a task may use other
+ * tasks internally to accomplish things.
  */
 public abstract class Task implements Serializable, Comparable {
 
     // Data members
     protected String name;            // The name of the task
     protected Person person;          // The person performing the task.
-    protected Mars mars;              // The virtual Mars
     private boolean done;             // True if task is finished
     protected double timeCompleted;   // The current amount of time spent on the task (in microsols)
     protected String description;     // Description of the task
@@ -41,13 +41,11 @@ public abstract class Task implements Serializable, Comparable {
      * @param effort Does this task require physical effort
      * @param createEvents Does this task create events?
      * @param stressModifier stress modified by person performing task per millisol.
-     * @param mars the virtual Mars
      */
     public Task(String name, Person person, boolean effort, boolean createEvents, 
-    		double stressModifier, Mars mars) {
+    		double stressModifier) {
         this.name = name;
         this.person = person;
-        this.mars = mars;
 		this.createEvents = createEvents;
 		this.stressModifier = stressModifier;
 
@@ -69,7 +67,7 @@ public abstract class Task implements Serializable, Comparable {
         // Create ending task event if needed.
         if (getCreateEvents()) {
         	TaskEvent endingEvent = new TaskEvent(person, this, TaskEvent.FINISH, "");
-			mars.getEventManager().registerNewEvent(endingEvent);
+			Simulation.instance().getEventManager().registerNewEvent(endingEvent);
         }
     }
 
@@ -142,10 +140,9 @@ public abstract class Task implements Serializable, Comparable {
     /** Returns the weighted probability that a person might perform this task.
      *  It should return a 0 if there is no chance to perform this task given the person and the situation.
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) { return 0D; }
+    public static double getProbability(Person person) { return 0D; }
 
     /** 
      * Perform the task for the given number of seconds.

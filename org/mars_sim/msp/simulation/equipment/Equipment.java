@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Equipment.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
  
@@ -24,13 +24,12 @@ public abstract class Equipment extends Unit implements Malfunctionable {
     /** Constructs an Equipment object
      *  @param name the name of the unit
      *  @param location the unit's location
-     *  @param mars the virtual Mars
      */
-    Equipment(String name, Coordinates location, Mars mars) {
-        super(name, location, mars);
+    Equipment(String name, Coordinates location) {
+        super(name, location);
 
 		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, mars);
+		malfunctionManager = new MalfunctionManager(this);
 		malfunctionManager.addScopeString("Equipment");
     }
 
@@ -50,7 +49,7 @@ public abstract class Equipment extends Unit implements Malfunctionable {
         PersonCollection people = new PersonCollection();
 
 		// Check all people.
-        PersonIterator i = mars.getUnitManager().getPeople().iterator(); 
+        PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator(); 
         while (i.hasNext()) {
 	    	Person person = i.next();
 	    	Task task = person.getMind().getTaskManager().getTask();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.76 2004-05-19
+ * @version 2.76 2004-06-01
  * @author Barry Evans
  */
 
@@ -44,16 +44,14 @@ public class PhysicalCondition implements Serializable {
      * Construct a Physical Condition instance.
      *
      * @param person The person requiring a physical presence.
-     * @param mars main simulation control.
-     *
      */
-    public PhysicalCondition(Person newPerson, Mars mars) {
+    public PhysicalCondition(Person newPerson) {
         deathDetails = null;
         person = newPerson;
         problems = new HashMap();
         performance = 1.0D;
 
-        medic = mars.getMedicalManager();
+		medic = Simulation.instance().getMedicalManager();
         // fatigue = RandomUtil.getRandomDouble(1000D);
         fatigue = 0D;
         // hunger = RandomUtil.getRandomDouble(1000D);
@@ -370,7 +368,7 @@ public class PhysicalCondition implements Serializable {
 
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, illness, MedicalEvent.DEATH);
-		person.getMars().getEventManager().registerNewEvent(event);
+		Simulation.instance().getEventManager().registerNewEvent(event);
     }
     
     /**

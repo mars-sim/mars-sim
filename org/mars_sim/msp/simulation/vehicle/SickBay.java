@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SickBay.java
- * @version 2.75 2003-05-06
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -26,7 +26,7 @@ public class SickBay extends MedicalStation implements Serializable {
      */
     public SickBay(Vehicle vehicle, int treatmentLevel, int sickBedNum) {
         // Use MedicalStation constructor
-        super(treatmentLevel, sickBedNum, vehicle.getMars().getMedicalManager());
+        super(treatmentLevel, sickBedNum);
         
         this.vehicle = vehicle;
     }

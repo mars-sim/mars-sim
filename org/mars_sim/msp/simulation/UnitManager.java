@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2004-04-09
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -29,18 +29,15 @@ public class UnitManager implements Serializable {
     public static String EQUIPMENT = "equipment";
     
     // Data members
-    private Mars mars; // Virtual Mars
     private UnitCollection units; // Collection of all units
     private List settlementNames; // List of possible settlement names
     private List vehicleNames; // List of possible vehicle names
     private List personNames; // List of possible person names
 
-    /** Constructs a UnitManager object
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
      */
-    UnitManager(Mars mars) {
-        // Initialize virtual mars to parameter
-        this.mars = mars;
+    UnitManager() {
    
         // Initialize unit collection
         units = new UnitCollection();
@@ -69,7 +66,9 @@ public class UnitManager implements Serializable {
      */
     private void initializePersonNames() throws Exception {
  		try {
-    		personNames = mars.getSimulationConfiguration().getPersonConfiguration().getPersonNameList();
+			SimulationConfig simConfig = Simulation.instance().getSimConfig();
+			PersonConfig personConfig = simConfig.getPersonConfiguration();
+    		personNames = personConfig.getPersonNameList();
  		}
  		catch (Exception e) {
  			throw new Exception("person names could not be loaded: " + e.getMessage());
@@ -82,7 +81,9 @@ public class UnitManager implements Serializable {
      */
     private void initializeVehicleNames() throws Exception {
         try {
-        	vehicleNames = mars.getSimulationConfiguration().getVehicleConfiguration().getRoverNameList();
+			SimulationConfig simConfig = Simulation.instance().getSimConfig();
+			VehicleConfig vehicleConfig = simConfig.getVehicleConfiguration();
+        	vehicleNames = vehicleConfig.getRoverNameList();
         }
         catch (Exception e) {
         	throw new Exception("rover names could not be loaded: " + e.getMessage());
@@ -95,7 +96,9 @@ public class UnitManager implements Serializable {
      */
     private void initializeSettlementNames() throws Exception {
 		try {
-			settlementNames = mars.getSimulationConfiguration().getSettlementConfiguration().getSettlementNameList();
+			SimulationConfig simConfig = Simulation.instance().getSimConfig();
+			SettlementConfig settlementConfig = simConfig.getSettlementConfiguration();
+			settlementNames = settlementConfig.getSettlementNameList();
 		}
 		catch (Exception e) {
 			throw new Exception("settlement names could not be loaded: " + e.getMessage());
@@ -167,7 +170,8 @@ public class UnitManager implements Serializable {
      */
     private void createInitialSettlements() throws Exception {
     	
-    	SettlementConfig config = mars.getSimulationConfiguration().getSettlementConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+    	SettlementConfig config = simConfig.getSettlementConfiguration();
     	
 		try {
 			for (int x=0; x < config.getNumberOfInitialSettlements(); x++) {
@@ -192,7 +196,7 @@ public class UnitManager implements Serializable {
 				
 				Coordinates location = new Coordinates(latitude, longitude);
 				
-				addUnit(new Settlement(name, template, location, mars));
+				addUnit(new Settlement(name, template, location));
 			}
 		}
 		catch (Exception e) {
@@ -206,7 +210,8 @@ public class UnitManager implements Serializable {
      */
     private void createInitialVehicles() throws Exception {
     	
-		SettlementConfig config = mars.getSimulationConfiguration().getSettlementConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		SettlementConfig config = simConfig.getSettlementConfiguration();
     	
     	try {
     		SettlementIterator i = getSettlements().iterator();
@@ -216,7 +221,7 @@ public class UnitManager implements Serializable {
     			Iterator j = vehicleTypes.iterator();
     			while (j.hasNext()) {
     				String vehicleType = (String) j.next();
-    				addUnit(new Rover(getNewName(VEHICLE), vehicleType, settlement, mars));
+    				addUnit(new Rover(getNewName(VEHICLE), vehicleType, settlement));
     			}
     		}
     	}
@@ -236,7 +241,7 @@ public class UnitManager implements Serializable {
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			while (settlement.getAvailablePopulationCapacity() > 0) 
-    				addUnit(new Person(getNewName(PERSON), settlement, mars));
+    				addUnit(new Person(getNewName(PERSON), settlement));
     		}
     	}
     	catch (Exception e) {

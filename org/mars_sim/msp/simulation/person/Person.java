@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2004-04-09
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -17,9 +17,10 @@ import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.vehicle.*;
 
-/** The Person class represents a person on the virtual Mars. It keeps
- *  track of everything related to that person and provides
- *  information about him/her.
+/** 
+ * The Person class represents a person on the virtual Mars. It keeps
+ * track of everything related to that person and provides
+ * information about him/her.
  */
 public class Person extends Unit implements Serializable {
 
@@ -56,26 +57,27 @@ public class Person extends Unit implements Serializable {
      *
      * @param name the person's name
      * @param settlement the settlement the person is at
-     * @param mars the virtual Mars
      * @throws Exception if no inhabitable building available at settlement.
      */
-    public Person(String name, Settlement settlement, Mars mars) throws Exception {
+    public Person(String name, Settlement settlement) throws Exception {
         // Use Unit constructor
-        super(name, settlement.getCoordinates(), mars);
+        super(name, settlement.getCoordinates());
 
-        initPersonData(mars);
+        initPersonData();
 	    settlement.getInventory().addUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
     }
 
-    /** Initialize person data */
-    private void initPersonData(Mars mars) {
+    /** 
+     * Initialize person data 
+     */
+    private void initPersonData() {
         // Initialize data members
         attributes = new NaturalAttributeManager();
         skills = new SkillManager(this);
-        mind = new Mind(this, mars);
+        mind = new Mind(this);
 	    isBuried = false;
-        health = new PhysicalCondition(this, mars);
+        health = new PhysicalCondition(this);
 
 	    // Set base mass of person.
         baseMass = 70D;
@@ -170,7 +172,8 @@ public class Person extends Unit implements Serializable {
         try {
         	// If Person is dead, then skip
         	if (health.getDeathDetails() == null) {
-            	PersonConfig config = mars.getSimulationConfiguration().getPersonConfiguration();
+        		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+            	PersonConfig config = simConfig.getPersonConfiguration();
             	LifeSupport support = getLifeSupport();
             
             	// Pass the time in the physical condition first as this may result in death.

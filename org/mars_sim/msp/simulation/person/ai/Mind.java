@@ -1,16 +1,14 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.75 2004-01-07
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
-
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
@@ -27,19 +25,19 @@ public class Mind implements Serializable {
     private TaskManager taskManager; // The person's task manager.
     private Mission mission; // The person's current mission (if any).
 
-    /** Constructs a Mind object
-     *  @param person the person owning this mind
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
+     * @param person the person owning this mind
      */
-    public Mind(Person person, Mars mars) {
+    public Mind(Person person) {
 
         // Initialize data members
         this.person = person;
-        missionManager = mars.getMissionManager();
+        missionManager = Simulation.instance().getMissionManager();
         mission = null;
 
         // Construct a task manager
-        taskManager = new TaskManager(this, mars);
+        taskManager = new TaskManager(this);
     }
 
     /** 
@@ -156,7 +154,7 @@ public class Mind implements Serializable {
         // Determine which type of action was selected and set new action accordingly.
         if (tasks) {
             if (rand < taskWeights) {
-                taskManager.addTask(taskManager.getNewTask(taskWeights));
+                taskManager.addTask(taskManager.getNewTask());
                 return;
             }
             else rand -= taskWeights;
@@ -164,7 +162,7 @@ public class Mind implements Serializable {
         if (missions) {
             if (rand < missionWeights) {
                 // System.out.println(person.getName() + " starting a new mission.");
-                Mission newMission = missionManager.getNewMission(person, missionWeights);
+                Mission newMission = missionManager.getNewMission(person);
                 missionManager.addMission(newMission);
 
                 setMission(newMission);
@@ -175,7 +173,7 @@ public class Mind implements Serializable {
         if (activeMissions) {
             if (rand < activeMissionWeights) {
                 // System.out.println(person.getName() + " joining a mission.");
-                Mission activeMission = missionManager.getActiveMission(person, activeMissionWeights);
+                Mission activeMission = missionManager.getActiveMission(person);
                 if (activeMission == null) return;
                 activeMission.addPerson(person);
                 setMission(activeMission);

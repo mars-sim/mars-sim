@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -58,15 +58,14 @@ public class DriveGroundVehicle extends Task implements Serializable {
 
     /** Constructs a DriveGroundVehicle object
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @param vehicle the vehicle to be driven
      *  @param destination location to be driven to
      *  @param startTripTime the starting time of the trip
      *  @param startTripDistance the starting distance to destination for the trip
      */
-    public DriveGroundVehicle(Person person, Mars mars, GroundVehicle vehicle,
+    public DriveGroundVehicle(Person person, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
-        super("Driving vehicle", person, true, false, STRESS_MODIFIER, mars);
+        super("Driving vehicle", person, true, false, STRESS_MODIFIER);
 
         // Set initial parameters
         description = DRIVING + " " + vehicle.getName();
@@ -90,16 +89,15 @@ public class DriveGroundVehicle extends Task implements Serializable {
     /**
      * Constructs a DriveGroundVehicle object with a given starting phase.
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      * @param vehicle the vehicle to be driven
      * @param destination location to be driven to
      * @param startTripTime the starting time of the trip
      * @param startTripDistance the starting distance to destination for the trip
      * @param startingPhase the starting phase for the task
      */
-    public DriveGroundVehicle(Person person, Mars mars, GroundVehicle vehicle, Coordinates destination, 
+    public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, 
             MarsClock startTripTime, double startTripDistance, String startingPhase) {
-        this(person, mars, vehicle, destination, startTripTime, startTripDistance);
+        this(person, vehicle, destination, startTripTime, startTripDistance);
 
         if ((startingPhase != null) && !startingPhase.equals("")) phase = startingPhase;
         else phase = DRIVING;
@@ -306,7 +304,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
 
         // Consume fuel for distance traveled.
         try {
-        	VehicleConfig config = mars.getSimulationConfiguration().getVehicleConfiguration();
+        	SimulationConfig simConfig = Simulation.instance().getSimConfig();
+        	VehicleConfig config = simConfig.getVehicleConfiguration();
         	double fuelConsumed = distanceTraveled / config.getFuelEfficiency(vehicle.getDescription());
         	vehicle.getInventory().removeResource(Resource.METHANE, fuelConsumed);
         }
@@ -354,7 +353,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
      *  @return elevation in km.
      */
     private double getVehicleElevation() {
-        return mars.getSurfaceFeatures().getSurfaceTerrain().getElevation(startingLocation);
+    	SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        return surface.getSurfaceTerrain().getElevation(startingLocation);
     }
 
     /** Determine direction for obstacle avoidance.
@@ -392,7 +392,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
     private double getSpeed(Direction direction) {
 
         // Determine the terrain grade in the vehicle's current direction.
-        TerrainElevation terrain = mars.getSurfaceFeatures().getSurfaceTerrain();
+		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        TerrainElevation terrain = surface.getSurfaceTerrain();
         double terrainGrade = terrain.determineTerrainDifficulty(startingLocation, direction);
         vehicle.setTerrainGrade(terrainGrade);
 
@@ -422,7 +423,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
 
         // Determine light condition modifier based on available sunlight.
         // 30% speed at night.
-        double lightModifier = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
+        double lightModifier = surface.getSurfaceSunlight(vehicle.getCoordinates());
         lightModifier = (lightModifier * .7D) + .3D;
 
         double speed = (vehicle.getBaseSpeed() + speedSkillModifier) * Math.cos(tempAngle) * lightModifier;
@@ -455,7 +456,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
         chance /= (1D + vehicle.getTerrainHandlingCapability());
 
         // Light condition modification.
-        double lightConditions = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
+		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        double lightConditions = surface.getSurfaceSunlight(vehicle.getCoordinates());
         chance *= (5D * (1D - lightConditions)) + 1D;
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
@@ -468,7 +470,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
      *  @return MarsClock instance of date/time for ETA
      */
     private MarsClock getETA() {
-        MarsClock currentTime = mars.getMasterClock().getMarsClock();
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 
         // Determine time difference from start of trip in millisols.
         double millisolsDiff = MarsClock.getTimeDiff(currentTime, startTime);

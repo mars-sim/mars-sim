@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.76 2004-05-04
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -9,15 +9,17 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 
-/** The Sleep class is a task for sleeping.
- *  The duration of the task is by default chosen randomly, between 250 - 350 millisols.
- *  Note: Sleeping reduces fatigue.
+/** 
+ * The Sleep class is a task for sleeping.
+ * The duration of the task is by default chosen randomly, between 250 - 350 millisols.
+ * Note: Sleeping reduces fatigue and stress.
  */
 class Sleep extends Task implements Serializable {
 
@@ -28,12 +30,12 @@ class Sleep extends Task implements Serializable {
     private double duration; // The duration of task in millisols
     private LivingAccommodations accommodations; // The living accommodations if any.
 
-    /** Constructs a Sleep object
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
+     * @param person the person to perform the task
      */
-    public Sleep(Person person, Mars mars) {
-        super("Sleeping", person, false, false, STRESS_MODIFIER, mars);
+    public Sleep(Person person) {
+        super("Sleeping", person, false, false, STRESS_MODIFIER);
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
@@ -58,10 +60,9 @@ class Sleep extends Task implements Serializable {
      *  Returns 25 if person's fatigue is over 750, more if fatigue is much higher.
      *  Returns an additional 50 if it is night time.
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
         double result = 0D;
 
 		// Fatigue modifier.
@@ -69,7 +70,8 @@ class Sleep extends Task implements Serializable {
         if (fatigue > 500D) result = (fatigue - 500D) / 10D;
         
         // Dark outside modifier.
-		if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0)
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+		if (surface.getSurfaceSunlight(person.getCoordinates()) == 0)
 			result *= 2D;
         
         // Crowding modifier.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.76 2004-05-10
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -29,12 +28,12 @@ public class Maintenance extends Task implements Serializable {
     private Malfunctionable entity; // Entity to be maintained.
     private double duration; // Duration (in millisols) the person with perform this task.
 
-    /** Constructs a Maintenance object
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
+     * @param person the person to perform the task
      */
-    public Maintenance(Person person, Mars mars) {
-        super("Performing Maintenance", person, true, false, STRESS_MODIFIER, mars);
+    public Maintenance(Person person) {
+        super("Performing Maintenance", person, true, false, STRESS_MODIFIER);
 
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
@@ -52,10 +51,9 @@ public class Maintenance extends Task implements Serializable {
     /** Returns the weighted probability that a person might perform this task.
      *  It should return a 0 if there is no chance to perform this task given the person and his/her situation.
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
         double result = 0D;
 
         // Total probabilities for all malfunctionable entities in person's local.

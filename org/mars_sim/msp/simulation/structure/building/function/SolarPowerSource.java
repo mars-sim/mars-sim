@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SolarPowerSource.java
- * @version 2.75 2004-03-29
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -31,8 +31,8 @@ public class SolarPowerSource extends PowerSource implements Serializable {
 	public double getCurrentPower(Building building) {
 		BuildingManager manager = building.getBuildingManager();
 		Coordinates location = manager.getSettlement().getCoordinates();
-		Mars mars = manager.getSettlement().getMars();
-		double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
+		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+		double sunlight = surface.getSurfaceSunlight(location);
 		return sunlight * getMaxPower();
 	}
 }

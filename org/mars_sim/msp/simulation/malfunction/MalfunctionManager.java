@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.76 2004-05-19
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -31,7 +31,6 @@ public class MalfunctionManager implements Serializable {
     private double maintenanceTimeCompleted; // The completed
     private Collection scope;                // The scope strings of the unit.
     private Collection malfunctions;         // The current malfunctions in the unit.
-    private Mars mars;                       // The virtual Mars.
 
     // Life support modifiers.
     private double oxygenFlowModifier = 100D;
@@ -40,15 +39,15 @@ public class MalfunctionManager implements Serializable {
     private double temperatureModifier = 100D;
 
     /**
-     * Constructs a MalfunctionManager object.
+     * Constructor
+     * @param entity the malfunctionable entity.
      */
-    public MalfunctionManager(Malfunctionable entity, Mars mars) {
+    public MalfunctionManager(Malfunctionable entity) {
 
         // Initialize data members
         this.entity = entity;
         timeSinceLastMaintenance = 0D;
         effectiveTimeSinceLastMaintenance = 0D;
-        this.mars = mars;
         scope = new ArrayList();
         malfunctions = new ArrayList();
         maintenanceWorkTime = DEFAULT_MAINTENANCE_WORK_TIME;
@@ -246,12 +245,12 @@ public class MalfunctionManager implements Serializable {
      * Adds a randomly selected malfunction to the unit (if possible).
      */
     private void addMalfunction() {
-        MalfunctionFactory factory = mars.getMalfunctionFactory();
+        MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
         Malfunction malfunction = factory.getMalfunction(scope);
         if (malfunction != null) {
             malfunctions.add(malfunction);
             HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
-            mars.getEventManager().registerNewEvent(newEvent);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
             issueMedicalComplaints(malfunction);
        }
@@ -297,7 +296,7 @@ public class MalfunctionManager implements Serializable {
                 Malfunction item = (Malfunction)i.next();
                 malfunctions.remove(item);
                 HistoricalEvent newEvent = new MalfunctionEvent(entity, item, true);
-                mars.getEventManager().registerNewEvent(newEvent);
+				Simulation.instance().getEventManager().registerNewEvent(newEvent);
             }
         }
 
@@ -473,7 +472,7 @@ public class MalfunctionManager implements Serializable {
         while (i1.hasNext()) {
             String complaintName = (String) i1.next();
             double probability = ((Double) malfunction.getMedicalComplaints().get(complaintName)).doubleValue();
-            MedicalManager medic = mars.getMedicalManager();
+            MedicalManager medic = Simulation.instance().getMedicalManager();
             Complaint complaint = medic.getComplaintByName(complaintName);
             if (complaint != null) {
                 PersonIterator i2 = people.iterator();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 2.75 2004-04-01
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -39,8 +39,8 @@ public class Farming extends Function implements Serializable {
     	// Use Function constructor.
     	super(NAME, building);
     	
-		BuildingConfig config = building.getBuildingManager().getSettlement()
-			.getMars().getSimulationConfiguration().getBuildingConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		BuildingConfig config = simConfig.getBuildingConfiguration();
 		
 		try {
 			cropNum = config.getCropNum(building.getName());
@@ -59,10 +59,10 @@ public class Farming extends Function implements Serializable {
 		crops = new ArrayList();
 		try {
 			Settlement settlement = building.getBuildingManager().getSettlement();
-			Mars mars = settlement.getMars();
+			CropConfig cropConfig = simConfig.getCropConfiguration();
 			for (int x=0; x < cropNum; x++) {
-				crops.add(new Crop(Crop.getRandomCropType(mars.getSimulationConfiguration().getCropConfiguration()), 
-					(maxHarvest / (double) cropNum), this, mars, settlement));
+				crops.add(new Crop(Crop.getRandomCropType(cropConfig), 
+					(maxHarvest / (double) cropNum), this, settlement));
 			}
 		}
 		catch (Exception e) {
@@ -193,10 +193,11 @@ public class Farming extends Function implements Serializable {
 		// Add any new crops.
 		try {
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-			Mars mars = settlement.getMars();
+			SimulationConfig simConfig = Simulation.instance().getSimConfig();
+			CropConfig cropConfig = simConfig.getCropConfiguration();
 			for (int x=0; x < newCrops; x++) {
-				crops.add(new Crop(Crop.getRandomCropType(mars.getSimulationConfiguration().getCropConfiguration()), 
-					(maxHarvest / (double) cropNum), this, mars, settlement));
+				crops.add(new Crop(Crop.getRandomCropType(cropConfig), 
+					(maxHarvest / (double) cropNum), this, settlement));
 			}
 		}
 		catch (Exception e) {

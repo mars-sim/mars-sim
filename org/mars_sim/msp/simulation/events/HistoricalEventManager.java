@@ -1,18 +1,14 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 2.76 2004-05-12
+ * @version 2.76 2004-06-01
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.events;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.mars_sim.msp.simulation.Mars;
+import java.util.*;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.MarsClock;
 
 /**
@@ -41,15 +37,12 @@ public class HistoricalEventManager {
     private List listeners = new ArrayList();
     private List events = new LinkedList();
     private MarsClock mainClock;
-    private Mars mars;
+    // private Mars mars;
 
     /**
      * Create a new EventManager that represnets a particular simulation.
-     *
-     * @param mars The main simualtion object.
      */
-    public HistoricalEventManager(Mars mars) {
-        this.mars = mars;
+    public HistoricalEventManager() {
 
         // The main clock is not initialised until the simulation start
         this.mainClock = null;
@@ -88,7 +81,7 @@ public class HistoricalEventManager {
         }
 
         if (mainClock == null) {
-            mainClock = mars.getMasterClock().getMarsClock();
+            mainClock = Simulation.instance().getMasterClock().getMarsClock();
         }
         newEvent.setTimestamp((MarsClock)mainClock.clone());
         events.add(0, newEvent);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.76 2004-05-11
+ * @version 2.76 2004-06-02
  * @author Barry Evans
  */
 
@@ -9,8 +9,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
@@ -39,10 +39,9 @@ public class MedicalAssistance extends Task implements Serializable {
      * Constructor
      *
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      */
-    public MedicalAssistance(Person person, Mars mars) {
-        super("Medical Assistance", person, true, true, STRESS_MODIFIER, mars);
+    public MedicalAssistance(Person person) {
+        super("Medical Assistance", person, true, true, STRESS_MODIFIER);
         
         // Sets this task to create historical events.
         setCreateEvents(true);
@@ -80,7 +79,7 @@ public class MedicalAssistance extends Task implements Serializable {
 				// Create starting task event if needed.
 			    if (getCreateEvents()) {
 					TaskEvent startingEvent = new TaskEvent(person, this, TaskEvent.START, "");
-					mars.getEventManager().registerNewEvent(startingEvent);
+					Simulation.instance().getEventManager().registerNewEvent(startingEvent);
 				}
             }
             catch (Exception e) {
@@ -94,10 +93,9 @@ public class MedicalAssistance extends Task implements Serializable {
     /** Returns the weighted probability that a person might perform this task.
      *  It should return a 0 if there is no chance to perform this task given the person and his/her situation.
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
         double result = 0D;
 
         // Get the local medical aids to use.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
  
@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.structure.building;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
@@ -51,8 +53,8 @@ public class Building implements Malfunctionable, Serializable {
         	functions = determineFunctions();
         	
         	// Get base power requirements.
-			BuildingConfig config = manager.getSettlement().getMars()
-				.getSimulationConfiguration().getBuildingConfiguration();
+        	SimulationConfig simConfig = Simulation.instance().getSimConfig();
+			BuildingConfig config = simConfig.getBuildingConfiguration();
 				
 			basePowerRequirement = config.getBasePowerRequirement(name);
 			basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
@@ -62,7 +64,7 @@ public class Building implements Malfunctionable, Serializable {
         }
         
 		// Set up malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, manager.getSettlement().getMars());
+		malfunctionManager = new MalfunctionManager(this);
 		malfunctionManager.addScopeString("Building");
 		
 		// Add each function to the malfunction scope.
@@ -81,8 +83,8 @@ public class Building implements Malfunctionable, Serializable {
     private List determineFunctions() throws Exception {
     	List buildingFunctions = new ArrayList();
     	
-    	BuildingConfig config = manager.getSettlement().getMars()
-    		.getSimulationConfiguration().getBuildingConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		BuildingConfig config = simConfig.getBuildingConfiguration();
     	
     	// Set power generation function.
     	if (config.hasPowerGeneration(name)) buildingFunctions.add(new PowerGeneration(this));

@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 2.76 2004-05-12
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -30,11 +29,10 @@ public class Workout extends Task implements Serializable {
 	 * Constructor
 	 * This is an effort-driven task.
 	 * @param person the person performing the task.
-	 * @param mars the virtual Mars.
 	 */
-	public Workout(Person person, Mars mars) {
+	public Workout(Person person) {
 		// Use Task constructor.
-		super("Exercise", person, true, false, STRESS_MODIFIER, mars);
+		super("Exercise", person, true, false, STRESS_MODIFIER);
 		
 		List gyms = getAvailableGyms(person);
 		
@@ -62,10 +60,9 @@ public class Workout extends Task implements Serializable {
 	 * Returns the weighted probability that a person might perform this task.
 	 * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
 	 * @param person the person to perform the task
-	 * @param mars the virtual Mars
 	 * @return the weighted probability that a person might perform this task
 	 */
-	public static double getProbability(Person person, Mars mars) {
+	public static double getProbability(Person person) {
 		
 		double result = 0D;
 		

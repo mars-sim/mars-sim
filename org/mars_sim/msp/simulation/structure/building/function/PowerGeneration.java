@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 2.75 2004-03-29
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
  
 import java.io.Serializable;
 import java.util.*;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.building.*;
  
 /**
@@ -29,8 +30,8 @@ public class PowerGeneration extends Function implements Serializable {
     	super(NAME, building);
     	
     	// Determine power sources.
-    	BuildingConfig config = building.getBuildingManager().getSettlement()
-    		.getMars().getSimulationConfiguration().getBuildingConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		BuildingConfig config = simConfig.getBuildingConfiguration();
     		
     	try {
     		powerSources = config.getPowerSources(building.getName());

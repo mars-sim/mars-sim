@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResearchScience.java
- * @version 2.76 2004-05-24
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Lab;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
@@ -41,15 +40,14 @@ public abstract class ResearchScience extends Task implements Serializable {
 	 * Constructor
 	 * @param science the science the person is researching.
 	 * @param person the person doing the research.
-	 * @param mars the Mars instance.
 	 * @param consumesResources does the research consume a resource?
 	 * @param resourceType the type of resource consumed by the research.
 	 * @param resourceRate the rate of resource consumption by the research.
 	 */
-	public ResearchScience(String science, Person person, Mars mars, boolean consumesResources, 
+	public ResearchScience(String science, Person person, boolean consumesResources, 
 			String resourceType, double resourceRate) {
 		// Use task constructor.
-		super("Research " + science, person, true, false, STRESS_MODIFIER, mars);
+		super("Research " + science, person, true, false, STRESS_MODIFIER);
 		
 		// Initialize local members.
 		this.science = science;

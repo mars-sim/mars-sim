@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 2.76 04-05-17
+ * @version 2.76 04-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -39,10 +39,9 @@ public class CollectIce extends CollectResourcesMission {
 	/** 
 	 * Gets the weighted probability that a given person would start this mission.
 	 * @param person the given person
-	 * @param mars the virtual Mars
 	 * @return the weighted probability
 	 */
-	public static double getNewMissionProbability(Person person, Mars mars) {
+	public static double getNewMissionProbability(Person person) {
 
 		double result = 0D;
 

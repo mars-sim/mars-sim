@@ -1,18 +1,13 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.75 2004-04-11
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
-
 package org.mars_sim.msp;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
-import org.mars_sim.msp.simulation.Mars;
+import java.io.*;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.ui.standard.MainWindow;
 import org.mars_sim.msp.ui.standard.SplashWindow;
 
@@ -28,13 +23,12 @@ public class MarsProject {
         // create a splash window
         SplashWindow splashWindow = new SplashWindow();
         
-        // create Mars
+        // create Simulation
         boolean usage = false;
-        Mars mars = null;
         if (args.length == 1) {
             if (args[0].equals("-new")) {
             	try {
-            		mars = new Mars();
+            		Simulation.createNewSimulation();
             	}
             	catch (Exception e) {
             		System.err.println("Problem creating new simulation " + e);
@@ -50,7 +44,7 @@ public class MarsProject {
                 File loadFile = new File(args[1]);
                 if (loadFile.exists()) {
                     try {
-                        mars = Mars.load(loadFile);
+                    	Simulation.instance().loadSimulation(loadFile);
                     }
                     catch (Exception e) {
                         System.err.println("Problem loading existing simulation " + e);
@@ -71,20 +65,18 @@ public class MarsProject {
         // Load a the default simulation
         else if (args.length == 0) {
             try {
-                mars = Mars.load(null);
+            	Simulation.instance().loadSimulation(null);
             }
             catch (Exception e) {
                 System.err.println("Problem loading default simulation " + e);
-                System.err.println("Creating new simulation");
-            }
-
-            // If no default, then create a new one
-            if (mars == null) {
-				try {
-					mars = new Mars();
-				}
-				catch (Exception e) {
-					System.err.println("Problem creating new simulation " + e);
+                
+                try {
+                	// If error reading default saved file, create new simulation.
+                	System.err.println("Creating new simulation");
+					Simulation.createNewSimulation();
+                }
+				catch (Exception e2) {
+					System.err.println("Problem creating new simulation " + e2);
 					System.exit(0);
 				}
             }
@@ -98,10 +90,10 @@ public class MarsProject {
             System.err.println("MarsProject [-new | -load file]");
             System.exit(0);
         }
-        mars.start();
+        Simulation.instance().start();
 
         // create main desktop window
-        MainWindow window = new MainWindow(mars);
+        MainWindow window = new MainWindow();
        
         // dispose splash window
         splashWindow.dispose();

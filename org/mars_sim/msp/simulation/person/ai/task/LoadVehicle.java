@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -30,14 +29,13 @@ public class LoadVehicle extends Task implements Serializable {
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
     private Settlement settlement; // The person's settlement.
 
-    /** Constructs a LoadVehicle object.
-     *
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
-     *  @param vehicle the vehicle to be loaded
+    /** 
+     * Constructor
+     * @param person the person to perform the task
+     * @param vehicle the vehicle to be loaded
      */
-    public LoadVehicle(Person person, Mars mars, Vehicle vehicle) {
-        super("Loading vehicle", person, true, false, STRESS_MODIFIER, mars);
+    public LoadVehicle(Person person, Vehicle vehicle) {
+        super("Loading vehicle", person, true, false, STRESS_MODIFIER);
 
         description = "Loading " + vehicle.getName();
         this.vehicle = vehicle;

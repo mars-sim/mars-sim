@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 2.75 2003-03-16
+ * @version 2.76 2004-06-01
  * @author Scott Davis 
  */
 
@@ -29,22 +29,12 @@ public class MalfunctionFactory {
 
     /**
      * Constructs a MalfunctionFactory object.
-     * @param config the malfunction configuration subset.
+     * @param config malfunction configuration DOM document.
      * @throws Exception when malfunction list could not be found.
      */
     public MalfunctionFactory(MalfunctionConfig config) throws Exception {
 		malfunctions = config.getMalfunctionList(); 
     }
-
-    /**
-     * Adds a malfunction to the factory.
-     * @param malfunction the new malfunction to add
-     */
-    /*
-    public void addMalfunction(Malfunction malfunction) {
-        malfunctions.add(malfunction);
-    }
-    */
 
     /**
      * Gets a randomly-picked malfunction for a given unit scope.

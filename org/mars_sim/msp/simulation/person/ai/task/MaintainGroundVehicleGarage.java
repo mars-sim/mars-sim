@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.76 2004-05-10
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -35,10 +35,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * Constructor
      *
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      */
-    public MaintainGroundVehicleGarage(Person person, Mars mars) {
-        super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER, mars);
+    public MaintainGroundVehicleGarage(Person person) {
+        super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER);
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
@@ -69,10 +68,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * Returns the weighted probability that a person might perform this task.
      * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      * @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
         double result = 0D;
 
         VehicleIterator i = getAllVehicleCandidates(person).iterator();

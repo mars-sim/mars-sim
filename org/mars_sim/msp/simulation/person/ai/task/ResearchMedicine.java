@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * ResearchMedicine.java
- * @version 2.76 2004-05-21
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Lab;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
@@ -22,19 +21,17 @@ public class ResearchMedicine extends ResearchScience implements Serializable {
 	 * Constructor
 	 * This is an effort driven task.
 	 * @param person the person to perform the task
-	 * @param mars the virtual Mars
 	 */
-	public ResearchMedicine(Person person, Mars mars) {
-		super(Skill.MEDICAL, person, mars, false, null, 0D);
+	public ResearchMedicine(Person person) {
+		super(Skill.MEDICAL, person, false, null, 0D);
 	}
 	
 	/** 
 	 * Returns the weighted probability that a person might perform this task.
 	 * @param person the person to perform the task
-	 * @param mars the virtual Mars
 	 * @return the weighted probability that a person might perform this task
 	 */
-	public static double getProbability(Person person, Mars mars) {
+	public static double getProbability(Person person) {
 		double result = 0D;
 
 		Lab lab = getLocalLab(person, Skill.MEDICAL, false, null);

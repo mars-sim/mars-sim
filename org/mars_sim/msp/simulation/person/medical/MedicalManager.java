@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalManager.java
- * @version 2.75 2004-03-16
+ * @version 2.76 2004-06-01
  * @author Barry Evans
  */
 
@@ -68,24 +68,22 @@ public class MedicalManager implements Serializable {
      * pre-defined Complaints and the user-defined ones in the XML
      * propery file.
      *
-     * @param personConfig person configuration.
-     * @param medicalConfig medical configuration.
      * @throws Exception if unable to construct.
      */
-    public MedicalManager(PersonConfig personConfig, MedicalConfig medicalConfig) throws Exception {
+    public MedicalManager() throws Exception {
 
-        initMedical(personConfig, medicalConfig);
+        initMedical();
     }
 
     /**
      * Initialise the Medical Complaints from the configuration.
-     *
-     * @param personConfig the person configuration.
-     * @param medicalConfig the medical configuration.
      * @throws exception if not able to initialize complaints.
      */
-    public void initMedical(PersonConfig personConfig, MedicalConfig medicalConfig) throws Exception{
+    public void initMedical() throws Exception{
         // Create the pre-defined complaints, using person configuration.
+        SimulationConfig simConfig = Simulation.instance().getSimConfig();
+        PersonConfig personConfig = simConfig.getPersonConfiguration();
+        MedicalConfig medicalConfig = simConfig.getMedicalConfiguration();
 
 		try {
 			

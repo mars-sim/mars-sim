@@ -1,20 +1,15 @@
 /**
  * Mars Simulation Project
  * DeathInfo.java
- * @version 2.75 2002-06-08
+ * @version 2.76 2004-06-01
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.util.Iterator;
-
-import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.malfunction.Malfunction;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
@@ -47,7 +42,7 @@ public class DeathInfo implements java.io.Serializable {
     public DeathInfo(Person person) {
 
         // Initialize data members
-        timeOfDeath = person.getMars().getMasterClock().getMarsClock().getTimeStamp();
+        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
     
         Complaint serious = person.getPhysicalCondition().getMostSerious();
         if (serious != null) illness = serious.getName();

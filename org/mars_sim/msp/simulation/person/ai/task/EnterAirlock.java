@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -10,8 +10,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Mars;
+// import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.Person;
@@ -37,11 +38,10 @@ class EnterAirlock extends Task implements Serializable {
      * Constructor
      *
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      * @param airlock to be used.
      */
-    public EnterAirlock(Person person, Mars mars, Airlock airlock) {
-        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, mars);
+    public EnterAirlock(Person person, Airlock airlock) {
+        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER);
 
         // Initialize data members
         description = "Entering " + airlock.getEntityName() + " from EVA";
@@ -54,14 +54,9 @@ class EnterAirlock extends Task implements Serializable {
      * Constructs a EnterAirlock object without an airlock.
      *
      * @param person the person to perform the task.
-     * @param mars the virtual Mars
      */
-    public EnterAirlock(Person person, Mars mars) {
-        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, mars);
-
-        // System.out.println("Enter Airlock due to strange situation.");
-        // System.out.println("Illness: " + person.getPhysicalCondition().getHealthSituation());
-        // System.out.println("Performance Rating: " + person.getPerformanceRating());
+    public EnterAirlock(Person person) {
+        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER);
 	
         // Determine airlock from other people on mission.
         if (person.getMind().getMission() != null) {
@@ -84,7 +79,7 @@ class EnterAirlock extends Task implements Serializable {
 
         // If not look for any settlements at person's location.
         if (airlock == null) {
-            SettlementIterator i = mars.getUnitManager().getSettlements().iterator();
+            SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().iterator();
             while (i.hasNext() && (airlock == null)) {
                 Settlement settlement = i.next();
                 if (person.getCoordinates().equals(settlement.getCoordinates())) 
@@ -94,7 +89,7 @@ class EnterAirlock extends Task implements Serializable {
 
         // If not look for any airlockable vehicles at person's location.
         if (airlock == null) {
-            VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
+            VehicleIterator i = Simulation.instance().getUnitManager().getVehicles().iterator();
             while (i.hasNext() && (airlock == null)) {
                 Vehicle vehicle = i.next();
                 if (person.getCoordinates().equals(vehicle.getCoordinates())) {
@@ -112,10 +107,9 @@ class EnterAirlock extends Task implements Serializable {
     /** Returns the weighted probability that a person might perform this task.
      *  It should return a 0 if there is no chance to perform this task given the person and his/her situation.
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 500D;

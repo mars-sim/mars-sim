@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.76 2004-05-17
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -10,8 +10,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.Iterator;
 import org.mars_sim.msp.simulation.Airlock;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SurfaceFeatures;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 
@@ -31,10 +32,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
     /**
      * Constructs a RepairEVAMalfunction object.
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      */
-    public RepairEVAMalfunction(Person person, Mars mars) {
-        super("Repairing EVA Malfunction", person, mars);
+    public RepairEVAMalfunction(Person person) {
+        super("Repairing EVA Malfunction", person);
 
         // Get the malfunctioning entity.
         entity = getEVAMalfunctionEntity(person);
@@ -106,10 +106,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
     /** Returns the weighted probability that a person might perform this task.
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
         double result = 0D;
 
         // Total probabilities for all malfunctionable entities in person's local.
@@ -123,8 +122,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         if (getAvailableAirlock(person) == null) result = 0D;
 
         // Check if it is night time.
-        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
-			if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+			if (!surface.inDarkPolarRegion(person.getCoordinates()))
         		result = 0D;
         } 
 	

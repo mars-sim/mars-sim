@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.76 2004-05-17
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -26,11 +26,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 	protected double startingCargo; // Amount of resource already in rover cargo at start of task. (kg)
 	protected String resourceType; // The resource type (see org.mars_sim.msp.simulation.Resource)
 	
-	public CollectResources(String taskName, Person person, Mars mars, Rover rover, String resourceType, 
+	public CollectResources(String taskName, Person person, Rover rover, String resourceType, 
 			double collectionRate, double targettedAmount, double startingCargo) {
 		
 		// Use EVAOperation parent constructor.
-		super(taskName, person, mars);
+		super(taskName, person);
 		
 		// Initialize data members.
 		this.rover = rover;
@@ -60,8 +60,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Add experience to "EVA Operations" skill.
 		// (1 base experience point per 100 millisols of time spent)
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		double experience = time / 100D;
+		
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
 		experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
 		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
@@ -121,7 +122,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Modify collection rate by polar region if ice collecting.
 		if (resourceType.equals(Resource.ICE)) {
-			if (mars.getSurfaceFeatures().inPolarRegion(person.getCoordinates()))
+			if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates()))
 				samplesCollected *= 3D;
 		}
 
@@ -181,19 +182,20 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * Checks if a person can perform an CollectResources task.
 	 * @param person the person to perform the task
 	 * @param rover the rover the person will EVA from
-	 * @param mars the virtual mars instance
 	 * @return true if person can perform the task.
 	 */
-	public static boolean canCollectResources(Person person, Rover rover, Mars mars) {
+	public static boolean canCollectResources(Person person, Rover rover) {
 
 		// Check if person can exit the rover.
 		boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
+		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+
 		// Check if it is night time outside.
-		boolean sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) > 0;
+		boolean sunlight = surface.getSurfaceSunlight(rover.getCoordinates()) > 0;
 		
 		// Check if in dark polar region.
-		boolean darkRegion = mars.getSurfaceFeatures().inDarkPolarRegion(rover.getCoordinates());
+		boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
 
 		// Check if person's medical condition will not allow task.
 		boolean medical = person.getPerformanceRating() < .5D;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Weather.java
- * @version 2.75 2003-01-07
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
  
@@ -22,13 +22,8 @@ public class Weather implements Serializable {
     // exreme cold temperatures at Mars
     private static final double EXTREME_COLD = -120D;
     
-    // Data members 
-    private Mars mars;
-    
     /** Constructs a Weather object */
-    public Weather(Mars mars) {
-        this.mars = mars;
-    }
+    public Weather() {}
     
     /**
      * Gets the air pressure at a given location.
@@ -37,6 +32,7 @@ public class Weather implements Serializable {
     public double getAirPressure(Coordinates location) {
 	    
         // Get local elevation in meters.
+		Mars mars = Simulation.instance().getMars();
         TerrainElevation terrainElevation = mars.getSurfaceFeatures().getSurfaceTerrain();
         double elevation = terrainElevation.getElevation(location);
         
@@ -60,6 +56,7 @@ public class Weather implements Serializable {
         // standard -120D if extreme cold
         
         double temperature = EXTREME_COLD;
+		Mars mars = Simulation.instance().getMars();
         SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
         
         if (surfaceFeatures.inDarkPolarRegion(location)){

@@ -1,16 +1,18 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.75 2004-04-03
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
-/** The Unit class is the abstract parent class to all units on the
- *  virtual Mars.  Units include people, vehicles and settlements.
- *  This class provides data members and methods common to all units.
+
+/** 
+ * The Unit class is the abstract parent class to all units in the
+ * Simulation.  Units include people, vehicles and settlements.
+ * This class provides data members and methods common to all units.
  */
 public abstract class Unit implements Serializable {
 
@@ -18,21 +20,19 @@ public abstract class Unit implements Serializable {
     protected Coordinates location; // Unit location coordinates
     protected String name;          // Unit name
     protected String description;   // Unit description
-    protected Mars mars;            // The virtual Mars
     protected double baseMass;      // The mass of the unit without inventory
     protected Inventory inventory;  // The unit's inventory
     protected Unit containerUnit;   // The unit containing this unit
     
-    /** Constructs a Unit object
-     *  @param name the name of the unit
-     *  @param location the unit's location
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
+     * @param name the name of the unit
+     * @param location the unit's location
      */
-    public Unit(String name, Coordinates location, Mars mars) {
+    public Unit(String name, Coordinates location) {
         // Initialize data members from parameters
         this.name = name;
         this.location = new Coordinates(location);
-        this.mars = mars;
 	
         // Set unit description (children can set it to something else).
         description = name;
@@ -51,7 +51,7 @@ public abstract class Unit implements Serializable {
      *  @return the unit's unit manager
      */
     public UnitManager getUnitManager() {
-        return mars.getUnitManager();
+        return Simulation.instance().getUnitManager();
     }
 
     /** Returns unit's name 
@@ -75,13 +75,6 @@ public abstract class Unit implements Serializable {
      */
     public Coordinates getCoordinates() {
         return location;
-    }
-
-    /** Returns the Mars instance
-     *  @return mars
-     */
-    public Mars getMars() {
-        return mars;
     }
     
     /** Sets unit's location coordinates 

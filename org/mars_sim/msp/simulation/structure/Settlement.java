@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.76 2004-05-10
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -15,8 +15,9 @@ import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
-/** The Settlement class represents a settlement unit on virtual Mars.
- *  It contains information related to the state of the settlement.
+/** 
+ * The Settlement class represents a settlement unit on virtual Mars.
+ * It contains information related to the state of the settlement.
  */
 public class Settlement extends Structure implements org.mars_sim.msp.simulation.LifeSupport {
 
@@ -33,12 +34,11 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * @param name the settlement's name
      * @param template for the settlement
      * @param location the settlement's location
-     * @param mars the virtual Mars
      * @throws Exception if settlement cannot be constructed.
      */
-    public Settlement(String name, String template, Coordinates location, Mars mars) throws Exception { 
+    public Settlement(String name, String template, Coordinates location) throws Exception { 
         // Use Unit constructor
-        super(name, location, mars);
+        super(name, location);
         
         this.template = template;
         
@@ -191,7 +191,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public double getAirPressure() {
         double result = NORMAL_AIR_PRESSURE * (getAirPressureModifier() / 100D);
-        double ambient = mars.getWeather().getAirPressure(location);
+        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(location);
         if (result < ambient) return ambient;
         else return result;
     }
@@ -209,7 +209,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public double getTemperature() {
         double result = NORMAL_TEMP * (getTemperatureModifier() / 100D);
-        double ambient = mars.getWeather().getTemperature(location);
+        double ambient = Simulation.instance().getMars().getWeather().getTemperature(location);
         if (result < ambient) return ambient;
         else return result;
     }
@@ -268,7 +268,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         PersonCollection people = new PersonCollection(getInhabitants());
 
         // Check all people.
-        PersonIterator i = mars.getUnitManager().getPeople().iterator();
+        PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
         while (i.hasNext()) {
             Person person = i.next();
             Task task = person.getMind().getTaskManager().getTask();

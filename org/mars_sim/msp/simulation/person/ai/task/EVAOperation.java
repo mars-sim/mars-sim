@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 2.76 2004-05-17
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -37,13 +38,12 @@ abstract class EVAOperation extends Task implements Serializable {
     protected boolean enteredAirlock; // Person has entered the airlock.
 	
     /** 
-     * Constructs a EVAOperation object.
+     * Constructor
      * @param name the name of the task
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      */
-    public EVAOperation(String name, Person person, Mars mars) { 
-        super(name, person, true, false, STRESS_MODIFIER, mars);
+    public EVAOperation(String name, Person person) { 
+        super(name, person, true, false, STRESS_MODIFIER);
     }
 
     /**
@@ -63,7 +63,7 @@ abstract class EVAOperation extends Task implements Serializable {
         }
         else {
             if (ExitAirlock.canExitAirlock(person, airlock)) {
-                addSubTask(new ExitAirlock(person, mars, airlock));
+                addSubTask(new ExitAirlock(person, airlock));
                 return 0D;
             }
             else {
@@ -85,7 +85,7 @@ abstract class EVAOperation extends Task implements Serializable {
 
         if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             if (EnterAirlock.canEnterAirlock(person, airlock)) {
-                addSubTask(new EnterAirlock(person, mars, airlock));
+                addSubTask(new EnterAirlock(person, airlock));
                 return 0D;
             }
             else {
@@ -110,6 +110,7 @@ abstract class EVAOperation extends Task implements Serializable {
         boolean result = false;
         
         // Check if it is night time. 
+        Mars mars = Simulation.instance().getMars();
         if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
             // System.out.println(person.getName() + " should end EVA: night time.");
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))

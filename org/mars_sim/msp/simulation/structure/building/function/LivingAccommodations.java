@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 2.76 2004-05-12
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -33,8 +33,9 @@ public class LivingAccommodations extends Function implements Serializable {
 		// Call Function constructor.
 		super(NAME, building);
 		
-		BuildingConfig config = building.getBuildingManager().getSettlement()
-			.getMars().getSimulationConfiguration().getBuildingConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		BuildingConfig config = simConfig.getBuildingConfiguration();
+		
 		try {
 			beds = config.getLivingAccommodationBeds(building.getName());
 		}

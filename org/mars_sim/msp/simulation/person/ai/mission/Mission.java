@@ -1,15 +1,14 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.75 2004-01-15
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
-
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonCollection;
@@ -27,7 +26,6 @@ public abstract class Mission implements Serializable {
     private static final String END_MISSION = "End Mission ";
 
     // Data members
-    protected Mars mars; // Virtual Mars
     protected PersonCollection people; // People in mission
     protected String name; // Name of mission
     protected String description; // Description of the mission
@@ -48,13 +46,12 @@ public abstract class Mission implements Serializable {
         description = name;
         people = new PersonCollection();
         done = false;
-        mars = missionManager.getMars();
         phase = "";
         missionCapacity = Integer.MAX_VALUE;
 
 		// Created mission starting event.
 		HistoricalEvent newEvent = new MissionEvent(startingPerson, this, MissionEvent.START);
-		mars.getEventManager().registerNewEvent(newEvent);
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
         // Add starting person to mission.
         addPerson(startingPerson);
@@ -69,7 +66,7 @@ public abstract class Mission implements Serializable {
 
 			// Creating mission joining event.
             HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.JOINING);
-            mars.getEventManager().registerNewEvent(newEvent);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
             // System.out.println(person.getName() + " added to mission: " + name);
         }
     }
@@ -83,7 +80,7 @@ public abstract class Mission implements Serializable {
 
 			// Creating missing finishing event.
 			HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.FINISH);
-            mars.getEventManager().registerNewEvent(newEvent);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
             if (people.size() == 0) done = true;
             // System.out.println(person.getName() + " removed from mission: " + name);
@@ -158,10 +155,9 @@ public abstract class Mission implements Serializable {
 
     /** Gets the weighted probability that a given person would start this mission.
      *  @param person the given person
-     *  @param mars the virtual Mars
      *  @return the weighted probability
      */
-    public static double getNewMissionProbability(Person person, Mars mars) {
+    public static double getNewMissionProbability(Person person) {
         return 0D;
     }
 

@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -35,8 +37,9 @@ public class LifeSupport extends Function implements Serializable {
 		
 		occupants = new PersonCollection();
 		
-		BuildingConfig config = building.getBuildingManager().getSettlement()
-			.getMars().getSimulationConfiguration().getBuildingConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		BuildingConfig config = simConfig.getBuildingConfiguration();
+		
 		try {
 			// Set occupant capacity.
 			occupantCapacity = config.getLifeSupportCapacity(building.getName());

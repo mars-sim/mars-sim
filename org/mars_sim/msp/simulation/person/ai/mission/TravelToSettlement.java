@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.76 2004-05-17
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -10,9 +10,9 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.MarsClock;
 import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
@@ -50,9 +50,10 @@ class TravelToSettlement extends Mission implements Serializable {
     private DriveGroundVehicle driveTask; // The current driving task.
     ReserveRover reserveRover;
 
-    /** Constructs a TravelToSettlement object with destination settlement
-     *  randomly determined.
-     *  @param missionManager the mission manager 
+    /** 
+     * Constructs a TravelToSettlement object with destination settlement
+     * randomly determined.
+     * @param missionManager the mission manager 
      */
     public TravelToSettlement(MissionManager missionManager, Person startingPerson) {
         super("Travel To Settlement", missionManager, startingPerson);
@@ -78,10 +79,9 @@ class TravelToSettlement extends Mission implements Serializable {
 
     /** Gets the weighted probability that a given person would start this mission.
      *  @param person the given person
-     *  @param mars the virtual Mars
      *  @return the weighted probability
      */
-    public static double getNewMissionProbability(Person person, Mars mars) {
+    public static double getNewMissionProbability(Person person) {
 
         double result = 0D;
 
@@ -191,8 +191,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // If a rover cannot be reserved, end mission.
         if (rover == null) {
             if (reserveRover == null) {
-                reserveRover = new ReserveRover(null, 0D, person, mars, 
-		        	destinationSettlement.getCoordinates());
+                reserveRover = new ReserveRover(null, 0D, person, destinationSettlement.getCoordinates());
                 assignTask(person, reserveRover);
                 return;
             }
@@ -213,7 +212,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // If there isn't enough supplies available, end mission.
         if (isRoverLoaded()) roverLoaded = true;
         if (!roverLoaded) {
-            assignTask(person, new LoadVehicle(person, mars, rover));
+            assignTask(person, new LoadVehicle(person, rover));
             if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission(); 
             return;
         }
@@ -255,7 +254,7 @@ class TravelToSettlement extends Mission implements Serializable {
 
         // Record starting time and distance to destination.
         if ((startingTime == null) || (startingDistance == 0D)) {
-            startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
+            startingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
             startingDistance = rover.getCoordinates().getDistance(destinationSettlement.getCoordinates());
         }
 
@@ -274,9 +273,9 @@ class TravelToSettlement extends Mission implements Serializable {
             else {
                 if ((rover.getDriver() == null) && (rover.getStatus().equals(Rover.PARKED))) {
                     Coordinates destination = destinationSettlement.getCoordinates();
-                    if (driveTask != null) driveTask = new DriveGroundVehicle(person, mars, rover, 
+                    if (driveTask != null) driveTask = new DriveGroundVehicle(person, rover, 
                         destination, startingTime, startingDistance, driveTask.getPhase()); 
-                    else driveTask = new DriveGroundVehicle(person, mars, rover, destination, 
+                    else driveTask = new DriveGroundVehicle(person, rover, destination, 
                         startingTime, startingDistance); 
                     assignTask(person, driveTask);
                     lastDriver = person;
@@ -336,7 +335,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // Unload rover if necessary.
         if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
         if (!roverUnloaded) {
-            assignTask(person, new UnloadVehicle(person, mars, rover));
+            assignTask(person, new UnloadVehicle(person, rover));
             return;
         }
 

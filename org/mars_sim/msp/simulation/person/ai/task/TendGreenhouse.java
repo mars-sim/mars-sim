@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.76 2004-05-21
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -30,9 +29,9 @@ public class TendGreenhouse extends Task implements Serializable {
     private Settlement settlement; // The settlement the greenhouse is in.
     private double duration; // The duration (in millisols) the person will perform the task.
 
-    public TendGreenhouse(Person person, Mars mars) {
+    public TendGreenhouse(Person person) {
         // Use Task constructor
-        super("Tending Greenhouse", person, true, false, STRESS_MODIFIER, mars);
+        super("Tending Greenhouse", person, true, false, STRESS_MODIFIER);
         
         // Initialize data members
         description = "Tending Greenhouse at " + person.getSettlement().getName();
@@ -55,11 +54,12 @@ public class TendGreenhouse extends Task implements Serializable {
         duration = RandomUtil.getRandomDouble(500D);
     }
 
-    /** Returns the weighted probability that a person might perform this task.
-     *  Returns a 25 probability if person is at a settlement.
-     *  Returns a 0 if not.
-     */
-    public static double getProbability(Person person, Mars mars) {
+	/** 
+	 * Returns the weighted probability that a person might perform this task.
+	 * @param person the person to perform the task
+	 * @return the weighted probability that a person might perform this task
+	 */
+    public static double getProbability(Person person) {
         double result = 0D;
         
         try {

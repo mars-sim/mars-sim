@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 2.75 2004-03-31
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
  
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 
 /**
@@ -30,8 +30,8 @@ public class Storage extends Function implements Serializable {
 		super(NAME, building);
 		
 		try {
-			BuildingConfig config = building.getBuildingManager().getSettlement()
-				.getMars().getSimulationConfiguration().getBuildingConfiguration();
+			SimulationConfig simConfig = Simulation.instance().getSimConfig();
+			BuildingConfig config = simConfig.getBuildingConfiguration();
 			Inventory inventory = building.getInventory();	
 		
 			// Get building resource capacity.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.75 2004-01-12
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -11,40 +11,30 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
-
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
 
-/** The MissionManager class keeps track of ongoing missions
- *  in the simulation. 
+/** 
+ * The MissionManager class keeps track of ongoing missions
+ * in the simulation. 
  *
- *  The simulation has only one mission manager. 
+ * The simulation has only one mission manager. 
  */
 public class MissionManager implements Serializable {
 
     // Data members
     private List missions; // Current missions in the simulation. 
-    private Mars mars; // Virtual Mars 
 
     // Array of potential new missions
     Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, CollectIce.class };
 
-    /** Constructs a MissioniManager object
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
      */
-    public MissionManager(Mars mars) {
+    public MissionManager() {
 
         // Initialize data members
-        this.mars = mars;
         missions = new ArrayList();
-    }
-
-    /** Returns the virtual Mars in the simulation
-     *  @return virtual Mars
-     */
-    public Mars getMars() {
-        return mars;
     }
 
     /** Returns the number of currently active missions.
@@ -112,8 +102,8 @@ public class MissionManager implements Serializable {
         double result = 0D;
      
         // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class, Mars.class };
-        Object[] parametersForInvokingMethod = { person, mars };
+        Class[] parametersForFindingMethod = { Person.class };
+        Object[] parametersForInvokingMethod = { person };
 
         // Sum the probable weights for each available potential mission.
         for (int x=0; x < potentialMissions.length; x++) {
@@ -130,18 +120,17 @@ public class MissionManager implements Serializable {
     }
 
     /** Gets a new mission for a person based on potential missions available.
-     *  @param person person to find the mission for
-     *  @param totalProbabilityWeight total probability weight of all available missions 
+     *  @param person person to find the mission for 
      *  @return new mission
      */
-    public Mission getNewMission(Person person, double totalProbabilityWeight) {
+    public Mission getNewMission(Person person) {
         
         // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class, Mars.class };
-        Object[] parametersForInvokingMethod = { person, mars };
+        Class[] parametersForFindingMethod = { Person.class };
+        Object[] parametersForInvokingMethod = { person };
 
         // Get a random number from 0 to the total probability weight.
-        double r = RandomUtil.getRandomDouble(totalProbabilityWeight);
+        double r = RandomUtil.getRandomDouble(getTotalMissionProbability(person));
 
         // Determine which mission is selected.
         Class mission = null;
@@ -194,18 +183,18 @@ public class MissionManager implements Serializable {
         return result;
     }
 
-    /** Gets an active mission for a person to join.
-     *  @param person the given person
-     *  @param totalProbabilityWeight the total probability weight for active missions.
+    /** 
+     * Gets an active mission for a person to join.
+     * @param person the given person
      */
-    public Mission getActiveMission(Person person, double totalProbabilityWeight) {
+    public Mission getActiveMission(Person person) {
         Mission result = null;
 
         // Remove missions that are already completed.
         cleanMissions();
 
         // Get a random number from 0 to the total probability weight.
-        double r = RandomUtil.getRandomDouble(totalProbabilityWeight);
+        double r = RandomUtil.getRandomDouble(getTotalActiveMissionProbability(person));
 
         for (int x=0; x < missions.size(); x++) {
             Mission tempMission = (Mission) missions.get(x);            

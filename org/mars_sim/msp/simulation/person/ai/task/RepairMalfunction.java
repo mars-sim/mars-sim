@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.76 2004-05-12
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -28,12 +27,11 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     private double duration; // Duration of task in millisols.
 
     /**
-     * Constructs a RepairMalfunction object.
+     * Constructor
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      */
-    public RepairMalfunction(Person person, Mars mars) {
-        super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, mars);
+    public RepairMalfunction(Person person) {
+        super("Repairing Malfunction", person, true, false, STRESS_MODIFIER);
 
         // Randomly determine duration, from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);
@@ -60,10 +58,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
     /** Returns the weighted probability that a person might perform this task.
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
         double result = 0D;
 
         // Total probabilities for all malfunctionable entities in person's local.

@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -27,14 +26,13 @@ public class UnloadVehicle extends Task implements Serializable {
     private Vehicle vehicle;  // The vehicle that needs to be unloaded.
     private Settlement settlement; // The settlement the person is unloading to.
 
-    /** Constructs a UnloadVehicle object.
-     *
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
-     *  @param vehicle the vehicle to be unloaded
+    /** 
+     * Constructor
+     * @param person the person to perform the task
+     * @param vehicle the vehicle to be unloaded
      */
-    public UnloadVehicle(Person person, Mars mars, Vehicle vehicle) {
-        super("Unloading vehicle", person, true, false, STRESS_MODIFIER, mars);
+    public UnloadVehicle(Person person, Vehicle vehicle) {
+        super("Unloading vehicle", person, true, false, STRESS_MODIFIER);
 
 	    description = "Unloading " + vehicle.getName();
         this.vehicle = vehicle;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.73 2004-03-08
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -18,7 +18,6 @@ import java.io.Serializable;
 public class MasterClock implements Runnable, Serializable {
 
     // Data members
-    private Mars mars;            // Virtual Mars
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
@@ -32,14 +31,11 @@ public class MasterClock implements Runnable, Serializable {
 
     /** 
      * Constructor
-     * @param mars the virtual mars that uses the clock.
      * @throws Exception if clock could not be constructed.
      */
-    public MasterClock(Mars mars) throws Exception {
+    public MasterClock() throws Exception {
         // Initialize data members
-        this.mars = mars;
-
-		SimulationConfig config = mars.getSimulationConfiguration();
+		SimulationConfig config = Simulation.instance().getSimConfig();
 
         // Create a Martian clock
         marsTime = new MarsClock(config.getMarsStartDateTime());
@@ -80,7 +76,7 @@ public class MasterClock implements Runnable, Serializable {
     public double getTimePulse() throws Exception {
 
 		// Get time ratio from simulation configuration.
-		if (timeRatio == 0) setTimeRatio(mars.getSimulationConfiguration().getSimulationTimeRatio());
+		if (timeRatio == 0) setTimeRatio(Simulation.instance().getSimConfig().getSimulationTimeRatio());
 
         double timePulse;
         if (timeRatio > 0D) {
@@ -129,8 +125,8 @@ public class MasterClock implements Runnable, Serializable {
             	// Get the time pulse length in millisols.
             	double timePulse = getTimePulse();
 
-            	// Send virtual Mars a clock pulse representing the time pulse length (in millisols).
-            	mars.clockPulse(timePulse);
+            	// Send simulation a clock pulse representing the time pulse length (in millisols).
+            	Simulation.instance().clockPulse(timePulse);
 
             	// Add time pulse length to Earth and Mars clocks. 
             	earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -11,23 +11,23 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 
-/** The TaskManager class keeps track of a person's current task and can randomly
- *  assign a new task to a person based on a list of possible tasks and that person's
- *  current situation.
+/** 
+ * The TaskManager class keeps track of a person's current task and can randomly
+ * assign a new task to a person based on a list of possible tasks and that person's
+ * current situation.
  *
- *  There is one instance of TaskManager per person.
+ * There is one instance of TaskManager per person.
  */
 public class TaskManager implements Serializable {
 
     // Data members
     private Task currentTask; // The current task the person is doing.
     private Mind mind; // The mind of the person the task manager is responsible for.
-    private Mars mars; // The virtual Mars
 
     // Array of available tasks
     private Class[] availableTasks = { Relax.class, TendGreenhouse.class,
@@ -40,16 +40,17 @@ public class TaskManager implements Serializable {
                                        RepairMalfunction.class,
                                        RepairEVAMalfunction.class,
                                        EnterAirlock.class,
-                                       Workout.class };
+                                       Workout.class,
+                                       ResearchBotany.class,
+                                       ResearchMedicine.class };
 
-    /** Constructs a TaskManager object
-     *  @param person the person the task manager is for
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
+     * @param person the person the task manager is for
      */
-    public TaskManager(Mind mind, Mars mars) {
+    public TaskManager(Mind mind) {
         // Initialize data members
         this.mind = mind;
-        this.mars = mars;
         currentTask = null;
     }
 
@@ -109,8 +110,6 @@ public class TaskManager implements Serializable {
      * Sets the current task to null.
      */
     public void clearTask() {
-
-
         currentTask = null;
     }
 
@@ -159,24 +158,29 @@ public class TaskManager implements Serializable {
 				task = task.getSubTask();
 	    	}
 
-	    	if (!hasEmergencyRepair) addTask(new RepairEmergencyMalfunction(mind.getPerson(), mars));
+	    	if (!hasEmergencyRepair) addTask(new RepairEmergencyMalfunction(mind.getPerson()));
 		}
     }
 
     /** 
      * Gets a new task for the person based on tasks available.
-     * @param totalProbabilityWeight the total of task probability weights
      * @return new task
      * @throws Exception if new task could not be found.
      */
-    public Task getNewTask(double totalProbabilityWeight) throws Exception {
+    public Task getNewTask() throws Exception {
 
         // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class, Mars.class };
-        Object[] parametersForInvokingMethod = { mind.getPerson(), mars };
+        Class[] parametersForFindingMethod = { Person.class };
+        Object[] parametersForInvokingMethod = { mind.getPerson() };
 
         // Get a random number from 0 to the total weight
-        double r = RandomUtil.getRandomDouble(totalProbabilityWeight);
+        double totalProbability = getTotalTaskProbability(); 
+        Map firstMap = getProbabilityMap();
+        double totalProbability2 = getTotalTaskProbability();
+        Map firstMap2 = getProbabilityMap();
+        double totalProbability3 = getTotalTaskProbability();
+        Map firstMap3 = getProbabilityMap();
+        double r = RandomUtil.getRandomDouble(totalProbability);
 
         // Determine which task is selected.
         Class task = null;
@@ -192,12 +196,14 @@ public class TaskManager implements Serializable {
             }
             catch (InvocationTargetException ie) {
                 Throwable nested = ie.getTargetException();
-                System.out.println("TaskManager.getNewTask() (Invocation Exception): " + nested.toString());
-                System.out.println("Target = " + availableTasks[x]);
-                System.out.println("Args = " + parametersForInvokingMethod);
+                System.err.println("TaskManager.getNewTask() (Invocation Exception): " + nested.toString());
+                System.err.println("Target = " + availableTasks[x]);
+                System.err.println("Args = " + parametersForInvokingMethod);
                 nested.printStackTrace();
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+            	System.err.println("TaskManager.getNewTask(): " + e.getMessage());
+            }
         }
 
         // Construct the task
@@ -206,6 +212,12 @@ public class TaskManager implements Serializable {
             return (Task) construct.newInstance(parametersForInvokingMethod);
         }
         catch (Exception e) {
+			double checkProbability1 = getTotalTaskProbability();
+			Map secondMap1 = getProbabilityMap();
+			double checkProbability2 = getTotalTaskProbability();
+			Map secondMap2 = getProbabilityMap();
+			double checkProbability3 = getTotalTaskProbability();
+			Map secondMap3 = getProbabilityMap();
         	throw new Exception("TaskManager.getNewTask(): " + e.getMessage());
         }
     }
@@ -217,8 +229,8 @@ public class TaskManager implements Serializable {
         double result = 0D;
 
         // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class, Mars.class };
-        Object[] parametersForInvokingMethod = { mind.getPerson(), mars };
+        Class[] parametersForFindingMethod = { Person.class };
+        Object[] parametersForInvokingMethod = { mind.getPerson() };
 
         // Sum the probable weights of each available task.
         for (int x = 0; x < availableTasks.length; x++) {
@@ -226,10 +238,30 @@ public class TaskManager implements Serializable {
                 Method probability = availableTasks[x].getMethod("getProbability", parametersForFindingMethod);
                 result += ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
             } catch (Exception e) {
-                // System.out.println("TaskManager.getTotalTaskProbability(): " + e.toString());
+                System.err.println("TaskManager.getTotalTaskProbability(): " + e.toString());
             }
         }
 
         return result;
+    }
+    
+    private Map getProbabilityMap() {
+    	Map result = new HashMap();
+    	
+		// Initialize parameters
+		Class[] parametersForFindingMethod = { Person.class };
+		Object[] parametersForInvokingMethod = { mind.getPerson() };
+
+		// Sum the probable weights of each available task.
+		for (int x = 0; x < availableTasks.length; x++) {
+			try {
+				Method probability = availableTasks[x].getMethod("getProbability", parametersForFindingMethod);
+				result.put(mind.getPerson().getName() + availableTasks[x], probability.invoke(null, parametersForInvokingMethod));
+			} catch (Exception e) {
+				System.err.println("TaskManager.getTotalTaskProbability(): " + e.toString());
+			}
+		}    	
+    	
+    	return result;
     }
 }

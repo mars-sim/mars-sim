@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.76 2004-05-17
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -12,8 +12,10 @@ import java.util.*;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.MarsClock;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
@@ -147,7 +149,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		// If there isn't enough supplies available, end mission.
 		if (LoadVehicle.isFullyLoaded(rover)) roverLoaded = true;
 		if (!roverLoaded) {
-			assignTask(person, new LoadVehicle(person, mars, rover));
+			assignTask(person, new LoadVehicle(person, rover));
 			if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission();
 			return;
 		}
@@ -201,7 +203,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	    
 		// Record starting time and distance to destination.
 		if ((startingTime == null) || (startingDistance == 0D)) {
-			startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
+			startingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 			startingDistance = rover.getCoordinates().getDistance(destination);
 		}
 
@@ -214,7 +216,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 				phase = COLLECT_RESOURCES + " from Site " + (siteIndex + 1);
 				siteCollectedResources = 0D;
 				collectingStart = rover.getInventory().getResourceMass(resourceType);
-				startCollectingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
+				startCollectingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 			}
 			return;
 		}
@@ -227,9 +229,9 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			}
 			else {
 				if ((rover.getDriver() == null) && (rover.getStatus().equals(Vehicle.PARKED))) {
-					if (driveTask != null) driveTask = new DriveGroundVehicle(person, mars, rover, 
+					if (driveTask != null) driveTask = new DriveGroundVehicle(person, rover, 
 							destination, startingTime, startingDistance, driveTask.getPhase());
-					else driveTask = new DriveGroundVehicle(person, mars, rover, destination, 
+					else driveTask = new DriveGroundVehicle(person, rover, destination, 
 							startingTime, startingDistance);
 					assignTask(person, driveTask);
 					lastDriver = person;
@@ -265,11 +267,12 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			boolean nobodyCollect = true;
 			PersonIterator j = people.iterator();
 			while (j.hasNext()) {
-				if (CollectResources.canCollectResources(j.next(), rover, mars)) nobodyCollect = false;
+				if (CollectResources.canCollectResources(j.next(), rover)) nobodyCollect = false;
 			}
 	    
 			// If no one can collect resources and this is not due to it just being
 			// night time, end the collecting phase.
+			Mars mars = Simulation.instance().getMars();
 			boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(rover.getCoordinates());
 			double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
 			if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) endPhase = true;
@@ -281,9 +284,9 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		if (!endPhase) {
 			if (siteCollectedResources < siteResourceGoal) {
 				// If person can collect resources, start him/her on that task.
-				if (CollectResources.canCollectResources(person, rover, mars)) {
+				if (CollectResources.canCollectResources(person, rover)) {
 					CollectResources collectResources = new CollectResources("Collecting Resources", person, 
-							mars, rover, resourceType, resourceCollectionRate, 
+							rover, resourceType, resourceCollectionRate, 
 							siteResourceGoal - siteCollectedResources, inv.getResourceMass(resourceType));
 					assignTask(person, collectResources);
 				}
@@ -357,7 +360,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		// Unload rover if necessary.
 		if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
 		if (!roverUnloaded) {
-			assignTask(person, new UnloadVehicle(person, mars, rover));
+			assignTask(person, new UnloadVehicle(person, rover));
 			return;
 		}
 
@@ -440,7 +443,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		Coordinates startingLocation = startingSettlement.getCoordinates();
         
 		// Get Mars surface features.
-		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
+		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
         
 		// Determine the first collection site.
 		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
@@ -513,7 +516,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			}
 		}
 		else {
-			reserveRoverTask = new ReserveRover(resourceType, siteResourceGoal, person, mars);
+			reserveRoverTask = new ReserveRover(resourceType, siteResourceGoal, person);
 			assignTask(person, reserveRoverTask);
 		}
         

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.76 2004-05-10
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -9,8 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -29,10 +28,9 @@ class EatMeal extends Task implements Serializable {
 
     /** Constructs a EatMeal object
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      */
-    public EatMeal(Person person, Mars mars) {
-        super("Eating a meal", person, false, false, STRESS_MODIFIER, mars);
+    public EatMeal(Person person) {
+        super("Eating a meal", person, false, false, STRESS_MODIFIER);
         
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
@@ -53,10 +51,9 @@ class EatMeal extends Task implements Serializable {
     /** Returns the weighted probability that a person might perform this task.
      *
      *  @param person the person to perform the task
-     *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, Mars mars) {
+    public static double getProbability(Person person) {
 
         double result = person.getPhysicalCondition().getHunger() - 250D;
         if (result < 0D) result = 0D;
@@ -88,7 +85,8 @@ class EatMeal extends Task implements Serializable {
         timeCompleted += time;
         if (timeCompleted > DURATION) {
         	try {
-            	PersonConfig config = mars.getSimulationConfiguration().getPersonConfiguration();
+        		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+            	PersonConfig config = simConfig.getPersonConfiguration();
             	person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D));
         	}
         	catch (Exception e) {

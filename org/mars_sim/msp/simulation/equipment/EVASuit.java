@@ -1,21 +1,15 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.equipment;
 
 import java.io.Serializable;
-
-import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.LifeSupport;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 
 /** 
  * The EVASuit class represents an EVA suit which provides life support
@@ -31,12 +25,13 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     private double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
 
     /**
-     * Constructs a EVASuit object.
+     * Constructor
+     * @param location the location of the EVA suit.
      */
-    public EVASuit(Coordinates location, Mars mars) {
+    public EVASuit(Coordinates location) {
     
         // User Equipment constructor.
-        super("EVA Suit", location, mars);
+        super("EVA Suit", location);
 
         // Add scope to malfunction manager.
         malfunctionManager.addScopeString("EVASuit");
@@ -131,7 +126,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     public double getAirPressure() {
         double result = NORMAL_AIR_PRESSURE * 
 	        (malfunctionManager.getAirPressureModifier() / 100D);
-        double ambient = mars.getWeather().getAirPressure(location);
+        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(location);
         if (result < ambient) return ambient;
         else return result;
     }
@@ -143,7 +138,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     public double getTemperature() {
         double result = NORMAL_TEMP * 
 	        (malfunctionManager.getTemperatureModifier() / 100D);
-        double ambient = mars.getWeather().getTemperature(location);
+        double ambient = Simulation.instance().getMars().getWeather().getTemperature(location);
         if (result < ambient) return ambient;
         else return result;
     }

@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 2.76 2004-05-12
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Lab;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.building.*;
  
 /**
@@ -32,8 +32,8 @@ public class Research extends Function implements Lab, Serializable {
 		// Use Function constructor
 		super(NAME, building);
 		
-		BuildingConfig config = building.getBuildingManager().getSettlement()
-			.getMars().getSimulationConfiguration().getBuildingConfiguration();
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		BuildingConfig config = simConfig.getBuildingConfiguration();
 			
 		try {
 			techLevel = config.getResearchTechLevel(building.getName());

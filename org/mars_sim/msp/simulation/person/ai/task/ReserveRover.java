@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.76 2004-05-17
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -35,11 +34,10 @@ public class ReserveRover extends Task implements Serializable {
      * @param resource the type of resource the rover must be able to carry.
      * @param amount the amount of the resource the rover must be able to carry.
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      * @param destination the destination of the trip
      */
-    public ReserveRover(String resource, double amount, Person person, Mars mars, Coordinates destination) {
-        super("Reserving a rover", person, false, false, STRESS_MODIFIER, mars);
+    public ReserveRover(String resource, double amount, Person person, Coordinates destination) {
+        super("Reserving a rover", person, false, false, STRESS_MODIFIER);
 
         this.resourceType = resource;
         this.resourceAmount = amount;
@@ -52,10 +50,9 @@ public class ReserveRover extends Task implements Serializable {
      * @param resource the type of resource the rover must be able to carry.
      * @param amount the amount of the resource the rover must be able to carry.
      * @param person the person to perform the task
-     * @param mars the virtual Mars
      */
-    public ReserveRover(String resource, double amount, Person person, Mars mars) {
-        super("Reserving a rover", person, false, false, STRESS_MODIFIER, mars);
+    public ReserveRover(String resource, double amount, Person person) {
+        super("Reserving a rover", person, false, false, STRESS_MODIFIER);
 
         this.resourceType = resource;
         this.resourceAmount = amount;

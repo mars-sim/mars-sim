@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 2.75 2004-03-30
+ * @version 2.76 2004-06-01
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 
@@ -34,16 +34,16 @@ public class MedicalStation implements MedicalAid, Serializable {
      *
      * @param level The treatment level of the medical station.
      * @param sickBeds Number of sickbeds. 
-     * @param manager The medical manager for Mars.
      */
-    public MedicalStation(int level, int sickBeds, MedicalManager manager) {
+    public MedicalStation(int level, int sickBeds) {
         this.level = level;
         this.sickBeds = sickBeds;
         problemsBeingTreated = new ArrayList();
         problemsAwaitingTreatment = new ArrayList();
 
         // Get all supported treatments.
-        supportedTreatments = manager.getSupportedTreatments(level);
+        MedicalManager medManager = Simulation.instance().getMedicalManager();
+        supportedTreatments = medManager.getSupportedTreatments(level);
     }
 
     /**
