@@ -1,0 +1,50 @@
+/**
+ * Mars Simulation Project
+ * ExplorerRoverDialog.java
+ * @version 2.74 2002-03-15
+ * @author Scott Davis
+ */
+
+package org.mars_sim.msp.ui.standard; 
+ 
+import org.mars_sim.msp.simulation.*; 
+import org.mars_sim.msp.simulation.vehicle.*;
+import java.awt.*;
+import javax.swing.*;
+
+/**
+ * The ExplorerRoverDialog class is the detail window for an explorer rover.
+ */
+public class ExplorerRoverDialog extends GroundVehicleDialog {
+    
+    // Data members
+    protected ExplorerRover rover;  // Explorer rover related to this detail window
+    protected LaboratoryPanel labPane; // The rover's laboratory panel
+	
+    /** Constructs an ExplorerRoverDialog object 
+     *  @param parentDesktop desktop pane
+     *  @param ExplorerRoverUIProxy the explorer rover's UI proxy
+     */
+    public ExplorerRoverDialog(MainDesktopPane parentDesktop, ExplorerRoverUIProxy explorerRoverUIProxy) {
+	// Use GroundVehicleDialog constructor	
+	super(parentDesktop, explorerRoverUIProxy);
+    }
+
+    /** Override setupComponents */
+    protected void setupComponents() {
+		
+	// Initialize explorer rover 
+	rover = (ExplorerRover) parentUnit;
+	
+	super.setupComponents();
+
+	labPane = new LaboratoryPanel(rover.getLab(), parentDesktop);
+	tabPane.addTab("Lab", labPane);
+    }
+
+    /** Override generalUpdate */
+    protected void generalUpdate() {
+	super.generalUpdate();
+        labPane.updateInfo();	
+    }
+}

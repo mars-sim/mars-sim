@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleDialog.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-03-15
  * @author Scott Davis
  */
 
@@ -15,10 +15,8 @@ import javax.swing.border.*;
 
 /**
  * The GroundVehicleDialog class is the detail window for a ground vehicle.
- * It is abstract and an appropriate detail window needs to be derived for 
- * a particular type of ground vehicle. (See RoverDialog for an example)
  */
-public class GroundVehicleDialog extends VehicleDialog {
+public abstract class GroundVehicleDialog extends VehicleDialog {
     
     // Data members
     protected GroundVehicle groundVehicle;               // Ground vehicle related to this detail window

@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * LaboratoryPanel.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-14
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -19,13 +18,13 @@ import javax.swing.border.*;
 public class LaboratoryPanel extends FacilityPanel {
 
     // Data members
-    private Laboratory laboratory; // The laboratory facility this panel displays.
+    private Lab laboratory; // The laboratory facility this panel displays.
 
     /** Constructs a LaboratoryPanel object 
      *  @param laboratory the laboratory facility
      *  @param desktop the desktop pane
      */
-    public LaboratoryPanel(Laboratory laboratory, MainDesktopPane desktop) {
+    public LaboratoryPanel(Lab laboratory, MainDesktopPane desktop) {
 
         // Use FacilityPanel's constructor
         super(desktop);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-03-03
+ * @version 2.74 2002-03-15
  * @author Scott Davis
  */
 
@@ -166,7 +166,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	innerPane.add(descriptionLabel, "North");
 	
         // Prepare tab pane
-        JTabbedPane tabPane = new JTabbedPane();
+        tabPane = new JTabbedPane();
         tabPane.addTab("Navigation", setupNavigationPane());
 	
 	if (vehicle instanceof Crewable) tabPane.addTab("Crew", setupCrewPane(true));

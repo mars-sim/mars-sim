@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIProxyManager.java
- * @version 2.74 2002-03-05
+ * @version 2.74 2002-03-15
  * @author Scott Davis
  */
 
@@ -36,14 +36,11 @@ public class UIProxyManager {
             if (unit instanceof Settlement)
                 proxies.add(new SettlementUIProxy((Settlement) unit, this));
 
-            if (unit instanceof GroundVehicle) {
-		ImageIcon vehicleIcon = null;
-                if (unit instanceof ExplorerRover) 
-                    vehicleIcon = new ImageIcon("images/ExplorerRoverIcon.gif");
-		else if (unit instanceof TransportRover) 
-		    vehicleIcon = new ImageIcon("images/TransportRoverIcon.gif");
-		proxies.add(new GroundVehicleUIProxy((GroundVehicle) unit, this, vehicleIcon));
-            }
+            if (unit instanceof ExplorerRover)
+                proxies.add(new ExplorerRoverUIProxy((ExplorerRover) unit, this));
+
+	    if (unit instanceof TransportRover)
+                proxies.add(new TransportRoverUIProxy((TransportRover) unit, this));
         }
     }
     

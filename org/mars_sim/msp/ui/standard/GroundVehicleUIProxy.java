@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleUIProxy.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-15
  * @author Scott Davis
  */
 
@@ -15,15 +15,15 @@ import javax.swing.*;
 /**
  * Standard user interface proxy for a ground vehicle.
  */
-public class GroundVehicleUIProxy extends VehicleUIProxy {
+public abstract class GroundVehicleUIProxy extends VehicleUIProxy {
 
     // Data members
     private GroundVehicle groundVehicle;
-    private static ImageIcon surfMapIcon = new ImageIcon("images/VehicleSymbol.gif");
-    private static ImageIcon topoMapIcon = new ImageIcon("images/VehicleSymbolBlack.gif");
-    private static Font mapLabelFont = new Font("SansSerif", Font.PLAIN, 9);
-    private ImageIcon buttonIcon;
-    private UnitDialog unitDialog;
+    protected static ImageIcon surfMapIcon = new ImageIcon("images/VehicleSymbol.gif");
+    protected static ImageIcon topoMapIcon = new ImageIcon("images/VehicleSymbolBlack.gif");
+    protected static Font mapLabelFont = new Font("SansSerif", Font.PLAIN, 9);
+    protected ImageIcon buttonIcon;
+    protected UnitDialog unitDialog;
 
     /** Constructs a GroundVehicleUIProxy object 
      *  @param groundVehicle the ground vehicle
@@ -31,13 +31,10 @@ public class GroundVehicleUIProxy extends VehicleUIProxy {
      *  @param buttonIcon the unit button image
      */
     public GroundVehicleUIProxy(GroundVehicle groundVehicle,
-            UIProxyManager proxyManager, ImageIcon buttonIcon) {
+            UIProxyManager proxyManager) {
         super(groundVehicle, proxyManager);
 
         this.groundVehicle = groundVehicle;
-        this.buttonIcon = buttonIcon;
-
-        unitDialog = null;
     }
 
     /** Returns true if this ground vehicle is to be displayed on navigator map. 
@@ -117,14 +114,5 @@ public class GroundVehicleUIProxy extends VehicleUIProxy {
      */
     public ImageIcon getButtonIcon() {
         return buttonIcon;
-    }
-
-    /** Returns dialog window for ground vehicle. 
-     *  @return dialog window for ground vehicle
-     */
-    public UnitDialog getUnitDialog(MainDesktopPane desktop) {
-        if (unitDialog == null)
-            unitDialog = new GroundVehicleDialog(desktop, this);
-        return unitDialog;
     }
 }
