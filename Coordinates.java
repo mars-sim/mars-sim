@@ -22,9 +22,9 @@ public class Coordinates {
     private double cosPhi;     // Cosine of phi (stored for efficiency)
     private double cosTheta;   // Cosine of theta (stored for efficiency)
 
-    public static final double someConst = 1440D;
-    public static final double some2Const = 3393D;
-    public static final double twoPI = (2.0 * Math.PI);
+    private static final double someConst = 1440D;
+    private static final double some2Const = 3393D;
+    private static final double twoPI = (2.0 * Math.PI);
 	
     public Coordinates(double phi, double theta) {
 		
@@ -71,8 +71,11 @@ public class Coordinates {
 	setTrigFunctions();
     }
 	
-    /** sine of phi */
-    public double getSinPhi() { return sinPhi; }
+    /** sine of phi. */
+    public double getSinPhi() {
+	// <tip> would it be help to use lazy evaluation of sinPhi here? </tip>
+	return sinPhi;
+    }
 	
     /** sine of theta */
     public double getSinTheta() { return sinTheta; }

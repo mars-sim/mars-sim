@@ -40,7 +40,9 @@ public class MarsProject {
 	    FileOutputStream errFileStream = new FileOutputStream("err.txt");
 	    System.setErr(new PrintStream(errFileStream));
 	}
-	catch(FileNotFoundException e) { System.out.println("err.txt could not be opened"); }
+	catch(FileNotFoundException e) {
+	    System.out.println("err.txt could not be opened");
+	}
     }
 
     /** The starting method for the application */

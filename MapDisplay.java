@@ -53,8 +53,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	addMouseListener(this);
 
 	// Create surface objects for both real and topographical modes
-	marsSurface = new SurfaceMap("surface", this);
-	topoSurface = new SurfaceMap("topo", this);
+	//marsSurface = new CannedMarsMap("surface", this);
+	marsSurface = new USGSMarsMap(this);
+	topoSurface = new CannedMarsMap("topo", this);
 
 	// Initialize global variables
 	centerCoords = new Coordinates(Math.PI / 2D, 0D);
