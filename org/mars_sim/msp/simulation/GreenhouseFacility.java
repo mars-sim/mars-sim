@@ -155,13 +155,13 @@ public class GreenhouseFacility extends Facility {
     /** Override Facility's timePasses method to allow for harvest cycle. 
      *  @param time the amount of time passing (in millisols) 
      */
-    void timePasses(double time) {
+    void timePassing(double time) {
 
         if (phase.equals("Growing")) {
             growthPeriodCompleted += time;
             if (growthPeriodCompleted >= growthPeriod) {
                 phase = "Harvesting";
-                workCompleted = 0F;
+                workCompleted = 0D;
             }
         }
     }

@@ -16,7 +16,7 @@ class TendGreenhouse extends Task {
 
     private GreenhouseFacility greenhouse; // The greenhouse the person is tending.
     private Settlement settlement; // The settlement the greenhouse is in.
-    private double duration; // The duration (in seconds) the person will perform the task.
+    private double duration; // The duration (in millisols) the person will perform the task.
 
     public TendGreenhouse(Person person, VirtualMars mars) {
         // Use Task constructor
@@ -36,12 +36,12 @@ class TendGreenhouse extends Task {
      */
     public static double getProbability(Person person, VirtualMars mars) {
         if (person.getLocationSituation().equals("In Settlement")) {
-            // GreenhouseFacility greenhouse =
-            //        (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
-            //if ((greenhouse.getPhase().equals("Growing")) &&
-            //        (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
-            //    return 0D;
-            //else
+            GreenhouseFacility greenhouse =
+                   (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
+            if ((greenhouse.getPhase().equals("Growing")) &&
+                    (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
+                return 0D;
+            else
                 return 25D;
         } else
             return 0D;
@@ -62,15 +62,14 @@ class TendGreenhouse extends Task {
         double workTime = timeLeft;
         int greenhouseSkill = person.getSkillManager().getSkillLevel("Greenhouse Farming");
         if (greenhouseSkill == 0) workTime /= 2;
-        if (greenhouseSkill > 1) workTime += workTime * (.2D * (double) greenhouseSkill);
+        else workTime += workTime * (.2D * (double) greenhouseSkill);
 
         // Add this work to the greenhouse.
         greenhouse.addWorkToGrowthCycle(workTime);
 
         // Keep track of the duration of the task.
         timeCompleted += timeLeft;
-        if (timeCompleted >= duration)
-            isDone = true;
+        if (timeCompleted >= duration) isDone = true;
 
         // Add experience to "Greenhouse Farming" skill
         // (1 base experience point per 100 millisols of work)
