@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.73 2001-12-15
+ * @version 2.73 2001-12-21
  * @author Scott Davis
  */
 
@@ -186,7 +186,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             closestDistance = distanceToDestination;
             obstacleTimeCount = 0;
         }
-        else obstacleTimeCount++;
+        else obstacleTimeCount += timeUsed;
 
         // Add experience points for driver's 'Driving' skill.
         double newPoints = time / 100D;
