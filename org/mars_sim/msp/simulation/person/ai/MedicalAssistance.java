@@ -25,7 +25,6 @@ public class MedicalAssistance extends Task implements Serializable {
     private final static String MEDICAL = "Medical";
 
     private double duration;            // How long for treatment
-    private HealthProblem   problem;    // Problem being cured.
 
     /** Constructs a Medical help object
      *  @param person the person to perform the task
@@ -35,7 +34,7 @@ public class MedicalAssistance extends Task implements Serializable {
         super("Medical Assistance", person, true, mars);
 
         SickBay sickbay = getSickbay(person);
-        problem = sickbay.getCurableProblem();
+        HealthProblem problem = sickbay.getCurableProblem();
 
         int skill = person.getSkillManager().getSkillLevel(MEDICAL);
 
@@ -43,18 +42,9 @@ public class MedicalAssistance extends Task implements Serializable {
 	    description = "Apply " + treatment.getName();
         duration = treatment.getAdjustedDuration(10);
 
-        // I fthe duration is negative, then the Treatment run in parallel to
-        // the recovery and last the same time.
-        if (duration > 0D) {
-            problem.startTreatment(duration);
-        }
-        else {
-            problem.startRecovery();
-            duration = problem.getIllness().getRecoveryPeriod();
-        }
-
-        System.out.println(person.getName() + " starts " + description +
-                            " for " + duration + " on " + problem.getSufferer());
+        // Start the treatment and updaet sickBay
+        problem.startTreatment(duration);
+        sickbay.startTreatment(problem);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -101,8 +91,6 @@ public class MedicalAssistance extends Task implements Serializable {
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             person.getSkillManager().addExperience(MEDICAL, newPoints);
 
-            System.out.println(person.getName() + " done " + problem +
-                               " skill " + newPoints);
             return timeCompleted - duration;
         }
         else {
