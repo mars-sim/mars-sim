@@ -73,7 +73,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         Iterator iter = buildings.iterator();
         while (iter.hasNext()) {
             Building b = (Building) iter.next();
-            BuildingPanel panel = new BuildingPanel(String.valueOf(count), b);
+            BuildingPanel panel = new BuildingPanel(String.valueOf(count), b, desktop);
             buildingPanels.add(panel);
             buildingDisplayPanel.add(panel, panel.getPanelName());
             count++;
@@ -95,7 +95,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
             while (iter1.hasNext()) {
                 Building building = (Building) iter1.next();
                 if (!buildingsCache.contains(building)) {
-                    BuildingPanel panel = new BuildingPanel(String.valueOf(count), building);
+                    BuildingPanel panel = new BuildingPanel(String.valueOf(count), building, desktop);
                     buildingPanels.add(panel);
                     buildingDisplayPanel.add(panel, panel.getPanelName());
                     count++;

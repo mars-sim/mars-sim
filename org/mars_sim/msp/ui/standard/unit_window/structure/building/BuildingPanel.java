@@ -12,6 +12,7 @@ import java.util.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**
  * The BuildingPanel class is a panel representing a settlement building.
@@ -27,8 +28,9 @@ public class BuildingPanel extends JPanel {
      *
      * @param panelName the name of the panel.
      * @param building the building this panel is for.
+     * @param desktop the main desktop.
      */
-    public BuildingPanel(String panelName, Building building) {
+    public BuildingPanel(String panelName, Building building, MainDesktopPane desktop) {
         super();
         
         // Initialize data members
@@ -38,6 +40,15 @@ public class BuildingPanel extends JPanel {
         
         // Set layout
         setLayout(new BorderLayout(0, 0));
+        
+        // Prepare function list panel
+        JPanel functionListPanel = new JPanel();
+        functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
+        add(functionListPanel, BorderLayout.NORTH);
+        
+        // Prepare inhabitable panel if building is inhabitable.
+        if (building instanceof InhabitableBuilding)
+            functionListPanel.add(new InhabitableBuildingPanel((InhabitableBuilding) building, desktop));
     }
     
     /**
@@ -61,7 +72,15 @@ public class BuildingPanel extends JPanel {
     /**
      * Update this panel
      */
-    public void update() {}
+    public void update() {
+    
+        // Update each building function panel.
+        Iterator i = functionPanels.iterator();
+        while (i.hasNext()) {
+            BuildingFunctionPanel panel = (BuildingFunctionPanel) i.next();
+            panel.update();
+        }
+    }
 }
         
     
