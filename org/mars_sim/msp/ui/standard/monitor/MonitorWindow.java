@@ -48,6 +48,7 @@ implements Runnable {
 
         // Use TableWindow constructor
         super("Monitor Tool");
+        setMaximizable(true);
 
         // Set internal frame listener
         addInternalFrameListener(new ViewFrameListener());
