@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.76 2004-06-14
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Resource;
@@ -222,7 +223,13 @@ public class TravelToSettlement extends Mission implements Serializable {
                         endMission(); 
                         return;
                     }
-                    else setMissionCapacity(rover.getCrewCapacity());
+                    else if (missionAlreadyUsingRover(rover)) {
+                    	System.err.println(rover.getName() + " is already in use by another mission.");
+                    	rover = null;
+                    	endMission();
+                    	return;
+                    }
+                    else setMissionCapacity(rover.getCrewCapacity()); 
                 }
                 else return;
             }
@@ -476,4 +483,26 @@ public class TravelToSettlement extends Mission implements Serializable {
 		if (getRover() != null) result.add(getRover());
 		return result;
 	}	
+	
+	/**
+	 * Checks if a rover is already being used by another mission.
+	 * @param missionRover the rover to check for.
+	 * @return true if rover in use.
+	 */
+	private boolean missionAlreadyUsingRover(Rover missionRover) {
+		boolean result = false;
+		
+		Iterator i = Simulation.instance().getMissionManager().getMissions().iterator();
+		while (i.hasNext()) {
+			Mission mission = (Mission) i.next();
+			if (mission != this) {
+				VehicleIterator j =  mission.getMissionVehicles().iterator();
+				while (j.hasNext()) {
+					if (j.next() == missionRover) result = true;
+				}
+			}
+		}
+		
+		return result;
+	}
 }
