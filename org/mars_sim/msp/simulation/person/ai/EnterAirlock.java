@@ -38,6 +38,72 @@ class EnterAirlock extends Task implements Serializable {
 	// System.out.println(person.getName() + " is starting to enter " + entity.getName());
     }
 
+    /**
+     * Constructs a EnterAirlock object without an airlockable entity.
+     * @param person the person to perform the task.
+     * @param mars the virtual Mars
+     */
+    public EnterAirlock(Person person, Mars mars) {
+        super("Entering airlock from EVA", person, false, mars);
+
+        // System.out.println("Enter Airlock due to strange situation.");
+	// System.out.println("Illness: " + person.getPhysicalCondition().getHealthSituation());
+	// System.out.println("Performance Rating: " + person.getPerformanceRating());
+	
+	// Determine airlockable entity from other people on mission.
+	if (person.getMind().getMission() != null) {
+	    PersonIterator i = person.getMind().getMission().getPeople().iterator();
+	    while (i.hasNext() && (entity == null)) {
+	        Person p = i.next();
+		if (p != person) {
+		    if (p.getSettlement() != null) entity = p.getSettlement();
+		    else if (p.getVehicle() != null) entity = (Rover) p.getVehicle();
+		}
+	    }
+	}
+
+	// If not look for any settlements at person's location.
+	if (entity == null) {
+	    SettlementIterator i = mars.getUnitManager().getSettlements().iterator();
+	    while (i.hasNext() && (entity == null)) {
+                Settlement settlement = i.next();
+		if (person.getCoordinates().equals(settlement.getCoordinates())) 
+	            entity = settlement;
+            }
+        }
+
+	// If not look for any rovers at person's location.
+	if (entity == null) {
+	    VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
+	    while (i.hasNext() && (entity == null)) {
+                Vehicle vehicle = i.next();
+		if (vehicle instanceof Rover) {
+	            Rover rover = (Rover) vehicle;
+		    if (person.getCoordinates().equals(rover.getCoordinates())) 
+	                entity = rover;
+		}
+            }
+        }
+
+	// If still no airlockable entity, end task.
+	if (entity == null) done = true;
+	else description = "Entering " + entity.getName() + " from EVA";
+    }
+   
+    /** Returns the weighted probability that a person might perform this task.
+     *  It should return a 0 if there is no chance to perform this task given the person and his/her situation.
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     *  @return the weighted probability that a person might perform this task
+     */
+    public static double getProbability(Person person, Mars mars) {
+        double result = 0D;
+
+	if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 500D;
+
+	return result;
+    }
+    
     /** 
      * Performs this task for the given amount of time.
      * @param time the amount of time to perform this task (in millisols)

@@ -96,7 +96,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
             MarsClock startTripTime, double startTripDistance, String startingPhase) {
         this(person, mars, vehicle, destination, startTripTime, startTripDistance);
 
-	if (startingPhase != null) phase = startingPhase;
+	if ((startingPhase != null) && !startingPhase.equals("")) phase = startingPhase;
+	else phase = DRIVING;
     }
      
     /** Perform the driving task
@@ -104,7 +105,6 @@ public class DriveGroundVehicle extends Task implements Serializable {
      *  @return time remaining after finishing with task (in millisols
      */
     double performTask(double time) {
-
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
@@ -132,6 +132,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
             if (phase.equals(DRIVING)) timeLeft = drivingPhase(timeLeft);
             else if (phase.equals(AVOID_OBSTACLE)) timeLeft = obstaclePhase(timeLeft);
             else if (phase.equals(WINCH_VEHICLE)) timeLeft = winchingPhase(timeLeft);
+	    else break;
         }
 
         // Keep track of the duration of the task.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-05-16
+ * @version 2.74 2002-05-19
  * @author Scott Davis
  */
 
@@ -222,6 +222,17 @@ class CollectRockSamplesMission extends Mission implements Serializable {
      */
     private void drivingPhase(Person person) {
 
+        // If someone has a dangerous medical problem, drive home.
+	if (hasDangerousMedicalProblems() && !phase.equals(DRIVEHOME)) {
+            phase = DRIVEHOME;
+            destination = startingSettlement.getCoordinates();
+            rover.setDestinationSettlement(startingSettlement);
+            rover.setDestinationType("Settlement");
+	    startingTime = null;
+	    startingDistance = 0D;
+	    siteIndex = collectionSites.size();
+        }	    
+	    
         // Record starting time and distance to destination.
         if ((startingTime == null) || (startingDistance == 0D)) {
             startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
@@ -317,7 +328,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	else {
             // End collecting phase.
             siteIndex++;
-	    if (hasDangerousMedicalProblems()) siteIndex = collectionSites.size();
+	    if (hasDangerousMedicalProblems()) {
+                siteIndex = collectionSites.size();
+            }
             if (siteIndex == collectionSites.size()) {
                 phase = DRIVEHOME;
                 destination = startingSettlement.getCoordinates();

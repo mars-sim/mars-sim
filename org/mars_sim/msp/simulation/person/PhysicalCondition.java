@@ -81,7 +81,6 @@ public class PhysicalCondition implements Serializable {
     boolean timePassing(double time, LifeSupport support,
                         SimulationProperties props) {
         boolean recalculate = false;
-
         // Check the existing problems
         if (!problems.isEmpty()) {
             ArrayList newProblems = new ArrayList();
@@ -151,6 +150,7 @@ public class PhysicalCondition implements Serializable {
         if (recalculate) {
             recalculate();
         }
+
         return (deathDetails == null);
     }
 

@@ -33,7 +33,8 @@ public class TaskManager implements Serializable {
                                        MedicalAssistance.class,
                                        StudyRockSamples.class,
                                        RepairMalfunction.class, 
-                                       RepairEVAMalfunction.class };
+                                       RepairEVAMalfunction.class,
+                                       EnterAirlock.class };
 
     /** Constructs a TaskManager object
      *  @param person the person the task manager is for
@@ -120,9 +121,7 @@ public class TaskManager implements Serializable {
     public void performTask(double time, double efficiency) {
         if (currentTask != null) {
             // For effort driven task, reduce the effective time
-            if (currentTask.isEffortDriven()) {
-                time *= efficiency;
-            }
+            if (currentTask.isEffortDriven()) time *= efficiency;
 	    checkForEmergency();
             currentTask.performTask(time);
         }
