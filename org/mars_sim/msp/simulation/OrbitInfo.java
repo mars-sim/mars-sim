@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OrbitInfo.java
- * @version 2.73 2001-12-14
+ * @version 2.75 2002-01-14
  * @author Scott Davis
  */
 
@@ -9,7 +9,8 @@ package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
 
-/** The OrbitInfo class keeps track of the orbital position of Mars 
+/** 
+ * The OrbitInfo class keeps track of the orbital position of Mars 
  */
 public class OrbitInfo implements Serializable {
 
@@ -29,7 +30,7 @@ public class OrbitInfo implements Serializable {
 
     /** Constructs an OrbitInfo object */
     public OrbitInfo() {   
-	// Initialize data members
+	    // Initialize data members
         // Set orbit coordinates to start of orbit.
         orbitTime = 0D;
         theta = 0D;
@@ -37,7 +38,8 @@ public class OrbitInfo implements Serializable {
         sunDirection = new Coordinates((Math.PI / 2D) + TILT, Math.PI);
     }
 
-    /** Adds time (in seconds) to the orbit
+    /** 
+     * Adds time (in seconds) to the orbit
      * @param seconds seconds of time added
      */
     public void addTime(double seconds) {
@@ -77,11 +79,28 @@ public class OrbitInfo implements Serializable {
      */
     public double getTheta() { return theta; }
 
-    /** Returns the radius of Mars's orbit in au.
+    /** Returns the radius of Mars's orbit in A.U.
      * @return the radius of Mars's orbit
      */
     public double getRadius() { return radius; }
 
+    /**
+     * Gets the current distance to the Sun.
+     * @return distance in Astronomical Units (A.U.)
+     */
+    public double getDistanceToSun() { 
+        return getRadius(); 
+    }
+    
+    /** 
+     * Gets the Sun's angle from a given phi (latitude).
+     * @param phi location in radians (0 - PI).
+     * @return angle in radians (0 - PI).
+     */
+    public double getSunAngleFromPhi(double phi) {
+        return Math.abs(phi - getSunDirection().getPhi());
+    }
+    
     /** The point on the surface of Mars perpendicular to the Sun as Mars rotates. 
      *  @return the surface point on Mars perpendicular to the sun
      */
