@@ -36,6 +36,7 @@ public class PersonDialog extends UnitDialog {
     private JLabel fatigueLabel;    // Fatigue label
     private JLabel hungerLabel;     // Hunger labele
     private JLabel healthLabel;     // Health state label
+    private JLabel performanceLabel;   // Performance rating
     private JProgressBar healthStatus; // Health state in current phase
 
     // Cached person data
@@ -212,6 +213,9 @@ public class PersonDialog extends UnitDialog {
             hunger = roundOneDecimal(condition.getHunger());
             hungerLabel.setText("" + hunger + " millisols");
         }
+
+        double performance = roundOneDecimal(person.getPerformanceRating() * 100D);
+        performanceLabel.setText("" + performance + " %");
     }
 
 	/** ActionListener method overriden */
@@ -401,7 +405,7 @@ public class PersonDialog extends UnitDialog {
         conditionPane.add(conditionContentPane, "Center");
 
         // Prepare condition list pane
-        JPanel conditionListPane = new JPanel(new GridLayout(3, 2));
+        JPanel conditionListPane = new JPanel(new GridLayout(4, 2));
         conditionContentPane.add(conditionListPane, "North");
 
         // Prepare health state name label
@@ -433,6 +437,17 @@ public class PersonDialog extends UnitDialog {
         hungerLabel = new JLabel("" + roundOneDecimal(condition.getHunger()) + " millisols", JLabel.RIGHT);
         hungerLabel.setForeground(Color.black);
         conditionListPane.add(hungerLabel);
+
+        // Prepare performance rating label
+        JLabel performanceNameLabel = new JLabel("Performance", JLabel.LEFT);
+        performanceNameLabel.setForeground(Color.black);
+        conditionListPane.add(performanceNameLabel);
+
+        // Performance rating value
+        double performance = roundOneDecimal(person.getPerformanceRating() * 100D);
+        performanceLabel = new JLabel("" + performance + " %", JLabel.RIGHT);
+        performanceLabel.setForeground(Color.black);
+        conditionListPane.add(performanceLabel);
 
         // Prepare health rating pane
 	    JPanel healthStatusPane = new JPanel(new BorderLayout());
