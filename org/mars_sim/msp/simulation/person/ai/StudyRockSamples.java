@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -24,7 +25,8 @@ public class StudyRockSamples extends Task implements Serializable {
     private static final double RESEARCH_RATE = .01D;
 	
     // Data members
-    private Inventory inv;   // The inventory containing the rock samples. 
+    private Inventory inv;   // The inventory containing the rock samples.
+    private MalfunctionManager malfunctions; // The labs associated malfunction manager.
     private Lab lab;         // The laboratory the person is working in.
     private double duration; // The duration (in millisols) the person will perform this task.
 
@@ -40,6 +42,7 @@ public class StudyRockSamples extends Task implements Serializable {
 	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 	    Settlement settlement = person.getSettlement();
             inv = settlement.getInventory();
+	    malfunctions = settlement.getMalfunctionManager();
             lab = (Laboratory) settlement.getFacilityManager().getFacility(Laboratory.NAME);
 	    lab.addResearcher();
 	}
@@ -47,6 +50,7 @@ public class StudyRockSamples extends Task implements Serializable {
 	    if (person.getVehicle() instanceof ExplorerRover) {
 	        ExplorerRover rover = (ExplorerRover) person.getVehicle();
 		inv = rover.getInventory();
+		malfunctions = rover.getMalfunctionManager();
 		lab = rover.getLab();
 		lab.addResearcher();
 	    }
@@ -67,10 +71,11 @@ public class StudyRockSamples extends Task implements Serializable {
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
 	    Inventory inv = settlement.getInventory();
-	    Lab lab = (Laboratory) settlement.getFacilityManager().getFacility(Laboratory.NAME);
+	    Laboratory lab = (Laboratory) settlement.getFacilityManager().getFacility(Laboratory.NAME);
             if (inv.getResourceMass(Inventory.ROCK_SAMPLES) > 0D) {
 		if (lab.getResearcherNum() < lab.getLaboratorySize()) result = 25D;
 	    }
+	    if (lab.getMalfunctionManager().hasMalfunction()) result = 0D;
 	}
 	else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
 	    if (person.getVehicle() instanceof ExplorerRover) {
@@ -80,6 +85,7 @@ public class StudyRockSamples extends Task implements Serializable {
                 if (inv.getResourceMass(Inventory.ROCK_SAMPLES) > 0D) {
 		    if (lab.getResearcherNum() < lab.getLaboratorySize()) result = 25D;
 	        }
+		if (rover.getMalfunctionManager().hasMalfunction()) result = 0D;
 	    }
 	}
 	    
@@ -101,6 +107,12 @@ public class StudyRockSamples extends Task implements Serializable {
 	if (person.getPerformanceRating() == 0D) {
 	    done = true;
 	    lab.removeResearcher();
+	}
+
+	// Check for laboratory malfunction.
+	if (malfunctions.hasMalfunction()) {
+	    done = true;
+	    return timeLeft;
 	}
 	
         // Determine effective research time based on "Areology" skill.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.74 2002-04-18
+ * @version 2.74 2002-04-30
  * @author Scott Davis
  */
 
@@ -107,6 +107,9 @@ public class DriveGroundVehicle extends Task implements Serializable {
             return 0D;
         }
 
+        // If vehicle has malfunction, end task.
+	if (vehicle.getMalfunctionManager().hasMalfunction()) done = true;
+	
 	// Perform phases of task until time is up or task is done.
         while ((timeLeft > 0D) && !done) {
             if (phase.equals(DRIVING)) timeLeft = drivingPhase(timeLeft);

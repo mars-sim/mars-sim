@@ -84,6 +84,7 @@ public class MaintainVehicle extends Task implements Serializable {
                 Vehicle vehicle = i.next();
 		if (!vehicle.isReserved()) 
 		    result += (vehicle.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
+		if (vehicle.getMalfunctionManager().hasMalfunction()) result = 0D;
             }
         }
 
@@ -102,16 +103,15 @@ public class MaintainVehicle extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-	if (person.getPerformanceRating() == 0D) {
-	    done = true;
-	    return 0D;
-	}
+	if (person.getPerformanceRating() == 0D) done = true;
 
 	// Check if maintenance has already been completed on vehicle.
-	if (vehicle.getMalfunctionManager().getTimeSinceLastMaintenance() == 0D) {
-	    done = true;
-	    return 0D;
-	}
+	if (vehicle.getMalfunctionManager().getTimeSinceLastMaintenance() == 0D) done = true;
+
+        // Check if vehicle has a malfunction.
+	if (vehicle.getMalfunctionManager().hasMalfunction()) done = true;
+	
+        if (done) return timeLeft;
 	
         // Determine effective work time based on "Mechanic" skill.
         double workTime = timeLeft;

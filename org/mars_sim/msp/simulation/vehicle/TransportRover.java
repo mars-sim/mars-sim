@@ -77,7 +77,7 @@ public class TransportRover extends Rover implements Serializable {
 	inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
 	inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
 
-    sickBay = new SickBay("RoverSickBay", 2, SICKBAY_LEVEL, mars);
+        sickBay = new SickBay("RoverSickBay", 2, SICKBAY_LEVEL, mars, this);
     }
 
     /**

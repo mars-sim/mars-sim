@@ -85,11 +85,13 @@ public class MaintainSettlement extends Task implements Serializable {
 	// since last maintenance for the settlement and all of its facilities.
 	Settlement settlement = person.getSettlement();
 	if (settlement != null) {
-            result += (settlement.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
+	    if (!settlement.getMalfunctionManager().hasMalfunction())
+                result += (settlement.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
 	    Iterator i = settlement.getFacilityManager().getFacilities();
 	    while (i.hasNext()) {
 	        Facility facility = (Facility) i.next();
-		result += (facility.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
+		if (!facility.getMalfunctionManager().hasMalfunction())
+		    result += (facility.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
 	    }
 	}
 		
@@ -108,16 +110,15 @@ public class MaintainSettlement extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
 	// If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
-	    done = true;
-	    return 0D;
-	}
+        if (person.getPerformanceRating() == 0D) done = true;
 
         // Check if maintenance has already been completed.
-	if (entity.getMalfunctionManager().getTimeSinceLastMaintenance() == 0D) {
-            done = true;
-	    return 0D;
-	}
+	if (entity.getMalfunctionManager().getTimeSinceLastMaintenance() == 0D) done = true;
+
+        // Check if entity has a malfunction.
+	if (entity.getMalfunctionManager().hasMalfunction()) done = true;
+	
+        if (done) return timeLeft;
 	
 	// Determine effective work time based on "Mechanic" skill.
 	double workTime = timeLeft;

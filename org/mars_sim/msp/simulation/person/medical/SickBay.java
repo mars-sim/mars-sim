@@ -8,11 +8,9 @@
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.List;
-import org.mars_sim.msp.simulation.Mars;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.*;
 
 /**
  * This class represents the abstract notiation of a SickBay. The Sick bay
@@ -31,18 +29,21 @@ public class SickBay implements MedicalAid, Serializable {
     private int sickBeds;                           // Number of sick beds
     private int treatedPatients;                    // Number of patients treated
     private ArrayList patients = new ArrayList();   // Patients treated & queuing
-    private Collection  supportedTreatments;        // Shared treatments
+    private Collection supportedTreatments;         // Shared treatments
+    private Malfunctionable owner;                  // Owner entity of sickbay
 
     /** Construct a Sick Bay.
      *  @param name Name of the Sick bay, this is used to locate support Treatments
      *  @param sickBeds Number of sickbeds.
      *  @param mars Overall simulation control.
+     *  @param owner The owner entity of the sickbay.
      */
-    public SickBay(String name, int sickBeds, int level, Mars mars) {
+    public SickBay(String name, int sickBeds, int level, Mars mars, Malfunctionable owner) {
         this.name = name;
         this.sickBeds = sickBeds;
         this.level = level;
         this.treatedPatients = 0;
+	this.owner = owner;
 
         supportedTreatments =
                     mars.getMedicalManager().getSupportedTreatments(level);
@@ -191,5 +192,13 @@ public class SickBay implements MedicalAid, Serializable {
             System.out.println("WARNING : Unexpected patient is stopTreatment " +
                                 stopped);
         }
+    }
+
+    /**
+     * Gets the owner entity of the sickbay.
+     * @return owner entity
+     */
+    public Malfunctionable getOwner() {
+        return owner; 
     }
 }

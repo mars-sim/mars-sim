@@ -95,6 +95,8 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	    double rocks = currentSettlement.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
 	    if (rocks >= 300D) possible = false;
 
+            if (currentSettlement.getCurrentPopulationNum() > 1) possible = false;
+	    
 	    if (possible) result = 5D;
         }
 
@@ -111,7 +113,10 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         if ((phase.equals(EMBARK)) && !hasPerson(person)) {
             if (person.getSettlement() == startingSettlement) {
-                if (people.size() < missionCapacity) result = 50D;
+                if (people.size() < missionCapacity) {
+		    if (people.size() < person.getSettlement().getCurrentPopulationNum()) 	
+			result = 50D;
+		}
             }
         }
 
@@ -239,14 +244,17 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If rover doesn't currently have a driver, start drive task for person.
         // Can't be immediate last driver and can't be at night time.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) > 0D) {
-            if (person == lastDriver) {
-                lastDriver = null;
-            }
-            else {
-                if ((rover.getDriver() == null) && (rover.getStatus().equals(Vehicle.PARKED))) {
-                    DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, destination, startingTime, startingDistance);
-		    assignTask(person, driveTask);
-                    lastDriver = person;
+            if (rover.getMalfunctionManager().hasMalfunction()) {
+	        if (person == lastDriver) {
+                    lastDriver = null;
+                }
+                else {
+                    if ((rover.getDriver() == null) && (rover.getStatus().equals(Vehicle.PARKED))) {
+                        DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, 
+			        destination, startingTime, startingDistance);
+		        assignTask(person, driveTask);
+                        lastDriver = person;
+		    }
                 }
             }
         }

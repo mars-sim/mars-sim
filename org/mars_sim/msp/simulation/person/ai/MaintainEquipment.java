@@ -110,7 +110,8 @@ public class MaintainEquipment extends Task implements Serializable {
 	UnitIterator i = personEquipmentList.iterator();
 	while (i.hasNext()) {
 	    Equipment e = (Equipment) i.next();
-	    result += (e.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
+	    if (!e.getMalfunctionManager().hasMalfunction())
+	        result += (e.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
 	}
 	
 	// Sum up probabilities for equipment in container's inventory.
@@ -120,7 +121,8 @@ public class MaintainEquipment extends Task implements Serializable {
 	    i = containerEquipmentList.iterator();
 	    while (i.hasNext()) {
 	        Equipment e = (Equipment) i.next();
-	        result += (e.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
+		if (!e.getMalfunctionManager().hasMalfunction())
+	            result += (e.getMalfunctionManager().getTimeSinceLastMaintenance() / 200D);
 	    }
 	}
 	    
@@ -139,16 +141,15 @@ public class MaintainEquipment extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
 	// If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
-	    done = true;
-	    return 0D;
-	}
+        if (person.getPerformanceRating() == 0D) done = true;
 
         // Check if maintenance has already been completed.
-	if (equipment.getMalfunctionManager().getTimeSinceLastMaintenance() == 0D) {
-            done = true;
-	    return 0D;
-	}
+	if (equipment.getMalfunctionManager().getTimeSinceLastMaintenance() == 0D) done = true;
+
+        // If equipment has malfunction, end task.
+	if (equipment.getMalfunctionManager().hasMalfunction()) done = true;
+
+	if (done) return timeLeft;
 	
 	// Determine effective work time based on "Mechanic" skill.
 	double workTime = timeLeft;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-30
  * @author Scott Davis
  */
 
@@ -227,19 +227,19 @@ class CollectRockSamples extends Task implements Serializable {
 	}
         Inventory suitInv = suit.getInventory();
 	
-	// Check if EVA suit is at 10% of its oxygen capacity.
+	// Check if EVA suit is at 15% of its oxygen capacity.
 	double oxygenCap = suitInv.getResourceCapacity(Inventory.OXYGEN);
 	double oxygen = suitInv.getResourceMass(Inventory.OXYGEN);
-	if (oxygen <= (oxygenCap * .1D)) {
-	    // System.out.println(person.getName() + " should end collection phase: EVA suit oxygen level less than 10%");	
+	if (oxygen <= (oxygenCap * .15D)) {
+	    // System.out.println(person.getName() + " should end collection phase: EVA suit oxygen level less than 15%");	
 	    result = true;
 	}
 
-	// Check if EVA suit is at 10% of its water capacity.
+	// Check if EVA suit is at 15% of its water capacity.
 	double waterCap = suitInv.getResourceCapacity(Inventory.WATER);
 	double water = suitInv.getResourceMass(Inventory.WATER);
-	if (water <= (waterCap * .1D)) {
-	    // System.out.println(person.getName() + " should end collection phase: EVA suit water level less than 10%");	
+	if (water <= (waterCap * .15D)) {
+	    // System.out.println(person.getName() + " should end collection phase: EVA suit water level less than 15%");	
             result = true;
 	}
 
@@ -249,6 +249,9 @@ class CollectRockSamples extends Task implements Serializable {
 	    result = true;
 	}
 
+        // Check if suit has any malfunctions.
+	if (suit.getMalfunctionManager().hasMalfunction()) result = true;
+	
 	// Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() < .5D) {
 	    // System.out.println(person.getName() + " should end collection phase: medical problems.");	

@@ -49,6 +49,7 @@ public class TendGreenhouse extends Task implements Serializable {
                     (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
                 result = 0D;
             else result = 25D;
+	    if (greenhouse.getMalfunctionManager().hasMalfunction()) result = 0D;
 	}
 
 	// Effort-driven task modifier.
@@ -67,6 +68,11 @@ public class TendGreenhouse extends Task implements Serializable {
 
         // If person is incompacitated, end task.
 	if (person.getPerformanceRating() == 0D) done = true;
+
+        // Check if greenhouse has malfunction.
+	if (greenhouse.getMalfunctionManager().hasMalfunction()) done = true;
+
+	if (done) return timeLeft;
 	
         // Get the phase from the greenhouse's phase of operation.
         phase = greenhouse.getPhase();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.74 2002-04-23
+ * @version 2.74 2002-05-01
  * @author Barry Evans
  */
 
@@ -9,11 +9,11 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.Infirmary;
-import org.mars_sim.msp.simulation.structure.FacilityManager;
+import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.medical.*;
+import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.malfunction.*;
 
 /**
  * THis class represents a Task that requires a Person to provide Medical
@@ -24,7 +24,7 @@ public class MedicalAssistance extends Task implements Serializable {
 
     private final static String MEDICAL = "Medical";
 
-    private double duration;            // How long for treatment
+    private double duration; // How long for treatment
 
     /** Constructs a Medical help object
      *  @param person the person to perform the task
@@ -42,7 +42,7 @@ public class MedicalAssistance extends Task implements Serializable {
 	    description = "Apply " + treatment.getName();
         duration = treatment.getAdjustedDuration(10);
 
-        // Start the treatment and updaet sickBay
+        // Start the treatment and update sickBay
         problem.startTreatment(duration);
         sickbay.startTreatment(problem);
     }
@@ -61,13 +61,31 @@ public class MedicalAssistance extends Task implements Serializable {
             result = 50D * person.getPerformanceRating();
         }
 
+        if (infirmary.getOwner().getMalfunctionManager().hasMalfunction())
+	    result = 0D;
+	
         return result;
     }
 
+    /**
+     * Gets the local sickbay.
+     * Returns null if none.
+     * @return sickbay
+     */
     static private SickBay getSickbay(Person person) {
-        Settlement location = person.getSettlement();
-        FacilityManager mgr = location.getFacilityManager();
-        return ((Infirmary)mgr.getFacility(Infirmary.NAME)).getSickBay();
+	String location = person.getLocationSituation();
+	if (location.equals(person.INSETTLEMENT)) {
+            Settlement settlement = person.getSettlement();
+            FacilityManager mgr = settlement.getFacilityManager();
+            return ((Infirmary)mgr.getFacility(Infirmary.NAME)).getSickBay();
+	}
+	if (location.equals(person.INVEHICLE)) {
+	    Vehicle vehicle = person.getVehicle();
+	    if (vehicle instanceof TransportRover) 
+	        return (SickBay) ((TransportRover) vehicle).getMedicalFacility();
+        }
+
+	return null;
     }
 
     /** This task simply waits until the set duration of the task is complete, then ends the task.
@@ -81,6 +99,11 @@ public class MedicalAssistance extends Task implements Serializable {
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) done = true;
 
+        // If sickbay owner has malfunction, end task.
+        if (getSickbay(person).getOwner().getMalfunctionManager().hasMalfunction()) done = true;
+
+	if (done) return timeLeft;
+	
         // Check for accident in infirmary.
 	checkForAccident(time);
 	
@@ -107,21 +130,18 @@ public class MedicalAssistance extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-	Settlement settlement = person.getSettlement();
-	if (settlement != null) {
+        Malfunctionable entity = getSickbay(person).getOwner();	
 	
-            double chance = .001D;
+        double chance = .001D;
 	    
-            // Medical skill modification.
-	    int skill = person.getSkillManager().getEffectiveSkillLevel("Medical");
-	    if (skill <= 3) chance *= (4 - skill);
-	    else chance /= (skill - 2);
+        // Medical skill modification.
+        int skill = person.getSkillManager().getEffectiveSkillLevel("Medical");
+        if (skill <= 3) chance *= (4 - skill);
+	else chance /= (skill - 2);
 
-	    if (RandomUtil.lessThanRandPercent(chance * time)) {
-	        System.out.println(person.getName() + " has accident during medical assistance in infirmary.");
-		FacilityManager mgr = settlement.getFacilityManager();
-		mgr.getFacility(Infirmary.NAME).getMalfunctionManager().accident();
-	    }
-	}
+	if (RandomUtil.lessThanRandPercent(chance * time)) {
+	    System.out.println(person.getName() + " has accident during medical assistance.");
+            entity.getMalfunctionManager().accident();
+        }
     }
 }
