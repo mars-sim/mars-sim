@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTemplate.java
- * @version 2.75 2003-01-15
+ * @version 2.75 2003-01-19
  * @author Scott Davis
  */
 
@@ -32,7 +32,6 @@ public class SettlementTemplate {
         this.name = name;
         buildings = new ArrayList();
         vehicles = new ArrayList();
-        System.out.println("Constructing new settlement template.");
     }
     
     /**
@@ -50,7 +49,6 @@ public class SettlementTemplate {
      */
     public void addBuilding(String buildingName) {
         buildings.add(new BuildingTemplate(buildingName));
-        System.out.println("Adding new building " + buildingName + " to settlement template " + name);
     }
     
     /**
@@ -60,7 +58,6 @@ public class SettlementTemplate {
      */
     public void addVehicle(String vehicleName) {
         vehicles.add(new VehicleTemplate(vehicleName));
-        System.out.println("Adding new vehicle " + vehicleName + " to settlement template " + name);
     }
     
     /**

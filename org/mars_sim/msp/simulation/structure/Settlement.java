@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-01-15
+ * @version 2.75 2003-01-19
  * @author Scott Davis
  */
 
@@ -38,8 +38,6 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
     public Settlement(String name, Coordinates location, Mars mars) {
         // Use Unit constructor
         super(name, location, mars);
-
-        System.out.println("Creating settlement " + name);
         
         // Initialize data members
         facilityManager = new FacilityManager(this, mars);

@@ -154,7 +154,7 @@ public class MainWindow extends JFrame implements WindowListener {
         }
         catch(Exception e) {
             e.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Problem loading simualtion",
+	        JOptionPane.showMessageDialog(null, "Problem loading simulation",
                         e.toString(), JOptionPane.ERROR_MESSAGE);
 	    }
     }

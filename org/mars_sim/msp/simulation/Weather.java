@@ -25,14 +25,10 @@ public class Weather implements Serializable {
     
     // Data members 
     private Mars mars;
-    private TerrainElevation terrainElevation;
-    private SurfaceFeatures sunlight;
     
     /** Constructs a Weather object */
     public Weather(Mars mars) {
         this.mars = mars;
-        terrainElevation = mars.getSurfaceFeatures().getSurfaceTerrain();
-        sunlight = mars.getSurfaceFeatures();
     }
     
     /**
@@ -42,6 +38,7 @@ public class Weather implements Serializable {
     public double getAirPressure(Coordinates location) {
 	    
         // Get local elevation in meters.
+        TerrainElevation terrainElevation = mars.getSurfaceFeatures().getSurfaceTerrain();
         double elevation = terrainElevation.getElevation(location);
         
         // p = pressure0 * e(-((density0 * gravitation) / pressure0) * h)
@@ -64,8 +61,9 @@ public class Weather implements Serializable {
         // standard -120D if extreme cold
         
         double temperature = EXTREME_COLD;
+        SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
         
-        if (sunlight.inDarkPolarRegion(location)){
+        if (surfaceFeatures.inDarkPolarRegion(location)){
             
             //known temperature for cold days at the pole
             
@@ -77,10 +75,11 @@ public class Weather implements Serializable {
             // if sun full we will get -40D the avg, if night or twilight we will get 
             // a smoth temperature change and in the night -120D
         
-            temperature = temperature + sunlight.getSurfaceSunlight(location) * 0.629921D;
+            temperature = temperature + surfaceFeatures.getSurfaceSunlight(location) * 0.629921D;
         
             // not correct but guess: - (elevation * 5)
         
+            TerrainElevation terrainElevation = surfaceFeatures.getSurfaceTerrain();
             temperature = temperature - (terrainElevation.getElevation(location) * 5D);
         
             // - ((math.pi/2) / (phi of location)) * 20

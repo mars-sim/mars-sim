@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2003-01-05
+ * @version 2.75 2003-01-19
  * @author Scott Davis
  */
 
@@ -145,11 +145,9 @@ public class UnitManager implements Serializable {
     
     /** Creates initial settlements */
     private void createInitialSettlements() {
-        System.out.println("Creating initial settlements");
         SettlementsXmlReader settlementsReader = new SettlementsXmlReader(mars);
         settlementsReader.parse();
         units.mergeSettlements(settlementsReader.getInitialSettlements());
-        System.out.println("Finished creating settlements");
     }
 
     /** Adds all units in inventories. */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.74 2002-03-13
+ * @version 2.75 2003-01-19
  * @author Scott Davis
  */
 
@@ -62,8 +62,6 @@ public class Person extends Unit implements Serializable {
 
         initPersonData(mars);
 	    settlement.getInventory().addUnit(this);
-        
-        System.out.println("Constructing person: " + name);
     }
 
     /** Constructs a Person object

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2002-11-02
+ * @version 2.75 2003-01-19
  * @author Scott Davis
  */
  
@@ -28,8 +28,6 @@ public abstract class Building implements Serializable {
         
         this.name = name;
         this.manager = manager;
-        
-        System.out.println("Constructing building: " + name);
     }
     
     /**

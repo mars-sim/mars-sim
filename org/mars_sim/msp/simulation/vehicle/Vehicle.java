@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.75 2003-01-08
+ * @version 2.75 2003-01-19
  * @author Scott Davis
  */
 
@@ -57,8 +57,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 
         settlement.getInventory().addUnit(this);
         initVehicleData();
-        
-        System.out.println("Constructing vehicle: " + name);
     }
 
     /** Initializes vehicle data */
