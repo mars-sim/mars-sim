@@ -7,28 +7,28 @@
 
 package org.mars_sim.msp.simulation;
 
-/** The SimulationProperties class contains user-defined properties 
- *  for the simulation. 
+/** The SimulationProperties class contains user-defined properties
+ *  for the simulation.
  */
 public class SimulationProperties {
 
     // Data members
-    private PropertiesXmlReader propertiesReader; // The XML properties reader 
-   
+    private PropertiesXmlReader propertiesReader; // The XML properties reader
+
     // Property values
     private double timeRatio = 0D; // Simulation time / real time
 
     /** Constructor */
     public SimulationProperties() {
-   
-        // Create a PropertiesXmlReader. 
+
+        // Create a PropertiesXmlReader.
         propertiesReader = new PropertiesXmlReader();
         propertiesReader.parse();
     }
 
-    /** Gets the time ratio property. 
+    /** Gets the time ratio property.
      *  Default value is 1000.0.
-     *  @return the ration between simulation and real time 
+     *  @return the ration between simulation and real time
      */
     public double getTimeRatio() {
         if (timeRatio > 0D) return timeRatio;
@@ -43,6 +43,15 @@ public class SimulationProperties {
         if (newTimeRatio > 0) timeRatio = newTimeRatio;
     }
 
+    /** Gets the how long a Person can survive without oxygen in sol.
+     *  Value must be >= 0.
+     *
+     *  @return the time period a person survies property
+     */
+    public double getPersonLackOfOxygenPeriod() {
+        return propertiesReader.getPersonLackOfOxygenPeriod();
+    }
+
     /** Gets the person oxygen consumption property.
      *  Value must be >= 0.
      *  Default value is 1.0 kg/sol.
@@ -52,6 +61,15 @@ public class SimulationProperties {
         return propertiesReader.getPersonOxygenConsumption();
     }
 
+    /** Gets the  time a Person can survive without Water in sols.
+     *  Value must be >= 0.
+     *
+     *  @return the persion a person can survive.
+     */
+    public double getPersonLackOfWaterPeriod() {
+        return propertiesReader.getPersonLackOfWaterPeriod();
+    }
+
     /** Gets the person water consumption property.
      *  Value must be >= 0.
      *  Default value is 4.0 kg/sol.
@@ -59,6 +77,14 @@ public class SimulationProperties {
      */
     public double getPersonWaterConsumption() {
         return propertiesReader.getPersonWaterConsumption();
+    }
+
+    /** Gets the period a person can survive without food in sols
+     *  Value must be >= 0.
+     *  @return the person food period property
+     */
+    public double getPersonLackOfFoodPeriod() {
+        return propertiesReader.getPersonLackOfFoodPeriod();
     }
 
     /** Gets the person food consumption property.

@@ -33,14 +33,20 @@ class PropertiesXmlReader extends MspXmlReader {
     private static final int RANGE = 13;
     private static final int GREENHOUSE_FULL_HARVEST = 14;
     private static final int GREENHOUSE_GROWING_CYCLE = 15;
+    private static final int LACK_OF_OXYGEN = 16;
+    private static final int LACK_OF_WATER = 17;
+    private static final int LACK_OF_FOOD = 18;
 
     // Data members
     private int elementType; // The current element type being parsed
     private int propertyCatagory; // The property catagory
     private double timeRatio; // The time ratio property
     private double personOxygenConsumption; // The person oxygen consumption property
+    private double personLackOfOxygen; // The period a persion surives without Oxygen
     private double personWaterConsumption; // The person water consumption property
+    private double personLackOfWater; // The period a person can survive without water
     private double personFoodConsumption; // The person food consumption property
+    private double personLackOfFood; // The period a person can survive without food
     private double roverOxygenStorageCapacity; // The rover oxygen storage capacity property
     private double roverWaterStorageCapacity; // The rover water storage capacity property
     private double roverFoodStorageCapacity; // The rover food storage capacity property
@@ -50,7 +56,7 @@ class PropertiesXmlReader extends MspXmlReader {
     private double settlementOxygenStorageCapacity; // The settlement oxygen storage capacity property
     private double settlementWaterStorageCapacity; // The settlement water storage capacity property
     private double settlementFoodStorageCapacity; // The settlement food storage capacity property
-    private double settlementFuelStorageCapacity; // The settlement fuel storage capacity property 
+    private double settlementFuelStorageCapacity; // The settlement fuel storage capacity property
     private double greenhouseFullHarvest; // The greenhouse full harvest property
     private double greenhouseGrowingCycle; // The greenhouse growing cycle property
 
@@ -118,6 +124,15 @@ class PropertiesXmlReader extends MspXmlReader {
         if (name.equals("GREENHOUSE_FULL_HARVEST")) {
             elementType = GREENHOUSE_FULL_HARVEST;
         }
+        if (name.equals("LACK_OF_OXYGEN")) {
+            elementType = LACK_OF_OXYGEN;
+        }
+        if (name.equals("LACK_OF_FOOD")) {
+            elementType = LACK_OF_FOOD;
+        }
+        if (name.equals("LACK_OF_WATER")) {
+            elementType = LACK_OF_WATER;
+        }
     }
 
     /** Handle the end of an element by printing an event.
@@ -138,9 +153,12 @@ class PropertiesXmlReader extends MspXmlReader {
                 elementType = PROPERTY_LIST;
                 propertyCatagory = -1;
                 break;
-            case OXYGEN_CONSUMPTION:       
+            case OXYGEN_CONSUMPTION:
             case WATER_CONSUMPTION:
             case FOOD_CONSUMPTION:
+            case LACK_OF_FOOD:
+            case LACK_OF_OXYGEN:
+            case LACK_OF_WATER:
                 elementType = PERSON_PROPERTIES;
                 break;
             case FUEL_EFFICIENCY:
@@ -176,10 +194,19 @@ class PropertiesXmlReader extends MspXmlReader {
                 personOxygenConsumption = Double.parseDouble(data);
                 break;
             case WATER_CONSUMPTION:
-                personWaterConsumption = Double.parseDouble(data);  
+                personWaterConsumption = Double.parseDouble(data);
                 break;
             case FOOD_CONSUMPTION:
                 personFoodConsumption = Double.parseDouble(data);
+                break;
+            case LACK_OF_FOOD:
+                personLackOfFood = Double.parseDouble(data);
+                break;
+            case LACK_OF_OXYGEN:
+                personLackOfOxygen = Double.parseDouble(data);
+                break;
+            case LACK_OF_WATER:
+                personLackOfWater = Double.parseDouble(data);
                 break;
             case OXYGEN_STORAGE_CAPACITY:
                 double oxygen = Double.parseDouble(data);
@@ -216,14 +243,24 @@ class PropertiesXmlReader extends MspXmlReader {
         }
     }
 
-    /** Gets the time ratio property. 
+    /** Gets the time ratio property.
      *  Value must be > 0.
      *  Default value is 1000.
-     *  @return the ratio between simulation and real time 
+     *  @return the ratio between simulation and real time
      */
     public double getTimeRatio() {
         if (timeRatio <= 0) timeRatio = 1000D;
         return timeRatio;
+    }
+
+    /** Gets the time persod a person can survive without oxygen.
+     *  Value must be > 0.
+     *  Default value is 5 mars sols.
+     *  @return the person locak of oxygen property
+     */
+    public double getPersonLackOfOxygenPeriod() {
+        if (personLackOfOxygen <= 0) personLackOfOxygen = 5D;
+        return personLackOfOxygen;
     }
 
     /** Gets the person oxygen consumption property.
@@ -236,6 +273,16 @@ class PropertiesXmlReader extends MspXmlReader {
         return personOxygenConsumption;
     }
 
+    /** Gets the time persod a person can survive without water
+     *  Value must be > 0.
+     *  Default value is 300 mars sols.
+     *  @return the person water consumption property
+     */
+    public double getPersonLackOfWaterPeriod() {
+        if (personLackOfWater <= 0) personLackOfWater = 300D;
+        return personLackOfWater;
+    }
+
     /** Gets the person water consumption property.
      *  Value must be >= 0.
      *  Default value is 4.0.
@@ -244,6 +291,16 @@ class PropertiesXmlReader extends MspXmlReader {
     public double getPersonWaterConsumption() {
         if (personWaterConsumption < 0) personWaterConsumption = 4D;
         return personWaterConsumption;
+    }
+
+    /** Gets the time persod a person can survive without food.
+     *  Value must be > 0.
+     *  Default value is 1000 mars sols.
+     *  @return the person lack of food property
+     */
+    public double getPersonLackOfFoodPeriod() {
+        if (personLackOfFood <= 0) personLackOfFood = 1500D;
+        return personLackOfFood;
     }
 
     /** Gets the person food consumption property.
@@ -345,7 +402,7 @@ class PropertiesXmlReader extends MspXmlReader {
         if (settlementFoodStorageCapacity < 0) settlementFoodStorageCapacity = 10000D;
         return settlementFoodStorageCapacity;
     }
- 
+
     /** Gets the settlement fuel storage capacity property.
      *  Value must be >= 0.
      *  Default value is 10000.0.
