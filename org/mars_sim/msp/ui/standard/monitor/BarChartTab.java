@@ -1,0 +1,235 @@
+/**
+ * Mars Simulation Project
+ * BarChartTab.java
+ * @version 2.74 2002-01-21
+ * @author Barry Evans
+ */
+
+package org.mars_sim.msp.ui.standard.monitor;
+
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import javax.swing.ImageIcon;
+import javax.swing.Icon;
+import javax.swing.JScrollPane;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+import com.jrefinery.data.AbstractSeriesDataset;
+import com.jrefinery.data.CategoryDataset;
+import com.jrefinery.chart.JFreeChart;
+import com.jrefinery.chart.JFreeChartPanel;
+import com.jrefinery.chart.ChartFactory;
+import com.jrefinery.chart.HorizontalCategoryAxis;
+import com.jrefinery.chart.VerticalCategoryAxis;
+import com.jrefinery.chart.Plot;
+import com.jrefinery.chart.TextTitle;
+
+/**
+ */
+class BarChartTab extends MonitorTab {
+
+    public final static Icon BARICON = new ImageIcon("images/BarChart.gif");
+
+    private final static int MAXLABEL = 12;
+    private final static int COLUMNWIDTH = 2;
+    private final static int LABELWIDTH = 10;
+
+    /**
+     *  Basic Bar Dataset to map a table model onto a Category Data set for
+     *  display on the Bar chart. The Categories are mapped onto the individual
+     *  rows of the Table Model. The Series are the columns specified to be
+     *  displayed.
+     */
+    class TableBarDataset extends AbstractSeriesDataset
+            implements CategoryDataset {
+
+        private UnitTableModel model;
+        private int[] columns;
+        private List  categories;
+
+        public TableBarDataset(UnitTableModel model, int columns[]) {
+            this.model = model;
+
+            loadCategories();
+            setColumns(columns);
+        }
+
+
+        /**
+         * Return the list of displayed categories.
+         *
+         * @return List of String that represent Unit names.
+         */
+        public List getCategories() {
+            return categories;
+        }
+
+        /**
+         * How many categories are displayed in this model. This is the number
+         * of units in the model.
+         *
+         * @return Number of loaded categories.
+         */
+        public int getCategoryCount() {
+            return categories.size();
+        }
+
+        /**
+         * Get the number of series displayed in chart. This is the number of
+         * columns mapped in the table model.
+         *
+         * @return Number of series supported.
+         */
+        public int getSeriesCount() {
+            return columns.length;
+        }
+
+        /**
+         * The series names are mapped onto the column names.
+         *
+         * @param series Index of the series.
+         * @return Name of the Series.
+         */
+        public String getSeriesName(int series) {
+            return model.getColumnName(columns[series]);
+        }
+
+        /**
+         * Get an individual value of a series and category. The Series
+         * is mapped onto a column, the category is mapped onto a row.
+         *
+         * @param category Category value.
+         * @param series Series index.
+         * @return Numeric value of the model cell.
+         */
+        public Number getValue(int series, Object category) {
+            int rowId = categories.indexOf(category);
+            return (Number)model.getValueAt(rowId, columns[series]);
+        }
+
+        /**
+         * Load the categories that this model displays. These are the labels
+         * of the rows in the model, i.e. the first column.
+         */
+        private void loadCategories() {
+            int rowCount = model.getRowCount();
+            categories = new ArrayList(rowCount);
+
+            // Iterate the rows and add the value from the first cell.
+            for(int i = 0; i < rowCount; i++) {
+                String value = (String)model.getValueAt(i, 0);
+                if (value.length() > MAXLABEL) {
+                    value = value.substring(0, MAXLABEL-2) + "..";
+                }
+                categories.add(value);
+            }
+        }
+
+        /**
+         * Redefine the columns mapped into this dataset. Each column maps
+         * onto a different Series in the model.
+         *
+         * @param newcolumns Indexes in the source model.
+         */
+        public void setColumns(int newcolumns[]) {
+
+            columns = new int[newcolumns.length];
+            for(int i = 0; i < newcolumns.length; i++) {
+                columns[i] = newcolumns[i];
+            }
+
+            fireDatasetChanged();
+        }
+
+        /**
+         * The table model has changed
+         */
+        public void update() {
+            fireDatasetChanged();
+        }
+    }
+
+    private TableBarDataset barModel = null;
+    private JFreeChart chart = null;
+
+    /**
+     * Create a PieChart view that display the data in a particular column.
+     *
+     * @param model Data source.
+     * @param columns Indexes of columns to display.
+     */
+    public BarChartTab(UnitTableModel model, int []columns) {
+        super(model, false, BARICON);
+
+        String title = model.getName();
+        setName(title);
+
+        barModel = new TableBarDataset(model, columns);
+        chart = ChartFactory.createVerticalBarChart(title, null, null, barModel, true);
+        Plot plot = chart.getPlot();
+        HorizontalCategoryAxis hAxis = (HorizontalCategoryAxis)plot.getAxis(Plot.HORIZONTAL_AXIS);
+        hAxis.setVerticalCategoryLabels(true);
+
+        // Estimate the width of the chart by multipling the categories by the
+        // number of series. First calculate the column width as this is
+        // dependent upon the categories, it can not be smaller than the
+        // label width.
+        int columnWidth = barModel.getSeriesCount() * COLUMNWIDTH;
+        if (columnWidth < LABELWIDTH) {
+            columnWidth = LABELWIDTH;
+        }
+        int chartwidth = columnWidth * barModel.getCategoryCount();
+
+        Component panel = new JFreeChartPanel(chart);
+        Dimension size = panel.getSize();
+        if (chartwidth > size.width) {
+            size.width = chartwidth;
+            panel.setSize(size);
+            panel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        }
+
+        add(panel, "Center");
+    }
+
+
+    /**
+     * Display the properties dialog that allows the data displayed to be
+     * configured.
+     *
+     * @param desktop main window of simulation.
+     */
+    public void displayProps(MainDesktopPane desktop) {
+
+        // Show modal column selector
+        int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow(),
+                                                    getModel());
+        if (columns.length > 0) {
+            barModel.setColumns(columns);
+        }
+    }
+
+    protected int[] getSelection() {
+        int empty[] = {};
+
+        return empty;
+    }
+
+    /**
+     * The tab has been remove
+     */
+    public void remove() {
+        chart = null;
+        barModel = null;
+        super.remove();
+    }
+
+    /**
+     * Update the selected table
+     */
+    public void update() {
+        super.update();
+        barModel.update();
+    }
+}
