@@ -18,11 +18,17 @@ import org.mars_sim.msp.simulation.person.PhysicalCondition;
  */
 public class HealthProblem implements Serializable {
 
+    private static final int DEGRADING = 0;
+    private static final int TREATMENT = 1;
+    private static final int RECOVERING = 2;
+    private static final int CURED = 3;
+    private static final int DEAD = 4;
+
     private Complaint       illness;        // Illness
     private Person          sufferer;       // Person
-    private boolean         isRecovering;   // Persion is recovering
-    private boolean         cured;           // Problem completed
-    private double          duration;       // Duration of state
+    private int             state;          // State of problem
+    private double          timePassed;     // Current time of state
+    private double          duration;       // Length of the current state
     private MedicalAid      usedAid;        // Any aid being used
 
     /**
@@ -39,18 +45,19 @@ public class HealthProblem implements Serializable {
                           Person person, MedicalAid aid) {
         illness = complaint;
         sufferer = person;
-        isRecovering = false;
-        cured = false;
-        duration = 0;
+        timePassed = 0;
+        state = DEGRADING;
+        duration = illness.getDegradePeriod();
         usedAid = null;
 
-        // If no degrade period, then can do self heel
-        if (illness.getDegradePeriod() == 0D) {
+        // If no degrade period & no treatment, then can do self heel
+        if ((duration == 0D) &&
+                (illness.getRecoveryTreatment() == null)) {
             startRecovery();
         }
         else {
             // Check if a medical aid is available to help
-            canStartRecovery(aid);
+            canStartTreatment(aid);
         }
     }
 
@@ -61,8 +68,8 @@ public class HealthProblem implements Serializable {
      * e.g. Starvation.
      * @param newAid The Medical aid to try.
      */
-    public void canStartRecovery(MedicalAid newAid) {
-        if (!isRecovering && (usedAid == null)) {
+    public void canStartTreatment(MedicalAid newAid) {
+        if ((state == DEGRADING) && (usedAid == null)) {
 
             Treatment treatment = illness.getRecoveryTreatment();
             if ((treatment != null) && (newAid != null) &&
@@ -77,7 +84,7 @@ public class HealthProblem implements Serializable {
      * Has the problem been cured.
      */
     public boolean getCured() {
-        return cured;
+        return (state == CURED);
     }
 
     /**
@@ -87,13 +94,7 @@ public class HealthProblem implements Serializable {
      * @return Percentage value.
      */
     private int getHealthRating() {
-        int rating = 0;
-        if (illness != null) {
-            double max = (isRecovering ? illness.getRecoveryPeriod() :
-                                         illness.getDegradePeriod());
-            rating = (int)((duration * 100D) / max);
-        }
-        return rating;
+        return (int)((timePassed * 100D) / duration);
     }
 
     /**
@@ -108,15 +109,33 @@ public class HealthProblem implements Serializable {
     /**
      * Sufferer of problem
      */
-    Person getSufferer() {
+    public Person getSufferer() {
         return sufferer;
+    }
+
+    /**
+     * The performance rating for this Problem. If there is an aid in used, then
+     * the factor is zero otherwise it is the illness rating.
+     */
+    public double getPerformanceFactor() {
+        if (usedAid != null) {
+            return 0D;
+        }
+        return illness.getPerformanceFactor();
     }
 
     /**
      * Has the problem been cured.
      */
     public boolean getRecovering() {
-        return isRecovering;
+        return (state == RECOVERING);
+    }
+
+    /**
+     * Awaiting treatment
+     */
+    public boolean getAwaitingTreatment() {
+        return ((state == DEGRADING) && (usedAid != null));
     }
 
     /**
@@ -125,8 +144,11 @@ public class HealthProblem implements Serializable {
      * @return Name of the complaint prefixed by the status.
      */
     public String getSituation() {
-        if (isRecovering) {
+        if (state == RECOVERING) {
             return "Recovering " + illness.getName();
+        }
+        else if (state == TREATMENT) {
+            return "Treatment " + illness.getName();
         }
         else {
             return illness.getName();
@@ -134,18 +156,31 @@ public class HealthProblem implements Serializable {
     }
 
     /**
+     * Start the treatment required treatment. It will take the specified
+     * duration.
+     *
+     * @param treatmentLength Lenght of treatment.
+     */
+    public void startTreatment(double treatmentLength) {
+        duration = treatmentLength;
+        timePassed = 0;
+        state = TREATMENT;
+    }
+
+    /**
      * This is now moving to a recovery state.
      */
     public void startRecovery() {
-        if (!isRecovering) {
+        if ((state == DEGRADING) || (state == TREATMENT)) {
             // If no recovery period, then it's done.
-            isRecovering = (illness.getRecoveryPeriod() > 0);
-            if (!isRecovering) {
-                cured = true;
+            duration = illness.getRecoveryPeriod();
+            if (duration != 0D) {
+                state = RECOVERING;
             }
             else {
-                duration = 0;
+                state = CURED;
             }
+
         }
     }
 
@@ -159,34 +194,45 @@ public class HealthProblem implements Serializable {
     public Complaint timePassing(double time, PhysicalCondition condition) {
         Complaint result = null;
 
-        duration += time;
+        timePassed += time;
 
-        // Recoving so has the recovery period expired
-        if (isRecovering) {
-            cured = (duration > illness.getRecoveryPeriod());
+        if (timePassed > duration) {
 
-            // If person is cured or treatment persion has expired, then
-            // release the aid.
-            if ((usedAid != null) && (cured ||
-                    (duration > illness.getRecoveryTreatment().getDuration())))
-            {
-                usedAid.stopTreatment(this);
-                usedAid = null;
+            // Recoving so has the recovery period expired
+            if (state == RECOVERING) {
+                state = CURED;
+
+                // If person is cured or treatment persion has expired, then
+                // release the aid.
+                if (usedAid != null) {
+                    usedAid.stopTreatment(this);
+                    usedAid = null;
+                }
             }
-        }
-        else if (duration > illness.getDegradePeriod()) {
-            // Illness has moved to next phase, if null then dead
-            Complaint nextPhase = illness.getNextPhase();
-            if (usedAid != null) {
-                usedAid.stopTreatment(this);
+            else if (state == DEGRADING) {
+                // Illness has moved to next phase, if null then dead
+                Complaint nextPhase = illness.getNextPhase();
+                if (usedAid != null) {
+                    usedAid.stopTreatment(this);
+                }
+
+                if (nextPhase == null) {
+                    state = DEAD;
+                    condition.setDead();
+                }
+                else {
+                    result = nextPhase;
+                }
+            }
+            else if (state == TREATMENT) {
+                if (usedAid != null) {
+                    usedAid.stopTreatment(this);
+                    usedAid = null;
+                }
+                startRecovery();
             }
 
-            if (nextPhase == null) {
-                condition.setDead();
-            }
-            else {
-                result = nextPhase;
-            }
+
         }
         return result;
     }
@@ -198,13 +244,15 @@ public class HealthProblem implements Serializable {
      */
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-        if (isRecovering) {
+        if (state == RECOVERING) {
             buffer.append("Recovering ");
             buffer.append(illness.getName());
-            if (usedAid != null) {
-                buffer.append("; ");
-                buffer.append(illness.getRecoveryTreatment().getName());
-            }
+        }
+        else if (state == TREATMENT) {
+            buffer.append("Treatment (");
+            buffer.append(illness.getRecoveryTreatment().getName());
+            buffer.append(") ");
+            buffer.append(illness.getName());
         }
         else {
             buffer.append(illness.getName());

@@ -30,7 +30,8 @@ public class Infirmary extends Facility
         super(manager, NAME);
 
         // Initialize random size from 1 to 5.
-        sickBay = new SickBay(NAME, 1 + RandomUtil.getRandomInt(4));
+        sickBay = new SickBay(NAME, 1 + RandomUtil.getRandomInt(4),
+                              manager.getMars());
     }
 
     /**

@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.mars_sim.msp.simulation.SimulationProperties;
@@ -28,6 +29,7 @@ public class MedicalManager implements Serializable {
 
     private HashMap complaints = new HashMap(); // Possible Complaints
     private HashMap treatments = new HashMap(); // Possible Treatments
+    private HashMap supported = new HashMap();  // Treatments 2 Facilities
     private Complaint starvation;        // Pre-defined complaint
     private Complaint suffocation;       // Pre-defined complaint
     private Complaint dehydration;       // Pre-defined complaint
@@ -224,6 +226,17 @@ public class MedicalManager implements Serializable {
     public Complaint getSuffocation() {
         return suffocation;
     }
+
+    /**
+     * Get the supported Treatments for a Medical Facility of a name.
+     *
+     * @param name Name of Medical facility.
+     * @return Collection of Treatments
+     */
+    public Collection getSupportedTreatments(String name) {
+        return (Collection)supported.get(name);
+    }
+
     /**
      * Return the pre-defined Medical Complaint that signifies a dehydration
      * complaint.

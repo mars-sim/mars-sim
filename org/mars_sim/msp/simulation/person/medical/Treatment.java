@@ -45,8 +45,23 @@ public class Treatment implements java.io.Serializable {
     }
 
     /**
-     * Get the time required to perform this treatment
-     * @return treatment time.
+     * Get the time required to perform this treatment by a Person with
+     * the appropriate skill rating.
+     * @param skill The skill rating that will apply the treatment.
+     * @return Adjusted treatment time according to skill.
+     */
+    public double getAdjustedDuration(int skill) {
+        double result = duration;
+        if ((result > 0D) && (skill < requiredSkill)) {
+            // Increase the time by the percentage skill lacking
+            result = duration * (1 + ((requiredSkill - skill)/requiredSkill));
+        }
+        return result;
+    }
+
+    /**
+     * Return the theoritical duration of this treatment.
+     * @return The duration to apply this Treatment.
      */
     public double getDuration() {
         return duration;

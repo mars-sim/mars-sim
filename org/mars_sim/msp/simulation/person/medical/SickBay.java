@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
+import org.mars_sim.msp.simulation.Mars;
 
 /**
  * This class represents the abstract notiation of a SickBay. The Sick bay
@@ -32,10 +33,14 @@ public class SickBay implements MedicalAid, Serializable {
     /** Construct a Sick Bay.
      *  @param name Name of the Sick bay, this is used to locate support Treatments
      *  @param sickBeds Number of sickbeds.
+     *  @param mars Overall simulation control.
      */
-    public SickBay(String name, int sickBeds) {
+    public SickBay(String name, int sickBeds, Mars mars) {
         this.name = name;
         this.sickBeds = sickBeds;
+
+        supportedTreatments =
+                    mars.getMedicalManager().getSupportedTreatments(name);
     }
 
     /**
@@ -50,9 +55,7 @@ public class SickBay implements MedicalAid, Serializable {
             HealthProblem problem = (HealthProblem)iter.next();
 
             // Find the first rpoblem that is not recovering and curable
-            if (!problem.getRecovering())
-            {
-                problem.startRecovery();
+            if (problem.getAwaitingTreatment()) {
                 return problem;
             }
         }
@@ -82,8 +85,9 @@ public class SickBay implements MedicalAid, Serializable {
      * treatment can not be satisfied, then a false return value is provided.
      *
      * @param sufferer Person with problem.
-     * @return Can the treatment be satified.
+     * @return Can the treatment be satified at some future time.
      * @see MedicalAid
+     * @see org.mars_sim.msp.simulation.person.ai.MedicalAssistance
      */
     public boolean requestTreatment(HealthProblem problem) {
 
@@ -96,12 +100,10 @@ public class SickBay implements MedicalAid, Serializable {
 
         if (canHeal) {
             patients.add(problem);
-            System.out.println(problem.getSufferer() + " enters " + name +
-                                " for " + required);
 
             if (required.getSkill() == 0) {
                 // Start now, no other help
-                problem.startRecovery();
+                problem.startTreatment(required.getDuration());
             }
         }
 
@@ -115,6 +117,5 @@ public class SickBay implements MedicalAid, Serializable {
      */
     public void stopTreatment(HealthProblem problem) {
         patients.remove(problem);
-        System.out.println(problem.getSufferer() + " leaves " + name);
     }
 }

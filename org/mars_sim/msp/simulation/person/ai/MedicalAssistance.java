@@ -37,16 +37,24 @@ public class MedicalAssistance extends Task implements Serializable {
         SickBay sickbay = getSickbay(person);
         problem = sickbay.getCurableProblem();
 
+        int skill = person.getSkillManager().getSkillLevel(MEDICAL);
+
         Treatment treatment = problem.getIllness().getRecoveryTreatment();
 	    description = "Apply " + treatment.getName();
-        duration = treatment.getDuration();
-        if (duration < 0) {
+        duration = treatment.getAdjustedDuration(10);
+
+        // I fthe duration is negative, then the Treatment run in parallel to
+        // the recovery and last the same time.
+        if (duration > 0D) {
+            problem.startTreatment(duration);
+        }
+        else {
+            problem.startRecovery();
             duration = problem.getIllness().getRecoveryPeriod();
         }
-        problem.startRecovery();
 
         System.out.println(person.getName() + " starts " + description +
-                            " for " + duration);
+                            " for " + duration + " on " + problem.getSufferer());
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -60,7 +68,7 @@ public class MedicalAssistance extends Task implements Serializable {
 
         SickBay infirmary = getSickbay(person);
         if ((infirmary != null) && infirmary.hasWaitingPatients()) {
-            result = 50D;
+            result = 50D * person.getPerformanceRating();
         }
 
 	    return result;
@@ -86,7 +94,15 @@ public class MedicalAssistance extends Task implements Serializable {
         timeCompleted += time;
         if (timeCompleted > duration) {
             done = true;
-            System.out.println(person.getName() + " done " + problem);
+            // Add experience points for 'Medical' skill.
+            // Add one point for every 100 millisols.
+            double newPoints = duration / 100D;
+            int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
+            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            person.getSkillManager().addExperience(MEDICAL, newPoints);
+
+            System.out.println(person.getName() + " done " + problem +
+                               " skill " + newPoints);
             return timeCompleted - duration;
         }
         else {

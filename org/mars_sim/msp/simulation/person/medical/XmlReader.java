@@ -35,7 +35,9 @@ class XmlReader extends MspXmlReader {
     private static final int TREATMENT = 11;
     private static final int DURATION = 12;
     private static final int SKILL = 13;
-
+    private static final int AID = 14;
+    private static final int AID_LIST = 15;
+    private static final int SUPPORTED = 16;
 
     private MedicalManager manager = null;  // The manager to load.
     private int elementType;                // The current element type being parsed
@@ -80,6 +82,8 @@ class XmlReader extends MspXmlReader {
             elementType = COMPLAINT;
             currentName = "";
             currentDegrade = 0D;
+            currentProbability = 0;
+            currentPerformance = 0;
             currentTreatment = null;
             nextComplaint = null;
         }

@@ -54,11 +54,11 @@ public class PhysicalCondition implements Serializable {
      * Can any of the existing problem be heeled by this FirstAidUnit
      * @param unit FirstAidUnit that can heal.
      */
-    void canStartRecovery(MedicalAid unit) {
+    void canStartTreatment(MedicalAid unit) {
         Iterator iter = problems.values().iterator();
         while(iter.hasNext()) {
             HealthProblem prob = (HealthProblem)iter.next();
-            prob.canStartRecovery(unit);
+            prob.canStartTreatment(unit);
         }
     }
 
@@ -335,13 +335,13 @@ public class PhysicalCondition implements Serializable {
         Iterator iter = problems.values().iterator();
         while(iter.hasNext()) {
             HealthProblem problem = (HealthProblem)iter.next();
-            Complaint illness = problem.getIllness();
-            if (illness.getPerformanceFactor() < performance) {
-                performance = illness.getPerformanceFactor();
+            double factor = problem.getPerformanceFactor();
+            if (factor < performance) {
+                performance = factor;
             }
 
             if ((serious == null) || (serious.getIllness().getSeriousness() <
-                                      illness.getSeriousness())) {
+                                      problem.getIllness().getSeriousness())) {
                 serious = problem;
             }
         }
