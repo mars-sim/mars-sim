@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -35,7 +35,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     private JButton goThere; // Location entry submit button
     private JCheckBox unitLabelCheckbox; // Show unit labels checkbox
 
-    /** Constructs a NavigatorWindow object */
+    /** Constructs a NavigatorWindow object 
+     *  @param desktop the desktop pane
+     */
     public NavigatorWindow(MainDesktopPane desktop) {
 
         // use ToolWindow constructor
@@ -173,6 +175,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
     /** Update coordinates in map, buttons, and globe
       *  Redraw map and globe if necessary 
+      *  @param newCoords the new center location
       */
     public void updateCoords(Coordinates newCoords) {
         navButtons.updateCoords(newCoords);
@@ -180,7 +183,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         globeNav.showGlobe(newCoords);
     }
 
-    /** Update coordinates on globe only. Redraw globe if necessary */
+    /** Update coordinates on globe only. Redraw globe if necessary 
+     *  @param newCoords the new center location
+     */
     public void updateGlobeOnly(Coordinates newCoords) {
         globeNav.showGlobe(newCoords);
     }
@@ -188,6 +193,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     /** Change topographical mode
       *  Redraw legend
       *  Redraw map and globe if necessary
+      *  @param topoMode true if in topographical mode
       */
     public void updateTopo(boolean topoMode) {
         if (topoMode) {
@@ -240,7 +246,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         }
     }
 
-    /** Opens a unit window on the desktop */
+    /** Opens a unit window on the desktop 
+     *  @param unitProxy the unit UI proxy
+     */
     public void openUnitWindow(UnitUIProxy unitProxy) {
         desktop.openUnitWindow(unitProxy);
     }

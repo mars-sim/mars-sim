@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementDialog.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-09-22
  * @author Scott Davis
  */
 
@@ -23,7 +23,10 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
     private JList vehicleList; // List of parked vehicles
     private FacilityPanel[] facilityPanes; // Panes for each of the settlement's facilities.
 
-    /** Constructs a SettlementDialog object */
+    /** Constructs a SettlementDialog object 
+     *  @param parentDesktop the desktop pane
+     *  @param settlementUIProxy the settlement's UI proxy
+     */
     public SettlementDialog(MainDesktopPane parentDesktop, 
             SettlementUIProxy settlementUIProxy) {
         
@@ -89,7 +92,9 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
-    /** Set window size */
+    /** Set window size 
+     *  @return the window's size
+     */
     protected Dimension setWindowSize() {
         return new Dimension(300, 410);
     }
@@ -147,7 +152,9 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         facilityPanes[4] = storeroomPane;
     }
 
-    /** Prepare vehicles pane */
+    /** Prepare vehicles pane 
+     *  @return the vehicle pane
+     */
     protected JPanel setupVehiclesPane() {
 
         // Preapre primary pane
@@ -187,7 +194,9 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         return vehiclesPane;
     }
 
-    /** Prepare location pane */
+    /** Prepare location pane 
+     *  @return the location pane
+     */
     protected JPanel setupLocationPane() {
 
         // Prepare main location pane

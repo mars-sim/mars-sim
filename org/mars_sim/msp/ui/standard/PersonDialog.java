@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -36,7 +36,10 @@ public class PersonDialog extends UnitDialog {
 	private Hashtable skillList;
 	private String[] skillKeys;
 
-	/** Constructs a PersonDialog object */
+	/** Constructs a PersonDialog object 
+     *  @param parentDesktop the desktop pane
+     *  @param personUIProxy the person's UI proxy
+     */
 	public PersonDialog(MainDesktopPane parentDesktop, PersonUIProxy personUIProxy) {
 
 		// Use UnitDialog constructor
@@ -180,7 +183,9 @@ public class PersonDialog extends UnitDialog {
 		}
 	}
 	
-	/** Set window size */
+	/** Set window size 
+     *  @return the window's size
+     */
 	protected Dimension setWindowSize() { return new Dimension(300, 345); }
 	
 	/** Prepare components */
@@ -200,7 +205,9 @@ public class PersonDialog extends UnitDialog {
 		mainPane.add(tabPane, "Center");
 	}
 	
-	/** Set up task panel */
+	/** Set up task panel 
+     *  @return the task pane
+     */
 	protected JPanel setupTaskPane() {
 	
 		// Prepare Task pane
@@ -260,7 +267,9 @@ public class PersonDialog extends UnitDialog {
 		return taskPane;
 	}
 	
-	/** Set up location panel */
+	/** Set up location panel 
+     *  @return location pane
+     */
 	protected JPanel setupLocationPane() {
 		
 		// Prepare location pane
@@ -312,7 +321,9 @@ public class PersonDialog extends UnitDialog {
 		return locationPane;
 	}
 	
-	/** Set up attribute panel */
+	/** Set up attribute panel 
+     *  @return attribute pane
+     */
 	protected JPanel setupAttributePane() {
 	
 		// Prepare attribute pane
@@ -356,7 +367,9 @@ public class PersonDialog extends UnitDialog {
 		return attributePane;
 	}
 	
-	/** Set up skill panel */
+	/** Set up skill panel 
+     *  @return the skill pane
+     */
 	protected JPanel setupSkillPane() {
 	
 		// Prepare skill pane

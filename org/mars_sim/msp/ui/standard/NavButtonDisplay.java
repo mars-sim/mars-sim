@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavButtonDisplay.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -30,7 +30,9 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
     private final Image[] lightUpButtons; // Lit button images
     private final Rectangle[] hotSpots; // Regions encompassing images
 
-    /** Constructs a NavButtonDisplay object */
+    /** Constructs a NavButtonDisplay object 
+     *  @param parentNavigator the navigator window pane
+     */
     public NavButtonDisplay(NavigatorWindow parentNavigator) {
 
         // Set component size
@@ -85,12 +87,16 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
         hotSpots[8] = new Rectangle(0, 61, 15, 28);
     }
 
-    /** Update coordinates */
+    /** Update coordinates 
+     *  @param newCenter the new center position
+     */
     public void updateCoords(Coordinates newCenter) {
         centerCoords.setCoords(newCenter);
     }
 
-    /** Override paintComponent method. Paints buttons and lit button */
+    /** Override paintComponent method. Paints buttons and lit button 
+     *  @param g graphics context
+     */
     public void paintComponent(Graphics g) {
 
         // paint black background
@@ -177,7 +183,10 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
-    /** Light button if mouse is on button */
+    /** Light button if mouse is on button 
+     *  @param x x-position
+     *  @param y y-position
+     */
     private void lightButton(int x, int y) {
         buttonLight = findHotSpot(x, y);
         if (buttonLight >= 0) {
@@ -196,6 +205,8 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
     /** Returns button number if mouse is on button
       *  Returns -1 if not on button
       *  Uses rectangular image mapping
+      *  @param x x-position
+      *  @param y y-position
       */
     private int findHotSpot(int x, int y) {
         for (int i = 0; i < 9; i++) {

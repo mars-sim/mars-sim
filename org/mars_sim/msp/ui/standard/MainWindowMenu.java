@@ -23,7 +23,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
 	private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
 	
-	/** Constructs a MainWindowMenu object */
+	/** Constructs a MainWindowMenu object 
+     *  @mainWindow the main window pane
+     */
 	public MainWindowMenu(MainWindow mainWindow) {
 	
 		// Use JMenuBar constructor

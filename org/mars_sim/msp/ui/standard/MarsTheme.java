@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsTheme.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -24,6 +24,8 @@ public class MarsTheme extends DefaultMetalTheme {
     protected ColorUIResource getPrimary2() { return primary2; }
     protected ColorUIResource getPrimary3() { return primary3; }
 
-    /** Returns the theme's name */
+    /** Returns the theme's name 
+     *  @return name of theme
+     */
     public String getName() { return "Mars Project"; }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -37,7 +37,9 @@ public class SearchWindow extends ToolWindow implements ActionListener,
     private boolean lockSearchText; // True if selectTextField events should be ignored.
     private String[] unitCategoryNames; // Array of category names.
 
-    /** Constructs a SearchWindow object */
+    /** Constructs a SearchWindow object 
+     *  @param desktop the desktop pane
+     */
     public SearchWindow(MainDesktopPane desktop) {
 
         // Use ToolWindow constructor
@@ -259,4 +261,3 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         statusLabel.setText(" ");
     }
 }
-

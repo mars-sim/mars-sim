@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsGlobe.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -32,7 +32,10 @@ public class MarsGlobe {
     private boolean imageDone; // true when image is done
     private JComponent displayArea; // parent display area
 
-    /** Constructs a MarsGlobe object */
+    /** Constructs a MarsGlobe object 
+     *  @param globeType the type of globe: "surface" or "topo"
+     *  @param displayArea the display component for the globe
+     */
     public MarsGlobe (String globeType, JComponent displayArea) {
 
         // Initialize Variables
@@ -62,7 +65,9 @@ public class MarsGlobe {
         setup_sphere();
     }
 
-    /** Creates a Sphere Image at given center point */
+    /** Creates a Sphere Image at given center point 
+     *  @param newCenter new center location
+     */
     public synchronized void drawSphere(Coordinates newCenter) {
 
         // Adjust coordinates
@@ -213,7 +218,9 @@ public class MarsGlobe {
         imageDone = true;
     }
 
-    /** Returns globe image */
+    /** Returns globe image 
+     *  @return globe image
+     */
     public Image getGlobeImage() {
         return globeImage;
     }
@@ -272,7 +279,9 @@ public class MarsGlobe {
         }
     }
 
-    /** determines if a requested sphere is complete */
+    /** determines if a requested sphere is complete 
+     *  @return true if image is done
+     */
     public boolean isImageDone() {
         return imageDone;
     }

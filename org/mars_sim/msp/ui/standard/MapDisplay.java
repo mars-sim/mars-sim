@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -44,7 +44,12 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private static final int HALF_MAP = 150;
     private static final double HALF_MAP_ANGLE = .48587D;
 
-    /** Constructs a MapDisplay object */
+    /** Constructs a MapDisplay object 
+     *  @param navWindow the navigator window pane
+     *  @param proxyManager the UI proxy manager
+     *  @param width the width of the map shown
+     *  @param height the height of the map shown
+     */
     public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager, 
             int width, int height) {
 
@@ -77,7 +82,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         showSurf();
     }
 
-    /** Change label display flag */
+    /** Change label display flag 
+     *  @param labels true if labels are to be displayed
+     */
     public void setLabels(boolean labels) {
         this.labels = labels;
     }
@@ -102,7 +109,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         showMap(centerCoords);
     }
 
-    /** Display surface with new coords, regenerating image if necessary */
+    /** Display surface with new coords, regenerating image if necessary 
+     *  @param newCenter new center location for map
+     */
     public void showMap(Coordinates newCenter) {
         if (!centerCoords.equals(newCenter)) {
             wait = true;
@@ -157,7 +166,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     }
 
     /** Overrides paintComponent method.  Displays map image or
-      *  "Preparing Map..." message. */
+     *  "Preparing Map..." message. 
+     *  @param g graphics context 
+     */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -193,7 +204,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         }
     }
 
-    /** Draws units on map */
+    /** Draws units on map 
+     *  @param g graphics context
+     */
     private void drawUnits(Graphics g) {
         UnitUIProxy[] proxies = proxyManager.getUIProxies();
         for (int x = 0; x < proxies.length; x++) {
@@ -257,7 +270,10 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
-    /** Returns unit x, y position on map panel */
+    /** Returns unit x, y position on map panel 
+     *  @param unitCoords location of unit
+     *  @return display point on map
+     */
     private IntPoint getUnitRectPosition(Coordinates unitCoords) {
 
         double rho = 1440D / Math.PI;
@@ -268,7 +284,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 half_map, low_edge);
     }
 
-    /** Returns unit image draw position on map panel */
+    /** Returns unit image draw position on map panel 
+     *  @param unitPosition absolute unit position
+     *  @param unitImage unit's map image
+     *  @return draw position for unit image
+     */
     private IntPoint getUnitDrawLocation(IntPoint unitPosition, Image unitImage) {
         return new IntPoint(unitPosition.getiX() - (unitImage.getWidth(this) / 2),
                 unitPosition.getiY() - (unitImage.getHeight(this) / 2));
@@ -276,12 +296,14 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
     private static final int labelHorizOffset = 10;
 
-    /** Returns label draw postion on map panel */
-    
+    /** Returns label draw postion on map panel 
+     *  @param unitPosition absolute unit position
+     *  @param unitImage unit's map image
+     *  @return draw position for unit label
+     */
     private IntPoint getLabelLocation(IntPoint unitPosition, Image unitImage) {
         // this differs from getUnitDrawLocation by adding 10 to the horizontal position
         return new IntPoint(unitPosition.getiX() + (unitImage.getWidth(this) / 2) + labelHorizOffset,
                 unitPosition.getiY() + (unitImage.getHeight(this) / 2));
     }
 }
-
