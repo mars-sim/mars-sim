@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindowListener.java
- * @version 2.70 2000-02-29
+ * @version 2.71 2000-09-18
  * @author Scott Davis
  */
 
@@ -12,27 +12,28 @@ import javax.swing.event.*;
  *  detail windows that handles their behavior.
  */
 public class UnitWindowListener extends InternalFrameAdapter {
-	
-    MainDesktopPane desktop;  // Main desktop pane that holds unit windows.
-	
+
+    MainDesktopPane desktop; // Main desktop pane that holds unit windows.
+
     public UnitWindowListener(MainDesktopPane desktop) {
-	this.desktop = desktop;
+        this.desktop = desktop;
     }
-	
+
     // Overridden parent method
-    public void internalFrameOpened(InternalFrameEvent e) { 
-	JInternalFrame frame = (JInternalFrame) e.getSource();
-	try {
-	    frame.setClosed(false);
-	} catch(java.beans.PropertyVetoException v) {
-	    System.out.println(frame.getTitle() + " setClosed() is Vetoed!");
-	}
-    } 
-	
+    public void internalFrameOpened(InternalFrameEvent e) {
+        JInternalFrame frame = (JInternalFrame) e.getSource();
+        try { frame.setClosed(false); } 
+        catch (java.beans.PropertyVetoException v) {
+            System.out.println(frame.getTitle() + " setClosed() is Vetoed!");
+        }
+    }
+
     // Overriden parent method
     /** Removes unit button from toolbar when unit window is closed. */
-    public void internalFrameClosing(InternalFrameEvent e) { 
-	int unitID = ((UnitDialog) e.getSource()).getUnitID();
-	desktop.disposeUnitWindow(unitID); 
+    public void internalFrameClosing(InternalFrameEvent e) {
+        Unit unit = ((UnitDialog) e.getSource()).getUnit();
+        UnitUIProxy proxy = desktop.getProxyManager().getUnitUIProxy(unit);
+        desktop.disposeUnitWindow(proxy);
     }
 }
+

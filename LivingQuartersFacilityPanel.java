@@ -1,12 +1,19 @@
-//************************** Living Quarters Facility Panel **************************
-// Last Modified: 5/24/00
-
-// The LivingQuartersFacilityPanel class displays information about a settlement's living quarters facility in the user interface.
+/**
+ * Mars Simulation Project
+ * LivingQuartersFacilityPanel.java
+ * @version 2.71 2000-09-17
+ * @author Scott Davis
+ */
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+
+/**
+ * The LivingQuartersFacilityPanel class displays information about a settlement's 
+ * living quarters facility in the user interface.
+ */
 
 public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseListener {
 
@@ -18,8 +25,8 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 	
 	// Update data cache
 	
-	private UnitInfo[] inhabitantInfo;              // An array of information on the current inhabitants.
-	private int currentPopulation;                  // The current population.
+	private Unit[] inhabitants;                     // An array of the current inhabitants.
+	private int currentPopulation;                  // The current population number.
 	
 	// Constructor
 	
@@ -93,9 +100,10 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 		
 		// Prepare inhabitant list
 		
-		inhabitantInfo = livingQuarters.getPopulationInfo();
+		inhabitants = livingQuarters.getPopulationUnits();
 		DefaultListModel inhabitantListModel = new DefaultListModel();
-		for (int x=0; x < livingQuarters.getCurrentPopulation(); x++) inhabitantListModel.addElement(inhabitantInfo[x].getName());
+		for (int x=0; x < livingQuarters.getCurrentPopulation(); x++) 
+            inhabitantListModel.addElement(inhabitants[x].getName());
 		inhabitantList = new JList(inhabitantListModel);
 		inhabitantList.setVisibleRowCount(6);
 		inhabitantList.addMouseListener(this);
@@ -117,7 +125,7 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 		// Update inhabitant list
 		
 		DefaultListModel model = (DefaultListModel) inhabitantList.getModel();
-		inhabitantInfo = livingQuarters.getPopulationInfo();
+		inhabitants = livingQuarters.getPopulationUnits();
 		
 		boolean match = false;
 		
@@ -126,14 +134,14 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 		if (model.getSize() == population) {
 			match = true;
 			for (int x=0; x < population; x++) 
-				if (!((String) model.getElementAt(x)).equals(inhabitantInfo[x].getName())) match = false;
+				if (!((String) model.getElementAt(x)).equals(inhabitants[x].getName())) match = false;
 		}
 		
 		// If no match, update inhabitant list
 		
 		if (!match) {
 			model.removeAllElements();
-			for (int x=0; x < population; x++) model.addElement(inhabitantInfo[x].getName());
+			for (int x=0; x < population; x++) model.addElement(inhabitants[x].getName());
 			validate();
 		}	
 	}
@@ -145,7 +153,10 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 		if (event.getClickCount() >= 2) {
   	     		int index = inhabitantList.locationToIndex(event.getPoint());
   	     		if (index > -1) {
-  	     			try { desktop.openUnitWindow(inhabitantInfo[index].getID()); }
+  	     			try { 
+                        UnitUIProxy proxy = desktop.getProxyManager().getUnitUIProxy(inhabitants[index]);
+                        desktop.openUnitWindow(proxy); 
+                    }
   	     			catch(NullPointerException e) {}
   	     		}
 	 	}
@@ -155,27 +166,4 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 	public void mouseReleased(MouseEvent event) {}
 	public void mouseEntered(MouseEvent event) {}
 	public void mouseExited(MouseEvent event) {}
-}	
-
-// Mars Simulation Project
-// Copyright (C) 2000 Scott Davis
-//
-// For questions or comments on this project, email:
-// mars-sim-users@lists.sourceforge.net
-//
-// or visit the project's Web site at:
-// http://mars-sim@sourceforge.net
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+}

@@ -1,14 +1,20 @@
-//************************** Person Detail Window **************************
-// Last Modified: 8/29/00
-
-// The PersonDialog class is a detail window for a person.
-// It displays information about the person and the person's current status.
+/**
+ * Mars Simulation Project
+ * PersonDialog.java
+ * @version 2.71 2000-09-17
+ * @author Scott Davis
+ */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
+
+/**
+ * The PersonDialog class is a detail window for a person.
+ * It displays information about the person and the person's current status.
+ */
 
 public class PersonDialog extends UnitDialog {
 
@@ -33,17 +39,17 @@ public class PersonDialog extends UnitDialog {
 
 	// Constructor
 
-	public PersonDialog(MainDesktopPane parentDesktop, Person person) {
+	public PersonDialog(MainDesktopPane parentDesktop, PersonUIProxy personUIProxy) {
 
 		// Use UnitDialog constructor
 
-		super(parentDesktop, person);
+		super(parentDesktop, personUIProxy);
 	}
 	
 	// Load image icon (overridden)
-	
+	/*
 	public ImageIcon getIcon() { return new ImageIcon("PersonIcon.gif"); }
-	
+	*/
 	// Initialize cached data members
 	
 	protected void initCachedData() {
@@ -188,8 +194,10 @@ public class PersonDialog extends UnitDialog {
 		// If location button, open window for selected unit
 			
 		if (button == locationButton) {
-			if (person.getSettlement() != null) parentDesktop.openUnitWindow(person.getSettlement().getID());
-			else if (person.getVehicle() != null) parentDesktop.openUnitWindow(person.getVehicle().getID());
+			if (person.getSettlement() != null) 
+                parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(person.getSettlement()));
+			else if (person.getVehicle() != null) 
+                parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(person.getVehicle()));
 		}
 	}
 	
@@ -466,27 +474,4 @@ public class PersonDialog extends UnitDialog {
 		return skillPane;
 	}
 }
-
-// Mars Simulation Project
-// Copyright (C) 2000 Scott Davis
-//
-// For questions or comments on this project, email:
-// mars-sim-users@lists.sourceforge.net
-//
-// or visit the project's Web site at:
-// http://mars-sim@sourceforge.net
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 

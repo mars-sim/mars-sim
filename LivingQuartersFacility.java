@@ -1,12 +1,16 @@
-//************************** Living Quarters Facility **************************
-// Last Modified: 5/14/00
+/**
+ * Mars Simulation Project
+ * LivingQuartersFacility.java
+ * @version 2.71 2000-09-17
+ * @author Scott Davis
+ */
 
-// The LivingQuartersFacility class represents the living quarters in a settlement.
-// It defines the settlement's capacity for inhabitants in both normal and emergency
-// situations.
-
-// Every settlement should have living quarters.
-
+/**
+ * The LivingQuartersFacility class represents the living quarters in a settlement.
+ * It defines the settlement's capacity for inhabitants in both normal and emergency
+ * situations.
+ */
+ 
 public class LivingQuartersFacility extends Facility {
 
 	// Data members
@@ -59,40 +63,13 @@ public class LivingQuartersFacility extends Facility {
 	
 	// Returns an array of UnitInfo about inhabitants of the settlement
 	
-	public UnitInfo[] getPopulationInfo() {
+	public Unit[] getPopulationUnits() {
 		
 		int populationNum = manager.getSettlement().getPeopleNum();
-		UnitInfo[] personInfo = new UnitInfo[populationNum];
+		Unit[] personUnits = new Unit[populationNum];
 		
-		for (int x=0; x < populationNum; x++) personInfo[x] = manager.getSettlement().getPerson(x).getUnitInfo();
+		for (int x=0; x < populationNum; x++) personUnits[x] = manager.getSettlement().getPerson(x);
 		
-		return personInfo;
+		return personUnits;
 	}
-	
-	// Returns the UI panel for this facility.
-	
-	public FacilityPanel getUIPanel(MainDesktopPane desktop) { return new LivingQuartersFacilityPanel(this, desktop); }
-}	
-
-// Mars Simulation Project
-// Copyright (C) 2000 Scott Davis
-//
-// For questions or comments on this project, email:
-// mars-sim-users@lists.sourceforge.net
-//
-// or visit the project's Web site at:
-// http://mars-sim@sourceforge.net
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.70 2000-02-29
+ * @version 2.71 2000-09-17
  * @author Scott Davis
  */
 
@@ -14,89 +14,44 @@ import javax.swing.*;
  */
 public abstract class Unit {
 
-    private static int idCount = 0;    // a unique id for each Unit instance
+    protected Coordinates location; // Unit location coordinates
+    protected String name; // Unit name
+    protected VirtualMars mars; // The virtual Mars
+    protected UnitManager manager; // Primary unit manager
 
-    protected Coordinates location;    // Unit location coordinates
-    protected int unitID;              // Unit ID assigned by UnitManager
-    protected String name;             // Unit name
-    protected VirtualMars mars;        // The virtual Mars
-    protected UnitManager manager;     // Primary unit manager
-    protected UnitInfo info;
+    public Unit(String name, Coordinates location, VirtualMars mars,
+            UnitManager manager) {
 
-    public Unit(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
-
-	this.unitID = idCount++;
-
-	// Initialize data members from parameters
-	this.name = name;
-	this.location = location;
-	this.mars = mars;
-	this.manager = manager;
-	info = new UnitInfo(this, unitID, name);
-    }
-	
-    /** unit identification */
-    public UnitInfo getUnitInfo() {
-	return info;
+        // Initialize data members from parameters
+        this.name = name;
+        this.location = location;
+        this.mars = mars;
+        this.manager = manager;
     }
 
-    /** Returns unit's ID */
-    public int getID() {
-	return unitID;
-    }
-	
     /** Returns unit's UnitManager */
     public UnitManager getUnitManager() {
-	return manager;
+        return manager;
     }
 
     /** Returns unit's name */
     public String getName() {
-	return name;
+        return name;
     }
 
     /** Returns unit's location */
     public Coordinates getCoordinates() {
-	return location;
+        return location;
     }
 
     /** Sets unit's location coordinates */
     public void setCoordinates(Coordinates newLocation) {
-	location.setCoords(newLocation);
+        location.setCoords(newLocation);
     }
 
     // perhaps this should be moved into a seperate Time interface
     /** the opportunity for a unit to handle time passing */
     public void timePasses(int seconds) {
     }
-
-    // these UI methods will eventually be moved into their own class
-
-    /** should this unit be drawn on the globe or on the map */
-    public boolean isDrawn() {
-	return false;
-    }
-
-    /** Returns a detail window for the unit */
-    public abstract UnitDialog getDetailWindow(MainDesktopPane parentDesktop); 
-
-    /** the image to be drawn on the surface map to represent this unit */
-    public Image getSurfIcon() {
-	return null;
-    }
-
-    /** the image to be drawn on the topo map to represent this unit */
-    public Image getTopoIcon() {
-	return null;
-    }
-
-    /** the color of this unit's label */
-    public Color getLabelColor(boolean topo) {
-	return null;
-    }
-
-    /** the font of this unit's label */
-    public Font getLabelFont() {
-	return null;
-    }
 }
+

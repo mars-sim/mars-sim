@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.70 2000-09-01
+ * @version 2.71 2000-09-17
  * @author Scott Davis
  */
 
@@ -93,10 +93,5 @@ public class Person extends Unit {
     /** Returns a reference to the Person's task manager */
     public TaskManager getTaskManager() {
 	return tasks;
-    }
-
-    /** Returns a detail window for the unit */
-    public UnitDialog getDetailWindow(MainDesktopPane parentDesktop) {
-	return new PersonDialog(parentDesktop, this);
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.70 2000-09-05
+ * @version 2.71 2000-09-17
  * @author Scott Davis
  */
 
@@ -17,16 +17,6 @@ public class Settlement extends Unit {
     protected Vector people;                    // List of inhabitants
     protected Vector vehicles;                  // List of parked vehicles
     protected FacilityManager facilityManager;  // The facility manager for the settlement.
-
-    private static Image surfImage;
-    private static Image topoImage;
-
-
-    // static initializer block
-    static {
-	surfImage = Toolkit.getDefaultToolkit().getImage("SettlementSymbol.gif");
-	topoImage = Toolkit.getDefaultToolkit().getImage("SettlementSymbolBlack.gif");
-    }
 
     public Settlement(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
@@ -100,33 +90,4 @@ public class Settlement extends Unit {
     public void timePasses(int seconds) {
 	facilityManager.timePasses(seconds);
     }
-
-    // UI methods (will be relocated to a seperate class soon)
-
-    public boolean isDrawn() {
-	return true;
-    }
-
-    public Image getSurfIcon() {
-	return surfImage;
-    }
-
-    public Image getTopoIcon() {
-	return topoImage;
-    }
-
-    public Color getLabelColor(boolean topo) {
-	// topo=black, surf=green
-	return (topo ? Color.black : Color.green);
-    }
-
-    public Font getLabelFont() {
-	// topo=black, surf=green
-	return new Font("Helvetica", Font.PLAIN, 12);
-    }
-
-    /** Returns a detail window for the unit */
-    public UnitDialog getDetailWindow(MainDesktopPane parentDesktop) {
-	return new SettlementDialog(parentDesktop, this);
-    } 
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.70 2000-09-08
+ * @version 2.71 2000-09-17
  * @author Scott Davis
  */
 
@@ -212,93 +212,16 @@ public class UnitManager {
                 current.getCoordinates());
     }
 
-    /** Get a unit based on its unit ID */
-    public Unit getUnit(int unitID) {
-        Unit result = null;
-        for (int i = 0; i < unitVector.size(); i++) {
-            if (((Unit) unitVector.elementAt(i)).getID() == unitID) {
-                result = (Unit) unitVector.elementAt(i);
-            }
-        }
-        return result;
-    }
-
     /** The total number of units */
     public int getUnitCount() {
         return unitVector.size();
     }
-
-    /** Returns an array of unit info sorted by unit name from a vector of units. */
-    private UnitInfo[] sortUnitInfo(Vector unsortedUnits) {
-	
-	/*
-        Vector tempVector = new Vector();
-
-        for (int x = 0; x < unsortedUnits.size(); x++) {
-            tempVector.addElement(unsortedUnits.elementAt(x));
-        }
-	*/
-
-        Vector tempVector = (Vector)unsortedUnits.clone();
-
-        Unit sorterUnit = null;
-        UnitInfo[] sortedInfo = new UnitInfo[tempVector.size()];
-
-        for (int x = 0; x < sortedInfo.length; x++) {
-            sorterUnit = (Unit) tempVector.elementAt(0);
-            for (int y = 0; y < tempVector.size(); y++) {
-                Unit tempUnit = (Unit) tempVector.elementAt(y);
-                if (tempUnit.getName().compareTo(sorterUnit.getName()) <=
-                        0) {
-                    sorterUnit = tempUnit;
-                }
-            }
-            sortedInfo[x] = sorterUnit.getUnitInfo();
-            tempVector.removeElement(sorterUnit);
-        }
-
-        return sortedInfo;
-    }
-
-    /** Returns an array of unit info for all settlements sorted by
-      *  unit name.  Used with the UI.
-      */
-    public UnitInfo[] getSettlementInfo() {
-        return sortUnitInfo(settlementsVector);
-    }
-
-    /** Returns an array of unit info for all people sorted by unit
-      *  name.  Used with the UI.
-      */
-    public UnitInfo[] getPeopleInfo() {
-        return sortUnitInfo(peopleVector);
-    }
-
-    /** Returns an array of unit info for all vehicles sorted by unit
-      *  name.  Used with the UI.
-      */
-    public UnitInfo[] getVehicleInfo() {
-        return sortUnitInfo(vehiclesVector);
-    }
-
-    /** Returns an array of unit info for all vehicles not parked at a
-      *  settlement. Used with the UI.
-      */
-    public UnitInfo[] getMovingVehicleInfo() {
-        Vector movingVehicleInfo = new Vector();
-
-        for (int x = 0; x < vehiclesVector.size(); x++) {
-            Vehicle tempVehicle = (Vehicle) vehiclesVector.elementAt(x);
-            if (tempVehicle.getSettlement() == null) {
-                movingVehicleInfo.addElement(tempVehicle);
-            }
-        }
-        return sortUnitInfo(movingVehicleInfo);
-    }
-
-    /** Returns a unit dialog for a given unit ID. Used with the UI. */
-    public UnitDialog getDetailWindow(int unitID, MainDesktopPane desktop) {
-        return getUnit(unitID).getDetailWindow(desktop);
+    
+    /** Returns an array of all the units. */
+    public Unit[] getUnits() { 
+        Unit[] units = new Unit[unitVector.size()];
+        for (int x=0; x < units.length; x++) units[x] = (Unit) unitVector.elementAt(x);
+        return units;
     }
 }
 

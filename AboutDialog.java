@@ -43,7 +43,7 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 		// Create the document
 		
 		try {
-			document.insertString(0, "The Mars Simulation Project v2.7\n\n", null);
+			document.insertString(0, "The Mars Simulation Project v2.71\n\n", null);
 			document.insertString(document.getLength(), "Web Site: http://mars-sim.sourceforge.net\n\n", null);
 			
 			document.insertString(document.getLength(), "Developers:\n", null);

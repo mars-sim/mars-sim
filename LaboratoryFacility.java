@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LaboratoryFacility.java
- * @version 2.70 2000-09-08
+ * @version 2.71 2000-09-17
  * @author Scott Davis
  */
 
@@ -71,9 +71,4 @@ public class LaboratoryFacility extends Facility {
 	}
 	return result;
     }	
-	
-    /** Returns the UI panel for this facility. */
-    public FacilityPanel getUIPanel(MainDesktopPane desktop) {
-	return new LaboratoryFacilityPanel(this, desktop);
-    }
 }	

@@ -1,11 +1,17 @@
-//************************** Greenhouse Facility Panel **************************
-// Last Modified: 5/24/00
-
-// The GreenhouseFacilityPanel class displays information about a settlement's greenhouse facility in the user interface.
+/**
+ * Mars Simulation Project
+ * FacilityManager.java
+ * @version 2.71 2000-09-17
+ * @author Scott Davis
+ */
 
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
+
+/**
+ * The GreenhouseFacilityPanel class displays information about a settlement's greenhouse facility in the user interface.
+ **/
 
 public class GreenhouseFacilityPanel extends FacilityPanel {
 
@@ -149,27 +155,4 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
 			tendingProgress.setValue(percentCompleted);
 		}
 	}
-}	
-
-// Mars Simulation Project
-// Copyright (C) 2000 Scott Davis
-//
-// For questions or comments on this project, email:
-// mars-sim-users@lists.sourceforge.net
-//
-// or visit the project's Web site at:
-// http://mars-sim@sourceforge.net
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+}

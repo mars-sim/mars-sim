@@ -1,15 +1,21 @@
-//******************** Ground Vehicle Detail Window ********************
-// Last Modified: 8/27/00
-
-// The GroundVehicleDialog class is the detail window for a ground vehicle.
-// It is abstract and an appropriate detail window needs to be derived for 
-// a particular type of ground vehicle. (See RoverDialog for an example)
+/**
+ * Mars Simulation Project
+ * VehicleDialog.java
+ * @version 2.71 2000-09-17
+ * @author Scott Davis
+ */
 
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-public abstract class GroundVehicleDialog extends VehicleDialog {
+/**
+ * The GroundVehicleDialog class is the detail window for a ground vehicle.
+ * It is abstract and an appropriate detail window needs to be derived for 
+ * a particular type of ground vehicle. (See RoverDialog for an example)
+ */
+
+public class GroundVehicleDialog extends VehicleDialog {
 
 	// Data members
 
@@ -26,11 +32,11 @@ public abstract class GroundVehicleDialog extends VehicleDialog {
 	
 	// Constructor
 
-	public GroundVehicleDialog(MainDesktopPane parentDesktop, GroundVehicle groundVehicle) {
+	public GroundVehicleDialog(MainDesktopPane parentDesktop, GroundVehicleUIProxy groundVehicleUIProxy) {
 		
 		// Use VehicleDialog constructor
 		
-		super(parentDesktop, groundVehicle);
+		super(parentDesktop, groundVehicleUIProxy);
 	}
 
 	// Initialize cached data members
@@ -152,30 +158,13 @@ public abstract class GroundVehicleDialog extends VehicleDialog {
 			elevation = tempElevation;
 		}
 	}
+    
+    // Load image icon (overridden)
+	
+	public ImageIcon getIcon() { return new ImageIcon("RoverIcon.gif"); }
+    
+    // Set window size
+	
+	protected Dimension setWindowSize() { return new Dimension(300, 430); }
 }
-
-// Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
-//
-// For questions or comments on this project, contact:
-//
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 

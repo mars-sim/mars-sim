@@ -1,5 +1,9 @@
-//***************** Unit Button *****************
-// Last Modified: 2/23/00
+/**
+ * Mars Simulation Project
+ * UnitToolbar.java
+ * @version 2.71 2000-09-17
+ * @author Scott Davis
+ */
 
 // The UnitButton class is a UI button for a given unit.
 // It is displayed in the unit tool bar.
@@ -7,23 +11,24 @@
 import java.awt.*;
 import javax.swing.*;
 
+/**
+ * The UnitButton class is a UI button for a given unit.
+ * It is displayed in the unit tool bar.
+ */
+
 public class UnitButton extends JButton {
-
-	// Data members
 	
-	private int unitID;  // ID of unit which button is for.
+	private UnitUIProxy unitUIProxy;  // Unit UI proxy for button.
 
-	// Constructor
-
-	public UnitButton(int unitID, String unitName, ImageIcon unitIcon) {
+	public UnitButton(UnitUIProxy unitUIProxy) {
 		
 		// Use JButton constructor
 		
-		super(unitName, unitIcon); 
+		super(unitUIProxy.getUnit().getName(), unitUIProxy.getButtonIcon()); 
 		
-		// Initialize ID
+		// Initialize unit
 		
-		this.unitID = unitID;
+		this.unitUIProxy = unitUIProxy;
 		
 		// Prepare default unit button values
 		
@@ -34,32 +39,7 @@ public class UnitButton extends JButton {
 		setAlignmentY(.5F);
 	}
 	
-	// Returns units ID number
+	/** Returns the button's unit proxy */
 	
-	public int getUnitID() { return unitID; }
+	public UnitUIProxy getUnitProxy() { return unitUIProxy; }
 }
-
-// Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
-//
-// For questions or comments on this project, contact:
-//
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA

@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * LaboratoryFacility.java
+ * LaboratoryFacilityPanel.java
  * @version 2.70 2000-09-08
  * @author Scott Davis
  */

@@ -1,14 +1,18 @@
-//************************** Maintenance Garage Facility **************************
-// Last Modified: 5/14/00
-
-// The MaintenanceGarageFacility class represents the pressurized maintenance garage in a settlement.
-// Vehicles can be taken to a maintenance garage for repair and maintenance.
-// Note: Any number or size of vehicles can always be parked outside a settlement.  The garage's
-// capacity only reflects those vehicles in the garage itself.
-
-// A settlement may or may not have a maintenance garage.
+/**
+ * Mars Simulation Project
+ * MaintenanceGarageFacility.java
+ * @version 2.71 2000-09-17
+ * @author Scott Davis
+ */
 
 import java.util.*;
+
+/**
+ * The MaintenanceGarageFacility class represents the pressurized maintenance garage in a settlement.
+ * Vehicles can be taken to a maintenance garage for repair and maintenance.
+ * Note: Any number or size of vehicles can always be parked outside a settlement.  The garage's
+ * capacity only reflects those vehicles in the garage itself.
+ */
 
 public class MaintenanceGarageFacility extends Facility {
 
@@ -140,31 +144,4 @@ public class MaintenanceGarageFacility extends Facility {
 		
 		return result;
 	}
-	
-	// Returns the UI panel for this facility.
-	
-	public FacilityPanel getUIPanel(MainDesktopPane desktop) { return new MaintenanceGarageFacilityPanel(this, desktop); }
-}	
-
-// Mars Simulation Project
-// Copyright (C) 2000 Scott Davis
-//
-// For questions or comments on this project, email:
-// mars-sim-users@lists.sourceforge.net
-//
-// or visit the project's Web site at:
-// http://mars-sim@sourceforge.net
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+}

@@ -25,9 +25,6 @@ public abstract class Facility {
 	return name;
     }
 	
-    /** Returns the UI panel for this facility */
-    public abstract FacilityPanel getUIPanel(MainDesktopPane desktop);
-	
     /** Called every clock pulse for time events in facilities.
      *  Override in children to use this. */
     public void timePasses(int seconds) {}

@@ -40,16 +40,6 @@ public abstract class Vehicle extends Unit {
     private HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
     private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
     private boolean distanceMark = false;
-
-    protected static Image surfImage;
-    protected static Image topoImage;
-
-
-    // static initializer block
-    static {
-	surfImage = Toolkit.getDefaultToolkit().getImage("VehicleSymbol.gif");
-	topoImage = Toolkit.getDefaultToolkit().getImage("VehicleSymbolBlack.gif");
-    }
     
     public Vehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
@@ -376,28 +366,5 @@ public abstract class Vehicle extends Unit {
     /** Returns the total amount of work needed for maintenance. */
     public int getTotalMaintenanceWork() {
 	return totalMaintenanceWork;
-    }
-
-    public boolean isDrawn() {
-	// true if the vehicle is moving, false if in a settlement
-	return (getSettlement() == null);
-    }
-
-    public Image getSurfIcon() {
-	return surfImage;
-    }
-
-    public Image getTopoIcon() {
-	return topoImage;
-    }
-
-    public Color getLabelColor(boolean topo) {
-	// topo=black, surf=green
-	return (topo ? Color.black : Color.white);
-    }
-
-    public Font getLabelFont() {
-	// topo=black, surf=green
-	return new Font("Helvetica", Font.PLAIN, 9);
     }
 }
