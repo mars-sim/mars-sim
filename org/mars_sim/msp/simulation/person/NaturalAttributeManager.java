@@ -18,7 +18,7 @@ public class NaturalAttributeManager implements Serializable {
 
     // List of the person's natural attributes by name.
     static private String[] attributeKeys = {"Strength", "Endurance", "Agility", "Academic Aptitude", 
-        "Experience Aptitude", "Attractiveness", "Presence", "Leadership", "Conversation"}; 
+        "Experience Aptitude", "Stress Resilience", "Attractiveness", "Presence", "Leadership", "Conversation"}; 
 
     // Data members
     private Hashtable attributeList; // List of the person's natural attributes keyed by unique name.
@@ -41,6 +41,7 @@ public class NaturalAttributeManager implements Serializable {
         addSettlerBonus("Strength", 20);
         addSettlerBonus("Endurance", 20);
         addSettlerBonus("Agility", 10);
+        addSettlerBonus("Stress Resilience", 40);
         addSettlerBonus("Academic Aptitude", 40);
         addSettlerBonus("Experience Aptitude", 30);
     }

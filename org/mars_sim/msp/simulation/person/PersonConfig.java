@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 2.75 2004-03-10
+ * @version 2.77 2004-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person;
@@ -29,6 +29,7 @@ public class PersonConfig {
 	private static final String MIN_TEMPERATURE = "min-temperature";
 	private static final String MAX_TEMPERATURE = "max-temperature";
 	private static final String FREEZING_TIME = "freezing-time";
+	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
 	
 	private Document personDoc;
 	private List nameList;
@@ -203,5 +204,18 @@ public class PersonConfig {
 		String freezingTimeStr = freezingTimeElement.getAttribute("value");
 		double freezingTime = Double.parseDouble(freezingTimeStr);
 		return freezingTime;
+	}
+	
+	/**
+	 * Gets the base percent chance that a person will have a stress breakdown when at maximum stress.
+	 * @return percent chance of a breakdown per millisol.
+	 * @throws Exception if stress breakdown time could not be found.
+	 */
+	public double getStressBreakdownChance() throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element stressBreakdownChanceElement = (Element) root.getElementsByTagName(STRESS_BREAKDOWN_CHANCE).item(0);
+		String stressBreakdownChanceStr = stressBreakdownChanceElement.getAttribute("value");
+		double stressBreakdownChance = Double.parseDouble(stressBreakdownChanceStr);
+		return stressBreakdownChance;
 	}
 }

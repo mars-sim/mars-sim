@@ -178,7 +178,18 @@
 			<performance-percent value="40.0" />
 			<treatment value="Dressing" />
 			<degrade-complaint value="Gangrene" />
-		</medical-complaint>				
+		</medical-complaint>			
+		
+		<!-- An anxiety attack happens when a person is at maximum stress for too long. -->
+		<!-- It is a mental breakdown, reducing the person's performance on activities -->
+		<!-- to minimal and forcing them to relax and destress.  The effects do not last -->
+		<!-- long, however. (See "stress-breakdown-chance" in person.xml.) -->
+		<medical-complaint name="Anxiety Attack">
+			<seriousness value="70" />
+			<recovery-time value="1.0" />
+			<probability value="0.0" />
+			<performance-percent value="0.0" />
+		</medical-complaint>	
 
 	</medical-complaint-list>
 	

@@ -253,12 +253,12 @@ public abstract class Task implements Serializable, Comparable {
 			// Increase probability if current building is overcrowded.
 			LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(LifeSupport.NAME);
 			int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
-			if (currentOverCrowding > 0) modifier *= ((double) currentOverCrowding + 1);
+			if (currentOverCrowding > 0) modifier *= ((double) currentOverCrowding + 2);
 			
 			// Decrease probability if new building is overcrowded.
 			LifeSupport newLS = (LifeSupport) newBuilding.getFunction(LifeSupport.NAME);
 			int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
-			if (newOverCrowding > 0) modifier /= ((double) newOverCrowding + 1);
+			if (newOverCrowding > 0) modifier /= ((double) newOverCrowding + 2);
 		}
 		
 		return modifier;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.76 2004-06-01
+ * @version 2.77 2004-08-12
  * @author Barry Evans
  */
 
@@ -27,6 +27,9 @@ public class PhysicalCondition implements Serializable {
     
     // Stress jump resulting from being in an accident.
     public static final double ACCIDENT_STRESS = 40D;
+    
+    // The anxiety attack health complaint.
+    private static final String ANXIETY_ATTACK = "Anxiety Attack";
 
     // Data members
     private DeathInfo deathDetails;     // Details of persons death
@@ -41,8 +44,7 @@ public class PhysicalCondition implements Serializable {
     private boolean alive;              // True if person is alive.
 
     /**
-     * Construct a Physical Condition instance.
-     *
+     * Constructor
      * @param person The person requiring a physical presence.
      */
     public PhysicalCondition(Person newPerson) {
@@ -52,11 +54,9 @@ public class PhysicalCondition implements Serializable {
         performance = 1.0D;
 
 		medic = Simulation.instance().getMedicalManager();
-        // fatigue = RandomUtil.getRandomDouble(1000D);
-        fatigue = 0D;
-        // hunger = RandomUtil.getRandomDouble(1000D);
-        hunger = 0D;
-        stress = 0D;
+        fatigue = RandomUtil.getRandomDouble(1000D);
+        hunger = RandomUtil.getRandomDouble(1000D);
+        stress = RandomUtil.getRandomDouble(100D);
         alive = true;
     }
 
@@ -166,6 +166,9 @@ public class PhysicalCondition implements Serializable {
         // Build up fatigue & hunger for given time passing.
         fatigue += time;
         hunger += time;
+        
+        // If person is at maximum stress, check for mental breakdown.
+        if (stress == 100.0D) checkForStressBreakdown(config, time);
 
 		// Calculate performance and most serious illness.
         recalculate();
@@ -353,6 +356,35 @@ public class PhysicalCondition implements Serializable {
     	stress = newStress;
     	if (stress > 100D) stress = 100D;
     	else if (stress < 0D) stress = 0D;
+    }
+    
+    /**
+     * Checks if person has an anxiety attack due to too much stress.
+     * @param config the person configuration.
+     * @param time the time passing (millisols)
+     */
+    private void checkForStressBreakdown(PersonConfig config, double time) {
+		try {
+			if (!problems.containsKey(ANXIETY_ATTACK)) {
+				
+				// Determine stress resilience modifier (0D - 2D).
+				int resilience = person.getNaturalAttributeManager().getAttribute("Stress Resilience");
+				double resilienceModifier = (double) (100 - resilience) / 50D;
+				
+				// If random breakdown, add anxiety attack.
+				if (RandomUtil.lessThanRandPercent(config.getStressBreakdownChance() * time * resilienceModifier)) {
+					Complaint anxietyAttack = medic.getComplaintByName(ANXIETY_ATTACK);
+					if (anxietyAttack != null) {
+						addMedicalComplaint(anxietyAttack);
+						// System.out.println(person.getName() + " has an anxiety attack.");
+					}
+					else System.err.println("Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");
+				}
+			}
+		}
+		catch (Exception e) {
+			System.err.println("Problem reading 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
+		}
     }
 
     /**

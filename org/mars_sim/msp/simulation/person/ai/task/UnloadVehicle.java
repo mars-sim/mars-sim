@@ -20,7 +20,7 @@ public class UnloadVehicle extends Task implements Serializable {
 
     // The amount of resources (kg) one person can unload per millisol.
     private static double UNLOAD_RATE = 10D;
-	private static final double STRESS_MODIFIER = .2D; // The stress modified per millisol.
+	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be unloaded.

@@ -48,6 +48,12 @@
 	<!-- Note: 1 millisol = 88.77 seconds -->
 	<!-- Default: 160.0 -->
 	<freezing-time value="160.0" />
+	
+	<!-- Base percent chance per millisol that a person at maximum stress will have an anxiety attack. -->
+	<!-- See medical complaint: "Anxiety Attack" in medical.xml. -->
+	<!-- Note: 1 millisol = 88.77 seconds -->
+	<!-- Default: .1 -->
+	<stress-breakdown-chance value=".1" />
 
 	<!-- List of person names -->
 	<person-name-list>		
