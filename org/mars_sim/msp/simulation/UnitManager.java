@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.73 2001-09-23
+ * @version 2.73 2001-10-15
  * @author Scott Davis
  */
 
@@ -44,9 +44,18 @@ public class UnitManager {
 
     /** Create the units */
     private void createEntities() {
+
         createSettlements();
         createVehicles();
-        createPeople();
+
+        System.out.println("settlementsVector.size(): " + settlementsVector.size());
+        PeopleXmlReader peopleReader = new PeopleXmlReader(this, mars);
+        peopleReader.parse();
+        peopleVector = peopleReader.getPeople();
+        for (int x=0; x < peopleVector.size(); x++) 
+            unitVector.addElement(peopleVector.elementAt(x));
+
+        // createPeople();
     }
 
     /** Creates initial settlements with random locations */
@@ -288,5 +297,16 @@ public class UnitManager {
         for (int x=0; x < vehicles.length; x++)
             vehicles[x] = (Vehicle) vehiclesVector.elementAt(x);
         return vehicles;
+    }
+
+    public Settlement getSettlement(String settlementName) {
+        Settlement result = null;
+
+        for (int x=0; x < settlementsVector.size(); x++) {
+            Settlement settlement = (Settlement) settlementsVector.elementAt(x);
+            if (settlement.getName().equals(settlementName)) result = settlement;
+        }
+
+        return result;
     }
 }

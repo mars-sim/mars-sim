@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<PEOPLE_LIST>
+    <PERSON>
+        <NAME>Scott Davis</NAME>
+        <SETTLEMENT>Port Zubrin</SETTLEMENT>
+        <SKILL>
+            <NAME>Driving</NAME>
+            <LEVEL>3</LEVEL>
+        </SKILL>
+    </PERSON>
+    <PERSON>
+        <NAME>Test Person</NAME>
+        <SETTLEMENT>Port Zubrin</SETTLEMENT>
+    </PERSON>
+</PEOPLE_LIST>

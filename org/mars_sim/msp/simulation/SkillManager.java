@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.72 2001-07-23
+ * @version 2.73 2001-10-23
  * @author Scott Davis
  */
 
@@ -112,7 +112,11 @@ public class SkillManager {
      *  @param newSkill the skill to be added
      */
     public void addNewSkill(Skill newSkill) {
-        skills.put(newSkill.getName(), newSkill);
+        String skillName = newSkill.getName();
+        if (hasSkill(skillName)) {
+            ((Skill) skills.get(skillName)).setLevel(newSkill.getLevel());
+        }
+        else skills.put(newSkill.getName(), newSkill);
     }
 
     /** Adds given experience points to a named skill if it exists in the SkillManager.

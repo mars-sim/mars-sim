@@ -24,7 +24,7 @@ public class VirtualMars {
 
     /** Constructs a VirtualMars object */
     public VirtualMars() {
-       
+
         // Initialize orbit info
         orbitInfo = new OrbitInfo();
  
