@@ -1,5 +1,5 @@
 //************************** Skill Manager **************************
-// Last Modified: 3/2/00
+// Last Modified: 5/25/00
 
 // The SkillManager class manages skills for a given person.
 // Each person has one skill manager.
@@ -16,6 +16,26 @@ public class SkillManager {
 
 	public SkillManager() {
 		skills = new Hashtable();
+		
+		// Add starting skills randomly for person.
+		
+		String[] startingSkills = {"Driving", "Greenhouse Farming"};
+		
+		for (int x=0; x < startingSkills.length; x++) {
+			int skillLevel = getInitialSkillLevel(0, 50);
+			if (skillLevel > 0) {
+				Skill newSkill = new Skill(startingSkills[x]);
+				newSkill.setLevel(skillLevel);
+				addNewSkill(newSkill);
+			}
+		}		
+	}
+	
+	// Returns an initial skill level.
+	
+	private int getInitialSkillLevel(int level, int chance) {
+		if (RandomUtil.lessThanRandPercent(chance)) return getInitialSkillLevel(level + 1, chance / 2);
+		else return level;
 	}
 	
 	// Returns the number of skills.
@@ -80,15 +100,13 @@ public class SkillManager {
 }	
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
