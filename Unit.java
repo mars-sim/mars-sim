@@ -23,7 +23,7 @@ public abstract class Unit {
     protected UnitManager manager;     // Primary unit manager
     protected UnitInfo info;
 
-    public Unit(String name, Coordinates location, VirtualMars mars, UnitManager manager)	{
+    public Unit(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
 	this.unitID = idCount++;
 
