@@ -51,7 +51,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void prepareToolButtons() {
 
         // Add utilise buttons
- 		ToolButton newButton = new ToolButton("New", "images/New.gif");
+ 		ToolButton newButton = new ToolButton("New", "New");
 		newButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         parentMainWindow.newSimulation();
@@ -59,7 +59,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
                 } );
 		add(newButton);
 
-        ToolButton openButton = new ToolButton("Open", "images/Open.gif");
+        ToolButton openButton = new ToolButton("Open", "Open");
 		openButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         parentMainWindow.loadSimulation();
@@ -67,7 +67,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
                 } );
 		add(openButton);
 
- 		ToolButton saveButton = new ToolButton("Save", "images/Save.gif");
+ 		ToolButton saveButton = new ToolButton("Save", "Save");
 		saveButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         parentMainWindow.saveSimulation(true);
@@ -75,7 +75,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
                 } );
 		add(saveButton);
 
-        ToolButton saveAsButton = new ToolButton("Save As", "images/SaveAs.gif");
+        ToolButton saveAsButton = new ToolButton("Save As", "SaveAs");
 		saveAsButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         parentMainWindow.saveSimulation(false);
@@ -85,26 +85,26 @@ public class ToolToolBar extends JToolBar implements ActionListener {
         addSeparator();
 
 		// Add Mars navigator button
-		ToolButton navButton = new ToolButton("Mars Navigator", "images/Planet.gif");
+		ToolButton navButton = new ToolButton("Mars Navigator", "Planet");
 		navButton.addActionListener(this);
 		add(navButton);
 		toolButtons.addElement(navButton);
 
 		// Add search tool button
-		ToolButton searchButton = new ToolButton("Search Tool", "images/Find.gif");
+		ToolButton searchButton = new ToolButton("Search Tool", "Find");
 		searchButton.addActionListener(this);
 		add(searchButton);
 		toolButtons.addElement(searchButton);
 
 
 		// Add time tool button
-		ToolButton timeButton = new ToolButton("Time Tool", "images/Time.gif");
+		ToolButton timeButton = new ToolButton("Time Tool", "Time");
 		timeButton.addActionListener(this);
 		add(timeButton);
 		toolButtons.addElement(timeButton);
 
 		// Add monitor tool button
-		ToolButton monitorButton = new ToolButton("Monitor Tool", "images/Monitor.gif");
+		ToolButton monitorButton = new ToolButton("Monitor Tool", "Monitor");
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);

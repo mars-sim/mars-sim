@@ -51,7 +51,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         addComponentListener(this);
 
         // Create background logo label and make it partially transparent
-        logoLabel = new JLabel(new ImageIcon("images/logo2.gif"), JLabel.LEFT);
+        logoLabel = new JLabel(ImageLoader.getIcon("logo2"), JLabel.LEFT);
         add(logoLabel, Integer.MIN_VALUE);
         logoLabel.setOpaque(false);
 
@@ -84,7 +84,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         // The size of the background tile cannot be determined during construction
         // since it requires the MainDesktopPane be displayed first.
         if (firstDisplay) {
-            ImageIcon baseImageIcon = new ImageIcon("images/background.gif");
+            ImageIcon baseImageIcon = ImageLoader.getIcon("background");
             Dimension screen_size =
                     Toolkit.getDefaultToolkit().getScreenSize();
             Image backgroundImage =

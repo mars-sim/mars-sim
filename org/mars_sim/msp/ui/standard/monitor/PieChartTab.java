@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.standard.monitor;
 
+import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
@@ -36,7 +37,7 @@ import com.jrefinery.chart.TextTitle;
  */
 class PieChartTab extends MonitorTab {
 
-    public final static Icon PIEICON = new ImageIcon("images/PieChart.gif");
+    public final static Icon PIEICON = ImageLoader.getIcon("PieChart");
 
     /**
      * The percentage below which segment goes to others

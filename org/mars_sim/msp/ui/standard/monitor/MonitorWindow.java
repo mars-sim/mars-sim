@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.standard.monitor;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.ToolWindow;
 import org.mars_sim.msp.ui.standard.UIProxyManager;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
@@ -63,6 +64,7 @@ implements Runnable {
 
         // Create toolbar
         JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
         mainPane.add(toolbar, "North");
 
 
@@ -86,7 +88,7 @@ implements Runnable {
                     });
         toolbar.add(barButton);
 
-        JButton tabRemove = new JButton(new ImageIcon("images/TabRemove.gif"));
+        JButton tabRemove = new JButton(ImageLoader.getIcon("TabRemove"));
         tabRemove.setToolTipText("Remove selected tab");
         tabRemove.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
@@ -100,7 +102,7 @@ implements Runnable {
         toolbar.addSeparator();
 
         // Create buttons based on selection
-        JButton mapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
+        JButton mapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         mapButton.setMargin(new Insets(1, 1, 1, 1));
         mapButton.setToolTipText("Center map on selected unit");
         mapButton.addActionListener(new ActionListener() {
@@ -110,7 +112,7 @@ implements Runnable {
                 });
         toolbar.add(mapButton);
 
-        JButton detailsButton = new JButton(new ImageIcon("images/ShowDetails.gif"));
+        JButton detailsButton = new JButton(ImageLoader.getIcon("ShowDetails"));
         detailsButton.setToolTipText("Show details dialog");
         detailsButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
@@ -120,7 +122,7 @@ implements Runnable {
         toolbar.add(detailsButton);
         toolbar.addSeparator();
 
-        JButton propsButton = new JButton(new ImageIcon("images/Preferences.gif"));
+        JButton propsButton = new JButton(ImageLoader.getIcon("Preferences"));
         propsButton.setToolTipText("Change the displayed columns");
         propsButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {

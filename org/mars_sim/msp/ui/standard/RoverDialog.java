@@ -146,7 +146,7 @@ public abstract class RoverDialog extends GroundVehicleDialog implements MouseLi
         crewListPane.add(peopleLabel, "North");
 
         // Add monitor button
-        JButton monitorButton = new JButton(new ImageIcon("images/Monitor.gif"));
+        JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
         monitorButton.setMargin(new Insets(1, 1, 1, 1));
         monitorButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -193,7 +193,7 @@ public abstract class RoverDialog extends GroundVehicleDialog implements MouseLi
         DefaultListModel model = (DefaultListModel) crewList.getModel();
         boolean match = false;
 
-        // Check if model matches crew 
+        // Check if model matches crew
         PersonCollection crew = rover.getCrew();
 
         if (model.getSize() == crew.size()) {

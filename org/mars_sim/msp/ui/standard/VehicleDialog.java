@@ -137,7 +137,7 @@ public abstract class VehicleDialog extends UnitDialog {
 	// Prepare description label
 	JLabel descriptionLabel = new JLabel(vehicle.getDescription(), JLabel.CENTER);
 	innerPane.add(descriptionLabel, "North");
-	
+
         // Prepare tab pane
         tabPane = new JTabbedPane();
         tabPane.addTab("Navigation", setupNavigationPane());
@@ -176,7 +176,7 @@ public abstract class VehicleDialog extends UnitDialog {
         locationPane.add(locationLabelPane, "North");
 
         // Prepare center map button
-        centerMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
+        centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         locationLabelPane.add(centerMapButton);
@@ -216,7 +216,7 @@ public abstract class VehicleDialog extends UnitDialog {
         destinationPane.add(destinationLabelPane, "North");
 
         // Prepare destination center map button
-	destinationCenterMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
+	destinationCenterMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
 	destinationCenterMapButton.setMargin(new Insets(1, 1, 1, 1));
 	destinationCenterMapButton.addActionListener(this);
 	destinationLabelPane.add(destinationCenterMapButton);

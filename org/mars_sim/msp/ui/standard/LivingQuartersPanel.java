@@ -94,7 +94,7 @@ public class LivingQuartersPanel extends FacilityPanel implements MouseListener 
 	innerInhabitantPane.add(new JScrollPane(inhabitantList), "Center");
 
         // Add monitor button
-        JButton monitorButton = new JButton(new ImageIcon("images/Monitor.gif"));
+        JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
         monitorButton.setMargin(new Insets(1, 1, 1, 1));
         monitorButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {

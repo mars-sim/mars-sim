@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.standard.monitor;
 
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.ImageLoader;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
@@ -32,7 +33,7 @@ import com.jrefinery.chart.TextTitle;
  */
 class BarChartTab extends MonitorTab {
 
-    public final static Icon BARICON = new ImageIcon("images/BarChart.gif");
+    public final static Icon BARICON = ImageLoader.getIcon("BarChart");
 
     private final static int MAXLABEL = 12;         // Maximum label length
     private final static int COLUMNWIDTH = 4;

@@ -50,7 +50,7 @@ public class PersonDialog extends UnitDialog {
     private double hunger;
     private int healthRating;
 
-    /** 
+    /**
      * Constructs a PersonDialog object
      * @param parentDesktop the desktop pane
      * @param personUIProxy the person's UI proxy
@@ -318,7 +318,7 @@ public class PersonDialog extends UnitDialog {
         missionNamePanel.add(missionLabel, "West");
 
 	// Add monitor button.
-	JButton monitorButton = new JButton(new ImageIcon("images/Monitor.gif"));
+	JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
 	monitorButton.setMargin(new Insets(1, 1, 1, 1));
 	monitorButton.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
@@ -379,7 +379,7 @@ public class PersonDialog extends UnitDialog {
 	locationSubPane.add(locationLabelPane);
 
 	// Prepare center map button
-	centerMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
+	centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
 	centerMapButton.setMargin(new Insets(1, 1, 1, 1));
 	centerMapButton.addActionListener(this);
 	locationLabelPane.add(centerMapButton);

@@ -17,11 +17,14 @@ import javax.swing.*;
  */
 public class ExplorerRoverUIProxy extends GroundVehicleUIProxy {
 
+    private final static ImageIcon BUTTON_ICON =
+                                    ImageLoader.getIcon("ExplorerRoverIcon");
+
     // Data members
     private ExplorerRover rover;
 
-    /** Constructs an ExplorerRoverUIProxy object 
-     *  @param ExplorerRover the explorer rover 
+    /** Constructs an ExplorerRoverUIProxy object
+     *  @param ExplorerRover the explorer rover
      *  @param proxyManager the unit UI proxy manager
      */
     public ExplorerRoverUIProxy(ExplorerRover rover,
@@ -29,11 +32,11 @@ public class ExplorerRoverUIProxy extends GroundVehicleUIProxy {
         super(rover, proxyManager);
 
         this.rover = rover;
-        buttonIcon = new ImageIcon("images/ExplorerRoverIcon.gif");
+        buttonIcon = BUTTON_ICON;
     }
 
-    /** Returns dialog window for explorer rover. 
-     *  @return dialog window for explorer rover 
+    /** Returns dialog window for explorer rover.
+     *  @return dialog window for explorer rover
      */
     public UnitDialog getUnitDialog(MainDesktopPane desktop) {
         if (unitDialog == null) unitDialog = new ExplorerRoverDialog(desktop, this);

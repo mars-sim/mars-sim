@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.ui.standard.monitor;
 
+import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
@@ -129,7 +130,7 @@ class TableTab extends MonitorTab {
     // These icons are used to render the sorting images on the column header
     private static Icon ascendingIcon = null;
     private static Icon descendingIcon = null;
-    private final static Icon TABLEICON = new ImageIcon("images/Table.gif");
+    private final static Icon TABLEICON = ImageLoader.getIcon("Table");
 
     private JTable table;                   // Table component
     private TableSorter sortedModel;        // Sortable modle proxy

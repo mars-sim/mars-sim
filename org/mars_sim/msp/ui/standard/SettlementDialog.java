@@ -233,7 +233,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         locationPane.add(locationLabelPane, "North");
 
         // Prepare center map button
-        centerMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
+        centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         locationLabelPane.add(centerMapButton);
