@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.74 2002-01-22
+ * @version 2.74 2002-02-18
  * @author Scott Davis
  */
 
@@ -74,7 +74,7 @@ public class AboutDialog extends JDialog implements ActionListener,
 
         buf.append("Martian clock/calendar based on calendars by\n");
         buf.append("Shaun Moss: Areosynchronous Calendar\n(http://www.virtualmars.net/Calendar.asp)\n");
-        buf.append("Tom Gangale: Darian Calendar\n(http://members.xoom.com/mars_ultor/mars/mst/darifrm.htm)\n");
+        buf.append("Tom Gangale: Darian Calendar\n(http://www.martiana.org/mars/mst/calendar_clock.htm)\n");
         buf.append("Frans Blok: The Rotterdam System\n(http://www.geocities.com/fra_nl/rotmonth.html)\n");
         buf.append("Bruce Mackenzie: Metric Time for Mars\n(http://members.nbci.com/_XMCM/mars_ultor/mars/other/mcknzfrm.htm)\n\n");
 
