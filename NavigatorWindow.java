@@ -31,13 +31,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 
     public NavigatorWindow(MainDesktopPane desktop) {
 		
-	// Use ToolWindow constructor
+	// use ToolWindow constructor
 	super("Mars Navigator");
 		
-	// Set internal frame listener
+	// set internal frame listener
 	addInternalFrameListener(new ViewFrameListener());
 
-	// Initialize data members
+	// initialize data members
 	this.desktop = desktop;
 
 	// Prepare content pane

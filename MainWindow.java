@@ -21,7 +21,7 @@ public class MainWindow extends JFrame implements WindowListener {
 
     public MainWindow(VirtualMars mars) {
 		
-	// Use JFrame constructor
+	// use JFrame constructor
 	super("Mars Simulation Project (version 2.7)");
 
 	// Initialize data member to parameter.

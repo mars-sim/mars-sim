@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceMap.java
- * @version 2.70 2000-08-31
+ * @version 2.70 2000-09-01
  * @author Scott Davis
  */
 
@@ -25,13 +25,16 @@ public class SurfaceMap {
     private int[] index;                      // Map index information
     private long[] sum;                       // Map sum information
 
+    RandomAccessFile realMap;
+    RandomAccessFile topoMap;
+
     private int viewHeight = 300;
     private int viewWidth = 300;
 
     // constants
     private final static int mapHeight = 1440;          // Height of source map in pixels.
     private final static int mapWidth = mapHeight * 2;  // Width of source map in pixels.
-	
+
     public SurfaceMap(String mapType, JComponent displayArea) {
 
 	// Initialize data members
@@ -40,6 +43,14 @@ public class SurfaceMap {
 	imageDone = false;
 	centerCoords = new Coordinates(0D, 0D);
 	loadArrays("TopoMarsMap.index", "TopoMarsMap.sum");
+	// open map files
+	try {
+	    topoMap = new RandomAccessFile("TopoMarsMap.dat", "r");
+	    realMap = new RandomAccessFile("SurfaceMarsMap.dat", "r");
+	} catch (FileNotFoundException ex) {
+	    System.out.println("Could not find TopoMarsMap.dat and SurfaceMarsMap.dat");
+	    System.exit(0);
+	}
     }
 
     /** loads the index array and sum array */
@@ -110,15 +121,15 @@ public class SurfaceMap {
 
 	try {
 	    String mapName;
+	    RandomAccessFile map;
 
 	    if (mapType.equals("surface")) { 
 		mapName = new String("SurfaceMarsMap");
+		map = realMap;
 	    } else {
 		mapName = new String("TopoMarsMap");
+		map = topoMap;
 	    }
-
-	    // Open map file
-	    RandomAccessFile map = new RandomAccessFile(mapName + ".dat", "r");
 
 	    // Initialize row variables
 	    double start_row = centerCoords.getPhi() - PI_piece;
@@ -185,8 +196,12 @@ public class SurfaceMap {
 		// Go through each column
 		for (double col = start_col; col <= end_col; col += col_iterate) {
 		    int array_x = (int) Math.round(col_array_modifier2 * col);
-		    while (array_x < 0) { array_x += circum; }
-		    while (array_x >= circum) { array_x -= circum; }
+		    while (array_x < 0) {
+			array_x += circum;
+		    }
+		    while (array_x >= circum) {
+			array_x -= circum;
+		    }
 		    
 		    double temp_col = col + col_correction;
 
@@ -216,11 +231,10 @@ public class SurfaceMap {
 		    }
 		}
 	    }
-
-	    // Close map file
-	    map.close();
 	}
-	catch(IOException e) { System.out.println("File read error: " + e); }	 
+	catch(IOException e) {
+	    System.out.println("File read error: " + e);
+	}
 
 	// Create image from buffer array
 	mapImage = displayArea.createImage(new MemoryImageSource(viewWidth, viewHeight, buffer_array, 0, 300));
