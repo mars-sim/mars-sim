@@ -55,6 +55,9 @@ class TaskMechanic extends Task {
             if (!garage.vehicleInGarage(vehicle))
                 garage.addVehicle(vehicle);
             name = "Performing Maintenance on " + vehicle.getName();
+
+            // System.out.println(name + " at " + settlement.getName());
+
             description = name;
             vehicle.setStatus("Periodic Maintenance");
         } else

@@ -63,7 +63,7 @@ public abstract class Vehicle extends Unit {
         setDestinationType("None");
         passengers = new Vector();
         potentialFailures = new HashMap();
-        totalMaintenanceWork = 12 * 60 * 60; // (12 hours)
+        totalMaintenanceWork = 24 * 60 * 60; // (24 hours)
         direction = new Direction(0);
     }
 
