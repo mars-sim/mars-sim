@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 2.77 2004-09-02
+ * @version 2.77 2004-09-06
  * @author Scott Davis
  */
 
@@ -22,7 +22,6 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 public class RelationshipManager implements Serializable {
 	
 	private Graph relationshipGraph; // The relationship graph
-	private int count = 0;
 
 	/**
 	 * Constructor
@@ -82,8 +81,6 @@ public class RelationshipManager implements Serializable {
 	private void addRelationship(Person person1, Person person2, String relationshipType) {
 		Relationship relationship = new Relationship(person1, person2, Relationship.EXISTING_RELATIONSHIP);
 		relationshipGraph.addEdge(relationship, person1, person2, false);
-		count++;
-		System.out.println("Adding new relationship between " + person1.getName() + " and " + person2.getName() + ": " + count);
 	}
 	
 	/**
@@ -93,7 +90,7 @@ public class RelationshipManager implements Serializable {
 	 * @return true if the two people have a relationship
 	 */
 	public boolean hasRelationship(Person person1, Person person2) {
-		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2, 0);
+		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2, GraphUtils.UNDIRECTED_MASK);
 		return (relationshipGraph.getEdge(edgePredicate) != null);
 	}
 
@@ -106,7 +103,7 @@ public class RelationshipManager implements Serializable {
 	public Relationship getRelationship(Person person1, Person person2) {
 		Relationship result = null;
 		if (hasRelationship(person1, person2)) {
-			EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2, 0);
+			EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2, GraphUtils.UNDIRECTED_MASK);
 			result = (Relationship) relationshipGraph.getEdge(edgePredicate).getUserObject();
 		}
 		return result;
@@ -119,8 +116,8 @@ public class RelationshipManager implements Serializable {
 	 */
 	public List getAllRelationships(Person person) {
 		List result = new ArrayList();
-		TraverserPredicate traverserPredicate = TraverserPredicateFactory.createEqualsNode(person, 0);
-		Traverser traverser = relationshipGraph.traverser(person, traverserPredicate);
+		// TraverserPredicate traverserPredicate = TraverserPredicateFactory.createEqualsNode(person, GraphUtils.UNDIRECTED_MASK);
+		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
 			Person knownPerson = (Person) traverser.next();
 			Relationship relationship = (Relationship) traverser.getEdge().getUserObject();
@@ -134,10 +131,10 @@ public class RelationshipManager implements Serializable {
 	 * @param person the person
 	 * @return a list of the people the person knows.
 	 */
-	public List getAllKnownPeople(Person person) {
-		List result = new ArrayList();
-		TraverserPredicate traverserPredicate = TraverserPredicateFactory.createEqualsNode(person, 0);
-		Traverser traverser = relationshipGraph.traverser(person, traverserPredicate);
+	public PersonCollection getAllKnownPeople(Person person) {
+		PersonCollection result = new PersonCollection();
+		// TraverserPredicate traverserPredicate = TraverserPredicateFactory.createEqualsNode(person, GraphUtils.UNDIRECTED_MASK);
+		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
 			Person knownPerson = (Person) traverser.next();
 			result.add(knownPerson);
