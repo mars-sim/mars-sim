@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2002-10-06
+ * @version 2.75 2003-01-15
  * @author Scott Davis
  */
  
@@ -17,12 +17,23 @@ public class LanderHab extends InhabitableBuilding
         implements LivingAccommodations, Research, Communication, EVA, 
         Storage, Recreation, Dining {
     
+    private static final int ACCOMMODATION_CAPACITY = 6;
+    
     /**
      * Constructor
      * @param manager - building manager.
      */
     public LanderHab(BuildingManager manager) {
         // Use InhabitableBulding constructor
-        super("Lander Hab", manager, 6);
+        super("Lander Hab", manager, ACCOMMODATION_CAPACITY);
+    }
+    
+    /**
+     * Gets the accommodation capacity of this building.
+     *
+     * @return number of accomodations.
+     */
+    public int getAccommodationCapacity() {
+        return ACCOMMODATION_CAPACITY;
     }
 }

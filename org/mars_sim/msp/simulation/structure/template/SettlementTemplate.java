@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTemplate.java
- * @version 2.75 2003-01-08
+ * @version 2.75 2003-01-15
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.template;
 
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.structure.*;
@@ -108,6 +109,13 @@ public class SettlementTemplate {
             catch (Exception e) {
                 System.out.println("Error while constructing vehicle: " + vehicleTemplate.getName() + ": " + e.getMessage());
             }
+        }
+        
+        // Add equipment to settlement.
+        for (int x=0; x < settlement.getPopulationCapacity(); x++) {
+            EVASuit evaSuit = new EVASuit(location, mars);
+            unitManager.addUnit(evaSuit);
+            settlement.getInventory().addUnit(evaSuit);
         }
         
         return settlement;

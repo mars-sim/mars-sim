@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-01-07
+ * @version 2.75 2003-01-15
  * @author Scott Davis
  */
 
@@ -22,18 +22,13 @@ import java.util.*;
  */
 public class Settlement extends Structure implements LifeSupport, Airlockable {
 
-    // Default population capacity for a settlement
-    private static int DEFAULT_POPULATION_CAPACITY = 20;
-    private static Random rand = new Random();
-    private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
-    private double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
+    private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
+    private static final double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
 
     // Data members
-    int populationCapacity; // The population capacity of the settlement
-    FacilityManager facilityManager; // The facility manager for the settlement
+    private FacilityManager facilityManager; // The facility manager for the settlement
     protected Airlock airlock; // the settlement's airlock.
-    
-    BuildingManager buildingManager; // The settlement's building manager.
+    private BuildingManager buildingManager; // The settlement's building manager.
 
     /** Constructs a Settlement object at a given location
      *  @param name the settlement's name
@@ -47,55 +42,45 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         System.out.println("Creating settlement " + name);
         
         // Initialize data members
-        this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
         facilityManager = new FacilityManager(this, mars);
         buildingManager = new BuildingManager(this);
-        setProperties();
-    }
-
-    /** Initialize settlement properties */
-    public void setProperties() {
        
         // Add scope string to malfunction manager.
         malfunctionManager.addScopeString("Settlement");
         malfunctionManager.addScopeString("LifeSupport");
-	    
+        
         // Set inventory total mass capacity.
         inventory.setTotalCapacity(Double.MAX_VALUE);
-	
+    
         // Set inventory resource capacities.
         SimulationProperties properties = mars.getSimulationProperties();
         double fuelCap = properties.getSettlementFuelStorageCapacity();
         inventory.setResourceCapacity(Inventory.FUEL, fuelCap);
-	    double oxygenCap = properties.getSettlementOxygenStorageCapacity();
+        double oxygenCap = properties.getSettlementOxygenStorageCapacity();
         inventory.setResourceCapacity(Inventory.OXYGEN, oxygenCap);
-	    double waterCap = properties.getSettlementWaterStorageCapacity();
+        double waterCap = properties.getSettlementWaterStorageCapacity();
         inventory.setResourceCapacity(Inventory.WATER, waterCap);
-	    double foodCap = properties.getSettlementFoodStorageCapacity();
+        double foodCap = properties.getSettlementFoodStorageCapacity();
         inventory.setResourceCapacity(Inventory.FOOD, foodCap);
 
-    	// Set random initial resources from 1/4 to total capacity.
-	    double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(3D * fuelCap / 4D);
-	    inventory.addResource(Inventory.FUEL, fuel); 
-	    double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(3D * oxygenCap / 4D);
-	    inventory.addResource(Inventory.OXYGEN, oxygen); 
-	    double water = (waterCap / 4D) + RandomUtil.getRandomDouble(3D * waterCap / 4D);
-	    inventory.addResource(Inventory.WATER, water); 
-	    double food = (foodCap / 4D) + RandomUtil.getRandomDouble(3D * foodCap / 4D);
-	    inventory.addResource(Inventory.FOOD, food);
+        // Set random initial resources from 1/4 to total capacity.
+        double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(3D * fuelCap / 4D);
+        inventory.addResource(Inventory.FUEL, fuel); 
+        double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(3D * oxygenCap / 4D);
+        inventory.addResource(Inventory.OXYGEN, oxygen); 
+        double water = (waterCap / 4D) + RandomUtil.getRandomDouble(3D * waterCap / 4D);
+        inventory.addResource(Inventory.WATER, water); 
+        double food = (foodCap / 4D) + RandomUtil.getRandomDouble(3D * foodCap / 4D);
+        inventory.addResource(Inventory.FOOD, food);
 
-	    // Set random initial rock samples from 0 to 500 kg.
-	    double rockSamples = RandomUtil.getRandomDouble(500D);
-	    inventory.addResource(Inventory.ROCK_SAMPLES, rockSamples);
+        // Set random initial rock samples from 0 to 500 kg.
+        double rockSamples = RandomUtil.getRandomDouble(500D);
+        inventory.addResource(Inventory.ROCK_SAMPLES, rockSamples);
 
-	    // Create airlock for settlement.
-	    airlock = new Airlock(this, mars, 4);
-
-	    // Adds enough EVA suits for inhabitant capacity.
-	    for (int x=0; x < getPopulationCapacity(); x++) 
-            inventory.addUnit(new EVASuit(location, mars));
+        // Create airlock for settlement.
+        airlock = new Airlock(this, mars, 4);
     }
-	
+    
     /** Returns the facility manager for the settlement
      *  @return the settlement's facility manager
      */
@@ -114,7 +99,13 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      *  @return the population capacity
      */
     public int getPopulationCapacity() {
-        return populationCapacity;
+        int result = 0;
+        Iterator i = buildingManager.getBuildings(LivingAccommodations.class);
+        while (i.hasNext()) {
+            result += ((LivingAccommodations) i.next()).getAccommodationCapacity();
+        }
+        
+        return result;
     }
 
     /** Gets the current population number of the settlement
@@ -128,9 +119,9 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      *  @return PersonCollection of inhabitants
      */
     public PersonCollection getInhabitants() {
-	return inventory.getContainedUnits().getPeople();
+        return inventory.getContainedUnits().getPeople();
     }
-	
+    
     /** Gets the current available population capacity
      *  of the settlement
      *  @return the available population capacity
@@ -143,14 +134,14 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      *  @return array of inhabitants
      */
     public Person[] getInhabitantArray() {
-	PersonCollection people = getInhabitants();
+        PersonCollection people = getInhabitants();
         Person[] personArray = new Person[people.size()];
-	PersonIterator i = people.iterator();
-	int count = 0;
-	while (i.hasNext()) {
-	    personArray[count] = i.next();
-	    count++;
-	}
+        PersonIterator i = people.iterator();
+        int count = 0;
+        while (i.hasNext()) {
+            personArray[count] = i.next();
+            count++;
+        }
         return personArray;
     }    
 
@@ -175,14 +166,14 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-	if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
+        if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
         if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
         if (getOxygenFlowModifier() < 100D) result = false;
         if (getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
         if (getTemperature() != NORMAL_TEMP) result = false;
-	
-	return result;
+    
+        return result;
     }
 
     /** Gets the number of people the life support can provide for.
@@ -198,7 +189,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      */
     public double provideOxygen(double amountRequested) {
          return inventory.removeResource(Inventory.OXYGEN, amountRequested) *
-	         (getOxygenFlowModifier() / 100D);
+             (getOxygenFlowModifier() / 100D);
     }
 
     /**
@@ -209,13 +200,13 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
 
         double result = malfunctionManager.getOxygenFlowModifier();
 
-	Iterator i = facilityManager.getFacilities();
-	while (i.hasNext()) {
-	    Facility facility = (Facility) i.next();
-	    result *= (facility.getMalfunctionManager().getOxygenFlowModifier() / 100D);
-	}
+        Iterator i = facilityManager.getFacilities();
+        while (i.hasNext()) {
+            Facility facility = (Facility) i.next();
+            result *= (facility.getMalfunctionManager().getOxygenFlowModifier() / 100D);
+        }
 
-	return result;
+        return result;
     }
     
     /** Gets water from system.
@@ -224,7 +215,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      */
     public double provideWater(double amountRequested) {
         return inventory.removeResource(Inventory.WATER, amountRequested) * 
-	        (getWaterFlowModifier() / 100D);
+            (getWaterFlowModifier() / 100D);
     }
 
     /**
@@ -235,13 +226,13 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
 
         double result = malfunctionManager.getWaterFlowModifier();
 
-	Iterator i = facilityManager.getFacilities();
-	while (i.hasNext()) {
-	    Facility facility = (Facility) i.next();
-	    result *= (facility.getMalfunctionManager().getWaterFlowModifier() / 100D);
-	}
+        Iterator i = facilityManager.getFacilities();
+        while (i.hasNext()) {
+            Facility facility = (Facility) i.next();
+            result *= (facility.getMalfunctionManager().getWaterFlowModifier() / 100D);
+        }
 
-	return result;
+        return result;
     }
     
     /** Gets the air pressure of the life support system.
@@ -262,20 +253,20 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
 
         double result = malfunctionManager.getAirPressureModifier();
 
-	Iterator i = facilityManager.getFacilities();
-	while (i.hasNext()) {
-	    Facility facility = (Facility) i.next();
-	    result *= (facility.getMalfunctionManager().getAirPressureModifier() / 100D);
-	}
+        Iterator i = facilityManager.getFacilities();
+        while (i.hasNext()) {
+            Facility facility = (Facility) i.next();
+            result *= (facility.getMalfunctionManager().getAirPressureModifier() / 100D);
+        }
 
-	return result;
+        return result;
     }
     
     /** Gets the temperature of the life support system.
      *  @return temperature (degrees C)
      */
     public double getTemperature() {
-	double result = NORMAL_TEMP * (getTemperatureModifier() / 100D);
+        double result = NORMAL_TEMP * (getTemperatureModifier() / 100D);
         double ambient = mars.getWeather().getTemperature(location);
         if (result < ambient) return ambient;
         else return result;
@@ -289,13 +280,13 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
 
         double result = malfunctionManager.getTemperatureModifier();
 
-	Iterator i = facilityManager.getFacilities();
-	while (i.hasNext()) {
-	    Facility facility = (Facility) i.next();
-	    result *= (facility.getMalfunctionManager().getTemperatureModifier() / 100D);
-	}
+        Iterator i = facilityManager.getFacilities();
+        while (i.hasNext()) {
+            Facility facility = (Facility) i.next();
+            result *= (facility.getMalfunctionManager().getTemperatureModifier() / 100D);
+        }
 
-	return result;
+        return result;
     }
     
     /**
@@ -311,10 +302,10 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      */
     public void timePassing(double time) {
         facilityManager.timePassing(time);
-	airlock.timePassing(time);
-	if (getCurrentPopulationNum() > 0)
-	    malfunctionManager.activeTimePassing(time);
-	malfunctionManager.timePassing(time);
+        airlock.timePassing(time);
+        if (getCurrentPopulationNum() > 0)
+            malfunctionManager.activeTimePassing(time);
+        malfunctionManager.timePassing(time);
     }
 
     /**
@@ -322,7 +313,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      * @return person collection
      */
     public PersonCollection getAffectedPeople() {
-	PersonCollection people = new PersonCollection(getInhabitants());
+        PersonCollection people = new PersonCollection(getInhabitants());
 
         // Check all people.
         PersonIterator i = mars.getUnitManager().getPeople().iterator();
@@ -334,14 +325,14 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
             if (task instanceof Maintenance) {
                 if (((Maintenance) task).getEntity() == this) {
                     if (!people.contains(person)) people.add(person);
-		}
+                }
             }
 
             // Add all people repairing this settlement.
             if (task instanceof Repair) {
                 if (((Repair) task).getEntity() == this) {
                     if (!people.contains(person)) people.add(person);
-		}
+                }
             }
         }
 
