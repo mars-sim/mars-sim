@@ -62,6 +62,17 @@ public class Coordinates implements Serializable {
         cosTheta = Math.cos(theta);
     }
 
+    /**
+     * Generate a string representation of this object. It will be the same
+     * format as the formatterString method.
+     *
+     * @return String description of Coordinate.
+     * @see #getFormatterString()
+     */
+    public String toString() {
+        return getFormattedString();
+    }
+
     /** phi accessor
      *  @return the phi angle value of the coordinate
      */
