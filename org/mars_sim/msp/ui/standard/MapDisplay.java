@@ -100,11 +100,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  @param useUSGSMap true if using USGS map.
      */
     public void setUSGSMap(boolean useUSGSMap) {
-    	if (!topo && (this.useUSGSMap != useUSGSMap)) 
+    	if (!topo && (this.useUSGSMap != useUSGSMap))
     		recreate = true;
     	this.useUSGSMap = useUSGSMap;
-   	}
-	
+    } 
+
     /** Change label display flag
      *  @param labels true if labels are to be displayed
      */
@@ -190,13 +190,13 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         super.paintComponent(g);
 
         if (wait) {
-            // If in waiting mode, display wait string 
+            // If in waiting mode, display wait string
             if (mapImage != null)
                 g.drawImage(mapImage, 0, 0, this);
-                
+
             if (topo) g.setColor(Color.black);
             else g.setColor(Color.green);
-            
+
             String message = "Generating Map";
             if (useUSGSMap) message = "Downloading Map";
             Font messageFont = new Font("SansSerif", Font.BOLD, 25);
@@ -219,7 +219,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             else {
             	if (useUSGSMap) map = usgsMap;
             	else map = surfMap;
-           	}
+            }
 
             if (map.isImageDone()) {
                 mapImage = map.getMapImage();
@@ -238,9 +238,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     protected void drawShading(Graphics g) {
         int centerX = width / 2;
         int centerY = width / 2;
-        
+
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
-        
+
         double rho = 1440D / Math.PI;
         if (useUSGSMap) rho = 11458D / Math.PI;
 
@@ -282,7 +282,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
             // Draw the shading image
             g.drawImage(shadingMap, 0, 0, this);
-        } 
+        }
     }
 
     /** Draws units on map
@@ -296,7 +296,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 double angle = 0D;
                 if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
                 else angle = HALF_MAP_ANGLE_STANDARD;
-                
+
                 if (centerCoords.getAngle(unitCoords) < angle) {
                     IntPoint rectLocation = getUnitRectPosition(unitCoords);
                     Image positionImage = proxies[x].getSurfMapIcon().getImage();
@@ -329,13 +329,13 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     }
 
     /** MouseListener methods overridden. Perform appropriate action
-     *  on mouse release. */
-    public void mouseReleased(MouseEvent event) {
+     *  on mouse click. */
+    public void mouseClicked(MouseEvent event) {
 
-		double rho;
-		if (useUSGSMap && !topo) rho = 11458D / Math.PI;
-		else rho = 1440D / Math.PI;
-		
+	double rho;
+	if (useUSGSMap && !topo) rho = 11458D / Math.PI;
+	else rho = 1440D / Math.PI;
+
         Coordinates clickedPosition = centerCoords.convertRectToSpherical(
                 (double)(event.getX() - HALF_MAP - 1),
                 (double)(event.getY() - HALF_MAP - 1), rho);
@@ -357,12 +357,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             }
         }
 
-        if (!unitsClicked)
-            navWindow.updateCoords(clickedPosition);
+        if (!unitsClicked) navWindow.updateCoords(clickedPosition);
     }
 
     public void mousePressed(MouseEvent event) {}
-    public void mouseClicked(MouseEvent event) {}
+    public void mouseReleased(MouseEvent event) {}
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
@@ -372,18 +371,18 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      */
     private IntPoint getUnitRectPosition(Coordinates unitCoords) {
 
-		double rho;
-		int half_map;
-		
-		if (useUSGSMap && !topo) {
-			rho = 11458D / Math.PI;
-			half_map = 11458 / 2;
-		}
-		else {
-			rho = 1440D / Math.PI;
-        	half_map = 1440 / 2;
+	double rho;
+	int half_map;
+
+	if (useUSGSMap && !topo) {
+	    rho = 11458D / Math.PI;
+	    half_map = 11458 / 2;
+	}
+	else {
+	    rho = 1440D / Math.PI;
+            half_map = 1440 / 2;
        	}
-       	
+
         int low_edge = half_map - 150;
 
         return Coordinates.findRectPosition(unitCoords, centerCoords, rho,
