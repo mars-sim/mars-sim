@@ -183,12 +183,14 @@ class BarChartTab extends MonitorTab {
 
         Component panel = new JFreeChartPanel(chart);
         Dimension size = panel.getSize();
+        /*
         if (chartwidth > size.width) {
             size.width = chartwidth;
             panel.setSize(size);
             panel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         }
+        */
 
         add(panel, "Center");
     }
