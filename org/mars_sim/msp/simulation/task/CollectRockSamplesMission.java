@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.73 2001-10-07
+ * @version 2.73 2001-12-15
  * @author Scott Davis
  */
 
@@ -70,7 +70,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         if (person.getLocationSituation().equals("In Settlement")) {
             Settlement currentSettlement = person.getSettlement();
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) {
-                if (ReserveGroundVehicle.availableVehicles(currentSettlement)) result = 10D;
+                if (ReserveGroundVehicle.availableVehicles(currentSettlement)) result = 2D;
             }
         }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.73 2001-12-07
+ * @version 2.73 2001-12-15
  * @author Scott Davis
  */
 
@@ -387,20 +387,20 @@ class DriveGroundVehicle extends Task implements Serializable {
     }
 
     /** Checks for vehicle breakdown to mechanical failure. 
-     *  @param time the amount of time vehicle is driven
+     *  @param time the amount of time vehicle is driven (millisols)
      */
     private void checkMechanicalBreakdown(double time) {
         // Base 1% of breakdown per 100 millisols of driving.
         double percentChance = time / 100D; 
 
         // Modify by total mileage on vehicle.
-        // Taken out until vehicle scrapping is implemented.
+        // Taken out until vehicle construction/scrapping is implemented.
         // double mileageModifier - .1D * (vehicle.getTotalDistanceTraveled() / 10000D);
 
         // Modify by distance since last maintenance if over 5,000 km.
         double maintenanceModifier = 0D;
         if (vehicle.getDistanceLastMaintenance() > 5000D) 
-            maintenanceModifier = 3D * (vehicle.getDistanceLastMaintenance() / 5000D);
+            maintenanceModifier = 1D * (vehicle.getDistanceLastMaintenance() / 5000D);
         
         // Modify by driver's skill level.
         int skillLevel = person.getSkillManager().getEffectiveSkillLevel("Driving");

@@ -70,7 +70,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected double oxygen; // Cached oxygen stores in vehicle
     protected double water; // Cached water stores in vehicle
     protected double food; // Cached food stores in vehicle
-    
+
     /** Constructs a VehicleDialog object 
      *  @param parentDesktop the desktop pane
      *  @param vehicleUIProxy the vehicle's UI proxy
@@ -297,7 +297,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         navigationPane.add(navigationInfoPane);
 
-        // Prepare speed/fuel pane
+        // Prepare speed pane
         JPanel speedPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         navigationInfoPane.add(speedPane);
 
