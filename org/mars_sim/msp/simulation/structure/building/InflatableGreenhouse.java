@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2003-06-08
  * @author Scott Davis
  */
  
@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.structure.building;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.structure.building.function.impl.*;
@@ -29,7 +31,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
     // Power required for sustaining crops per kg of crop.
     private static final double POWER_SUSTAINING_CROP = .05D;
     
-    private Collection crops;
+    private List crops;
     private int numCrops;
     private double maxHarvest;
     private Map resourceStorageCapacity;
@@ -109,7 +111,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
      * Gets the farm's current crops.
      * @return collection of crops
      */
-    public Collection getCrops() {
+    public List getCrops() {
         return crops;
     }
     
@@ -162,6 +164,23 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
             Crop crop = (Crop) i.next();
             if (crop.requiresWork()) result++;
         }
+        return result;
+    }
+    
+    /**
+     * Gets the number of farmers currently working at the farm.
+     *
+     * @return number of farmers
+     */
+    public int getFarmerNum() {
+        int result = 0;
+        
+        PersonIterator i = getOccupants().iterator();
+        while (i.hasNext()) {
+            Task task = i.next().getMind().getTaskManager().getTask();
+            if (task instanceof TendGreenhouse) result++;
+        }
+        
         return result;
     }
     

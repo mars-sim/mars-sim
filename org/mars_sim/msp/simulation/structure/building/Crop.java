@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.75 2003-02-16
+ * @version 2.75 2003-06-08
  * @author Scott Davis
  */
  
@@ -107,6 +107,28 @@ public class Crop implements Serializable {
             if (dailyTendingWorkRequired > currentPhaseWorkCompleted) result = true;
         }
         
+        return result;
+    }
+    
+    /**
+     * Gets the overall health condition of the crop.
+     *
+     * @return condition as value from 0 (poor) to 1 (healthy)
+     */
+    public double getCondition() {
+        double result = 0D;
+        
+        if (phase.equals(PLANTING)) result = 1D;
+        else if (phase.equals(GROWING)) {
+            if ((maxHarvest == 0D) || (growingTimeCompleted == 0D)) result = 1D;
+            else result = (actualHarvest * cropType.getGrowingTime()) / (maxHarvest * growingTimeCompleted);
+        }
+        else if (phase.equals(HARVESTING) || phase.equals(FINISHED)) {
+            result = actualHarvest / maxHarvest;
+        }
+        
+        if (result > 1D) result = 1D;
+        else if (result < 0D) result = 0D;
         return result;
     }
     

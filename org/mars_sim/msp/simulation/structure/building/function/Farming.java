@@ -1,13 +1,13 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 2.75 2002-10-26
+ * @version 2.75 2003-06-08
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building.function;
 
-import java.util.Collection;
+import java.util.List;
  
 public interface Farming extends Function {
         
@@ -18,7 +18,7 @@ public interface Farming extends Function {
      * Gets the farm's current crops.
      * @return collection of crops
      */
-    public Collection getCrops();
+    public List getCrops();
     
     /**
      * Checks if farm currently requires work.
@@ -38,4 +38,11 @@ public interface Farming extends Function {
      * @param harvest harvested food to add (kg.)
      */
     public void addHarvest(double harvest);
+    
+    /**
+     * Gets the number of farmers currently working at the farm.
+     *
+     * @return number of farmers
+     */
+    public int getFarmerNum();
 }

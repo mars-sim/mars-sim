@@ -7,17 +7,16 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
+import java.awt.*;
+import java.text.DecimalFormat;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
-import java.awt.*;
-import java.text.DecimalFormat;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.*;
 
 /** 
  * The PowerGridTabPanel is a tab panel for a settlement's power grid information.
