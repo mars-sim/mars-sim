@@ -10,41 +10,58 @@
             <!-- Range: 0 - 100 -->
             <!-- Default: 0 (no skill)  -->
             <SKILL>1</SKILL>
+
+            <!-- Lowest Medical facilities required (optional)-->
+            <!-- Range: 0 - 10 -->
+            <!-- Default: 10 (Most complete)  -->
+            <FACILITY_LEVEL>3</FACILITY_LEVEL>
     
             <!-- How long the treatment takes in hours  (optional) -->
-            <!-- If this is negative, it takes as long as the recovery -->
-            <!-- Default: -1.0 (As long as the recovery period) -->
+            <!-- Default: 0.0 (As long as the recovery period) -->
             <DURATION>1.0</DURATION>
+
+            <!-- Does the medical aid providing the treatment need to be -->
+            <!-- used during the Recovery as well (optional) -->
+            <!-- Default: false -->
+            <RETAINAID>False</RETAINAID>
         </TREATMENT>
 
         <TREATMENT>
             <NAME>Antibiotics</NAME>
             <SKILL>0</SKILL>
             <DURATION>0.1</DURATION>
+            <FACILITY_LEVEL>1</FACILITY_LEVEL>
         </TREATMENT>
 
         <TREATMENT>
             <NAME>Dressing</NAME>
             <SKILL>0</SKILL>
             <DURATION>0.5</DURATION>
+            <FACILITY_LEVEL>2</FACILITY_LEVEL>
         </TREATMENT>
 
         <TREATMENT>
             <NAME>Minor Operation</NAME>
             <SKILL>3</SKILL>
             <DURATION>2.0</DURATION>
+            <RETAINAID>True</RETAINAID>
+            <FACILITY_LEVEL>4</FACILITY_LEVEL>
         </TREATMENT>
 
         <TREATMENT>
             <NAME>Major Operation</NAME>
             <SKILL>4</SKILL>
             <DURATION>4.0</DURATION>
+            <RETAINAID>True</RETAINAID>
+            <FACILITY_LEVEL>5</FACILITY_LEVEL>
         </TREATMENT>
         
         <TREATMENT>
             <NAME>Hospitalization</NAME>
             <SKILL>3</SKILL>
-            <DURATION>-1.0</DURATION>
+            <DURATION>8.0</DURATION>
+            <RETAINAID>True</RETAINAID>
+            <FACILITY_LEVEL>5</FACILITY_LEVEL>
         </TREATMENT>
     </TREATMENT_LIST>
 
@@ -107,7 +124,7 @@
             <NAME>Pulled Tendon/Muscle</NAME>
             <SERIOUS>30</SERIOUS>
             <RECOVERY>14</RECOVERY>
-            <PROBABILITY>20</PROBABILITY>
+            <PROBABILITY>15</PROBABILITY>
             <PERFORMANCE>60</PERFORMANCE>
         </COMPLAINT>
 
@@ -115,7 +132,7 @@
             <NAME>Cold</NAME>
             <SERIOUS>10</SERIOUS>
             <RECOVERY>7</RECOVERY>
-            <PROBABILITY>30</PROBABILITY>
+            <PROBABILITY>25</PROBABILITY>
             <PERFORMANCE>70</PERFORMANCE>
         </COMPLAINT>
 
@@ -133,7 +150,7 @@
             <SERIOUS>60</SERIOUS>
             <DEGRADE>7</DEGRADE>
             <RECOVERY>14</RECOVERY>
-            <PROBABILITY>10</PROBABILITY>
+            <PROBABILITY>8</PROBABILITY>
             <PERFORMANCE>0</PERFORMANCE>
             <CURE>Plaster Cast</CURE>
             <NEXT>Gangrene</NEXT>
