@@ -32,7 +32,9 @@ public class ConfFileProcessor {
        
             Vector settlementNames = new Vector();
             String name;
-            while((name = configReader.readLine()) != null) settlementNames.addElement(name.trim());
+            while((name = configReader.readLine()) != null) {
+                if (!name.trim().equals("")) settlementNames.addElement(name.trim());
+            }
        
             result = new String[settlementNames.size()];
             for (int x=0; x < settlementNames.size(); x++) result[x] = (String) settlementNames.elementAt(x);  
