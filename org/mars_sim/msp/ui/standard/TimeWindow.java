@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.72 2001-04-02
+ * @version 2.72 2001-04-03
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ public class TimeWindow extends ToolWindow implements Runnable {
     private MarsClock marsTime;      // Martian Clock
     private EarthClock earthTime;    // Earth Clock
     private UpTimer uptimer;         // Uptime Timer
+    private MarsCalendarDisplay calendarDisplay;  // Martian calendar panel
     private JLabel martianTimeLabel; // JLabel for Martian time
     private JLabel earthTimeLabel;   // JLabel for Earth time
     private JLabel uptimeLabel;      // JLabel for uptimer
@@ -66,6 +67,18 @@ public class TimeWindow extends ToolWindow implements Runnable {
         martianTimeLabel = new JLabel(marsTime.getTimeStamp(), JLabel.CENTER);
         martianTimeLabel.setForeground(Color.black);
         martianTimePane.add(martianTimeLabel, "South");
+
+        // Create Martian calendar panel
+        JPanel martianCalendarPane = new JPanel(new FlowLayout());
+        martianCalendarPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        mainPane.add(martianCalendarPane, "Center");
+
+        // Create Martian calendar display
+        calendarDisplay = new MarsCalendarDisplay(marsTime);
+        JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        innerCalendarPane.add(calendarDisplay);
+        martianCalendarPane.add(innerCalendarPane);        
 
         JPanel southPane = new JPanel(new BorderLayout());
         mainPane.add(southPane, "South");
