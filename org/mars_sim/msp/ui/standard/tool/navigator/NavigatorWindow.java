@@ -20,25 +20,26 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  * globe showing Mars, and various other elements. It is the primary
  * interface component that presents the simulation to the user.
  */
-public class NavigatorWindow extends ToolWindow implements ActionListener,
-        ItemListener {
+public class NavigatorWindow extends ToolWindow implements ActionListener {
 
     // Data members
     private MapDisplay map; // map navigation
     private GlobeDisplay globeNav; // Globe navigation
     private NavButtonDisplay navButtons; // Compass navigation buttons
     private LegendDisplay legend; // Topographical and distance legend
-    private JCheckBox topoCheck; // Topographical view checkbox
     private JTextField latText; // Latitude entry
     private JTextField longText; // Longitude entry
     private JComboBox latDir; // Latitude direction choice
     private JComboBox longDir; // Longitude direction choice
     private JButton goThere; // Location entry submit button
-    private JCheckBox unitLabelCheckbox; // Show unit labels checkbox
-    private JCheckBox dayNightCheckbox; // Day/night tracking checkbox
-    private JCheckBox usgsCheckbox; // Show USGS map mode
-    private JCheckBox trailCheckbox; // Show vehicle trails
-    private JCheckBox landmarkCheckbox; // Show landmarks
+    private JButton optionsButton; // Options for map display
+    private JPopupMenu optionsMenu; // Map options menu
+    private JCheckBoxMenuItem topoItem; //Topographical map menu item.
+    private JCheckBoxMenuItem unitLabelItem; // Show unit labels menu item.
+    private JCheckBoxMenuItem dayNightItem; // Day/night tracking menu item.
+    private JCheckBoxMenuItem usgsItem; // Show USGS map mode menu item.
+    private JCheckBoxMenuItem trailItem; // Show vehicle trails menu item.
+    private JCheckBoxMenuItem landmarkItem; // Show landmarks menu item. 
 
     /** Constructs a NavigatorWindow object 
      *  @param desktop the desktop pane
@@ -95,8 +96,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         rightTopPane.add(mapPane);
         JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
         mapPaneInner.setBackground(Color.black);
-        mapPaneInner.add(map, "Center");
-        mapPane.add(mapPaneInner, "Center");
+        mapPaneInner.add(map, BorderLayout.CENTER);
+        mapPane.add(mapPaneInner, BorderLayout.CENTER);
 
         // Put some glue in to fill in extra space
         rightTopPane.add(Box.createVerticalStrut(5));
@@ -106,52 +107,22 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         topoPane.setBorder(new EmptyBorder(0, 3, 0, 0));
         mainPane.add(topoPane);
 
-        // Prepare checkbox panel
-        JPanel checkBoxPane = new JPanel(new GridLayout(6, 1));
-        topoPane.add(checkBoxPane, "West");
+        // Prepare options panel
+        JPanel optionsPane = new JPanel(new BorderLayout());
+        topoPane.add(optionsPane, BorderLayout.CENTER);
 
-        // Prepare show topographical map checkbox
-        topoCheck = new JCheckBox("Topographical Mode");
-        topoCheck.addItemListener(this);
-        checkBoxPane.add(topoCheck);
-
-        // Prepare unit label mode checkbox
-        unitLabelCheckbox = new JCheckBox("Show Unit Labels");
-        unitLabelCheckbox.setSelected(true);
-        unitLabelCheckbox.addItemListener(this);
-        checkBoxPane.add(unitLabelCheckbox);
-
-        // Prepare day/night checkbox
-        dayNightCheckbox = new JCheckBox("Day/Night Tracking");
-        dayNightCheckbox.setSelected(false);
-        dayNightCheckbox.addItemListener(this);
-        checkBoxPane.add(dayNightCheckbox);
-
-        // Prepare USGS checkbox
-        usgsCheckbox = new JCheckBox("8x Surface Map Zoom");
-        usgsCheckbox.setSelected(false);
-        usgsCheckbox.addItemListener(this);
-        checkBoxPane.add(usgsCheckbox);
-
-        // Prepare vehicle trails checkbox
-        trailCheckbox = new JCheckBox("Show Vehicle Trails");
-        trailCheckbox.setSelected(true);
-        trailCheckbox.addItemListener(this);
-        checkBoxPane.add(trailCheckbox);
-        
-        // Prepare landmark checkbox
-        landmarkCheckbox = new JCheckBox("Show Landmarks");
-        landmarkCheckbox.setSelected(true);
-        landmarkCheckbox.addItemListener(this);
-        checkBoxPane.add(landmarkCheckbox);
+		// Prepare options button.
+		optionsButton = new JButton("Map Options");
+		optionsButton.addActionListener(this);
+		optionsPane.add(optionsButton, BorderLayout.NORTH);
 	
         // Prepare legend icon
         legend = new LegendDisplay();
         legend.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
         JPanel legendPanel = new JPanel(new BorderLayout(0, 0));
-        legendPanel.add(legend, "North");
-        topoPane.add(legendPanel, "East");
+        legendPanel.add(legend, BorderLayout.NORTH);
+        topoPane.add(legendPanel, BorderLayout.EAST);
 
         // Prepare position entry panel
         JPanel positionPane = new JPanel();
@@ -220,88 +191,111 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         globeNav.showGlobe(newCoords);
     }
 
-    /** Change topographical mode
-     *  Redraw legend
-     *  Redraw map and globe if necessary
-     *  @param topoMode true if in topographical mode
-     */
-    public void updateTopo(boolean topoMode) {
-        if (topoMode) {
-            legend.showColor();
-            globeNav.showTopo();
-            map.showTopo();
-            dayNightCheckbox.setEnabled(false);
-            usgsCheckbox.setEnabled(false);
-        } else {
-            legend.showMap();
-            globeNav.showSurf();
-            map.showSurf();
-            dayNightCheckbox.setEnabled(true);
-            usgsCheckbox.setEnabled(true);
-        }
-    }
-    
-    /** Set USGS as surface map
-     *  @param useUSGSMap true if using USGS map.
-     */
-    public void setUSGSMap(boolean useUSGSMap) {
-    	globeNav.setUSGSMap(useUSGSMap);
-    	map.setUSGSMap(useUSGSMap);
-    	legend.setUSGSMode(useUSGSMap);
-    	if (!topoCheck.isSelected()) legend.showMap();
-    }
-
     /** ActionListener method overridden */
     public void actionPerformed(ActionEvent event) {
 
-        // Read longitude and latitude from user input, translate to radians,
-        // and recenter globe and surface map on that location.
-        try {
-            double latitude = ((Float) new Float(latText.getText())).doubleValue();
-            double longitude = ((Float) new Float(longText.getText())).doubleValue();
-            String latDirStr = (String) latDir.getSelectedItem();
-            String longDirStr = (String) longDir.getSelectedItem();
+		Object source = event.getSource();
 
-            if ((latitude >= 0D) && (latitude <= 90D)) {
-                if ((longitude >= 0D) && (longitude <= 180)) {
-                    if (latDirStr.equals("N"))
-                        latitude = 90D - latitude;
-                    else
-                        latitude += 90D;
-                    if (longitude > 0D)
-                        if (longDirStr.equals("W"))
-                            longitude = 360D - longitude;
-                    double phi = Math.PI * (latitude / 180D);
-                    double theta = (2 * Math.PI) * (longitude / 360D);
-                    updateCoords(new Coordinates(phi, theta));
+		if (source == goThere) {
+        	// Read longitude and latitude from user input, translate to radians,
+        	// and recenter globe and surface map on that location.
+        	try {
+            	double latitude = ((Float) new Float(latText.getText())).doubleValue();
+	            double longitude = ((Float) new Float(longText.getText())).doubleValue();
+    	        String latDirStr = (String) latDir.getSelectedItem();
+        	    String longDirStr = (String) longDir.getSelectedItem();
+
+            	if ((latitude >= 0D) && (latitude <= 90D)) {
+                	if ((longitude >= 0D) && (longitude <= 180)) {
+                    	if (latDirStr.equals("N")) latitude = 90D - latitude;
+	                    else latitude += 90D;
+        	            if (longitude > 0D) {
+            	            if (longDirStr.equals("W")) longitude = 360D - longitude;
+        	            }
+                    	double phi = Math.PI * (latitude / 180D);
+                    	double theta = (2 * Math.PI) * (longitude / 360D);
+                    	updateCoords(new Coordinates(phi, theta));
+                	}
                 }
-            }
-        } catch (NumberFormatException e) {}
-    }
-
-    /** ItemListener method overridden */
-    public void itemStateChanged(ItemEvent event) {
-        Object object = event.getSource();
-
-        if (object == topoCheck) {
-            updateTopo(event.getStateChange() == ItemEvent.SELECTED);
+            } catch (NumberFormatException e) {}
+        }
+        else if (source == optionsButton) {
+        	if (optionsMenu == null) {
+        		// Create options menu.
+        		createOptionsMenu();
+        		optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
+        	}
+        	else optionsMenu.setVisible(true);
+        }
+        else if (source == topoItem) {
+        	if (topoItem.isSelected()) {
+        		map.showTopo();
+        		globeNav.showTopo();
+				legend.showColor();
+        		dayNightItem.setEnabled(false);
+        		usgsItem.setEnabled(false);
+        	}	 
+        	else {
+        		map.showSurf();
+        		globeNav.showSurf();
+        		legend.showMap();
+        		dayNightItem.setEnabled(true);
+        		usgsItem.setEnabled(true);
+        	} 
+        }
+        else if (source == unitLabelItem) map.setUnitLabels(unitLabelItem.isSelected());
+        else if (source == dayNightItem) {
+        	map.setDayNightTracking(dayNightItem.isSelected());
+        	globeNav.setDayNightTracking(dayNightItem.isSelected());
         } 
-        else if (object == unitLabelCheckbox) {
-            map.setUnitLabels(unitLabelCheckbox.isSelected()); // Change map's label settings
-        }
-        else if (object == dayNightCheckbox) {
-            globeNav.setDayNightTracking(dayNightCheckbox.isSelected());
-            map.setDayNightTracking(dayNightCheckbox.isSelected());
-        }
-        else if (object == usgsCheckbox) {
-            setUSGSMap(usgsCheckbox.isSelected());
-        }
-        else if (object == trailCheckbox) {
-            map.setVehicleTrails(trailCheckbox.isSelected());
-        }
-        else if (object == landmarkCheckbox) {
-        	map.setLandmarks(landmarkCheckbox.isSelected());
-        }
+        else if (source == usgsItem) {
+        	map.setUSGSMap(usgsItem.isSelected());
+        	globeNav.setUSGSMap(usgsItem.isSelected());
+			legend.setUSGSMode(usgsItem.isSelected());
+        	topoItem.setEnabled(!usgsItem.isSelected());
+        } 
+        else if (source == trailItem) map.setVehicleTrails(trailItem.isSelected());
+        else if (source == landmarkItem) map.setLandmarks(landmarkItem.isSelected());
+    }
+    
+    /**
+     * Create the map options menu.
+     */
+    private void createOptionsMenu() {
+    	// Create options menu.
+		optionsMenu = new JPopupMenu("Map Options");
+		
+		// Create topographical map menu item.
+		topoItem = new JCheckBoxMenuItem("Topographical Mode", map.isTopo());
+		topoItem.addActionListener(this);
+		optionsMenu.add(topoItem);
+		
+		// Create unit label menu item.
+		unitLabelItem = new JCheckBoxMenuItem("Show Unit Labels", map.useUnitLabels());
+		unitLabelItem.addActionListener(this);
+		optionsMenu.add(unitLabelItem);
+		
+		// Create day/night tracking menu item.
+		dayNightItem = new JCheckBoxMenuItem("Day/Night Tracking", map.isDayNightTracking());
+		dayNightItem.addActionListener(this);
+		optionsMenu.add(dayNightItem);
+		
+		// Create USGS menu item.
+		usgsItem = new JCheckBoxMenuItem("8x Surface Map Zoom", map.isUsgs());
+		usgsItem.addActionListener(this);
+		optionsMenu.add(usgsItem);
+		
+		// Create vehicle trails menu item.
+		trailItem = new JCheckBoxMenuItem("Show Vehicle Trails", map.isVehicleTrails());
+		trailItem.addActionListener(this);
+		optionsMenu.add(trailItem);
+		
+		// Create landmarks menu item.
+		landmarkItem = new JCheckBoxMenuItem("Show Landmarks", map.isLandmarks());
+		landmarkItem.addActionListener(this);
+		optionsMenu.add(landmarkItem);
+		
+		optionsMenu.pack();
     }
 
     /** 
