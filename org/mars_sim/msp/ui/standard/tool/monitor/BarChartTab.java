@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BarChartTab.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-11-25
  * @author Barry Evans
  */
 
@@ -18,13 +18,13 @@ import javax.swing.event.TableModelEvent;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import com.jrefinery.data.AbstractSeriesDataset;
-import com.jrefinery.data.CategoryDataset;
-import com.jrefinery.chart.JFreeChart;
-import com.jrefinery.chart.JFreeChartPanel;
-import com.jrefinery.chart.ChartFactory;
-import com.jrefinery.chart.HorizontalCategoryAxis;
-import com.jrefinery.chart.Plot;
+import org.jfree.data.AbstractSeriesDataset;
+import org.jfree.data.CategoryDataset;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.plot.*;
+import org.jfree.chart.axis.CategoryAxis;
 
 /**
  */
@@ -45,16 +45,34 @@ class BarChartTab extends MonitorTab {
      */
     class TableBarDataset extends AbstractSeriesDataset
             implements CategoryDataset, TableModelListener {
-
+        
         private TableModel model;
         private int[] columns;
-        private List  categories;
+        private List categories;
 
         public TableBarDataset(TableModel model, int columns[]) {
-
             setModel(model);
-
             setColumns(columns);
+        }
+     
+        /**
+          * Get the number of series displayed in chart. This is the number of
+          * columns mapped in the table model.
+          *
+          * @return Number of series supported.
+          */
+        public int getSeriesCount() {
+            return columns.length;
+        }
+
+        /**
+         * The series names are mapped onto the column names.
+         *
+         * @param series Index of the series.
+         * @return Name of the Series.
+         */
+        public String getSeriesName(int series) {
+            return model.getColumnName(columns[series]);
         }
 
         /**
@@ -77,28 +95,25 @@ class BarChartTab extends MonitorTab {
         }
 
         /**
-         * Get the number of series displayed in chart. This is the number of
-         * columns mapped in the table model.
-         *
-         * @return Number of series supported.
+         * Load the categories that this model displays. These are the labels
+         * of the rows in the model, i.e. the first column.
          */
-        public int getSeriesCount() {
-            return columns.length;
-        }
+        private void loadCategories() {
+            categories = new ArrayList(model.getRowCount());
 
-        /**
-         * The series names are mapped onto the column names.
-         *
-         * @param series Index of the series.
-         * @return Name of the Series.
-         */
-        public String getSeriesName(int series) {
-            return model.getColumnName(columns[series]);
+            // Iterate the rows and add the value from the first cell.
+            for(int i = 0; i < model.getRowCount(); i++) {
+                String value = (String) model.getValueAt(i, 0);
+                if (value.length() > MAXLABEL) {
+                    value = value.substring(0, MAXLABEL-2) + "..";
+                }
+                categories.add(value);
+            }
         }
-
+        
         /**
-         * Get an individual value of a series and category. The Series
-         * is mapped onto a column, the category is mapped onto a row.
+         * Get an individual value of a series and category. The Series is
+         * mapped onto a column, the category is mapped onto a row.
          *
          * @param category Category value.
          * @param series Series index.
@@ -110,37 +125,78 @@ class BarChartTab extends MonitorTab {
         }
 
         /**
-         * Load the categories that this model displays. These are the labels
-         * of the rows in the model, i.e. the first column.
-         */
-        private void loadCategories() {
-            int rowCount = model.getRowCount();
-            categories = new ArrayList(rowCount);
-
-            // Iterate the rows and add the value from the first cell.
-            for(int i = 0; i < rowCount; i++) {
-                String value = (String)model.getValueAt(i, 0);
-                if (value.length() > MAXLABEL) {
-                    value = value.substring(0, MAXLABEL-2) + "..";
-                }
-                categories.add(value);
-            }
-        }
-
-        /**
          * Redefine the columns mapped into this dataset. Each column maps
          * onto a different Series in the model.
          *
          * @param newcolumns Indexes in the source model.
          */
         public void setColumns(int newcolumns[]) {
-
             columns = new int[newcolumns.length];
-            for(int i = 0; i < newcolumns.length; i++) {
-                columns[i] = newcolumns[i];
-            }
+            for(int i = 0; i < newcolumns.length; i++) columns[i] = newcolumns[i];
 
             fireDatasetChanged();
+        }
+        
+        public int getRowIndex(Comparable key) {
+            int result = -1;
+            
+            if (key instanceof String) {
+                String keyStr = (String) key;
+                for (int x=0; x < columns.length; x++) {
+                    if (model.getColumnName(columns[x]).equals(keyStr)) result = x;
+                }
+            }
+            
+            return result;    
+        }
+        
+        public int getRowCount() {
+            return columns.length;
+        }
+        
+        public Comparable getRowKey(int index) {
+            return model.getColumnName(columns[index]);
+        }
+        
+        public List getRowKeys() {
+            List result = new ArrayList();
+            for (int x=0; x < columns.length; x++) {
+                result.add(model.getColumnName(columns[x]));
+            }
+            
+            return result;
+        }
+        
+        public Comparable getColumnKey(int index) {
+            return (Comparable) getCategories().get(index);
+        }
+        
+        public List getColumnKeys() {
+            return getCategories();
+        }
+        
+        public int getColumnIndex(Comparable key) {
+            int result = -1;
+            
+            for (int x=0; x < getCategories().size(); x++) {
+                if (key.equals(getCategories().get(x))) result = x;
+            }
+            
+            return result;
+        }
+        
+        public int getColumnCount() {
+            return getCategoryCount();
+        }
+        
+        public Number getValue(int row, int column) {
+            return (Number) model.getValueAt(column, columns[row]);
+        }
+        
+        public Number getValue(Comparable rowKey, Comparable columnKey) {
+            int rowIndex = getRowIndex(rowKey);
+            int columnIndex = getColumnIndex(columnKey);
+            return getValue(rowIndex, columnIndex);
         }
 
         /**
@@ -190,9 +246,9 @@ class BarChartTab extends MonitorTab {
         setName(title);
 
         barModel = new TableBarDataset(model, columns);
-        chart = ChartFactory.createVerticalBarChart(null, null, null, barModel, true);
+        chart = ChartFactory.createBarChart(null, null, null, barModel, PlotOrientation.VERTICAL, true, false, false);
         Plot plot = chart.getPlot();
-        HorizontalCategoryAxis hAxis = (HorizontalCategoryAxis)plot.getAxis(Plot.HORIZONTAL_AXIS);
+        CategoryAxis hAxis = ((CategoryPlot) plot).getDomainAxis();
         hAxis.setVerticalCategoryLabels(true);
 
         // Estimate the width of the chart by multipling the categories by the
@@ -205,8 +261,8 @@ class BarChartTab extends MonitorTab {
         }
 
         // Create a panel for chart
-        JComponent panel = new JFreeChartPanel(chart);
-        chart.setChartBackgroundPaint(getBackground());
+        JComponent panel = new ChartPanel(chart);
+        chart.setBackgroundPaint(getBackground());
 
         // Check the width for possible scrolling
         int chartwidth = columnWidth * barModel.getCategoryCount();

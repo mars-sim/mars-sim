@@ -1,28 +1,28 @@
 /**
- * Mars Simulation Project
+ * Mars Simulation Project 
  * PieChartView.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-11-20
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
+import java.util.*;
+
+import javax.swing.Icon;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
+
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
-import javax.swing.Icon;
-import javax.swing.table.TableModel;
-import javax.swing.event.TableModelListener;
-import javax.swing.event.TableModelEvent;
-import java.util.TreeMap;
-import java.util.Iterator;
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.List;
-import com.jrefinery.data.DefaultPieDataset;
-import com.jrefinery.chart.JFreeChart;
-import com.jrefinery.chart.JFreeChartPanel;
-import com.jrefinery.chart.ChartFactory;
-import com.jrefinery.chart.PiePlot;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.AbstractDataset;
+import org.jfree.data.PieDataset;
 
 /**
  * This class presents a Pie chart as a Monitor tab. The data for the Pie
@@ -37,16 +37,6 @@ class PieChartTab extends MonitorTab {
     public final static Icon PIEICON = ImageLoader.getIcon("PieChart");
 
     /**
-     * The percentage below which segment goes to others
-     */
-    private final static int OTHERPERC = 2;
-
-    /**
-     * The category name for others
-     */
-    private final static String OTHERCAT = "Others less than " + OTHERPERC + "%";
-
-    /**
      * The category name for unknwown
      */
     private final static String NONECAT = "None";
@@ -54,80 +44,61 @@ class PieChartTab extends MonitorTab {
     /**
      *  Basic Pie Dataset with a method to recalculate.
      */
-    class TablePieDataset extends DefaultPieDataset
-            implements TableModelListener {
+    class TablePieDataset extends AbstractDataset
+            implements PieDataset, TableModelListener {
 
         private TableModel model;
         private int column;
+        private HashMap dataMap;
 
         public TablePieDataset(TableModel model, int column) {
             this.column = column;
+            dataMap = new HashMap();
             setModel(model);
         }
 
         /**
-         * Examines the assoicated modle and recreats the internal hashmap
-         * of values according to the values in one column. Any values which
-         * are less than OTHERPERC are combined into a single entry.
+         * Examines the associated model and recreates the internal hashmap of
+         * values according to the values in one column. Any values which are
+         * less than OTHERPERC are combined into a single entry.
          *
          */
         void calculate() {
+            
             int rows = model.getRowCount();
 
-            // Must clear incase values have disappeared
-            TreeMap newData = new TreeMap();
+            // Clear the data map.
+            Iterator iter = dataMap.keySet().iterator();
+            while (iter.hasNext()) dataMap.put(iter.next(), new Integer(0));
+                
+
+            // Add category values and categories.
             for(int i = 0; i < rows; i++) {
-                // The TreeMap uses a Comparable operations on the keys
-                // so they must implement this interface and it can not contain
-                // nulls. To bypass this, all categories are converted to
-                // strings
-                Object category = model.getValueAt(i, column);
-                if (category == null) {
-                    category = NONECAT;
-                }
-                else if (!(category instanceof String)) {
-                    category = category.toString();
-                }
+                
+                Comparable category = (Comparable) model.getValueAt(i, column);
+                if (category == null) category = NONECAT;
+                else if (!(category instanceof String)) category = category.toString();
+                if (((String) category).trim().equals("")) category = "None";
 
-
-                Integer value = (Integer)newData.get(category);
+                Integer value = (Integer) dataMap.get(category);
                 int count = 1;
                 if (value != null) {
                     count = value.intValue() + 1;
                 }
 
-                // Put updated value back
-                newData.put(category, new Integer(count));
-            }
-
-            // Knock off the small percentages. Copy the keys to avoid
-            // concurrent modification problems.
-            int smallSize = (OTHERPERC * rows)/100;
-            Iterator catagories = new HashSet(newData.keySet()).iterator();
-            while(catagories.hasNext()) {
-                Object key = catagories.next();
-                Integer value = (Integer)newData.get(key);
-
-                // If it is less than a percentage, then remove.
-                if (!key.equals(OTHERCAT) && (value.intValue() < smallSize)) {
-                    newData.remove(key);
-
-                    // Add it to the Other catagory
-                    int otherscount = value.intValue();
-                    Integer othersValue = (Integer)newData.get(OTHERCAT);
-                    if (othersValue != null) {
-                        otherscount += othersValue.intValue();
-                    }
-                    newData.put(OTHERCAT, new Integer(otherscount));
-                }
-            }
-
-            // Update if needed
-            if (!newData.equals(data)) {
-                data = newData;
-                fireDatasetChanged();
-            }
+                // Put updated value in data map.
+                dataMap.put(category, new Integer(count));
+            }    
+            
+            /*
+            System.out.println("");
+            Iterator i2 = dataMap.keySet().iterator();
+            while (i2.hasNext()) System.out.println("'" + i2.next() + "'");        
+            */
+            
+            fireDatasetChanged();
         }
+        
 
         /**
          * Set the column that is displayed in the Pie chart. It results in
@@ -166,11 +137,102 @@ class PieChartTab extends MonitorTab {
         public void tableChanged(TableModelEvent e) {
             calculate();
         }
+        
+        /**
+         * Returns the index for a given key.
+         * @see org.jfree.data.KeyedValues#getIndex(Comparable)
+         * 
+         * @param key the key.
+         * @return the index.
+         */
+        public int getIndex(Comparable key) {
+            int result = -1;
+            
+            Set keys = dataMap.keySet();
+            if (keys.contains(key)) {
+                int count = 0;
+                Iterator i = keys.iterator();
+                while (i.hasNext()) {
+                    if (key == i.next()) result = count;
+                    else count++;
+                }
+            }
+            
+            return result;
+        }
+        
+        /**
+         * Returns the value (possibly null) for a given key.
+         * If the key is not recognised, the method should return null. 
+         * @see org.jfree.data.KeyedValues#getValue(Comparable)
+         * 
+         * @param key the key.
+         * @return the value.
+         */
+        public Number getValue(Comparable key) {
+            return (Number) dataMap.get(key);
+        }
+        
+        /**
+         * Returns the number of items (values) in the collection.
+         * @see org.jfree.data.Values#getItemCount()
+         * 
+         * @return the item count.
+         */
+        public int getItemCount() {
+            return dataMap.size();
+        }
+        
+        /**
+         * Returns a value.
+         * @see org.jfree.data.Values#getValue(int)
+         * 
+         * @param item the item of interest (zero-based index).
+         * @return the value.
+         */
+        public Number getValue(int item) {
+            Number result = null;
+            
+            Object[] keys = dataMap.keySet().toArray();
+            if (item < keys.length) result = (Number) dataMap.get(keys[item]);
+            
+            return result;
+        }
+        
+        /**
+         * Returns the key associated with an item (value).
+         * @see org.jfree.data.KeyedValues#getKey(int)
+         * 
+         * @param index the item index (zero-based).
+         * @return the key.
+         */
+        public Comparable getKey(int index) {
+            Comparable result = null;
+            
+            Object[] keys = dataMap.keySet().toArray();
+            if (index < keys.length) result = (Comparable) keys[index];
+            
+            return result;
+        }
+        
+        /**
+         * Returns the keys.
+         * @see org.jfree.data.KeyedValues#getKeys()
+         * 
+         * @return the keys.
+         */
+        public List getKeys() {
+            List result = new ArrayList(dataMap.size());
+            Iterator i = dataMap.keySet().iterator();
+            while (i.hasNext()) result.add(i.next());
+            
+            return result;
+        }
     }
 
     private TablePieDataset pieModel = null;
     private JFreeChart chart = null;
-    private JFreeChartPanel chartpanel = null;
+    private ChartPanel chartpanel = null;
 
     /**
      * Create a PieChart view that display the data in a particular column.
@@ -185,17 +247,18 @@ class PieChartTab extends MonitorTab {
         setName(title);
 
         pieModel = new TablePieDataset(model, column);
-        chart = ChartFactory.createPieChart(null, pieModel, true);
-        chart.setChartBackgroundPaint(getBackground());
+        chart = ChartFactory.createPieChart(null, pieModel, true, true, false);
+        chart.setBackgroundPaint(getBackground());
         pieModel.calculate();
 
         // then customise it a little...
         PiePlot plot = (PiePlot)chart.getPlot();
         plot.setCircular(false);
-        plot.setRadiusPercent(0.60);
+        plot.setRadius(0.60);
         plot.setSectionLabelType(PiePlot.PERCENT_LABELS);
+        pieModel.addChangeListener(plot);
 
-        chartpanel = new JFreeChartPanel(chart);
+        chartpanel = new ChartPanel(chart, true);
         add(chartpanel, "Center");
     }
 
