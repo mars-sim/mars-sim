@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.75 04-01-12
+ * @version 2.75 04-02-15
  * @author Scott Davis
  */
 
@@ -24,12 +24,15 @@ public class Exploration extends CollectResourcesMission {
 	
 	// Collection rate of rock samples during EVA (kg/millisol).
 	private static final double COLLECTION_RATE = .1D;
+	
+	//	Number of collection sites.
+	private static final int NUM_SITES = 8;
 
 	public Exploration(MissionManager missionManager, Person startingPerson) {
 		
 		// Use CollectResourcesMission constructor.
 		super("Exploration", missionManager, startingPerson, Resource.ROCK_SAMPLES, 
-			SITE_GOAL, COLLECTION_RATE);
+			SITE_GOAL, COLLECTION_RATE, NUM_SITES);
 	}
 
 	/** 

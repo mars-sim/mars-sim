@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 2.75 04-01-12
+ * @version 2.75 04-02-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -19,16 +19,19 @@ import org.mars_sim.msp.simulation.vehicle.ExplorerRover;
 public class CollectIce extends CollectResourcesMission {
 
 	//	Amount of ice to be gathered at a given site (kg). 
-	private static final double SITE_GOAL = 500D;
+	private static final double SITE_GOAL = 2000D;
 	
 	// Collection rate of ice during EVA (kg/millisol).
 	private static final double COLLECTION_RATE = 1D;
+	
+	// Number of collection sites.
+	private static final int NUM_SITES = 1;
 
 	public CollectIce(MissionManager missionManager, Person startingPerson) {
 		
 		// Use CollectResourcesMission constructor.
 		super("Ice Prospecting", missionManager, startingPerson, Resource.ICE, 
-			SITE_GOAL, COLLECTION_RATE);
+			SITE_GOAL, COLLECTION_RATE, NUM_SITES);
 	}
 	
 	/** 

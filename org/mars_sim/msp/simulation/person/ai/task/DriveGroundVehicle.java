@@ -44,6 +44,9 @@ public class DriveGroundVehicle extends Task implements Serializable {
      * Winch stuck vehicle phase.
      */
     public final static String WINCH_VEHICLE = "Winching Stuck Vehicle";
+    
+    // Distance buffer for arriving at destination.
+    private final static double DESTINATION_BUFFER = 4D;
 
     // Data members
     private GroundVehicle vehicle; // Vehicle person is driving.
@@ -320,7 +323,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         double result = 0;
 
         // If starting distance to destination is less than distance traveled, stop at destination.
-        if (distanceToDestination < distanceTraveled) {
+        if (distanceToDestination < (distanceTraveled + DESTINATION_BUFFER)) {
             distanceTraveled = vehicle.getDistanceToDestination();
             distanceToDestination = 0D;
             vehicle.setDistanceToDestination(distanceToDestination);

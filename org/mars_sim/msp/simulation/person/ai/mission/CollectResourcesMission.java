@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.75 2004-02-10
+ * @version 2.75 2004-02-15
  * @author Scott Davis
  */
 
@@ -51,6 +51,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
 	private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol). 
 	ReserveRover reserveRoverTask;  // Mission task to reserve a rover.
+	private int numSites; // Number of collection sites.
 
 	/**
 	 * Constructor
@@ -60,10 +61,11 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	 * @param resourceType The type of resource (see org.mars_sim.msp.simulation.Resource).
 	 * @param siteResourceGoal The goal amount of resources to collect at a site (kg).
 	 * @param resourceCollectionRate The resource collection rate for a person (kg/millisol).
+	 * @param numSites The number of collection sites.
 	 */
 	CollectResourcesMission(String missionName, MissionManager missionManager, 
 			Person startingPerson, String resourceType, double siteResourceGoal, 
-			double resourceCollectionRate) {
+			double resourceCollectionRate, int numSites) {
 		
 		// Use Mission parent constructor
 		super(missionName, missionManager, startingPerson);
@@ -73,6 +75,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		this.resourceType = resourceType;
 		this.siteResourceGoal = siteResourceGoal;
 		this.resourceCollectionRate = resourceCollectionRate;
+		this.numSites = numSites;
 		
 		// Set initial mission phase.
 		phase = EMBARK;
@@ -387,9 +390,6 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 
 		List result = new ArrayList();
 		List unorderedSites = new ArrayList();
-        
-		// Determine number of collection sites (4 to 8).
-		int numSites = RandomUtil.getRandomInt(4, 8);
         
 		// Get the current location.
 		Coordinates startingLocation = startingSettlement.getCoordinates();
