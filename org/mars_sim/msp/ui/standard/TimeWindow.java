@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.72 2001-04-29
+ * @version 2.72 2001-07-22
  * @author Scott Davis
  */
 
@@ -147,6 +147,10 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
         // Pack window
         pack();
+
+        // Add 10 pixels to packed window width
+        Dimension windowSize = getSize();
+        setSize(new Dimension((int)windowSize.getWidth() + 10, (int) windowSize.getHeight()));
 
         // Start update thread
         start();

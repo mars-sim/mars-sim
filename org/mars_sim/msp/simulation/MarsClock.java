@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.72 2001-07-14
+ * @version 2.72 2001-07-22
  * @author Scott Davis
  */
 
@@ -305,7 +305,7 @@ public class MarsClock {
             if (hemisphere == NORTHERN_HEMISPHERE) season = "Autumn";
             if (hemisphere == SOUTHERN_HEMISPHERE) season = "Spring";
         }
-        else if (month < 14) {
+        else {
             if (hemisphere == NORTHERN_HEMISPHERE) season = "Winter";
             if (hemisphere == SOUTHERN_HEMISPHERE) season = "Summer";
         }
