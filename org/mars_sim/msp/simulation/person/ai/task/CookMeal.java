@@ -144,9 +144,9 @@ public class CookMeal extends Task implements Serializable {
 		}
 
 		// Add experience to "Cooking" skill
-		// (1 base experience point per 50 millisols of work)
+		// (1 base experience point per 25 millisols of work)
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		double experience = timeLeft / 50D;
+		double experience = timeLeft / 25D;
 		double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
 		experience += experience * ((experienceAptitude - 50D) / 100D);
 		experience *= getTeachingExperienceModifier();

@@ -23,7 +23,7 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
 class EatMeal extends Task implements Serializable {
 
     // Static members
-    private static final double DURATION = 20D; // The predetermined duration of task in millisols
+    private static final double DURATION = 40D; // The predetermined duration of task in millisols
     private static final double STRESS_MODIFIER = -.2D; // The stress modified per millisol.
     
     private CookedMeal meal;
