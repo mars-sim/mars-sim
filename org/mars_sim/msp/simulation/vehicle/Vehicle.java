@@ -281,7 +281,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      *  @param destinationCoords the vehicle's destination location
      */
     public void setDestination(Coordinates destinationCoords) {
-        this.destinationCoords = destinationCoords;
+        this.destinationCoords = new Coordinates(destinationCoords);
         if (destinationType == null) destinationType = COORDINATES;
     }
 
