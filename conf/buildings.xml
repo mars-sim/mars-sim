@@ -45,8 +45,11 @@
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation />
 			
-			<!-- The building has facilities for cooking and eating meals. -->
+			<!-- The building has facilities for eating meals. -->
 			<dining />
+			
+			<!-- The building has facilities for cooking/preparing meals. -->
+			<cooking capacity="1" />
 			
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="1" />
@@ -316,6 +319,7 @@
 		<functions>
 			<life-support capacity="20" power-required="40.0" />
 			<recreation />
+			<cooking capacity="4" />
 			<dining />
 			<exercise capacity="10" />
 		</functions>

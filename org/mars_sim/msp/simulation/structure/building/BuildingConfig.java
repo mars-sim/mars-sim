@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.77 2004-09-28
+ * @version 2.78 2004-11-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -61,6 +61,7 @@ public class BuildingConfig {
 	private static final String EXERCISE = "exercise";
 	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
 	private static final String VEHICLE_CAPACITY = "vehicle-capacity";
+	private static final String COOKING = "cooking";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -669,4 +670,32 @@ public class BuildingConfig {
 		Element maintenanceElement = (Element) buildingElement.getElementsByTagName(GROUND_VEHICLE_MAINTENANCE).item(0);
 		return Integer.parseInt(maintenanceElement.getAttribute(VEHICLE_CAPACITY));
 	}
+	
+	/**
+	 * Checks if the building has the cooking function.
+	 * @param buildingName the name of the building.
+	 * @return true if cooking
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public boolean hasCooking(String buildingName) throws Exception {
+		boolean result = false;
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		NodeList cookingNodes = functionsElement.getElementsByTagName(COOKING);
+		if (cookingNodes.getLength() > 0) result = true;
+		return result;
+	}
+	
+	/**
+	 * Gets the capacity of the cooking facility in the building.
+	 * @param buildingName the name of the building.
+	 * @return capacity for cooking
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getCookCapacity(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element cookingElement = (Element) buildingElement.getElementsByTagName(COOKING).item(0);
+		return Integer.parseInt(cookingElement.getAttribute(CAPACITY));
+	}	
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.76 2004-06-02
+ * @version 2.78 2004-11-10
  * @author Scott Davis
  */
  
@@ -127,6 +127,9 @@ public class Building implements Malfunctionable, Serializable {
     	
     	// Set ground vehicle maintenance function.
     	if (config.hasGroundVehicleMaintenance(name)) buildingFunctions.add(new GroundVehicleMaintenance(this));
+    	
+    	// Set cooking function.
+    	if (config.hasCooking(name)) buildingFunctions.add(new Cooking(this));
     	
     	return buildingFunctions;
     }
