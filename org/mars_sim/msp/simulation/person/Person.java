@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.76 2004-06-01
+ * @version 2.77 2004-08-20
  * @author Scott Davis
  */
 
@@ -44,6 +44,8 @@ public class Person extends Unit implements Serializable {
      */
     public final static String BURIED = "Buried";
 
+	public final static String MALE = "male";
+	public final static String FEMALE = "female";
 
     // Data members
     private NaturalAttributeManager attributes; // Manager for Person's natural attributes
@@ -51,42 +53,40 @@ public class Person extends Unit implements Serializable {
     private Mind mind; // Person's mind
     private PhysicalCondition health; // Person's physical
     private boolean isBuried; // True if person is dead and buried.
+    private String gender; // The gender of the person (male or female).
 
     /** 
      * Constructs a Person object at a given settlement
      *
      * @param name the person's name
+     * @param gender the person's gender ("male" or "female")
      * @param settlement the settlement the person is at
      * @throws Exception if no inhabitable building available at settlement.
      */
-    public Person(String name, Settlement settlement) throws Exception {
+    public Person(String name, String gender, Settlement settlement) throws Exception {
         // Use Unit constructor
         super(name, settlement.getCoordinates());
+		
+		// Initialize data members
+		this.gender = gender;
+		attributes = new NaturalAttributeManager();
+		skills = new SkillManager(this);
+		mind = new Mind(this);
+		isBuried = false;
+		health = new PhysicalCondition(this);
 
-        initPersonData();
+		// Set base mass of person.
+		baseMass = 70D;
+
+		// Set inventory total mass capacity.
+		inventory.setTotalCapacity(100D);
+		inventory.setResourceCapacity(Resource.ROCK_SAMPLES, 100D);
+		inventory.setResourceCapacity(Resource.ICE, 100D);
+		inventory.setResourceCapacity(Resource.FOOD, 100D);
+		
+		// Put person in proper building.
 	    settlement.getInventory().addUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
-    }
-
-    /** 
-     * Initialize person data 
-     */
-    private void initPersonData() {
-        // Initialize data members
-        attributes = new NaturalAttributeManager();
-        skills = new SkillManager(this);
-        mind = new Mind(this);
-	    isBuried = false;
-        health = new PhysicalCondition(this);
-
-	    // Set base mass of person.
-        baseMass = 70D;
-
-	    // Set inventory total mass capacity.
-	    inventory.setTotalCapacity(100D);
-        inventory.setResourceCapacity(Resource.ROCK_SAMPLES, 100D);
-        inventory.setResourceCapacity(Resource.ICE, 100D);
-        inventory.setResourceCapacity(Resource.FOOD, 100D);
     }
 
     /** Returns a string for the person's relative location "In
@@ -301,5 +301,13 @@ public class Person extends Unit implements Serializable {
      */
     public void consumeFood(double amount) {
         health.consumeFood(amount, getContainerUnit());
+    }
+    
+    /**
+     * Gets the gender of the person ("male" or "female")
+     * @return the gender
+     */
+    public String getGender() {
+    	return gender;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 2.76 2004-07-06
+ * @version 2.77 2004-08-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.events.*;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Rover;
@@ -104,7 +104,7 @@ public class Resupply implements Serializable {
 		Iterator vehicleI = newVehicles.iterator();
 		while (vehicleI.hasNext()) {
 			String vehicleType = (String) vehicleI.next();
-			String vehicleName = unitManager.getNewName(UnitManager.VEHICLE);
+			String vehicleName = unitManager.getNewName(UnitManager.VEHICLE, null);
 			Rover rover = new Rover(vehicleName, vehicleType, settlement);
 			unitManager.addUnit(rover);
 		}
@@ -119,7 +119,10 @@ public class Resupply implements Serializable {
 		
 		// Deliver immigrants.
 		for (int x = 0; x < newImmigrantNum; x++) {
-			Person immigrant = new Person(unitManager.getNewName(UnitManager.PERSON), settlement);
+			PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+			String gender = Person.FEMALE;
+			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
+			Person immigrant = new Person(unitManager.getNewName(UnitManager.PERSON, gender), gender, settlement);
 			unitManager.addUnit(immigrant);
 		}
 		

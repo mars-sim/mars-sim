@@ -19,6 +19,9 @@ import org.mars_sim.msp.simulation.vehicle.Crewable;
  */
 public class Teach extends Task implements Serializable {
 
+	//	Static members
+	private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
+
 	private Person student;
 	private Task teachingTask;
 
@@ -27,7 +30,7 @@ public class Teach extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public Teach(Person person) {
-		super("Teaching", person, false, false, 0D);
+		super("Teaching", person, false, false, STRESS_MODIFIER);
 		
 		// Randomly get a student.
 		PersonCollection students = getBestStudents(person);

@@ -1,0 +1,62 @@
+/**
+ * Mars Simulation Project
+ * GeneralTabPanel.java
+ * @version 2.77 2004-08-20
+ * @author Scott Davis
+ */
+package org.mars_sim.msp.ui.standard.unit_window.person;
+
+import java.awt.*;
+import javax.swing.*;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
+
+/**
+ * The GeneralTabPanel is a tab panel for general information about a person.
+ */
+public class GeneralTabPanel extends TabPanel {
+
+	/**
+	 * Constructor
+	 * @param unit the unit to display.
+	 * @param desktop the main desktop.
+	 */
+	public GeneralTabPanel(Unit unit, MainDesktopPane desktop) { 
+		// Use the TabPanel constructor
+		super("General", null, "General Info", unit, desktop);
+        
+		Person person = (Person) unit;
+		
+		// Create general label panel.
+		JPanel generalLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(generalLabelPanel);
+        
+		// Prepare general label
+		JLabel generalLabel = new JLabel("General Info", JLabel.CENTER);
+		generalLabelPanel.add(generalLabel);
+		
+		// Prepare info panel.
+		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 0, 0));
+		infoPanel.setBorder(new MarsPanelBorder());
+		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
+		
+		// Prepare gender name label
+		JLabel genderNameLabel = new JLabel("Gender", JLabel.LEFT);
+		infoPanel.add(genderNameLabel);
+
+		// Prepare gender label
+		String gender = person.getGender().substring(0, 1).toUpperCase() + person.getGender().substring(1);
+		JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
+		infoPanel.add(genderLabel);
+	}
+
+	/**
+	 * Updates the info on this panel.
+	 */
+	public void update() {
+		Person person = (Person) unit;
+		// Fill in as we have more to update on this panel.
+	}
+}

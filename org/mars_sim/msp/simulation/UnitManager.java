@@ -32,7 +32,8 @@ public class UnitManager implements Serializable {
     private UnitCollection units; // Collection of all units
     private List settlementNames; // List of possible settlement names
     private List vehicleNames; // List of possible vehicle names
-    private List personNames; // List of possible person names
+    private List personMaleNames; // List of possible male person names
+    private List personFemaleNames; // List of possible female person names
 
     /** 
      * Constructor
@@ -68,7 +69,16 @@ public class UnitManager implements Serializable {
  		try {
 			SimulationConfig simConfig = Simulation.instance().getSimConfig();
 			PersonConfig personConfig = simConfig.getPersonConfiguration();
-    		personNames = personConfig.getPersonNameList();
+    		List personNames = personConfig.getPersonNameList();
+    		personMaleNames = new ArrayList();
+    		personFemaleNames = new ArrayList();
+    		Iterator i = personNames.iterator();
+    		while (i.hasNext()) {
+    			String name = (String) i.next();
+    			String gender = personConfig.getPersonGender(name);
+    			if (gender.equals(Person.MALE)) personMaleNames.add(name);
+    			else if (gender.equals(Person.FEMALE)) personFemaleNames.add(name);
+    		}
  		}
  		catch (Exception e) {
  			throw new Exception("person names could not be loaded: " + e.getMessage());
@@ -121,10 +131,11 @@ public class UnitManager implements Serializable {
      * Gets a new name for a unit.
      *
      * @param unitType the type of unit.
+     * @param gender the gender of the person or null if not a person.
      * @return new name
      * @throws IllegalArgumentException if unitType is not valid.
      */
-    public String getNewName(String unitType) {
+    public String getNewName(String unitType, String gender) {
         
         Collection initialNameList = null;
         ArrayList usedNames = new ArrayList();
@@ -143,12 +154,14 @@ public class UnitManager implements Serializable {
             unitName = "Vehicle";
         }
         else if (unitType.equals(PERSON)) {
-            initialNameList = personNames;
+        	if (Person.MALE.equals(gender)) initialNameList = personMaleNames;
+        	else if (Person.FEMALE.equals(gender)) initialNameList = personFemaleNames;
+        	else throw new IllegalArgumentException("Improper gender for person unitType: " + gender);
             PersonIterator pi = getPeople().iterator();
             while (pi.hasNext()) usedNames.add(pi.next().getName());
             unitName = "Person";
         }
-        else throw new IllegalArgumentException("Inproper unitType");
+        else throw new IllegalArgumentException("Improper unitType");
  
         ArrayList remainingNames = new ArrayList();
         Iterator i = initialNameList.iterator();
@@ -177,7 +190,7 @@ public class UnitManager implements Serializable {
 			for (int x=0; x < config.getNumberOfInitialSettlements(); x++) {
 				// Get settlement name
 				String name = config.getInitialSettlementName(x);
-				if (name.equals(SettlementConfig.RANDOM)) name = getNewName(SETTLEMENT);
+				if (name.equals(SettlementConfig.RANDOM)) name = getNewName(SETTLEMENT, null);
 				
 				// Get settlement template
 				String template = config.getInitialSettlementTemplate(x);
@@ -222,7 +235,7 @@ public class UnitManager implements Serializable {
     			Iterator j = vehicleTypes.iterator();
     			while (j.hasNext()) {
     				String vehicleType = (String) j.next();
-    				addUnit(new Rover(getNewName(VEHICLE), vehicleType, settlement));
+    				addUnit(new Rover(getNewName(VEHICLE, null), vehicleType, settlement));
     			}
     		}
     	}
@@ -237,12 +250,17 @@ public class UnitManager implements Serializable {
      */
     private void createInitialPeople() throws Exception {
     	
+    	PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	
     	try {
     		SettlementIterator i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			while (settlement.getAvailablePopulationCapacity() > 0) 
-    				addUnit(new Person(getNewName(PERSON), settlement));
+    			while (settlement.getAvailablePopulationCapacity() > 0) {
+    				String gender = Person.FEMALE;
+    				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
+    				addUnit(new Person(getNewName(PERSON, gender), gender, settlement));
+    			}
     		}
     	}
     	catch (Exception e) {

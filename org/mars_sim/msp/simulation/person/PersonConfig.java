@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 2.77 2004-08-12
+ * @version 2.77 2004-08-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person;
@@ -18,6 +18,7 @@ public class PersonConfig {
 	// Element names
 	private static final String PERSON_NAME_LIST = "person-name-list";
 	private static final String PERSON_NAME = "person-name";
+	private static final String GENDER="gender";
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String FOOD_CONSUMPTION_RATE = "food-consumption-rate";
@@ -30,6 +31,7 @@ public class PersonConfig {
 	private static final String MAX_TEMPERATURE = "max-temperature";
 	private static final String FREEZING_TIME = "freezing-time";
 	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
+	private static final String GENDER_RATIO = "gender-ratio";
 	
 	private Document personDoc;
 	private List nameList;
@@ -55,12 +57,33 @@ public class PersonConfig {
 			Element personNameList = (Element) root.getElementsByTagName(PERSON_NAME_LIST).item(0);
 			NodeList personNames = personNameList.getElementsByTagName(PERSON_NAME);
 			for (int x=0; x < personNames.getLength(); x++) {
-					Element nameElement = (Element) personNames.item(x);
-					nameList.add(nameElement.getAttribute("value"));
+				Element nameElement = (Element) personNames.item(x);
+				nameList.add(nameElement.getAttribute("value"));
 			}
 		}
 		
 		return nameList;
+	}
+	
+	/**
+	 * Gets the gender of a given person name.
+	 * @param name the name of the person
+	 * @return the gender of the person name ("male", "female", "unknown")
+	 * @throws Exception if person names could not be found.
+	 */
+	public String getPersonGender(String name) throws Exception {
+		String result = "unknown";
+		
+		Element root = personDoc.getDocumentElement();
+		Element personNameList = (Element) root.getElementsByTagName(PERSON_NAME_LIST).item(0);
+		NodeList personNames = personNameList.getElementsByTagName(PERSON_NAME);
+		for (int x=0; x < personNames.getLength(); x++) {
+			Element nameElement = (Element) personNames.item(x);
+			String personName = nameElement.getAttribute("value");
+			if (personName.equals(name)) result = nameElement.getAttribute(GENDER);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -217,5 +240,18 @@ public class PersonConfig {
 		String stressBreakdownChanceStr = stressBreakdownChanceElement.getAttribute("value");
 		double stressBreakdownChance = Double.parseDouble(stressBreakdownChanceStr);
 		return stressBreakdownChance;
+	}
+	
+	/**
+	 * Gets the gender ratio between males and the total population on Mars.
+	 * @return gender ratio between males and total population.
+	 * @throws Exception if gender ratio could not be found.
+	 */
+	public double getGenderRatio() throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element genderRatioElement = (Element) root.getElementsByTagName(GENDER_RATIO).item(0);
+		String genderRatioStr = genderRatioElement.getAttribute("value");
+		double genderRatio = Double.parseDouble(genderRatioStr);
+		return genderRatio;
 	}
 }
