@@ -25,6 +25,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.plot.*;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPosition;
 
 /**
  */
@@ -248,8 +249,13 @@ class BarChartTab extends MonitorTab {
         barModel = new TableBarDataset(model, columns);
         chart = ChartFactory.createBarChart(null, null, null, barModel, PlotOrientation.VERTICAL, true, false, false);
         Plot plot = chart.getPlot();
+        
+        // Set bottom labels to vertical.
         CategoryAxis hAxis = ((CategoryPlot) plot).getDomainAxis();
-        hAxis.setVerticalCategoryLabels(true);
+        CategoryLabelPosition defaultPos = new CategoryLabelPosition();
+        CategoryLabelPosition verticalPosition = new CategoryLabelPosition(defaultPos.getCategoryAnchor(), 
+            defaultPos.getLabelAnchor(), defaultPos.getRotationAnchor(), (3D * Math.PI / 2D));
+        hAxis.setBottomCategoryLabelPosition(verticalPosition);
 
         // Estimate the width of the chart by multipling the categories by the
         // number of series. First calculate the column width as this is
