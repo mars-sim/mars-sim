@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -62,7 +62,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected int repairProgress; // Cached repair progress percentage.
     protected int maintenanceProgress; // Cached maintenance progress percentage;
 
-    /** Constructs a VehicleDialog object */
+    /** Constructs a VehicleDialog object 
+     *  @param parentDesktop the desktop pane
+     *  @param vehicleUIProxy the vehicle's UI proxy
+     */
     public VehicleDialog(MainDesktopPane parentDesktop, VehicleUIProxy vehicleUIProxy) {
 
         // Use UnitDialog constructor
@@ -145,7 +148,9 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         mainPane.add(tabPane, "Center");
     }
 
-    /** Set up navigation panel */
+    /** Set up navigation panel 
+     *  @return navigation pane
+     */
     protected JPanel setupNavigationPane() {
 
         // Prepare navigation pane
@@ -172,7 +177,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         locationPane.add(locationLabelPane, "North");
 
         // Prepare center map button
-        centerMapButton = new JButton(new ImageIcon("CenterMap.gif"));
+        centerMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         locationLabelPane.add(centerMapButton);
@@ -288,7 +293,9 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         return navigationPane;
     }
 
-    /** Set up crew pane */
+    /** Set up crew pane 
+     *  @return crew pane
+     */
     protected JPanel setupCrewPane() {
 
         // Prepare crew pane
@@ -373,7 +380,9 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         return crewPane;
     }
 
-    /** Set up damage pane */
+    /** Set up damage pane 
+     *  @return damage pane
+     */
     protected JPanel setupDamagePane() {
 
         // Prepare damage pane

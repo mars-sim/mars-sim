@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -23,7 +23,9 @@ public class UnitToolBar extends JToolBar implements ActionListener {
     private Vector unitButtons; // List of unit buttons
     private MainWindow parentMainWindow; // Main window that contains this toolbar.
 
-    /** Constructs a UnitToolBar object */
+    /** Constructs a UnitToolBar object 
+     *  @param parentMainWindow the main window pane
+     */
     public UnitToolBar(MainWindow parentMainWindow) {
 
         // Use JToolBar constructor
@@ -46,7 +48,9 @@ public class UnitToolBar extends JToolBar implements ActionListener {
         setBorder(new BevelBorder(BevelBorder.RAISED));
     }
 
-    /** Create a new unit button in toolbar */
+    /** Create a new unit button in toolbar 
+     *  @param unitUIProxy unit's UI proxy
+     */
     public void createUnitButton(UnitUIProxy unitUIProxy) {
 
         // Check if unit button already exists
@@ -68,7 +72,9 @@ public class UnitToolBar extends JToolBar implements ActionListener {
         }
     }
 
-    /** Disposes a unit button in toolbar */
+    /** Disposes a unit button in toolbar 
+     *  @param unitUIProxy the unit's UI Proxy
+     */
     public void disposeUnitButton(UnitUIProxy unitUIProxy) {
         for (int x = 0; x < unitButtons.size(); x++) {
             UnitButton tempButton = (UnitButton) unitButtons.elementAt(x);

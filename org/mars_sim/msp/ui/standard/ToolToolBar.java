@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -22,7 +22,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private Vector toolButtons;          // List of tool buttons
 	private MainWindow parentMainWindow; // Main window that contains this toolbar.
 	
-	/** Constructs a ToolToolBar object */
+	/** Constructs a ToolToolBar object 
+     *  @param parentMainWindow the main window pane
+     */
 	public ToolToolBar(MainWindow parentMainWindow) {
 	
 		// Use JToolBar constructor

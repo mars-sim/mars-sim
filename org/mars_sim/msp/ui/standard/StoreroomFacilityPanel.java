@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StoreroomFacilityPanel.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -33,7 +33,10 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 	private double fuel;                  // Fuel supplies
 	private double parts;                 // Parts supplies
 	
-	/** Constructs a StoreroomFacilityPanel object */
+	/** Constructs a StoreroomFacilityPanel object 
+     *  @param storeroom the storeroom facility
+     *  @param desktop the desktop pane
+     */
 	public StoreroomFacilityPanel(StoreroomFacility storeroom, MainDesktopPane desktop) {
 	
 		// Use FacilityPanel's constructor	
@@ -154,7 +157,10 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 		}
 	}
 	
-	/** Returns a double value rounded to one decimal point */
+	/** Returns a double value rounded to one decimal point 
+     *  @param initial the initial double value
+     *  @return the rounded value
+     */
 	public double roundOneDecimal(double initial) {
 		return (double) (Math.round(initial * 10D) / 10D);
 	}

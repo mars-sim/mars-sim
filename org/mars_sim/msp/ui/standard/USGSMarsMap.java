@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * USGSMarsMap.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Greg Whelan
  */
 
@@ -41,12 +41,16 @@ public class USGSMarsMap implements Map {
     /** Constructs a USGSMarsMap object */
     public USGSMarsMap() {}
 
-    /** Constructs a USGSMarsMap object */
+    /** Constructs a USGSMarsMap object 
+     *  @param comp the map's container component
+     */
     public USGSMarsMap(Component comp) {
         component = comp;
     }
 
-    /** creates a 2D map at a given center point */
+    /** creates a 2D map at a given center point 
+     *  @param newCenter the center location
+     */
     public void drawMap(Coordinates newCenter) {
         if (imageInCache(newCenter)) {
             // simply translate the image
@@ -62,24 +66,32 @@ public class USGSMarsMap implements Map {
         }
     }
 
-    /** determines if a requested map is complete */
+    /** determines if a requested map is complete 
+     *  @return true if requested map is complete
+     */
     public boolean isImageDone() {
         return imageDone;
     }
 
-    /** Returns map image */
+    /** Returns map image 
+     *  @return map image
+     */
     public Image getMapImage() {
         return img;
     }
 
-    /** Returns true if map image is cached */
+    /** Returns true if map image is cached 
+     *  @return true if map image is cached
+     */
     private boolean imageInCache(Coordinates location) {
         return false;
     }
 
     /** requests an image from the PDS web server.
-      *  @param size is pixels per degree
-      */
+     *  @param size is pixels per degree
+     *  @param lat latitude
+     *  @param lon longitude
+     */
     private Image retrieveImage(int size, double lat, double lon) {
         imageDone = false;
         try {
@@ -129,10 +141,16 @@ public class USGSMarsMap implements Map {
         return null;
     }
 
+    /** Prefetch the map image
+     *  @param size is pixels per degree
+     *  @param lat latitude
+     *  @param lon longitude
+     */
     private void prefetchImage(int size, double lat, double lon) {
         prefetchedImage = retrieveImage(size, lat, lon);
     }
 
+    /** Wait for USGS map image to load */
     private void waitForMapLoaded() {
         MediaTracker tracker = new MediaTracker(component);
         tracker.addImage(img, 0);
@@ -156,7 +174,9 @@ public class USGSMarsMap implements Map {
         g.drawImage(img, 0, 0, null);
     }
 
-    /** for component testing */
+    /** for component testing 
+     *  @param argv an array of command line arguments
+     */
     public static void main(String argv[]) {
         USGSMarsMap map = new USGSMarsMap();
         map.retrieveImage(3, 0, 0);

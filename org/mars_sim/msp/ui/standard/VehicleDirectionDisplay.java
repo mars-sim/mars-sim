@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDirectionDisplay.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -19,7 +19,10 @@ public class VehicleDirectionDisplay extends JComponent {
 	private double direction;  // Direction of travel (0 = north, clockwise)
 	private boolean showLine;  // True if direction line is to be shown
 
-	/** Constructs a VehicleDirectionDisplay object */
+	/** Constructs a VehicleDirectionDisplay object 
+     *  @param direction the vehicle's current direction
+     *  @param park true if vehicle is parked
+     */
 	public VehicleDirectionDisplay(double direction, boolean park) {
 		super();
 		
@@ -34,7 +37,10 @@ public class VehicleDirectionDisplay extends JComponent {
 		else showLine = true;
 	}
 
-	/** Update direction and redraw if necessary */
+	/** Update direction and redraw if necessary 
+     *  @param newDirection vehicle's current direction
+     *  @param park true if vehicle is currently parked
+     */
 	public void updateDirection(double newDirection, boolean park) {
 
 		if (newDirection != direction) {
@@ -46,7 +52,9 @@ public class VehicleDirectionDisplay extends JComponent {
 		}
 	}
 
-	/** Override paintComponent method */
+	/** Override paintComponent method 
+     *  @param g graphics context
+     */
 	public void paintComponent(Graphics g) {
 
 		// Draw black background

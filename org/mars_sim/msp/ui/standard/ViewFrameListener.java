@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ViewFrameListener.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolButton.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -20,7 +20,10 @@ public class ToolButton extends JButton {
 	private String toolName;        // The name of the tool which the button represents.
 	private JToolTip toolButtonTip; // Customized tool tip with white background.
 
-	/** Constructs a ToolButton object */
+	/** Constructs a ToolButton object 
+     *  @param toolName the name of the tool
+     *  @param imageName the name of the tool button image
+     */
 	public ToolButton(String toolName, String imageName) {
 		
 		// Use JButton constructor	
@@ -40,9 +43,13 @@ public class ToolButton extends JButton {
 		setAlignmentY(.5F);
 	}
 	
-	/** Returns tool name */
+	/** Returns tool name 
+     *  @return tool name
+     */
 	public String getToolName() { return new String(toolName); }
 	
-	/** Overrides JComponent's createToolTip() method */
+	/** Overrides JComponent's createToolTip() method 
+     *  @return tool tip for tool
+     */
 	public JToolTip createToolTip() { return toolButtonTip; }
 }

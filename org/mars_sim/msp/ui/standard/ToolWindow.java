@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolWindow.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -18,7 +18,9 @@ public abstract class ToolWindow extends JInternalFrame {
     protected String toolName; // The name of the tool the window is for.
     protected boolean notOpened; // True if window hasn't yet been opened.
 
-    /** Constructs a ToolWindow object */
+    /** Constructs a ToolWindow object 
+     *  @toolName the name of the tool
+     */
     public ToolWindow(String toolName) {
 
         // use JInternalFrame constructor
@@ -34,12 +36,16 @@ public abstract class ToolWindow extends JInternalFrame {
         notOpened = true;
     }
 
-    /** Returns tool name */
+    /** Returns tool name 
+     *  @return tool name
+     */
     public String getToolName() {
         return new String(toolName);
     }
 
-    /** Returns true if tool window has not previously been opened. */
+    /** Returns true if tool window has not previously been opened. 
+     *  @return true if tool window has not previously been opened
+     */
     public boolean hasNotBeenOpened() {
         return notOpened;
     }

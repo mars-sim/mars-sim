@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -19,7 +19,9 @@ public class UnitButton extends JButton {
     // Data members	
 	private UnitUIProxy unitUIProxy;  // Unit UI proxy for button.
 
-    /** Constructs a UnitButton object */
+    /** Constructs a UnitButton object 
+     *  @param unitUIProxy the unit UI proxy
+     */
 	public UnitButton(UnitUIProxy unitUIProxy) {
 		
 		// Use JButton constructor	
@@ -36,6 +38,8 @@ public class UnitButton extends JButton {
 		setAlignmentY(.5F);
 	}
 	
-	/** Returns the button's unit proxy */
+	/** Returns the button's unit proxy 
+     *  @return the unit's UI proxy
+     */
 	public UnitUIProxy getUnitProxy() { return unitUIProxy; }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfMarsMap.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  * @author Greg Whelan
  */
@@ -20,7 +20,9 @@ public class SurfMarsMap extends CannedMarsMap {
     // Data members
     private RandomAccessFile map;
 
-    /** Constructs a SurfMarsMap object */
+    /** Constructs a SurfMarsMap object 
+     *  @param displayArea the component display area
+     */
     public SurfMarsMap(JComponent displayArea) {
 
         // User CannedMarsMap constructor
@@ -35,7 +37,9 @@ public class SurfMarsMap extends CannedMarsMap {
         }
     }
 
-    /** Gets the surface map */
+    /** Gets the surface map 
+     *  @return the map file
+     */
     public RandomAccessFile getMapFile() {
         return map;
     }

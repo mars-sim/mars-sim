@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitDialog.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -32,7 +32,10 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
     protected Thread updateThread; // Dialog update thread
     protected JButton centerMapButton; // Center map button
 
-    /** Constructs a UnitDialog class */
+    /** Constructs a UnitDialog class 
+     *  @param parentDesktop the desktop pane
+     *  @param unitUIProxy the unit's UI proxy
+     */
     public UnitDialog(MainDesktopPane parentDesktop, UnitUIProxy unitUIProxy) {
         
         // Use JInternalFrame constructor
@@ -87,10 +90,14 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
         }
     }
 
-    /** Returns unit's name */
+    /** Returns unit's name 
+     *  @return unit's name
+     */
     public String getUnitName() { return parentUnit.getName(); }
     
-    /** Returns the unit for this window */
+    /** Returns the unit for this window 
+     *  @return unit
+     */
     public Unit getUnit() { return parentUnit; }
 
     /** ActionListener method overriden */
@@ -146,7 +153,9 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
 
     // --- Abstract methods ---
 
-    /** Set up proper window size */
+    /** Set up proper window size 
+     *  @return the window's size
+     */
     protected abstract Dimension setWindowSize();
     
     /** Complete update */

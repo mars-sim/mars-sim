@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TopoMarsMap.java
- * @version 2.70 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  * @author Greg Whelan
  */
@@ -20,7 +20,9 @@ public class TopoMarsMap extends CannedMarsMap {
     // Data members
     private RandomAccessFile map;
 
-    /** Constructs a TopoMarsMap object */
+    /** Constructs a TopoMarsMap object 
+     *  @param displayArea the display component
+     */
     public TopoMarsMap(JComponent displayArea) {
         super(displayArea);
 
@@ -34,12 +36,17 @@ public class TopoMarsMap extends CannedMarsMap {
         }
     }
     
-    /** Gets the topographical map */
+    /** Gets the topographical map 
+     *  @return the topographical map file
+     */
     public RandomAccessFile getMapFile() {
         return map;
     }
 
-    /** Loads the index and sum arrays */
+    /** Loads the index and sum arrays 
+     *  @param indexFile the name path of the index file
+     *  @param sumFile the name path of the sum file
+     */
     private void loadArrays(String indexFile, String sumFile) {
         try {
             // Load index array

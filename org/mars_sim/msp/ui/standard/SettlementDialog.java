@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementDialog.java
- * @version 2.71 2000-09-22
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -213,7 +213,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         locationPane.add(locationLabelPane, "North");
 
         // Prepare center map button
-        centerMapButton = new JButton(new ImageIcon("CenterMap.gif"));
+        centerMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         locationLabelPane.add(centerMapButton);

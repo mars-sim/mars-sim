@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindowListener.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -19,7 +19,9 @@ public class UnitWindowListener extends InternalFrameAdapter {
     // Data members
     MainDesktopPane desktop; // Main desktop pane that holds unit windows.
 
-    /** Constructs a UnitWindowListener object */
+    /** Constructs a UnitWindowListener object 
+     *  @param desktop the desktop pane
+     */
     public UnitWindowListener(MainDesktopPane desktop) {
         this.desktop = desktop;
     }

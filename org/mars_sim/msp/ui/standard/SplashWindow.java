@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SplashWindow.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -62,7 +62,9 @@ public class SplashWindow extends JWindow implements Runnable {
         setVisible(true);
     }
 
-    /** for component testing */
+    /** for component testing 
+     *  @param argv command line arguments
+     */
     public static void main(String argv[]) {
         SplashWindow s = new SplashWindow();
     }

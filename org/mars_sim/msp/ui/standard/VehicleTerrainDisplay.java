@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTerrainDisplay.java
- * @version 2.71 2000-10-08
+ * @version 2.71 2000-10-23
  * @author Scott Davis
  */
 
@@ -31,7 +31,9 @@ public class VehicleTerrainDisplay extends JComponent {
 		terrainAngle = 0D;
 	}
 
-	/** Update terrain angle displayed if necessary */
+	/** Update terrain angle displayed if necessary 
+     *  @param angle the terrain angle
+     */
 	public void updateTerrainAngle(double angle) {
 
 		if (angle != terrainAngle) {
@@ -40,7 +42,9 @@ public class VehicleTerrainDisplay extends JComponent {
 		}
 	}
 
-	/** Override paintComponent method */
+	/** Override paintComponent method 
+     *  @param g graphics context
+     */
 	public void paintComponent(Graphics g) {
 
 		// Set background to black
