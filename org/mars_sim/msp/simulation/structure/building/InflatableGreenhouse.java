@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-02-05
+ * @version 2.75 2003-02-16
  * @author Scott Davis
  */
  
@@ -9,13 +9,17 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /**
  * The InflatableGreenhouse class represents a 
  * generic inflatable greenhouse building.
  */
-public class InflatableGreenhouse extends InhabitableBuilding implements Farming {
+public class InflatableGreenhouse extends InhabitableBuilding implements Farming, Storage, ResourceProcessing {
+    
+    // Power down level for processes.
+    private final static double POWER_DOWN_LEVEL = .5D;
     
     // Power required for growing crops per kg of crop.
     private static final double POWER_GROWING_CROP = .1D;
@@ -26,6 +30,8 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
     private Collection crops;
     private int numCrops;
     private double maxHarvest;
+    private Map resourceStorageCapacity;
+    private ResourceProcessManager processManager;
     
     /**
      * Constructor
@@ -34,6 +40,16 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
     public InflatableGreenhouse(BuildingManager manager) {
         // User InhabitableBulding constructor
         super("Inflatable Greenhouse", manager, 3);
+        
+        Settlement settlement = manager.getSettlement();
+        Inventory inv = settlement.getInventory();
+        processManager = new ResourceProcessManager(this, inv);
+        
+        // Create carbon dioxide pump process
+        ResourceProcess carbonDioxidePump = new ResourceProcess("carbon dioxide pump", inv);
+        carbonDioxidePump.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .0001D, true);
+        carbonDioxidePump.addMaxOutputResourceRate(Resource.CARBON_DIOXIDE, .0001D, false);
+        processManager.addResourceProcess(carbonDioxidePump);
         
         double floorSpace = 75;
         
@@ -49,8 +65,23 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         // Create crops;
         crops = new ArrayList();
         for (int x=0; x < numCrops; x++) {
-            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this));
-        }    
+            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this, settlement.getMars(), settlement));
+        }  
+        
+        // Set up resource storage capacity map.
+        resourceStorageCapacity = new HashMap();
+        resourceStorageCapacity.put(Resource.WATER, new Double(500D));
+        resourceStorageCapacity.put(Resource.WASTE_WATER, new Double(500D));
+        resourceStorageCapacity.put(Resource.CARBON_DIOXIDE, new Double(500D));
+        resourceStorageCapacity.put(Resource.FOOD, new Double(500D));
+        
+        // Add resource storage capacity to settlement inventory.
+        Iterator i = resourceStorageCapacity.keySet().iterator();
+        while (i.hasNext()) {
+            String resourceName = (String) i.next();
+            double capacity = ((Double) resourceStorageCapacity.get(resourceName)).doubleValue();
+            inv.setResourceCapacity(resourceName, inv.getResourceCapacity(resourceName) + capacity);
+        }
     }
     
     /**
@@ -126,7 +157,15 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
      * @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
-
+        
+        // Determine resource processing production level.
+        double productionLevel = 0D;
+        if (powerMode.equals(FULL_POWER)) productionLevel = 1D;
+        else if (powerMode.equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
+        
+        // Process resources
+        processManager.processResources(time, productionLevel);
+        
         // Add time to each crop.
         Iterator i = crops.iterator();
         int newCrops = 0;
@@ -142,8 +181,9 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         }
         
         // Add any new crops.
+        Settlement settlement = manager.getSettlement();
         for (int x=0; x < newCrops; x++) {
-            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this));
+            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this, settlement.getMars(), settlement));
         }    
     }  
     
@@ -186,4 +226,29 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         
         return powerRequired;
     } 
+    
+    /**
+     * Gets the building's resource process manager.
+     * @return resource process manager
+     */
+    public ResourceProcessManager getResourceProcessManager() {
+        return processManager;
+    }
+    
+    /**
+     * Gets the power down mode resource processing level.
+     * @return proportion of max processing rate (0D - 1D)
+     */
+    public double getPowerDownResourceProcessingLevel() {
+        return POWER_DOWN_LEVEL;
+    }
+    
+    /** 
+     * Gets a map of the resources this building is capable of
+     * storing and their amounts in kg.
+     * @return Map of resource keys and amount Double values.
+     */
+    public Map getResourceStorageCapacity() {
+        return resourceStorageCapacity;
+    }
 }

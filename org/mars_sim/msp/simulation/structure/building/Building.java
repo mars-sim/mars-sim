@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2003-02-13
+ * @version 2.75 2003-02-15
  * @author Scott Davis
  */
  

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.75 2003-01-21
+ * @version 2.75 2003-02-16
  * @author Scott Davis
  */
  
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.structure.building;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /**
@@ -30,6 +31,8 @@ public class Crop implements Serializable {
     private CropType cropType; // The type of crop.
     private double maxHarvest; // Maximum possible food harvest for crop. (kg)
     private Farming farm; // Farm crop being grown in.
+    private Mars mars; // The planet Mars.
+    private Settlement settlement; // The settlement the crop is located at.
     private String phase; // Current phase of crop.
     private double plantingWorkRequired; // Required work time for planting (millisols)
     private double dailyTendingWorkRequired; // Required work time to tend crop daily (millisols)
@@ -45,11 +48,15 @@ public class Crop implements Serializable {
      * @param maxHarvest - Maximum possible food harvest for crop. (kg)
      * @param growingPeiod - Length of growing phase for crop. (millisols)
      * @param farm - Farm crop being grown in.
+     * @param mars - planet Mars.
+     * @param settlement - the settlement the crop is located at.
      */
-    public Crop(CropType cropType, double maxHarvest, Farming farm) {
+    public Crop(CropType cropType, double maxHarvest, Farming farm, Mars mars, Settlement settlement) {
         this.cropType = cropType;
         this.maxHarvest = maxHarvest;
         this.farm = farm;
+        this.mars = mars;
+        this.settlement = settlement;
         
         // Determine work required.
         plantingWorkRequired = maxHarvest * 10D;
@@ -162,14 +169,37 @@ public class Crop implements Serializable {
                 currentPhaseWorkCompleted = 0D;
             }
             else {
-                int newSol = ((Building) farm).getBuildingManager().getSettlement()
-                    .getMars().getMasterClock().getMarsClock().getSolOfMonth();
+                // Modify actual harvest amount based on daily tending work.
+                int newSol = mars.getMasterClock().getMarsClock().getSolOfMonth();
                 if (newSol != currentSol) {
-                    currentSol = newSol;
                     double maxDailyHarvest = maxHarvest / (cropType.getGrowingTime() / 1000D);
-                    actualHarvest += (maxDailyHarvest * (currentPhaseWorkCompleted / dailyTendingWorkRequired));
+                    double dailyWorkCompleted = currentPhaseWorkCompleted / dailyTendingWorkRequired;
+                    actualHarvest = actualHarvest + (maxDailyHarvest * (dailyWorkCompleted - .5D));
+                    currentSol = newSol;
                     currentPhaseWorkCompleted = 0D;
                 }
+                
+                double maxPeriodHarvest = maxHarvest * (time / cropType.getGrowingTime());
+                double harvestModifier = 1D;
+                
+                // Determine harvest modifier by amount of sunlight.
+                double sunlight = (double) mars.getSurfaceFeatures().getSurfaceSunlight(settlement.getCoordinates()) / 127D;
+                harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
+                    
+                // Determine harvest modifier by amount of waste water available.
+                double wasteWaterRequired = maxPeriodHarvest * 100D;
+                double wasteWaterUsed = settlement.getInventory().removeResource(Resource.WASTE_WATER, wasteWaterRequired);
+                settlement.getInventory().addResource(Resource.WATER, wasteWaterUsed * .8D);
+                harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
+                    
+                // Determine harvest modifier by amount of carbon dioxide available.
+                double carbonDioxideRequired = maxPeriodHarvest * 2D;
+                double carbonDioxideUsed = settlement.getInventory().removeResource(Resource.CARBON_DIOXIDE, carbonDioxideRequired);
+                settlement.getInventory().addResource(Resource.OXYGEN, carbonDioxideUsed * .9D);
+                harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
+                    
+                // Modifiy harvest amount.
+                actualHarvest += maxPeriodHarvest * harvestModifier;
             }
         }
     }

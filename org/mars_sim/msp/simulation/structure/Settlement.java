@@ -188,8 +188,10 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      *  @return the amount of oxgyen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-         return inventory.removeResource(Resource.OXYGEN, amountRequested) *
-             (getOxygenFlowModifier() / 100D);
+        double oxygenProvided = inventory.removeResource(Resource.OXYGEN, amountRequested) *
+            (getOxygenFlowModifier() / 100D);
+        inventory.addResource(Resource.CARBON_DIOXIDE, oxygenProvided);
+        return oxygenProvided;
     }
 
     /**
@@ -302,6 +304,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      * @param time the amount of time passing (in millisols)
      */
     public void timePassing(double time) {
+        
         powerGrid.timePassing(time);
         facilityManager.timePassing(time);
         buildingManager.timePassing(time);

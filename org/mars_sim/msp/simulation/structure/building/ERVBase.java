@@ -41,10 +41,10 @@ public class ERVBase extends Building implements ResourceProcessing, Storage {
         // CO2 + 4H2 = CH4 + 2H2O
         // Carbon Dioxide is pumped in from outside air.
         ResourceProcess sabatier = new ResourceProcess("Sebatier", inv);
-        sabatier.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .00055D, true);
-        sabatier.addMaxInputResourceRate(Resource.HYDROGEN, .0001D, false);
-        sabatier.addMaxOutputResourceRate(Resource.METHANE, .0002D, false);
-        sabatier.addMaxOutputResourceRate(Resource.WATER, .00045D, false);
+        sabatier.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .0011D, true);
+        sabatier.addMaxInputResourceRate(Resource.HYDROGEN, .0002D, false);
+        sabatier.addMaxOutputResourceRate(Resource.METHANE, .0004D, false);
+        sabatier.addMaxOutputResourceRate(Resource.WATER, .0009D, false);
         processManager.addResourceProcess(sabatier);
         
         // Create water electrolysis resource process.

@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-02-13
+ * @version 2.75 2003-02-15
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import java.util.*;
 
@@ -18,7 +19,10 @@ public class LanderHab extends InhabitableBuilding
         implements LivingAccommodations, Research, Communication, EVA, 
         Recreation, Dining, ResourceProcessing, Storage {
     
+    // Number of people the hab can accommodate at once.
     private final static int ACCOMMODATION_CAPACITY = 6;
+    
+    // Power down level for processes.
     private final static double POWER_DOWN_LEVEL = .5D;
     
     private ResourceProcessManager processManager;
@@ -38,19 +42,21 @@ public class LanderHab extends InhabitableBuilding
         
         // Create water recycling process
         ResourceProcess waterRecycling = new ResourceProcess("water recycling", inv);
-        waterRecycling.addMaxInputResourceRate(Resource.WASTE_WATER, .002D, false);
-        waterRecycling.addMaxOutputResourceRate(Resource.WATER, .0017D, false);
+        waterRecycling.addMaxInputResourceRate(Resource.WASTE_WATER, .0002D, false);
+        waterRecycling.addMaxOutputResourceRate(Resource.WATER, .00017D, false);
+        processManager.addResourceProcess(waterRecycling);
         
         // Create carbon scrubbing process
         ResourceProcess carbonScrubbing = new ResourceProcess("carbon scrubbing", inv);
         carbonScrubbing.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .000067D, false);
         carbonScrubbing.addMaxOutputResourceRate(Resource.OXYGEN, .00005D, false);
+        processManager.addResourceProcess(carbonScrubbing);
         
         // Set up resource storage capacity map.
         resourceStorageCapacity = new HashMap();
         resourceStorageCapacity.put(Resource.OXYGEN, new Double(1000D));
         resourceStorageCapacity.put(Resource.WATER, new Double(5000D));
-        resourceStorageCapacity.put(Resource.WASTE_WATER, new Double(1000D));
+        resourceStorageCapacity.put(Resource.WASTE_WATER, new Double(500D));
         resourceStorageCapacity.put(Resource.CARBON_DIOXIDE, new Double(500D));
         resourceStorageCapacity.put(Resource.FOOD, new Double(1000D));
         
@@ -120,6 +126,9 @@ public class LanderHab extends InhabitableBuilding
     public void timePassing(double time) {
         super.timePassing(time);
         
+        // Utilize water.
+        waterUsage(time);
+        
         // Determine resource processing production level.
         double productionLevel = 0D;
         if (powerMode.equals(FULL_POWER)) productionLevel = 1D;
@@ -128,4 +137,22 @@ public class LanderHab extends InhabitableBuilding
         // Process resources
         processManager.processResources(time, productionLevel);
     } 
+    
+    /** 
+     * Utilizes water for bathing, washing, etc. based on population.
+     * @param time amount of time passing (millisols)
+     */
+    public void waterUsage(double time) {
+        
+        Settlement settlement = manager.getSettlement();
+        double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D) * time;
+        double waterUsageSettlement = waterUsagePerPerson * settlement.getCurrentPopulationNum();
+        double buildingProportionCap = (double) ACCOMMODATION_CAPACITY / 
+            (double) settlement.getPopulationCapacity();
+        double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
+        
+        Inventory inv = settlement.getInventory();
+        double waterUsed = inv.removeResource(Resource.WATER, waterUsageBuilding);
+        inv.addResource(Resource.WASTE_WATER, waterUsed);
+    }   
 }

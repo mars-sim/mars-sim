@@ -34,12 +34,16 @@ public class Inventory implements Serializable {
         this.owner = owner;
 
 	    // Initialize contained resources to zero.
+        /*
+        containedResources.put(Resource.CARBON_DIOXIDE, new Double(0D));
+        containedResources.put(Resource.WASTE_WATER, new Double(0D));
         containedResources.put(Resource.WATER, new Double(0D));
 	    containedResources.put(Resource.OXYGEN, new Double(0D));
 	    containedResources.put(Resource.FOOD, new Double(0D));
 	    containedResources.put(Resource.ROCK_SAMPLES, new Double(0D));
         containedResources.put(Resource.HYDROGEN, new Double(0D));
         containedResources.put(Resource.METHANE, new Double(0D));
+        */
     }
 
     /**
@@ -90,7 +94,7 @@ public class Inventory implements Serializable {
      * @param the mass actually added in kg.
      */
     public double addResource(String resource, double mass) {
-        if (containedResources.containsKey(resource) && (mass > 0D)) {
+        if (resourceCapacities.containsKey(resource) && (mass > 0D)) {
             double remainingResourceCap = getResourceRemainingCapacity(resource);
             double remainingTotalCap = getTotalCapacity() - getTotalMass();
 	    
@@ -99,8 +103,7 @@ public class Inventory implements Serializable {
             if (remainingTotalCap < massLimit) massLimit = remainingTotalCap;
 	    
             double finalResourceMass = getResourceMass(resource);
-            
-	    
+           
             if (mass < massLimit) {
                 finalResourceMass += mass;
                 containedResources.put(resource, new Double(finalResourceMass));
@@ -124,7 +127,7 @@ public class Inventory implements Serializable {
         if (resourceCapacities.containsKey(resource)) {
             return ((Double) resourceCapacities.get(resource)).doubleValue();
         }
-        else return Double.MAX_VALUE;
+        else return 0D;
     }
 
     /**
@@ -142,8 +145,7 @@ public class Inventory implements Serializable {
      * @return the remaining mass capacity in kg.
      */
     public double getResourceRemainingCapacity(String resource) {
-        double resourceRemaining = getResourceCapacity(resource) 
-	        - getResourceMass(resource);
+        double resourceRemaining = getResourceCapacity(resource) - getResourceMass(resource);
         if (resourceRemaining < getRemainingCapacity()) 
             return resourceRemaining;
         else return getRemainingCapacity();
