@@ -17,15 +17,15 @@ public abstract class GroundVehicle extends Vehicle {
 
     public GroundVehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 		
-	// Use Vehicle constructor
+	// use Vehicle constructor
 	super(name, location, mars, manager); 
 		
-	// Initialize public variables
+	// initialize variables
 	setTerrainHandlingCapability(0D);  // Default terrain capability
 	setTerrainGrade(0D);
 	elevation = mars.getSurfaceTerrain().getElevation(location);
 		
-	// initialize potential vehicle failures.
+	// initialize potential vehicle failures
 	addPotentialFailure("Fuel Leak");
 	addPotentialFailure("Air Leak");
 	addPotentialFailure("Life Support Failure");
@@ -58,6 +58,16 @@ public abstract class GroundVehicle extends Vehicle {
 	terrainHandlingCapability = c;
     }
 
+    /** Returns terrain steepness as angle */
+    public double getTerrainGrade() {
+	return terrainGrade;
+    }
+
+    /** Sets the terrain grade with an angle */
+    public void setTerrainGrade(double terrainGrade) {
+	this.terrainGrade = terrainGrade;
+    }
+
     /** Returns true if ground vehicle is stuck */
     public boolean isStuck() { 
 	return (getStatus().equals("Stuck - Using Winch"));
@@ -70,15 +80,5 @@ public abstract class GroundVehicle extends Vehicle {
 	} else {
 	    setStatus("Moving");
 	}
-    }
-
-    /** Returns terrain steepness as angle */
-    public double getTerrainGrade() {
-	return terrainGrade;
-    }
-
-    /** Sets the terrain grade with an angle */
-    public void setTerrainGrade(double terrainGrade) {
-	this.terrainGrade = terrainGrade;
     }
 }

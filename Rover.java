@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.70 2000-05-06
+ * @version 2.70 2000-09-01
  * @author Scott Davis
  */
 

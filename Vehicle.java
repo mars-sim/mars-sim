@@ -122,7 +122,7 @@ public abstract class Vehicle extends Unit {
     }
 	
     /** Returns the fuel capacity of the vehicle. */
-    public void setFuelCapacity(double capacity) {
+    protected void setFuelCapacity(double capacity) {
 	fuelCapacity = capacity;
     }
 	
@@ -170,7 +170,7 @@ public abstract class Vehicle extends Unit {
     }
 
     /** Returns the maximum passenger capacity of the vehicle (including the driver). */
-    public void setMaxPassengers(int num) {
+    protected void setMaxPassengers(int num) {
 	maxPassengers = num;
     }
 
@@ -299,7 +299,7 @@ public abstract class Vehicle extends Unit {
     }
 	
     /** sets the vehicle's size. */
-    public void setSize(int size) {
+    protected void setSize(int size) {
 	vehicleSize = size;
     }
 	
@@ -345,7 +345,9 @@ public abstract class Vehicle extends Unit {
     public void addWorkToMaintenance(int seconds) {
 		
 	// If vehicle has already been maintained, return.
-	if (distanceMaint == 0D) return;
+	if (distanceMaint == 0D) {
+	    return;
+	}
 		
 	// Add work to maintenance work done.
 	maintenanceWork += seconds;
