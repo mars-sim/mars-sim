@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-05-16
  * @author Barry Evans
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.ui.standard.UIProxyManager;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import java.util.Iterator;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects.
@@ -125,10 +126,19 @@ public class SettlementTableModel extends UnitTableModel {
 	        } break;
 
             case MALFUNCTION: {
-                Malfunction failure = settle.getMalfunctionManager().getMostSeriousMalfunction();
-                if ((failure != null) && !failure.isFixed()) {
-                    result = failure.getName();
-                }
+                int severity = 0;
+                Malfunction malfunction = settle.getMalfunctionManager().getMostSeriousMalfunction();
+		if (malfunction != null) severity = malfunction.getSeverity();
+		Iterator i = settle.getFacilityManager().getFacilities();
+		while (i.hasNext()) {
+                    Facility facility = (Facility) i.next();
+		    Malfunction tempMalfunction = facility.getMalfunctionManager().getMostSeriousMalfunction();
+		    if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
+                        malfunction = tempMalfunction;
+			severity = tempMalfunction.getSeverity();
+		    }
+		}
+                if (malfunction != null) result = malfunction.getName();
             } break;
 
             case POPULATION : {
