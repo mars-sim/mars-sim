@@ -55,7 +55,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     private void initGroundVehicleData() {
         setTerrainHandlingCapability(0D); // Default terrain capability
         setTerrainGrade(0D);
-	// ##TODO## this line is throwing NullPointerExceptions --jpatokal
         elevation = mars.getSurfaceFeatures().getSurfaceTerrain().getElevation(location);
         initFailures();
     }

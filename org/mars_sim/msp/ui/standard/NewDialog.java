@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * $Id: NewDialog.java,v 1.3 2002-03-18 02:34:52 scud1 Exp $
+ * $Id: NewDialog.java,v 1.4 2002-03-18 07:26:16 scud1 Exp $
  * @version 2.74
  * @author Jani Patokallio
  */
@@ -53,12 +53,12 @@ public class NewDialog extends JDialog implements ActionListener {
 	mainPane.add(Box.createRigidArea(new Dimension(0,15)));
 
 	peopleSlider =
-	    addSlider(mainPane, "People", 5, 50, p.getInitPeople(), 5);
+	    addSlider(mainPane, "People", 0, 150, p.getInitPeople(), 10, 5);
 	settlementSlider =
-	    addSlider(mainPane, "Settlements", 1, 20, p.getInitSettlements(),
-		      1);
+	    addSlider(mainPane, "Settlements", 1, 15, p.getInitSettlements(),
+		      1, 1);
 	vehicleSlider =
-	    addSlider(mainPane, "Vehicles", 1, 10, p.getInitVehicles(), 1);
+	    addSlider(mainPane, "Vehicles", 0, 30, p.getInitVehicles(), 5, 1);
 
         // Create button panel
         JPanel buttonPane = new JPanel(new GridLayout(0,2));
@@ -93,10 +93,10 @@ public class NewDialog extends JDialog implements ActionListener {
     }
 
     private JSlider addSlider(JPanel mainPane, String name,
-		      int min, int max, int start, int tickSpacing) {
+		      int min, int max, int start, int majorTickSpacing, int minorTickSpacing) {
 	JSlider slider = new JSlider(JSlider.HORIZONTAL, min, max, start);
-	slider.setMajorTickSpacing(tickSpacing);
-	slider.setMinorTickSpacing(1);
+	slider.setMajorTickSpacing(majorTickSpacing);
+	slider.setMinorTickSpacing(minorTickSpacing);
 	slider.setSnapToTicks(true);
 	slider.setPaintTicks(true);
 	slider.setPaintLabels(true);

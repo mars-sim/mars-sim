@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -45,12 +45,8 @@ public class Mars implements Serializable {
     /** Constructs a Mars object */
     public Mars(SimulationProperties initProps) {
 
-	if(initProps == null) {
-	    initialiseTransients();
-	    setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
-	} else {
-	    properties = initProps;
-	}
+	// Initialize transient properties
+	initializeTransients(initProps);
 
         // Initialize the Medical conditions
         medicalManager = new MedicalManager(properties);
@@ -70,13 +66,21 @@ public class Mars implements Serializable {
         System.out.println("Create new simulation");
     }
 
-    private void initialiseTransients() {
+    /**
+     * Initialize transient simulation properties.
+     * @param initProps simulation properties if any or null.
+     */
+    private void initializeTransients(SimulationProperties initProps) {
 
         // Initialize simulation properties
-        properties = new SimulationProperties();
+	if (initProps != null) properties = initProps;
+	else properties = new SimulationProperties();
 
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
+
+	// Set state file
+	setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
     }
 
     private void setStateFile(String fileName) {
@@ -230,7 +234,7 @@ public class Mars implements Serializable {
             throws IOException, ClassNotFoundException {
 
         // Initialise the transient values
-        initialiseTransients();
+        initializeTransients(null);
 
         // Load in the persistent values in sequence
         units = (UnitManager)in.readObject();
