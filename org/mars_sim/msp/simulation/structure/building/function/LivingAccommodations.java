@@ -15,4 +15,5 @@ public interface LivingAccommodations extends Function {
      * @return number of accomodations.
      */
     public int getAccommodationCapacity();
+    
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-01-05
+ * @version 2.75 2003-01-15
  * @author Scott Davis
  */
  
@@ -44,8 +44,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         // Create crops;
         crops = new ArrayList();
         for (int x=0; x < numCrops; x++) {
-            crops.add(new Crop(Crop.getRandomCropName(), (maxHarvest / numCrops), 
-                Farming.BASE_CROP_GROWING_TIME, this));
+            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this));
         }    
     }
     
@@ -139,11 +138,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         
         // Add any new crops.
         for (int x=0; x < newCrops; x++) {
-            String cropName = Crop.getRandomCropName();
-            double cropGrowingTime = Farming.BASE_CROP_GROWING_TIME;
-            double cropHarvest = maxHarvest / numCrops;
-            crops.add(new Crop(Crop.getRandomCropName(), (maxHarvest / numCrops), 
-                Farming.BASE_CROP_GROWING_TIME, this));
+            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this));
         }    
     }   
 }

@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.75 2003-01-09
+ * @version 2.75 2003-01-15
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
@@ -22,19 +23,12 @@ public class Crop implements Serializable {
     public static final String HARVESTING = "Harvesting";
     public static final String FINISHED = "Finished";
     
-    // Crop names (should put in XML config file later)
-    private static String[] cropNames = { "strawberries", "lettuce", "spinach", "tomatoes",
-                                          "potatoes", "carrots", "turnips", "rutabaga",
-                                          "beets", "zucchini", "wheat", "cauliflower", 
-                                          "broccoli", "peas", "green beans", "peppers", 
-                                          "yellow squash", "sunflowers", "brussel sprouts", 
-                                          "kohlrabi", "kale", "radish", "lettuce", 
-                                          "cabbage", "canoli", "rice", "peanuts", "soybeans" };
+    // Crop types
+    private static ArrayList cropTypes = null;
     
     // Data members
-    private String name; // Name of the crop
+    private CropType cropType; // The type of crop.
     private double maxHarvest; // Maximum possible food harvest for crop. (kg)
-    private double growingPeriod; // Length of growing phase (millisols).
     private Farming farm; // Farm crop being grown in.
     private String phase; // Current phase of crop.
     private double plantingWorkRequired; // Required work time for planting (millisols)
@@ -52,10 +46,9 @@ public class Crop implements Serializable {
      * @param growingPeiod - Length of growing phase for crop. (millisols)
      * @param farm - Farm crop being grown in.
      */
-    public Crop(String name, double maxHarvest, double growingPeriod, Farming farm) {
-        this.name = name;
+    public Crop(CropType cropType, double maxHarvest, Farming farm) {
+        this.cropType = cropType;
         this.maxHarvest = maxHarvest;
-        this.growingPeriod = growingPeriod;
         this.farm = farm;
         
         // Determine work required.
@@ -68,10 +61,13 @@ public class Crop implements Serializable {
     }
     
     /**
-     * Gets the name of the crop.
-     * @return name as String
+     * Gets the type of crop.
+     *
+     * @return crop type
      */
-    public String getName() { return name; }
+    public CropType getCropType() {
+        return cropType;
+    }
     
     /**
      * Gets the phase of the crop.
@@ -86,12 +82,6 @@ public class Crop implements Serializable {
      * @return food harvest (kg.)
      */
     public double getMaxHarvest() { return maxHarvest; }
-    
-    /**
-     * Gets the amount of time the crop needs to grow before harvest.
-     * @return growing time (millisols)
-     */
-    public double getGrowingPeriod() { return growingPeriod; }
     
     /**
      * Gets the amount of growing time completed.
@@ -167,7 +157,7 @@ public class Crop implements Serializable {
         
         if (phase.equals(GROWING)) {
             growingTimeCompleted += time;
-            if (growingTimeCompleted > growingPeriod) {
+            if (growingTimeCompleted > cropType.getGrowingTime()) {
                 phase = HARVESTING;
                 currentPhaseWorkCompleted = 0D;
             }
@@ -176,7 +166,7 @@ public class Crop implements Serializable {
                     .getMars().getMasterClock().getMarsClock().getSolOfMonth();
                 if (newSol != currentSol) {
                     currentSol = newSol;
-                    double maxDailyHarvest = maxHarvest / (growingPeriod / 1000D);
+                    double maxDailyHarvest = maxHarvest / (cropType.getGrowingTime() / 1000D);
                     actualHarvest += (maxDailyHarvest * (currentPhaseWorkCompleted / dailyTendingWorkRequired));
                     currentPhaseWorkCompleted = 0D;
                 }
@@ -185,11 +175,18 @@ public class Crop implements Serializable {
     }
     
     /**
-     * Gets a random crop name.
-     * @return crop name
+     * Gets a random crop type.
+     * @return crop type
      */
-    public static String getRandomCropName() {
-        int r = RandomUtil.getRandomInt(cropNames.length - 1);
-        return cropNames[r];
+    public static CropType getRandomCropType() {
+        
+        if (cropTypes == null) {
+            CropXmlReader cropReader = new CropXmlReader();
+            cropReader.parse();
+            cropTypes = cropReader.getCropTypes();
+        }
+        
+        int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
+        return (CropType) cropTypes.get(r);
     }
 }
