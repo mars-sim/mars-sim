@@ -1,5 +1,5 @@
 //************************** Task Manager **************************
-// Last Modified: 7/25/00
+// Last Modified: 8/23/00
 
 // The TaskManager class keeps track of a person's current task and can randomly
 // assign a new task to a person based on a list of possible tasks and that person's
@@ -32,7 +32,7 @@ class TaskManager {
 		// Create an array of general task classes.
 		// (Add additional general tasks as they are created)
 		
-		try { generalTasks = new Class[] { TaskRelax.class, TaskDrive.class, TaskTendGreenhouse.class }; }
+		try { generalTasks = new Class[] { TaskRelax.class, TaskDrive.class, TaskTendGreenhouse.class, TaskMechanic.class }; }
 		catch(Exception e) { System.out.println("TaskManager.constructor(): " + e.toString()); }
 	}
 	
