@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopulationTabPanel.java
- * @version 2.75 2003-08-03
+ * @version 2.77 2004-09-13
  * @author Scott Davis
  */
 
@@ -120,7 +120,7 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
      */
     public void actionPerformed(ActionEvent event) {
         // If the population monitor button was pressed, create tab in monitor tool.
-        desktop.addModel(new PersonTableModel((Settlement) unit));
+        desktop.addModel(new PersonTableModel((Settlement) unit, false));
     }
     
     /** 
