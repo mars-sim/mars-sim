@@ -1,5 +1,5 @@
 //******************* About Mars Simulation Project Window ****************
-// Last Modified: 5/14/00
+// Last Modified: 5/23/00
 
 // The AboutDialog is an information window that is called from the "About The Mars Simulation Project"
 // item in the MainWindowMenu.  It provides information about the project, credit to contributors and the GPL license.
@@ -43,17 +43,18 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 		// Create the document
 		
 		try {
-			document.insertString(0, "The Mars Simulation Project v2.7\n\n", null);
+			document.insertString(0, "The Mars Simulation Project v2.65\n\n", null);
 			document.insertString(document.getLength(), "Web Site: http://mars-sim.sourceforge.net\n\n", null);
 			
 			document.insertString(document.getLength(), "Developers:\n", null);
 			document.insertString(document.getLength(), "  Scott Davis - Java programming, graphics\n", null);
 			document.insertString(document.getLength(), "  James Barnard - 3D graphics, sound\n\n", null);
 			
-			document.insertString(document.getLength(), "Testing and recommendations:\n", null);
-			document.insertString(document.getLength(), "Mike Jones\n", null);
-			document.insertString(document.getLength(), "Dan Sepanski\n", null);
-			document.insertString(document.getLength(), "Joe Wagner\n\n", null);
+			document.insertString(document.getLength(), "Testing and Recommendations:\n", null);
+			document.insertString(document.getLength(), "  Mike Jones\n", null);
+			document.insertString(document.getLength(), "  Dan Sepanski\n", null);
+			document.insertString(document.getLength(), "  Joe Wagner\n", null);
+			document.insertString(document.getLength(), "  Tom Zanoni\n\n", null);
 			
 			document.insertString(document.getLength(), "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License ", null);
 			document.insertString(document.getLength(), "as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n", null);
