@@ -76,12 +76,17 @@ public class MedicalManager implements Serializable {
 
         // The following should be loaded from an XML file, later work
         // These are illness/injuries that happen at random
-        createComplaint("Cut", 5, 0, (2 * MINSPERDAY), 30, 90, null);
+
         createComplaint("Cold", 10, 0, (7 * MINSPERDAY), 30, 70, null);
         createComplaint("Pulled Tendon/Muscle", 30, 0, (14 * MINSPERDAY),
                         20, 60, null);
-        createComplaint("Broken bone", 60, (4 * MINSPERDAY), (14 * MINSPERDAY),
-                        10, 0, null);
+        MedicalComplaint next = createComplaint("Gangrene", 80,
+                                        (7 * MINSPERDAY), (14 * MINSPERDAY),
+                                        1, 0, null);
+        createComplaint("Broken bone", 60, (7 * MINSPERDAY), (14 * MINSPERDAY),
+                        10, 0, next);
+        createComplaint("Laceration", 20, (7 * MINSPERDAY), (2 * MINSPERDAY),
+                        10, 70, next);
         createComplaint("Meningitis", 70, (4 * MINSPERDAY), (14 * MINSPERDAY),
                         5, 0, null);
     }
@@ -106,11 +111,12 @@ public class MedicalManager implements Serializable {
     /**
      * Select a probable complaint to strike the Person down. This uses
      * a random factor to select the complaint based on the probability
-     * rating.
+     * rating. The physical characteristics of the Person are taken into account.
      *
+     * @param person The person that may have a complaint.
      * @return Possible MedicalComplaint, this maybe null.
      */
-    MedicalComplaint getProbableComplaint() {
+    MedicalComplaint getProbableComplaint(Person person) {
         MedicalComplaint complaint = null;
 
         // Get a random number from 0 to the total probability weight.

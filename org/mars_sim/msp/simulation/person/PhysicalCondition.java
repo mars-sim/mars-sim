@@ -24,17 +24,21 @@ public class PhysicalCondition implements Serializable {
     private double fatigue;             // Person's fatigue level
     private double hunger;              // Person's hunger level
     private MedicalManager medic;       // Simulation Medical manager
+    private Person person;              // Person's of this physical
 
     /**
      * Construct a Physical Condition instance.
      *
+     * @param person The person requiring a physical presence.
      * @param mars main simulation control.
+     *
      */
-    public PhysicalCondition(VirtualMars mars) {
+    public PhysicalCondition(Person newPerson, VirtualMars mars) {
         isAlive = true;
         illness = null;
         isRecovering = false;
         illnessDuration = 0;
+        person = newPerson;
 
         medic = mars.getMedicalManager();
         fatigue = RandomUtil.getRandomDouble(1000D);
@@ -79,7 +83,7 @@ public class PhysicalCondition implements Serializable {
         }
         else {
             // See if a random illness catches this Person out
-            MedicalComplaint newComplaint = medic.getProbableComplaint();
+            MedicalComplaint newComplaint = medic.getProbableComplaint(person);
             if (newComplaint != null) {
                 setProblem(newComplaint);
             }
@@ -206,6 +210,7 @@ public class PhysicalCondition implements Serializable {
         fatigue = 0;
         hunger = 0;
         isAlive = false;
+        isRecovering = false;
     }
 
     /**
@@ -260,9 +265,16 @@ public class PhysicalCondition implements Serializable {
 
         illness = complaint;
         illnessDuration = 0;
+        isRecovering = false;
 
         // If no degrade period, then can do self heel
-        isRecovering = (complaint.getDegradePeriod() == 0D);
+        if (complaint.getDegradePeriod() == 0D) {
+            startRecovery();
+        }
+        else if (person.getSettlement() != null) {
+            // If in a settlement, then maybe shelf heel
+            canStartRecovery(person.getSettlement());
+        }
     }
 
     /**
@@ -284,8 +296,14 @@ public class PhysicalCondition implements Serializable {
      * This is now moving to a recovery state.
      */
     public void startRecovery() {
-        System.out.println("Start recovery " + illness);
-        illnessDuration = 0;
-        isRecovering = true;
+        if (!isRecovering) {
+            illnessDuration = 0;
+
+            // If no recovery period, then it's done.
+            isRecovering = (illness.getRecoveryPeriod() == 0);
+            if (!isRecovering) {
+                illness = null;
+            }
+        }
     }
 }

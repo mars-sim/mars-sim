@@ -100,7 +100,7 @@ public class Person extends Unit implements Serializable {
         skills = new SkillManager(this);
         mind = new Mind(this, mars);
         locationSituation = INSETTLEMENT;
-        health = new PhysicalCondition(mars);
+        health = new PhysicalCondition(this, mars);
     }
 
     /** Returns a string for the person's relative location "In
