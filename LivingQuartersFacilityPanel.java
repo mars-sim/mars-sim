@@ -1,5 +1,5 @@
 //************************** Living Quarters Facility Panel **************************
-// Last Modified: 5/22/00
+// Last Modified: 5/24/00
 
 // The LivingQuartersFacilityPanel class displays information about a settlement's living quarters facility in the user interface.
 
@@ -117,7 +117,7 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 		// Update inhabitant list
 		
 		DefaultListModel model = (DefaultListModel) inhabitantList.getModel();
-		UnitInfo[] inhabitants = livingQuarters.getPopulationInfo();
+		inhabitantInfo = livingQuarters.getPopulationInfo();
 		
 		boolean match = false;
 		
@@ -126,14 +126,14 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 		if (model.getSize() == population) {
 			match = true;
 			for (int x=0; x < population; x++) 
-				if (!((String) model.getElementAt(x)).equals(inhabitants[x].getName())) match = false;
+				if (!((String) model.getElementAt(x)).equals(inhabitantInfo[x].getName())) match = false;
 		}
 		
 		// If no match, update inhabitant list
 		
 		if (!match) {
 			model.removeAllElements();
-			for (int x=0; x < population; x++) model.addElement(inhabitants[x].getName());
+			for (int x=0; x < population; x++) model.addElement(inhabitantInfo[x].getName());
 			validate();
 		}	
 	}
