@@ -1,5 +1,5 @@
 //************************** Unit Detail Window **************************
-// Last Modified: 2/27/00
+// Last Modified: 5/19/00
 
 // The UnitDialog class is an abstract UI detail window for a given unit.
 // It displays information about the unit and its current status.
@@ -125,7 +125,7 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable, Act
 		// Prepare content pane
 		
 		mainPane = new JPanel();
-		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
+		mainPane.setLayout(new BorderLayout());
 		mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(mainPane);
 	}
@@ -151,7 +151,7 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable, Act
 		// Prepare name panel
 		
 		JPanel namePanel = new JPanel();
-		mainPane.add(namePanel);
+		mainPane.add(namePanel, "North");
 
 		// Prepare name label
 
