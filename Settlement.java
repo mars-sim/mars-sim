@@ -1,5 +1,5 @@
 //************************** Settlement Unit **************************
-// Last Modified 2/27/00
+// Last Modified 5/8/00
 
 // The Settlement class represents a settlement unit on virtual Mars.
 // It contains information related to the state of the settlement.
@@ -12,8 +12,9 @@ public class Settlement extends Unit {
 
 	// Data members
 
-	protected Vector people;   // List of inhabitants
-	protected Vector vehicles; // List of parked vehicles
+	protected Vector people;                    // List of inhabitants
+	protected Vector vehicles;                  // List of parked vehicles
+	protected FacilityManager facilityManager;  // The facility manager for the settlement.
 
 	// Constructor
 
@@ -27,7 +28,12 @@ public class Settlement extends Unit {
 
 		people = new Vector();
 		vehicles = new Vector();
+		facilityManager = new FacilityManager(this);
 	}
+
+	// Returns the facility manager for the settlement
+	
+	public FacilityManager getFacilityManager() { return facilityManager; }
 
 	// Get number of inhabitants or parked vehicles in settlement
 
@@ -63,6 +69,10 @@ public class Settlement extends Unit {
 	// Make a given vehicle leave the settlement
 	
 	public void vehicleLeave(Vehicle vehicle) { if (vehicles.contains(vehicle)) vehicles.removeElement(vehicle); }
+	
+	// Perform time-related processes
+	
+	public void timePasses(int seconds) { facilityManager.timePasses(seconds); }
 
 	// Returns a detail window for the unit
 
