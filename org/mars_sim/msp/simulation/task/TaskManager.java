@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.72 2001-08-12
+ * @version 2.73 2001-09-23
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ public class TaskManager {
                                        Sleep.class, EatMeal.class, RepairMechanicalFailure.class,
                                        ReserveGroundVehicle.class, LoadVehicle.class, EnterVehicle.class,
                                        DriveGroundVehicle.class, ExitVehicle.class, UnloadVehicle.class,
-                                       CollectRockSamples.class };
+                                       CollectRockSamples.class, MaintainSettlement.class };
 
     /** Constructs a TaskManager object
      *  @param person the person the task manager is for
