@@ -1,5 +1,5 @@
 //***************** Rover Unit *****************
-// Last Modified: 2/20/00
+// Last Modified: 5/6/00
 
 // The Rover class represents the rover type of ground vehicle.
 // It contains information about the rover.
@@ -20,6 +20,10 @@ class Rover extends GroundVehicle {
 		// Set rover terrain modifier
 		
 		terrainHandlingCapability = 0D;
+		
+		// Set the vehicle size of the rover.
+		
+		vehicleSize = 2;
 	}
 
 	// Returns a detail window for the unit
