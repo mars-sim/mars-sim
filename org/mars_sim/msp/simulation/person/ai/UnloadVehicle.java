@@ -84,7 +84,6 @@ class UnloadVehicle extends Task implements Serializable {
         // Unload Rock Samples 
 	double rockAmount = vehicle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
         if (rockAmount > amountUnloading) rockAmount = amountUnloading;
-	if (rockAmount > 0D) System.out.println(person.getName() + " unloading " + rockAmount + " kg of rock samples from " + vehicle.getName());
 	vehicle.getInventory().removeResource(Inventory.ROCK_SAMPLES, rockAmount);
 	settlement.getInventory().addResource(Inventory.ROCK_SAMPLES, rockAmount);
         amountUnloading -= rockAmount;

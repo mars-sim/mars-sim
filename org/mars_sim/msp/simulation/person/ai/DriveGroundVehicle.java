@@ -102,6 +102,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             // System.out.println(person.getName() + " stopped driving due to darkness.");
 	    vehicle.setSpeed(0D);
             vehicle.setDriver(null);
+	    vehicle.setStuck(false);
             done = true;
             return 0D;
         }
@@ -119,6 +120,7 @@ class DriveGroundVehicle extends Task implements Serializable {
 	    // System.out.println(person.getName() + " finished driving " + vehicle.getName());
 	    vehicle.setSpeed(0D);
             vehicle.setDriver(null);
+	    vehicle.setStuck(false);
             done = true;
         }
 

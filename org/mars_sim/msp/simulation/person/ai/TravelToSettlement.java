@@ -201,7 +201,7 @@ class TravelToSettlement extends Mission implements Serializable {
      *  @param person the person currently performing the mission
      */ 
     private void drivingPhase(Person person) {
-       
+      
         // Record starting time and distance to destination.
         if ((startingTime == null) || (startingDistance == 0D)) {
             startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
@@ -217,6 +217,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // If rover doesn't currently have a driver, start drive task for person.
         // Can't be immediate last driver and can't be at night time.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) > 0D) {
+	    
             if (person == lastDriver) {
                 lastDriver = null;
             }
