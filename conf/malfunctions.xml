@@ -255,5 +255,20 @@
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 		</effects-list>
 	</malfunction>
+	
+	<!-- EVA suit tear. -->
+	<malfunction name="Suit Tear">
+		<severity value="70" />
+		<probability value="100.0" />
+		<emergency-repair-time value="1.0" />
+		<repair-time value="20.0" />
+		<entity-list>
+			<entity name="EVA Suit" />
+		</entity-list>
+		<medical-complaint-list>
+			<medical-complaint name="Frostnip" probability="80.0" />
+			<medical-complaint name="Frostbite" probability="10.0" />
+		</medical-complaint-list>
+	</malfunction>
 
 </malfunction-list>

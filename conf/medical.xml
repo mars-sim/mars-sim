@@ -156,7 +156,29 @@
 			<probability value="0.0" />
 			<performance-percent value="0.0" />
 			<treatment value="Skin Graft" />
+		</medical-complaint>	
+		
+		<!-- Frostnip is damaged tissue due to exposure to freezing conditions -->
+		<!-- and possibly low air pressure. -->
+		<medical-complaint name="Frostnip">
+			<seriousness value="20" />
+			<recovery-time value="1.0" />
+			<probability value="0.0" />
+			<performance-percent value="80.0" />
 		</medical-complaint>		
+		
+		<!-- Frostbite is damaged tissue due to exposure to freezing conditions -->
+		<!-- and possibly low air pressure. It is more serious than frostnip and -->
+		<!-- can turn into gangrene if left untreated. -->
+		<medical-complaint name="Frostbite">
+			<seriousness value="50" />
+			<degrade-time value="10.0" />
+			<recovery-time value="10.0" />
+			<probability value="0.0" />
+			<performance-percent value="40.0" />
+			<treatment value="Dressing" />
+			<degrade-complaint value="Gangrene" />
+		</medical-complaint>				
 
 	</medical-complaint-list>
 	
