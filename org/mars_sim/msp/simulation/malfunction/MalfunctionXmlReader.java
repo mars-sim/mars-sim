@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionXmlReader.java
- * @version 2.74 2002-03-31
+ * @version 2.74 2002-04-16
  * @author Scott Davis 
  */
 
@@ -62,7 +62,7 @@ class MalfunctionXmlReader extends MspXmlReader {
      * @param manager malfunction factory to load
      */
     MalfunctionXmlReader(MalfunctionFactory factory) {
-        super("conf/malfunction.xml");
+        super("malfunction");
 
         this.factory = factory;
     }

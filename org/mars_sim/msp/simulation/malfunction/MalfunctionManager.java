@@ -50,9 +50,26 @@ public class MalfunctionManager implements Serializable {
     /**
      * Adds a randomly selected malfunction to the unit (if possible).
      */
+    /**
     public void addMalfunction() {
        MalfunctionFactory factory = unit.getMars().getMalfunctionFactory();
        Malfunction malfunction = factory.getMalfunction(scope);
        if (malfunction != null) malfunctions.add(malfunction);
+    }
+    */
+
+    /**
+     * Time passing while the unit is being actively used.
+     * @param amount of time passing (in millisols)
+     */
+    public void activeTimePassing(double time) {
+
+    }
+
+    /**
+     * Called when the unit has an accident.
+     */
+    public void accident() {
+
     }
 }
