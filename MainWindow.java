@@ -1,5 +1,5 @@
 //*********************** Main UI Window ***********************
-// Last Modified: 5/23/00
+// Last Modified: 5/24/00
 
 // The MainWindow class is the primary UI frame for the project.
 // It contains the tool bars and main desktop pane.
@@ -62,7 +62,7 @@ public class MainWindow extends JFrame implements WindowListener {
 		
 		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frame_size = new Dimension(screen_size);
-		if (screen_size.width > 800) frame_size = new Dimension((int) Math.round(screen_size.getWidth() * .7D), (int) Math.round(screen_size.getHeight() * .7D));
+		if (screen_size.width > 800) frame_size = new Dimension((int) Math.round(screen_size.getWidth() * .8D), (int) Math.round(screen_size.getHeight() * .8D));
 		setSize(frame_size);
 
 		// Center frame on screen
