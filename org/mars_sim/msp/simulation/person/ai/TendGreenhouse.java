@@ -1,16 +1,19 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.74 2002-04-27
+ * @version 2.75 2003-01-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /** The TendGreenhouse class is a task for tending the greenhouse in a settlement.
  *  It has the phases, "Planting", "Tending" and "Harvesting".
@@ -18,7 +21,8 @@ import org.mars_sim.msp.simulation.structure.*;
  */
 public class TendGreenhouse extends Task implements Serializable {
 
-    private Greenhouse greenhouse; // The greenhouse the person is tending.
+    // Data members
+    private Farming greenhouse; // The greenhouse the person is tending.
     private Settlement settlement; // The settlement the greenhouse is in.
     private double duration; // The duration (in millisols) the person will perform the task.
 
@@ -27,9 +31,13 @@ public class TendGreenhouse extends Task implements Serializable {
         super("Tending Greenhouse", person, true, mars);
 
         // Initialize data members
-	description = "Tending Greenhouse at " + person.getSettlement().getName();
+        description = "Tending Greenhouse at " + person.getSettlement().getName();
         this.settlement = person.getSettlement();
-        this.greenhouse = (Greenhouse) settlement.getFacilityManager().getFacility(Greenhouse.NAME);
+        Iterator i = settlement.getBuildingManager().getBuildings(Farming.class);
+        while (i.hasNext()) {
+            Farming farm = (Farming) i.next();
+            if (farm.requiresWork()) greenhouse = farm;
+        }
 
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
@@ -42,20 +50,23 @@ public class TendGreenhouse extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 	    
+        boolean workableFarm = false;
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Greenhouse greenhouse =
-                   (Greenhouse) person.getSettlement().getFacilityManager().getFacility(Greenhouse.NAME);
-            if ((greenhouse.getPhase().equals("Growing")) &&
-                    (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
-                result = 0D;
-            else result = 25D;
-	    if (greenhouse.getMalfunctionManager().hasMalfunction()) result = 0D;
-	}
+            Iterator i = person.getSettlement().getBuildingManager().getBuildings(Farming.class);
+            while (i.hasNext()) {
+                Farming farm = (Farming) i.next();
+                if (farm.requiresWork()) workableFarm = true;
+                // Add later
+                // if (farm.getMalfunctionManager().hasMalfunction()) workableFarm = false;
+            }
+        }
 
-	// Effort-driven task modifier.
-	result *= person.getPerformanceRating();
+        if (workableFarm) result = 25D;
+        
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
 
-	return result;
+        return result;
     }
 
     /** Performs the tending greenhouse task for a given amount of time.
@@ -67,15 +78,17 @@ public class TendGreenhouse extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-	if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) {
+            done = true;
+            return timeLeft;
+        }
 
+        // Add later
         // Check if greenhouse has malfunction.
-	if (greenhouse.getMalfunctionManager().hasMalfunction()) done = true;
-
-	if (done) return timeLeft;
-	
-        // Get the phase from the greenhouse's phase of operation.
-        phase = greenhouse.getPhase();
+        // if (greenhouse.getMalfunctionManager().hasMalfunction()) {
+        //    done = true;
+        //    return timeLeft;
+        // }
 
         // Determine amount of effective work time based on "Greenhouse Farming" skill.
         double workTime = timeLeft;
@@ -84,7 +97,7 @@ public class TendGreenhouse extends Task implements Serializable {
         else workTime += workTime * (.2D * (double) greenhouseSkill);
 
         // Add this work to the greenhouse.
-        greenhouse.addWorkToGrowthCycle(workTime);
+        greenhouse.addWork(workTime);
 
         // Keep track of the duration of the task.
         timeCompleted += time;
@@ -94,13 +107,12 @@ public class TendGreenhouse extends Task implements Serializable {
         // (1 base experience point per 100 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = timeLeft / 100D;
-        experience += experience *
-                (((double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude") -
-                50D) / 100D);
+        double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
+        experience += experience * ((experienceAptitude - 50D) / 100D);
         person.getSkillManager().addExperience("Greenhouse Farming", experience);
 
         // Check for accident in greenhouse.
-	checkForAccident(time);
+        checkForAccident(time);
 	
         return 0D;
     }
@@ -113,14 +125,15 @@ public class TendGreenhouse extends Task implements Serializable {
 
         double chance = .001D;
 
-	// Greenhouse farming skill modification.
-	int skill = person.getSkillManager().getEffectiveSkillLevel("Greenhouse Farming");
+        // Greenhouse farming skill modification.
+        int skill = person.getSkillManager().getEffectiveSkillLevel("Greenhouse Farming");
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // System.out.println(person.getName() + " has accident while tending the greenhouse.");
-            greenhouse.getMalfunctionManager().accident();
+            // Add later
+            // greenhouse.getMalfunctionManager().accident();
         }
     }
 }

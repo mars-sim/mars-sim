@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.75 2002-06-08
+ * @version 2.75 2003-01-20
  * @author Scott Davis
  */
 
@@ -33,7 +33,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         claimMalfunction();
 
-	if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        // if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
     }
 
     /**
@@ -44,15 +44,15 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         boolean result = false;
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	while (i.hasNext()) {
-	    // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-	    Malfunctionable entity = (Malfunctionable) i.next();
-	    MalfunctionManager manager = entity.getMalfunctionManager();
-	    if (manager.hasEmergencyMalfunction()) result = true;
-	}
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        while (i.hasNext()) {
+            // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
+            Malfunctionable entity = (Malfunctionable) i.next();
+            MalfunctionManager manager = entity.getMalfunctionManager();
+            if (manager.hasEmergencyMalfunction()) result = true;
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -69,11 +69,11 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         // Check if there emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
-                            malfunction.getCompletedEmergencyWorkTime();
+             malfunction.getCompletedEmergencyWorkTime();
         if (workTimeLeft == 0) {
-	    System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
+	        // System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
             done = true;
-	}
+        }
 
         if (done) return timeLeft;
 
@@ -84,12 +84,12 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
         // Add work to emergency malfunction.
-        System.out.println(person.getName() + " contributing " + workTime + " millisols of work time to emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        // System.out.println(person.getName() + " contributing " + workTime + " millisols of work time to emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
         double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
         if (remainingWorkTime > 0D) {
-	    System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
+	        // System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
             done = true;
-	}
+        }
 
         // Add experience to "Mechanic" skill.
         // (1 base experience point per 20 millisols of time spent)

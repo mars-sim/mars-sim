@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Malfunction.java
- * @version 2.75 2002-06-06
+ * @version 2.75 2003-01-20
  * @author Scott Davis
  */
 
@@ -43,19 +43,19 @@ public class Malfunction implements Serializable {
 
         // Initialize data members
         this.name = name;
-	this.severity = severity;
-	this.probability = probability;
-	this.emergencyWorkTime = emergencyWorkTime;
-	this.workTime = workTime;
-	this.EVAWorkTime = EVAWorkTime;
-	this.scope = scope;
-	this.resourceEffects = resourceEffects;
-	this.lifeSupportEffects = lifeSupportEffects;
-	this.medicalComplaints = medicalComplaints;
+        this.severity = severity;
+        this.probability = probability;
+        this.emergencyWorkTime = emergencyWorkTime;
+        this.workTime = workTime;
+        this.EVAWorkTime = EVAWorkTime;
+        this.scope = scope;
+        this.resourceEffects = resourceEffects;
+        this.lifeSupportEffects = lifeSupportEffects;
+        this.medicalComplaints = medicalComplaints;
 
-	workTimeCompleted = 0D;
-	emergencyWorkTimeCompleted = 0D;
-	EVAWorkTimeCompleted = 0D;
+        workTimeCompleted = 0D;
+        emergencyWorkTimeCompleted = 0D;
+        EVAWorkTimeCompleted = 0D;
     }
 
     /**
@@ -71,11 +71,11 @@ public class Malfunction implements Serializable {
      * @return true if malfunction is fixed
      */
     public boolean isFixed() {
-	boolean result = true;
+        boolean result = true;
 
         if (workTimeCompleted < workTime) result = false;
-	if (emergencyWorkTimeCompleted < emergencyWorkTime) result = false;
-	if (EVAWorkTimeCompleted < EVAWorkTime) result = false;
+        if (emergencyWorkTimeCompleted < emergencyWorkTime) result = false;
+        if (EVAWorkTimeCompleted < EVAWorkTime) result = false;
 	
         return result;
     }
@@ -121,10 +121,10 @@ public class Malfunction implements Serializable {
         workTimeCompleted += time;
         if (workTimeCompleted >= workTime) {
             double remaining = workTimeCompleted - workTime;
-	    workTimeCompleted = workTime;
-	    return remaining;
-	}
-	return 0D;
+            workTimeCompleted = workTime;
+            return remaining;
+        }
+        return 0D;
     }
 
     /**
@@ -152,11 +152,11 @@ public class Malfunction implements Serializable {
         emergencyWorkTimeCompleted += time;
         if (emergencyWorkTimeCompleted >= emergencyWorkTime) {
             double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
-	    emergencyWorkTimeCompleted = emergencyWorkTime;
-	    System.out.println(name + "@" + Integer.toHexString(hashCode()) + " emergency fixed.");
-	    return remaining;
-	}
-	return 0D;
+            emergencyWorkTimeCompleted = emergencyWorkTime;
+            // System.out.println(name + "@" + Integer.toHexString(hashCode()) + " emergency fixed.");
+            return remaining;
+        }
+        return 0D;
     }
     
     /**
@@ -184,10 +184,10 @@ public class Malfunction implements Serializable {
         EVAWorkTimeCompleted += time;
         if (EVAWorkTimeCompleted >= EVAWorkTime) {
             double remaining = EVAWorkTimeCompleted - EVAWorkTime;
-	    EVAWorkTimeCompleted = EVAWorkTime;
-	    return remaining;
-	}
-	return 0D;
+            EVAWorkTimeCompleted = EVAWorkTime;
+            return remaining;
+        }
+        return 0D;
     }
 
     /**
@@ -198,19 +198,19 @@ public class Malfunction implements Serializable {
     public boolean unitScopeMatch(Collection unitScope) {
         boolean result = false;
 
-	if ((scope.size() > 0) && (unitScope.size() > 0)) {
+        if ((scope.size() > 0) && (unitScope.size() > 0)) {
             Iterator i1 = scope.iterator();
-	    while (i1.hasNext()) {
-	        String scopeString = (String) i1.next();
-	        Iterator i2 = unitScope.iterator();
-	        while (i2.hasNext()) {
-	            String unitScopeString = (String) i2.next();
-		    if (scopeString.equals(unitScopeString)) result = true;
-	        }
-	    }
-	}
+            while (i1.hasNext()) {
+                String scopeString = (String) i1.next();
+                Iterator i2 = unitScope.iterator();
+                while (i2.hasNext()) {
+                    String unitScopeString = (String) i2.next();
+            	    if (scopeString.equals(unitScopeString)) result = true;
+                }
+            }
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -244,10 +244,10 @@ public class Malfunction implements Serializable {
      */
     public Malfunction getClone() {
         Malfunction clone = new Malfunction(name, severity, probability, emergencyWorkTime,
-	        workTime, EVAWorkTime, scope, resourceEffects, lifeSupportEffects, medicalComplaints);
+            workTime, EVAWorkTime, scope, resourceEffects, lifeSupportEffects, medicalComplaints);
 
-	if (emergencyWorkTime > 0D) System.out.println(name + "@" + Integer.toHexString(clone.hashCode()) + " emergency starts");
+        // if (emergencyWorkTime > 0D) System.out.println(name + "@" + Integer.toHexString(clone.hashCode()) + " emergency starts");
 	
-	return clone;
+        return clone;
     }
 }

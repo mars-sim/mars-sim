@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-01-19
+ * @version 2.75 2003-01-20
  * @author Scott Davis
  */
 
@@ -299,6 +299,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      */
     public void timePassing(double time) {
         facilityManager.timePassing(time);
+        buildingManager.timePassing(time);
         airlock.timePassing(time);
         if (getCurrentPopulationNum() > 0)
             malfunctionManager.activeTimePassing(time);

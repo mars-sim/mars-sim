@@ -120,7 +120,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
      * @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
-        
+
         // Add time to each crop.
         Iterator i = crops.iterator();
         int newCrops = 0;
