@@ -282,13 +282,7 @@ public class TableSorter extends AbstractTableModel
 
         // Compare the results to see if anything has changed, aims to
         // minimise full refresh events
-        boolean sorted = !Arrays.equals(original, indexes);
-        if (sorted) {
-            System.out.println("Resorted " + sourceModel.getName() +
-                               " on " + sortedColumn);
-        }
-
-        return sorted;
+        return !Arrays.equals(original, indexes);
     }
 
     private void swap(int i, int j) {
