@@ -1,5 +1,5 @@
 //************************** Vehicle Detail Window **************************
-// Last Modified: 7/10/00
+// Last Modified: 7/29/00
 
 // The VehicleDialog class is an abstract detail window for a vehicle.
 // It displays information about the vehicle as well as its current status.
@@ -36,6 +36,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	protected JPanel navigationInfoPane;        // Navigation info pane
 	protected JLabel odometerLabel;             // Odometer Label
 	protected JLabel lastMaintLabel;            // Distance Since Last Maintenance Label
+	protected JLabel failureDetailLabel;        // Mechanical failure name label
+	protected JProgressBar repairProgressBar;   // Failure repair progress bar
 
 	// Cached data members
 	
@@ -47,6 +49,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	protected Vector crewInfo;                  // Cached list of crewmembers.
 	protected double distanceTraveled;          // Cached total distance traveled by vehicle.
 	protected double distanceMaint;             // Cached distance traveled by vehicle since last maintenance.
+	protected String failureName;               // Cached mechanical failure name.
+	protected int repairProgress;               // Cached repair progress percentage.
 
 	// Constructor
 
@@ -76,6 +80,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			updateSpeed();
 			updateCrew();
 			updateOdometer();
+			updateMechanicalFailure();
 	}
 	
 	// Implement MouseListener Methods
@@ -128,7 +133,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		JTabbedPane tabPane = new JTabbedPane();
 		tabPane.addTab("Navigation", setupNavigationPane());
 		tabPane.addTab("Crew", setupCrewPane());
-		tabPane.addTab("Condition", setupDamagePane());
+		tabPane.addTab("Damage", setupDamagePane());
 		mainPane.add(tabPane, "Center");
 	}
 
@@ -162,7 +167,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		locationPane.add(locationLabelPane, "North");
 
 		// Prepare center map button
-		
+				
 		centerMapButton = new JButton(new ImageIcon("CenterMap.gif"));
 		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
 		centerMapButton.addActionListener(this);
@@ -179,11 +184,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		locationButton = new JButton();
 		locationButton.setMargin(new Insets(1, 1, 1, 1));
 		locationButton.addActionListener(this);
-		if (vehicle.getStatus().equals("Parked")) {
+		if (vehicle.getStatus().equals("Parked") && (vehicle.getSettlement() != null)) {
 			locationButton.setText(vehicle.getSettlement().getName());
 			locationLabelPane.add(locationButton);
 		}
-
+		
 		// Prepare location coordinates pane
 		
 		JPanel locationCoordsPane = new JPanel(new GridLayout(1, 2, 0, 0));
@@ -246,7 +251,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		if (!vehicle.getStatus().equals("Parked")) destinationLongitudeLabel.setText("Longitude: ");
 		destinationLongitudeLabel.setForeground(Color.black);
 		destinationCoordsPane.add(destinationLongitudeLabel);
-
+		
 		// Prepare distance to destination label
 
 		distanceDestinationLabel = new JLabel("Distance: ", JLabel.LEFT);
@@ -274,7 +279,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		navigationInfoPane.add(speedLabelPane);
 
 		// Return navigation pane
-
+		
 		return navigationPane;
 	}
 
@@ -417,7 +422,65 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		lastMaintLabel = new JLabel((int) vehicle.getDistanceLastMaintenance() + " km.", JLabel.RIGHT);
 		lastMaintLabel.setForeground(Color.black);
 		valuePane.add(lastMaintLabel);
+		
+		// Prepare failure pane
+		
+		JPanel failurePane = new JPanel(new BorderLayout());
+		failurePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+		contentPane.add(failurePane, "Center");
 
+		// Prepare failure label
+		
+		JLabel failureLabel = new JLabel("Mechanical Failure:", JLabel.CENTER);
+		failureLabel.setForeground(Color.black);
+		failurePane.add(failureLabel, "North");
+		
+		// Prepare failure content pane
+		
+		JPanel failureContentPane = new JPanel(new BorderLayout());
+		failurePane.add(failureContentPane, "Center");
+		
+		// Prepare failure detail label
+		
+		failureDetailLabel = new JLabel("None", JLabel.CENTER);
+		failureDetailLabel.setForeground(Color.black);
+		failureContentPane.add(failureDetailLabel, "North");
+		MechanicalFailure failure = vehicle.getMechanicalFailure();
+		if ((failure != null) && !failure.isFixed()) {
+			failureDetailLabel.setText(failure.getName());
+			failureName = failure.getName();
+		}
+		else failureName = "None";
+
+		// Prepare south pane
+		
+		JPanel southPane = new JPanel(new BorderLayout());
+		failureContentPane.add(southPane, "Center");
+
+		// Prepare repair pane
+		
+		JPanel repairPane = new JPanel(new GridLayout(2, 1));
+		southPane.add(repairPane, "North");
+
+		// Prepare repair label
+		
+		JLabel repairLabel = new JLabel("Repair Progress:", JLabel.CENTER);
+		repairLabel.setForeground(Color.black);
+		repairPane.add(repairLabel);
+
+		// Prepare repair progress bar
+		
+		repairProgressBar = new JProgressBar();
+		repairProgressBar.setStringPainted(true);
+		repairPane.add(repairProgressBar);
+		repairProgress = 0;
+		if ((failure != null) && !failure.isFixed()) {
+			float totalHours = failure.getTotalWorkHours();
+			float remainingHours = failure.getRemainingWorkHours();
+			repairProgress = (int) (100F * (totalHours - remainingHours) / totalHours);
+		}
+		repairProgressBar.setValue(repairProgress);
+		
 		// Return damage pane
 
 		return damagePane;
@@ -582,18 +645,54 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			lastMaintLabel.setText((int) distanceMaint + " km.");
 		}
 	}
+	
+	// Update mechanical failure
+	
+	protected void updateMechanicalFailure() {
+		
+		// Update failure detail label
+		
+		MechanicalFailure failure = vehicle.getMechanicalFailure();
+		boolean change = false;
+		
+		if ((failure == null) || failure.isFixed()) {
+			if (!failureName.equals("None")) {
+				failureName = "None";
+				change = true;
+			}
+		}
+		else {
+			if (failureName.equals("None")) {
+				failureName = failure.getName();
+				change = true;
+			}
+		}
+		
+		if (change) failureDetailLabel.setText(failureName);
+		
+		// Update repair progress label
+		
+		int repairProgressTemp = 0;
+		if ((failure != null) && !failure.isFixed()) {
+			float totalHours = failure.getTotalWorkHours();
+			float remainingHours = failure.getRemainingWorkHours();
+			repairProgressTemp = (int) (100F * (totalHours - remainingHours) / totalHours);
+		}
+		if (repairProgress != repairProgressTemp) {
+			repairProgress = repairProgressTemp;
+			repairProgressBar.setValue(repairProgress);
+		}
+	}
 }
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
