@@ -1,5 +1,5 @@
 //*********************** Main Desktop Pane ***********************
-// Last Modified: 4/2/00
+// Last Modified: 4/5/00
 
 // The MainDesktopPane class is the desktop part of the project's UI.
 // It contains all tool and unit windows, and is itself contained, along
@@ -26,7 +26,7 @@ public class MainDesktopPane extends JDesktopPane {
 		
 		super();
 		
-		// Initialize global variables
+		// Initialize data members
 		
 		this.mainWindow = mainWindow;
 		unitWindows = new Vector();
@@ -49,15 +49,12 @@ public class MainDesktopPane extends JDesktopPane {
 	
 	private void prepareToolWindows() {
 		
-		// Prepare and open navigator window
+		// Prepare navigator window
 		
 		NavigatorWindow navWindow = new NavigatorWindow(this);
-		navWindow.setLocation(0, 0);
-		add(navWindow);
-		try { navWindow.setSelected(true); } 
+		try { navWindow.setClosed(true); } 
 		catch (java.beans.PropertyVetoException e) {}
 		toolWindows.addElement(navWindow);
-		navWindow.setOpened();
 		
 		// Prepare search tool window
 		
@@ -121,12 +118,6 @@ public class MainDesktopPane extends JDesktopPane {
 			// Put window in random position on desktop
 			
 			tempWindow.setLocation(getRandomLocation(tempWindow));
-			
-			/* Dimension desktop_size = getSize();
- 			Dimension window_size = tempWindow.getSize();
-			int rX = (int) Math.round(Math.random() * (desktop_size.width - window_size.width));
-			int rY = (int) Math.round(Math.random() * (desktop_size.height - window_size.height));
-			tempWindow.setLocation(rX, rY); */
 			
 			// Add unit window to unitWindows vector
 			
