@@ -1,5 +1,5 @@
 //*********************** Navigator Tool Window ***********************
-// Last Modified: 2/23/00
+// Last Modified: 4/4/00
 
 // The NavigatorWindow is a tool window that displays virtual Mars 
 // and allows the user to navigate around.
@@ -44,7 +44,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 		
 		addInternalFrameListener(new ViewFrameListener());
 
-		// Initialize global variables
+		// Initialize data members
 
 		this.desktop = desktop;
 		
@@ -275,7 +275,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 				}
 			}
 		}
-		catch (NumberFormatException e) { System.out.println(e.toString()); }
+		catch (NumberFormatException e) {}
 	}
 
 	// ItemListener method overridden
