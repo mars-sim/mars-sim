@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.72 2001-02-25
+ * @version 2.72 2001-02-29
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.text.*;
 public class EarthClock extends GregorianCalendar {
 
     // Data members
+    SimpleDateFormat formatter;
 
     /** Constructs a EarthClock object */
     public EarthClock() {
@@ -27,32 +28,21 @@ public class EarthClock extends GregorianCalendar {
         SimpleTimeZone zone = new SimpleTimeZone(0, "GMT");
         setTimeZone(zone);
 
-        // Set starting date/time to midnight, January 1st, 2050
+        // Initialize formatter
+        formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a z");
+        formatter.setTimeZone(zone);
+
+        // Set starting date/time to midnight, January 1st, 2035
         clear(); 
-        set(2050, Calendar.JANUARY, 1);
+        set(2035, Calendar.JANUARY, 1);
         complete();
     }
 
     /** Returns the date/time formatted in a string 
-     *  @return date/time formatted in a string. ex "5/6/2055 3:37 PM"
+     *  @return date/time formatted in a string. ex "05/06/2055 03:37:22 PM GMT"
      */
-    public String getDateTimeString() {
-        int month = get(Calendar.MONTH) + 1;
-        int date = get(Calendar.DATE);
-        int year = get(Calendar.YEAR);
-        int hour = get(Calendar.HOUR);
-        if (hour == 0) hour = 12;
-        int minute = get(Calendar.MINUTE);
-        int am_pm = get(Calendar.AM_PM);
-       
-        String am_pmString;
-        if (am_pm == Calendar.AM) am_pmString = "AM";
-        else am_pmString = "PM"; 
-        
-        String minuteString;
-        if (minute < 10) minuteString = "0" + minute;
-        else minuteString = "" + minute;
-        return new String("" + month + "/" + date + "/" + year + " " + hour + ":" + minuteString + " " + am_pmString);
+    public String getTimeStamp() {
+        return formatter.format(getTime());
     }
     
     /** Adds time to the calendar 

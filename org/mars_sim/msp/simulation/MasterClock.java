@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.72 2001-03-20
+ * @version 2.72 2001-03-29
  * @author Scott Davis
  */
 
@@ -44,7 +44,7 @@ class MasterClock extends Thread {
         uptimer = new UpTimer();
 
         System.out.println("Martian Time: " + marsTime.getTimeStamp());
-        System.out.println("Earth Time (GMT): " + earthTime.getDateTimeString());
+        System.out.println("Earth Time (GMT): " + earthTime.getTimeStamp());
         System.out.println("Simulation Uptime: " + uptimer.getUptime());
     }
 
@@ -65,7 +65,7 @@ class MasterClock extends Thread {
             
             System.out.println(" ");
             System.out.println("Martian Time: " + marsTime.getTimeStamp());
-            System.out.println("Earth Time (GMT): " + earthTime.getDateTimeString());
+            System.out.println("Earth Time (GMT): " + earthTime.getTimeStamp());
             System.out.println("Simulation Uptime: " + uptimer.getUptime());
         }
     }
