@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation.task;
 
+import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 
@@ -15,7 +16,7 @@ import org.mars_sim.msp.simulation.*;
  *
  *  May also be constructed with predetermined destination. 
  */
-class TravelToSettlement extends Mission {
+class TravelToSettlement extends Mission implements Serializable {
 
     // Data members
     private Settlement startingSettlement;

@@ -158,6 +158,7 @@ public class MainWindow extends JFrame implements WindowListener {
 
     // WindowListener methods overridden
     public void windowClosing(WindowEvent event) {
+        mars.store();
         System.exit(0);
     }
     public void windowClosed(WindowEvent event) {}

@@ -7,12 +7,13 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /** The LaboratoryFacility class represents the research laboratories
  *  in a settlement. A settlement may or may not have laboratories.
  */
-public class LaboratoryFacility extends Facility {
+public class LaboratoryFacility extends Facility implements Serializable {
 
     // Data members
     private int laboratorySize; // Size of collective laboratories (units defined later)

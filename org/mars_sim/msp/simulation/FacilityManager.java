@@ -8,11 +8,12 @@
 package org.mars_sim.msp.simulation;
 
 import java.util.Vector;
+import java.io.Serializable;
 
 /** The FacilityManager class manages a settlement's facilities.
  *  There is only one facility manager for each settlement.
  */
-public class FacilityManager {
+public class FacilityManager implements Serializable {
 
     // Data members
     private Settlement settlement; // The settlement the facility manager belongs to.

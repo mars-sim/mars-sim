@@ -7,11 +7,12 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 /** The Unit class is the abstract parent class to all units on the
  *  virtual Mars.  Units include people, vehicles and settlements.
  *  This class provides data members and methods common to all units.
  */
-public abstract class Unit {
+public abstract class Unit implements Serializable {
 
     // Data members
     Coordinates location; // Unit location coordinates

@@ -9,12 +9,13 @@ package org.mars_sim.msp.simulation;
 
 import org.mars_sim.msp.simulation.task.*;
 import java.util.*;
+import java.io.Serializable;
 
 /** The Person class represents a person on the virtual Mars. It keeps
  *  track of everything related to that person and provides
  *  information about him/her.
  */
-public class Person extends Unit {
+public class Person extends Unit implements Serializable {
 
     // Data members
     private Settlement settlement; // Person's current settlement

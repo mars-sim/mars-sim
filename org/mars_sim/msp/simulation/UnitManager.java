@@ -16,7 +16,7 @@ import java.util.*;
  *  There should be only one instance of this class and it should be
  *  constructed and owned by the virtual Mars object.
  */
-public class UnitManager {
+public class UnitManager implements Serializable {
 
     // Data members
     private VirtualMars mars; // Virtual Mars

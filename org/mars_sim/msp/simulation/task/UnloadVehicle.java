@@ -7,11 +7,12 @@
 
 package org.mars_sim.msp.simulation.task;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 
 /** The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle. 
  */
-class UnloadVehicle extends Task {
+class UnloadVehicle extends Task implements Serializable {
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.

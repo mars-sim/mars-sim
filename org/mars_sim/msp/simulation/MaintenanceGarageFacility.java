@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
@@ -15,7 +16,8 @@ import java.util.Vector;
  * Note: Any number or size of vehicles can always be parked outside a settlement.  The garage's
  * capacity only reflects those vehicles in the garage itself.
  */
-public class MaintenanceGarageFacility extends Facility {
+public class MaintenanceGarageFacility extends Facility 
+        implements Serializable {
 
     // Data members
     private int maxVehicleSize; // The maximum size of vehicle the garage can accomidate.

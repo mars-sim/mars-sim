@@ -7,10 +7,12 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /** Direction. Represents an angular direction.
  *  It provides some useful static methods involving directions.
  */
-public class Direction implements Cloneable {
+public class Direction implements Cloneable, Serializable {
 
     // Data members
     private double direction; // Direction in radians

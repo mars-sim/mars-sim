@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The MaintainSettlement class is a task for cleaning, organizing and performing
  *  preventive maintenance on a settlement.
@@ -16,7 +17,7 @@ import org.mars_sim.msp.simulation.*;
  *  Note: Preventive maintenance might affect settlement mechanical failures when
  *  they are implemented.
  */
-class MaintainSettlement extends Task {
+class MaintainSettlement extends Task implements Serializable {
 
     // Data members
     private double duration; // The predetermined duration of task in millisols

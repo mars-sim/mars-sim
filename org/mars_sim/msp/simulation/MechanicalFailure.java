@@ -7,10 +7,12 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /** The MechanicalFailure class represents a
  *  mechanical failure in a vehicle.
  */
-public class MechanicalFailure {
+public class MechanicalFailure implements Serializable {
 
     // Data members
     private String name; // The name of the failure.

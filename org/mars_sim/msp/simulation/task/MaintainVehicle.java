@@ -8,12 +8,13 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 import java.util.*;
 
 /** The MaintainVehicle class is a task for performing periodic maintenance on a vehicle
  *  in a settlements maintenance garage.
  */
-class MaintainVehicle extends Task {
+class MaintainVehicle extends Task implements Serializable {
 
     // Data members
     private Vehicle vehicle; // Vehicle that person is performing the task on.

@@ -8,12 +8,13 @@
 package org.mars_sim.msp.simulation.task;
 
 import java.util.*;
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 
 /** The CollectRockSamplesMission class is a mission to travel to several 
  *  random locations around a settlement and collect rock samples. 
  */
-class CollectRockSamplesMission extends Mission {
+class CollectRockSamplesMission extends Mission implements Serializable {
 
     // Data members
     private Settlement startingSettlement;

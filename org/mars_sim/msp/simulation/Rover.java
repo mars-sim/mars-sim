@@ -7,10 +7,12 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /** The Rover class represents the rover type of ground vehicle.  It
  *  contains information about the rover.
  */
-public class Rover extends GroundVehicle {
+public class Rover extends GroundVehicle implements Serializable {
 
     /** Constructs a Rover object at a given settlement
      *  @param name the name of the rover

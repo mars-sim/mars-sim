@@ -7,10 +7,12 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /** The Skill class represents a single skill that a person has.
  *  The skill must have a name unique among the person's collection of skills.
  */
-public class Skill {
+public class Skill implements Serializable {
 
     // Data members
     private int level; // The skill level (0 to infinity)

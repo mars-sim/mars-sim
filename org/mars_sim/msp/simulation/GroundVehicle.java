@@ -7,11 +7,13 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /** The GroundVehicle class represents a ground-type vehicle.  It is
  *  abstract and should be extended to a particular type of ground
  *  vehicle.
 */
-public abstract class GroundVehicle extends Vehicle {
+public abstract class GroundVehicle extends Vehicle implements Serializable {
 
     // Data members
     private double elevation; // Current elevation in km.

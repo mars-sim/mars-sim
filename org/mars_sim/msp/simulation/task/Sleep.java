@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation.task;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 
 /** The Sleep class is a task for sleeping.
@@ -14,7 +15,7 @@ import org.mars_sim.msp.simulation.*;
  *
  *  Note: Sleeping reduces fatigue.
  */
-class Sleep extends Task {
+class Sleep extends Task implements Serializable {
 
     // Data members
     private double duration; // The predetermined duration of task in millisols

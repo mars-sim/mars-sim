@@ -8,13 +8,14 @@
 package org.mars_sim.msp.simulation;
 
 import java.text.*;
+import java.io.Serializable;
 import java.util.*;
 
 /** The MarsClock class keeps track of Martian time.
  *  This uses Shaun Moss's Mars Calendar, which is
  *  described at http://www.virtualmars.net/Time.asp.
  */
-public class MarsClock {
+public class MarsClock implements Serializable {
 
     // Martian calendar static members
     private static final int SOLS_IN_ORBIT_NON_LEAPYEAR = 668;

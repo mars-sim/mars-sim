@@ -8,12 +8,13 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The EnterVehicle class is a task for entering a vehicle 
  *  and strapping in for a trip. 
  *  The duration of the task is 20 millisols.
  */
-class EnterVehicle extends Task {
+class EnterVehicle extends Task implements Serializable {
 
     // Data members
     private double duration = 20D; // The predetermined duration of task in millisols

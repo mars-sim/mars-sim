@@ -8,10 +8,11 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The CollectRockSamples class is a task for collecting rock and soil samples at a site. 
  */
-class CollectRockSamples extends Task {
+class CollectRockSamples extends Task implements Serializable {
 
     // Data members
     double samplesCollected; // The total amount of rock samples collected.

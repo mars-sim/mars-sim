@@ -7,11 +7,13 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /** The Facility class is an abstract class that is the parent to all
  *  settlement facilities and has data members and methods common to
  *  all facilities.
  */
-public abstract class Facility {
+public abstract class Facility implements Serializable {
 
     // Data members
     String name; // Name of the facility.

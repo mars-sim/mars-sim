@@ -8,11 +8,12 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** 
  *  The Drive Ground Vehicle class is a task for driving a ground vehicle to a destination.
  */
-class DriveGroundVehicle extends Task {
+class DriveGroundVehicle extends Task implements Serializable {
 
     // Data members
     private GroundVehicle vehicle; // Vehicle person is driving.

@@ -8,11 +8,12 @@
 package org.mars_sim.msp.simulation;
 
 import java.util.*; // ArrayList
+import java.io.Serializable;
 
 /** The UnitCollection class is a homogenous collection of Unit objects
  *  with useful methods for accessing and sorting them. 
  */
-public class UnitCollection {
+public class UnitCollection implements Serializable {
 
     // We can replace this with another type of collection if we need to.
     private ArrayList elements;  // Used internally to hold elements.

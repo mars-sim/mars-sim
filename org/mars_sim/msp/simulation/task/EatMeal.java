@@ -8,13 +8,14 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The EatMail class is a task for eating a meal.
  *  The duration of the task is 20 millisols.
  *
  *  Note: Eating a meal reduces hunger
  */
-class EatMeal extends Task {
+class EatMeal extends Task implements Serializable {
 
     // Data members
     private double duration = 20D; // The predetermined duration of task in millisols

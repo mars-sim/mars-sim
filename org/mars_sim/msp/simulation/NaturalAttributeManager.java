@@ -7,12 +7,13 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 import java.util.*;
 
 /** The NaturalAttributeManager class manages a person's natural attributes.
  *  There is only natural attribute manager for each person.
  */
-public class NaturalAttributeManager {
+public class NaturalAttributeManager implements Serializable {
 
     // List of the person's natural attributes by name.
     static private String[] attributeKeys = {"Strength", "Endurance", "Agility", "Academic Aptitude", 

@@ -7,12 +7,14 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 /** The InsituResourceProcessorFacility class represents 
  *  a settlement's INSITU (on site) resource processor
  *  which chemically processes Martian air to generate 
  *  oxygen, water and methane (fuel).
  */
-public class InsituResourceProcessorFacility extends Facility {
+public class InsituResourceProcessorFacility extends Facility 
+                implements Serializable {
 
     LivingQuartersFacility quarters;  // The settlement's living quarters
     StoreroomFacility stores;  // The settlement's storerooms

@@ -19,8 +19,11 @@ import javax.swing.event.*;
  */
 public class TimeWindow extends ToolWindow implements Runnable {
 
+    private final static int RATIO_SCALE = 500;
+
     // Data members
     private MainDesktopPane desktop; // Desktop pane
+    private MasterClock master;      // Master Clock
     private MarsClock marsTime;      // Martian Clock
     private EarthClock earthTime;    // Earth Clock
     private UpTimer uptimer;         // Uptime Timer
@@ -31,6 +34,7 @@ public class TimeWindow extends ToolWindow implements Runnable {
     private JLabel southernSeasonLabel; // JLabel for Southern hemisphere season
     private JLabel earthTimeLabel;   // JLabel for Earth time
     private JLabel uptimeLabel;      // JLabel for uptimer
+    private JSlider pulseSlider;     // JSlider for pulse
     private Thread updateThread;     // Window update thread
 
     /** Constructs a TimeWindow object 
@@ -46,7 +50,7 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
         // Initialize data members
         this.desktop = desktop;
-        MasterClock master = desktop.getMainWindow().getVirtualMars().getMasterClock();
+        master = desktop.getMainWindow().getVirtualMars().getMasterClock();
         marsTime = master.getMarsClock();
         earthTime = master.getEarthClock();
         uptimer = master.getUpTimer(); 
@@ -95,6 +99,9 @@ public class TimeWindow extends ToolWindow implements Runnable {
         JPanel southPane = new JPanel(new BorderLayout());
         mainPane.add(southPane, "South");
 
+        JPanel simulationPane = new JPanel(new BorderLayout());
+        southPane.add(simulationPane, "South");
+
         // Create Martian season panel
         JPanel marsSeasonPane = new JPanel(new BorderLayout());
         marsSeasonPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
@@ -133,7 +140,7 @@ public class TimeWindow extends ToolWindow implements Runnable {
         // Create uptime panel
         JPanel uptimePane = new JPanel(new BorderLayout());
         uptimePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        southPane.add(uptimePane, "South");
+        simulationPane.add(uptimePane, "North");
 
         // Create uptime header label
         JLabel uptimeHeaderLabel = new JLabel("Simulation Uptime", JLabel.CENTER);
@@ -143,7 +150,32 @@ public class TimeWindow extends ToolWindow implements Runnable {
         // Create uptime label
         uptimeLabel = new JLabel(uptimer.getUptime(), JLabel.CENTER);
         uptimeLabel.setForeground(Color.black);
-        uptimePane.add(uptimeLabel, "South");
+        uptimePane.add(uptimeLabel, "Center");
+
+        // Create uptime panel
+        JPanel pulsePane = new JPanel(new BorderLayout());
+        pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        simulationPane.add(pulsePane, "South");
+
+        // Create pulse header label
+        JLabel pulseHeaderLabel = new JLabel("Simulation Speed", JLabel.CENTER);
+        pulseHeaderLabel.setForeground(Color.black);
+        pulsePane.add(pulseHeaderLabel, "North");
+
+        // Create pulse slider
+        int existingRatio = (int)
+        desktop.getMainWindow().getVirtualMars().getSimulationProperties().getTimeRatio();
+
+        pulseSlider = new JSlider(0, 10, existingRatio / RATIO_SCALE);
+        pulseSlider.setMajorTickSpacing(1);
+        pulseSlider.setPaintTicks(true);
+        pulseSlider.addChangeListener(new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                double ratio = (double)(pulseSlider.getValue() * RATIO_SCALE);
+                                master.setRatio(ratio);
+                            }
+                        });
+        pulsePane.add(pulseSlider, "South");
 
         // Pack window
         pack();

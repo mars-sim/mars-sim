@@ -24,7 +24,12 @@ public class MarsProject {
         SplashWindow splashWindow = new SplashWindow();
 
         // create virtual mars
-        VirtualMars mars = new VirtualMars();
+        VirtualMars mars = VirtualMars.load();
+        if (mars == null) {
+            System.out.println("Constructing new simulation");
+            mars = new VirtualMars();
+        }
+        mars.start();
 
         // create main desktop window
         MainWindow window = new MainWindow(mars);

@@ -9,13 +9,14 @@ package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
 import java.util.Vector;
+import java.io.Serializable;
 
 /** The Mission class represents a large multi-person task
  *
  *  There is at most one instance of a mission per person.
  *  A Mission may have one or more people associated with it.
  */
-public abstract class Mission {
+public abstract class Mission implements Serializable {
 
     // Data members
     protected VirtualMars mars; // Virtual Mars

@@ -7,13 +7,14 @@
 
 package org.mars_sim.msp.simulation.task;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 
 /** The Mind class represents a person's mind.
  *  It keeps track of missions and tasks which 
  *  the person is involved. 
  */
-public class Mind {
+public class Mind implements Serializable {
 
     // Data members
     private Person person; // The person owning this mind.

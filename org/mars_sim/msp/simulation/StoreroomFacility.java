@@ -7,12 +7,14 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /**
  * The StoreroomFacility class represents the collective storerooms in a settlement.
  * It defines the settlement's storage of food, oxygen, water, fuel, parts and other
  * various materials.
  */
-public class StoreroomFacility extends Facility {
+public class StoreroomFacility extends Facility implements Serializable {
 
     // Data members
     private double foodStores; // The settlement's stores of food.

@@ -7,13 +7,14 @@
 
 package org.mars_sim.msp.simulation.task;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 
 /** The Task class is an abstract parent class for tasks that allow people to do various things.
  *  A person's TaskManager keeps track of one current task for the person, but a task may use other 
  *  tasks internally to accomplish things.
  */
-abstract class Task {
+abstract class Task implements Serializable {
 
     // Data members
     protected String name;            // The name of the task

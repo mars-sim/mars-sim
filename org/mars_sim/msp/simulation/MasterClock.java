@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /** The MasterClock represents the simulated time clock on virtual
  *  Mars. Virtual Mars has only one master clock. The master clock
  *  delivers a clock pulse the virtual Mars every second or so, which
@@ -16,18 +18,19 @@ package org.mars_sim.msp.simulation;
  *  Note: Later the master clock will control calendaring information
  *  as well, so Martian calendars and clocks can be displayed.
  */
-public class MasterClock extends Thread {
+public class MasterClock implements Runnable, Serializable {
 
     // Data members
     private VirtualMars mars;     // Virtual Mars
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
-    private double timePulse;     // Time pulse length in millisols
+    private transient double timePulse;     // Time pulse length in millisols
 
     // Sleep duration in milliseconds 
     private final static int SLEEP_DURATION = 1000;
     
+    static final long serialVersionUID = -1688463735489226494L;
 
     /** Constructs a MasterClock object
      *  @param mars the virtual mars that uses the clock
@@ -37,9 +40,7 @@ public class MasterClock extends Thread {
         this.mars = mars;
 
         // Get time ratio property
-        double timeRatio = mars.getSimulationProperties().getTimeRatio();
-        double timePulseSeconds = timeRatio * (SLEEP_DURATION / 1000D);
-        timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
+        setRatio(mars.getSimulationProperties().getTimeRatio());
 
         // Create a Martian clock
         marsTime = new MarsClock();
@@ -72,13 +73,27 @@ public class MasterClock extends Thread {
         return uptimer;
     }
 
+    /**
+     * Set the time simulation ratio
+     * @param timeRatio The new time ratio.
+     */
+    public void setRatio(double timeRatio) {
+        if (timeRatio > 0D) {
+            double timePulseSeconds = timeRatio * (SLEEP_DURATION / 1000D);
+            timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
+        }
+    }
+
     /** Run clock */
     public void run() {
         // Endless clock pulse loop
         while (true) {
             try {
-                sleep(SLEEP_DURATION);
+                Thread.currentThread().sleep(SLEEP_DURATION);
             } catch (InterruptedException e) {}
+
+            //Increament the uptimer
+            uptimer.addTime(SLEEP_DURATION);
 
             // Send virtual Mars a clock pulse representing the time pulse length (in millisols).
             mars.clockPulse(timePulse);

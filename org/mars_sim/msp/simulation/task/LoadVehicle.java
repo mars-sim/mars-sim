@@ -8,10 +8,11 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The LoadVehicle class is a task for loading a vehicle with fuel and supplies. 
  */
-class LoadVehicle extends Task {
+class LoadVehicle extends Task implements Serializable {
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.

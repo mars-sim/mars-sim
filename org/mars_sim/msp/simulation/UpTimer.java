@@ -7,20 +7,29 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 import java.util.*;
 
 /** The UpTimer class keeps track of how long a instance of the simulation 
  *  has been running in real time.
  */
-public class UpTimer {
+public class UpTimer implements Serializable {
 
     // Data members
-    Date startTime;
+    private long uptime = 0;
 
     /** Constructs an UpTimer object */
     public UpTimer() {
     
-        startTime = new Date();
+    }
+
+    /**
+     * This method adds a period of time to the running time of the 
+     * simulation.
+     * @param period Extra time the simulation is running.
+     */
+    public void addTime(long period) {
+        uptime += period;
     }
 
     /** Determines the amount of time the simulation has been running. 
@@ -28,9 +37,6 @@ public class UpTimer {
      */
     public String getUptime() {
         
-        Date currentTime = new Date();
-
-        long uptime = currentTime.getTime() - startTime.getTime();
 
         int hoursInt = (int) ((double) uptime / 1000D / 60D / 60D);
         

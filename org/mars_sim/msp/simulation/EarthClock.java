@@ -7,13 +7,14 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 import java.util.*;
 import java.text.*;
 
 /** The EarthClock class keeps track of Earth Greenwich Mean Time.
  *  It should be synchronized with the Mars clock. 
  */
-public class EarthClock extends GregorianCalendar {
+public class EarthClock extends GregorianCalendar implements Serializable {
 
     // Data members
     SimpleDateFormat formatter;

@@ -8,11 +8,12 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The ExitVehicle class is a task for exiting a vehicle.
  *  The duration of the task is 20 millisols.
  */
-class ExitVehicle extends Task {
+class ExitVehicle extends Task implements Serializable {
 
     // Data members
     private double duration = 20D; // The predetermined duration of task in millisols

@@ -8,10 +8,11 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The RepairMechanicalFailure class is a task for fixing a mechanical failure on a vehicle. 
  */
-class RepairMechanicalFailure extends Task {
+class RepairMechanicalFailure extends Task implements Serializable {
 
     // Data members
     private Vehicle vehicle;

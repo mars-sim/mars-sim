@@ -10,7 +10,7 @@ package org.mars_sim.msp.simulation;
 /** The SimulationProperties class contains user-defined properties 
  *  for the simulation. 
  */
-class SimulationProperties {
+public class SimulationProperties {
 
     // Data members
     private PropertiesXmlReader propertiesReader; // The XML properties reader 

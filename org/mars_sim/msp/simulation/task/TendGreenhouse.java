@@ -7,12 +7,13 @@
 
 package org.mars_sim.msp.simulation.task;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 
 /** The TendGreenhouse class is a task for tending the greenhouse in a settlement.
  *  It has the phases, "Planting", "Tending" and "Harvesting".
  */
-class TendGreenhouse extends Task {
+class TendGreenhouse extends Task implements Serializable {
 
     private GreenhouseFacility greenhouse; // The greenhouse the person is tending.
     private Settlement settlement; // The settlement the greenhouse is in.

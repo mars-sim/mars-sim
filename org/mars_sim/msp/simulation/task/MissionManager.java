@@ -10,13 +10,14 @@ package org.mars_sim.msp.simulation.task;
 import org.mars_sim.msp.simulation.*;
 import java.util.Vector;
 import java.lang.reflect.*;
+import java.io.Serializable;
 
 /** The MissionManager class keeps track of ongoing missions
  *  in the simulation. 
  *
  *  The simulation has only one mission manager. 
  */
-public class MissionManager {
+public class MissionManager implements Serializable {
 
     // Data members
     private Vector missions; // Current missions in the simulation. 

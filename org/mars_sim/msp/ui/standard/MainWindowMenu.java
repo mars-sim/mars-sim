@@ -79,7 +79,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		
 	    JMenuItem selectedItem = (JMenuItem) event.getSource();
 		
-	    if (selectedItem == exitItem) System.exit(0);
+	    if (selectedItem == exitItem) {
+		    mainWindow.getVirtualMars().store();
+            System.exit(0);
+		}
 		
 	    if (selectedItem == marsNavigatorItem) {
 	        if (marsNavigatorItem.isSelected()) {

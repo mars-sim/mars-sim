@@ -8,13 +8,14 @@
 package org.mars_sim.msp.simulation;
 
 import java.awt.Point;
+import java.io.Serializable;
 
 /** Spherical Coordinates. Represents a location on virtual Mars in
  *  spherical coordinates. It provides some useful methods involving
  *  those coordinates, as well as some static methods for general
  *  coordinate calculations.
  */
-public class Coordinates {
+public class Coordinates implements Serializable {
 
     // Data members
     private double phi; // Phi value of coordinates

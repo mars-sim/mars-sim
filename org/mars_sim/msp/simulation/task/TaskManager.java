@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 import java.util.Vector;
 import java.lang.reflect.*;
 
@@ -17,7 +18,7 @@ import java.lang.reflect.*;
  *
  *  There is one instance of TaskManager per person.
  */
-public class TaskManager {
+public class TaskManager implements Serializable {
 
     // Data members
     private Task currentTask; // The current task the person is doing.

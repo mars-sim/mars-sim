@@ -8,12 +8,13 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The ReserveGroundVehicle class is a task for reserving a ground 
  *  vehicle at a settlement for a trip.
  *  The duration of the task is 50 millisols.
  */
-class ReserveGroundVehicle extends Task {
+class ReserveGroundVehicle extends Task implements Serializable {
 
     // Data members
     private double duration = 50D; // The predetermined duration of task in millisols

@@ -8,13 +8,14 @@
 package org.mars_sim.msp.simulation.task;
 
 import org.mars_sim.msp.simulation.*;
+import java.io.Serializable;
 
 /** The Relax class is a simple task that implements resting and doing nothing for a while.
  *  The duration of the task is by default chosen randomly, up to 100 millisols.
  *
  *  Note: Mental stress may be added later, which this task could be used to reduce.
  */
-class Relax extends Task {
+class Relax extends Task implements Serializable {
 
     // Data members
     private double duration; // The predetermined duration of task in millisols

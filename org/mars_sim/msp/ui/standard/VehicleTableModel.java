@@ -136,7 +136,7 @@ public class VehicleTableModel extends UnitTableModel {
                 StringBuffer status = new StringBuffer();
                 status.append(vehicle.getStatus());
                 MechanicalFailure failure = vehicle.getMechanicalFailure();
-                if (failure != null) {
+                if ((failure != null) && !failure.isFixed()) {
                     status.append(" ");
                     status.append(failure.getName());
                 }

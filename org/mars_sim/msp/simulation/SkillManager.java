@@ -7,12 +7,13 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 
 /** The SkillManager class manages skills for a given person.
  *  Each person has one skill manager.
  */
-public class SkillManager {
+public class SkillManager implements Serializable {
 
     // Data members
     private Person person; // The person owning the SkillManager

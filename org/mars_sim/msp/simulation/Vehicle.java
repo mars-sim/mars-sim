@@ -7,13 +7,14 @@
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
 import java.util.*;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
  *  subclassed to represent a specific type of vehicle.
  */
-public abstract class Vehicle extends Unit {
+public abstract class Vehicle extends Unit implements Serializable {
 
     // Data members
     private Direction direction; // Direction vehicle is traveling in
