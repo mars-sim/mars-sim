@@ -72,14 +72,16 @@
 
   <Landmark>
     <name>Viking Lander</name>
-    <location></location>
+    <location>
+    </location>
   </Landmark>  
 
   <Landmark>
     <name>Mars Pathfinder</name>
-    <location></location>
+    <location>
+    </location>
   </Landmark>  
 
-<units>
+</units>
 
 </marssim>
