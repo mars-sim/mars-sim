@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingQuartersFacility.java
- * @version 2.71 2000-10-12
+ * @version 2.71 2001-01-29
  * @author Scott Davis
  */
 
@@ -27,8 +27,8 @@ public class LivingQuartersFacility extends Facility {
         // Use Facility's constructor.
         super(manager, "Living Quarters");
 
-        // Initialize random normal capacity from 10 to 30.
-        normalCapacity = 10 + RandomUtil.getRandomInteger(20);
+        // Initialize random normal capacity from 5 to 20.
+        normalCapacity = 5 + RandomUtil.getRandomInteger(15);
 
         // Initialize maximumCapacity as twice normal capacity.
         maximumCapacity = 2 * normalCapacity;

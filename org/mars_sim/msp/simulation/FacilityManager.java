@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.71 2000-11-13
+ * @version 2.71 2001-01-29
  * @author Scott Davis
  */
 
@@ -30,8 +30,9 @@ public class FacilityManager {
         facilityList = new Vector();
 
         // Add manditory facilities to manager.
-        facilityList.addElement(new LivingQuartersFacility(this));
-        facilityList.addElement(new GreenhouseFacility(this));
+	LivingQuartersFacility quarters = new LivingQuartersFacility(this);
+        facilityList.addElement(quarters);
+        facilityList.addElement(new GreenhouseFacility(this, quarters));
         facilityList.addElement(new StoreroomFacility(this));
         facilityList.addElement(new MaintenanceGarageFacility(this));
         facilityList.addElement(new LaboratoryFacility(this));
