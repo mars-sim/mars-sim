@@ -5,38 +5,72 @@
     <MALFUNCTION>
         <NAME>Air Leak</NAME>
         <SEVERITY>100</SEVERITY>
-        <SCOPE>
-            <ENTITY>LifeSupport</ENTITY>
-        </SCOPE>
-        <EFFECTS>
- 	    <ENTITY>LifeSupport.Oxygen</ENTITY>
-	    <ENTITY>LifeSupport.AirPressure</ENTITY>
-        </EFFECTS>
         <PROBABILITY>10.0</PROBABILITY>
         <WORK_EMERGENCY>10.0</WORK_EMERGENCY>
         <WORK_TIME>100.0</WORK_TIME>
         <EVA_WORK_TIME>0.0<EVA_WORK_TIME>
+        <SCOPE>
+            <ENTITY>LifeSupport</ENTITY>
+        </SCOPE>
+        <EFFECTS>
+            <RESOURCE>
+                <NAME>Oxygen</NAME>
+                <CHANGE_RATE>-1.0</CHANGE_RATE>
+            </RESOURCE>
+	    <LIFESUPPORT>
+                <NAME>Air Pressure</NAME>
+		<CHANGE_RATE>-.01</CHANGE_RATE>
+	    </LIFESUPPORT>
+        </EFFECTS>
     </MALFUNCTION>
 
     <MALFUNCTION>
         <NAME>Electrical Fire</NAME>
         <SEVERITY>90</SEVERITY>
+        <PROBABILITY>15.0</PROBABILITY>
+        <WORK_EMERGENCY>10.0</WORK_EMERGENCY>
+	<WORK_TIME>100.0</WORK_EMERGENCY>
+	<EVA_WORK_TIME>0.0</EVA_WORK_TIME>
         <SCOPE>
             <ENTITY>Settlement</ENTITY>
 	    <ENTITY>Vehicle</ENTITY>
         </SCOPE>
-        <EFFECTS>
-            <ENTITY>LifeSupport.Temperature</ENTITY>
-        <EFFECTS>
         <MEDICAL>
             <COMPLAINT>
                 <NAME>Burns</NAME>
-                <PROBABILITY>30.0</PROBABILITY>
+                <PROBABILITY>5.0</PROBABILITY>
 	    </COMPLAINT>
         </MEDICAL>
-        <PROBABILITY>15.0</PROBABILITY>
-        <WORK_EMERGENCY>10.0</WORK_EMERGENCY>
-        <WORK_TIME>100.0</WORK_EMERGENCY>
     </MALFUNCTION>
 
+    <MALFUNCTION>
+        <NAME>Flat Tire</NAME>
+	<SEVERITY>50</SEVERITY>
+	<PROBABILITY>30.0</PROBABILITY>
+        <WORK_EMERGENCY>0.0</WORK_EMERGENCY>
+	<WORK_TIME>0.0</WORK_TIME>
+	<EVA_WORK_TIME>50.0</EVA_WORK_TIME>
+        <SCOPE>
+	    <ENTITY>Rover</ENTITY>
+        </SCOPE>
+    </MALFUNCTION>
+
+    <MALFUNCTION>
+        <NAME>Fuel Leak</NAME>
+	<SEVERITY>50</SEVERITY>
+	<PROBABILITY>30.0</PROBABILITY>
+        <WORK_EMERGENCY>0.0</WORK_EMERGENCY>
+	<WORK_TIME>0.0</WORK_TIME>
+	<EVA_WORK_TIME>50.0</EVA_WORK_TIME>
+        <SCOPE>
+	    <ENTITY>Vehicle</ENTITY>
+        </SCOPE>
+        <EFFECTS>
+	    <RESOURCE>
+	        <NAME>Fuel</NAME>
+		<CHANGE_RATE>-1.0</CHANGE_RATE>
+	    </RESOURCE>
+	</EFFECTS>
+    </MALFUNCTION>
+    
 </MALFUNCTION_LIST>
