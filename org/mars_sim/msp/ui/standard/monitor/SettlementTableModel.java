@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-11
  * @author Barry Evans
  */
 
@@ -118,7 +118,7 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case POPULATION : {
-                result = new Integer(settle.getPopulationCapacity());
+                result = new Integer(settle.getCurrentPopulationNum());
             } break;
 
             case GARAGED : {
