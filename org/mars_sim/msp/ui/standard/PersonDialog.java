@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.71 2000-10-23
+ * @version 2.71 2001-02-16
  * @author Scott Davis
  */
 
@@ -34,12 +34,11 @@ public class PersonDialog extends UnitDialog {
 	private String settlementName;
 	private String vehicleName;
 	private Hashtable skillList;
-	private String[] skillKeys;
 
 	/** Constructs a PersonDialog object 
-     *  @param parentDesktop the desktop pane
-     *  @param personUIProxy the person's UI proxy
-     */
+     	 *  @param parentDesktop the desktop pane
+     	 *  @param personUIProxy the person's UI proxy
+     	 */
 	public PersonDialog(MainDesktopPane parentDesktop, PersonUIProxy personUIProxy) {
 
 		// Use UnitDialog constructor
@@ -53,8 +52,6 @@ public class PersonDialog extends UnitDialog {
 		settlementName = "";
 		vehicleName = "";
 		skillList = new Hashtable();
-		skillKeys = new String[0];
-			
 	}
 	
 	/** Complete update (overridden) */
@@ -103,35 +100,40 @@ public class PersonDialog extends UnitDialog {
 		boolean change = false;
 		SkillManager skillManager = person.getSkillManager();
 
-		if (skillManager.getSkillNum() != skillKeys.length) change = true;
-		else if (skillManager.getSkillNum() > 0) {
-			String[] newKeys = skillManager.getKeys();
-			for (int x=0; x < newKeys.length; x++) {
-				if (!newKeys[x].equals(skillKeys[x])) change = true;
-				int skillLevel = ((Integer) skillList.get(skillKeys[x])).intValue();
-				if (skillLevel != skillManager.getSkillLevel(newKeys[x])) change = true;
+		String[] keyNames = skillManager.getKeys();
+		for (int x=0; x < keyNames.length; x++) {
+			int skillLevel = skillManager.getSkillLevel(keyNames[x]);
+			if (skillLevel > 0) {
+				if (skillList.containsKey(keyNames[x])) {
+					int cacheSkillLevel = ((Integer) skillList.get(keyNames[x])).intValue();
+					if (skillLevel != cacheSkillLevel) {
+						skillList.put(keyNames[x], new Integer(skillLevel));
+						change = true; 
+					}
+				}
+				else {
+					skillList.put(keyNames[x], new Integer(skillLevel));
+					change = true;
+				}
 			}
 		}
-		
+			
 		if (change) {
-			skillKeys = skillManager.getKeys();
-			skillList.clear();
-			
-			for (int x=0; x < skillKeys.length; x++) 
-				skillList.put(skillKeys[x], new Integer(skillManager.getSkillLevel(skillKeys[x])));
-			
 			skillListPane.removeAll();
-			for (int x=0; x < skillKeys.length; x++) {
-				if (skillManager.getSkillLevel(skillKeys[x]) > 0) {
+			skillListPane.setLayout(new GridLayout(skillList.size(), 2));
+
+			for (int x=0; x < keyNames.length; x++) {
+				int skillLevel = skillManager.getSkillLevel(keyNames[x]);
+				if (skillLevel > 0) {
 				
 					// Display skill name
-					JLabel skillName = new JLabel(skillKeys[x] + ":", JLabel.LEFT);
+					JLabel skillName = new JLabel(keyNames[x] + ":", JLabel.LEFT);
 					skillName.setForeground(Color.black);
 					skillName.setVerticalAlignment(JLabel.TOP);
 					skillListPane.add(skillName);
 				
 					// Display skill value
-					JLabel skillValue = new JLabel("" + skillManager.getSkillLevel(skillKeys[x]), JLabel.RIGHT);
+					JLabel skillValue = new JLabel("" + skillLevel, JLabel.RIGHT);
 					skillValue.setForeground(Color.black);
 					skillValue.setVerticalAlignment(JLabel.TOP);
 					skillListPane.add(skillValue);
@@ -383,29 +385,34 @@ public class PersonDialog extends UnitDialog {
 		skillLabel.setForeground(Color.black);
 		skillLabelPane.add(skillLabel);
 		
-		// Use person's skill manager.
+		// Populate skill list
 		SkillManager skillManager = person.getSkillManager();
+		String[] keyNames = skillManager.getKeys();
+		skillList = new Hashtable();
+		for (int x=0; x < keyNames.length; x++) {
+			int skillLevel = skillManager.getSkillLevel(keyNames[x]);
+			if (skillLevel > 0) skillList.put(keyNames[x], new Integer(skillLevel));
+		}
 		
 		// Prepare skill list pane
 		JPanel skillListTopPane = new JPanel(new BorderLayout());
 		skillListTopPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		skillPane.add(new JScrollPane(skillListTopPane), "Center");
-		skillListPane = new JPanel(new GridLayout(skillManager.getDisplayableSkillNum(), 2));
+		skillListPane = new JPanel(new GridLayout(skillList.size(), 2));
 		skillListTopPane.add(skillListPane, "North");
 		
 		// For each skill, display the name and its value.
-		String[] keyNames = skillManager.getKeys();
 		for (int x=0; x < keyNames.length; x++) {
-			if (skillManager.getSkillLevel(keyNames[x]) > 0) {
-			
+			if (skillList.containsKey(keyNames[x])) {
+
 				// Display skill name
 				JLabel skillName = new JLabel(keyNames[x] + ":", JLabel.LEFT);
 				skillName.setForeground(Color.black);
 				skillName.setVerticalAlignment(JLabel.TOP);
 				skillListPane.add(skillName);
-	
+
 				// Display skill value
-				JLabel skillValue = new JLabel("" + skillManager.getSkillLevel(keyNames[x]), JLabel.RIGHT);
+				JLabel skillValue = new JLabel("" + skillList.get(keyNames[x]), JLabel.RIGHT);
 				skillValue.setForeground(Color.black);
 				skillValue.setVerticalAlignment(JLabel.TOP);
 				skillListPane.add(skillValue);

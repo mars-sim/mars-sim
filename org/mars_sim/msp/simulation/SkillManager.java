@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.71 2000-10-17
+ * @version 2.71 2001-02-16
  * @author Scott Davis
  */
 
@@ -51,19 +51,6 @@ public class SkillManager {
      */
     public int getSkillNum() {
         return skills.size();
-    }
-
-    /** Returns number of skills at skill level 1 or better. 
-     *  @return the number of skills of level 1 or better
-     */
-    public int getDisplayableSkillNum() {
-        String[] keys = getKeys();
-        int count = 0;
-        for (int x = 0; x < keys.length; x++)
-            if (getSkillLevel(keys[x]) >= 1)
-                count++;
-
-        return count;
     }
 
     /** Returns an array of the skill names as strings. 
