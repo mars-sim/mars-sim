@@ -3,17 +3,21 @@
 <PROPERTY_LIST>
 
     <!-- Simulation time ratio to real time -->
+    <!-- Default: 1000 -->
     <TIME_RATIO>1000</TIME_RATIO>
 
     <PERSON_PROPERTIES>
 
         <!-- The average amount of oxygen (kg) breathed by a person each Martian Sol -->
+        <!-- Default: 1.0 -->
         <OXYGEN_CONSUMPTION>1.0</OXYGEN_CONSUMPTION>
 
         <!-- The average amount of water (kg) drank by a person each Martian Sol -->
+        <!-- Default: 4.0 -->
         <WATER_CONSUMPTION>4.0</WATER_CONSUMPTION>
 
         <!-- The average amount of food (kg) eaten by a person each Martian Sol -->
+        <!-- Default: 1.5 -->
         <FOOD_CONSUMPTION>1.5</FOOD_CONSUMPTION>
     
     </PERSON_PROPERTIES>
@@ -21,35 +25,56 @@
     <ROVER_PROPERTIES>
 
         <!-- The amount of oxygen (kg) that can be stored in a rover -->
+        <!-- Default: 350.0 -->
         <OXYGEN_STORAGE_CAPACITY>350.0</OXYGEN_STORAGE_CAPACITY>
 
         <!-- The amount of water (kg) that can be stored in a rover -->
+        <!-- Default: 1400.0 -->
         <WATER_STORAGE_CAPACITY>1400.0</WATER_STORAGE_CAPACITY>
 
         <!-- The amount of food (kg) that can be stored in a rover -->
+        <!-- Default: 525.0 -->
         <FOOD_STORAGE_CAPACITY>525.0</FOOD_STORAGE_CAPACITY>
 
         <!-- The amount of fuel (kg) that can be stored in a rover -->
+        <!-- Default: 2500.0 -->
         <FUEL_STORAGE_CAPACITY>2500.0</FUEL_STORAGE_CAPACITY>
 
         <!-- The average kilometers/kilogram fuel efficiency of a rover -->
+        <!-- Default: 2.0 -->
         <FUEL_EFFICIENCY>2.0</FUEL_EFFICIENCY>
+
+        <!-- The range of the rover (km) -->
+        <!-- Default: 4000.0 -->
+        <RANGE>4000</RANGE>
 
     </ROVER_PROPERTIES>
 
     <SETTLEMENT_PROPERTIES>
 
         <!-- The amount of oxygen (kg) that can be stored in a settlement -->
+        <!-- Default: 10000.0 -->
         <OXYGEN_STORAGE_CAPACITY>10000.0</OXYGEN_STORAGE_CAPACITY>
 
         <!-- The amount of water (kg) that can be stored in a settlement -->
+        <!-- Default: 10000.0 -->
         <WATER_STORAGE_CAPACITY>10000.0</WATER_STORAGE_CAPACITY>
 
         <!-- The amount of food (kg) that can be stored in a settlement -->
+        <!-- Default: 10000.0 -->
         <FOOD_STORAGE_CAPACITY>10000.0</FOOD_STORAGE_CAPACITY>
 
         <!-- The amount of fuel (kg) that can be stored in a settlement -->
+        <!-- Default: 10000.0 -->
         <FUEL_STORAGE_CAPACITY>10000.0</FUEL_STORAGE_CAPACITY>
+
+        <!-- The amount of food (kg) in a full green house harvest -->
+        <!-- Default: 200.0 -->
+        <GREENHOUSE_FULL_HARVEST>200.0</GREENHOUSE_FULL_HARVEST>
+
+        <!-- The length of time (millisols) in the greenhouse growing cycle -->
+        <!-- Default: 10000.0 -->
+        <GREENHOUSE_GROWING_CYCLE>10000.0</GREENHOUSE_GROWING_CYCLE>
 
     </SETTLEMENT_PROPERTIES>
 

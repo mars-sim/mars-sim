@@ -1,18 +1,34 @@
 <?xml version="1.0" ?>
 
-<PEOPLE_LIST>    
+<PEOPLE_LIST>   
+ 
     <PERSON>
+        
+        <!-- Full name of the person (required) -->
         <NAME>Scott Davis</NAME>
+     
+        <!-- Name of the settlement the person starts at (optional) -->
+        <!-- Default: least occupied settlement -->
         <SETTLEMENT>Port Zubrin</SETTLEMENT>
+
+        <!-- Skill person starts with (optional) (multiple) -->
+        <!-- Requires valid skill name and level -->
+        <!-- Default: random set of initial skills -->
         <SKILL>
             <NAME>Driving</NAME>
             <LEVEL>3</LEVEL>
         </SKILL>
+
+        <!-- Natural attribute person starts with (optional (multiple) -->
+        <!-- Requires valid natural attribute name and level -->
+        <!-- Default: random set of natural attributes -->
         <ATTRIBUTE>
             <NAME>Strength</NAME>
             <LEVEL>65</LEVEL>
         </ATTRIBUTE>
+
     </PERSON>
+
     <PERSON>
         <NAME>Mike Jones </NAME>
     </PERSON>

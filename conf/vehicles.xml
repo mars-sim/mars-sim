@@ -1,10 +1,18 @@
 <?xml version="1.0" ?>
 
 <VEHICLES_LIST>
+
     <ROVER>
+
+        <!-- Name of the rover (required) -->
         <NAME>Dune Drifter</NAME>
+
+        <!-- Name of the settlement the rover is initially parked (optional) -->
+        <!-- Default: Settlement with least number of parked rovers -->
         <SETTLEMENT>Port Zubrin</SETTLEMENT>
+
     </ROVER>
+
     <ROVER>
         <NAME>Osprey</NAME>
     </ROVER>

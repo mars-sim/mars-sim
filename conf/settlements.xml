@@ -1,14 +1,26 @@
 <?xml version="1.0" ?>
 
 <SETTLEMENTS_LIST>
+
     <SETTLEMENT>
+
+        <!-- Name of the settlement (required) -->
         <NAME>Port Zubrin</NAME>
+
+        <!-- Location of the settlement (optional) -->
+        <!-- Requires valid longitude and latitude -->
+        <!-- Default: random longitude and latitude -->
         <LOCATION>
             <LATITUDE>0.0 N</LATITUDE>
             <LONGITUDE>0.0 E</LONGITUDE>
         </LOCATION>
-        <POPULATION_CAPACITY>15</POPULATION_CAPACITY>
+
+        <!-- Maximum number of inhabitants the settlement can support (optional) -->
+        <!-- Default: 20 inhabitants -->
+        <POPULATION_CAPACITY>20</POPULATION_CAPACITY>
+
     </SETTLEMENT>
+
     <SETTLEMENT>
         <NAME>Lowell Station</NAME>
     </SETTLEMENT>

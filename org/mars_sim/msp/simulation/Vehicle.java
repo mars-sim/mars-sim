@@ -177,8 +177,8 @@ public abstract class Vehicle extends Unit implements Serializable {
      */
     public void addFuel(double addedFuel) {
         fuel += addedFuel;
-        if (fuel > fuelCapacity) {
-            fuel = fuelCapacity;
+        if (fuel > getFuelCapacity()) {
+            fuel = getFuelCapacity();
         }
     }
 
@@ -217,8 +217,8 @@ public abstract class Vehicle extends Unit implements Serializable {
      */
     public void addOxygen(double addedOxygen) {
         oxygen += addedOxygen;
-        if (oxygen > oxygenCapacity) {
-            oxygen = oxygenCapacity;
+        if (oxygen > getOxygenCapacity()) {
+            oxygen = getOxygenCapacity();
         }
     }
 
@@ -263,8 +263,8 @@ public abstract class Vehicle extends Unit implements Serializable {
      */
     public void addWater(double addedWater) {
         water += addedWater;
-        if (water > waterCapacity) {
-            water = waterCapacity;
+        if (water > getWaterCapacity()) {
+            water = getWaterCapacity();
         }
     }
 
@@ -309,8 +309,8 @@ public abstract class Vehicle extends Unit implements Serializable {
      */
     public void addFood(double addedFood) {
         food += addedFood;
-        if (food > foodCapacity) {
-            food = foodCapacity;
+        if (food > getFoodCapacity()) {
+            food = getFoodCapacity();
         }
     }
 

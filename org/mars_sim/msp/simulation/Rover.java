@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.73 2001-12-06
+ * @version 2.73 2001-12-09
  * @author Scott Davis
  */
 
@@ -50,25 +50,47 @@ public class Rover extends GroundVehicle implements Serializable {
         // Set default maximum passengers for a rover.
         setMaxPassengers(8);
 
-        // Get simulation properties.
-        SimulationProperties properties = mars.getSimulationProperties();
-
-        // Set default fuel capacity for a rover.
-        setFuelCapacity(properties.getRoverFuelStorageCapacity());
-        
-        // Set default oxygen capacity for a rover.
-        setOxygenCapacity(properties.getRoverOxygenStorageCapacity());
-        
-        // Set default water capacity for a rover.
-        setWaterCapacity(properties.getRoverWaterStorageCapacity());
-        
-        // Set default food capacity for a rover.
-        setFoodCapacity(properties.getRoverFoodStorageCapacity());
-
-        // Set range of rover.
-        range = properties.getRoverFuelEfficiency() * getFuelCapacity() * .8D;
- 
         // Set base speed to 30kph.
         setBaseSpeed(30D);
+    }
+
+    /** Gets the range of the rover
+     *  @return the range of the rover (km)
+     */
+    public double getRange() {
+        SimulationProperties properties = mars.getSimulationProperties();
+        return properties.getRoverRange();
+    }
+
+    /** Gets the fuel capacity of the rover
+     *  @return the fuel capacity of the rover (kg)
+     */
+    public double getFuelCapacity() {
+        SimulationProperties properties = mars.getSimulationProperties();
+        return properties.getRoverFuelStorageCapacity();
+    }
+
+    /** Gets the oxygen capacity of the rover
+     *  @return the oxygen capacity of the rover (kg)
+     */
+    public double getOxygenCapacity() {
+        SimulationProperties properties = mars.getSimulationProperties();
+        return properties.getRoverOxygenStorageCapacity();
+    }
+
+    /** Gets the water capacity of the rover
+     *  @return the water capacity of the rover (kg)
+     */
+    public double getWaterCapacity() {
+        SimulationProperties properties = mars.getSimulationProperties();
+        return properties.getRoverWaterStorageCapacity();
+    }
+
+    /** Gets the food capacity of the rover
+     *  @return the food capacity of the rover (kg)
+     */
+    public double getFoodCapacity() {
+        SimulationProperties properties = mars.getSimulationProperties();
+        return properties.getRoverFoodStorageCapacity();
     }
 }

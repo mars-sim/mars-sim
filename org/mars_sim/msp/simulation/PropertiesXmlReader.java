@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PropertiesXmlReader.java
- * @version 2.73 2001-12-07
+ * @version 2.73 2001-12-09
  * @author Scott Davis
  */
 
@@ -30,6 +30,9 @@ class PropertiesXmlReader extends MspXmlReader {
     private static int FUEL_STORAGE_CAPACITY = 10;
     private static int FUEL_EFFICIENCY = 11;
     private static int SETTLEMENT_PROPERTIES = 12;
+    private static int RANGE = 13;
+    private static int GREENHOUSE_FULL_HARVEST = 14;
+    private static int GREENHOUSE_GROWING_CYCLE = 15;
 
     // Data members
     private int elementType; // The current element type being parsed
@@ -43,10 +46,13 @@ class PropertiesXmlReader extends MspXmlReader {
     private double roverFoodStorageCapacity; // The rover food storage capacity property
     private double roverFuelStorageCapacity; // The rover fuel storage capacity property
     private double roverFuelEfficiency; // The rover fuel efficiency property
+    private double roverRange; // The rover range property
     private double settlementOxygenStorageCapacity; // The settlement oxygen storage capacity property
     private double settlementWaterStorageCapacity; // The settlement water storage capacity property
     private double settlementFoodStorageCapacity; // The settlement food storage capacity property
     private double settlementFuelStorageCapacity; // The settlement fuel storage capacity property 
+    private double greenhouseFullHarvest; // The greenhouse full harvest property
+    private double greenhouseGrowingCycle; // The greenhouse growing cycle property
 
     /** Constructor */
     public PropertiesXmlReader() {
@@ -99,9 +105,18 @@ class PropertiesXmlReader extends MspXmlReader {
         if (name.equals("FUEL_EFFICIENCY")) {
             elementType = FUEL_EFFICIENCY;
         }
+        if (name.equals("RANGE")) {
+            elementType = RANGE;
+        }
         if (name.equals("SETTLEMENT_PROPERTIES")) {
             elementType = SETTLEMENT_PROPERTIES;
             propertyCatagory = SETTLEMENT_PROPERTIES;
+        }
+        if (name.equals("GREENHOUSE_GROWING_CYCLE")) {
+            elementType = GREENHOUSE_GROWING_CYCLE;
+        }
+        if (name.equals("GREENHOUSE_FULL_HARVEST")) {
+            elementType = GREENHOUSE_FULL_HARVEST;
         }
     }
 
@@ -159,9 +174,21 @@ class PropertiesXmlReader extends MspXmlReader {
             elementType = ROVER_PROPERTIES;
             return;
         }
+        if (elementType == RANGE) {
+            elementType = ROVER_PROPERTIES;
+            return;
+        }
         if (elementType == SETTLEMENT_PROPERTIES) {
             elementType = PROPERTY_LIST;
             propertyCatagory = -1;
+            return;
+        }
+        if (elementType == GREENHOUSE_FULL_HARVEST) {
+            elementType = SETTLEMENT_PROPERTIES;
+            return;
+        }
+        if (elementType == GREENHOUSE_GROWING_CYCLE) {
+            elementType = SETTLEMENT_PROPERTIES;
             return;
         }
     }
@@ -208,6 +235,15 @@ class PropertiesXmlReader extends MspXmlReader {
         }
         if (elementType == FUEL_EFFICIENCY) {
             roverFuelEfficiency = Double.parseDouble(data);
+        }
+        if (elementType == RANGE) {
+            roverRange = Double.parseDouble(data);
+        }
+        if (elementType == GREENHOUSE_FULL_HARVEST) {
+            greenhouseFullHarvest = Double.parseDouble(data);
+        }
+        if (elementType == GREENHOUSE_GROWING_CYCLE) {
+            greenhouseGrowingCycle = Double.parseDouble(data);
         }
     }
 
@@ -301,6 +337,16 @@ class PropertiesXmlReader extends MspXmlReader {
         return roverFuelEfficiency;
     }
 
+    /** Gets the rover range property.
+     *  Value must be >= 0.
+     *  Default value is 4000.0.
+     *  @return the rover range property
+     */
+    public double getRoverRange() {
+        if (roverRange < 0) roverRange = 4000D;
+        return roverRange;
+    }
+
     /** Gets the settlement oxygen storage capacity property.
      *  Value must be >= 0.
      *  Default value is 10000.0.
@@ -339,5 +385,25 @@ class PropertiesXmlReader extends MspXmlReader {
     public double getSettlementFuelStorageCapacity() {
         if (settlementFuelStorageCapacity < 0) settlementFuelStorageCapacity = 10000D;
         return settlementFuelStorageCapacity;
+    }
+
+    /** Gets the greenhouse full harvest property.
+     *  Value must be >= 0.
+     *  Default value is 200.0.
+     *  @return the greenhouse full harvest property
+     */
+    public double getGreenhouseFullHarvest() {
+        if (greenhouseFullHarvest < 0) greenhouseFullHarvest = 200D;
+        return greenhouseFullHarvest;
+    }
+
+    /** Gets the greenhouse growing cycle property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the greenhouse growing cycle property
+     */
+    public double getGreenhouseGrowingCycle() {
+        if (greenhouseGrowingCycle < 0) greenhouseGrowingCycle = 10000D;
+        return greenhouseGrowingCycle;
     }
 }

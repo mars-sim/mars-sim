@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationProperties.java
- * @version 2.73 2001-12-06
+ * @version 2.73 2001-12-09
  * @author Scott Davis
  */
 
@@ -45,7 +45,7 @@ public class SimulationProperties {
 
     /** Gets the person oxygen consumption property.
      *  Value must be >= 0.
-     *  Default value is 1.0.
+     *  Default value is 1.0 kg/sol.
      *  @return the person oxygen consumption property
      */
     public double getPersonOxygenConsumption() {
@@ -54,7 +54,7 @@ public class SimulationProperties {
 
     /** Gets the person water consumption property.
      *  Value must be >= 0.
-     *  Default value is 4.0.
+     *  Default value is 4.0 kg/sol.
      *  @return the person water consumption property
      */
     public double getPersonWaterConsumption() {
@@ -63,7 +63,7 @@ public class SimulationProperties {
 
     /** Gets the person food consumption property.
      *  Value must be >= 0.
-     *  Default value is 1.5.
+     *  Default value is 1.5 kg/sol.
      *  @return the person food consumption property
      */
     public double getPersonFoodConsumption() {
@@ -72,7 +72,7 @@ public class SimulationProperties {
 
     /** Gets the rover oxygen storage capacity property.
      *  Value must be >= 0.
-     *  Default value is 350.0.
+     *  Default value is 350.0 kg.
      *  @return the rover oxygen storage capacity property
      */
     public double getRoverOxygenStorageCapacity() {
@@ -81,7 +81,7 @@ public class SimulationProperties {
 
     /** Gets the rover water storage capacity property.
      *  Value must be >= 0.
-     *  Default value is 1400.0.
+     *  Default value is 1400.0 kg.
      *  @return the rover water storage capacity property
      */
     public double getRoverWaterStorageCapacity() {
@@ -90,7 +90,7 @@ public class SimulationProperties {
 
     /** Gets the rover food storage capacity property.
      *  Value must be >= 0.
-     *  Default value is 525.0.
+     *  Default value is 525.0 kg.
      *  @return the rover food storage capacity property
      */
     public double getRoverFoodStorageCapacity() {
@@ -99,7 +99,7 @@ public class SimulationProperties {
 
     /** Gets the rover fuel storage capacity property.
      *  Value must be >= 0.
-     *  Default value is 2500.0.
+     *  Default value is 2500.0 kg.
      *  @return the rover fuel storage capacity property
      */
     public double getRoverFuelStorageCapacity() {
@@ -108,16 +108,25 @@ public class SimulationProperties {
 
     /** Gets the rover fuel efficiency property.
      *  Value must be > 0.
-     *  Default value is 2.0.
+     *  Default value is 2.0 km/kg.
      *  @return the rover fuel efficiency property
      */
     public double getRoverFuelEfficiency() {
         return propertiesReader.getRoverFuelEfficiency();
     }
 
+    /** Gets the rover range property.
+     *  Value must be >= 0.
+     *  Default value is 4000.0 km.
+     *  @return the rover range property
+     */
+    public double getRoverRange() {
+        return propertiesReader.getRoverRange();
+    }
+
     /** Gets the settlement oxygen storage capacity property.
      *  Value must be >= 0.
-     *  Default value is 10000.0.
+     *  Default value is 10000.0 kg.
      *  @return the settlement oxygen storage capacity property
      */
     public double getSettlementOxygenStorageCapacity() {
@@ -126,7 +135,7 @@ public class SimulationProperties {
 
     /** Gets the settlement water storage capacity property.
      *  Value must be >= 0.
-     *  Default value is 10000.0.
+     *  Default value is 10000.0 kg.
      *  @return the settlement water storage capacity property
      */
     public double getSettlementWaterStorageCapacity() {
@@ -135,7 +144,7 @@ public class SimulationProperties {
 
     /** Gets the settlement food storage capacity property.
      *  Value must be >= 0.
-     *  Default value is 10000.0.
+     *  Default value is 10000.0 kg.
      *  @return the settlement food storage capacity property
      */
     public double getSettlementFoodStorageCapacity() {
@@ -144,10 +153,28 @@ public class SimulationProperties {
 
     /** Gets the settlement fuel storage capacity property.
      *  Value must be >= 0.
-     *  Default value is 10000.0.
+     *  Default value is 10000.0 kg.
      *  @return the settlement fuel storage capacity property
      */
     public double getSettlementFuelStorageCapacity() {
         return propertiesReader.getSettlementFuelStorageCapacity();
+    }
+
+    /** Gets the greenhouse full harvest property.
+     *  Value must be >= 0.
+     *  Default value is 200.0 kg.
+     *  @return the greenhouse full harvest property
+     */
+    public double getGreenhouseFullHarvest() {
+        return propertiesReader.getGreenhouseFullHarvest();
+    }
+
+    /** Gets the greenhouse growing cycle property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0 millisols.
+     *  @return the greenhouse growing cycle property
+     */
+    public double getGreenhouseGrowingCycle() {
+        return propertiesReader.getGreenhouseGrowingCycle();
     }
 }
