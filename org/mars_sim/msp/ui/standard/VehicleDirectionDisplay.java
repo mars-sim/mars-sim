@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * VehicleDirectionDisplay.java
- * @version 2.71 2000-10-23
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard; 
 
+import org.mars_sim.msp.simulation.*;  
 import java.awt.*;
 import javax.swing.*;
 
@@ -16,14 +17,14 @@ import javax.swing.*;
 public class VehicleDirectionDisplay extends JComponent {
 
 	// Data members
-	private double direction;  // Direction of travel (0 = north, clockwise)
-	private boolean showLine;  // True if direction line is to be shown
+	private Direction direction; // Direction of travel
+	private boolean showLine;    // True if direction line is to be shown
 
 	/** Constructs a VehicleDirectionDisplay object 
      *  @param direction the vehicle's current direction
      *  @param park true if vehicle is parked
      */
-	public VehicleDirectionDisplay(double direction, boolean park) {
+	public VehicleDirectionDisplay(Direction direction, boolean park) {
 		super();
 		
 		// Set component size	
@@ -41,10 +42,10 @@ public class VehicleDirectionDisplay extends JComponent {
      *  @param newDirection vehicle's current direction
      *  @param park true if vehicle is currently parked
      */
-	public void updateDirection(double newDirection, boolean park) {
+	public void updateDirection(Direction newDirection, boolean park) {
 
-		if (newDirection != direction) {
-			direction = newDirection;
+		if (!newDirection.equals(direction)) {
+			direction = (Direction) newDirection.clone();
 			if (park) showLine = false;
 			else showLine = true;
 			
@@ -97,8 +98,8 @@ public class VehicleDirectionDisplay extends JComponent {
 		// Draw direction line if necessary
 		if (showLine) {
 			double hyp = (double)(22);
-			int newX = (int)Math.round(hyp * Math.sin(direction));
-			int newY = -1 * (int)Math.round(hyp * Math.cos(direction));
+			int newX = (int)Math.round(hyp * direction.getSinDirection());
+			int newY = -1 * (int)Math.round(hyp * direction.getCosDirection());
 			g.drawLine(25, 25, newX + 25, newY + 25);
 		}
 	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.71 2000-10-18
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
@@ -15,16 +15,15 @@ import java.util.*;
 public class VirtualMars {
 
     // Data members
-    private TerrainElevation elevationMap; // Terrain elevation of Mars
+    private SurfaceFeatures surfaceFeatures; // Surface features
     private UnitManager units; // Unit controller
     private MasterClock masterClock; // Master clock for virtual world
 
     /** Constructs a VirtualMars object */
     public VirtualMars() {
-        // Initialize terrain
-        elevationMap =
-                new TerrainElevation("map_data/TopoMarsMap.dat", "map_data/TopoMarsMap.index",
-                "map_data/TopoMarsMap.sum");
+        
+        // Initialize surface features
+        surfaceFeatures = new SurfaceFeatures();
 
         // Initialize all units
         units = new UnitManager(this);
@@ -41,11 +40,11 @@ public class VirtualMars {
         units.takeAction(seconds);
     }
 
-    /** Returns terrain elevation
-     *  @return terrain elevation for virtual Mars
+    /** Returns surface features
+     *  @return surfaces features
      */
-    public TerrainElevation getElevationMap() {
-        return elevationMap;
+    public SurfaceFeatures getSurfaceFeatures() {
+        return surfaceFeatures;
     }
 
     /** Returns the unit manager 

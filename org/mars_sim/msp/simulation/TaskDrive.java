@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskDrive.java
- * @version 2.71 2000-10-18
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
@@ -411,19 +411,19 @@ class TaskDrive extends Task {
         startingLocation = vehicle.getCoordinates();
 
         // Find current direction and update vehicle
-        double direction = 0;
+        Direction direction = new Direction(0);
 
         if (subPhase.equals("Normal Driving") || subPhase.equals("Winching Stuck Vehicle"))
             direction = startingLocation.getDirectionToPoint(destinationCoordinates);
         else if (subPhase.equals("Avoiding Obstacle"))
             direction = avoidObstacle();
         else if (subPhase.equals("Backing Up"))
-            direction = Coordinates.cleanAngle(vehicle.getDirection() + Math.PI);
+            direction = new Direction(vehicle.getDirection().getDirection() + Math.PI);
 
         vehicle.setDirection(direction);
 
         // Determine current elevation and update vehicle
-        double elevation = mars.getElevationMap().getElevation(startingLocation);
+        double elevation = mars.getSurfaceFeatures().getSurfaceTerrain().getElevation(startingLocation);
         vehicle.setElevation(elevation);
 
         // Determine vehicle's speed in given direction
@@ -475,8 +475,8 @@ class TaskDrive extends Task {
             endingLocation = destinationCoordinates;
         } else {
             // Determine new position
-            double newY = -1D * (Math.cos(direction) * (distanceTraveled / 7.4D));
-            double newX = Math.sin(direction) * (distanceTraveled / 7.4D);
+            double newY = -1D * direction.getCosDirection() * (distanceTraveled / 7.4D);
+            double newX = direction.getSinDirection() * (distanceTraveled / 7.4D);
             endingLocation = new Coordinates(startingLocation.convertRectToSpherical(newX, newY));
 
             // Find ending distance to destination
@@ -525,22 +525,22 @@ class TaskDrive extends Task {
     /** Determine direction for obstacle avoidance. 
      *  @return the direction for obstacle avoidance (in radians)
      */
-    private double avoidObstacle() {
+    private Direction avoidObstacle() {
         boolean foundGoodPath = false;
 
         String sideCheck = new String("left");
         if (RandomUtil.lessThanRandPercent(50))
             sideCheck = new String("right");
 
-        double resultDirection = vehicle.getDirection();
+        Direction resultDirection = vehicle.getDirection();
 
         for (int x = 0; (x < 5) && !foundGoodPath; x++) {
             double modAngle = (double) x * (Math.PI / 6D);
 
             if (sideCheck.equals("left"))
-                resultDirection = Coordinates.cleanAngle(resultDirection - modAngle);
+                resultDirection.setDirection(resultDirection.getDirection() - modAngle);
             else
-                resultDirection = Coordinates.cleanAngle(resultDirection + modAngle);
+                resultDirection.setDirection(resultDirection.getDirection() + modAngle);
 
             if (getSpeed(resultDirection) > 1D)
                 foundGoodPath = true;
@@ -558,11 +558,11 @@ class TaskDrive extends Task {
      *  @param direction the direction the vehice is traveling in
      *  @return the speed of the vehicle (in km/hr)
      */
-    private double getSpeed(double direction) {
+    private double getSpeed(Direction direction) {
 
         // Determine the terrain grade in the vehicle's current direction
         double terrainGrade =
-                mars.getElevationMap().determineTerrainDifficulty(startingLocation, direction);
+                mars.getSurfaceFeatures().getSurfaceTerrain().determineTerrainDifficulty(startingLocation, direction);
         vehicle.setTerrainGrade(terrainGrade);
 
         // Get the driver's driving skill

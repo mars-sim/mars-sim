@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TerrainElevation.java
- * @version 2.71 2000-10-18
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
@@ -81,9 +81,9 @@ public class TerrainElevation {
       *  @param currentDirection the current direction (in radians)
       *  @return terrain steepness angle (in radians)
       */
-    public double determineTerrainDifficulty(Coordinates currentLocation, double currentDirection) {
-        double newY = -1.5D * Math.cos(currentDirection);
-        double newX = 1.5D * Math.sin(currentDirection);
+    public double determineTerrainDifficulty(Coordinates currentLocation, Direction currentDirection) {
+        double newY = -1.5D * currentDirection.getCosDirection();
+        double newX = 1.5D * currentDirection.getSinDirection();
         Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
         double elevationChange = getElevation(sampleLocation) - getElevation(currentLocation);
         double result = Math.atan(elevationChange / 11.1D);

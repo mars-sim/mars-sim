@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.71 2000-10-18
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
@@ -16,7 +16,7 @@ import java.util.*;
 public abstract class Vehicle extends Unit {
 
     // Data members
-    private double direction = 0; // Direction vehicle is traveling in
+    private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
     private double baseSpeed = 30; // Base speed of vehicle in kph (can be set in child class)
     private String status; // Current status of vehicle ("Moving", "Parked") (other child-specific status allowed)
@@ -58,6 +58,7 @@ public abstract class Vehicle extends Unit {
         passengers = new Vector();
         potentialFailures = new HashMap();
         totalMaintenanceWork = 12 * 60 * 60; // (12 hours)
+        direction = new Direction(0);
     }
 
     /** Returns vehicle's current status 
@@ -196,15 +197,15 @@ public abstract class Vehicle extends Unit {
     /** Returns direction of vehicle (0 = north, clockwise in radians) 
      *  @return the direction the vehicle is traveling (in radians)
      */
-    public double getDirection() {
-        return direction;
+    public Direction getDirection() {
+        return (Direction) direction.clone();
     }
 
     /** Sets the vehicle's facing direction (0 = north, clockwise in radians) 
      *  @param direction the direction the vehicle is travleling (in radians)
      */
-    void setDirection(double direction) {
-        this.direction = direction;
+    void setDirection(Direction direction) {
+        this.direction.setDirection(direction.getDirection());
     }
 
     /** Returns the maximum passenger capacity of the vehicle (including the driver). 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-10-19
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
@@ -28,7 +28,7 @@ public class GroundVehicleDialog extends VehicleDialog {
 	// Update data cache
 	protected double elevation;                          // Cached elevation data
 	protected double terrainGrade;                       // Cached terrain grade data
-	protected double direction;                          // Cached direction data
+	protected Direction direction;                       // Cached direction data
 	
     /** Constructs a GroundVehicleDialog object 
      *  @param parentDesktop desktop pane
@@ -45,7 +45,7 @@ public class GroundVehicleDialog extends VehicleDialog {
 		
 		elevation = 0D;
 		terrainGrade = 0D;
-		direction = 0D;
+		direction = new Direction(0D);
 		
 	}
 
@@ -83,7 +83,8 @@ public class GroundVehicleDialog extends VehicleDialog {
 		// Prepare terrain display
 		terrainDisplay = new VehicleTerrainDisplay();
 		JPanel terrainDisplayPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		terrainDisplayPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.green)));
+		terrainDisplayPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), 
+                new LineBorder(Color.green)));
 		terrainDisplayPane.setMaximumSize(new Dimension(106, 56));
 		terrainDisplayPane.add(terrainDisplay);
 		groundDisplayPane.add(terrainDisplayPane);
@@ -92,9 +93,11 @@ public class GroundVehicleDialog extends VehicleDialog {
 		groundDisplayPane.add(Box.createHorizontalGlue());
 		
 		// Prepare direction display
-		directionDisplay = new VehicleDirectionDisplay(groundVehicle.getDirection(), (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")));
+		directionDisplay = new VehicleDirectionDisplay(groundVehicle.getDirection(), 
+                (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")));
 		JPanel directionDisplayPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		directionDisplayPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.green)));
+		directionDisplayPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), 
+                new LineBorder(Color.green)));
 		directionDisplayPane.setMaximumSize(new Dimension(56, 56));
 		directionDisplayPane.add(directionDisplay);
 		groundDisplayPane.add(directionDisplayPane);
@@ -130,9 +133,10 @@ public class GroundVehicleDialog extends VehicleDialog {
 
 	/** Update direction display */
 	protected void updateDirection() {
-		double tempDirection = groundVehicle.getDirection();
-		if (direction != tempDirection) {
-			directionDisplay.updateDirection(tempDirection, (groundVehicle.getStatus().equals("Parked") || groundVehicle.getStatus().equals("Periodic Maintenance")));
+		Direction tempDirection = groundVehicle.getDirection();
+		if (!direction.equals(tempDirection)) {
+			directionDisplay.updateDirection(tempDirection, (groundVehicle.getStatus().equals("Parked") || 
+                    groundVehicle.getStatus().equals("Periodic Maintenance")));
 			direction = tempDirection;
 		}
 	}

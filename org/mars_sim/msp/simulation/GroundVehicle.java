@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.71 2000-10-11
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
@@ -32,7 +32,7 @@ public abstract class GroundVehicle extends Vehicle {
         // initialize variables
         setTerrainHandlingCapability(0D); // Default terrain capability
         setTerrainGrade(0D);
-        elevation = mars.getElevationMap().getElevation(location);
+        elevation = mars.getSurfaceFeatures().getSurfaceTerrain().getElevation(location);
 
         // initialize potential vehicle failures
         addPotentialFailure("Fuel Leak");

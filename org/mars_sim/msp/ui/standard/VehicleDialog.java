@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-10-23
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
@@ -118,6 +118,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
     /** ActionListener method overriden */
     public void actionPerformed(ActionEvent event) {
+        super.actionPerformed(event);
+        
         Object button = event.getSource();
 
         // If location button, open window for selected unit

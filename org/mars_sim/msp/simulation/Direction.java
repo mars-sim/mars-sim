@@ -1,0 +1,89 @@
+/**
+ * Mars Simulation Project
+ * Coordinates.java
+ * @version 2.71 2000-10-30
+ * @author Scott Davis
+ */
+
+package org.mars_sim.msp.simulation;
+
+/** Direction. Represents an angular direction.
+ *  It provides some useful static methods involving directions.
+ */
+public class Direction implements Cloneable {
+
+    // Data members
+    private double direction; // Direction in radians
+    
+    // Static data members
+    private static double TWO_PI = 2 * Math.PI;
+    
+    /** Constructs a Direction object 
+     *  0 = North, clockwise
+     *  @param direction direction in radians
+     */
+    public Direction(double direction) {
+        this.direction = cleanDirection(direction);
+    }
+    
+    /** Clones this Direction object
+     *  @param this Direction object
+     */
+    public Object clone() {
+        return new Direction(direction);
+    }
+    
+    /** Returns true if object is an equal direction
+     *  @param obj an Object instance
+     *  @return true if obj is an equal direction
+     */
+    public boolean equals(Object obj) {
+        boolean result = false;
+        if (obj instanceof Direction) {
+            if (((Direction) obj).getDirection() == direction) result = true;
+        }
+        return result;
+    }
+    
+    /** Returns direction in radians
+     *  0 = North, clockwise
+     *  @return direction in radians
+     */
+    public double getDirection() { 
+        return direction; 
+    }
+    
+    /** Sets the direction
+     *  0 = North, clockwise
+     *  @param direction new direction
+     */
+    public void setDirection(double direction) {
+        this.direction = cleanDirection(direction);
+    }
+    
+    /** Returns the sine of the direction
+     *  @return the sine of the direction
+     */
+    public double getSinDirection() {
+        return Math.sin(direction); 
+    }
+    
+    /** Returns the cosine of the direction
+     *  @return the cosine of the direction
+     */
+    public double getCosDirection() {
+        return Math.cos(direction);
+    }
+    
+    /** Makes sure a direction isn't above 2PI or less than zero 
+     *  @param raw direction
+     *  @return cleaned direction
+     */
+    private double cleanDirection(double direction) {
+        if ((direction < 0.0) || (direction > TWO_PI)) {
+            direction = Math.IEEEremainder(direction, TWO_PI);
+        }
+       
+        return direction;
+    }
+}

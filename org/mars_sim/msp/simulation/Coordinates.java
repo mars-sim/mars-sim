@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.71 2000-10-10
+ * @version 2.71 2000-10-30
  * @author Scott Davis
  */
 
@@ -305,7 +305,7 @@ public class Coordinates {
      *  @param otherCoords target location
      *  @return angle direction to target (in radians)
      */
-    public double getDirectionToPoint(Coordinates otherCoords) {
+    public Direction getDirectionToPoint(Coordinates otherCoords) {
 
         double rho = HALF_CIRCUM_PIXELS / Math.PI;
         int half_map = 720;
@@ -347,7 +347,7 @@ public class Coordinates {
             }
         }
 
-        return result;
+        return new Direction(result);
     }
 
     /** Makes sure an angle isn't above 2PI or less than zero 
