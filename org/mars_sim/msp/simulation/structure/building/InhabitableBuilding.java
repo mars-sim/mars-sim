@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InhabitableBuilding.java
- * @version 2.75 2003-01-05
+ * @version 2.75 2003-01-25
  * @author Scott Davis
  */
  
@@ -15,6 +15,9 @@ import org.mars_sim.msp.simulation.person.Person;
  * building capable of inhabitation.
  */
 public abstract class InhabitableBuilding extends Building {
+   
+    // Power required to sustain life support for one occupant.
+    private static final double LIFE_SUPPORT_OCCUPANT_POWER = 2D;
    
     protected int occupantCapacity;
     protected Collection occupants;
@@ -72,4 +75,20 @@ public abstract class InhabitableBuilding extends Building {
         if (occupants.contains(person))
             occupants.remove(person);
     }
+    
+    /**
+     * Gets the base-line power required for just life support.
+     * @return power in kW.
+     */
+    public double getLifeSupportPowerRequired() {
+        return getOccupantCapacity() * LIFE_SUPPORT_OCCUPANT_POWER;
+    }   
+    
+    /**
+     * Gets the power the building requires for power-down mode.
+     * @return power in kW.
+     */
+    public double getPoweredDownPowerRequired() {
+        return getLifeSupportPowerRequired();
+    }   
 }

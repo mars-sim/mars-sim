@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-01-22
+ * @version 2.75 2003-01-25
  * @author Scott Davis
  */
  
@@ -37,10 +37,10 @@ public class LanderHab extends InhabitableBuilding
     }
     
     /**
-     * Gets the power this building currently uses.
+     * Gets the power this building currently requires for full-power mode.
      * @return power in kW.
      */
-    public double getPowerUsed() {
-        return 20D;
+    public double getFullPowerRequired() {
+        return getLifeSupportPowerRequired() + 10D;
     }
 }

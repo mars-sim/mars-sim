@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2003-01-22
+ * @version 2.75 2003-01-26
  * @author Scott Davis
  */
  
@@ -15,9 +15,15 @@ import java.io.Serializable;
  */
 public abstract class Building implements Serializable {
     
+    // Power Modes
+    public static final String FULL_POWER = "Full Power";
+    public static final String POWER_DOWN = "Power Down";
+    public static final String NO_POWER = "No Power";
+    
     // Data members
     protected BuildingManager manager; 
     protected String name;
+    protected String powerMode;
     
     /**
      * Constructs a Building object.
@@ -28,6 +34,7 @@ public abstract class Building implements Serializable {
         
         this.name = name;
         this.manager = manager;
+        this.powerMode = FULL_POWER;
     }
     
     /**
@@ -59,8 +66,28 @@ public abstract class Building implements Serializable {
     }   
     
     /**
-     * Gets the power this building currently uses.
+     * Gets the power this building currently requires for full-power mode.
      * @return power in kW.
      */
-    public abstract double getPowerUsed();
+    public abstract double getFullPowerRequired();
+    
+    /**
+     * Gets the power the building requires for power-down mode.
+     * @return power in kW.
+     */
+    public abstract double getPoweredDownPowerRequired();
+     
+    /**
+     * Gets the building's power mode.
+     */
+    public String getPowerMode() {
+        return powerMode;
+    }
+    
+    /**
+     * Sets the building's power mode.
+     */
+    public void setPowerMode(String powerMode) {
+        this.powerMode = powerMode;
+    }
 }

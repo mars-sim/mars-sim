@@ -17,6 +17,12 @@ import org.mars_sim.msp.simulation.structure.building.function.Farming;
  */
 public class InflatableGreenhouse extends InhabitableBuilding implements Farming {
     
+    // Power required for growing crops per kg of crop.
+    private static final double POWER_GROWING_CROP = .1D;
+    
+    // Power required for sustaining crops per kg of crop.
+    private static final double POWER_SUSTAINING_CROP = .05D;
+    
     private Collection crops;
     private int numCrops;
     private double maxHarvest;
@@ -142,25 +148,42 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
     }  
     
     /**
-     * Gets the power this building currently uses.
+     * Gets the power this building currently requires for full-power mode.
      * @return power in kW.
      */
-    public double getPowerUsed() {
-        
-        // Amount of power (kW) required for 1kg of harvest
-        // for a currently growing crop.
-        double powerGrowingMass = .1D;
+    public double getFullPowerRequired() {
         
         // Power (kW) required for normal operations.
-        double powerUsed = 10D;
+        double powerRequired = getPoweredDownPowerRequired();
         
         Iterator i = crops.iterator();
         while (i.hasNext()) {
             Crop crop = (Crop) i.next();
             if (crop.getPhase().equals(Crop.GROWING))
-                powerUsed += powerGrowingMass * crop.getMaxHarvest();
+                powerRequired += (crop.getMaxHarvest() * POWER_GROWING_CROP);
         }
         
-        return powerUsed;
+        return powerRequired;
     }
+    
+    /**
+     * Gets the power the building requires for power-down mode.
+     * @return power in kW.
+     */
+    public double getPoweredDownPowerRequired() {
+        
+        // Get power required for occupant life support.
+        double powerRequired = getLifeSupportPowerRequired();
+        
+        // Add power required to sustain growing or harvest-ready crops.
+        Iterator i = crops.iterator();
+        while (i.hasNext()) {
+            Crop crop = (Crop) i.next();
+            if (crop.getPhase().equals(Crop.GROWING) || crop.getPhase().equals(Crop.HARVESTING)) {
+                powerRequired += (crop.getMaxHarvest() * POWER_SUSTAINING_CROP);
+            }
+        }
+        
+        return powerRequired;
+    } 
 }

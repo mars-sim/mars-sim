@@ -33,6 +33,26 @@ public class ERVBase extends Building {
      */
     public double getPowerUsed() {
         // ERVBase has its own power supply.
-        return 0D;
+        return 5D;
+    }
+    
+    /**
+     * Gets the power this building currently requires for full-power mode.
+     * @return power in kW.
+     */
+    public double getFullPowerRequired() {
+        double result = 0D;
+        if (processing) result = 10D;
+        return result;
+    }
+    
+    /**
+     * Gets the power the building requires for power-down mode.
+     * @return power in kW.
+     */
+    public double getPoweredDownPowerRequired() {
+        double result = 0D;
+        if (processing) result = 5D;
+        return result;
     }
 }

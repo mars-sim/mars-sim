@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGrid.java
- * @version 2.75 2003-01-21
+ * @version 2.75 2003-01-25
  * @author Scott Davis
  */
  
@@ -19,7 +19,8 @@ public class PowerGrid implements Serializable {
         
     // Data members
     private double powerGenerated;
-    private double powerUsed;
+    private double powerRequired;
+    private boolean sufficientPower;
     private Settlement settlement;
     
     /**
@@ -28,7 +29,8 @@ public class PowerGrid implements Serializable {
     public PowerGrid(Settlement settlement) {
         this.settlement = settlement;
         powerGenerated = 0D;;
-        powerUsed = 0D;
+        powerRequired = 0D;
+        sufficientPower = true;
     }
     
     /**
@@ -40,11 +42,20 @@ public class PowerGrid implements Serializable {
     }
     
     /**
-     * Gets the power used from the grid.
+     * Gets the power required from the grid.
      * @return power in kW
      */
-    public double getUsedPower() {
-        return powerUsed;
+    public double getRequiredPower() {
+        return powerRequired;
+    }
+    
+    /**
+     * Checks if there is enough power in the grid for all 
+     * buildings to be set to full power.
+     * @return true if sufficient power
+     */
+    public boolean isSufficientPower() {
+        return sufficientPower;
     }
     
     /**
@@ -54,9 +65,11 @@ public class PowerGrid implements Serializable {
      */
     public void timePassing(double time) {
         
+        // System.out.println("");
+        
         // Clear and recalculate power
         powerGenerated = 0D;
-        powerUsed = 0D;
+        powerRequired = 0D;
         
         BuildingManager manager = settlement.getBuildingManager();
         
@@ -67,11 +80,73 @@ public class PowerGrid implements Serializable {
             powerGenerated += gen.getGeneratedPower();
         }
         
-        // Determine total power used by buildings.
+        // System.out.println(settlement.getName() + " power generated: " + powerGenerated);
+        
+        // Determine total power used by buildings when set to full power mode.
         Iterator iUsed = manager.getBuildings();
         while (iUsed.hasNext()) {
             Building building = (Building) iUsed.next();
-            powerUsed += building.getPowerUsed();
+            powerRequired += building.getFullPowerRequired();
+        }
+        
+        // System.out.println(settlement.getName() + " power required: " + powerRequired);
+        
+        // Check if there is enough power generated to fully supply each building.
+        if (powerRequired <= powerGenerated) {
+            sufficientPower = true;
+            // System.out.println(settlement.getName() + " has sufficient power");
+        }
+        else {
+            sufficientPower = false;
+            // System.out.println(settlement.getName() + " has insufficient power");
+            double neededPower = powerRequired - powerGenerated;
+            // System.out.println(settlement.getName() + " needs " + neededPower + " kW.");
+            
+            // Reduce each building's power mode to low power until 
+            // required power reduction is met.
+            Iterator iLowPower = manager.getBuildings();
+            while (iLowPower.hasNext() && (neededPower > 0D)) {
+                Building building = (Building) iLowPower.next();
+                if (!(building instanceof PowerGeneration)) {
+                    building.setPowerMode(Building.POWER_DOWN);
+                    // System.out.println(building.getName() + " powered down");
+                    neededPower -= building.getFullPowerRequired() - 
+                        building.getPoweredDownPowerRequired();
+                    // System.out.println(settlement.getName() + " still needs " + neededPower + " kW.");
+                }
+            }
+            
+            // If power needs are still not met, turn off the power to each 
+            // uninhabitable building until required power reduction is met.
+            if (neededPower > 0D) {
+                Iterator iNoPower = manager.getBuildings();
+                while (iNoPower.hasNext() && (neededPower > 0D)) {
+                    Building building = (Building) iNoPower.next();
+                    if (!(building instanceof PowerGeneration) && 
+                        !(building instanceof InhabitableBuilding)) {
+                        building.setPowerMode(Building.NO_POWER);
+                        // System.out.println(building.getName() + " shut down");
+                        neededPower -= building.getPoweredDownPowerRequired();
+                        // System.out.println(settlement.getName() + " still needs " + neededPower + " kW.");
+                    }
+                }
+            }
+            
+            // If power needs are still not met, turn off the power to each inhabitable building 
+            // until required power reduction is met.
+            if (neededPower > 0D) {
+                Iterator iNoPower = manager.getBuildings();
+                while (iNoPower.hasNext() && (neededPower > 0D)) {
+                    Building building = (Building) iNoPower.next();
+                    if (!(building instanceof PowerGeneration) && 
+                        building instanceof InhabitableBuilding) {
+                        building.setPowerMode(Building.NO_POWER);
+                        // System.out.println(building.getName() + " shut down");
+                        neededPower -= building.getPoweredDownPowerRequired();
+                        // System.out.println(settlement.getName() + " still needs " + neededPower + " kW.");
+                    }
+                }
+            }
         }
     }  
 }

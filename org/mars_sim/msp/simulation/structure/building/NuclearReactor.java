@@ -42,4 +42,22 @@ public class NuclearReactor extends Building implements PowerGeneration {
     public double getPowerUsed() {
         return 0D;
     }
+    
+    /**
+     * Gets the power this building currently requires for full-power mode.
+     * @return power in kW.
+     */
+    public double getFullPowerRequired() {
+        // Produces more power than it uses.
+        return 0D;
+    }
+    
+    /**
+     * Gets the power the building requires for power-down mode.
+     * @return power in kW.
+     */
+    public double getPoweredDownPowerRequired() {
+        // Produces more power than it uses.
+        return 0D;
+    }
 }
