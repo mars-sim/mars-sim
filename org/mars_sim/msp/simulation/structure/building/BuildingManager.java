@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.75 2003-04-24
+ * @version 2.75 2003-05-01
  * @author Scott Davis
  */
  
@@ -21,7 +21,7 @@ import org.mars_sim.msp.simulation.vehicle.*;
 public class BuildingManager implements Serializable {
     
     private Settlement settlement; // The manager's settlement.
-    private Collection buildings; // The settlement's buildings.
+    private List buildings; // The settlement's buildings.
     
     /**
      * Constructor
@@ -56,7 +56,7 @@ public class BuildingManager implements Serializable {
      *
      * @return collection of buildings
      */
-    public Collection getBuildings() {
+    public List getBuildings() {
         return buildings;
     }
     
@@ -65,8 +65,8 @@ public class BuildingManager implements Serializable {
      *
      * @return collection of buildings.
      */
-    public Collection getBuildings(Class function) {   
-        Collection functionBuildings = new ArrayList();
+    public List getBuildings(Class function) {   
+        List functionBuildings = new ArrayList();
         
         Iterator i = buildings.iterator();
         while (i.hasNext()) {

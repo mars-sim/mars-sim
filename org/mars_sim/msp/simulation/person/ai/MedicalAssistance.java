@@ -1,22 +1,24 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2003-05-01
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 
 /**
- * THis class represents a Task that requires a Person to provide Medical
+ * This class represents a Task that requires a Person to provide Medical
  * help to someelse. It relies on looking for any Sick Bays in the
  * current location.
  */
@@ -32,13 +34,17 @@ public class MedicalAssistance extends Task implements Serializable {
      */
     public MedicalAssistance(Person person, Mars mars) {
         super("Medical Assistance", person, true, mars);
+        
+        // Sets this task to create historical events.
         setCreateEvents(true);
 
+        // Get the local sickbay to use.
         SickBay sickbay = getSickbay(person);
+        
+        // Get a curable medical problem at the sickbay.
         HealthProblem problem = sickbay.getCurableProblem();
 
-        int skill = person.getSkillManager().getSkillLevel(MEDICAL);
-
+        // Treat medical problem.
         Treatment treatment = problem.getIllness().getRecoveryTreatment();
 	    description = "Apply " + treatment.getName();
         duration = treatment.getAdjustedDuration(10);
@@ -57,17 +63,16 @@ public class MedicalAssistance extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
-        SickBay infirmary = getSickbay(person);
-        if (infirmary != null)
-        {
-            if (infirmary.hasWaitingPatients()) {
-                result = 50D * person.getPerformanceRating();
-            }
-
-            if (infirmary.getOwner().getMalfunctionManager().hasMalfunction()) {
-	            result = 0D;
-            }
+        // Get the local sickbay to use.
+        SickBay sickbay = getSickbay(person);
+        if (sickbay != null) {
+            boolean patients = sickbay.hasWaitingPatients();
+            boolean malfunction = sickbay.getOwner().getMalfunctionManager().hasMalfunction();
+            if (patients && !malfunction) result = 50D;
         }
+        
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
 
         return result;
     }
@@ -78,19 +83,22 @@ public class MedicalAssistance extends Task implements Serializable {
      * @return sickbay
      */
     static private SickBay getSickbay(Person person) {
-	String location = person.getLocationSituation();
-	if (location.equals(Person.INSETTLEMENT)) {
+        SickBay result = null;
+        
+        String location = person.getLocationSituation();
+        if (location.equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            FacilityManager mgr = settlement.getFacilityManager();
-            return ((Infirmary)mgr.getFacility(Infirmary.NAME)).getSickBay();
-	}
-	if (location.equals(Person.INVEHICLE)) {
-	    Vehicle vehicle = person.getVehicle();
-	    if (vehicle instanceof TransportRover)
-	        return (SickBay) ((TransportRover) vehicle).getMedicalFacility();
+            List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.class);
+            int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
+            result = ((MedicalCare) infirmaries.get(rand)).getSickBay();
+        }
+        if (location.equals(Person.INVEHICLE)) {
+            Vehicle vehicle = person.getVehicle();
+            if (vehicle instanceof TransportRover)
+                result = (SickBay) ((TransportRover) vehicle).getMedicalFacility();
         }
 
-	return null;
+        return result;
     }
 
     /** This task simply waits until the set duration of the task is complete, then ends the task.
@@ -143,7 +151,7 @@ public class MedicalAssistance extends Task implements Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-	    // System.out.println(person.getName() + " has accident during medical assistance.");
+            // System.out.println(person.getName() + " has accident during medical assistance.");
             entity.getMalfunctionManager().accident();
         }
     }

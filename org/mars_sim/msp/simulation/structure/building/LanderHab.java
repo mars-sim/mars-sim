@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-04-20
+ * @version 2.75 2003-05-01
  * @author Scott Davis
  */
  
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.structure.building;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.structure.building.function.impl.*;
@@ -22,7 +23,7 @@ import java.util.*;
  */
 public class LanderHab extends InhabitableBuilding 
         implements LivingAccommodations, Research, Communication, EVA, 
-        Recreation, Dining, ResourceProcessing, Storage, PowerGeneration {
+        Recreation, Dining, ResourceProcessing, Storage, PowerGeneration, MedicalCare {
     
     // Number of people the hab can accommodate at once.
     private final static int ACCOMMODATION_CAPACITY = 4;
@@ -38,8 +39,13 @@ public class LanderHab extends InhabitableBuilding
     private static final String[] LAB_SPECIALITIES = {"Areology"};
     private static final int RESEARCHER_NUM = 4;
     
+    // Infirmary info.
+    private static final int INFIRMARY_BEDS = 1;
+    private static final int INFIRMARY_TREATMENT_LEVEL = 4;
+    
     private Map resourceStorageCapacity;
     private Research lab;
+    private MedicalCare infirmary;
     private LivingAccommodations quarters;
     private PowerGeneration solarCells;
     private ResourceProcessing processor;
@@ -55,6 +61,9 @@ public class LanderHab extends InhabitableBuilding
         
         // Create lab
         lab = new StandardResearch(this, LAB_TECH_LEVEL, LAB_SPECIALITIES, RESEARCHER_NUM);
+        
+        // Create infirmary
+        infirmary = new StandardMedicalCare(this, INFIRMARY_BEDS, INFIRMARY_TREATMENT_LEVEL);
         
         // Create quarters
         quarters = new StandardLivingAccommodations(this, ACCOMMODATION_CAPACITY);
@@ -267,5 +276,34 @@ public class LanderHab extends InhabitableBuilding
      */
     public Airlock getAirlock() {
         return airlock;
+    }
+    
+    /**
+     * A person requests to start the specified treatment using this aid. This
+     * aid may elect to record that this treatment is being performed. If the
+     * treatment can not be satisfied, then a false return value is provided.
+     *
+     * @param problem the medical problem.
+     * @return true if problem can be treated.
+     */
+    public boolean requestTreatment(HealthProblem problem) {
+        return infirmary.requestTreatment(problem);
+    }
+
+    /**
+     * Stop a previously started treatment.
+     *
+     * @param problem the medical problem.
+     */
+    public void stopTreatment(HealthProblem problem) {
+        infirmary.stopTreatment(problem);
+    }
+    
+    /**
+     * Get the sick bay of this building.
+     * @return sick bay.
+     */
+    public SickBay getSickBay() {
+        return infirmary.getSickBay();
     }
 }

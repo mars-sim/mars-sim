@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SickBay.java
- * @version 2.74 2002-03-10
+ * @version 2.75 2003-05-01
  * @author Barry Evans
  */
 
@@ -35,7 +35,8 @@ public class SickBay implements MedicalAid, Serializable {
     /** Construct a Sick Bay.
      *  @param name Name of the Sick bay, this is used to locate support Treatments
      *  @param sickBeds Number of sickbeds.
-     *  @param mars Overall simulation control.
+     *  @param level the treatment level of the sick bay.
+     *  @param mars Mars instance.
      *  @param owner The owner entity of the sickbay.
      */
     public SickBay(String name, int sickBeds, int level, Mars mars, Malfunctionable owner) {
@@ -43,10 +44,9 @@ public class SickBay implements MedicalAid, Serializable {
         this.sickBeds = sickBeds;
         this.level = level;
         this.treatedPatients = 0;
-	this.owner = owner;
+        this.owner = owner;
 
-        supportedTreatments =
-                    mars.getMedicalManager().getSupportedTreatments(level);
+        supportedTreatments = mars.getMedicalManager().getSupportedTreatments(level);
     }
 
     /**
@@ -156,8 +156,7 @@ public class SickBay implements MedicalAid, Serializable {
             treatedPatients++;
         }
         else {
-            System.out.println("WARNING : Unexpected patient is startTreatment " +
-                                started);
+            System.out.println("WARNING : Unexpected patient is startTreatment " + started);
         }
     }
 
