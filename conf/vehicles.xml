@@ -2,7 +2,7 @@
 
 <VEHICLES_LIST>
 
-    <ROVER>
+    <EXPLORER_ROVER>
 
         <!-- Name of the rover (required) -->
         <NAME>Dune Drifter</NAME>
@@ -11,93 +11,93 @@
         <!-- Default: Settlement with least number of parked rovers -->
         <SETTLEMENT>Port Zubrin</SETTLEMENT>
 
-    </ROVER>
+    </EXPLORER_ROVER>
 
-    <ROVER>
+    <EXPLORER_ROVER>
         <NAME>Osprey</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Dune Runner</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Wind Runner</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Sand Dancer</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Nomad</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Spice Trader</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Solitude</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Sandstorm</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Martian Escape</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Odyssey</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Red Mariner</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Dust Devil</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Windstorm</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <EXPLORER_ROVER>
         <NAME>Desertfarer</NAME>
-    </ROVER>
-    <ROVER>
+    </EXPLORER_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Fantasia</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Oasis</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Sun Dancer</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Desert Fox</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Serenity</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Gypsea</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Martian Cloud</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Sand Spirit</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Dust Sprite</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Phobos Drifter</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Deimos Tide</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Shooting Star</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Desert Star</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Drift Wood</NAME>
-    </ROVER>
-    <ROVER>
+    </TRANSPORT_ROVER>
+    <TRANSPORT_ROVER>
         <NAME>Dream Chaser</NAME>
-    </ROVER>
+    </TRANSPORT_ROVER>
 </VEHICLES_LIST>

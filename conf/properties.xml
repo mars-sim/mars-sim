@@ -52,22 +52,6 @@
 
     <ROVER_PROPERTIES>
 
-        <!-- The amount of oxygen (kg) that can be stored in a rover -->
-        <!-- Default: 350.0 -->
-        <OXYGEN_STORAGE_CAPACITY>350.0</OXYGEN_STORAGE_CAPACITY>
-
-        <!-- The amount of water (kg) that can be stored in a rover -->
-        <!-- Default: 1400.0 -->
-        <WATER_STORAGE_CAPACITY>1400.0</WATER_STORAGE_CAPACITY>
-
-        <!-- The amount of food (kg) that can be stored in a rover -->
-        <!-- Default: 525.0 -->
-        <FOOD_STORAGE_CAPACITY>525.0</FOOD_STORAGE_CAPACITY>
-
-        <!-- The amount of fuel (kg) that can be stored in a rover -->
-        <!-- Default: 2500.0 -->
-        <FUEL_STORAGE_CAPACITY>2500.0</FUEL_STORAGE_CAPACITY>
-
         <!-- The average kilometers/kilogram fuel efficiency of a rover -->
         <!-- Default: 2.0 -->
         <FUEL_EFFICIENCY>2.0</FUEL_EFFICIENCY>

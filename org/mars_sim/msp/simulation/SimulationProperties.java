@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationProperties.java
- * @version 2.74 2002-02-25
+ * @version 2.74 2002-03-03
  * @author Scott Davis
  */
 
@@ -134,42 +134,6 @@ public class SimulationProperties {
         return propertiesReader.getPersonFreezingTime();
     }
     
-    /** Gets the rover oxygen storage capacity property.
-     *  Value must be >= 0.
-     *  Default value is 350.0 kg.
-     *  @return the rover oxygen storage capacity property
-     */
-    public double getRoverOxygenStorageCapacity() {
-        return propertiesReader.getRoverOxygenStorageCapacity();
-    }
-
-    /** Gets the rover water storage capacity property.
-     *  Value must be >= 0.
-     *  Default value is 1400.0 kg.
-     *  @return the rover water storage capacity property
-     */
-    public double getRoverWaterStorageCapacity() {
-        return propertiesReader.getRoverWaterStorageCapacity();
-    }
-
-    /** Gets the rover food storage capacity property.
-     *  Value must be >= 0.
-     *  Default value is 525.0 kg.
-     *  @return the rover food storage capacity property
-     */
-    public double getRoverFoodStorageCapacity() {
-        return propertiesReader.getRoverFoodStorageCapacity();
-    }
-
-    /** Gets the rover fuel storage capacity property.
-     *  Value must be >= 0.
-     *  Default value is 2500.0 kg.
-     *  @return the rover fuel storage capacity property
-     */
-    public double getRoverFuelStorageCapacity() {
-        return propertiesReader.getRoverFuelStorageCapacity();
-    }
-
     /** Gets the rover fuel efficiency property.
      *  Value must be > 0.
      *  Default value is 2.0 km/kg.

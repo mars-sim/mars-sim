@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-03
  * @author Scott Davis
  */
 
@@ -33,7 +33,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     // Data members
     private Settlement startingSettlement; // The settlement the mission starts at.
     private Coordinates destination; // The current destination of the mission.
-    private Rover rover; // The rover used in the mission.
+    private ExplorerRover rover; // The rover used in the mission.
     private MarsClock startingTime; // The starting time of a driving phase.
     private double startingDistance; // The starting distance to destination of a driving phase.
     private Person lastDriver; // The last driver in a driving phase.
@@ -90,7 +90,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             if (mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) 
 	        possible = false;
 	    
-            if (!ReserveRover.availableRovers(currentSettlement)) possible = false;
+            if (!ReserveRover.availableRovers(ReserveRover.EXPLORER_ROVER, currentSettlement)) possible = false;
 
 	    double rocks = currentSettlement.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
 	    if (rocks >= 300D) possible = false;
@@ -149,20 +149,21 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If a rover cannot be reserved, end mission.
         if (rover == null) {
             if (reserveRover == null) {
-                reserveRover = new ReserveRover(person, mars, startingSettlement.getCoordinates());
+                reserveRover = new ReserveRover(ReserveRover.EXPLORER_ROVER, person, mars, 
+	                startingSettlement.getCoordinates());
 		assignTask(person, reserveRover);
                 return;
             }
             else {
                 if (reserveRover.isDone()) {
-                    rover = reserveRover.getReservedRover();
+                    rover = (ExplorerRover) reserveRover.getReservedRover();
                     if (rover == null) {
                         endMission();
                         return;
                     }
                     else {
-                        if (rover.getMaxPassengers() < missionCapacity)
-                            setMissionCapacity(rover.getMaxPassengers());
+                        if (rover.getCrewCapacity() < missionCapacity)
+                            setMissionCapacity(rover.getCrewCapacity());
                     }
                 }
                 else return;
@@ -424,7 +425,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         if (rover != null) rover.setReserved(false);
         else {
             if ((reserveRover != null) && reserveRover.isDone()) {
-                rover = reserveRover.getReservedRover();
+                rover = (ExplorerRover) reserveRover.getReservedRover();
                 if (rover != null) rover.setReserved(false);
             }
         }

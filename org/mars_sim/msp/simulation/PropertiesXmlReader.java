@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PropertiesXmlReader.java
- * @version 2.74 2002-02-25
+ * @version 2.74 2002-03-03
  * @author Scott Davis
  */
 
@@ -55,10 +55,6 @@ class PropertiesXmlReader extends MspXmlReader {
     private double personDecompression; // The decompression property
     private double personMinTemperature; // The minimum temperature property
     private double personFreezingTime; // The freezing time property
-    private double roverOxygenStorageCapacity; // The rover oxygen storage capacity property
-    private double roverWaterStorageCapacity; // The rover water storage capacity property
-    private double roverFoodStorageCapacity; // The rover food storage capacity property
-    private double roverFuelStorageCapacity; // The rover fuel storage capacity property
     private double roverFuelEfficiency; // The rover fuel efficiency property
     private double roverRange; // The rover range property
     private double settlementOxygenStorageCapacity; // The settlement oxygen storage capacity property
@@ -241,25 +237,13 @@ class PropertiesXmlReader extends MspXmlReader {
 	    case FREEZING_TIME:
 		personFreezingTime = Double.parseDouble(data);
             case OXYGEN_STORAGE_CAPACITY:
-                double oxygen = Double.parseDouble(data);
-                if (propertyCatagory == ROVER_PROPERTIES) roverOxygenStorageCapacity = oxygen;
-                if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementOxygenStorageCapacity = oxygen;
-                break;
+                settlementOxygenStorageCapacity = Double.parseDouble(data);
             case WATER_STORAGE_CAPACITY:
-                double water = Double.parseDouble(data);
-                if (propertyCatagory == ROVER_PROPERTIES) roverWaterStorageCapacity = water;
-                if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementWaterStorageCapacity = water;
-                break;
+                settlementWaterStorageCapacity = Double.parseDouble(data);
             case FOOD_STORAGE_CAPACITY:
-                double food = Double.parseDouble(data);
-                if (propertyCatagory == ROVER_PROPERTIES) roverFoodStorageCapacity = food;
-                if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementFoodStorageCapacity = food;
-                break;
+                settlementFoodStorageCapacity = Double.parseDouble(data);
             case FUEL_STORAGE_CAPACITY:
-                double fuel = Double.parseDouble(data);
-                if (propertyCatagory == ROVER_PROPERTIES) roverFuelStorageCapacity = fuel;
-                if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementFuelStorageCapacity = fuel;
-                break;
+                settlementFuelStorageCapacity = Double.parseDouble(data);
             case FUEL_EFFICIENCY:
                 roverFuelEfficiency = Double.parseDouble(data);
                 break;
@@ -385,46 +369,6 @@ class PropertiesXmlReader extends MspXmlReader {
 	return personFreezingTime;
     }
     
-    /** Gets the rover oxygen storage capacity property.
-     *  Value must be >= 0.
-     *  Default value is 350.0.
-     *  @return the rover oxygen storage capacity property
-     */
-    public double getRoverOxygenStorageCapacity() {
-        if (roverOxygenStorageCapacity < 0) roverOxygenStorageCapacity = 350D;
-        return roverOxygenStorageCapacity;
-    }
-
-    /** Gets the rover water storage capacity property.
-     *  Value must be >= 0.
-     *  Default value is 1400.0.
-     *  @return the rover water storage capacity property
-     */
-    public double getRoverWaterStorageCapacity() {
-        if (roverWaterStorageCapacity < 0) roverWaterStorageCapacity = 1400D;
-        return roverWaterStorageCapacity;
-    }
-
-    /** Gets the rover food storage capacity property.
-     *  Value must be >= 0.
-     *  Default value is 525.0.
-     *  @return the rover food storage capacity property
-     */
-    public double getRoverFoodStorageCapacity() {
-        if (roverFoodStorageCapacity < 0) roverFoodStorageCapacity = 525D;
-        return roverFoodStorageCapacity;
-    }
-
-    /** Gets the rover fuel storage capacity property.
-     *  Value must be >= 0.
-     *  Default value is 2500.0.
-     *  @return the rover fuel storage capacity property
-     */
-    public double getRoverFuelStorageCapacity() {
-        if (roverFuelStorageCapacity < 0) roverFuelStorageCapacity = 2500D;
-        return roverFuelStorageCapacity;
-    }
-
     /** Gets the rover fuel efficiency property.
      *  Value must be > 0.
      *  Default value is 2.0.

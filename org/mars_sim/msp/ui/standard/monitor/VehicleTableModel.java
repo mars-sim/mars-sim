@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.74 2002-02-21
+ * @version 2.74 2002-02-28
  * @author Barry Evans
  */
 
@@ -103,7 +103,9 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case CREW : {
-                result = new Integer(vehicle.getPassengerNum());
+		if (vehicle instanceof Crewable) 
+		    result = new Integer(((Crewable) vehicle).getCrewNum());
+		else result = new Integer(0);
             } break;
 
             case WATER : {

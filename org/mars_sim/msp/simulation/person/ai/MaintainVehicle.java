@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-02-28
  * @author Scott Davis
  */
 
@@ -44,11 +44,9 @@ class MaintainVehicle extends Task implements Serializable {
                 if (garage.vehicleInGarage(tempVehicle))
                     vehiclesNeedingMaint.add(tempVehicle);
                 else {
-                    if (garage.getMaxVehicleSize() >= tempVehicle.getSize()) {
-                        if ((garage.getMaxSizeCapacity() - garage.getTotalSize()) >=
-                                tempVehicle.getSize())
-                            vehiclesNeedingMaint.add(tempVehicle);
-                    }
+		    double openCapacity = garage.getVehicleCapacity() - garage.getCurrentVehicleMass();
+                    if (tempVehicle.getMass() < openCapacity) 
+                        vehiclesNeedingMaint.add(tempVehicle);
                 }
             }
         }

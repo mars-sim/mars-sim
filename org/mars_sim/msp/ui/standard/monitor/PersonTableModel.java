@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.74 2002-02-22
+ * @version 2.74 2002-02-28
  * @author Barry Evans
  */
 
@@ -12,7 +12,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 import java.util.List;
 
@@ -60,9 +60,9 @@ public class PersonTableModel extends UnitTableModel {
     }
 
     // Data members
-    private Vehicle         vehicle;    // Monitored Vehicle
-    private Settlement      settlement; // Monitored Location
-    private Mission         mission; // Monitored Mission
+    private Crewable vehicle;      // Monitored Crewable Vehicle
+    private Settlement settlement; // Monitored Location
+    private Mission mission;       // Monitored Mission
 
     /**
      * Constructs a PersonTableModel object that displays all Person from the
@@ -85,12 +85,12 @@ public class PersonTableModel extends UnitTableModel {
      *
      * @param vehicle Monitored vehicle Person objects.
      */
-    public PersonTableModel(Vehicle vehicle) {
-        super(vehicle.getName() + " - People", columnNames, columnTypes);
+    public PersonTableModel(Crewable vehicle) {
+        super(((Unit) vehicle).getName() + " - People", columnNames, columnTypes);
 
         this.vehicle = vehicle;
 
-        PersonIterator iter = vehicle.getPassengers().iterator();
+        PersonIterator iter = vehicle.getCrew().iterator();
         while(iter.hasNext()) {
             add(iter.next());
         }
@@ -142,7 +142,7 @@ public class PersonTableModel extends UnitTableModel {
 
         // Find an appropriate source collection,
         if (vehicle != null) {
-            people = vehicle.getPassengers();
+            people = vehicle.getCrew();
         }
         else if (settlement != null) {
             people = settlement.getInhabitants();

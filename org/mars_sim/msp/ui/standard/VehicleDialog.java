@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-02-22
+ * @version 2.74 2002-03-03
  * @author Scott Davis
  */
 
@@ -156,14 +156,26 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         // Initialize vehicle
         vehicle = (Vehicle) parentUnit;
 
+        // Prepare inner pane
+	JPanel innerPane = new JPanel(new BorderLayout());
+	mainPane.add(innerPane, "Center");
+
+	// Prepare description label
+	JLabel descriptionLabel = new JLabel(vehicle.getDescription(), JLabel.CENTER);
+	descriptionLabel.setForeground(Color.black);
+	innerPane.add(descriptionLabel, "North");
+	
         // Prepare tab pane
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.addTab("Navigation", setupNavigationPane());
-        tabPane.addTab("Crew", setupCrewPane());
+	
+	if (vehicle instanceof Crewable) tabPane.addTab("Crew", setupCrewPane(true));
+	else tabPane.addTab("Driver", setupCrewPane(false));
+
         tabPane.addTab("Damage", setupDamagePane());
 	inventoryPane = new InventoryPanel(vehicle.getInventory());
 	tabPane.addTab("Inventory", inventoryPane);
-        mainPane.add(tabPane, "Center");
+        innerPane.add(tabPane, "Center");
     }
 
     /** Set up navigation panel
@@ -253,7 +265,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         destinationButton = new JButton();
         destinationButton.setMargin(new Insets(1, 1, 1, 1));
         destinationButton.addActionListener(this);
-        // if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
         if (vehicle.getDestination() != null) {
             if (vehicle.getDestinationType().equals("Settlement")) {
                 destinationButton.setText(
@@ -268,14 +279,12 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
         // Prepare destination latitude label
         destinationLatitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
-        // if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")))
         if (vehicle.getDestination() != null) destinationLatitudeLabel.setText("Latitude: ");
         destinationLatitudeLabel.setForeground(Color.black);
         destinationCoordsPane.add(destinationLatitudeLabel);
 
         // Prepare destination longitude label
         destinationLongitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
-        // if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")))
         if (vehicle.getDestination() != null) destinationLongitudeLabel.setText("Longitude: ");
         destinationLongitudeLabel.setForeground(Color.black);
         destinationCoordsPane.add(destinationLongitudeLabel);
@@ -291,7 +300,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
         // Prepare distance to destination label
         distanceDestinationLabel = new JLabel("Distance: ", JLabel.LEFT);
-        // if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
         if (vehicle.getDestination() != null) {
             int tempDistance = (int) Math.round(vehicle.getDistanceToDestination());
             distanceDestinationLabel.setText("Distance: " + tempDistance + " km.");
@@ -324,7 +332,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     /** Set up crew pane
      *  @return crew pane
      */
-    protected JPanel setupCrewPane() {
+    protected JPanel setupCrewPane(boolean crewable) {
 
         // Prepare crew pane
         JPanel crewPane = new JPanel();
@@ -332,17 +340,19 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         crewPane.setLayout(new BoxLayout(crewPane, BoxLayout.Y_AXIS));
 
-        // Prepare maximum crew capacity pane
-        JPanel maxCrewPane = new JPanel(new BorderLayout());
-        maxCrewPane.setBorder(
-                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        crewPane.add(maxCrewPane);
+	if (crewable) {
+            // Prepare maximum crew capacity pane
+            JPanel maxCrewPane = new JPanel(new BorderLayout());
+            maxCrewPane.setBorder(
+                    new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+            crewPane.add(maxCrewPane);
 
-        // Prepare maximum crew capacity label
-        JLabel maxCrewLabel = new JLabel("Maximum Crew Capacity: " +
-                vehicle.getMaxPassengers(), JLabel.CENTER);
-        maxCrewLabel.setForeground(Color.black);
-        maxCrewPane.add(maxCrewLabel, "Center");
+            // Prepare maximum crew capacity label
+	    int maxCrew = ((Crewable) vehicle).getCrewCapacity();
+            JLabel maxCrewLabel = new JLabel("Maximum Crew Capacity: " + maxCrew, JLabel.CENTER);
+            maxCrewLabel.setForeground(Color.black);
+            maxCrewPane.add(maxCrewLabel, "Center");
+	}
 
         // Prepare driver pane
         JPanel driverPane = new JPanel(new BorderLayout());
@@ -369,54 +379,56 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             driverButtonPane.add(driverButton);
         }
 
-        // Prepare crew list pane
-        JPanel crewListPane = new JPanel(new BorderLayout());
-        crewListPane.setBorder(
-                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        crewPane.add(crewListPane);
+	if (vehicle instanceof Crewable) {
+            // Prepare crew list pane
+            JPanel crewListPane = new JPanel(new BorderLayout());
+            crewListPane.setBorder(
+                    new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+            crewPane.add(crewListPane);
 
-        // Prepare crew label
-        JLabel peopleLabel = new JLabel("Crew", JLabel.CENTER);
-        peopleLabel.setForeground(Color.black);
-        crewListPane.add(peopleLabel, "North");
+            // Prepare crew label
+            JLabel peopleLabel = new JLabel("Crew", JLabel.CENTER);
+            peopleLabel.setForeground(Color.black);
+            crewListPane.add(peopleLabel, "North");
 
-        // Add monitor button
-        JButton monitorButton = new JButton(new ImageIcon("images/Monitor.gif"));
-        monitorButton.setMargin(new Insets(1, 1, 1, 1));
-        monitorButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        parentDesktop.addModel(new PersonTableModel(vehicle));
-                    }
-                });
-        JPanel monitorPanel = new JPanel();
-        monitorPanel.add(monitorButton);
-        crewListPane.add(monitorPanel, "East");
+            // Add monitor button
+            JButton monitorButton = new JButton(new ImageIcon("images/Monitor.gif"));
+            monitorButton.setMargin(new Insets(1, 1, 1, 1));
+            monitorButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            parentDesktop.addModel(new PersonTableModel((Crewable) vehicle));
+                        }
+                    });
+            JPanel monitorPanel = new JPanel();
+            monitorPanel.add(monitorButton);
+            crewListPane.add(monitorPanel, "East");
 
-        // Prepare crew list
-        DefaultListModel crewListModel = new DefaultListModel();
+            // Prepare crew list
+            DefaultListModel crewListModel = new DefaultListModel();
 
-	    PersonIterator i = vehicle.getPassengers().iterator();
+	    PersonIterator i = ((Crewable) vehicle).getCrew().iterator();
 	    while (i.hasNext()) {
 	        Person person = i.next();
-            if (person != vehicle.getDriver()) {
-                PersonUIProxy tempCrew = (PersonUIProxy) proxyManager.getUnitUIProxy(person);
-                crewInfo.addElement(tempCrew);
-                crewListModel.addElement(tempCrew.getUnit().getName());
+                if (person != vehicle.getDriver()) {
+                    PersonUIProxy tempCrew = (PersonUIProxy) proxyManager.getUnitUIProxy(person);
+                    crewInfo.addElement(tempCrew);
+                    crewListModel.addElement(tempCrew.getUnit().getName());
+                }
             }
-        }
 
-        // This prevents the list from sizing strange due to having no contents
-        if (crewInfo.size() == 0) crewListModel.addElement(" ");
+            // This prevents the list from sizing strange due to having no contents
+            if (crewInfo.size() == 0) crewListModel.addElement(" ");
 
-        crewList = new JList(crewListModel);
-        crewList.setVisibleRowCount(7);
-        crewList.addMouseListener(this);
-        crewList.setPreferredSize(
-                new Dimension(150, (int) crewList.getPreferredSize().getHeight()));
-        JScrollPane crewScroll = new JScrollPane(crewList);
-        JPanel crewScrollPane = new JPanel();
-        crewScrollPane.add(crewScroll);
-        crewListPane.add(crewScrollPane, "Center");
+            crewList = new JList(crewListModel);
+            crewList.setVisibleRowCount(7);
+            crewList.addMouseListener(this);
+            crewList.setPreferredSize(
+                    new Dimension(150, (int) crewList.getPreferredSize().getHeight()));
+            JScrollPane crewScroll = new JScrollPane(crewList);
+            JPanel crewScrollPane = new JPanel();
+            crewScrollPane.add(crewScroll);
+            crewListPane.add(crewScrollPane, "Center");
+	}
 
         // Return crew pane
         return crewPane;
@@ -661,40 +673,42 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 driverButtonPane.add(driverButton);
         }
 
-        // Update crew list
-        DefaultListModel model = (DefaultListModel) crewList.getModel();
-        boolean match = false;
+	if (vehicle instanceof Crewable) {
+            // Update crew list
+            DefaultListModel model = (DefaultListModel) crewList.getModel();
+            boolean match = false;
 
-        // Check if model matches passengers
-        PersonCollection tempPassengers = new PersonCollection(vehicle.getPassengers());
-        tempPassengers.remove(vehicle.getDriver());
+            // Check if model matches passengers
+            PersonCollection tempPassengers = new PersonCollection(((Crewable) vehicle).getCrew());
+            tempPassengers.remove(vehicle.getDriver());
 
-        if (model.getSize() == tempPassengers.size()) {
-            match = true;
-	    PersonIterator i = tempPassengers.iterator();
-	    int count = 0;
-	    while (i.hasNext()) {
-                String tempName = (String) model.getElementAt(count);
-                if (!tempName.equals(i.next().getName())) match = false;
-            }
-        }
-
-        // If no match, update crew list
-        if (!match) {
-            model.removeAllElements();
-            crewInfo.removeAllElements();
-	    PersonIterator i = tempPassengers.iterator();
-	    while (i.hasNext()) {
-                Person tempPassenger = i.next();
-                crewInfo.addElement(proxyManager.getUnitUIProxy(tempPassenger));
-                model.addElement(tempPassenger.getName());
+            if (model.getSize() == tempPassengers.size()) {
+                match = true;
+	        PersonIterator i = tempPassengers.iterator();
+	        int count = 0;
+	        while (i.hasNext()) {
+                    String tempName = (String) model.getElementAt(count);
+                    if (!tempName.equals(i.next().getName())) match = false;
+                }
             }
 
-            // This prevents the list from sizing strange due to having no contents
-            if (crewInfo.size() == 0) model.addElement(" ");
+            // If no match, update crew list
+            if (!match) {
+                model.removeAllElements();
+                crewInfo.removeAllElements();
+	        PersonIterator i = tempPassengers.iterator();
+	        while (i.hasNext()) {
+                    Person tempPassenger = i.next();
+                    crewInfo.addElement(proxyManager.getUnitUIProxy(tempPassenger));
+                    model.addElement(tempPassenger.getName());
+                }
 
-            validate();
-        }
+                // This prevents the list from sizing strange due to having no contents
+                if (crewInfo.size() == 0) model.addElement(" ");
+
+                validate();
+            }
+	}
     }
 
     /** Update odometer info */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-02-09
+ * @version 2.74 2002-02-28
  * @author Scott Davis
  */
 
@@ -16,9 +16,6 @@ import java.util.*;
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
  *  subclassed to represent a specific type of vehicle.
- *
- * It currently also provides a Life Support system for people. This
- * should be revisited soon since not all Vehicle will have LifeSupport systems.
  */
 public abstract class Vehicle extends Unit implements Serializable {
 
@@ -35,14 +32,12 @@ public abstract class Vehicle extends Unit implements Serializable {
     private Person driver; // Driver of the vehicle
     private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
-    private int maxPassengers = 0; // Maximum number of passengers the vehicle can carry.
     protected double range; // Maximum range of vehicle. (km)
     private Coordinates destinationCoords; // Coordinates of the destination
     private Settlement destinationSettlement; // Destination settlement (it applicable)
     private String destinationType; // Type of destination ("None", "Settlement" or "Coordinates")
     private double distanceToDestination = 0; // Distance to the destination (km)
     private boolean isReserved = false; // True if vehicle is currently reserved for a driver and cannot be taken by another
-    private int vehicleSize = 1; // Size of vehicle in arbitrary units.(Value of size units will be established later.)
     private double maintenanceWork = 0; // Work done for vehicle maintenance.
     private double totalMaintenanceWork; // Total amount of work necessary for vehicle maintenance.
     private HashMap potentialFailures; // A table of potential failures in the vehicle. (populated by child classes)
@@ -229,34 +224,6 @@ public abstract class Vehicle extends Unit implements Serializable {
         this.direction.setDirection(direction.getDirection());
     }
 
-    /** Returns the maximum passenger capacity of the vehicle (including the driver).
-     *  @return the maximum passenger capacity of the vehicle
-     */
-    public int getMaxPassengers() {
-        return maxPassengers;
-    }
-
-    /** Returns the maximum passenger capacity of the vehicle (including the driver).
-     *  @param num the maximum passenger capacity of the vehicle
-     */
-    void setMaxPassengers(int num) {
-        maxPassengers = num;
-    }
-
-    /** Returns number of passengers in vehicle
-     *  @return the current number of passengers
-     */
-    public int getPassengerNum() {
-        return getPassengers().size(); 
-    }
-
-    /** Gets a collection of the vehicle's passengers.
-     *  @return PersonCollection of passengers
-     */
-    public PersonCollection getPassengers() {
-        return inventory.getContainedUnits().getPeople();
-    }
-    
     /** Returns driver of the vehicle
      *  @return the driver
      */
@@ -367,20 +334,6 @@ public abstract class Vehicle extends Unit implements Serializable {
         this.estimatedTimeOfArrival = newETA;
     }
 
-    /** Returns the vehicle's size.
-     *  @return the vehicle's size
-     */
-    public int getSize() {
-        return vehicleSize;
-    }
-
-    /** Sets the vehicle's size.
-     *  @param size the vehicle's size
-     */
-    void setSize(int size) {
-        vehicleSize = size;
-    }
-
     /** Adds a potential mechanical failure for the vehicle.
      *  @param failureName the name of the mechanical failure
      */
@@ -457,4 +410,10 @@ public abstract class Vehicle extends Unit implements Serializable {
     public double getTotalMaintenanceWork() {
         return totalMaintenanceWork;
     }
+
+    /** 
+     * Returns a string describing the vehicle.
+     * @return string describing vehicle
+     */
+    public abstract String getDescription();
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.74 2002-02-19
+ * @version 2.74 2002-03-03
  * @author Scott Davis
  */
 
@@ -19,30 +19,39 @@ import java.io.Serializable;
  */
 class ReserveRover extends Task implements Serializable {
 
+    // Rover types
+    public static final int EXPLORER_ROVER = 1;
+    public static final int TRANSPORT_ROVER = 2;
+	
     // Data members
     private double duration = 50D;   // The predetermined duration of task in millisols
     private Rover reservedRover;     // The reserved rover 
     private Coordinates destination; // The destination coordinates for the trip
+    private int roverType;           // The type of rover
 
     /** Constructs a ReserveRover object with a destination.
+     *  @param roverType the type of rover to be reserved
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      *  @param destination the destination of the trip
      */
-    public ReserveRover(Person person, VirtualMars mars, Coordinates destination) {
+    public ReserveRover(int roverType, Person person, VirtualMars mars, Coordinates destination) {
         super("Reserving a rover", person, false, mars);
 
+	this.roverType = roverType;
         this.destination = destination;
         reservedRover = null;
     }
 
     /** Constructs a ReserveRover object without a destinatiion.
+     *  @param roverType the type of rover to be reserved
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public ReserveRover(Person person, VirtualMars mars) {
+    public ReserveRover(int roverType, Person person, VirtualMars mars) {
         super("Reserving a rover", person, false, mars);
 
+	this.roverType = roverType;
         destination = null;
         reservedRover = null;
     }
@@ -66,7 +75,12 @@ class ReserveRover extends Task implements Serializable {
 	    VehicleIterator i = settlement.getParkedVehicles().iterator();
 	    while (i.hasNext()) {
 	        Vehicle tempVehicle = i.next();
-		if ((reservedRover == null) && (tempVehicle instanceof Rover)) {
+		boolean correctRoverType = false;
+		if ((roverType == EXPLORER_ROVER) && (tempVehicle instanceof ExplorerRover)) 
+		    correctRoverType = true;
+		if ((roverType == TRANSPORT_ROVER) && (tempVehicle instanceof TransportRover))
+		    correctRoverType = true;
+		if ((reservedRover == null) && correctRoverType) {
                     boolean reservable = true;
 
                     if (tempVehicle.isReserved()) reservable = false;
@@ -93,7 +107,7 @@ class ReserveRover extends Task implements Serializable {
      *  @param settlement
      *  @return are there any available rovers 
      */
-    public static boolean availableRovers(Settlement settlement) {
+    public static boolean availableRovers(int roverType, Settlement settlement) {
 
         boolean result = false;
 
@@ -104,7 +118,12 @@ class ReserveRover extends Task implements Serializable {
 	VehicleIterator i = settlement.getParkedVehicles().iterator();
 	while (i.hasNext()) {
 	    Vehicle vehicle = i.next();
-            if (vehicle instanceof Rover) {
+	    boolean correctRoverType = false;
+	    if ((roverType == EXPLORER_ROVER) && (vehicle instanceof ExplorerRover)) 
+	        correctRoverType = true;
+	    if ((roverType == TRANSPORT_ROVER) && (vehicle instanceof TransportRover))
+	        correctRoverType = true;
+            if (correctRoverType) {
                 if (!vehicle.isReserved() && !garage.vehicleInGarage(vehicle)) {
 		    if (LoadVehicle.hasEnoughSupplies(settlement, vehicle)) {	
 		        result = true;

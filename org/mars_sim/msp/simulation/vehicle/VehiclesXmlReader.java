@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclesXmlReader.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-03
  * @author Scott Davis
  */
 
@@ -20,9 +20,10 @@ public class VehiclesXmlReader extends MspXmlReader {
 
     // XML element types
     private static final int VEHICLES_LIST = 0;
-    private static final int ROVER = 1;
-    private static final int NAME = 2;
-    private static final int SETTLEMENT = 3;
+    private static final int EXPLORER_ROVER = 1;
+    private static final int TRANSPORT_ROVER = 2;
+    private static final int NAME = 3;
+    private static final int SETTLEMENT = 4;
 
     // Data members
     private int elementType; // The current element type being parsed
@@ -63,12 +64,18 @@ public class VehiclesXmlReader extends MspXmlReader {
             elementType = VEHICLES_LIST;
             vehicles = new VehicleCollection();
         }
-        if (name.equals("ROVER")) {
-            elementType = ROVER;
-            vehicleType = ROVER;
+        if (name.equals("EXPLORER_ROVER")) {
+            elementType = EXPLORER_ROVER;
+            vehicleType = EXPLORER_ROVER;
             currentName = "";
             currentSettlement = null;
         }
+	if (name.equals("TRANSPORT_ROVER")) {
+	    elementType = TRANSPORT_ROVER;
+	    vehicleType = TRANSPORT_ROVER;
+	    currentName = "";
+	    currentSettlement = null;
+	}
         if (name.equals("NAME")) elementType = NAME;
         if (name.equals("SETTLEMENT")) elementType = SETTLEMENT;
     }
@@ -86,11 +93,16 @@ public class VehiclesXmlReader extends MspXmlReader {
             case SETTLEMENT:
                 elementType = vehicleType;
                 break;
-            case ROVER:
-                Rover rover = createRover();
-                if (rover != null) vehicles.add(rover);
+            case EXPLORER_ROVER:
+                Rover explorerRover = createRover(EXPLORER_ROVER);
+                if (explorerRover != null) vehicles.add(explorerRover);
                 elementType = VEHICLES_LIST;
                 break;
+	    case TRANSPORT_ROVER:
+	        Rover transportRover = createRover(TRANSPORT_ROVER);
+		if (transportRover != null) vehicles.add(transportRover);
+		elementType = VEHICLES_LIST;
+		break;
         }
     }
 
@@ -112,18 +124,25 @@ public class VehiclesXmlReader extends MspXmlReader {
         }
     }
     
-    /** Creates a rover object 
+    /** Creates a rover object
+     *  @param roverType type of rover 
      *  @return a rover or null if rover could not be constructed
      */
-    private Rover createRover() {
+    private Rover createRover(int roverType) {
 
         Rover rover = null;
         if (currentSettlement != null) {
-            rover = new Rover(currentName, currentSettlement, mars);
+	    if (roverType == EXPLORER_ROVER) 
+                rover = new ExplorerRover(currentName, currentSettlement, mars);
+	    else if (roverType == TRANSPORT_ROVER) 
+                rover = new TransportRover(currentName, currentSettlement, mars);
         }
         else {
             try {
-                rover = new Rover(currentName, mars, manager);
+		if (roverType == EXPLORER_ROVER)
+                    rover = new ExplorerRover(currentName, mars, manager);
+		else if (roverType == TRANSPORT_ROVER)
+		    rover = new TransportRover(currentName, mars, manager);
             }
             catch (Exception e) {}
         }

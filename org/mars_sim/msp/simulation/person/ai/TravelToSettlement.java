@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-03
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ class TravelToSettlement extends Mission implements Serializable {
     // Data members
     private Settlement startingSettlement;
     private Settlement destinationSettlement;
-    private Rover rover;
+    private TransportRover rover;
     private MarsClock startingTime;
     private double startingDistance;
     private Person lastDriver;
@@ -77,7 +77,8 @@ class TravelToSettlement extends Mission implements Serializable {
             boolean possible = true;
 	    
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) {
-                if (ReserveRover.availableRovers(currentSettlement)) result = 1D; 
+                if (ReserveRover.availableRovers(ReserveRover.TRANSPORT_ROVER, currentSettlement)) 
+		    result = 1D; 
             }
         }
 
@@ -94,7 +95,11 @@ class TravelToSettlement extends Mission implements Serializable {
 
         if (phase.equals(EMBARK) && !hasPerson(person)) { 
             if (person.getSettlement() == startingSettlement) {
-                if (people.size() < missionCapacity) result = 50D;
+                if (people.size() < missionCapacity) {
+		    if (people.size() < startingSettlement.getCurrentPopulationNum()) {	
+			result = 50D;
+		    }
+		}
             }
         }
 
@@ -146,20 +151,21 @@ class TravelToSettlement extends Mission implements Serializable {
         // If a rover cannot be reserved, end mission.
         if (rover == null) {
             if (reserveRover == null) {
-                reserveRover = new ReserveRover(person, mars, destinationSettlement.getCoordinates());
+                reserveRover = new ReserveRover(ReserveRover.TRANSPORT_ROVER, person, mars, 
+		        destinationSettlement.getCoordinates());
 		assignTask(person, reserveRover);
                 return;
             }
             else { 
                 if (reserveRover.isDone()) {
-                    rover = reserveRover.getReservedRover();
+                    rover = (TransportRover) reserveRover.getReservedRover();
                     if (rover == null) {
                         endMission(); 
                         return;
                     }
                     else {
-                        if (rover.getMaxPassengers() < missionCapacity) 
-                            setMissionCapacity(rover.getMaxPassengers());
+                        if (rover.getCrewCapacity() < missionCapacity) 
+                            setMissionCapacity(rover.getCrewCapacity());
                     }
                 }
                 else return;
@@ -307,8 +313,10 @@ class TravelToSettlement extends Mission implements Serializable {
         while (i.hasNext()) {
             Vehicle tempVehicle = i.next();
             Settlement tempSettlement = tempVehicle.getDestinationSettlement();
-            if ((tempSettlement != null) && (tempSettlement == settlement))
-                result -= tempVehicle.getPassengerNum();
+            if ((tempSettlement != null) && (tempSettlement == settlement)) {
+		if (tempVehicle instanceof Crewable)
+                    result -= ((Crewable) tempVehicle).getCrewCapacity();
+	    }
         }
 
         return result;
@@ -337,7 +345,7 @@ class TravelToSettlement extends Mission implements Serializable {
         if (rover != null) rover.setReserved(false);
         else {
             if ((reserveRover != null) && reserveRover.isDone()) {
-                rover = reserveRover.getReservedRover();
+                rover = (TransportRover) reserveRover.getReservedRover();
                 if (rover != null) rover.setReserved(false); 
             }
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.74 2002-02-21
+ * @version 2.74 2002-02-28
  * @author Barry Evans
  */
 
@@ -127,7 +127,7 @@ public class SettlementTableModel extends UnitTableModel {
             case GARAGED : {
                 MaintenanceGarageFacility garage = (MaintenanceGarageFacility)
                                 fMgr.getFacility("Maintenance Garage");
-                result = new Integer(garage.getTotalSize());
+                result = new Integer((int) garage.getVehicleCapacity());
             } break;
 
             case PARKED : {
