@@ -16,7 +16,7 @@
 			<building type="Inflatable Greenhouse" number="1" />
 			
 			<!-- Small nuclear reactor power generator. -->
-			<building type="Nuclear Reactor" number="2" />
+			<building type="MD1 Nuclear Reactor" number="2" />
 			
 			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
 			     hydrogen and carbon dioxide into methane, water and oxygen. 
@@ -40,29 +40,53 @@
 				<!-- (668 Sols = 1 Martian orbit) -->
 				<resupply-mission name="Mars Direct Base resupply 1" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="1336.0" />
+				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="2004.0" />
 			</resupply>
 		</template>
 	
 		<template name="Mars Direct Base (phase 2)">
 			<building type="Lander Hab" number="2" />
 			<building type="Inflatable Greenhouse" number="2" />
-			<building type="Nuclear Reactor" number="3" />
+			<building type="MD1 Nuclear Reactor" number="3" />
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="2" />
 			<vehicle type="Explorer Rover" number="2" />
 			<resupply>
-				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668" />
+				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
 			</resupply>
 		</template>
 		
 		<template name="Mars Direct Base (phase 3)">
 			<building type="Lander Hab" number="3" />
 			<building type="Inflatable Greenhouse" number="3" />
-			<building type="Nuclear Reactor" number="4" />
+			<building type="MD1 Nuclear Reactor" number="4" />
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="3" />
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="1" />
+			<resupply>
+				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
+			</resupply>
+		</template>
+		
+		<template name="Alpha Base (MD phase 4)">
+			<building type="Atmospheric Processor" number="1" />
+			<building type="Residential Quarters" number="1" />
+			<building type="Lounge" number="1" />
+			<building type="Infirmary" number="1" />
+			<building type="Command and Control" number="1" />
+			<building type="Large Greenhouse" number="1" />
+			<building type="Laboratory" number="1" />
+			<building type="Garage" number="1" />
+			<building type="Lander Hab" number="3" />
+			<building type="Inflatable Greenhouse" number="3" />
+			<building type="MD1 Nuclear Reactor" number="4" />
+			<building type="MD4 Nuclear Reactor" number="2" />
+			<building type="Starting ERV Base" number="1" />
+			<building type="ERV Base" number="3" />
+			<vehicle type="Explorer Rover" number="5" />
+			<vehicle type="Transport Rover" number="3" />
 		</template>
 	
 	</settlement-template-list>
@@ -80,7 +104,7 @@
 			<building type="Lander Hab" number="1" />
 			
 			<building type="Inflatable Greenhouse" number="1" />
-			<building type="Nuclear Reactor" number="1" />
+			<building type="MD1 Nuclear Reactor" number="1" />
 			<building type="Starting ERV Base" number="1" />
 			
 			<!-- A new vehicle for the settlement. -->
@@ -102,11 +126,28 @@
 		<resupply name="Mars Direct Base resupply 2">
 			<building type="Lander Hab" number="1" />
 			<building type="Inflatable Greenhouse" number="1" />
-			<building type="Nuclear Reactor" number="1" />
+			<building type="MD1 Nuclear Reactor" number="1" />
 			<building type="Starting ERV Base" number="1" />
 			<vehicle type="Explorer Rover" number="1" />
 			<vehicle type="Transport Rover" number="1" />
 			<person number="4" />
+			<resource type="hydrogen" amount="1000.0" />
+			<resource type="food" amount="500.0" />
+		</resupply>
+		
+		<resupply name="Mars Direct Base resupply 3">
+			<building type="Atmospheric Processor" number="1" />
+			<building type="Residential Quarters" number="1" />
+			<building type="Lounge" number="1" />
+			<building type="Infirmary" number="1" />
+			<building type="Command and Control" number="1" />
+			<building type="Large Greenhouse" number="1" />
+			<building type="Laboratory" number="1" />
+			<building type="Garage" number="1" />
+			<building type="MD4 Nuclear Reactor" number="2" />
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Transport Rover" number="2" />
+			<person number="12" />
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
 		</resupply>
@@ -115,6 +156,10 @@
 	
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
+	
+		<settlement name="Alpha Base" template="Alpha Base (MD phase 4)">
+			<location longitude="random" latitude="random" />
+		</settlement>
 	
 		<settlement name="Port Zubrin" template="Mars Direct Base (phase 3)">
 			<location longitude="0.0 W" latitude="0.0 N" />

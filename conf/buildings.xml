@@ -163,7 +163,7 @@
 	</building>
 	
 	<!-- A small, self-contained 80kW nuclear reactor that requires minimum maintenance. -->
-	<building name="Nuclear Reactor" >
+	<building name="MD1 Nuclear Reactor" >
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -244,6 +244,150 @@
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- A medium-sized, self-contained 200kW nuclear reactor that requires minimum maintenance. -->
+	<building name="MD4 Nuclear Reactor" >
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Standard Power Source" power="200.0" />
+			</power-generation>
+		</functions>
+	</building>	
+	
+	<!-- An uninhabitable specialized building for water and air processing and recycling. -->
+	<building name="Atmospheric Processor">
+		<power-required base-power="50.0" base-power-down-power="10.0" />
+		<functions>
+			<resource-processing power-down-level=".5">
+				<process name="Sebatier">
+					<input resource="Carbon Dioxide" rate=".001" ambient="true" />
+					<input resource="Hydrogen" rate=".002" ambient="false" />
+					<output resource="Methane" rate=".004" ambient="false" />
+					<output resource="Water" rate=".009" ambient="false" />
+				</process>
+				<process name="Water Electrolysis">
+					<input resource="Water" rate=".001" ambient="false" />
+					<output resource="Hydrogen" rate=".00011" ambient="false" />
+					<output resource="Oxygen" rate=".00089" ambient="false" />
+				</process>
+				<process name="CO2 Reduction">
+					<input resource="Carbon Dioxide" rate=".00825" ambient="true" />
+					<output resource="Oxygen" rate=".003" ambient="false" />
+					<output resource="Carbon Monoxide" rate=".00525" ambient="true" />
+				</process>
+				<process name="Water Recycling">
+					<input resource="Waste Water" rate=".002" ambient="false" />
+					<output resource="Water" rate=".00017" ambient="false" />
+				</process>
+				<process name="Carbon Scrubbing">
+					<input resource="Carbon Dioxide" rate=".00067" ambient="false" />
+					<output resource="Oxygen" rate=".0005" ambient="false" />
+				</process>
+				<process name="Ice Melting/Filtration">
+					<input resource="Ice" rate=".01" ambient="false" />
+					<output resource="Water" rate=".005" ambient="false" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Hydrogen" capacity="10000.0" />
+				<resource-storage resource="Methane" capacity="10000.0" />
+				<resource-storage resource="Oxygen" capacity="10000.0" />
+				<resource-storage resource="Water" capacity="10000.0" />
+				<resource-storage resource="Ice" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>		
+	
+	<!-- A specialized living accommodations building for 12 people -->
+	<building name="Residential Quarters">
+		<power-required base-power="20.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="12" power-required="24.0" />
+			<living-accommodations beds="12" />
+		</functions> 
+	</building>
+	
+	<!-- A specialized rest and relaxation building with dining tables and exercise equipment. -->
+	<building name="Lounge">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="20" power-required="40.0" />
+			<recreation />
+			<dining />
+			<exercise capacity="10" />
+		</functions>
+	</building>
+	
+	<!-- A medical building for medical care and research. -->
+	<building name="Infirmary">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="10" power-required="20.0" />
+			<research tech-level="2" capacity="10">
+				<research-speciality name="Medicine" />
+			</research>
+			<medical-care tech-level="5" beds="8" />
+		</functions>
+	</building>
+	
+	<!-- A specialized building for communications and EVA operations. -->
+	<building name="Command and Control">
+		<power-required base-power="50.0" base-power-down-power="10.0" />
+		<functions>
+			<life-support capacity="10" power-required="20.0" />
+			<communication />
+			<EVA airlock-capacity="8" eva-suits="20" />
+		</functions>
+	</building>
+	
+	<!-- A large greenhouse and botany lab. -->
+	<building name="Large Greenhouse">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="10" power-required="20.0" />
+			<research tech-level="2" capacity="5">
+				<research-speciality name="Botany" />
+			</research>
+			<farming crops="30" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
+			<storage>
+				<resource-storage resource="Water" capacity="1000.0" />
+				<resource-storage resource="Waste Water" capacity="1000.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
+				<resource-storage resource="Food" capacity="1000.0" />
+			</storage>	
+			<resource-processing power-down-level=".5">
+				<process name="Carbon Dioxide Pump">
+					<input resource="Carbon Dioxide" rate=".002" ambient="true" />
+					<output resource="Carbon Dioxide" rate=".002" ambient="false" />
+				</process>
+			</resource-processing>					
+		</functions>
+	</building>
+	
+	<!-- A specialized scientific laboratory for areology. -->
+	<!-- TODO: Add more sciences here later. -->
+	<building name="Laboratory">
+		<power-required base-power="30.0" base-power-down-power="10.0" />
+		<functions>
+			<life-support capacity="10" power-required="20.0" />
+			<research tech-level="2" capacity="10">
+				<research-speciality name="Areology" />
+			</research>
+		</functions>
+	</building>
+	
+	<!-- A maintenance garage for rovers. -->
+	<building name="Garage">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="4" power-required="8.0" />
+			<ground-vehicle-maintenance capacity="50000.0" />
+			<storage>
+				<resource-storage resource="Methane" capacity="1000.0" />
+			</storage>
 		</functions>
 	</building>
 
