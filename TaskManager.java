@@ -1,5 +1,5 @@
 //************************** Task Manager **************************
-// Last Modified: 3/3/00
+// Last Modified: 5/24/00
 
 // The TaskManager class keeps track of a person's current task and can randomly
 // assign a new task to a person based on a list of possible tasks and that person's
@@ -32,7 +32,7 @@ class TaskManager {
 		// Create an array of general task classes.
 		// (Add additional general tasks as they are created)
 		
-		try { generalTasks = new Class[] { TaskRelax.class, TaskDrive.class }; }
+		try { generalTasks = new Class[] { TaskRelax.class, TaskDrive.class, TaskTendGreenhouse.class }; }
 		catch(Exception e) { System.out.println("TaskManager.constructor(): " + e.toString()); }
 	}
 	
@@ -141,15 +141,13 @@ class TaskManager {
 }	
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
