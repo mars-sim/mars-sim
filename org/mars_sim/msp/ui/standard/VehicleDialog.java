@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-03-17
+ * @version 2.74 2002-04-23
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.standard;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.malfunction.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -397,10 +398,12 @@ public abstract class VehicleDialog extends UnitDialog {
         maintenanceProgressBar.setStringPainted(true);
         maintenancePane.add(maintenanceProgressBar, "South");
         maintenanceProgress = 0;
-        if (vehicle.getStatus() == Vehicle.MAINTENANCE)
+        if (vehicle.getStatus() == Vehicle.MAINTENANCE) {
+	    MalfunctionManager m = vehicle.getMalfunctionManager();
             maintenanceProgress = (int)(100F *
-                    ((float) vehicle.getCurrentMaintenanceWork() /
-                    (float) vehicle.getTotalMaintenanceWork()));
+                    ((float) m.getMaintenanceWorkTimeCompleted() /
+                    (float) m.getMaintenanceWorkTime()));
+	}
         maintenanceProgressBar.setValue(maintenanceProgress);
 
         // Prepare failure pane
@@ -410,13 +413,13 @@ public abstract class VehicleDialog extends UnitDialog {
         contentPane.add(failurePane);
 
         // Prepare failure label
-        JLabel failureLabel = new JLabel("Mechanical Failure:", JLabel.CENTER);
+        JLabel failureLabel = new JLabel("Malfunction:", JLabel.CENTER);
         failurePane.add(failureLabel);
 
         // Prepare failure detail label
         failureDetailLabel = new JLabel("None", JLabel.CENTER);
         failurePane.add(failureDetailLabel);
-        MechanicalFailure failure = vehicle.getMechanicalFailure();
+        Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
         if ((failure != null) && !failure.isFixed()) {
             failureDetailLabel.setText(failure.getName());
             failureName = failure.getName();
@@ -433,9 +436,9 @@ public abstract class VehicleDialog extends UnitDialog {
         failurePane.add(repairProgressBar);
         repairProgress = 0;
         if ((failure != null) && !failure.isFixed()) {
-            double totalTime = failure.getTotalWorkTime();
-            double remainingTime = failure.getRemainingWorkTime();
-            repairProgress = (int)(100D * (totalTime - remainingTime) / totalTime);
+            double totalTime = failure.getWorkTime();
+            double completedTime = failure.getCompletedWorkTime();
+            repairProgress = (int)(100D * (completedTime) / totalTime);
         }
         repairProgressBar.setValue(repairProgress);
 
@@ -579,7 +582,7 @@ public abstract class VehicleDialog extends UnitDialog {
     protected void updateMechanicalFailure() {
 
         // Update failure detail label
-        MechanicalFailure failure = vehicle.getMechanicalFailure();
+        Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
         boolean change = false;
 
         if ((failure == null) || failure.isFixed()) {
@@ -600,10 +603,10 @@ public abstract class VehicleDialog extends UnitDialog {
         // Update repair progress bar
         int repairProgressTemp = 0;
         if ((failure != null) && !failure.isFixed()) {
-            double totalTime = failure.getTotalWorkTime();
-            double remainingTime = failure.getRemainingWorkTime();
+            double totalTime = failure.getWorkTime();
+            double completedTime = failure.getCompletedWorkTime();
             repairProgressTemp =
-                    (int)(100F * (totalTime - remainingTime) / totalTime);
+                    (int)(100F * (completedTime) / totalTime);
         }
         if (repairProgress != repairProgressTemp) {
             repairProgress = repairProgressTemp;
@@ -618,8 +621,8 @@ public abstract class VehicleDialog extends UnitDialog {
         int maintenanceProgressTemp = 0;
         if (vehicle.getStatus() == Vehicle.MAINTENANCE)
             maintenanceProgressTemp = (int)(100F *
-                    ((float) vehicle.getCurrentMaintenanceWork() /
-                    (float) vehicle.getTotalMaintenanceWork()));
+                    ((float) vehicle.getMalfunctionManager().getMaintenanceWorkTimeCompleted() /
+                    (float) vehicle.getMalfunctionManager().getMaintenanceWorkTime()));
         if (maintenanceProgress != maintenanceProgressTemp) {
             maintenanceProgress = maintenanceProgressTemp;
             maintenanceProgressBar.setValue(maintenanceProgress);

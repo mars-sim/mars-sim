@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-23
  * @author Scott Davis
  */
 
@@ -29,10 +29,10 @@ public class TaskManager implements Serializable {
     // Array of available tasks
     private Class[] availableTasks = { Relax.class, TendGreenhouse.class,
                                        MaintainVehicle.class,
+                                       MaintainSettlement.class,
+				       MaintainEquipment.class,
                                        Sleep.class, EatMeal.class,
-                                       RepairMechanicalFailure.class,
                                        MedicalAssistance.class,
-                                       MaintainSettlement.class, 
                                        StudyRockSamples.class };
 
     /** Constructs a TaskManager object

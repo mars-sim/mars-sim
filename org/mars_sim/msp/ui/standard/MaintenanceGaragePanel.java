@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGaragePanel.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-23
  * @author Scott Davis
  */
 
@@ -121,8 +121,8 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 	    vehicleProgressBar.setPreferredSize(new Dimension(100, 0));
 			
 	    int maintenanceProgress = 0;
-	    float currentWork = (float) vehicle.getCurrentMaintenanceWork();
-	    float totalWork = (float) vehicle.getTotalMaintenanceWork();
+	    float currentWork = (float) vehicle.getMalfunctionManager().getMaintenanceWorkTimeCompleted();
+	    float totalWork = (float) vehicle.getMalfunctionManager().getMaintenanceWorkTime();
 	    maintenanceProgress = (int) (100F * (currentWork / totalWork));
 			
 	    vehicleProgressBar.setValue(maintenanceProgress);
@@ -175,8 +175,8 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 		Vehicle vehicle = (Vehicle) parkedVehicles.elementAt(x);
 				
 		int maintenanceProgress = 0;
-		float currentWork = (float) vehicle.getCurrentMaintenanceWork();
-		float totalWork = (float) vehicle.getTotalMaintenanceWork();
+		float currentWork = (float) vehicle.getMalfunctionManager().getMaintenanceWorkTimeCompleted();
+		float totalWork = (float) vehicle.getMalfunctionManager().getMaintenanceWorkTime();
 		maintenanceProgress = (int) (100F * (currentWork / totalWork));
 				
 		((JProgressBar) vehicleProgressBars.elementAt(x)).setValue(maintenanceProgress);
@@ -218,8 +218,8 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 		vehicleProgressBar.setPreferredSize(new Dimension(100, 0));
 				
 		int maintenanceProgress = 0;
-		float currentWork = (float) vehicle.getCurrentMaintenanceWork();
-		float totalWork = (float) vehicle.getTotalMaintenanceWork();
+		float currentWork = (float) vehicle.getMalfunctionManager().getMaintenanceWorkTimeCompleted();
+		float totalWork = (float) vehicle.getMalfunctionManager().getMaintenanceWorkTime();
 		maintenanceProgress = (int) (100F * (currentWork / totalWork));
 				
 	        vehicleProgressBar.setValue(maintenanceProgress);

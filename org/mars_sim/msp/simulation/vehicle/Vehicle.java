@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-04-21
+ * @version 2.74 2002-04-22
  * @author Scott Davis
  */
 
@@ -24,7 +24,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
     public final static String MOVING = "Moving";
-    public final static String MECHANICAL_FAILURE = "Mechanical Failure";
+    public final static String MALFUNCTION = "Malfunction";
     public final static String MAINTENANCE = "Periodic Maintenance";
 
     // Data members
@@ -41,10 +41,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private String destinationType; // Type of destination ("None", "Settlement" or "Coordinates")
     private double distanceToDestination = 0; // Distance to the destination (km)
     private boolean isReserved = false; // True if vehicle is currently reserved for a driver and cannot be taken by another
-    private double maintenanceWork = 0; // Work done for vehicle maintenance.
-    private double totalMaintenanceWork; // Total amount of work necessary for vehicle maintenance.
-    private HashMap potentialFailures; // A table of potential failures in the vehicle. (populated by child classes)
-    private MechanicalFailure mechanicalFailure; // Vehicle's current mechanical failure.
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
 
@@ -96,8 +92,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	malfunctionManager.addScopeString("Vehicle");
 	    
         setDestinationType("None");
-        potentialFailures = new HashMap();
-        totalMaintenanceWork = 1000D; // (1 sol)
         direction = new Direction(0);
     }
 
@@ -118,8 +112,8 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    else status = PARKED;
 	}
 	else {
-	    if ((mechanicalFailure != null) && !mechanicalFailure.isFixed()) {
-	        status = MECHANICAL_FAILURE;
+	    if (malfunctionManager.hasMalfunction()) {
+	        status = MALFUNCTION;
 	    }
 	    else {
 	        if (speed == 0D) status = PARKED;
@@ -339,83 +333,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void setETA(MarsClock newETA) {
         this.estimatedTimeOfArrival = newETA;
-    }
-
-    /** Adds a potential mechanical failure for the vehicle.
-     *  @param failureName the name of the mechanical failure
-     */
-    public void addPotentialFailure(String failureName) {
-        potentialFailures.put(failureName, new Integer(1));
-    }
-
-    /** Returns the vehicle's current mechanical failure.
-     *  @return the vehicle's current mechanical failure
-     */
-    public MechanicalFailure getMechanicalFailure() {
-        return mechanicalFailure;
-    }
-
-    /** Creates a new mechanical failure for the vehicle from its list
-     *  of potential failures.
-     */
-    public void newMechanicalFailure() {
-        Object keys[] = potentialFailures.keySet().toArray();
-
-        // Sum weights
-        int totalWeight = 0;
-
-        for (int x = 0; x < keys.length; x++) {
-            totalWeight += ((Integer) potentialFailures.get((String) keys[x])).intValue();
-        }
-
-        // Get a random number from 0 to the total weight
-        int r = (int) Math.round(Math.random() * (double) totalWeight);
-
-        // Determine which failure is selected
-        int tempWeight = ((Integer) potentialFailures.get((String) keys[0])).intValue();
-        int failureNum = 0;
-        while (tempWeight < r) {
-            failureNum++;
-            tempWeight += ((Integer) potentialFailures.get((String) keys[failureNum])).intValue();
-        }
-        String failureName = (String) keys[failureNum];
-
-        mechanicalFailure = new MechanicalFailure(failureName);
-	speed = 0D;
-        // System.out.println(name + " has mechanical failure: " + mechanicalFailure.getName());
-    }
-
-    /** Add work to periodic vehicle maintenance.
-     *  @param time amount of work time added to vehicle maintenance (in millisols)
-     */
-    public void addWorkToMaintenance(double time) {
-        // If vehicle has already been maintained, return.
-        if (distanceMaint == 0D) {
-            return;
-        }
-
-        // Add work to maintenance work done.
-        maintenanceWork += time;
-
-        // If maintenance work is complete, vehicle good for 5,000 km.
-        if (maintenanceWork >= totalMaintenanceWork) {
-            maintenanceWork = 0;
-            distanceMaint = 0D;
-        }
-    }
-
-    /** Returns the current amount of work towards maintenance.
-     *  @return the current amount of work towards maintenance
-     */
-    public double getCurrentMaintenanceWork() {
-        return maintenanceWork;
-    }
-
-    /** Returns the total amount of work needed for maintenance.
-     *  @return the total amount of work needed for maintenance
-     */
-    public double getTotalMaintenanceWork() {
-        return totalMaintenanceWork;
     }
 
     /**

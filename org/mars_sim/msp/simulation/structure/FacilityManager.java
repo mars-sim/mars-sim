@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure;
 
 import org.mars_sim.msp.simulation.*;
-import java.util.Vector;
+import java.util.*;
 import java.io.Serializable;
 
 /** The FacilityManager class manages a settlement's facilities.
@@ -62,6 +62,14 @@ public class FacilityManager implements Serializable {
         return facilityList.size();
     }
 
+    /**
+     * Gets an iterator for the facilities.
+     * @return facility iterator
+     */
+    public Iterator getFacilities() {
+        return facilityList.iterator();
+    }
+    
     /** Returns a facility given an index number. If there is no
      *  facility at that index number, return null.
      *  @param index index number of the requested facility

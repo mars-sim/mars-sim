@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.74 2002-04-18
+ * @version 2.74 2002-04-22
  * @author Scott Davis
  */
 
@@ -62,7 +62,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
         setTerrainHandlingCapability(0D); // Default terrain capability
         setTerrainGrade(0D);
         elevation = mars.getSurfaceFeatures().getSurfaceTerrain().getElevation(location);
-        initFailures();
     }
 
     /** Returns vehicle's current status
@@ -75,20 +74,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	else status = super.getStatus();
 
 	return status;
-    }
-    
-    /** Initialize potential vehicle failures */
-    private void initFailures() {
-        addPotentialFailure("Fuel Leak");
-        addPotentialFailure("Air Leak");
-        addPotentialFailure("Life Support Failure");
-        addPotentialFailure("Engine Problems");
-        addPotentialFailure("Battery Failure");
-        addPotentialFailure("Flat Tire");
-        addPotentialFailure("Transmission Failure");
-        addPotentialFailure("Coolant Leak");
-        addPotentialFailure("Navigation System Failure");
-        addPotentialFailure("Communications Failure");
     }
     
     /** Returns the elevation of the vehicle in km. 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainSettlement.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-22
  * @author Scott Davis
  */
 
@@ -9,19 +9,19 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
+import java.util.*;
 
 /** The MaintainSettlement class is a task for cleaning, organizing and performing
  *  preventive maintenance on a settlement.
- *  The duration of the task is by default chosen randomly, up to 200 millisols.
- *
- *  Note: Preventive maintenance might affect settlement mechanical failures when
- *  they are implemented.
  */
 class MaintainSettlement extends Task implements Serializable {
 
     // Data members
-    private double duration; // The predetermined duration of task in millisols
+    private Malfunctionable entity; // Settlement or facility to be maintained.
+    private double duration; // Duration (in millisols) the person with perform this task.
 
     /** Constructs a MaintainSettlement object
      *  @param person the person to perform the task
@@ -30,8 +30,46 @@ class MaintainSettlement extends Task implements Serializable {
     public MaintainSettlement(Person person, Mars mars) {
         super("Performing Settlement Maintenance", person, true, mars);
 
-	description = "Performing Settlement Maintenance on " + person.getSettlement().getName();
-        duration = RandomUtil.getRandomInt(200);
+        // Randomly determine duration, from 0 - 500 millisols
+	duration = RandomUtil.getRandomDouble(500D);
+	
+        Settlement settlement = person.getSettlement();
+	FacilityManager manager = settlement.getFacilityManager();
+	
+	// Determine either settlement or facility to maintain.
+	double totalProbabilityWeight = 0D;
+	totalProbabilityWeight += settlement.getMalfunctionManager().getTimeSinceLastMaintenance();
+	Iterator i = manager.getFacilities();
+	while (i.hasNext()) {
+	    Facility facility = (Facility) i.next();
+	    totalProbabilityWeight += facility.getMalfunctionManager().getTimeSinceLastMaintenance();
+	}
+
+	double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);
+
+	double lastMaint = settlement.getMalfunctionManager().getTimeSinceLastMaintenance();
+	if (chance < lastMaint) {
+            entity = settlement;
+	    description = "Performing maintenance on " + settlement.getName();
+	    System.out.println(person.getName() + " " + description + " - " + lastMaint);
+	}
+	else {
+            chance -= lastMaint; 
+	    i = manager.getFacilities();
+	    while (i.hasNext()) {
+	        Facility facility = (Facility) i.next();
+		lastMaint = facility.getMalfunctionManager().getTimeSinceLastMaintenance();
+		if (chance < lastMaint) {
+		    entity = facility;
+		    description = "Performing maintenance on " + settlement.getName() + " " + facility.getName();
+		    System.out.println(person.getName() + " " + description + " - " + lastMaint);
+		    break;
+		}
+		else chance -= lastMaint;
+	    }
+	}
+
+	if (entity == null) done = true;
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -42,9 +80,19 @@ class MaintainSettlement extends Task implements Serializable {
      */
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
-	    
-        if (person.getSettlement() != null) result = 50D;
-
+	  
+	// If person is in a settlement, determine probability based on the time
+	// since last maintenance for the settlement and all of its facilities.
+	Settlement settlement = person.getSettlement();
+	if (settlement != null) {
+            result += (settlement.getMalfunctionManager().getTimeSinceLastMaintenance() / 100D);
+	    Iterator i = settlement.getFacilityManager().getFacilities();
+	    while (i.hasNext()) {
+	        Facility facility = (Facility) i.next();
+		result += (facility.getMalfunctionManager().getTimeSinceLastMaintenance() / 100D);
+	    }
+	}
+		
         // Effort-driven task modifier.
 	result*= person.getPerformanceRating();
 	
@@ -60,14 +108,42 @@ class MaintainSettlement extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
 	// If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
-	
-        timeCompleted += time;
-        if (timeCompleted > duration) {
+        if (person.getPerformanceRating() == 0D) {
+	    done = true;
+	    return 0D;
+	}
+
+        // Check if maintenance has already been completed.
+	if (entity.getMalfunctionManager().getTimeSinceLastMaintenance() == 0D) {
             done = true;
-            return timeCompleted - duration;
-        }
-        else return 0;
+	    return 0D;
+	}
+	
+	// Determine effective work time based on "Mechanic" skill.
+	double workTime = timeLeft;
+        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        if (mechanicSkill == 0) workTime /= 2;
+        if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
+
+        // Add work to the maintenance
+        entity.getMalfunctionManager().addMaintenanceWorkTime(workTime);
+
+        // Add experience to "Mechanic" skill.
+        // (1 base experience point per 100 millisols of time spent)
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        double experience = timeLeft / 100D;
+	NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
+        person.getSkillManager().addExperience("Mechanic", experience);
+
+        // If maintenance is complete, task is done.
+	if (entity.getMalfunctionManager().getTimeSinceLastMaintenance() == 0D) done = true;
+
+        // Keep track of the duration of the task.
+	timeCompleted += time;
+	if (timeCompleted >= duration) done = true;
+	
+	return 0D;
     }
 }
 

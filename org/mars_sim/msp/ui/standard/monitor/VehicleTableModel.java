@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.74 2002-02-28
+ * @version 2.74 2002-04-23
  * @author Barry Evans
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.ui.standard.UIProxyManager;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
@@ -153,11 +154,11 @@ public class VehicleTableModel extends UnitTableModel {
 		}
             } break;
 
-            // Status is a combination of Mechincal failure and maintenance
+            // Status is a combination of Mechical failure and maintenance
             case STATUS : {
                 StringBuffer status = new StringBuffer();
                 status.append(vehicle.getStatus());
-                MechanicalFailure failure = vehicle.getMechanicalFailure();
+                Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
                 if ((failure != null) && !failure.isFixed()) {
                     status.append(" ");
                     status.append(failure.getName());
