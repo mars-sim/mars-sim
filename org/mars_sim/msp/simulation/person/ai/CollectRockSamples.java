@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2003-02-27
  * @author Scott Davis
  */
 

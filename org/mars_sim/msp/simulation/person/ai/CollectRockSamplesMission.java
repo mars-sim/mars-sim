@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2003-02-27
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     final private static String DRIVEHOME = "Driving Home";
 
     // Amount of rock samples to be gathered at a given site. (in kg.) 
-    final private static double SITE_SAMPLE_AMOUNT = 100D;
+    final private static double SITE_SAMPLE_AMOUNT = 300D;
     
     // Data members
     private Settlement startingSettlement; // The settlement the mission starts at.
@@ -95,7 +95,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             if (!ReserveRover.availableRovers(ReserveRover.EXPLORER_ROVER, currentSettlement)) possible = false;
 
             double rocks = currentSettlement.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
-            if (rocks >= 300D) possible = false;
+            if (rocks >= 500D) possible = false;
 
             if (currentSettlement.getCurrentPopulationNum() <= 1) possible = false;
 	    
@@ -420,7 +420,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private void determineCollectionSites(double roverRange) {
 
         Vector tempVector = new Vector();
-        int numSites = RandomUtil.getRandomInt(1, 5);
+        int numSites = RandomUtil.getRandomInt(1, 8);
         Coordinates startingLocation = startingSettlement.getCoordinates();
 
         // Determine first site
