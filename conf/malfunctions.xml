@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+
+<MALFUNCTION_LIST>
+
+    <MALFUNCTION>
+        <NAME>Air Leak</NAME>
+        <SEVERITY>100</SEVERITY>
+        <SCOPE>
+            <ENTITY>LifeSupport</ENTITY>
+        </SCOPE>
+        <EFFECTS>
+ 	    <ENTITY>LifeSupport.Oxygen</ENTITY>
+	    <ENTITY>LifeSupport.AirPressure</ENTITY>
+        </EFFECTS>
+        <PROBABILITY>10.0</PROBABILITY>
+        <WORK_EMERGENCY>10.0</WORK_EMERGENCY>
+        <WORK_TIME>100.0</WORK_TIME>
+        <EVA_WORK_TIME>0.0<EVA_WORK_TIME>
+    </MALFUNCTION>
+
+    <MALFUNCTION>
+        <NAME>Electrical Fire</NAME>
+        <SEVERITY>90</SEVERITY>
+        <SCOPE>
+            <ENTITY>Settlement</ENTITY>
+	    <ENTITY>Vehicle</ENTITY>
+        </SCOPE>
+        <EFFECTS>
+            <ENTITY>LifeSupport.Temperature</ENTITY>
+        <EFFECTS>
+        <MEDICAL>
+            <COMPLAINT>
+                <NAME>Burns</NAME>
+                <PROBABILITY>30.0</PROBABILITY>
+	    </COMPLAINT>
+        </MEDICAL>
+        <PROBABILITY>15.0</PROBABILITY>
+        <WORK_EMERGENCY>10.0</WORK_EMERGENCY>
+        <WORK_TIME>100.0</WORK_EMERGENCY>
+    </MALFUNCTION>
+
+</MALFUNCTION_LIST>
