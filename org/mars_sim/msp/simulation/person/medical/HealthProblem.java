@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthProblem.java
- * @version 2.75 2004-01-15
+ * @version 2.76 2004-05-24
  * @author Barry Evans
  */
 
@@ -247,7 +247,7 @@ public class HealthProblem implements Serializable {
 						usedAid.stopTreatment(this);
 					}
 					catch (Exception e) {
-						System.err.println("HealthProblem.timePassing(): " + e.getMessage());
+						// System.err.println("HealthProblem.timePassing(): " + e.getMessage());
 					}
 					usedAid = null;
 				}
@@ -293,7 +293,7 @@ public class HealthProblem implements Serializable {
                         usedAid.stopTreatment(this);
                     }
                     catch (Exception e) {
-                    	System.err.println("HealthProblem.timePassing(): " + e.getMessage());
+                    	// System.err.println("HealthProblem.timePassing(): " + e.getMessage());
                     }
                     usedAid = null;
                 }
@@ -307,7 +307,7 @@ public class HealthProblem implements Serializable {
                             usedAid.stopTreatment(this);
                         }
                         catch (Exception e) {
-                            System.err.println("HealthProblem.timePassing(): " + e.getMessage());
+                            // System.err.println("HealthProblem.timePassing(): " + e.getMessage());
                         }
                         usedAid = null;
                     }
