@@ -376,6 +376,17 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 				if (!result.contains(person)) result.add(person);
 			}
 		}
+		
+		// Check all people who are outside the settlement and not on missions.
+		PersonIterator l = Simulation.instance().getUnitManager().getPeople().iterator();
+		while (l.hasNext()) {
+			Person person = l.next();
+			if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+				if (!person.getMind().hasActiveMission()) {
+					if (person.getCoordinates().equals(getCoordinates())) result.add(person);
+				}
+			}
+		}
     	
     	return result;
     }
