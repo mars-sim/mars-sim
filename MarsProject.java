@@ -1,13 +1,15 @@
 //*********************** Mars Simulation Project ***********************
-// Last Modified: 2/21/00
+// Last Modified: 3/15/00
 
 // The MarsProject class is the main class for the application.
 // It creates both virtual Mars and the user interface.
 
 import java.io.*;
 import javax.swing.plaf.metal.*;
+import javax.swing.*;
+import java.awt.*;
 
-class MarsProject {
+public class MarsProject {
 
 	// Constructor
 
@@ -28,6 +30,10 @@ class MarsProject {
 		
 		MetalLookAndFeel.setCurrentTheme(new MarsTheme());
 		
+		// Create a splash window
+		
+		SplashWindow splashWindow = new SplashWindow();
+		
 		// Create virtual mars
 		
 		VirtualMars mars = new VirtualMars();
@@ -35,6 +41,11 @@ class MarsProject {
 		// Create main desktop window
 		
 		MainWindow window = new MainWindow(mars);
+		
+		// Free memory from splash window
+		
+		splashWindow.dispose();
+		splashWindow = null;
 	}
 
 	// Main Method
