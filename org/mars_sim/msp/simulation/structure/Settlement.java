@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-21
  * @author Scott Davis
  */
 
@@ -92,7 +92,11 @@ public class Settlement extends Structure implements LifeSupport {
 	double water = (waterCap / 4D) + RandomUtil.getRandomDouble(waterCap / 4D);
 	inventory.addResource(Inventory.WATER, water); 
 	double food = (foodCap / 4D) + RandomUtil.getRandomDouble(foodCap / 4D);
-	inventory.addResource(Inventory.FOOD, food); 
+	inventory.addResource(Inventory.FOOD, food);
+
+	// Set random initial rock samples from 0 to 500 kg.
+	double rockSamples = RandomUtil.getRandomDouble(500D);
+	inventory.addResource(Inventory.ROCK_SAMPLES, rockSamples);
     }
 	
     /** Returns the facility manager for the settlement

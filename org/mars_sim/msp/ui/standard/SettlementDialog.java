@@ -25,6 +25,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
     private Settlement settlement; // Settlement which the dialog window is about.
     private JList vehicleList; // List of parked vehicles
     private FacilityPanel[] facilityPanes; // Panes for each of the settlement's facilities.
+    private InventoryPanel inventoryPane; // The inventory pane.
 
     /** Constructs a SettlementDialog object 
      *  @param parentDesktop the desktop pane
@@ -43,6 +44,8 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         for (int x = 0; x < facilityPanes.length; x++) {
             facilityPanes[x].updateInfo();
         }
+
+	inventoryPane.updateInfo();
     }
 
     /** Update vehicle list */
@@ -128,7 +131,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         // Prepare and add each facility pane
         FacilityManager facilityManager = settlement.getFacilityManager();
         
-        facilityPanes = new FacilityPanel[6];
+        facilityPanes = new FacilityPanel[5];
         
         // Prepare greenhouse pane
         GreenhouseFacility greenhouse = (GreenhouseFacility) facilityManager.getFacility("Greenhouse");
@@ -153,16 +156,15 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         tabPane.add(garagePane, garagePane.getTabName());
         facilityPanes[3] = garagePane;
         
-        // Prepare storeroom pane
-        StoreroomFacilityPanel storeroomPane = new StoreroomFacilityPanel(settlement, parentDesktop);
-        tabPane.add(storeroomPane, storeroomPane.getTabName());
-        facilityPanes[4] = storeroomPane;
-
         // Prepare INSITU resoruce processor pane
         InsituResourceProcessorFacility processor = (InsituResourceProcessorFacility) facilityManager.getFacility("INSITU Resource Processor");
         InsituResourceProcessorFacilityPanel processorPane = new InsituResourceProcessorFacilityPanel(processor, parentDesktop);
         tabPane.add(processorPane, processorPane.getTabName());
-        facilityPanes[5] = processorPane;
+        facilityPanes[4] = processorPane;
+
+	// Prepare inventory pane.
+	inventoryPane = new InventoryPanel(settlement.getInventory());
+	tabPane.add(inventoryPane, "Inventory");
     }
 
     /** Prepare vehicles pane 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-22
  * @author Scott Davis
  */
 
@@ -53,10 +53,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected JLabel failureDetailLabel; // Mechanical failure name label
     protected JProgressBar repairProgressBar; // Failure repair progress bar
     protected JProgressBar maintenanceProgressBar; // Maintenance progress bar
-    protected JLabel foodValueLabel; // A label displaying the stores of food.
-    protected JLabel oxygenValueLabel; // A label displaying the stores of oxygen.
-    protected JLabel waterValueLabel; // A label displaying the stores of water.
-    protected JLabel fuelValueLabel; // A label displaying the stores of fuel.
+    protected InventoryPanel inventoryPane; // The inventory panel.
 
     // Cached data members
     protected String status; // Cached status of vehicle
@@ -70,10 +67,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected String failureName; // Cached mechanical failure name.
     protected int repairProgress; // Cached repair progress percentage.
     protected int maintenanceProgress; // Cached maintenance progress percentage;
-    protected double fuel; // Cached fuel stores in vehicle
-    protected double oxygen; // Cached oxygen stores in vehicle
-    protected double water; // Cached water stores in vehicle
-    protected double food; // Cached food stores in vehicle
 
     /** Constructs a VehicleDialog object
      *  @param parentDesktop the desktop pane
@@ -104,7 +97,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         updateOdometer();
         updateMechanicalFailure();
         updateMaintenance();
-        updateStorage();
+	inventoryPane.updateInfo();
     }
 
     /** Implement MouseListener Methods */
@@ -168,7 +161,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         tabPane.addTab("Navigation", setupNavigationPane());
         tabPane.addTab("Crew", setupCrewPane());
         tabPane.addTab("Damage", setupDamagePane());
-        tabPane.addTab("Storage", setupStoragePane());
+	inventoryPane = new InventoryPanel(vehicle.getInventory());
+	tabPane.addTab("Inventory", inventoryPane);
         mainPane.add(tabPane, "Center");
     }
 
@@ -555,79 +549,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         return damagePane;
     }
 
-    /** Set up storage pane
-     *  @return storage pane
-     */
-    protected JPanel setupStoragePane() {
-
-        // Prepare damage pane
-        JPanel storagePane = new JPanel(new BorderLayout(0, 5));
-        storagePane.setBorder(
-                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-
-        // Prepare name label
-        JLabel nameLabel = new JLabel("Storage", JLabel.CENTER);
-        nameLabel.setForeground(Color.black);
-        storagePane.add(nameLabel, "North");
-
-        // Prepare content pane
-        JPanel contentPane = new JPanel();
-        contentPane.setBorder(
-                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        storagePane.add(contentPane, "Center");
-
-        // Prepare label pane
-	JPanel labelPane = new JPanel(new GridLayout(5, 2, 5, 3));
-	contentPane.add(labelPane);
-
-        // Prepare fuel label
-	JLabel fuelLabel = new JLabel("Fuel:");
-	fuelLabel.setForeground(Color.black);
-	labelPane.add(fuelLabel);
-
-	// Prepare fuel value label
-	fuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
-	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel) + " kg", JLabel.RIGHT);
-	fuelValueLabel.setForeground(Color.black);
-	labelPane.add(fuelValueLabel);
-
-        // Prepare oxygen label
-	JLabel oxygenLabel = new JLabel("Oxygen:");
-	oxygenLabel.setForeground(Color.black);
-	labelPane.add(oxygenLabel);
-
-	// Prepare oxygen value label
-	oxygen = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
-	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen) + " kg", JLabel.RIGHT);
-	oxygenValueLabel.setForeground(Color.black);
-	labelPane.add(oxygenValueLabel);
-
-        // Prepare water label
-	JLabel waterLabel = new JLabel("Water:");
-	waterLabel.setForeground(Color.black);
-	labelPane.add(waterLabel);
-
-	// Prepare water value label
-	water = vehicle.getInventory().getResourceMass(Inventory.WATER);
-	waterValueLabel = new JLabel("" + roundOneDecimal(water) + " kg", JLabel.RIGHT);
-	waterValueLabel.setForeground(Color.black);
-	labelPane.add(waterValueLabel);
-
-        // Prepare food label
-	JLabel foodLabel = new JLabel("Food:");
-	foodLabel.setForeground(Color.black);
-	labelPane.add(foodLabel);
-
-	// Prepare food value label
-	food = vehicle.getInventory().getResourceMass(Inventory.FOOD);
-	foodValueLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
-	foodValueLabel.setForeground(Color.black);
-	labelPane.add(foodValueLabel);
-
-        // Return storage pane
-        return storagePane;
-    }
-
     /** Update status info */
     protected void updateStatus() {
 
@@ -841,37 +762,5 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             maintenanceProgress = maintenanceProgressTemp;
             maintenanceProgressBar.setValue(maintenanceProgress);
         }
-    }
-
-    /** Update storage */
-    protected void updateStorage() {
-
-        // Update fuel
-	double newFuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
-        if (fuel != newFuel) {
-	    fuel = newFuel;
-	    fuelValueLabel.setText("" + roundOneDecimal(fuel) + " kg");
-	}
-
-        // Update oxygen
-	double newOxygen = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
-	if (oxygen != newOxygen) {
-	    oxygen = newOxygen;
-	    oxygenValueLabel.setText("" + roundOneDecimal(oxygen) + " kg");
-	}
-
-        // Update water
-	double newWater = vehicle.getInventory().getResourceMass(Inventory.WATER);
-	if (water != newWater) {
-	    water = newWater;
-	    waterValueLabel.setText("" + roundOneDecimal(water) + " kg");
-	}
-
-        // Update food
-	double newFood = vehicle.getInventory().getResourceMass(Inventory.FOOD);
-        if (food != newFood) {
-	    food = newFood;
-	    foodValueLabel.setText("" + roundOneDecimal(food) + " kg");
-	}
     }
 }

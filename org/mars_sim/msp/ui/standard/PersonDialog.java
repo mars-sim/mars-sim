@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-22
  * @author Scott Davis
  */
 
@@ -38,6 +38,7 @@ public class PersonDialog extends UnitDialog {
     private JLabel healthLabel;     // Health state label
     private JLabel performanceLabel;   // Performance rating
     private JProgressBar healthStatus; // Health state in current phase
+    private InventoryPanel inventoryPane; // The inventory panel
 
     // Cached person data
     private Coordinates unitCoords;
@@ -77,6 +78,7 @@ public class PersonDialog extends UnitDialog {
 		updateSkills();
 		updateTask();
         updateCondition();
+	inventoryPane.updateInfo();
 	}
 
 	/** Update position */
@@ -236,7 +238,7 @@ public class PersonDialog extends UnitDialog {
 	/** Set window size
      *  @return the window's size
      */
-	protected Dimension setWindowSize() { return new Dimension(300, 345); }
+	protected Dimension setWindowSize() { return new Dimension(300, 375); }
 
 	/** Prepare components */
 	protected void setupComponents() {
@@ -253,6 +255,8 @@ public class PersonDialog extends UnitDialog {
         tabPane.addTab("Condition", setupConditionPane());
 		tabPane.addTab("Attributes", setupAttributePane());
 		tabPane.addTab("Skills", setupSkillPane());
+		inventoryPane = new InventoryPanel(person.getInventory());
+		tabPane.addTab("Inventory", inventoryPane);
 		mainPane.add(tabPane, "Center");
 	}
 

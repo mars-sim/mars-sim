@@ -191,4 +191,28 @@ public class UnitCollection implements Serializable {
         }
         return people;
     }
+
+    /** Merges a equipment collection into this unit collection.
+     *  @param equipment equipment collection to merge
+     */
+    public void mergeEquipment(EquipmentCollection equipment) {
+        EquipmentIterator i = equipment.iterator();
+        while (i.hasNext()) {
+            Equipment equipmentUnit = i.next();
+            if (!elements.contains(equipmentUnit)) elements.add(equipmentUnit);
+        }
+    }
+
+    /** Gets a subset of this collection of all the equipment.
+     *  @return equipment collection subset
+     */
+    public EquipmentCollection getEquipment() {
+        EquipmentCollection equipment = new EquipmentCollection();
+        UnitIterator i = iterator();
+        while (i.hasNext()) {
+            Unit unit = i.next();
+            if (unit instanceof Equipment) equipment.add((Equipment) unit);
+        }
+        return equipment;
+    }
 }
