@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.71 2000-12-04
+ * @version 2.71 2001-1-29
  * @author Scott Davis
  */
 
@@ -31,7 +31,7 @@ public class InsituResourceProcessorFacility extends Facility {
         int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
         int result = normalPop;
-        if (currentPop > normalPop) result = normalPop;
+        if (currentPop > normalPop) result = currentPop;
         return result;
     }
     
@@ -43,7 +43,7 @@ public class InsituResourceProcessorFacility extends Facility {
         int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
         int result = normalPop;
-        if (currentPop > normalPop) result = normalPop;
+        if (currentPop > normalPop) result = currentPop;
         return result;
     }
     
@@ -55,7 +55,7 @@ public class InsituResourceProcessorFacility extends Facility {
         int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
         int result = normalPop;
-        if (currentPop > normalPop) result = normalPop;
+        if (currentPop > normalPop) result = currentPop;
         return result;
     }
     
