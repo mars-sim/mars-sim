@@ -106,4 +106,14 @@ public abstract class Facility implements Malfunctionable, Serializable {
     public Inventory getInventory() {
         return manager.getSettlement().getInventory();
     }
+
+    /**
+     * Return a string representation of this Facility. It is a combination
+     * of the name and the Facility manager.
+     * 
+     * @return Text representation.
+     */
+    public String toString() {
+        return name + " @ " + manager.getSettlement().getName();
+    }
 }
