@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMechanicalFailure.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-07-23
  * @author Scott Davis
  */
 
@@ -39,7 +39,7 @@ class RepairMechanicalFailure extends Task {
 
         // Determine effective work time person completes based on "Vehicle Mechanic" skill.
         double workTime = timeLeft;
-        int mechanicSkill = person.getSkillManager().getSkillLevel("Vehicle Mechanic");
+        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Vehicle Mechanic");
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += Math.round((double) workTime * (.2D * (double) mechanicSkill));
 

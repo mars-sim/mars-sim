@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitDialog.java
- * @version 2.71 2000-10-23
+ * @version 2.72 2001-07-28
  * @author Scott Davis
  */
 
@@ -162,4 +162,12 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
     
     /** Complete update */
     protected abstract void generalUpdate();
+    
+    /** Returns a double value rounded to one decimal point 
+     *  @param initial the initial double value
+     *  @return the rounded value
+     */
+	public double roundOneDecimal(double initial) {
+		return (double) (Math.round(initial * 10D) / 10D);
+	}
 }

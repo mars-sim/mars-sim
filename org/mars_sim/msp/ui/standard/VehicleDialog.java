@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.72 2001-07-16
+ * @version 2.72 2001-07-28
  * @author Scott Davis
  */
 
@@ -350,7 +350,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         driverButton.setMargin(new Insets(1, 1, 1, 1));
         driverButton.addActionListener(this);
        
-        if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
+        if (vehicle.getStatus().equals("Moving")) {
             driverButton.setText(vehicle.getDriver().getName());
             driverButtonPane.add(driverButton);
         }
@@ -370,7 +370,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         DefaultListModel crewListModel = new DefaultListModel();
 
         for (int x = 0; x < vehicle.getPassengerNum(); x++) {
-            if (vehicle.getPassenger(x) != vehicle.getDriver()) {
+            if (!(vehicle.getStatus().equals("Moving") && (vehicle.getPassenger(x) == vehicle.getDriver()))) {
                 PersonUIProxy tempCrew = (PersonUIProxy) 
                         proxyManager.getUnitUIProxy(vehicle.getPassenger(x));
                 crewInfo.addElement(tempCrew);
@@ -379,7 +379,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
         
         // This prevents the list from sizing strange due to having no contents
-        if (vehicle.getPassengerNum() <= 1) crewListModel.addElement(" ");
+        if (crewInfo.size() == 0) crewListModel.addElement(" ");
 
         crewList = new JList(crewListModel);
         crewList.setVisibleRowCount(7);
@@ -544,52 +544,52 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         storagePane.add(contentPane, "Center");
         
         // Prepare label pane
-		JPanel labelPane = new JPanel(new GridLayout(5, 2, 5, 3));
-		contentPane.add(labelPane);
+	JPanel labelPane = new JPanel(new GridLayout(5, 2, 5, 3));
+	contentPane.add(labelPane);
         
         // Prepare fuel label
-		JLabel fuelLabel = new JLabel("Fuel:");
-		fuelLabel.setForeground(Color.black);
-		labelPane.add(fuelLabel);
+	JLabel fuelLabel = new JLabel("Fuel:");
+	fuelLabel.setForeground(Color.black);
+	labelPane.add(fuelLabel);
 		
-		// Prepare fuel value label
-		fuel = vehicle.getFuel();
-		fuelValueLabel = new JLabel("" + roundOneDecimal(fuel), JLabel.RIGHT);
-		fuelValueLabel.setForeground(Color.black);
-		labelPane.add(fuelValueLabel);
+	// Prepare fuel value label
+	fuel = vehicle.getFuel();
+	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel), JLabel.RIGHT);
+	fuelValueLabel.setForeground(Color.black);
+	labelPane.add(fuelValueLabel);
         
         // Prepare oxygen label		
-		JLabel oxygenLabel = new JLabel("Oxygen:");
-		oxygenLabel.setForeground(Color.black);
-		labelPane.add(oxygenLabel);
+	JLabel oxygenLabel = new JLabel("Oxygen:");
+	oxygenLabel.setForeground(Color.black);
+	labelPane.add(oxygenLabel);
 		
-		// Prepare oxygen value label
-		oxygen = vehicle.getOxygen();
-		oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen), JLabel.RIGHT);
-		oxygenValueLabel.setForeground(Color.black);
-		labelPane.add(oxygenValueLabel);
+	// Prepare oxygen value label
+	oxygen = vehicle.getOxygen();
+	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen), JLabel.RIGHT);
+	oxygenValueLabel.setForeground(Color.black);
+	labelPane.add(oxygenValueLabel);
         
         // Prepare water label
-		JLabel waterLabel = new JLabel("Water:");
-		waterLabel.setForeground(Color.black);
-		labelPane.add(waterLabel);
+	JLabel waterLabel = new JLabel("Water:");
+	waterLabel.setForeground(Color.black);
+	labelPane.add(waterLabel);
 		
-		// Prepare water value label
-		water = vehicle.getWater();
-		waterValueLabel = new JLabel("" + roundOneDecimal(water), JLabel.RIGHT);
-		waterValueLabel.setForeground(Color.black);
-		labelPane.add(waterValueLabel);
+	// Prepare water value label
+	water = vehicle.getWater();
+	waterValueLabel = new JLabel("" + roundOneDecimal(water), JLabel.RIGHT);
+	waterValueLabel.setForeground(Color.black);
+	labelPane.add(waterValueLabel);
         
         // Prepare food label
-		JLabel foodLabel = new JLabel("Food:");
-		foodLabel.setForeground(Color.black);
-		labelPane.add(foodLabel);
+	JLabel foodLabel = new JLabel("Food:");
+	foodLabel.setForeground(Color.black);
+	labelPane.add(foodLabel);
 		
-		// Prepare food value label
-		food = vehicle.getFood();
-		foodValueLabel = new JLabel("" + roundOneDecimal(food), JLabel.RIGHT);
-		foodValueLabel.setForeground(Color.black);
-		labelPane.add(foodValueLabel);
+	// Prepare food value label
+	food = vehicle.getFood();
+	foodValueLabel = new JLabel("" + roundOneDecimal(food), JLabel.RIGHT);
+	foodValueLabel.setForeground(Color.black);
+	labelPane.add(foodValueLabel);
         
         // Return storage pane
         return storagePane;
@@ -688,12 +688,13 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
     /** Update crew info */
     protected void updateCrew() {
-
+        boolean vehicleMoving = vehicle.getStatus().equals("Moving");
+      
         // Update driver button
-        if ((vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
-            if (driverButtonPane.getComponentCount() > 0)
-                driverButtonPane.remove(driverButton);
-        } else {
+        if (!vehicleMoving) {
+            if (driverButtonPane.getComponentCount() > 0) driverButtonPane.remove(driverButton);
+        } 
+        else {
             if (!driverButton.getText().equals(vehicle.getDriver().getName()))
                 driverButton.setText(vehicle.getDriver().getName());
             if (driverButtonPane.getComponentCount() == 0)
@@ -705,11 +706,13 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         boolean match = false;
 
         // Check if crew list matches vehicle's crew
-        if ((model.getSize() + 1) == vehicle.getPassengerNum()) {
+        int crewNum = vehicle.getPassengerNum();
+        if (vehicle.getStatus().equals("Moving")) crewNum -= 1;
+        if ((model.getSize()) == crewNum) {
             match = true;
             int passengerCount = 0;
             for (int x = 0; x < vehicle.getPassengerNum(); x++) {
-                if (vehicle.getPassenger(x) != vehicle.getDriver()) {
+                if (!(vehicleMoving && (vehicle.getPassenger(x) == vehicle.getDriver()))) {
                     if (!((String) model.getElementAt(passengerCount)).equals(
                             vehicle.getPassenger(x).getName()))
                         match = false;
@@ -724,16 +727,16 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             crewInfo.removeAllElements();
             for (int x = 0; x < vehicle.getPassengerNum(); x++) {
                 Person tempPassenger = vehicle.getPassenger(x);
-                if ((tempPassenger != null) &&
-                        (tempPassenger != vehicle.getDriver())) {
-                    crewInfo.addElement(proxyManager.getUnitUIProxy(tempPassenger));
-                    model.addElement(tempPassenger.getName());
+                if (tempPassenger != null) {
+                    if (!(vehicleMoving && (tempPassenger == vehicle.getDriver()))) { 
+                        crewInfo.addElement(proxyManager.getUnitUIProxy(tempPassenger));
+                        model.addElement(tempPassenger.getName());
+                    }
                 }
             }
 
             // This prevents the list from sizing strange due to having no contents
-            if (vehicle.getPassengerNum() <= 1)
-                model.addElement(" ");
+            if (crewInfo.size() == 0) model.addElement(" ");
 
             validate();
         }
@@ -832,13 +835,5 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			food = vehicle.getFood();
 			foodValueLabel.setText("" + roundOneDecimal(food));
 		}
-	}
-    
-    /** Returns a double value rounded to one decimal point 
-     *  @param initial the initial double value
-     *  @return the rounded value
-     */
-	public double roundOneDecimal(double initial) {
-		return (double) (Math.round(initial * 10D) / 10D);
 	}
 }

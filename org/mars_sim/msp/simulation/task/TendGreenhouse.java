@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.72 2001-07-10
+ * @version 2.72 2001-07-28
  * @author Scott Davis
  */
 
@@ -26,8 +26,8 @@ class TendGreenhouse extends Task {
         this.settlement = person.getSettlement();
         this.greenhouse = (GreenhouseFacility) settlement.getFacilityManager().getFacility("Greenhouse");
 
-        // Randomly determine duration, from 0 - 500 millisols
-        duration = RandomUtil.getRandomDouble(500D);
+        // Randomly determine duration, from 0 - 250 millisols
+        duration = RandomUtil.getRandomDouble(250D);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -60,7 +60,7 @@ class TendGreenhouse extends Task {
 
         // Determine amount of effective work time based on "Greenhouse Farming" skill.
         double workTime = timeLeft;
-        int greenhouseSkill = person.getSkillManager().getSkillLevel("Greenhouse Farming");
+        int greenhouseSkill = person.getSkillManager().getEffectiveSkillLevel("Greenhouse Farming");
         if (greenhouseSkill == 0) workTime /= 2;
         else workTime += workTime * (.2D * (double) greenhouseSkill);
 

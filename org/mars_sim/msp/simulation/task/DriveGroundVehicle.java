@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.72 2001-07-21
+ * @version 2.72 2001-07-25
  * @author Scott Davis
  */
 
@@ -54,10 +54,21 @@ class DriveGroundVehicle extends Task {
      *  @return time remaining after finishing with task (in millisols
      */
     double doTask(double time) {
+
         double timeLeft = super.doTask(time);
+        if ((subTask != null) && subTask.isDone()) subTask = null;
         if (subTask != null) return timeLeft;
-            
+
+        // If night time, find something else to do other than drive.
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0D) {
+            vehicle.setStatus("Parked");
+            TaskManager taskManager = person.getTaskManager();
+            taskManager.addSubTask(taskManager.getNewTask());
+            return 0D;
+        } 
+
         while ((timeLeft > 0D) && !isDone) {
+            vehicle.setStatus("Moving");
             if (phase.equals("Driving")) timeLeft = drivingPhase(timeLeft);
             else if (phase.equals("Avoiding Obstacle")) timeLeft = obstaclePhase(timeLeft);
             else if (phase.equals("Winching Stuck Vehicle")) timeLeft = winchingPhase(timeLeft);
@@ -314,7 +325,7 @@ class DriveGroundVehicle extends Task {
         vehicle.setTerrainGrade(terrainGrade);
 
         // Get the driver's driving skill.
-        int skillLevel = person.getSkillManager().getSkillLevel("Driving");
+        int skillLevel = person.getSkillManager().getEffectiveSkillLevel("Driving");
 
         // Get vehicle's terrain handling capability.
         double handling = vehicle.getTerrainHandlingCapability();
@@ -364,7 +375,7 @@ class DriveGroundVehicle extends Task {
             maintenanceModifier = 3D * (vehicle.getDistanceLastMaintenance() / 5000D);
         
         // Modify by driver's skill level.
-        int skillLevel = person.getSkillManager().getSkillLevel("Driving");
+        int skillLevel = person.getSkillManager().getEffectiveSkillLevel("Driving");
         double skillModifier = .1D * (double) skillLevel;
 
         // Modify by terrain.
@@ -392,7 +403,6 @@ class DriveGroundVehicle extends Task {
         // Determine if failure happens and, if so, have the crew repair the failure.
         if (RandomUtil.lessThanRandPercent(percentChance)) {
             vehicle.setStatus("Broken Down");
-            vehicle.setSpeed(0);
             vehicle.newMechanicalFailure();
 
             for (int x=0; x < vehicle.getPassengerNum(); x++) {

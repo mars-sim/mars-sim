@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-07-23
  * @author Scott Davis
  */
 
@@ -15,10 +15,12 @@ import java.util.Hashtable;
 public class SkillManager {
 
     // Data members
+    private Person person; // The person owning the SkillManager
     private Hashtable skills; // A list of the person's skills keyed by name.
 
     /** Constructs a new SkillManager object */
-    SkillManager() {
+    SkillManager(Person person) {
+        this.person = person;
         skills = new Hashtable();
 
         // Add starting skills randomly for person.
@@ -85,6 +87,23 @@ public class SkillManager {
         int result = 0;
         if (skills.containsKey(skillName))
             result = ((Skill) skills.get(skillName)).getLevel();
+
+        return result;
+    }
+
+    /** Returns the effective integer skill level from a named skill 
+     *  based on additional modifiers such as fatigue.
+     *  @param skillName the skill's name
+     *  @return the skill's effective level
+     */
+    public int getEffectiveSkillLevel(String skillName) {
+        int result = getSkillLevel(skillName);
+
+        // Modify for fatigue
+        // - 1 skill level for every 1000 points of fatigue.
+        if (person.getFatigue() > 1000D) {
+            result -= (int) Math.round(person.getFatigue() / 1000D);
+        }
 
         return result;
     }

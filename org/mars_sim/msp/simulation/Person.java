@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-07-28
  * @author Scott Davis
  */
 
@@ -22,6 +22,8 @@ public class Person extends Unit {
     private SkillManager skills; // Manager for Person's skills
     private TaskManager tasks; // Manager for Person's tasks
     private String locationSituation; // Where person is ("In Settlement", "In Vehicle", "Outside")
+    private double fatigue; // Person's fatigue level
+    private double hunger; // Person's hunger level
 
     /** Constructs a Person object
      *  @param name the person's name
@@ -38,9 +40,11 @@ public class Person extends Unit {
         settlement = null;
         vehicle = null;
         attributes = new NaturalAttributeManager();
-        skills = new SkillManager();
+        skills = new SkillManager(this);
         tasks = new TaskManager(this, mars);
         locationSituation = new String("In Settlement");
+        fatigue = RandomUtil.getRandomDouble(1000D);
+        hunger = RandomUtil.getRandomDouble(1000D);
     }
 
     /** Returns a string for the person's relative location "In
@@ -92,6 +96,48 @@ public class Person extends Unit {
         settlement = null;
     }
 
+    /** Gets the person's fatigue level
+     *  @return person's fatigue
+     */
+    public double getFatigue() {
+        return fatigue;
+    }
+
+    /** Sets the person's fatigue level
+     *  @param fatigue new fatigue level
+     */
+    public void setFatigue(double fatigue) {
+        this.fatigue = fatigue;
+    }
+
+    /** Adds to the person's fatigue level
+     *  @param addFatigue additional fatigue
+     */
+    public void addFatigue(double addFatigue) {
+        fatigue += addFatigue;
+    }
+    
+    /** Gets the person's hunger level
+     *  @return person's hunger
+     */
+    public double getHunger() {
+        return hunger;
+    }
+
+    /** Sets the person's hunger level
+     *  @param hunger new hunger level
+     */
+    public void setHunger(double hunger) {
+        this.hunger = hunger;
+    }
+
+    /** Adds to the person's hunger level
+     *  @param addHunger additional hunger
+     */
+    public void addHunger(double addHunger) {
+        hunger += addHunger;
+    }
+
     /** Person can take action with time passing 
      *  @param time amount of time passing (in millisols)
      */
@@ -101,6 +147,12 @@ public class Person extends Unit {
         
         // Later to be replaced with a eat meal task.
         consumeFood(time / 1000D);
+
+        // Build up fatigue for given time passing.
+        addFatigue(time);
+        
+        // Build up hunger for given time passing.
+        addHunger(time);
 
         tasks.takeAction(time);
     }
@@ -161,7 +213,7 @@ public class Person extends Unit {
     /** Person consumes given amount of food
      *  @param amount amount of food to consume (in units)
      */
-    void consumeFood(double amount) {
+    public void consumeFood(double amount) {
         double amountRecieved = 0D;
         
         if (locationSituation.equals("In Settlement")) {

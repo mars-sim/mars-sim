@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-07-28
  * @author Scott Davis
  */
 
@@ -28,12 +28,16 @@ public class PersonDialog extends UnitDialog {
 	private JPanel skillListPane;   // Panel containing list of person's skills and their levels.
 	private JLabel taskDescription; // Current task description label
 	private JLabel taskPhase;       // Current task phase label
+    private JLabel fatigueLabel;    // Fatigue label
+    private JLabel hungerLabel;     // Hunger label
 
-	// Cached person data
-	private Coordinates unitCoords;
-	private String settlementName;
-	private String vehicleName;
-	private Hashtable skillList;
+    // Cached person data
+    private Coordinates unitCoords;
+    private String settlementName;
+    private String vehicleName;
+    private Hashtable skillList;
+    private double fatigue;
+    private double hunger;
 
 	/** Constructs a PersonDialog object 
      	 *  @param parentDesktop the desktop pane
@@ -52,6 +56,8 @@ public class PersonDialog extends UnitDialog {
 		settlementName = "";
 		vehicleName = "";
 		skillList = new Hashtable();
+        fatigue = 0D;
+        hunger = 0D;
 	}
 	
 	/** Complete update (overridden) */
@@ -61,6 +67,7 @@ public class PersonDialog extends UnitDialog {
 		updateVehicle();
 		updateSkills();
 		updateTask();
+        updateCondition();
 	}
 
 	/** Update position */
@@ -146,21 +153,37 @@ public class PersonDialog extends UnitDialog {
 	/** Update task info */
 	private void updateTask() {
 		
-		TaskManager taskManager = person.getTaskManager();
+            TaskManager taskManager = person.getTaskManager();
 	
-		// Update task description
-		String cacheDescription = "None";
-		if (taskManager.hasCurrentTask()) cacheDescription = taskManager.getCurrentTaskDescription();
-		if (!cacheDescription.equals(taskDescription.getText())) taskDescription.setText(cacheDescription);
+	    // Update task description
+            String cacheDescription = "None";
+            if (taskManager.hasCurrentTask()) cacheDescription = taskManager.getCurrentTaskDescription();
+	    if (!cacheDescription.equals(taskDescription.getText())) taskDescription.setText(cacheDescription);
 		
-		// Update task phase
-		String cachePhase = "";
-		if (taskManager.hasCurrentTask()) {
-			String phase = taskManager.getCurrentPhase();
-			if ((phase != null) && !phase.equals("")) cachePhase = "Phase: " + phase;
-		}
-		if (!cachePhase.equals(taskPhase.getText())) taskPhase.setText(cachePhase);
+            // Update task phase
+            String cachePhase = "";
+            if (taskManager.hasCurrentTask()) {
+                String phase = taskManager.getCurrentPhase();
+                if ((phase != null) && !phase.equals("")) cachePhase = "Phase: " + phase;
+            }
+            if (!cachePhase.equals(taskPhase.getText())) taskPhase.setText(cachePhase);
 	}
+    
+    /** Update condition info */
+    private void updateCondition() {
+   
+        // Update fatigue label
+        if (fatigue != roundOneDecimal(person.getFatigue())) {
+            fatigue = roundOneDecimal(person.getFatigue());
+            fatigueLabel.setText("" + fatigue);
+        }
+        
+        // Update hunger label
+        if (hunger != roundOneDecimal(person.getHunger())) {
+            hunger = roundOneDecimal(person.getHunger());
+            hungerLabel.setText("" + hunger);
+        }
+    }
 	
 	/** ActionListener method overriden */
 	public void actionPerformed(ActionEvent event) {
@@ -194,6 +217,7 @@ public class PersonDialog extends UnitDialog {
 		JTabbedPane tabPane = new JTabbedPane();
 		tabPane.addTab("Task", setupTaskPane());
 		tabPane.addTab("Location", setupLocationPane());
+        tabPane.addTab("Condition", setupConditionPane());
 		tabPane.addTab("Attributes", setupAttributePane());
 		tabPane.addTab("Skills", setupSkillPane());
 		mainPane.add(tabPane, "Center");
@@ -302,6 +326,57 @@ public class PersonDialog extends UnitDialog {
 		// Return location panel
 		return locationPane;
 	}
+
+    /** Set up condition panel
+     *  @return condition pane
+     */
+    protected JPanel setupConditionPane() {
+
+        // Prepare condition pane
+        JPanel conditionPane = new JPanel(new BorderLayout());
+        conditionPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+
+        // Prepare condition label pane
+        JPanel conditionLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        conditionPane.add(conditionLabelPane, "North");
+ 
+        // Prepare condition label
+        JLabel conditionLabel = new JLabel("Condition", JLabel.CENTER);
+        conditionLabel.setForeground(Color.black);
+        conditionLabelPane.add(conditionLabel);
+
+        // Prepare condition content pane
+        JPanel conditionContentPane = new JPanel(new BorderLayout());
+        conditionContentPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        conditionPane.add(conditionContentPane, "Center");
+            
+        // Prepare condition list pane
+        JPanel conditionListPane = new JPanel(new GridLayout(2, 2));
+        conditionContentPane.add(conditionListPane, "North");
+        
+        // Prepare fatigue name label
+        JLabel fatigueNameLabel = new JLabel("Fatigue", JLabel.LEFT);
+        fatigueNameLabel.setForeground(Color.black);
+        conditionListPane.add(fatigueNameLabel);
+        
+        // Prepare fatigue label
+        fatigueLabel = new JLabel("" + roundOneDecimal(person.getFatigue()), JLabel.RIGHT);
+        fatigueLabel.setForeground(Color.black);
+        conditionListPane.add(fatigueLabel);
+        
+        // Prepare hunger name label
+        JLabel hungerNameLabel = new JLabel("Hunger", JLabel.LEFT);
+        hungerNameLabel.setForeground(Color.black);
+        conditionListPane.add(hungerNameLabel);
+        
+        // Prepare hunger label
+        hungerLabel = new JLabel("" + roundOneDecimal(person.getHunger()), JLabel.RIGHT);
+        hungerLabel.setForeground(Color.black);
+        conditionListPane.add(hungerLabel);
+            
+        // Return condition panel
+        return conditionPane;
+    }
 	
 	/** Set up attribute panel 
      *  @return attribute pane

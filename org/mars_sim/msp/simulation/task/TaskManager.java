@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.72 2001-07-16
+ * @version 2.72 2001-07-23
  * @author Scott Davis
  */
 
@@ -38,7 +38,8 @@ public class TaskManager {
         // Create an array of general task classes.
         // (Add additional general tasks as they are created)
         try {
-            generalTasks = new Class[]{ TravelToSettlement.class, Relax.class, TendGreenhouse.class, MaintainVehicle.class };
+            generalTasks = new Class[]{ TravelToSettlement.class, Relax.class, 
+                TendGreenhouse.class, MaintainVehicle.class, Sleep.class, EatMeal.class };
         } catch (Exception e) {
             System.out.println("TaskManager.constructor(): " + e.toString());
         }
@@ -62,7 +63,7 @@ public class TaskManager {
         if (currentTask != null)
             return currentTask.getDescription();
         else
-            return null;
+            return "";
     }
 
     /** Returns the name of current task phase if there is one.
@@ -74,7 +75,7 @@ public class TaskManager {
         if (currentTask != null)
             return currentTask.getPhase();
         else
-            return null;
+            return "";
     }
 
     /** Returns the current task.
@@ -115,7 +116,7 @@ public class TaskManager {
      */
     public void takeAction(double time) {
         if ((currentTask == null) || currentTask.isDone()) {
-            getNewTask();
+            setCurrentTask(getNewTask());
         }
         currentTask.doTask(time);
     }
@@ -123,7 +124,7 @@ public class TaskManager {
     /** Assigns a new task to a person based on general tasks available.
      *  (Add support for role-based tasks later)
      */
-    public void getNewTask() {
+    public Task getNewTask() {
         // Initialize variables
         Vector probableTasks = new Vector();
         Vector weights = new Vector();
@@ -166,10 +167,10 @@ public class TaskManager {
         try {
             Constructor construct = ((Class) probableTasks.elementAt(taskNum)).getConstructor(
                     parametersForFindingMethod);
-            currentTask = (Task) construct.newInstance(parametersForInvokingMethod);
+            return (Task) construct.newInstance(parametersForInvokingMethod);
         } catch (Exception e) {
             System.out.println("TaskManager.getNewTask() (2): " + e.toString());
+            return null;
         }
-        
     }
 }

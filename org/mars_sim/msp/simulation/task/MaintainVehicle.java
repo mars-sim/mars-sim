@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.72 2001-07-21
+ * @version 2.72 2001-07-23
  * @author Scott Davis
  */
 
@@ -89,7 +89,7 @@ class MaintainVehicle extends Task {
 
         // Determine effective work time based on "Vehicle Mechanic" skill.
         double workTime = timeLeft;
-        int mechanicSkill = person.getSkillManager().getSkillLevel("Vehicle Mechanic");
+        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Vehicle Mechanic");
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 

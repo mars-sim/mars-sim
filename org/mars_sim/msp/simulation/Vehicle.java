@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.72 2001-07-14
+ * @version 2.72 2001-07-22
  * @author Scott Davis
  */
 
@@ -79,6 +79,8 @@ public abstract class Vehicle extends Unit {
      */
     public void setStatus(String status) {
         this.status = status;
+        if (status.equals("Parked") || status.equals("Broken Down"))
+            setSpeed(0D); 
     }
 
     /** Returns true if vehicle is reserved by someone 
