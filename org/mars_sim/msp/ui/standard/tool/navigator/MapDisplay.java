@@ -1,17 +1,30 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2003-10-13
+ * @version 2.75 2003-12-15
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.navigator;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.ui.standard.unit_display_info.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JComponent;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.IntPoint;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
 
 /** The MapDisplay class is the visual component for the surface map
  *  of Mars in the UI. It can show either the surface or topographical
@@ -245,9 +258,14 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                     wait = false;
                 }
                 
+                // Set thread sleep time.
+				long sleepTime = 2000;
+				if (wait) sleepTime = 100;
+                
                 // Pause for 2000 milliseconds between display refreshs
                 try {
-                    Thread.sleep(2000);
+                    // Thread.sleep(2000);
+                    Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {}
                 repaint();
             }
@@ -261,6 +279,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         
+        // System.out.println("paintComponent()");
         // Determine map type.
         Map map = null;
         if (isTopo()) map = topoMap;
@@ -270,6 +289,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         }
         
         if (wait) {
+        	// System.out.println("wait");
             // display previous map image.
             if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
 
@@ -281,9 +301,12 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             drawCenteredMessage(message, g);
             
             if (map.isImageDone() || mapError) wait = false;
+            // System.out.println("end wait");
         } 
         else {
+        	// System.out.println("Go");
             if (mapError) {
+            	System.out.println("mapError");
                 // Display previous map image
                 if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
                 
@@ -309,6 +332,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 // Display units.
                 unitLayer.displayLayer(g);
             }
+            // System.out.println("end go");
         }
     }
     
