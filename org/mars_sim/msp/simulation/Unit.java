@@ -146,4 +146,12 @@ public abstract class Unit implements Serializable {
     public String toString() {
         return name;
     }
+    /**
+     * Returns sound appropriate for this unit
+     * This method should be overriden by child classes
+     * 
+     */
+    public String getSound() {
+    	return "";
+    	}
 }
