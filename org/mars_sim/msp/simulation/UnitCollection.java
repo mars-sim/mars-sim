@@ -7,6 +7,10 @@
 
 package org.mars_sim.msp.simulation;
 
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.equipment.*;
 import java.util.*; // ArrayList
 import java.io.Serializable;
 

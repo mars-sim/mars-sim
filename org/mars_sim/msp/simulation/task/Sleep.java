@@ -1,14 +1,15 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.72 2001-08-05
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.task;
+package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 
 /** The Sleep class is a task for sleeping.
  *  The duration of the task is by default chosen randomly, between 250 - 350 millisols.

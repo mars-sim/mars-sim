@@ -1,14 +1,16 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.72 2001-07-22
+ * @version 2.74 2002-01-13
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.task.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.

@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * RepairMechanicalFailure.java
- * @version 2.72 2001-08-05
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.task;
+package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
 
 /** The RepairMechanicalFailure class is a task for fixing a mechanical failure on a vehicle. 

@@ -1,14 +1,15 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.72 2001-08-05
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.task;
+package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 
 /** The Task class is an abstract parent class for tasks that allow people to do various things.
  *  A person's TaskManager keeps track of one current task for the person, but a task may use other 

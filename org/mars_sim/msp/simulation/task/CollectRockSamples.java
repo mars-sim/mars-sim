@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.72 2001-08-12
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.task;
+package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 import java.io.Serializable;
 
 /** The CollectRockSamples class is a task for collecting rock and soil samples at a site. 

@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.73 2001-09-23
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.task;
+package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 import java.io.Serializable;
 import java.util.Vector;
 import java.lang.reflect.*;

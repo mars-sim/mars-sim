@@ -1,14 +1,17 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.73 2001-11-25
+ * @version 2.74 2002-01-13
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.task.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
  * The PersonTableModel that maintns a list of Person objects.

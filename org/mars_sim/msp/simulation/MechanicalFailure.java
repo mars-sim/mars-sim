@@ -23,7 +23,7 @@ public class MechanicalFailure implements Serializable {
     /** Constructs a MechanicalFailure object
      *  @param name name of the mechanical failure
      */
-    MechanicalFailure(String name) {
+    public MechanicalFailure(String name) {
 
         // Initialize data members
         this.name = name;

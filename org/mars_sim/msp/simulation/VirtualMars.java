@@ -1,13 +1,13 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.73 2001-12-14
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
-import org.mars_sim.msp.simulation.task.MissionManager;
+import org.mars_sim.msp.simulation.person.ai.MissionManager;
 import java.util.*;
 import java.io.*;
 

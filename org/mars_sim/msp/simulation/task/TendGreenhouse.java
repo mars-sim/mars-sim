@@ -1,14 +1,16 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.72 2001-08-05
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.task;
+package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.*;
 
 /** The TendGreenhouse class is a task for tending the greenhouse in a settlement.
  *  It has the phases, "Planting", "Tending" and "Harvesting".

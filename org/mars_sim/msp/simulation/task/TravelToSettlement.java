@@ -1,15 +1,18 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.73 2001-12-15
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.task;
+package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /** The TravelToSettlement class is a mission to travel from one settlement 
  *  to another randomly selected one within range of an available vehicle.  

@@ -1,12 +1,16 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.73 2001-11-22
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.equipment.*;
 import java.io.*;
 import java.util.*;
 

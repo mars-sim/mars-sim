@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * GroundVehicleDialog.java
- * @version 2.73 2001-10-07
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard; 
  
-import org.mars_sim.msp.simulation.*;  
+import org.mars_sim.msp.simulation.*; 
+import org.mars_sim.msp.simulation.vehicle.*;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;

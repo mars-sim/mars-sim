@@ -15,16 +15,16 @@ import java.io.Serializable;
 public abstract class Unit implements Serializable {
 
     // Data members
-    Coordinates location; // Unit location coordinates
-    String name; // Unit name
-    VirtualMars mars; // The virtual Mars
+    protected Coordinates location; // Unit location coordinates
+    protected String name; // Unit name
+    protected VirtualMars mars; // The virtual Mars
 
     /** Constructs a Unit object
      *  @param name the name of the unit
      *  @param location the unit's location
      *  @param mars the virtual Mars
      */
-    Unit(String name, Coordinates location, VirtualMars mars) {
+    public Unit(String name, Coordinates location, VirtualMars mars) {
         // Initialize data members from parameters
         this.name = name;
         this.location = new Coordinates(location);

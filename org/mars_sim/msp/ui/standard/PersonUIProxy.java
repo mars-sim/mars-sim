@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * PersonUIProxy.java
- * @version 2.71 2000-10-22
+ * @version 2.74 2002-01-13
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 import java.awt.*;
 import javax.swing.*;
 

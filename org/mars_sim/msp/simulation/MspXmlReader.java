@@ -10,7 +10,7 @@ package org.mars_sim.msp.simulation;
 import java.io.*;
 import com.microstar.xml.*;
 
-abstract class MspXmlReader extends HandlerBase {
+public abstract class MspXmlReader extends HandlerBase {
 
     private String documentName; // The XML document to be read
 
