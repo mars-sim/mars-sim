@@ -1,5 +1,7 @@
 <marssim>
 
+<units>
+
   <Settlement>
     <name>Port Zubrin</name>
   </Settlement>
@@ -77,5 +79,7 @@
     <name>Mars Pathfinder</name>
     <location></location>
   </Landmark>  
+
+<units>
 
 </marssim>

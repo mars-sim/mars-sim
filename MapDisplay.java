@@ -63,12 +63,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	surfMap = new USGSMarsMap(this);
 	topoMap = new TopoMarsMap(this);
 
-	// Load vehicle and settlement images
-	vehicleSymbol = Vehicle.getSurfIcon();
-	topoVehicleSymbol = Vehicle.getTopoIcon();
-	settlementSymbol = Settlement.getSurfIcon();
-	topoSettlementSymbol = Settlement.getTopoIcon();
-	
 	// initially show real surface map (versus topo map)
 	showSurf();
     }
@@ -190,27 +184,25 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     }
 
     private void drawVehicles(Graphics g) {
-	// topo=black, surf=white
-	g.setColor(topo ? Color.black : Color.white);
+	g.setColor(Vehicle.getLabelColor(topo));
+	g.setFont(Vehicle.getLabelFont());
 
-	// Draw a vehicle symbol for each moving vehicle within the viewing map
-	g.setFont(new Font("Helvetica", Font.PLAIN, 9));
-	
+	// Draw a vehicle symbol for each moving vehicle within the viewing map	
 	UnitInfo[] vehicleInfo = navWindow.getMovingVehicleInfo();
 			
 	for (int x=0; x < vehicleInfo.length; x++) {
 	    // what's this .48587 magic number?
 	    if (centerCoords.getAngle(vehicleInfo[x].getCoords()) < .48587D) {
 		IntPoint rectLocation = getUnitRectPosition(vehicleInfo[x].getCoords());
-		IntPoint imageLocation = getUnitDrawLocation(rectLocation, vehicleSymbol);
+		IntPoint imageLocation = getUnitDrawLocation(rectLocation, Vehicle.getSurfIcon());
 		if (topo) {
-		    g.drawImage(topoVehicleSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
+		    g.drawImage(Vehicle.getTopoIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
 		} else {
-		    g.drawImage(vehicleSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
+		    g.drawImage(Vehicle.getSurfIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
 		}
 		    
 		if (labels) {
-		    IntPoint labelLocation = getLabelLocation(rectLocation, vehicleSymbol);
+		    IntPoint labelLocation = getLabelLocation(rectLocation, Vehicle.getSurfIcon());
 		    g.drawString(vehicleInfo[x].getName(), labelLocation.getiX(), labelLocation.getiY());	
 		}
 	    }
@@ -218,11 +210,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     }
 			
     private void drawSettlements(Graphics g) {
-	// topo=black, surf=green
-	g.setColor(topo ? Color.black : Color.green);
-
-	// Draw a settlement symbol for each settlement within the viewing map
-	g.setFont(new Font("Helvetica", Font.PLAIN, 12));
+	g.setColor(Settlement.getLabelColor(topo));
+	g.setFont(Settlement.getLabelFont());
 
 	UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
 
@@ -230,14 +219,14 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	    // what's this .48587 magic number?
 	    if (centerCoords.getAngle(settlementInfo[x].getCoords()) < .48587D) {
 		IntPoint rectLocation = getUnitRectPosition(settlementInfo[x].getCoords());
-		IntPoint imageLocation = getUnitDrawLocation(rectLocation, settlementSymbol);
+		IntPoint imageLocation = getUnitDrawLocation(rectLocation, Settlement.getSurfIcon());
 		if (topo) {
-		    g.drawImage(topoSettlementSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
+		    g.drawImage(Settlement.getTopoIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
 		} else {
-		    g.drawImage(settlementSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
+		    g.drawImage(Settlement.getSurfIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
 		}
 		if (labels) {
-		    IntPoint labelLocation = getLabelLocation(rectLocation, settlementSymbol);
+		    IntPoint labelLocation = getLabelLocation(rectLocation, Settlement.getSurfIcon());
 		    g.drawString(settlementInfo[x].getName(), labelLocation.getiX(), labelLocation.getiY());
 		}
 	    }

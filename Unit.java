@@ -73,4 +73,8 @@ public abstract class Unit {
     public abstract Image getTopoIcon();
     */
 
+    // perhaps this should be moved into a seperate Time interface
+    /** the opportunity for a unit to handle time passing */
+    public void timePasses(int seconds) {
+    }
 }

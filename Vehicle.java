@@ -64,14 +64,6 @@ public abstract class Vehicle extends Unit {
 	totalMaintenanceWork = 12 * 60 * 60; // (12 hours)
     }
 
-    public static Image getSurfIcon() {
-	return surfImage;
-    }
-
-    public static Image getTopoIcon() {
-	return topoImage;
-    }
-
     /** Returns vehicle's current status */
     public String getStatus() {
 	return status;
@@ -384,5 +376,23 @@ public abstract class Vehicle extends Unit {
     /** Returns the total amount of work needed for maintenance. */
     public int getTotalMaintenanceWork() {
 	return totalMaintenanceWork;
+    }
+
+    public static Image getSurfIcon() {
+	return surfImage;
+    }
+
+    public static Image getTopoIcon() {
+	return topoImage;
+    }
+
+    public static Color getLabelColor(boolean topo) {
+	// topo=black, surf=green
+	return (topo ? Color.black : Color.white);
+    }
+
+    public static Font getLabelFont() {
+	// topo=black, surf=green
+	return new Font("Helvetica", Font.PLAIN, 9);
     }
 }

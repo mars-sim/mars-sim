@@ -76,7 +76,7 @@ public class Person extends Unit {
     }
 
     /** Action taken by person during unit turn */
-    public void takeAction(int seconds) {
+    public void timePasses(int seconds) {
 	tasks.takeAction(seconds);
     }
 

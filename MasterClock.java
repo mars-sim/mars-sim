@@ -18,7 +18,7 @@ public class MasterClock extends Thread {
 	
     private VirtualMars mars;       // Virtual Mars
 
-    /** sleepDuration in milleseconds */
+    /** sleep duration in milliseconds */
     private static int sleepDuration = 1000;
 	
     public MasterClock(VirtualMars mars) {

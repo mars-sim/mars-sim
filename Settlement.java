@@ -39,14 +39,6 @@ public class Settlement extends Unit {
 	facilityManager = new FacilityManager(this);
     }
 
-    public static Image getSurfIcon() {
-	return surfImage;
-    }
-
-    public static Image getTopoIcon() {
-	return topoImage;
-    }
-
     /** Returns the facility manager for the settlement */
     public FacilityManager getFacilityManager() {
 	return facilityManager;
@@ -107,6 +99,24 @@ public class Settlement extends Unit {
     /** Perform time-related processes */
     public void timePasses(int seconds) {
 	facilityManager.timePasses(seconds);
+    }
+
+    public static Image getSurfIcon() {
+	return surfImage;
+    }
+
+    public static Image getTopoIcon() {
+	return topoImage;
+    }
+
+    public static Color getLabelColor(boolean topo) {
+	// topo=black, surf=green
+	return (topo ? Color.black : Color.green);
+    }
+
+    public static Font getLabelFont() {
+	// topo=black, surf=green
+	return new Font("Helvetica", Font.PLAIN, 12);
     }
 
     /** Returns a detail window for the unit */

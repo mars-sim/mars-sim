@@ -148,17 +148,11 @@ public class UnitManager {
     }
 	    
 
-    /** Make each person take action. Notify each settlement that time
-     *  passes for time-related processes (Note: Later automated
-     *  processes may be added to vehicles)
-     */
+    /** Notify all the units that time has passed. Times they are a
+     *  changing.  */
     public void takeAction(int seconds) {
-	for (int x=0; x < peopleVector.size(); x++) {
-	    ((Person) peopleVector.elementAt(x)).takeAction(seconds);
-	}
-
-	for (int x=0; x < settlementsVector.size(); x++) {
-	    ((Settlement) settlementsVector.elementAt(x)).timePasses(seconds);
+	for (int x=0; x < unitVector.size(); x++) {
+	    ((Unit)unitVector.elementAt(x)).timePasses(seconds);
 	}
     }
 

@@ -131,8 +131,7 @@ class GlobeDisplay extends JComponent implements Runnable {
 
     /** draw the dots on the globe that identify moving vehicles */
     protected void drawVehicles(Graphics g) {
-	// topo=black, surf=white
-	g.setColor(topo ? Color.black : Color.white);
+	g.setColor(Vehicle.getLabelColor(topo));
 		
 	UnitInfo[] vehicleInfo = navWindow.getMovingVehicleInfo();
 	for (int x=0; x < vehicleInfo.length; x++) {
@@ -145,8 +144,7 @@ class GlobeDisplay extends JComponent implements Runnable {
 
     /** draw the dots on the globe that identify settlements */    
     protected void drawSettlements(Graphics g) {
-	// topo=black, surf=green
-	g.setColor(topo ? Color.black : Color.green);
+	g.setColor(Settlement.getLabelColor(topo));
 		
 	UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
 	for (int x=0; x < settlementInfo.length; x++) {
