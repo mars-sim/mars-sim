@@ -108,8 +108,10 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
                 Building building = (Building) iter2.next();
                 if (!buildings.contains(building)) {
                     BuildingPanel panel = getBuildingPanel(building);
-                    buildingPanels.remove(panel);
-                    buildingDisplayPanel.remove(panel);
+                    if (panel != null) {
+                        buildingPanels.remove(panel);
+                        buildingDisplayPanel.remove(panel);
+                    }
                 }
             }
             

@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
@@ -47,8 +48,16 @@ public class BuildingPanel extends JPanel {
         add(functionListPanel, BorderLayout.NORTH);
         
         // Prepare inhabitable panel if building is inhabitable.
-        if (building instanceof InhabitableBuilding)
-            functionListPanel.add(new InhabitableBuildingPanel((InhabitableBuilding) building, desktop));
+        if (building instanceof InhabitableBuilding) {
+            BuildingFunctionPanel inhabitablePanel = new InhabitableBuildingPanel((InhabitableBuilding) building, desktop);
+            functionPanels.add(inhabitablePanel);
+            functionListPanel.add(inhabitablePanel);
+        }
+        
+        // Prepare malfunctionable panel.
+        BuildingFunctionPanel malfunctionPanel = new MalfunctionableBuildingPanel((Malfunctionable) building, desktop);
+        functionPanels.add(malfunctionPanel);
+        functionListPanel.add(malfunctionPanel);
     }
     
     /**

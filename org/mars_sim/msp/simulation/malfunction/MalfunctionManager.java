@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.76 2002-06-08
+ * @version 2.75 2003-05-29
  * @author Scott Davis
  */
 
@@ -81,16 +81,16 @@ public class MalfunctionManager implements Serializable {
     public boolean hasEmergencyMalfunction() {
         boolean result = false;
 
-    if (hasMalfunction()) {
-        Iterator i = malfunctions.iterator();
-        while (i.hasNext()) {
-            Malfunction malfunction = (Malfunction) i.next();
-            if ((malfunction.getEmergencyWorkTime() -
-                malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if ((malfunction.getEmergencyWorkTime() -
+                    malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
+            }
         }
-    }
 
-    return result;
+        return result;
     }
 
     /**
@@ -136,7 +136,7 @@ public class MalfunctionManager implements Serializable {
      * @return malfunction collection
      */
     public Collection getMalfunctions() {
-        return malfunctions;
+        return new ArrayList(malfunctions);
     }
 
     /**
