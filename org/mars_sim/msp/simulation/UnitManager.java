@@ -1,12 +1,12 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-09-26
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation; 
- 
+package org.mars_sim.msp.simulation;
+
 import java.io.*;
 import java.util.*;
 
@@ -25,8 +25,7 @@ public class UnitManager {
     private Vector vehiclesVector; // List of vehicle units
     private Vector peopleVector; // List of people units
 
-    public UnitManager(VirtualMars mars) {
-
+    UnitManager(VirtualMars mars) {
         // Initialize virtual mars to parameter
         this.mars = mars;
 
@@ -47,10 +46,9 @@ public class UnitManager {
 
     /** Creates initial settlements with random locations */
     private void createSettlements() {
-        
         // Get settlement names from "settlements.conf"
-        String[] settlementNames = ConfFileProcessor.getSettlementNames(); 
-            
+        String[] settlementNames = ConfFileProcessor.getSettlementNames();
+
         // Set base random value
         Random baseRand = new Random();
 
@@ -59,8 +57,10 @@ public class UnitManager {
 
             // Determine random location of settlement, adjust so it will be less likely to be near the poles
             double settlementPhi = (baseRand.nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
-            if (settlementPhi > Math.PI) settlementPhi = Math.PI;
-            if (settlementPhi < 0D) settlementPhi = 0D;
+            if (settlementPhi > Math.PI)
+                settlementPhi = Math.PI;
+            if (settlementPhi < 0D)
+                settlementPhi = 0D;
             double settlementTheta = (double)(Math.random() * (2D * Math.PI));
             Coordinates settlementCoords = new Coordinates(settlementPhi, settlementTheta);
             createSettlement(settlementNames[x], settlementCoords);
@@ -68,8 +68,7 @@ public class UnitManager {
     }
 
     private void createSettlement(String name, Coordinates coords) {
-        Settlement tempSettlement =
-                new Settlement(name, coords, mars, this);
+        Settlement tempSettlement = new Settlement(name, coords, mars, this);
         // Add settlement to master unit and settlements vectors
         unitVector.addElement(tempSettlement);
         settlementsVector.addElement(tempSettlement);
@@ -78,20 +77,20 @@ public class UnitManager {
 
     /** Creates initial vehicles at random settlements */
     private void createVehicles() {
-        
+
         // Get rover names from "rovers.conf"
-        String[] roverNames = ConfFileProcessor.getRoverNames(); 
+        String[] roverNames = ConfFileProcessor.getRoverNames();
 
         for (int x = 0; x < roverNames.length; x++) {
-            // Create a rover 
+            // Create a rover
             // Place rover initially at random settlement
             int randSettlement = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
             createVehicle(roverNames[x], new Coordinates(0D, 0D),
-                (Settlement) settlementsVector.elementAt(randSettlement));
+                    (Settlement) settlementsVector.elementAt(randSettlement));
         }
     }
 
-    public void createVehicle(String name, Coordinates coords, Settlement seti) {
+    void createVehicle(String name, Coordinates coords, Settlement seti) {
         Rover tempVehicle = new Rover(name, coords, mars, this);
         // Add rover to master unit and vehicles vectors
         unitVector.addElement(tempVehicle);
@@ -101,25 +100,21 @@ public class UnitManager {
 
     /** Creates initial people at random settlements */
     private void createPeople() {
-
         // Get people names from "people.conf"
-        String[] peopleNames = ConfFileProcessor.getPersonNames(); 
-        
+        String[] peopleNames = ConfFileProcessor.getPersonNames();
+
         // Create a Person opject for each name
         // Choose a random settlement to put the person.
         for (int x = 0; x < peopleNames.length; x++) {
 
             // Place person initially in random settlement
-            int randSettlement = RandomUtil.getRandomInteger(
-                    settlementsVector.size() - 1);
+            int randSettlement = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
             createPerson(peopleNames[x], new Coordinates(0D, 0D),
-                    (Settlement) settlementsVector.elementAt(
-                    randSettlement));
+                    (Settlement) settlementsVector.elementAt(randSettlement));
         }
     }
 
-    private void createPerson(String name, Coordinates coord,
-            Settlement seti) {
+    private void createPerson(String name, Coordinates coord, Settlement seti) {
         // Create a person with that name
         Person tempPerson = new Person(name, coord, mars, this);
         // Add person to master unit and people vectors
@@ -130,8 +125,9 @@ public class UnitManager {
 
 
     /** Notify all the units that time has passed. Times they are a
-      *  changing.  */
-    public void takeAction(int seconds) {
+       *  changing.
+       */
+    void takeAction(int seconds) {
         for (int x = 0; x < unitVector.size(); x++) {
             ((Unit) unitVector.elementAt(x)).timePasses(seconds);
         }
@@ -153,13 +149,13 @@ public class UnitManager {
     }
 
     /** Get a random settlement */
-    public Settlement getRandomSettlement() {
+    Settlement getRandomSettlement() {
         int r = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
         return (Settlement) settlementsVector.elementAt(r);
     }
 
     /** Get a random settlement other than given current one. */
-    public Settlement getRandomSettlement(Settlement current) {
+    Settlement getRandomSettlement(Settlement current) {
         Settlement newSettlement;
         do {
             newSettlement = getRandomSettlement();
@@ -170,16 +166,14 @@ public class UnitManager {
     }
 
     /** Get a random settlement among the closest three settlements to
-      *   the given location.
-      */
-    public Settlement getRandomOfThreeClosestSettlements(
-            Coordinates location) {
+       *   the given location.
+       */
+    Settlement getRandomOfThreeClosestSettlements(Coordinates location) {
         Vector tempVector = new Vector();
         Vector resultVector = new Vector();
 
         for (int x = 0; x < settlementsVector.size(); x++) {
-            Settlement tempSettlement =
-                    (Settlement) settlementsVector.elementAt(x);
+            Settlement tempSettlement = (Settlement) settlementsVector.elementAt(x);
             if (!tempSettlement.getCoordinates().equals(location))
                 tempVector.addElement(tempSettlement);
         }
@@ -188,12 +182,9 @@ public class UnitManager {
             Settlement nearestSettlement = null;
             double smallestDistance = 100000D;
             for (int y = 0; y < tempVector.size(); y++) {
-                Settlement tempSettlement =
-                        (Settlement) tempVector.elementAt(y);
-                double tempDistance = location.getDistance(
-                        tempSettlement.getCoordinates());
-                if ((tempDistance < smallestDistance) &&
-                        (tempDistance != 0D)) {
+                Settlement tempSettlement = (Settlement) tempVector.elementAt(y);
+                double tempDistance = location.getDistance(tempSettlement.getCoordinates());
+                if ((tempDistance < smallestDistance) && (tempDistance != 0D)) {
                     smallestDistance = tempDistance;
                     nearestSettlement = tempSettlement;
                 }
@@ -207,23 +198,22 @@ public class UnitManager {
     }
 
     /** Get a random settlement among the closest three settlements to
-      *  the given settlement
-      */
-    public Settlement getRandomOfThreeClosestSettlements(Settlement current) {
-        return getRandomOfThreeClosestSettlements(
-                current.getCoordinates());
+       *  the given settlement
+       */
+    Settlement getRandomOfThreeClosestSettlements(Settlement current) {
+        return getRandomOfThreeClosestSettlements(current.getCoordinates());
     }
 
     /** The total number of units */
     public int getUnitCount() {
         return unitVector.size();
     }
-    
+
     /** Returns an array of all the units. */
-    public Unit[] getUnits() { 
+    public Unit[] getUnits() {
         Unit[] units = new Unit[unitVector.size()];
-        for (int x=0; x < units.length; x++) units[x] = (Unit) unitVector.elementAt(x);
+        for (int x = 0; x < units.length; x++)
+            units[x] = (Unit) unitVector.elementAt(x);
         return units;
     }
 }
-

@@ -1,24 +1,23 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.70 2000-09-01
+ * @version 2.71 2000-09-26
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation; 
- 
+package org.mars_sim.msp.simulation;
+
 /** The GroundVehicle class represents a ground-type vehicle.  It is
  *  abstract and should be extended to a particular type of ground
  *  vehicle.
 */
 public abstract class GroundVehicle extends Vehicle {
 
-    private double elevation; // Current elevation in km
-    private double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability
-    private double terrainGrade; // Average angle of terrain over next 7.4km distance in direction vehicle is traveling
+    private double elevation; // Current elevation in km.
+    private double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability.
+    private double terrainGrade; // Average angle of terrain over next 7.4km distance in direction vehicle is traveling.
 
-    public GroundVehicle(String name, Coordinates location, VirtualMars mars,
-            UnitManager manager) {
+    GroundVehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
         // use Vehicle constructor
         super(name, location, mars, manager);
@@ -47,7 +46,7 @@ public abstract class GroundVehicle extends Vehicle {
     }
 
     /** Sets the elevation of the vehicle (in km.) */
-    public void setElevation(double elevation) {
+    void setElevation(double elevation) {
         this.elevation = elevation;
     }
 
@@ -56,18 +55,18 @@ public abstract class GroundVehicle extends Vehicle {
         return terrainHandlingCapability;
     }
 
-    /** Returns the vehicle's terrain capability */
-    public void setTerrainHandlingCapability(double c) {
+    /** Sets the vehicle's terrain capability */
+    void setTerrainHandlingCapability(double c) {
         terrainHandlingCapability = c;
     }
 
-    /** Returns terrain steepness as angle */
+    /** Returns terrain steepness as an angle */
     public double getTerrainGrade() {
         return terrainGrade;
     }
 
     /** Sets the terrain grade with an angle */
-    public void setTerrainGrade(double terrainGrade) {
+    void setTerrainGrade(double terrainGrade) {
         this.terrainGrade = terrainGrade;
     }
 
@@ -77,7 +76,7 @@ public abstract class GroundVehicle extends Vehicle {
     }
 
     /** Sets the ground vehicle's stuck value */
-    public void setStuck(boolean stuck) {
+    void setStuck(boolean stuck) {
         if (stuck) {
             setStatus("Stuck - Using Winch");
         } else {
@@ -85,4 +84,3 @@ public abstract class GroundVehicle extends Vehicle {
         }
     }
 }
-

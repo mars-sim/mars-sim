@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-09-25
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation; 
+package org.mars_sim.msp.simulation;
 
 /** The Unit class is the abstract parent class to all units on the
  *  virtual Mars.  Units include people, vehicles and settlements.
@@ -13,14 +13,12 @@ package org.mars_sim.msp.simulation;
  */
 public abstract class Unit {
 
-    protected Coordinates location; // Unit location coordinates
-    protected String name; // Unit name
-    protected VirtualMars mars; // The virtual Mars
-    protected UnitManager manager; // Primary unit manager
+    Coordinates location; // Unit location coordinates
+    String name; // Unit name
+    VirtualMars mars; // The virtual Mars
+    UnitManager manager; // Primary unit manager
 
-    public Unit(String name, Coordinates location, VirtualMars mars,
-            UnitManager manager) {
-
+    Unit(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
         // Initialize data members from parameters
         this.name = name;
         this.location = location;
@@ -44,13 +42,12 @@ public abstract class Unit {
     }
 
     /** Sets unit's location coordinates */
-    public void setCoordinates(Coordinates newLocation) {
+    void setCoordinates(Coordinates newLocation) {
         location.setCoords(newLocation);
     }
 
     // perhaps this should be moved into a seperate Time interface
     /** the opportunity for a unit to handle time passing */
-    public void timePasses(int seconds) {
+    void timePasses(int seconds) {
     }
 }
-

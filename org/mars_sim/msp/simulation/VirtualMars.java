@@ -1,12 +1,12 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-09-26
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation; 
- 
+package org.mars_sim.msp.simulation;
+
 import java.util.*;
 
 /** VirtualMars represents Mars in the simulation. It contains all the
@@ -19,21 +19,21 @@ public class VirtualMars {
     private MasterClock masterClock; // Master clock for virtual world
 
     public VirtualMars() {
+        // Initialize terrain
+        elevationMap =
+                new TerrainElevation("map_data/TopoMarsMap.dat", "map_data/TopoMarsMap.index",
+                "map_data/TopoMarsMap.sum");
 
-        // initialize terrain
-        elevationMap = new TerrainElevation("map_data/TopoMarsMap.dat", 
-                "map_data/TopoMarsMap.index", "map_data/TopoMarsMap.sum");
-
-        // initialize all units
+        // Initialize all units
         units = new UnitManager(this);
 
-        // initialize and start master clock
+        // Initialize and start master clock
         masterClock = new MasterClock(this);
         masterClock.start();
     }
 
     /** Clock pulse from master clock */
-    public void clockPulse(int seconds) {
+    void clockPulse(int seconds) {
         units.takeAction(seconds);
     }
 

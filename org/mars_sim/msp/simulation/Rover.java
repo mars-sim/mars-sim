@@ -1,19 +1,18 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-09-26
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation; 
+package org.mars_sim.msp.simulation;
 
 /** The Rover class represents the rover type of ground vehicle.  It
  *  contains information about the rover.
  */
 public class Rover extends GroundVehicle {
 
-    public Rover(String name, Coordinates location, VirtualMars mars,
-            UnitManager manager) {
+    Rover(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
         // Use GroundVehicle constructor
         super(name, location, mars, manager);
@@ -31,4 +30,3 @@ public class Rover extends GroundVehicle {
         setFuelCapacity(10D);
     }
 }
-

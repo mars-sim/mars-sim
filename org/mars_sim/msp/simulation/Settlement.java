@@ -1,25 +1,24 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-09-26
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
-import java.util.*;
+import java.util.Vector;
 
 /** The Settlement class represents a settlement unit on virtual Mars.
  *  It contains information related to the state of the settlement.
  */
 public class Settlement extends Unit {
 
-    protected Vector people; // List of inhabitants
-    protected Vector vehicles; // List of parked vehicles
-    protected FacilityManager facilityManager; // The facility manager for the settlement.
+    Vector people; // List of inhabitants
+    Vector vehicles; // List of parked vehicles
+    FacilityManager facilityManager; // The facility manager for the settlement.
 
-    public Settlement(String name, Coordinates location, VirtualMars mars,
-            UnitManager manager) {
+    Settlement(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
         // Use Unit constructor
         super(name, location, mars, manager);
@@ -64,32 +63,31 @@ public class Settlement extends Unit {
     }
 
     /** Bring in a new inhabitant */
-    public void addPerson(Person newPerson) {
+    void addPerson(Person newPerson) {
         people.addElement(newPerson);
     }
 
     /** Make a given inhabitant leave the settlement */
-    public void personLeave(Person person) {
+    void personLeave(Person person) {
         if (people.contains(person)) {
             people.removeElement(person);
         }
     }
 
     /** Bring in a new vehicle to be parked */
-    public void addVehicle(Vehicle newVehicle) {
+    void addVehicle(Vehicle newVehicle) {
         vehicles.addElement(newVehicle);
     }
 
     /** Make a given vehicle leave the settlement */
-    public void vehicleLeave(Vehicle vehicle) {
+    void vehicleLeave(Vehicle vehicle) {
         if (vehicles.contains(vehicle)) {
             vehicles.removeElement(vehicle);
         }
     }
 
     /** Perform time-related processes */
-    public void timePasses(int seconds) {
+    void timePasses(int seconds) {
         facilityManager.timePasses(seconds);
     }
 }
-
