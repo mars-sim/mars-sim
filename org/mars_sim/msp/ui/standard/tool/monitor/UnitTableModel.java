@@ -1,16 +1,14 @@
 /**
  * Mars Simulation Project
  * UnitTableModel.java
- * @version 2.75 2003-08-03
+ * @version 2.77 2004-08-11
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
+import java.util.Iterator;
 import org.mars_sim.msp.simulation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -21,7 +19,7 @@ abstract public class UnitTableModel extends AbstractTableModel
             implements MonitorModel, MspCollectionEventListener {
 
     // Data members
-    private ArrayList units;        // Collection of units
+    private UnitCollection units;        // Collection of units
     private String name;            // Model name
     private String statusSuffix;    // Suffix to added to status message
     private String columnNames[];   // Names of the displayed columns
@@ -41,7 +39,7 @@ abstract public class UnitTableModel extends AbstractTableModel
         // Initialize data members
         this.name = name;
         this.statusSuffix = suffix;
-        this.units = new ArrayList();
+        this.units = new UnitCollection();
         this.columnNames = names;
         this.columnTypes = types;
     }
@@ -52,11 +50,10 @@ abstract public class UnitTableModel extends AbstractTableModel
      */
     protected void add(Unit newUnit) {
         if (!units.contains(newUnit)) {
-            int size = units.size();
             units.add(newUnit);
 
             // Inform listeners of new row
-            fireTableRowsInserted(size, size);
+            fireTableRowsInserted(units.size() - 1, units.size() - 1);
         }
     }
 
@@ -67,12 +64,13 @@ abstract public class UnitTableModel extends AbstractTableModel
     protected void remove(Unit oldUnit) {
         if (units.contains(oldUnit)) {
             int index = units.indexOf(oldUnit);
-            units.add(oldUnit);
+            units.remove(oldUnit);
 
             // Inform listeners of new row
             fireTableRowsDeleted(index, index);
         }
     }
+    
     /**
      * Source collection has changed
      */
@@ -166,28 +164,42 @@ abstract public class UnitTableModel extends AbstractTableModel
     }
 
     /**
-     * Compare the current contents to the expected.
-     *
-     * @param contents The contents of this model.
+	 * Updates the unit table model if it is different from the source collection.
+	 * @source the source collection to check against.
+	 * @return a status string.
      */
-    protected void checkContents(List contents) {
-    	
-    }
+    public String update(MspCollection source) {
 
-    /**
-     * Update the model contents. Ideally this should not be needed as the
-     * model should be event driven and always know about the current
-     * Unit state.
-     *
-     * It also check whether the contents have changed.
-     * @return a Status string.
-     */
-    public String update() {
-        // Check the contents first
-        checkContents(units);
+		// If the source is null, clear out the table.
+		if (source == null) {
+			fireTableRowsDeleted(0, units.size() - 1);
+			units.clear();
+		}
+		else {
+			// Check if model is different from source collection.
+			if (!units.equals(source)) {
+				
+				// Remove old units.
+				UnitCollection removeUnits = new UnitCollection();
+				UnitIterator i = units.iterator();
+				while (i.hasNext()) {
+					Unit unit = i.next();
+					if (!source.contains(unit)) removeUnits.add(unit);
+				}
+				UnitIterator k = removeUnits.iterator();
+				while (k.hasNext()) remove(k.next());
+				
+				// Add new units.
+				Iterator j = source.getIterator();
+				while (j.hasNext()) {
+					Unit unit = (Unit) j.next();
+					if (!units.contains(unit)) add(unit);
+				}
+			}
+		}
 
         // Just signal that all the cells have changed, this will refresh
-        // displated cells.
+        // displayed cells.
         if (units.size() > 0) {
             fireTableRowsUpdated(0, units.size() - 1);
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MspCollection.java
- * @version 2.75 2003-05-12
+ * @version 2.77 2004-08-11
  * @author Scott Davis
  */
 
@@ -56,6 +56,26 @@ public abstract class MspCollection implements java.io.Serializable {
      */
     public boolean contains(Unit o) {
         return elements.contains(o);
+    }
+    
+    /**
+     * Gets the first occurence of the given unit in this collection.
+     * @param o the unit to search for.
+     * @return the index of the unit or -1 if not in collection.
+     */
+    public int indexOf(Unit o) {
+    	return elements.indexOf(o);
+    }
+    
+    /**
+     * Gets a unit in the collection at a given index.
+     * @param index the index of the unit.
+     * @return the unit or null if invalid index.
+     */
+    public Unit get(int index) {
+    	Unit result = null;
+    	if ((index > -1) && (index < elements.size())) result = (Unit) elements.get(index);
+    	return result;
     }
 
     /** Returns true if this collection has no elements.
@@ -155,20 +175,10 @@ public abstract class MspCollection implements java.io.Serializable {
     }
     
     /**
-     * Refreshes the contents of this collection with the contents of another MSP collection.
-     * @param collection the refresher collection
+     * Gets the generic iterator for this collection.
+     * @return iterator
      */
-    public void refreshContents(MspCollection collection) {
-    	Iterator i = collection.getUnits().iterator();
-    	while (i.hasNext()) {
-    		Unit unit = (Unit) i.next();
-    		if (!contains(unit)) add(unit);
-    	}
-    	
-    	Iterator j = elements.iterator();
-    	while (j.hasNext()) {
-    		Unit unit = (Unit) j.next();
-    		if (!collection.contains(unit)) remove(unit);
-    	}
+    public Iterator getIterator() {
+    	return elements.iterator();
     }
 }

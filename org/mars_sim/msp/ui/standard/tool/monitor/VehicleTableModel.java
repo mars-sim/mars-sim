@@ -7,9 +7,7 @@
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.UnitManager;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
@@ -207,5 +205,14 @@ public class VehicleTableModel extends UnitTableModel {
 		}
 
 		source.addMspCollectionEventListener(this);
+	}
+	
+	/**
+	 * The Model should be updated to reflect any changes in the underlying
+	 * data.
+	 * @return A status string for the contents of the model.
+	 */
+	public String update() {
+		return update(Simulation.instance().getUnitManager().getVehicles());
 	}
 }

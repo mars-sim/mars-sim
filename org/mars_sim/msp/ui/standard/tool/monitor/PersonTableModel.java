@@ -35,6 +35,7 @@ public class PersonTableModel extends UnitTableModel {
     private final static int  COLUMNCOUNT = 10;   // The number of Columns
     private static String columnNames[];          // Names of Columns
     private static Class columnTypes[];           // Types of Columns
+    
     /**
      * The static initialisier creates the name & type arrays.
      */
@@ -62,65 +63,72 @@ public class PersonTableModel extends UnitTableModel {
         columnNames[HEALTH] = "Health";
         columnTypes[HEALTH] = String.class;
     }
-
-    // Data members
-    private Crewable vehicle;      // Monitored Crewable Vehicle
-    private Settlement settlement; // Monitored Location
-    private Mission mission;       // Monitored Mission
+    
+    // Valid source types.
+    private static final String ALL_PEOPLE = "All People";
+    private static final String VEHICLE_CREW = "Vehicle Crew";
+    private static final String SETTLEMENT_INHABITANTS = "Settlement Inhabitants";
+    private static final String MISSION_PEOPLE = "Mission People";
+    
+    private String sourceType; // The type of source for the people table.
+    
+    // List sources.
+    private UnitManager unitManager;
+    private Crewable vehicle;
+    private Settlement settlement;
+    private Mission mission;
 
     /**
-     * Constructs a PersonTableModel object that displays all Person from the
-     * proxy manager.
-     *
+     * Constructs a PersonTableModel object that displays all people in the simulation.
      * @param unitManager Manager containing Person objects.
      */
     public PersonTableModel(UnitManager unitManager) {
         super("All People", " people", columnNames, columnTypes);
 
+		sourceType = ALL_PEOPLE;
+		this.unitManager = unitManager;
         setSource(unitManager.getPeople());
     }
 
     /**
      * Constructs a PersonTableModel object that displays all Person from the
-     * specified Vechile
-     *
+     * specified vehicle.
      * @param vehicle Monitored vehicle Person objects.
      */
     public PersonTableModel(Crewable vehicle) {
         super(((Unit) vehicle).getName() + " - People", " people",
               columnNames, columnTypes);
 
-        this.vehicle = vehicle;
+		sourceType = VEHICLE_CREW;
+		this.vehicle = vehicle;
         setSource(vehicle.getCrew());
     }
 
     /**
      * Constructs a PersonTableModel object that displays all Person from the
-     * specified Vehicle
-     *
+     * specified settlement.
      * @param settlement Monitored settlement Person objects.
      */
     public PersonTableModel(Settlement settlement) {
         super(settlement.getName() + " - People", " residents",
               columnNames, columnTypes);
 
-        this.settlement = settlement;
-
+		sourceType = SETTLEMENT_INHABITANTS;
+		this.settlement = settlement;
         setSource(settlement.getInhabitants());
     }
 
     /**
      * Constructs a PersonTableModel object that displays all Person from the
-     * specified Mission.
-     *
+     * specified mission.
      * @param mission Monitored mission Person objects.
      */
     public PersonTableModel(Mission mission) {
         super(mission.getName() + " - People", " mission members",
               columnNames, columnTypes);
 
-	    this.mission = mission;
-
+		sourceType = MISSION_PEOPLE;
+		this.mission = mission;
 	    setSource(mission.getPeople());
     }
 
@@ -132,9 +140,26 @@ public class PersonTableModel extends UnitTableModel {
         while(iter.hasNext()) {
             add(iter.next());
         }
-
-        source.addMspCollectionEventListener(this);
     }
+    
+	/**
+	 * The Model should be updated to reflect any changes in the underlying
+	 * data.
+	 * @return A status string for the contents of the model.
+	 */
+	public String update() {
+		String statusString = "";
+		
+		if (sourceType.equals(ALL_PEOPLE)) statusString = update(unitManager.getPeople());
+		else if (sourceType.equals(VEHICLE_CREW)) statusString = update(vehicle.getCrew());
+		else if (sourceType.equals(SETTLEMENT_INHABITANTS)) statusString = update(settlement.getInhabitants());
+		else if (sourceType.equals(MISSION_PEOPLE)) {
+			if (mission != null) statusString = update(mission.getPeople());
+			else statusString = update(null);
+		} 
+		
+		return statusString;
+	}
 
     /**
      * Return the value of a Cell
@@ -146,7 +171,7 @@ public class PersonTableModel extends UnitTableModel {
         Person person = (Person)getUnit(rowIndex);
 
         // Invoke the appropriate method, switch is the best solution
-        // althought disliked by some
+        // although disliked by some
         switch (columnIndex) {
             case NAME : {
                 result = person.getName();
@@ -176,7 +201,6 @@ public class PersonTableModel extends UnitTableModel {
                 result = person.getPhysicalCondition().getHealthSituation();
             } break;
 
-            // Create a diplay vehicle, settlement, outside or buried.
             case LOCATION : {
                 String locationSituation = person.getLocationSituation();
                 if (locationSituation.equals(Person.INSETTLEMENT)) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.76 2004-06-01
+ * @version 2.77 2004-08-11
  * @author Scott Davis
  */
 
@@ -33,12 +33,6 @@ public class UnitManager implements Serializable {
     private List settlementNames; // List of possible settlement names
     private List vehicleNames; // List of possible vehicle names
     private List personNames; // List of possible person names
-    
-    private SettlementCollection settlements;
-    private VehicleCollection vehicles;
-    private PersonCollection people;
-    private EquipmentCollection equipment;
-    
 
     /** 
      * Constructor
@@ -47,10 +41,6 @@ public class UnitManager implements Serializable {
    
         // Initialize unit collection
         units = new UnitCollection();
-        settlements = new SettlementCollection();
-        vehicles = new VehicleCollection();
-        people = new PersonCollection();
-        equipment = new EquipmentCollection();
     }
     
     /**
@@ -124,23 +114,7 @@ public class UnitManager implements Serializable {
         if (!units.contains(unit)) {
             units.add(unit);
             units.mergeUnits(unit.getInventory().getContainedUnits());
-        }
-        
-        // Update settlement list
-        if (!units.getSettlements().equals(settlements))
-        	settlements.refreshContents(units.getSettlements());
-        	
-		// Update vehicles list
-		if (!units.getVehicles().equals(vehicles)) 
-			vehicles.refreshContents(units.getVehicles());
-			
-		// Update people list.
-		if (!units.getPeople().equals(people)) 
-			people.refreshContents(units.getPeople());
-		
-		// Update equipment list.
-		if (!units.getEquipment().equals(equipment)) 
-			equipment.refreshContents(units.getEquipment());			
+        }		
     }
     
     /**
@@ -291,48 +265,42 @@ public class UnitManager implements Serializable {
      *  @return the number of settlements
      */
     public int getSettlementNum() {
-        // return units.getSettlements().size();
-        return settlements.size();
+        return units.getSettlements().size();
     }
 
     /** Get settlements in vitual Mars
      *  @return SettlementCollection of settlements
      */
     public SettlementCollection getSettlements() {
-        // return units.getSettlements();
-        return settlements;
+        return units.getSettlements();
     }
 
     /** Get number of vehicles
      *  @return the number of vehicles
      */
     public int getVehicleNum() {
-        // return units.getVehicles().size();
-        return vehicles.size();
+        return units.getVehicles().size();
     }
 
     /** Get vehicles in virtual Mars
      *  @return VehicleCollection of vehicles
      */
     public VehicleCollection getVehicles() {
-        // return units.getVehicles();
-        return vehicles;
+        return units.getVehicles();
     }
 
     /** Get number of people
      *  @return the number of people
      */
     public int getPeopleNum() {
-        // return units.getPeople().size();
-        return people.size();
+        return units.getPeople().size();
     }
 
     /** Get people in virtual Mars
      *  @return PersonCollection of people
      */
     public PersonCollection getPeople() {
-        // return units.getPeople();
-        return people;
+        return units.getPeople();
     }
     
     /** 
@@ -341,8 +309,7 @@ public class UnitManager implements Serializable {
      * @return the number of equipment
      */
     public int getEquipmentNum() {
-        // return units.getEquipment().size();
-        return equipment.size();
+        return units.getEquipment().size();
     }
 
     /** 
@@ -351,8 +318,7 @@ public class UnitManager implements Serializable {
      * @return EquipmentCollection of equipment
      */
     public EquipmentCollection getEquipment() {
-        // return units.getEquipment();
-        return equipment;
+        return units.getEquipment();
     }
 
     /** The total number of units

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.75 2004-04-05
+ * @version 2.77 2004-08-11
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -79,17 +79,14 @@ public class SettlementTableModel extends UnitTableModel {
 
     /**
      * Constructs a SettlementTableModel model that displays all Settlements
-     * from a UIProxymanager.
+     * in the simulation.
      *
      * @param unitManager Unit manager that holds settlements.
      */
     public SettlementTableModel(UnitManager unitManager) {
         super("All Settlement", " settlements", columnNames, columnTypes);
 
-        SettlementIterator iter = unitManager.getSettlements().sortByName().iterator();
-        while(iter.hasNext()) {
-            add(iter.next());
-        }
+		setSource(unitManager.getSettlements());
     }
 
     /**
@@ -206,4 +203,23 @@ public class SettlementTableModel extends UnitTableModel {
 
         return result;
     }
+    
+	/**
+	 * Defines the source data from this table
+	 */
+	private void setSource(SettlementCollection source) {
+		SettlementIterator iter = source.iterator();
+		while(iter.hasNext()) {
+			add(iter.next());
+		}
+	}
+	
+	/**
+	 * The Model should be updated to reflect any changes in the underlying
+	 * data.
+	 * @return A status string for the contents of the model.
+	 */
+	public String update() {
+		return update(Simulation.instance().getUnitManager().getSettlements());
+	}
 }
