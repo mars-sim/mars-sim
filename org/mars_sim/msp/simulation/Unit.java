@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.73 2001-11-14
+ * @version 2.74 2002-01-24
  * @author Scott Davis
  */
 
@@ -16,9 +16,12 @@ public abstract class Unit implements Serializable {
 
     // Data members
     protected Coordinates location; // Unit location coordinates
-    protected String name; // Unit name
-    protected VirtualMars mars; // The virtual Mars
-
+    protected String name;          // Unit name
+    protected VirtualMars mars;     // The virtual Mars
+    protected double baseMass;      // The mass of the unit without inventory
+    protected Inventory inventory;  // The unit's inventory
+    protected Unit containerUnit;   // The unit containing this unit
+    
     /** Constructs a Unit object
      *  @param name the name of the unit
      *  @param location the unit's location
@@ -29,6 +32,15 @@ public abstract class Unit implements Serializable {
         this.name = name;
         this.location = new Coordinates(location);
         this.mars = mars;
+	
+	// Default base mass is effectively infinite.  Child classes can override.
+	baseMass = Double.MAX_VALUE;
+
+	// Child units should set parameters on inventory.
+	inventory = new Inventory(this); 
+
+	// Defaults to no containing unit.
+	containerUnit = null;
     }
 
     /** Returns unit's UnitManager 
@@ -64,5 +76,34 @@ public abstract class Unit implements Serializable {
      *  @param time the amount of time passing (in millisols)
      */
     public void timePassing(double time) {
+    }
+
+    /** Gets the unit's inventory
+     *  @return the unit's inventory object
+     */
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    /** Gets the unit's container unit.
+     *  Returns null if unit has no container unit.
+     *  @return the unit's container unit
+     */
+    public Unit getContainerUnit() {
+        return containerUnit;
+    }
+
+    /** Sets the unit's container unit.
+     *  @param containerUnit the unit to contain this unit.
+     */
+    public void setContainerUnit(Unit containerUnit) {
+        this.containerUnit = containerUnit;
+    }
+
+    /** Gets the unit's mass including inventory mass.
+     *  @return mass of unit and inventory
+     */
+    public double getMass() {
+        return baseMass + inventory.getTotalMass();
     }
 }

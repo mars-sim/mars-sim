@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 2.74 2002-01-21
+ * @version 2.74 2002-01-24
  * @author Scott Davis 
  */
 
@@ -26,14 +26,17 @@ public class Inventory implements Serializable {
     public static final String ROCK_SAMPLES = "rock samples";
 	
     // Data members
-    private Unit containerUnit = null;
+    private Unit owningUnit;
     private UnitCollection containedUnits = new UnitCollection();
     private HashMap containedResources = new HashMap();
     private HashMap resourceCapacities = new HashMap();
     private double totalCapacity = 0D;
     
     /** Construct an Inventory object */
-    public Inventory() {
+    public Inventory(Unit owningUnit) {
+        this.owningUnit = owningUnit;
+
+	// Initialize contained resources.
         containedResources.put(WATER, new Double(0D));
 	containedResources.put(OXYGEN, new Double(0D));
 	containedResources.put(FOOD, new Double(0D));
@@ -41,43 +44,43 @@ public class Inventory implements Serializable {
 	containedResources.put(ROCK_SAMPLES, new Double(0D));
     }
 
-    public double getResourceAmount(String resource) {
+    public double getResourceMass(String resource) {
         if (containedResources.containsKey(resource)) {
             return ((Double) containedResources.get(resource)).doubleValue();
         }
 	else return 0D;
     }
     
-    public double takeResource(String resource, double amount) {
+    public double takeResource(String resource, double mass) {
         if (containedResources.containsKey(resource)) {
-	    double containedAmount = ((Double) containedResources.get(resource)).doubleValue();
-	    if (amount > containedAmount) {
+	    double containedMass = ((Double) containedResources.get(resource)).doubleValue();
+	    if (mass > containedMass) {
                 containedResources.put(resource, new Double(0D));
-		return amount - containedAmount;
+		return mass - containedMass;
             }
 	    else {
-                containedResources.put(resource, new Double(containedAmount - amount));
-		return amount;
+                containedResources.put(resource, new Double(containedMass - mass));
+		return mass;
             }
         }
 	else return 0D;
     }
 
-    public double addResource(String resource, double amount) {
+    public double addResource(String resource, double mass) {
         if (containedResources.containsKey(resource)) {
-	    double remainingResourceCap = getResourceCapacity(resource) - getResourceAmount(resource); 
-	    double remainingTotalCap = getTotalCapacity() - getTotalAmount();
+	    double remainingResourceCap = getResourceCapacity(resource) - getResourceMass(resource); 
+	    double remainingTotalCap = getTotalCapacity() - getTotalMass();
 	    
-	    double amountLimit = Double.MAX_VALUE;
-	    if (remainingResourceCap < amountLimit) amountLimit = remainingResourceCap;
-	    if (remainingTotalCap < amountLimit) amountLimit = remainingTotalCap;
+	    double massLimit = Double.MAX_VALUE;
+	    if (remainingResourceCap < massLimit) massLimit = remainingResourceCap;
+	    if (remainingTotalCap < massLimit) massLimit = remainingTotalCap;
 	    
-	    if (amount > amountLimit) {
-	        containedResources.put(resource, new Double(amountLimit));
-		return amount - amountLimit;
+	    if (mass > massLimit) {
+	        containedResources.put(resource, new Double(massLimit));
+		return mass - massLimit;
             }
 	    else {
-                containedResources.put(resource, new Double(amount));
+                containedResources.put(resource, new Double(mass));
 		return 0D;
             }
         }
@@ -95,17 +98,43 @@ public class Inventory implements Serializable {
         return totalCapacity;
     }
 
-    public double getTotalAmount() {
-        double totalAmount = 0D;
+    public double getTotalMass() {
+        double totalMass = 0D;
 	
 	// Add resources in inventory.
 	Iterator i = containedResources.values().iterator();
 	while (i.hasNext()) {
-	    totalAmount += ((Double) i.next()).doubleValue();
+	    totalMass += ((Double) i.next()).doubleValue();
 	}
 
 	// Add mass of units in inventory.
-	
-	return totalAmount;
+        UnitIterator unitIt = containedUnits.iterator();
+	while (unitIt.hasNext()) {
+	    totalMass += unitIt.next().getMass();
+	}
+
+	return totalMass;
     }
+
+    public boolean containsUnit(Unit unit) {
+        return containedUnits.contains(unit);
+    }
+
+    /*
+    public boolean takeUnit(Unit unit) {
+        if (containedUnits.contains(unit)) {
+	    containedUnits.remove(unit);
+	    
+	    if (owningUnit != null) {
+                if (!owningUnit.getInventory().addUnit(unit)) 
+		    unit.setContainerUnit(null);
+	    }
+	    else owningUnit = null;
+	    
+	    return true;
+	}
+	else return false;
+    }
+    */
+
 }
