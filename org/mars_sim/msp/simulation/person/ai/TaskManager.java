@@ -27,11 +27,12 @@ public class TaskManager implements Serializable {
     private VirtualMars mars; // The virtual Mars
 
     // Array of available tasks
-    private Class[] availableTasks = { Relax.class, TendGreenhouse.class, MaintainVehicle.class,
-                                       Sleep.class, EatMeal.class, RepairMechanicalFailure.class,
-                                       ReserveRover.class, LoadVehicle.class, EnterRoverEVA.class,
-                                       DriveGroundVehicle.class, ExitRoverEVA.class, UnloadVehicle.class,
-                                       CollectRockSamples.class, MaintainSettlement.class };
+    private Class[] availableTasks = { Relax.class, TendGreenhouse.class,
+                                       MaintainVehicle.class,
+                                       Sleep.class, EatMeal.class,
+                                       RepairMechanicalFailure.class,
+                                       MedicalAssistance.class,
+                                       MaintainSettlement.class };
 
     /** Constructs a TaskManager object
      *  @param person the person the task manager is for
@@ -68,7 +69,7 @@ public class TaskManager implements Serializable {
         if (currentTask != null) return currentTask.getName();
 	else return "";
     }
-    
+
     /** Returns a description of current task for UI purposes.
      *  Returns a blank string if there is no current task.
      *  @return a description of the current task
