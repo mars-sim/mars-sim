@@ -15,6 +15,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.time.*;
+import org.mars_sim.msp.sound.SoundConstants;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
@@ -410,5 +411,26 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	            trail.add(new Coordinates(location));
 	    }
 	    else trail.add(new Coordinates(location));
+    }
+    /**
+     * Returns sound type for this vehicle according to
+     * vehicle's status.
+     * @return Sound constant @see SoundConstants
+     * TODO: Fix above line
+     * 
+     */
+    public String getSound()
+    {
+    	final String status = this.getStatus();
+    	if (status.equals(Vehicle.MOVING))
+    		return SoundConstants.SND_VEHICLE_MOVING;
+    	else 
+    		if (status.equals(Vehicle.MALFUNCTION))
+        		return SoundConstants.SND_VEHICLE_MALFUNCTION;
+        	else
+        		if (status.equals(Vehicle.MAINTENANCE))
+            		return SoundConstants.SND_VEHICLE_MAINTENANCE;
+            
+        	return "";
     }
 }
