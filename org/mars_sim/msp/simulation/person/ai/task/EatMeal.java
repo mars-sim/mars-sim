@@ -113,7 +113,6 @@ class EatMeal extends Task implements Serializable {
         	catch (Exception e) {
         		System.err.println(person.getName() + " unable to eat meal: " + e.getMessage());
         	}
-        	if (meal != null) System.out.println(person.getName() + " consumes cooked meal " + meal.getQuality() + " at " + person.getSettlement().getName());
             endTask();
            
             return timeCompleted - DURATION;

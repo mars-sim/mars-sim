@@ -185,7 +185,7 @@ public class Cooking extends Function implements Serializable {
 			
 				meals.add(new CookedMeal(mealQuality, time));
 				cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
-				System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + " has " + meals.size() + " hot meals, quality=" + mealQuality);
+				// System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + " has " + meals.size() + " hot meals, quality=" + mealQuality);
 			}
 			catch (Exception e) {
 				System.err.println("Cooking.addWork(): " + e.getMessage());
@@ -210,7 +210,7 @@ public class Cooking extends Function implements Serializable {
 					PersonConfig config = simConfig.getPersonConfiguration();
 					getBuilding().getInventory().addResource(Resource.FOOD, config.getFoodConsumptionRate() * (1D / 3D));
 					i.remove();
-					System.out.println("Cooked meal expiring at " + getBuilding().getBuildingManager().getSettlement().getName());
+					// System.out.println("Cooked meal expiring at " + getBuilding().getBuildingManager().getSettlement().getName());
 				}
 				catch (Exception e) {
 					System.err.println("Cooking.timePassing(): " + e.getMessage());

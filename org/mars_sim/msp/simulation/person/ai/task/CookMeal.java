@@ -43,7 +43,7 @@ public class CookMeal extends Task implements Serializable {
 		super("Cooking", person, true, false, STRESS_MODIFIER);
 		
 		// Initialize data members
-		description = "Cooking Meal";
+		description = "Cooking " + getMealName();
 		
 		// Get available kitchen if any.
 		try {
@@ -59,8 +59,8 @@ public class CookMeal extends Task implements Serializable {
 			endTask();
 		}		
 		
-		String jobName = person.getMind().getJob().getName();
-		System.out.println(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + " in " + person.getSettlement());
+		// String jobName = person.getMind().getJob().getName();
+		// System.out.println(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + " in " + person.getSettlement());
 	}
 	
 	/** 
@@ -125,7 +125,7 @@ public class CookMeal extends Task implements Serializable {
 		if (!isMealTime(person)) {
 			endTask();
 			kitchen.cleanup();
-			System.out.println(person.getName() + " finished cooking.");
+			// System.out.println(person.getName() + " finished cooking.");
 			return timeLeft;
 		}
         
@@ -201,6 +201,25 @@ public class CookMeal extends Task implements Serializable {
 		if ((modifiedTime >= BREAKFAST_START) && (modifiedTime <= (BREAKFAST_START + MEALTIME_DURATION))) result = true;
 		if ((modifiedTime >= LUNCH_START) && (modifiedTime <= (LUNCH_START + MEALTIME_DURATION))) result = true;
 		if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) result = true;		
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the name of the meal the person is cooking based on the time.
+	 * @return mean name ("Breakfast", "Lunch" or "Dinner) or empty string if none.
+	 */
+	private String getMealName() {
+		String result = "";
+		
+		double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+		double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
+		double modifiedTime = timeOfDay + timeDiff;
+		if (modifiedTime >= 1000D) modifiedTime -= 1000D;
+		
+		if ((modifiedTime >= BREAKFAST_START) && (modifiedTime <= (BREAKFAST_START + MEALTIME_DURATION))) result = "Breakfast";
+		if ((modifiedTime >= LUNCH_START) && (modifiedTime <= (LUNCH_START + MEALTIME_DURATION))) result = "Lunch";
+		if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) result = "Dinner";
 		
 		return result;
 	}
