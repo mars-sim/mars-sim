@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-05-09
+ * @version 2.74 2002-05-13
  * @author Scott Davis
  */
 
@@ -231,7 +231,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public Person getDriver() {
 	if (!inventory.containsUnit(driver)) driver = null;
-        else if (!driver.getPhysicalCondition().getAlive()) driver = null;
+        else if (driver.getPhysicalCondition().getDeathDetails() != null) driver = null;
 	return driver;
     }
 

@@ -55,7 +55,7 @@ public class PhysicalCondition implements Serializable {
     }
 
     /**
-     * Can any of the existing problem be heeled by this FirstAidUnit
+     * Can any of the existing problems be healed by this FirstAidUnit
      * @param unit FirstAidUnit that can heal.
      */
     void canStartTreatment(MedicalAid unit) {

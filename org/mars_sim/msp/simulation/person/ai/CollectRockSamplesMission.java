@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-05-04
+ * @version 2.74 2002-05-13
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import java.util.*;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
@@ -310,6 +311,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	else {
             // End collecting phase.
             siteIndex++;
+	    if (hasDangerousMedicalProblems()) siteIndex = collectionSites.size();
             if (siteIndex == collectionSites.size()) {
                 phase = DRIVEHOME;
                 destination = startingSettlement.getCoordinates();
@@ -326,6 +328,25 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         }
     }
 
+    /**
+     * Checks to see if the crew have any dangerous medical problems that require treatment
+     * at a settlment.
+     * @return true if dangerous medical problems
+     */
+    private boolean hasDangerousMedicalProblems() {
+        boolean result = false;
+	PersonIterator i = people.iterator();
+	while (i.hasNext()) {
+	    Person person = i.next();
+	    Iterator meds = person.getPhysicalCondition().getProblems().iterator();
+	    while (meds.hasNext()) {
+                HealthProblem prob = (HealthProblem) meds.next();
+		if (prob.getIllness().getRecoveryTreatment() != null) result = true;
+	    }
+	}
+	return result;
+    }
+    
     /**
      * Checks that everyone in the mission is aboard the rover.
      * @return true if everyone is aboard

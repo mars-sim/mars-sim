@@ -132,7 +132,7 @@ class TravelToSettlement extends Mission implements Serializable {
      *  @param person the person currently performing the mission
      */ 
     private void embarkingPhase(Person person) {
-        
+
         // Determine the destination settlement.
         if (destinationSettlement == null) { 
             destinationSettlement = getRandomDestinationSettlement(startingSettlement);

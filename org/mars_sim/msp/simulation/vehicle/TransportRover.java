@@ -20,6 +20,7 @@ public class TransportRover extends Rover implements Serializable {
 
     // Static data members
     private static final int CREW_CAPACITY = 12; // Max number of crewmembers.
+    private static final double CARGO_CAPACITY = 12000D; // Cargo capacity of rover in kg.
     private static final double FUEL_CAPACITY = 3750D; // Fuel capacity of rover in kg.
     private static final double OXYGEN_CAPACITY = 1000D; // Oxygen capacity of rover in kg.
     private static final double WATER_CAPACITY = 4000D; // Water capacity of rover in kg.
@@ -35,12 +36,12 @@ public class TransportRover extends Rover implements Serializable {
      */
     TransportRover(String name, Settlement settlement, Mars mars) {
         // Use the Rover constructor
-	    super(name, settlement, mars);
+        super(name, settlement, mars);
 
-	    initTransportRoverData();
+        initTransportRoverData();
 
-	    // Add EVA suits
-	    addEVASuits();
+        // Add EVA suits
+        addEVASuits();
     }
 
     /**
@@ -71,6 +72,9 @@ public class TransportRover extends Rover implements Serializable {
         // Set crew capacity
 	crewCapacity = CREW_CAPACITY;
 
+        // Set the cargo capacity of rover.
+	inventory.setTotalCapacity(CARGO_CAPACITY);
+	
 	// Set resource capacities of rover
 	inventory.setResourceCapacity(Inventory.FUEL, FUEL_CAPACITY);
 	inventory.setResourceCapacity(Inventory.OXYGEN, OXYGEN_CAPACITY);

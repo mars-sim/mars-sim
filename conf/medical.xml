@@ -37,7 +37,7 @@
             <NAME>Dressing</NAME>
             <SKILL>0</SKILL>
             <DURATION>0.5</DURATION>
-            <FACILITY_LEVEL>2</FACILITY_LEVEL>
+            <FACILITY_LEVEL>1</FACILITY_LEVEL>
         </TREATMENT>
 
         <TREATMENT>
@@ -93,7 +93,7 @@
             <!-- Probability of this complaint occuring (optional) -->
             <!-- Default: 0 -->
             <!-- Range: 1 - 100 -->
-            <PROBABILITY>5</PROBABILITY>
+            <PROBABILITY>1</PROBABILITY>
 
             <!-- Performance percentage when this complaint is active (required) -->
             <!-- Range: 1 - 100 -->
@@ -123,7 +123,7 @@
             <SERIOUS>60</SERIOUS>
             <DEGRADE>7</DEGRADE>
             <RECOVERY>14</RECOVERY>
-            <PROBABILITY>5</PROBABILITY>
+            <PROBABILITY>1</PROBABILITY>
             <PERFORMANCE>0</PERFORMANCE>
             <CURE>Minor Operation</CURE>
             <NEXT>Ruptured Appendix</NEXT>

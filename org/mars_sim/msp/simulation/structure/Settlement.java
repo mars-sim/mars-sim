@@ -94,14 +94,14 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
 	double foodCap = properties.getSettlementFoodStorageCapacity();
         inventory.setResourceCapacity(Inventory.FOOD, foodCap);
 
-	// Set random initial resources from 1/4 to 1/2 total capacity.
-	double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(fuelCap / 4D);
+	// Set random initial resources from 1/4 to total capacity.
+	double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(3D * fuelCap / 4D);
 	inventory.addResource(Inventory.FUEL, fuel); 
-	double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(oxygenCap / 4D);
+	double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(3D * oxygenCap / 4D);
 	inventory.addResource(Inventory.OXYGEN, oxygen); 
-	double water = (waterCap / 4D) + RandomUtil.getRandomDouble(waterCap / 4D);
+	double water = (waterCap / 4D) + RandomUtil.getRandomDouble(3D * waterCap / 4D);
 	inventory.addResource(Inventory.WATER, water); 
-	double food = (foodCap / 4D) + RandomUtil.getRandomDouble(foodCap / 4D);
+	double food = (foodCap / 4D) + RandomUtil.getRandomDouble(3D * foodCap / 4D);
 	inventory.addResource(Inventory.FOOD, food);
 
 	// Set random initial rock samples from 0 to 500 kg.
