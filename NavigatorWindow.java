@@ -1,5 +1,5 @@
 //*********************** Navigator Tool Window ***********************
-// Last Modified: 4/4/00
+// Last Modified: 4/6/00
 
 // The NavigatorWindow is a tool window that displays virtual Mars 
 // and allows the user to navigate around.
@@ -25,12 +25,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 	private JComboBox latDir;	             // Latitude direction choice
 	private JComboBox longDir;                   // Longitude direction choice
 	private JButton goThere;                     // Location entry submit button     
-	private JComboBox unitCategory;              // Unit go to category choice
-	private JComboBox unitGoTo;                  // Unit go to choice
-	private DefaultComboBoxModel unitGoToModel;  // Data model for unitGoTo
 	private JCheckBox unitLabelCheckbox;         // Show unit labels checkbox
-	private boolean unitGoToChange;              // Enables unitGoTo comboBox to recenter map
-	private UnitInfo[] unitTags;                 // List of unit info
 
 	// Constructor
 
@@ -47,10 +42,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 		// Initialize data members
 
 		this.desktop = desktop;
-		
-		// Enable unitGoTo to recenter map
-		
-		unitGoToChange = true;
 
 		// Prepare content pane
 
@@ -100,33 +91,40 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 
 		// Prepare topographical panel
 
-		JPanel topoPane = new JPanel();
-		topoPane.setLayout(new BoxLayout(topoPane, BoxLayout.X_AXIS));
-		topoPane.setBorder(new EmptyBorder(3, 3, 3, 3));
+		JPanel topoPane = new JPanel(new BorderLayout());
+		topoPane.setBorder(new EmptyBorder(0, 3, 0, 0));
 		mainPane.add(topoPane);
+		
+		// Prepare checkbox panel
+		
+		JPanel checkBoxPane = new JPanel(new GridLayout(2, 1));
+		topoPane.add(checkBoxPane, "West");
 		
 		// Prepare show topographical map checkbox
 		
 		topoCheck = new JCheckBox("Topographical Mode");
 		topoCheck.setFont(new Font("Helvetica", Font.BOLD, 12));
 		topoCheck.addItemListener(this);
-		topoCheck.setAlignmentY(.5F);
-		topoPane.add(topoCheck);
+		checkBoxPane.add(topoCheck);
 		
-		// Put glue spacer in
-		
-		topoPane.add(Box.createHorizontalGlue());
+		// Prepare unit label mode checkbox
+
+		unitLabelCheckbox = new JCheckBox("Show Unit Labels");
+		unitLabelCheckbox.setSelected(true);
+		unitLabelCheckbox.addItemListener(this);
+		checkBoxPane.add(unitLabelCheckbox);
 		
 		// Prepare legend icon
 		
 		legend = new LegendDisplay();
-		topoPane.add(legend);
+		legend.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.green)));
+		topoPane.add(legend, "East");
 		
 		// Prepare position entry panel
 		
 		JPanel positionPane = new JPanel();
 		positionPane.setLayout(new BoxLayout(positionPane, BoxLayout.X_AXIS));
-		positionPane.setBorder(new EmptyBorder(3, 3, 3, 3));
+		positionPane.setBorder(new EmptyBorder(6, 6, 3, 3));
 		mainPane.add(positionPane);
 		
 		// Prepare latitude entry components
@@ -177,43 +175,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 		goThere.addActionListener(this);
 		goThere.setAlignmentY(.5F);
 		positionPane.add(goThere);
-
-		// Prepare unit location panel
-
-		JPanel unitFinderPane = new JPanel();
-		unitFinderPane.setLayout(new BoxLayout(unitFinderPane, BoxLayout.X_AXIS));
-		unitFinderPane.setBorder(new EmptyBorder(3, 3, 3, 3));
-		mainPane.add(unitFinderPane);
-		
-		// Prepare unit category choice
-		
-		String[] unitStrings = { "Settlements", "Vehicles", "People" };
-		unitCategory = new JComboBox(unitStrings);
-		unitCategory.setSelectedIndex(0);
-		unitCategory.addItemListener(this);
-		unitFinderPane.add(unitCategory);
-
-		// Prepare unit go to choice
-
-		unitGoToModel = new DefaultComboBoxModel();
-		unitGoTo = new JComboBox(unitGoToModel);
-		fillUnitGoTo();
-		Dimension tempSize = new Dimension(150, (int) unitGoTo.getSize().getHeight());
-		unitGoTo.setPreferredSize(tempSize);
-		unitGoTo.addItemListener(this);
-		unitFinderPane.add(unitGoTo);
-
-		// Put glue spacer in
-		
-		unitFinderPane.add(Box.createHorizontalGlue());
-
-		// Prepare unit label mode checkbox
-
-		unitLabelCheckbox = new JCheckBox("Show Unit Labels");
-		unitLabelCheckbox.setSelected(true);
-		unitLabelCheckbox.setAlignmentY(.5F);
-		unitLabelCheckbox.addItemListener(this);
-		unitFinderPane.add(unitLabelCheckbox);
 		
 		// Pack window
 		
@@ -285,18 +246,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 		Object object = event.getSource();
 		
 		if (object == topoCheck) updateTopo(event.getStateChange() == ItemEvent.SELECTED);
-		else if (object == unitCategory) fillUnitGoTo();  // Refresh unitGoTo choice depending on unitCategory choice selection.
-		else if (object == unitGoTo) {
-			if (unitGoToChange) {
-				
-				// Set location to unit selected and refresh globe and surface map.
-			
-				if (unitGoToModel.getSize() > 0) {
-					Coordinates newCoords = unitTags[unitGoToModel.getIndexOf(unitGoToModel.getSelectedItem())].getCoords();
-					updateCoords(newCoords);
-				}
-			}
-		}
 		else if (object == unitLabelCheckbox) surfaceMap.setLabels(unitLabelCheckbox.isSelected());  // Change surface map's label settings
 	}
 	
@@ -311,22 +260,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 	// Opens a unit window on the desktop
 	
 	public void openUnitWindow(int unitID) { desktop.openUnitWindow(unitID); }
-	
-	// Fill unitGoTo choice when unitCategory choice is changed
-
-	private void fillUnitGoTo() {
-
-		unitGoToChange = false;
-
-		if (unitCategory.getSelectedItem().equals("Settlements")) unitTags = desktop.getSettlementInfo();
-		else if (unitCategory.getSelectedItem().equals("Vehicles")) unitTags = desktop.getVehicleInfo();
-		else unitTags = desktop.getPeopleInfo();
-
-		if (unitGoToModel.getSize() > 0) unitGoToModel.removeAllElements();
-		for (int x=0; x < unitTags.length; x++) unitGoToModel.addElement(unitTags[x].getName());
-		
-		unitGoToChange = true;
-	}
 }
 
 // Mars Simulation Project
