@@ -1,5 +1,5 @@
 //*********************** Main Desktop Pane ***********************
-// Last Modified: 2/22/00
+// Last Modified: 4/2/00
 
 // The MainDesktopPane class is the desktop part of the project's UI.
 // It contains all tool and unit windows, and is itself contained, along
@@ -57,6 +57,14 @@ public class MainDesktopPane extends JDesktopPane {
 		try { navWindow.setSelected(true); } 
 		catch (java.beans.PropertyVetoException e) {}
 		toolWindows.addElement(navWindow);
+		navWindow.setOpened();
+		
+		// Prepare search tool window
+		
+		SearchWindow searchWindow = new SearchWindow(this);
+		try { searchWindow.setClosed(true); }
+		catch (java.beans.PropertyVetoException e) {}
+		toolWindows.addElement(searchWindow);
 	}
 	
 	// Returns a tool window for a given tool name
@@ -79,7 +87,13 @@ public class MainDesktopPane extends JDesktopPane {
 	public void openToolWindow(String toolName) {
 		ToolWindow tempWindow = getToolWindow(toolName);
 		if (tempWindow != null) {
-			if (tempWindow.isClosed()) add(tempWindow, 0);
+			if (tempWindow.isClosed()) {
+				if (tempWindow.hasNotBeenOpened()) {
+					tempWindow.setLocation(getRandomLocation(tempWindow));
+					tempWindow.setOpened();
+				}
+				add(tempWindow, 0);
+			}
 			tempWindow.show();
 		}
 	}
@@ -106,11 +120,13 @@ public class MainDesktopPane extends JDesktopPane {
 				
 			// Put window in random position on desktop
 			
-			Dimension desktop_size = getSize();
+			tempWindow.setLocation(getRandomLocation(tempWindow));
+			
+			/* Dimension desktop_size = getSize();
  			Dimension window_size = tempWindow.getSize();
 			int rX = (int) Math.round(Math.random() * (desktop_size.width - window_size.width));
 			int rY = (int) Math.round(Math.random() * (desktop_size.height - window_size.height));
-			tempWindow.setLocation(rX, rY);
+			tempWindow.setLocation(rX, rY); */
 			
 			// Add unit window to unitWindows vector
 			
@@ -159,15 +175,18 @@ public class MainDesktopPane extends JDesktopPane {
 	
 	public UnitInfo[] getPeopleInfo() { return mainWindow.getPeopleInfo(); }
 	
-	/*
-	// Returns the coordinates of a named unit
+	// Returns a random location on the desktop for a given JInternalFrame
 	
-	public Coordinates getUnitCoords(String unitName) { return mainWindow.getUnitCoords(unitName); }
-	
-	// Returns sorted array of unit names with a given category
-	
-	public String[] getSortedUnitNames(String unitCategory) { return mainWindow.getSortedUnitNames(unitCategory); }
-	*/
+	private Point getRandomLocation(JInternalFrame tempWindow) {
+		
+		Dimension desktop_size = getSize();
+ 		Dimension window_size = tempWindow.getSize();
+		
+		int rX = (int) Math.round(Math.random() * (desktop_size.width - window_size.width));
+		int rY = (int) Math.round(Math.random() * (desktop_size.height - window_size.height));
+		
+		return new Point(rX, rY);
+	}
 }
 
 // Mars Simulation Project
