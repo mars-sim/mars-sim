@@ -7,6 +7,7 @@
 package org.mars_sim.msp.simulation.person;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import java.io.Serializable;
 
 /**
@@ -74,6 +75,13 @@ public class PhysicalCondition implements Serializable {
                 else {
                     setProblem(nextPhase);
                 }
+            }
+        }
+        else {
+            // See if a random illness catches this Person out
+            MedicalComplaint newComplaint = medic.getProbableComplaint();
+            if (newComplaint != null) {
+                setProblem(newComplaint);
             }
         }
 
@@ -208,10 +216,10 @@ public class PhysicalCondition implements Serializable {
         String situation = "Well";
         if (illness != null) {
             if (isRecovering) {
-                situation = "Recovering - " + illness.getName();
+                situation = "Recovery, " + illness.getName();
             }
             else if (!isAlive) {
-                situation = "Dead - " + illness.getName();
+                situation = "Dead, " + illness.getName();
             }
             else {
                 situation = illness.getName();
@@ -258,9 +266,25 @@ public class PhysicalCondition implements Serializable {
     }
 
     /**
+     * Move to a recovery state if the Settlement has the write stuff.
+     */
+    public void canStartRecovery(Settlement newHome) {
+        if (!isRecovering && (illness != null)) {
+
+            // Ideally this should check for Medical facilities but now
+            // any Settlement can fix random illness. Random illnesses are
+            // ones with a positive probability rating.
+            if (illness.getProbability() != 0) {
+                startRecovery();
+            }
+        }
+    }
+
+    /**
      * This is now moving to a recovery state.
      */
     public void startRecovery() {
+        System.out.println("Start recovery " + illness);
         illnessDuration = 0;
         isRecovering = true;
     }

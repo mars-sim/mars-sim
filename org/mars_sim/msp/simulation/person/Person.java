@@ -58,8 +58,8 @@ public class Person extends Unit implements Serializable {
         // Use Unit constructor
         super(name, settlement.getCoordinates(), mars);
 
-        setSettlement(settlement);
         initPersonData(mars);
+        setSettlement(settlement);
     }
 
     /** Constructs a Person object
@@ -71,6 +71,8 @@ public class Person extends Unit implements Serializable {
     Person(String name, VirtualMars mars, UnitManager manager) throws Exception {
         // Use Unit constructor
         super(name, new Coordinates(0D, 0D), mars);
+
+        initPersonData(mars);
 
         Settlement leastPeople = null;
         int least = Integer.MAX_VALUE;
@@ -88,7 +90,6 @@ public class Person extends Unit implements Serializable {
         if (leastPeople != null) setSettlement(leastPeople);
         else throw new Exception("No suitable settlements available");
 
-        initPersonData(mars);
     }
 
     /** Initialize person data */
@@ -133,7 +134,8 @@ public class Person extends Unit implements Serializable {
         return vehicle;
     }
 
-    /** Makes the person an inhabitant of a given settlement
+    /** Makes the person an inhabitant of a given settlement.
+     *  This check whether any illness can be recovered.
      *  @param settlement the person's settlement
      */
     public void setSettlement(Settlement settlement) {
@@ -141,6 +143,8 @@ public class Person extends Unit implements Serializable {
         location.setCoords(settlement.getCoordinates());
         settlement.addPerson(this);
         vehicle = null;
+
+        health.canStartRecovery(settlement);
     }
 
     /** Makes the person a passenger in a vehicle
@@ -208,13 +212,7 @@ public class Person extends Unit implements Serializable {
             // Person
             if (health.timePassing(time, support, props)) {
                 // Mins action is descreased according to any illness
-                MedicalComplaint illness = health.getIllness();
-                if (illness != null) {
-                    System.out.print(name + " mind time " + time );
-                    time = (time * illness.getPerformanceFactor())/ 100D;
-                    System.out.println(" changed to " + time);
-                }
-                mind.takeAction(time);
+                mind.takeAction(time * getPerformanceRating());
             }
             else {
                 // Person has died as a result of physical condition
@@ -228,6 +226,20 @@ public class Person extends Unit implements Serializable {
      */
     public NaturalAttributeManager getNaturalAttributeManager() {
         return attributes;
+    }
+
+    /**
+     * Get the performance rating of this Person
+     *
+     * @return A value in the range of 0 to 1.
+     */
+    public double getPerformanceRating() {
+        double rating = 1D;
+        MedicalComplaint illness = health.getIllness();
+        if (illness != null) {
+            rating = illness.getPerformanceFactor();
+        }
+        return rating;
     }
 
     /** Returns a reference to the Person's physical condition
