@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskDrive.java
- * @version 2.71 2000-12-04
+ * @version 2.71 2000-12-09
  * @author Scott Davis
  */
 
@@ -666,7 +666,10 @@ class TaskDrive extends Task {
         double percentChance = .1D;
 
         // Modify by total distance vehicle has traveled.
-        double distanceModifier = .1D * (vehicle.getTotalDistanceTraveled() / 10000D);
+        // Taken out until vehicles can be scrapped and created.
+        // Otherwise running the sim for more than a few hours will wear the
+        // vehicles down too much. [Scott]
+        // double distanceModifier = .1D * (vehicle.getTotalDistanceTraveled() / 10000D);
 
         // Modify by distance since last maintenance if over 5,000 km.
         double maintenanceModifier = 0D;
@@ -696,8 +699,10 @@ class TaskDrive extends Task {
             subPhaseModifier = .3D;
 
         // Total up modifications with base chance of failure.
-        percentChance += distanceModifier + maintenanceModifier - skillModifier + terrainModifier -
-                terrainHandlingModifier + subPhaseModifier;
+        //percentChance += distanceModifier + maintenanceModifier - skillModifier + terrainModifier -
+        //        terrainHandlingModifier + subPhaseModifier;
+        percentChance += maintenanceModifier - skillModifier + terrainModifier - terrainHandlingModifier + 
+                subPhaseModifier;
 
         // Determine if failure happens and, if so, have the crew fix the failure.
         if ((Math.random() * 100D) <= percentChance) {
