@@ -25,6 +25,7 @@ public class SearchWindow extends ToolWindow implements ActionListener, ItemList
 	private JCheckBox centerMapCheck;            // Checkbox to indicate if map is to be centered on unit.
 	private boolean lockUnitList;                // True if unitList selection events should be ignored.
 	private boolean lockSearchText;              // True if selectTextField events should be ignored.
+	private String[] unitCategoryNames;          // Array of category names.
 	
 	// Constructor
 	
@@ -39,6 +40,13 @@ public class SearchWindow extends ToolWindow implements ActionListener, ItemList
 		lockUnitList = false;
 		lockSearchText = false;
 		
+		// Initialize unitCategoryNames
+		
+		unitCategoryNames = new String[3];
+		unitCategoryNames[0] = "Person";
+		unitCategoryNames[1] = "Settlement";
+		unitCategoryNames[2] = "Vehicle";
+		
 		// Set internal frame listener
 		
 		addInternalFrameListener(new ViewFrameListener());
@@ -46,10 +54,6 @@ public class SearchWindow extends ToolWindow implements ActionListener, ItemList
 		// Initialize data members
 
 		this.desktop = desktop;
-	
-		// Don't show window until finished
-		
-		setVisible(false);
 	
 		// Set default font
 
@@ -127,6 +131,7 @@ public class SearchWindow extends ToolWindow implements ActionListener, ItemList
 		
 		statusLabel = new JLabel(" ", JLabel.CENTER);
 		statusLabel.setBorder(new EtchedBorder());
+		statusLabel.setForeground(Color.red);
 		bottomPane.add(statusLabel, "Center");
 		
 		// Create search button panel
@@ -143,10 +148,6 @@ public class SearchWindow extends ToolWindow implements ActionListener, ItemList
 		// Pack window
 		
 		pack();
-		
-		// Make window visible
-		
-		setVisible(true);
 	}
 	
 	// ActionListener method overridden
@@ -168,27 +169,21 @@ public class SearchWindow extends ToolWindow implements ActionListener, ItemList
 		boolean foundUnit = false;
 		for (int x=0; x < unitInfo.length; x++) {
 			if (selectTextField.getText().equalsIgnoreCase(unitInfo[x].getName())) {
-				statusLabel.setForeground(Color.black);
-				statusLabel.setText("Unit Found");
 				foundUnit = true;
 				if (openWindowCheck.isSelected()) desktop.openUnitWindow(unitInfo[x].getID());
 				if (centerMapCheck.isSelected()) desktop.centerMapGlobe(unitInfo[x].getCoords());
 			}
 		}
 		
-		// If not found, display "Unit Not Found" in statusLabel in red text.
+		String tempName = unitCategoryNames[searchForSelect.getSelectedIndex()];
 		
-		if (!foundUnit) {
-			statusLabel.setForeground(Color.red);
-			statusLabel.setText("Unit Not Found");
-		}
+		// If not found, display "Unit Not Found" in statusLabel.
 		
-		// If there is no text entered, display "Enter The Name Of A Unit" in statusLabel in red text.
+		if (!foundUnit) statusLabel.setText(tempName + " Not Found");
 		
-		if (selectTextField.getText().equals("")) {
-			statusLabel.setForeground(Color.red);
-			statusLabel.setText("Enter The Name Of A Unit");
-		}
+		// If there is no text entered, display "Enter The Name Of A Unit" in statusLabel.
+		
+		if (selectTextField.getText().equals("")) statusLabel.setText("Enter The Name Of A " + tempName);
 	}
 	
 	// ItemListener method overridden
