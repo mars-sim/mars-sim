@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRoverDialog.java
- * @version 2.74 2002-03-15
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ import javax.swing.*;
 /**
  * The TransportRoverDialog class is the detail window for a transport rover.
  */
-public class TransportRoverDialog extends GroundVehicleDialog {
+public class TransportRoverDialog extends RoverDialog {
     
     // Data members
     protected TransportRover rover;  // Transport rover related to this detail window
@@ -25,7 +25,7 @@ public class TransportRoverDialog extends GroundVehicleDialog {
      *  @param TransportRoverUIProxy the transport rover's UI proxy
      */
     public TransportRoverDialog(MainDesktopPane parentDesktop, TransportRoverUIProxy transportRoverUIProxy) {
-	// Use GroundVehicleDialog constructor	
+	// Use RoverDialog constructor	
 	super(parentDesktop, transportRoverUIProxy);
     }
 

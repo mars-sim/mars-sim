@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRoverDialog.java
- * @version 2.74 2002-03-15
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ import javax.swing.*;
 /**
  * The ExplorerRoverDialog class is the detail window for an explorer rover.
  */
-public class ExplorerRoverDialog extends GroundVehicleDialog {
+public class ExplorerRoverDialog extends RoverDialog {
     
     // Data members
     protected ExplorerRover rover;  // Explorer rover related to this detail window
@@ -26,7 +26,7 @@ public class ExplorerRoverDialog extends GroundVehicleDialog {
      *  @param ExplorerRoverUIProxy the explorer rover's UI proxy
      */
     public ExplorerRoverDialog(MainDesktopPane parentDesktop, ExplorerRoverUIProxy explorerRoverUIProxy) {
-	// Use GroundVehicleDialog constructor	
+	// Use RoverDialog constructor	
 	super(parentDesktop, explorerRoverUIProxy);
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-03-15
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.standard;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.ui.standard.monitor.PersonTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -23,7 +22,7 @@ import javax.swing.border.*;
  * It is abstract and an appropriate detail window needs to be derived for
  * a particular type of vehicle.
  */
-public abstract class VehicleDialog extends UnitDialog implements MouseListener {
+public abstract class VehicleDialog extends UnitDialog {
 
     // Data members
     protected Vehicle vehicle; // Vehicle detail window is about
@@ -45,7 +44,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected JLabel fuelLabel; // Fuel label
     protected JPanel driverButtonPane; // Driver pane
     protected JButton driverButton; // Driver button
-    protected JList crewList; // List of passengers
     protected JLabel damageLabel; // Vehicle damage label
     protected JPanel navigationInfoPane; // Navigation info pane
     protected JLabel odometerLabel; // Odometer Label
@@ -61,7 +59,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected Coordinates destination; // Cached destination of vehicle
     protected int distance; // Cached distance to destination
     protected float speed; // Cached speed of vehicle.
-    protected Vector crewInfo; // Cached list of crewmembers.
     protected double distanceTraveled; // Cached total distance traveled by vehicle.
     protected double distanceMaint; // Cached distance traveled by vehicle since last maintenance.
     protected String failureName; // Cached mechanical failure name.
@@ -84,7 +81,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         location = new Coordinates(0D, 0D);
         destination = new Coordinates(0D, 0D);
         speed = 0F;
-        crewInfo = new Vector();
     }
 
     /** Complete update (overridden) */
@@ -93,34 +89,12 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         updateLocation();
         updateDestination();
         updateSpeed();
-        updateCrew();
+        updateDriver();
         updateOdometer();
         updateMechanicalFailure();
         updateMaintenance();
 	inventoryPane.updateInfo();
     }
-
-    /** Implement MouseListener Methods */
-    public void mouseClicked(MouseEvent event) {
-        Object object = event.getSource();
-        if (object == crewList) {
-            if (event.getClickCount() >= 2) {
-                if (crewList.locationToIndex(event.getPoint()) > -1) {
-                    if ((crewList.getSelectedValue() != null) &&
-                            !((String) crewList.getSelectedValue()).equals(" ")) {
-                        UnitUIProxy personProxy = (UnitUIProxy) crewInfo.elementAt(
-                                crewList.getSelectedIndex());
-                        try { parentDesktop.openUnitWindow(personProxy); }
-                        catch (NullPointerException e) {}
-                    }
-                }
-            }
-        }
-    }
-    public void mousePressed(MouseEvent event) {}
-    public void mouseReleased(MouseEvent event) {}
-    public void mouseEntered(MouseEvent event) {}
-    public void mouseExited(MouseEvent event) {}
 
     /** ActionListener method overriden */
     public void actionPerformed(ActionEvent event) {
@@ -168,10 +142,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         // Prepare tab pane
         tabPane = new JTabbedPane();
         tabPane.addTab("Navigation", setupNavigationPane());
-	
-	if (vehicle instanceof Crewable) tabPane.addTab("Crew", setupCrewPane(true));
-	else tabPane.addTab("Driver", setupCrewPane(false));
-
+	tabPane.addTab("Driver", setupDriverPane());
         tabPane.addTab("Damage", setupDamagePane());
 	inventoryPane = new InventoryPanel(vehicle.getInventory());
 	tabPane.addTab("Inventory", inventoryPane);
@@ -329,45 +300,31 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         return navigationPane;
     }
 
-    /** Set up crew pane
-     *  @return crew pane
+    /** Set up driver pane
+     *  @return driver pane
      */
-    protected JPanel setupCrewPane(boolean crewable) {
-
-        // Prepare crew pane
-        JPanel crewPane = new JPanel();
-        crewPane.setBorder(
-                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        crewPane.setLayout(new BoxLayout(crewPane, BoxLayout.Y_AXIS));
-
-	if (crewable) {
-            // Prepare maximum crew capacity pane
-            JPanel maxCrewPane = new JPanel(new BorderLayout());
-            maxCrewPane.setBorder(
-                    new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-            crewPane.add(maxCrewPane);
-
-            // Prepare maximum crew capacity label
-	    int maxCrew = ((Crewable) vehicle).getCrewCapacity();
-            JLabel maxCrewLabel = new JLabel("Maximum Crew Capacity: " + maxCrew, JLabel.CENTER);
-            maxCrewLabel.setForeground(Color.black);
-            maxCrewPane.add(maxCrewLabel, "Center");
-	}
+    protected JPanel setupDriverPane() {
 
         // Prepare driver pane
-        JPanel driverPane = new JPanel(new BorderLayout());
+        JPanel driverPane = new JPanel();
         driverPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        crewPane.add(driverPane);
+        driverPane.setLayout(new BoxLayout(driverPane, BoxLayout.Y_AXIS));
+
+        // Prepare inner driver pane
+        JPanel innerDriverPane = new JPanel(new BorderLayout());
+        innerDriverPane.setBorder(
+                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        driverPane.add(innerDriverPane);
 
         // Prepare driver label
         JLabel driverLabel = new JLabel("Driver", JLabel.CENTER);
         driverLabel.setForeground(Color.black);
-        driverPane.add(driverLabel, "North");
+        innerDriverPane.add(driverLabel, "North");
 
         // Prepare driver button pane
         driverButtonPane = new JPanel();
-        driverPane.add(driverButtonPane, "Center");
+        innerDriverPane.add(driverButtonPane, "Center");
 
         // Prepare driver button
         driverButton = new JButton();
@@ -379,59 +336,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             driverButtonPane.add(driverButton);
         }
 
-	if (vehicle instanceof Crewable) {
-            // Prepare crew list pane
-            JPanel crewListPane = new JPanel(new BorderLayout());
-            crewListPane.setBorder(
-                    new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-            crewPane.add(crewListPane);
-
-            // Prepare crew label
-            JLabel peopleLabel = new JLabel("Crew", JLabel.CENTER);
-            peopleLabel.setForeground(Color.black);
-            crewListPane.add(peopleLabel, "North");
-
-            // Add monitor button
-            JButton monitorButton = new JButton(new ImageIcon("images/Monitor.gif"));
-            monitorButton.setMargin(new Insets(1, 1, 1, 1));
-            monitorButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            parentDesktop.addModel(new PersonTableModel((Crewable) vehicle));
-                        }
-                    });
-            JPanel monitorPanel = new JPanel();
-            monitorPanel.add(monitorButton);
-            crewListPane.add(monitorPanel, "East");
-
-            // Prepare crew list
-            DefaultListModel crewListModel = new DefaultListModel();
-
-	    PersonIterator i = ((Crewable) vehicle).getCrew().iterator();
-	    while (i.hasNext()) {
-	        Person person = i.next();
-                if (person != vehicle.getDriver()) {
-                    PersonUIProxy tempCrew = (PersonUIProxy) proxyManager.getUnitUIProxy(person);
-                    crewInfo.addElement(tempCrew);
-                    crewListModel.addElement(tempCrew.getUnit().getName());
-                }
-            }
-
-            // This prevents the list from sizing strange due to having no contents
-            if (crewInfo.size() == 0) crewListModel.addElement(" ");
-
-            crewList = new JList(crewListModel);
-            crewList.setVisibleRowCount(7);
-            crewList.addMouseListener(this);
-            crewList.setPreferredSize(
-                    new Dimension(150, (int) crewList.getPreferredSize().getHeight()));
-            JScrollPane crewScroll = new JScrollPane(crewList);
-            JPanel crewScrollPane = new JPanel();
-            crewScrollPane.add(crewScroll);
-            crewListPane.add(crewScrollPane, "Center");
-	}
-
-        // Return crew pane
-        return crewPane;
+        // Return driver pane
+        return driverPane;
     }
 
     /** Set up damage pane
@@ -658,8 +564,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
     }
 
-    /** Update crew info */
-    protected void updateCrew() {
+    /** Update driver info */
+    protected void updateDriver() {
         boolean vehicleMoving = (vehicle.getStatus() == Vehicle.MOVING);
 
         // Update driver button
@@ -672,43 +578,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             if (driverButtonPane.getComponentCount() == 0)
                 driverButtonPane.add(driverButton);
         }
-
-	if (vehicle instanceof Crewable) {
-            // Update crew list
-            DefaultListModel model = (DefaultListModel) crewList.getModel();
-            boolean match = false;
-
-            // Check if model matches passengers
-            PersonCollection tempPassengers = new PersonCollection(((Crewable) vehicle).getCrew());
-            tempPassengers.remove(vehicle.getDriver());
-
-            if (model.getSize() == tempPassengers.size()) {
-                match = true;
-	        PersonIterator i = tempPassengers.iterator();
-	        int count = 0;
-	        while (i.hasNext()) {
-                    String tempName = (String) model.getElementAt(count);
-                    if (!tempName.equals(i.next().getName())) match = false;
-                }
-            }
-
-            // If no match, update crew list
-            if (!match) {
-                model.removeAllElements();
-                crewInfo.removeAllElements();
-	        PersonIterator i = tempPassengers.iterator();
-	        while (i.hasNext()) {
-                    Person tempPassenger = i.next();
-                    crewInfo.addElement(proxyManager.getUnitUIProxy(tempPassenger));
-                    model.addElement(tempPassenger.getName());
-                }
-
-                // This prevents the list from sizing strange due to having no contents
-                if (crewInfo.size() == 0) model.addElement(" ");
-
-                validate();
-            }
-	}
     }
 
     /** Update odometer info */
