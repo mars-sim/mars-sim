@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.75 2003-07-28
+ * @version 2.75 2003-07-29
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
+package org.mars_sim.msp.ui.standard.tool.search;  
  
 import java.awt.*;
 import java.awt.event.*;
@@ -15,6 +15,7 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
 /** 

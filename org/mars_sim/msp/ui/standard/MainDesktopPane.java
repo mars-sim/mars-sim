@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.75 2003-07-28
+ * @version 2.75 2003-07-29
  * @author Scott Davis
  */
 
@@ -13,7 +13,9 @@ import java.util.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.monitor.*;
-import org.mars_sim.msp.ui.standard.tool.*;
+import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
+import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.standard.unit_window.*;
 import org.mars_sim.msp.ui.standard.unit_window.equipment.EquipmentWindow;
 import org.mars_sim.msp.ui.standard.unit_window.person.PersonWindow;
@@ -344,9 +346,16 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private void update() {
      
         // Update all unit windows.
-        Iterator i = unitWindows.iterator();
-        while (i.hasNext()) {
-            UnitWindow window = (UnitWindow) i.next();
+        Iterator i1 = unitWindows.iterator();
+        while (i1.hasNext()) {
+            UnitWindow window = (UnitWindow) i1.next();
+            window.update();
+        }
+        
+        // Update all tool windows.
+        Iterator i2 = toolWindows.iterator();
+        while (i2.hasNext()) {
+            ToolWindow window = (ToolWindow) i2.next();
             window.update();
         }
     }

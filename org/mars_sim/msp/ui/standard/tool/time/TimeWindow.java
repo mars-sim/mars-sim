@@ -1,23 +1,25 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.75 2003-07-28
+ * @version 2.75 2003-07-29
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
+package org.mars_sim.msp.ui.standard.tool.time;
  
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import org.mars_sim.msp.simulation.*;  
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
-/** The TimeWindow is a tool window that displays the current 
- *  Martian and Earth time 
+/** 
+ * The TimeWindow is a tool window that displays the current 
+ * Martian and Earth time 
  */
-public class TimeWindow extends ToolWindow implements Runnable {
+public class TimeWindow extends ToolWindow {
 
     private final static int RATIO_SCALE = 500;
 
@@ -35,7 +37,6 @@ public class TimeWindow extends ToolWindow implements Runnable {
     private JLabel earthTimeLabel;   // JLabel for Earth time
     private JLabel uptimeLabel;      // JLabel for uptimer
     private JSlider pulseSlider;     // JSlider for pulse
-    private Thread updateThread;     // Window update thread
 
     /** Constructs a TimeWindow object 
      *  @param desktop the desktop pane
@@ -170,37 +171,12 @@ public class TimeWindow extends ToolWindow implements Runnable {
         // Add 10 pixels to packed window width
         Dimension windowSize = getSize();
         setSize(new Dimension((int)windowSize.getWidth() + 10, (int) windowSize.getHeight()));
-
-        // Start update thread
-        start();
     }
 
-    /** Starts the update thread, or creates and starts a new one if necessary */
-    public void start() {
-        if ((updateThread == null) || (!updateThread.isAlive())) {
-            updateThread = new Thread(this, "Time Tool Window");
-            updateThread.start();
-        }
-    }
-
-    /** Update thread runner */
-    public void run() {
-    
-        // Endless refresh loop
-        while (true) {
-
-            // Pause for 1 second between display refreshes
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {}
-
-            // Update window
-            update();
-        }
-    }
-
-    /** Update window */
-    private void update() {
+    /** 
+     * Update window 
+     */
+    public void update() {
        martianTimeLabel.setText(marsTime.getTimeStamp());
        earthTimeLabel.setText(earthTime.getTimeStamp());
        uptimeLabel.setText(uptimer.getUptime());

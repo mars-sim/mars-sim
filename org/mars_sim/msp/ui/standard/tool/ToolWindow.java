@@ -71,4 +71,9 @@ public abstract class ToolWindow extends JInternalFrame {
     public void setWasOpened(boolean opened) {
         this.opened = opened;
     }
+    
+    /**
+     * Update window.
+     */
+    public void update() {}
 }
