@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-08
  * @author Scott Davis
  */
 
@@ -70,6 +70,9 @@ public class Maintenance extends Task implements Serializable {
 	
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+		// Job modifier.
+		result *= person.getMind().getJob().getStartTaskProbabilityModifier(Maintenance.class);        
 	
         return result;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathInfo.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-06-09
  * @author Barry Evans
  */
 
@@ -29,6 +29,7 @@ public class DeathInfo implements java.io.Serializable {
     private String placeOfDeath; // Place of death.
     private Unit containerUnit; // Container unit at death.
     private Coordinates locationOfDeath; // location of death.
+    private String job; // Name of person's job.
     private String mission; // Name of mission at time of death.
     private String missionPhase; // Phase of mission at time of death.
     private String task; // Name of task at time of death.
@@ -56,6 +57,9 @@ public class DeathInfo implements java.io.Serializable {
         locationOfDeath = person.getCoordinates();
 
         Mind mind = person.getMind();
+        
+        job = mind.getJob().getName();
+        
         if (mind.getMission() != null) {
             mission = mind.getMission().getName();
             missionPhase = mind.getMission().getPhase();
@@ -129,6 +133,15 @@ public class DeathInfo implements java.io.Serializable {
     public Coordinates getLocationOfDeath() {
         return locationOfDeath;
     }
+
+	/**
+	 * Gets the person's job at the time of death.
+	 * @return job
+	 */
+	public String getJob() {
+		if (job != null) return job;
+		else return "";
+	}
 
     /**
      * Gets the mission the person was on at time of death.

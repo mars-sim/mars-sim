@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 2.76 04-06-02
+ * @version 2.76 04-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -70,6 +70,9 @@ public class CollectIce extends CollectResourcesMission {
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
 			if (crowding > 0) result *= (crowding + 1);	
+			
+			// Job modifier.
+			result *= person.getMind().getJob().getStartMissionProbabilityModifier(CollectIce.class);			
 		}
         
 		return result;
@@ -110,6 +113,9 @@ public class CollectIce extends CollectResourcesMission {
 				// Crowding modifier.
 				int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
 				if (crowding > 0) result *= (crowding + 1);
+				
+				// Job modifier.
+				result *= person.getMind().getJob().getJoinMissionProbabilityModifier(CollectIce.class);				
 			}
 		}
 

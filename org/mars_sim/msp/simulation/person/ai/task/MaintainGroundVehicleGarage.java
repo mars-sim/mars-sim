@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-08
  * @author Scott Davis
  */
 
@@ -83,6 +83,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+		// Job modifier.
+		result *= person.getMind().getJob().getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class);        
 	
         return result;
     }

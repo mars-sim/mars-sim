@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-08
  * @author Scott Davis
  */
 
@@ -83,6 +83,9 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+		// Job modifier.
+		result *= person.getMind().getJob().getStartTaskProbabilityModifier(MaintainGroundVehicleEVA.class);        
 	
         return result;
     }

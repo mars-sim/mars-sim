@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.76 2004-05-01
+ * @version 2.76 2004-06-09
  * @author Barry Evans
  */
 
@@ -28,12 +28,13 @@ public class PersonTableModel extends UnitTableModel {
     private final static int  FATIGUE = 3;        // Fatigue column
 	private final static int  STRESS = 4;         // Stress column
     private final static int  PERFORMANCE = 5;    // Performance conlumn
-    private final static int  TASK = 6;           // Task column
-    private final static int  MISSION = 7;        // Mission column
-    private final static int  HEALTH = 8;         // Health column
-    private final static int  COLUMNCOUNT = 9;    // The number of Columns
-    private static String columnNames[];           // Names of Columns
-    private static Class columnTypes[];            // Types of Columns
+    private final static int  JOB = 6;            // Job column
+    private final static int  TASK = 7;           // Task column
+    private final static int  MISSION = 8;        // Mission column
+    private final static int  HEALTH = 9;         // Health column
+    private final static int  COLUMNCOUNT = 10;   // The number of Columns
+    private static String columnNames[];          // Names of Columns
+    private static Class columnTypes[];           // Types of Columns
     /**
      * The static initialisier creates the name & type arrays.
      */
@@ -52,6 +53,8 @@ public class PersonTableModel extends UnitTableModel {
         columnTypes[PERFORMANCE] = Integer.class;
         columnNames[LOCATION] = "Location";
         columnTypes[LOCATION] = String.class;
+        columnNames[JOB] = "Job";
+        columnTypes[JOB] = String.class;
         columnNames[MISSION] = "Mission";
         columnTypes[MISSION] = String.class;
         columnNames[TASK] = "Task";
@@ -183,6 +186,13 @@ public class PersonTableModel extends UnitTableModel {
                     if (person.getVehicle() != null) result = person.getVehicle().getName();
                 }
                 else result = locationSituation;
+            } break;
+            
+            case JOB : {
+            	// If person is dead, get job from deathinfo.
+            	if (person.getPhysicalCondition().isDead()) 
+            		result = person.getPhysicalCondition().getDeathDetails().getJob();
+     			else result = person.getMind().getJob().getName();
             } break;
 
             case TASK : {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-08
  * @author Barry Evans
  */
 
@@ -114,6 +114,9 @@ public class MedicalAssistance extends Task implements Serializable {
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+		// Job modifier.
+		result *= person.getMind().getJob().getStartTaskProbabilityModifier(MedicalAssistance.class);        
 
         return result;
     }

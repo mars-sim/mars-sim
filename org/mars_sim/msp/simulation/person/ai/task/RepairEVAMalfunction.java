@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-08
  * @author Scott Davis
  */
 
@@ -130,6 +130,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+		// Job modifier.
+		result *= person.getMind().getJob().getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
 
         return result;
     }

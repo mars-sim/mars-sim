@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ActivityTabPanel.java
- * @version 2.75 2003-08-03
+ * @version 2.76 2004-06-09
  * @author Scott Davis
  */
 
@@ -41,8 +41,10 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     private JTextArea taskPhaseTextArea;
     private JTextArea missionTextArea;
     private JTextArea missionPhaseTextArea;
+    private JLabel jobLabel;
     
     // Data cache
+    private String jobCache = "";
     private String taskCache = "";
     private String taskPhaseCache = "";
     private String missionCache = "";
@@ -70,6 +72,16 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         // Prepare activity label
         JLabel activityLabel = new JLabel("Activity", JLabel.CENTER);
         activityLabelPanel.add(activityLabel);
+        
+        // Prepare job panel
+        JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        jobPanel.setBorder(new MarsPanelBorder());
+        topContentPanel.add(jobPanel);
+        
+        // Prepare job label
+        jobCache = "Job: " + mind.getJob().getName();
+        jobLabel = new JLabel(jobCache, JLabel.CENTER);
+        jobPanel.add(jobLabel);
         
         // Prepare activity panel
         JPanel activityPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -168,6 +180,12 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         Mind mind = person.getMind();
         boolean dead = person.getPhysicalCondition().isDead();
         DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
+        
+        // Update job if necessary.
+        if (dead) jobCache = "Job: " + deathInfo.getJob();
+        else jobCache = "Job: " + mind.getJob().getName();
+        if (!jobCache.equals(jobLabel.getText())) jobLabel.setText(jobCache);
+        
         TaskManager taskManager = null;
         Mission mission = null;
         if (!dead) {

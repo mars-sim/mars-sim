@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.76 04-06-02
+ * @version 2.76 04-06-08
  * @author Scott Davis
  */
 
@@ -67,7 +67,10 @@ public class Exploration extends CollectResourcesMission {
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-			if (crowding > 0) result *= (crowding + 1);				
+			if (crowding > 0) result *= (crowding + 1);		
+			
+			// Job modifier.
+			result *= person.getMind().getJob().getStartMissionProbabilityModifier(Exploration.class);	
 		}
         
 		return result;
@@ -108,6 +111,9 @@ public class Exploration extends CollectResourcesMission {
 				// Crowding modifier.
 				int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
 				if (crowding > 0) result *= (crowding + 1);
+				
+				// Job modifier.
+				result *= person.getMind().getJob().getJoinMissionProbabilityModifier(Exploration.class);				
 			}
 		}
 

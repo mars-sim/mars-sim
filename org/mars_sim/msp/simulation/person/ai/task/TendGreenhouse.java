@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -78,6 +78,9 @@ public class TendGreenhouse extends Task implements Serializable {
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+
+		// Job modifier.
+		result *= person.getMind().getJob().getStartTaskProbabilityModifier(TendGreenhouse.class);
 
         return result;
     }

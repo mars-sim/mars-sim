@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.76 2004-07-08
+ * @version 2.76 2004-06-08
  * @author Scott Davis
  */
 
@@ -105,6 +105,9 @@ public class TravelToSettlement extends Mission implements Serializable {
             // Crowding modifier.
             int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
             if (crowding > 0) result *= (crowding + 1);
+            
+			// Job modifier.
+			result *= person.getMind().getJob().getStartMissionProbabilityModifier(TravelToSettlement.class);	            
         }
 
         return result;
@@ -145,6 +148,9 @@ public class TravelToSettlement extends Mission implements Serializable {
 				// Crowding modifier.
 				int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
 				if (crowding > 0) result *= (crowding + 1);
+				
+				// Job modifier.
+				result *= person.getMind().getJob().getJoinMissionProbabilityModifier(TravelToSettlement.class);					
 			}
 		}
 
