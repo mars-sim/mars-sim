@@ -1,10 +1,10 @@
 #
 # Mars Simulation Project
 # Java makefile by jpatokal
-# $Id: Makefile,v 1.2 2004-04-13 01:48:18 scud1 Exp $
+# $Id: Makefile,v 1.3 2004-09-03 02:53:17 scud1 Exp $
 #
 
-VERSION = 2.73
+VERSION = 2.77
 
 JAVAROOT = /usr/local/java/jdk1.3.1/j2sdk1.3.1/
 JAVABIN = $(JAVAROOT)/bin
@@ -15,6 +15,9 @@ CLASSPATH = .
 CLASSPATH := $(CLASSPATH):$(JARS)/jfreechart.jar
 CLASSPATH := $(CLASSPATH):$(JARS)/jcommon.jar
 CLASSPATH := $(CLASSPATH):$(JARS)/junit.jar
+CLASSPATH := $(CLASSPATH):$(JARS)/plexus-core.jar
+CLASSPATH := $(CLASSPATH):$(JARS)/commons-collections-3.1.jar
+CLASSPATH := $(CLASSPATH):$(JARS)/log4j-1.2.8.jar
 
 JAVA_OPTIONS = -classpath $(CLASSPATH)
 JAVAC_OPTIONS = -deprecation -classpath $(CLASSPATH)

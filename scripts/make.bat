@@ -1,6 +1,6 @@
 echo off
 
-set CLASSPATH=../;../jars/jfreechart.jar;../jars/jcommon.jar;../jars/junit.jar
+set CLASSPATH=../;../jars/jfreechart.jar;../jars/jcommon.jar;../jars/junit.jar;../jars/plexus-core.jar;../jars/commons-collections-3.1.jar;../jars/log4j-1.2.8.jar
 
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\*.java
