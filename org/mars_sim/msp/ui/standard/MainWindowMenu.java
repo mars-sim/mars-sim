@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.72 2001-07-14
+ * @version 2.73 2001-12-14
  * @author Scott Davis
  */
 
@@ -27,6 +27,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
     private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
+    private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
     private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
 	
     /** Constructs a MainWindowMenu object 
@@ -84,11 +85,16 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	searchToolItem.addActionListener(this);
 	toolsMenu.add(searchToolItem);
 		
-    // Create time tool menu item
-    timeToolItem = new JCheckBoxMenuItem("Time Tool");
-    timeToolItem.addActionListener(this);
-    toolsMenu.add(timeToolItem);    
-        
+        // Create time tool menu item
+        timeToolItem = new JCheckBoxMenuItem("Time Tool");
+        timeToolItem.addActionListener(this);
+        toolsMenu.add(timeToolItem);    
+   
+        // Create monitor tool menu item
+        monitorToolItem = new JCheckBoxMenuItem("Monitor Tool");
+        monitorToolItem.addActionListener(this);
+        toolsMenu.add(monitorToolItem);
+     
 	// Create help menu
 	JMenu helpMenu = new JMenu("Help");
 	add(helpMenu);
@@ -102,67 +108,67 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     // ActionListener method overriding
     public void actionPerformed(ActionEvent event) {
 		
-	    JMenuItem selectedItem = (JMenuItem) event.getSource();
+	JMenuItem selectedItem = (JMenuItem) event.getSource();
 		
-	    if (selectedItem == exitItem) {
-		    mainWindow.exitSimulation();
-		}
-	    else if (selectedItem == newItem) {
+	if (selectedItem == exitItem) {
+	    mainWindow.exitSimulation();
+	}
+	else if (selectedItem == newItem) {
             VirtualMars mars = new VirtualMars();
             mainWindow.setVirtualMars(mars);
             mars.start();
-		}
+	}
 		
         try{ 
-	        if (selectedItem == saveItem) {
-		        mainWindow.getVirtualMars().store(null);
-		    }
-	        else if (selectedItem == saveAsItem) {
+	    if (selectedItem == saveItem) {
+	        mainWindow.getVirtualMars().store(null);
+	    }
+            else if (selectedItem == saveAsItem) {
                 VirtualMars mars = mainWindow.getVirtualMars(); 
                 JFileChooser chooser = new JFileChooser(mars.DEFAULT_DIR);
                 chooser.setDialogTitle("Selected storage location");
                 int returnVal = chooser.showSaveDialog(mainWindow);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
-		            mars.store(chooser.getSelectedFile());
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+		    mars.store(chooser.getSelectedFile());
                 }
-		    }
-	        else if (selectedItem == loadItem) {
+	    }
+	    else if (selectedItem == loadItem) {
                 JFileChooser chooser = new JFileChooser(VirtualMars.DEFAULT_DIR);
                 chooser.setDialogTitle("Selected stored simulation");
                 int returnVal = chooser.showOpenDialog(mainWindow);
                 if(returnVal == JFileChooser.APPROVE_OPTION) {
                     VirtualMars mars = VirtualMars.load(chooser.getSelectedFile());
-		            if (mars != null) {
+	            if (mars != null) {
                         mainWindow.setVirtualMars(mars);
                         mars.start();
                     }
                 }
-		    }
+	    }
 		
-		}
-		catch(Exception e) {
+	}
+	catch(Exception e) {
             e.printStackTrace();
-		    JOptionPane.showMessageDialog(null, "Error saving state",
-                    e.toString(), JOptionPane.ERROR_MESSAGE);
-		}
+	    JOptionPane.showMessageDialog(null, "Error saving state",
+            e.toString(), JOptionPane.ERROR_MESSAGE);
+	}
 		
-	    if (selectedItem == marsNavigatorItem) {
-	        if (marsNavigatorItem.isSelected()) {
-		        mainWindow.openToolWindow("Mars Navigator");
-	        } 
+        if (selectedItem == marsNavigatorItem) {
+            if (marsNavigatorItem.isSelected()) {
+	        mainWindow.openToolWindow("Mars Navigator");
+            } 
             else {
-		        mainWindow.closeToolWindow("Mars Navigator");
-	        }
-	    }
+	        mainWindow.closeToolWindow("Mars Navigator");
+            }
+        }
 		
-	    if (selectedItem == searchToolItem) {
-	        if (searchToolItem.isSelected()) {
-		        mainWindow.openToolWindow("Search Tool");
-	        } 
+        if (selectedItem == searchToolItem) {
+            if (searchToolItem.isSelected()) {
+	        mainWindow.openToolWindow("Search Tool");
+            } 
             else {
-		        mainWindow.closeToolWindow("Search Tool");
-	        }
-	    }
+	        mainWindow.closeToolWindow("Search Tool");
+            }
+        }
 		
         if (selectedItem == timeToolItem) {
             if (timeToolItem.isSelected()) {
@@ -173,14 +179,24 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             }
         }
         
-	    if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
+        if (selectedItem == monitorToolItem) {
+            if (monitorToolItem.isSelected()) {
+                mainWindow.openToolWindow("Monitor Tool");
+            }
+            else {
+                mainWindow.closeToolWindow("Monitor Tool");
+            }
+        }
+
+        if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
     }
 	
     // MenuListener method overriding
     public void menuSelected(MenuEvent event) { 
-	    marsNavigatorItem.setSelected(mainWindow.isToolWindowOpen("Mars Navigator"));
-	    searchToolItem.setSelected(mainWindow.isToolWindowOpen("Search Tool"));
+        marsNavigatorItem.setSelected(mainWindow.isToolWindowOpen("Mars Navigator"));
+        searchToolItem.setSelected(mainWindow.isToolWindowOpen("Search Tool"));
         timeToolItem.setSelected(mainWindow.isToolWindowOpen("Time Tool"));
+        monitorToolItem.setSelected(mainWindow.isToolWindowOpen("Monitor Tool"));
     }
 	
     public void menuCanceled(MenuEvent event) {}
