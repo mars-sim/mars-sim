@@ -1,10 +1,12 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.70 2000-08-31
+ * @version 2.71 2000-09-21
  * @author Scott Davis
  */
-
+ 
+import org.mars_sim.msp.simulation.VirtualMars;
+import org.mars_sim.msp.ui.standard.*; 
 import java.io.*;
 import javax.swing.plaf.metal.*;
 import javax.swing.*;
