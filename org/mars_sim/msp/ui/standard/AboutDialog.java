@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.73 2001-09-12
+ * @version 2.73 2001-12-20
  * @author Scott Davis
  */
 
@@ -59,10 +59,12 @@ public class AboutDialog extends JDialog implements ActionListener,
         buf.append("  Mike Jones - Orbital equations\n");
         buf.append("  Brian Donovan - Java programming\n");
         buf.append("  Jarred McCaffrey - Java programming\n");
-        buf.append("  Dalen Kruse - Java Programming\n");
-        buf.append("  Daniel L. Thomas - Java Programming\n\n");
+        buf.append("  Dalen Kruse - Java Programming, debugging\n");
+        buf.append("  Daniel L. Thomas - Java Programming\n");
+        buf.append("  Barry Evans - Java Programming\n\n");
 
         buf.append("Testing and Recommendations:\n");
+        buf.append("  Paul Speed\n");
         buf.append("  Allen Bryan\n");
         buf.append("  Brian K. Smith\n");
         buf.append("  Kent Primrose\n");
