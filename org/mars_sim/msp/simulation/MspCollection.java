@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MspCollection.java
- * @version 2.75 2002-05-24
+ * @version 2.75 2003-05-12
  * @author Scott Davis
  */
 

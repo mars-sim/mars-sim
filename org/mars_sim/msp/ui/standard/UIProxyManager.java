@@ -38,7 +38,7 @@ public class UIProxyManager {
             if (unit instanceof ExplorerRover)
                 proxies.add(new ExplorerRoverUIProxy((ExplorerRover) unit, this));
 
-	    if (unit instanceof TransportRover)
+            if (unit instanceof TransportRover)
                 proxies.add(new TransportRoverUIProxy((TransportRover) unit, this));
         }
     }

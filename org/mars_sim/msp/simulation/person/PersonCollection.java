@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonCollection.java
- * @version 2.74 2002-02-26
+ * @version 2.75 2003-05-12
  * @author Edgar Crisostomo
  */
 
@@ -94,5 +94,30 @@ public class PersonCollection extends MspCollection implements Serializable {
         }
 
         return sortedPeople;
+    }
+    
+    /** 
+     * Checks if this person collection contains the same units in the same order
+     * as another person collection.
+     *
+     * @return true if collections contain the same units.
+     */
+    public boolean equals(Object o) {
+        boolean result = true;
+        
+        if (o instanceof PersonCollection) {
+            PersonCollection pc = (PersonCollection) o;
+            if (size() == pc.size()) {
+                PersonIterator i1 = iterator();
+                PersonIterator i2 = pc.iterator();
+                while (i1.hasNext()) {
+                    if (i1.hasNext() != i2.hasNext()) result = false;
+                }
+            }
+            else result = false;
+        }
+        else result = false;
+        
+        return result;
     }
 }

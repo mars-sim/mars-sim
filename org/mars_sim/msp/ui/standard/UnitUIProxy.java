@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitUIProxy.java
- * @version 2.71 2000-10-23
+ * @version 2.75 2003-05-08
  * @author Scott Davis
  */
 
@@ -96,4 +96,18 @@ public abstract class UnitUIProxy {
      *  @return unit
      */
     public Unit getUnit() { return unit; }
+    
+    /**
+     * Gets the UI proxy manager.
+     */
+    public UIProxyManager getUIProxyManager() {
+        return proxyManager;
+    }
+    
+    /**
+     * String display
+     */
+    public String toString() {
+        return unit.toString();
+    }
 }

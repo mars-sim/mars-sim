@@ -1,1 +1,3 @@
-javac -classpath .:jars/jfreechart.jar:jars/jcommon.jar:jars/aelfred.jar:jars/junit.jar *.java org/mars_sim/msp/simulation/*.java org/mars_sim/msp/simulation/person/*.java org/mars_sim/msp/simulation/person/ai/*.java org/mars_sim/msp/simulation/person/medical/*.java org/mars_sim/msp/simulation/structure/*.java org/mars_sim/msp/simulation/vehicle/*.java org/mars_sim/msp/simulation/equipment/*.java org/mars_sim/msp/simulation/malfunction/*.java org/mars_sim/msp/ui/standard/*.java org/mars_sim/msp/ui/standard/monitor/*.java org/mars_sim/msp/simulation/structure/building/*.java org/mars_sim/msp/simulation/structure/building/function/*.java org/mars_sim/msp/simulation/structure/template/*.java org/mars_sim/msp/simulation/structure/building/function/impl/*.java
+export CLASSPATH='.:jars/jfreechart.jar:jars/jcommon.jar:jars/aelfred.jar:jars/junit.jar'
+javac -classpath $CLASSPATH `find . -name \*.java -printf "%p "`
+

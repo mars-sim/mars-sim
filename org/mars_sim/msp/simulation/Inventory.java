@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resource.java
- * @version 2.75 2003-02-26
+ * @version 2.75 2003-05-13
  * @author Scott Davis 
  */
 
@@ -137,6 +137,14 @@ public class Inventory implements Serializable {
         if (resourceRemaining < getRemainingCapacity()) 
             return resourceRemaining;
         else return getRemainingCapacity();
+    }
+    
+    /**
+     * Gets a map of all the resources the inventory contains.
+     * @return map of resource names and mass
+     */
+    public Map getAllResources() {
+        return new HashMap(containedResources);
     }
 
     /** 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.72 2001-07-14
+ * @version 2.75 2003-05-11
  * @author Scott Davis
  */
 
@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.standard;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.ui.standard.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.monitor.UnitTableModel;
+import org.mars_sim.msp.ui.standard.unit_window.*;
+import org.mars_sim.msp.ui.standard.unit_window.structure.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -241,7 +243,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         }
 
         if (tempWindow != null) {
-            if (tempWindow.isClosed())  add(tempWindow, 0);
+            if (tempWindow.isClosed()) add(tempWindow, 0);
 
             try {
                 tempWindow.setIcon(false);
@@ -249,12 +251,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             catch(java.beans.PropertyVetoException e) {
                 System.out.println("Problem reopening " + e);
             }
-
         }
         else {
             tempWindow = unitUIProxy.getUnitDialog(this);
             add(tempWindow, 0);
-
 
             // Set internal frame listener
             tempWindow.addInternalFrameListener(new UnitWindowListener(this));
@@ -277,6 +277,16 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             tempWindow.moveToFront();
         }
         catch (java.beans.PropertyVetoException e) {}
+        
+        // Open a settlement unit window (remove later)
+        if (unitUIProxy instanceof SettlementUIProxy) {
+            System.out.println("Creating settlement window.");
+            SettlementWindow window = new SettlementWindow(this, unitUIProxy);
+            add(window, 0);
+            window.pack();
+            window.setVisible(true);
+            System.out.println("Adding settlement window.");
+        }
     }
 
     /** Disposes a unit window and button

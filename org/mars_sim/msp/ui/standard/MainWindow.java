@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.75 2002-06-06
+ * @version 2.75 2003-05-11
  * @author Scott Davis
  */
 
@@ -36,14 +36,15 @@ public class MainWindow extends JFrame implements WindowListener {
         // use JFrame constructor
         super("Mars Simulation Project (version " + VERSION + ")");
 
- 	// Prepare custom Mars UI theme
-	MetalLookAndFeel.setCurrentTheme(new MarsTheme());
-    	try {
-	    UIManager.setLookAndFeel(new MetalLookAndFeel());
-	}
-  	catch(UnsupportedLookAndFeelException e) {
-	    System.out.println("MainWindow: " + e.toString());
-	}
+        // Prepare custom Mars UI theme
+        MetalLookAndFeel.setCurrentTheme(new MarsTheme());
+        try {
+            UIManager.setLookAndFeel(new MetalLookAndFeel());
+        }
+        catch(UnsupportedLookAndFeelException e) {
+            System.out.println("MainWindow: " + e.toString());
+        }
+        
         // Prepare frame
         setVisible(false);
         addWindowListener(this);
@@ -85,7 +86,6 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // Show frame
         setVisible(true);
-
     }
 
     /** Returns the virtual Mars instance
