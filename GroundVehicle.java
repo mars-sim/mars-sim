@@ -1,5 +1,5 @@
 //***************** Ground Vehicle Unit *****************
-// Last Modified: 6/20/00
+// Last Modified: 7/14/00
 
 // The GroundVehicle class represents a ground-type vehicle.
 // It is abstract and should be extended to a particular type of ground vehicle.
@@ -25,6 +25,19 @@ public abstract class GroundVehicle extends Vehicle {
 		terrainHandlingCapability = 0D;  // Default terrain capability
 		terrainGrade = 0D;
 		elevation = mars.getSurfaceTerrain().getElevation(location);
+		
+		// Initialize potential vehicle failures.
+		
+		potentialFailures.put("Fuel Leak", new Integer(1));
+		potentialFailures.put("Air Leak", new Integer(1));
+		potentialFailures.put("Life Support Failure", new Integer(1));
+		potentialFailures.put("Engine Problems", new Integer(1));
+		potentialFailures.put("Battery Failure", new Integer(1));
+		potentialFailures.put("Flat Tire", new Integer(1));
+		potentialFailures.put("Transmission Failure", new Integer(1));
+		potentialFailures.put("Coolant Leak", new Integer(1));
+		potentialFailures.put("Navigation System Failure", new Integer(1));
+		potentialFailures.put("Communications Failure", new Integer(1));
 	}
 	
 	// Returns the elevation of the vehicle in km.
