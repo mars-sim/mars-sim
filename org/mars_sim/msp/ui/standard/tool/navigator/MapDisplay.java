@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-09-21
  * @author Scott Davis
  */
 
@@ -40,9 +40,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private boolean labels; // True if units should display labels
     private Image mapImage; // Main image
     private boolean useUSGSMap;  // True if USGS surface map is to be used
-    private int[] shadingArray;  // Array used to generate day/night shading image
     private boolean showDayNightShading; // True if day/night shading is to be used
     private boolean showVehicleTrails; // True if vehicle trails are to be displayed.
+    private MapLayer unitLayer;  // Display layer for showing units.
+    private MapLayer vehicleTrailLayer;  // Display layer for showing vehicle trails.
+    private MapLayer shadingLayer; // Display layer for showing day/night shading.
 
     private int width;
     private int height;
@@ -50,8 +52,12 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     // Constant data members
     private static final double HALF_PI = (Math.PI / 2D);
     private static final int HALF_MAP = 150;
-    private static final double HALF_MAP_ANGLE_STANDARD = .48587D;
-    private static final double HALF_MAP_ANGLE_USGS = .06106D;
+    static final double HALF_MAP_ANGLE_STANDARD = .48587D;
+    static final double HALF_MAP_ANGLE_USGS = .06106D;
+    static final double NORMAL_PIXEL_RHO = 1440D / Math.PI;
+    static final double USGS_PIXEL_RHO = 11458D / Math.PI;
+    private static final int NORMAL_HALF_MAP = 1440 / 2;
+    private static final int USGS_HALF_MAP = 11458 / 2;
     private static final int LABEL_HORIZONTAL_OFFSET = 2;
 
     /** 
@@ -75,7 +81,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         topo = false;
         labels = true;
         centerCoords = new Coordinates(HALF_PI, 0D);
-        shadingArray = new int[width * height];
         showDayNightShading = false;
         showVehicleTrails = true;
 
@@ -95,24 +100,55 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         surfMap = new SurfMarsMap(this);
         usgsMap = new USGSMarsMap(this);
         useUSGSMap = false;
+        
+        // Create map display layers.
+        unitLayer = new UnitMapLayer(mars, this);
+        vehicleTrailLayer = new VehicleTrailMapLayer(mars, this);
+        shadingLayer = new ShadingMapLayer(mars, this);
 
         // initially show real surface map (versus topo map)
         showSurf();
     }
 
-	/** Set USGS as surface map
-     *  @param useUSGSMap true if using USGS map.
+    /**
+     * Gets the map center coordinates.
+     * @return map center
+     */
+    public Coordinates getMapCenter() {
+        return centerCoords;
+    }
+    
+	/** 
+     * Set USGS as surface map
+     * @param useUSGSMap true if using USGS map.
      */
     public void setUSGSMap(boolean useUSGSMap) {
     	if (!topo && (this.useUSGSMap != useUSGSMap)) recreate = true;
     	this.useUSGSMap = useUSGSMap;
     }
-
-    /** Change label display flag
-     *  @param labels true if labels are to be displayed
+    
+    /**
+     * Checks if using a USGS map.
+     * @return true if USGS map
      */
-    public void setLabels(boolean labels) {
+    public boolean isUsgs() {
+        return useUSGSMap;
+    }
+
+    /** 
+     * Change unit label display flag
+     * @param labels true if labels are to be displayed
+     */
+    public void setUnitLabels(boolean labels) {
         this.labels = labels;
+    }
+    
+    /**
+     * Checks if unit labels are displayed.
+     * @return true if labels are displayed
+     */
+    public boolean useUnitLabels() {
+        return labels;
     }
 
     /** Display real surface image */
@@ -124,6 +160,14 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         topo = false;
         showMap(centerCoords);
     }
+    
+    /**
+     * Checks if showing the surface map.
+     * @return true if surface map.
+     */
+    public boolean isSurface() {
+        return !topo;
+    }
 
     /** Display topographical map */
     public void showTopo() {
@@ -133,6 +177,14 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         }
         topo = true;
         showMap(centerCoords);
+    }
+    
+    /**
+     * Checks if showing the topo map.
+     * @return true if topo map.
+     */
+    public boolean isTopo() {
+        return topo;
     }
 
     /** Display surface with new coords, regenerating image if necessary
@@ -196,11 +248,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             // If in waiting mode, display wait string
             if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
 
-            if (topo) g.setColor(Color.black);
+            if (isTopo()) g.setColor(Color.black);
             else g.setColor(Color.green);
 
             String message = "Generating Map";
-            if (useUSGSMap) message = "Downloading Map";
+            if (isUsgs()) message = "Downloading Map";
             Font messageFont = new Font("SansSerif", Font.BOLD, 25);
             FontMetrics messageMetrics = getFontMetrics(messageFont);
             int msgHeight = messageMetrics.getHeight();
@@ -218,9 +270,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
             // Paint topo, real or USGS surface image
             Map map = null;
-            if (topo) map = topoMap;
+            if (isTopo()) map = topoMap;
             else {
-            	if (useUSGSMap) map = usgsMap;
+            	if (isUsgs()) map = usgsMap;
             	else map = surfMap;
             }
 
@@ -229,133 +281,14 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 g.drawImage(mapImage, 0, 0, this);
             }
 
-            if (!topo && showDayNightShading) drawShading(g);
-            if (showVehicleTrails) drawVehicleTrails(g);
-            drawUnits(g);
-        }
-    }
-
-    /** Draws the day/night shading on the map.
-     *  @param g graphics context
-     */
-    protected void drawShading(Graphics g) {
-        int centerX = width / 2;
-        int centerY = width / 2;
-
-        Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
-
-        double rho = 1440D / Math.PI;
-        if (useUSGSMap) rho = 11458D / Math.PI;
-
-        boolean nightTime = true;
-        boolean dayTime = true;
-        Coordinates location = new Coordinates(0D, 0D);
-        for (int x = 0; x < width; x+=2) {
-            for (int y = 0; y < height; y+=2) {
-                centerCoords.convertRectToSpherical(x - centerX, y - centerY, rho, location);
-                int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
-                int shadeColor = ((127 - sunlight) << 24) & 0xFF000000;
-                shadingArray[x + (y * width)] = shadeColor;
-                shadingArray[x + 1 + (y * width)] = shadeColor;
-                if (y < height -1) {
-                    shadingArray[x + ((y + 1) * width)] = shadeColor;
-                    shadingArray[x + 1 + ((y + 1) * width)] = shadeColor;
-                }
-                // shadingArray[x + (y * width)] = ((127 - sunlight) << 24) & 0xFF000000;
-                if (sunlight > 0) nightTime = false;
-                if (sunlight < 127) dayTime = false;
-            }
-        }
-        if (nightTime) {
-            g.setColor(new Color(0, 0, 0, 128));
-            g.fillRect(0, 0, width, height);
-        }
-        else if (!dayTime) {
-            // Create shading image for map
-            Image shadingMap = this.createImage(new MemoryImageSource(width, height, shadingArray, 0, width));
-
-            MediaTracker mt = new MediaTracker(this);
-            mt.addImage(shadingMap, 0);
-            try {
-                mt.waitForID(0);
-            }
-            catch (InterruptedException e) {
-                System.out.println("MapDisplay - ShadingMap interrupted: " + e);
-            }
-
-            // Draw the shading image
-            g.drawImage(shadingMap, 0, 0, this);
-        }
-    }
-
-    /** Draws units on map
-     *  @param g graphics context
-     */
-    private void drawUnits(Graphics g) {
-        UnitIterator i = mars.getUnitManager().getUnits().iterator();
-        while (i.hasNext()) {
-            Unit unit = i.next();
-            UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-            if (displayInfo.isMapDisplayed(unit)) {
-                Coordinates unitCoords = unit.getCoordinates();
-                double angle = 0D;
-                if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
-                else angle = HALF_MAP_ANGLE_STANDARD;
-
-                if (centerCoords.getAngle(unitCoords) < angle) {
-                    IntPoint rectLocation = getUnitRectPosition(unitCoords);
-                    IntPoint imageLocation =
-                            getUnitDrawLocation(rectLocation, displayInfo.getSurfMapIcon());
-
-                    if (topo) displayInfo.getTopoMapIcon().paintIcon(this, g, 
-                        imageLocation.getiX(), imageLocation.getiY());
-                    else displayInfo.getSurfMapIcon().paintIcon(this, g, 
-                        imageLocation.getiX(), imageLocation.getiY());
-
-                    if (labels) {
-                        if (topo) g.setColor(displayInfo.getTopoMapLabelColor());
-                        else g.setColor(displayInfo.getSurfMapLabelColor());
-                        g.setFont(displayInfo.getMapLabelFont());
-                        IntPoint labelLocation = getLabelLocation(rectLocation, displayInfo.getSurfMapIcon());
-                        g.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Draws vehicle trails.
-     * @param g graphics context
-     */
-    private void drawVehicleTrails(Graphics g) {
-        
-        // Set trail color
-        if (topo) g.setColor(Color.black);
-        else g.setColor(new Color(0, 96, 0));
-        
-        // Get map angle
-        double angle = 0D;
-        if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
-        else angle = HALF_MAP_ANGLE_STANDARD;
-        
-        // Draw trail
-        VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
-        while (i.hasNext()) {
-            Vehicle vehicle = i.next();
-            IntPoint oldSpot = null;
-            Iterator j = (new ArrayList(vehicle.getTrail())).iterator();
-            while (j.hasNext()) {
-                Coordinates trailSpot = (Coordinates) j.next();
-                if (centerCoords.getAngle(trailSpot) < angle) {
-                    IntPoint spotLocation = getUnitRectPosition(trailSpot);
-                    if ((oldSpot == null))                            
-                        g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
-                    else if (!spotLocation.equals(oldSpot))
-                        g.drawLine(oldSpot.getiX(), oldSpot.getiY(), spotLocation.getiX(), spotLocation.getiY());
-                    oldSpot = spotLocation;
-                }
-            }
+            // Display day/night shading.
+            if (isSurface() && showDayNightShading) shadingLayer.displayLayer(g);
+            
+            // Display vehicle trails.
+            if (showVehicleTrails) vehicleTrailLayer.displayLayer(g);
+            
+            // Display units.
+            unitLayer.displayLayer(g);
         }
     }
     
@@ -398,54 +331,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
-    /** Returns unit x, y position on map panel
-     *  @param unitCoords location of unit
-     *  @return display point on map
-     */
-    private IntPoint getUnitRectPosition(Coordinates unitCoords) {
-
-        double rho;
-        int half_map;
-
-        if (useUSGSMap && !topo) {
-            rho = 11458D / Math.PI;
-            half_map = 11458 / 2;
-        }
-        else {
-            rho = 1440D / Math.PI;
-            half_map = 1440 / 2;
-       	}
-
-        int low_edge = half_map - 150;
-
-        return Coordinates.findRectPosition(unitCoords, centerCoords, rho, half_map, low_edge);
-    }
-
-    /** 
-     * Gets the unit image draw position on map panel.
-     *
-     * @param unitPosition absolute unit position
-     * @param unitIcon unit's map image icon
-     * @return draw position for unit image
-     */
-    private IntPoint getUnitDrawLocation(IntPoint unitPosition, Icon unitIcon) {
-        return new IntPoint(unitPosition.getiX() - (unitIcon.getIconWidth() / 2),
-                unitPosition.getiY() - (unitIcon.getIconHeight() / 2));
-    }
-
-    /** 
-     * Gets the label draw postion on map panel.
-     *
-     * @param unitPosition absolute unit position
-     * @param unitIcon unit's map icon
-     * @return draw position for unit label
-     */
-    private IntPoint getLabelLocation(IntPoint unitPosition, Icon unitIcon) {
-        // this differs from getUnitDrawLocation by adding 10 to the horizontal position
-        return new IntPoint(unitPosition.getiX() + (unitIcon.getIconWidth() / 2) + 
-            LABEL_HORIZONTAL_OFFSET, unitPosition.getiY() + (unitIcon.getIconHeight() / 2));
-    }
-
     /** Sets day/night tracking to on or off.
      *  @param showDayNightShading true if map is to use day/night tracking.
      */
@@ -459,5 +344,49 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      */
     public void setVehicleTrails(boolean showVehicleTrails) {
         this.showVehicleTrails = showVehicleTrails;
+    }
+    
+    /** 
+     * Gets a coordinate x, y position on the map image.
+     *
+     * @param coords location of unit
+     * @return display point on map
+     */
+    IntPoint getRectPosition(Coordinates coords) {
+
+        double rho;
+        int half_map;
+
+        if (isUsgs() && isSurface()) {
+            rho = USGS_PIXEL_RHO;
+            half_map = USGS_HALF_MAP;
+        }
+        else {
+            rho = NORMAL_PIXEL_RHO;
+            half_map = NORMAL_HALF_MAP;
+       	}
+
+        int low_edge = half_map - 150;
+
+        return Coordinates.findRectPosition(coords, getMapCenter(), 
+            rho, half_map, low_edge);
+    }
+    
+    /**
+     * Gets the width of the map display.
+     *
+     * @return width as int.
+     */
+    public int getWidth() { 
+        return width;
+    }
+    
+    /**
+     * Gets the height of the map display.
+     *
+     * @return height as int.
+     */
+    public int getHeight() {
+        return height;
     }
 }

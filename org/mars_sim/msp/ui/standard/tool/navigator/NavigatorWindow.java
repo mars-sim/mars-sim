@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-09-17
  * @author Scott Davis
  */
 
@@ -280,7 +280,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
             updateTopo(event.getStateChange() == ItemEvent.SELECTED);
         } 
         else if (object == unitLabelCheckbox) {
-            map.setLabels(unitLabelCheckbox.isSelected()); // Change map's label settings
+            map.setUnitLabels(unitLabelCheckbox.isSelected()); // Change map's label settings
         }
         else if (object == dayNightCheckbox) {
             globeNav.setDayNightTracking(dayNightCheckbox.isSelected());
