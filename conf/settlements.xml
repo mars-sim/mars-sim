@@ -10,8 +10,45 @@
         <POPULATION_CAPACITY>15</POPULATION_CAPACITY>
     </SETTLEMENT>
     <SETTLEMENT>
-        <NAME>Test Settlement</NAME>
-        <POPULATION_CAPACITY>2</POPULATION_CAPACITY>
+        <NAME>Lowell Station</NAME>
     </SETTLEMENT>
-    
+    <SETTLEMENT>
+        <NAME>Sagan Station</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Goddard Settlement</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Port Braun</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Burroughstown</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>McKay Base</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Asimov Base</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Clarketown</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Sojourner Station</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Viking Base</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Mariner Settlement</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Camp Bradbury</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Heinlein Station</NAME>
+    </SETTLEMENT>
+    <SETTLEMENT>
+        <NAME>Port Kokh</NAME>
+    </SETTLEMENT>
 </SETTLEMENTS_LIST>
