@@ -1,5 +1,5 @@
 //************************** Storeroom Facility Panel **************************
-// Last Modified: 5/22/00
+// Last Modified: 5/30/00
 
 // The StoreroomFacilityPanel class displays information about a settlement's storeroom facility in the user interface.
 
@@ -85,7 +85,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 		// Prepare food value label
 		
 		food = storeroom.getFoodStores();
-		foodValueLabel = new JLabel("" + food, JLabel.RIGHT);
+		foodValueLabel = new JLabel("" + roundOneDecimal(food), JLabel.RIGHT);
 		foodValueLabel.setForeground(Color.black);
 		labelPane.add(foodValueLabel);
 		
@@ -98,7 +98,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 		// Prepare oxygen value label
 		
 		oxygen = storeroom.getOxygenStores();
-		oxygenValueLabel = new JLabel("" + oxygen, JLabel.RIGHT);
+		oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen), JLabel.RIGHT);
 		oxygenValueLabel.setForeground(Color.black);
 		labelPane.add(oxygenValueLabel);
 		
@@ -111,7 +111,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 		// Prepare water value label
 		
 		water = storeroom.getWaterStores();
-		waterValueLabel = new JLabel("" + water, JLabel.RIGHT);
+		waterValueLabel = new JLabel("" + roundOneDecimal(water), JLabel.RIGHT);
 		waterValueLabel.setForeground(Color.black);
 		labelPane.add(waterValueLabel);
 		
@@ -124,7 +124,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 		// Prepare fuel value label
 		
 		fuel = storeroom.getFuelStores();
-		fuelValueLabel = new JLabel("" + fuel, JLabel.RIGHT);
+		fuelValueLabel = new JLabel("" + roundOneDecimal(fuel), JLabel.RIGHT);
 		fuelValueLabel.setForeground(Color.black);
 		labelPane.add(fuelValueLabel);
 		
@@ -137,7 +137,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 		// Prepare parts value label
 		
 		parts = storeroom.getPartsStores();
-		partsValueLabel = new JLabel("" + parts, JLabel.RIGHT);
+		partsValueLabel = new JLabel("" + roundOneDecimal(parts), JLabel.RIGHT);
 		partsValueLabel.setForeground(Color.black);
 		labelPane.add(partsValueLabel);
 	}
@@ -146,11 +146,17 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 	
 	public void updateInfo() { 
 	
-		if (food != storeroom.getFoodStores()) foodValueLabel.setText("" + food);
-		if (oxygen != storeroom.getOxygenStores()) oxygenValueLabel.setText("" + oxygen);
-		if (water != storeroom.getWaterStores()) waterValueLabel.setText("" + water);
-		if (fuel != storeroom.getFuelStores()) fuelValueLabel.setText("" + fuel);
-		if (parts != storeroom.getPartsStores()) partsValueLabel.setText("" + parts);
+		if (food != storeroom.getFoodStores()) foodValueLabel.setText("" + roundOneDecimal(food));
+		if (oxygen != storeroom.getOxygenStores()) oxygenValueLabel.setText("" + roundOneDecimal(oxygen));
+		if (water != storeroom.getWaterStores()) waterValueLabel.setText("" + roundOneDecimal(water));
+		if (fuel != storeroom.getFuelStores()) fuelValueLabel.setText("" + roundOneDecimal(fuel));
+		if (parts != storeroom.getPartsStores()) partsValueLabel.setText("" + roundOneDecimal(parts));
+	}
+	
+	// Returns a double value rounded to one decimal point
+	
+	public double roundOneDecimal(double initial) {
+		return (double) (Math.round(initial * 1000D) / 1000D);
 	}
 }	
 
