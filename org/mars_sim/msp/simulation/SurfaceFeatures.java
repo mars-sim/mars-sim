@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.75 2004-02-10
+ * @version 2.76 2004-05-23
  * @author Scott Davis
  */
  
@@ -15,7 +15,6 @@ public class SurfaceFeatures {
     // Data members 
     private TerrainElevation surfaceTerrain;
     private Mars mars;
-    // We can add landmarks here later - Scott
     private List landmarks;
     
     /** 
@@ -107,5 +106,13 @@ public class SurfaceFeatures {
     	if ((location.getPhi() < polarPhi) || (location.getPhi() > Math.PI - polarPhi))
     		return true;
     	else return false;
+    }
+    
+    /**
+     * Gets a list of landmarks on Mars.
+     * @return list of landmarks.
+     */
+    public List getLandmarks() {
+    	return landmarks;
     }
 }
