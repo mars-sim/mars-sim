@@ -35,9 +35,9 @@ class XmlReader extends MspXmlReader {
     private static final int TREATMENT = 11;
     private static final int DURATION = 12;
     private static final int SKILL = 13;
-    private static final int AID = 14;
-    private static final int AID_LIST = 15;
-    private static final int SUPPORTED = 16;
+    private static final int SUPPORTED = 14;
+    private static final int RETAINAID = 15;
+    private static final int FACILITY_LEVEL = 16;
 
     private MedicalManager manager = null;  // The manager to load.
     private int elementType;                // The current element type being parsed
@@ -49,8 +49,10 @@ class XmlReader extends MspXmlReader {
     private double currentDegrade;          // Currect degrade time
     private double currentRecovery;         // Current recoevery time
     private double currentDuration;         // Current treatment length
+    private boolean currentRetainAid;       // Curretn retain Aid setting
     private Treatment currentTreatment;     // Current recovery treatment
     private int currentSkill;               // Skill for Treatment
+    private int currentLevel;               // Level for Treatment
 
     /**
      * Construct a reader of the conf/medical.xml file that will load the
@@ -91,7 +93,9 @@ class XmlReader extends MspXmlReader {
             elementType = TREATMENT;
             currentName = "";
             currentSkill = 0;
+            currentLevel = 0;
             currentDuration = -1.0D;
+            currentRetainAid = false;
         }
         else if (name.equals("DURATION")) {
             elementType = DURATION;
@@ -123,6 +127,12 @@ class XmlReader extends MspXmlReader {
         else if (name.equals("NEXT")) {
             elementType = NEXT;
         }
+        else if (name.equals("RETAINAID")) {
+            elementType = RETAINAID;
+        }
+        else if (name.equals("FACILITY_LEVEL")) {
+            elementType = FACILITY_LEVEL;
+        }
     }
 
     /** Handle the end of an element by printing an event.
@@ -137,7 +147,8 @@ class XmlReader extends MspXmlReader {
 
             case TREATMENT:
                 manager.createTreatment(currentName, currentSkill,
-                                        currentDuration);
+                                        currentDuration, (currentSkill == 0),
+                                        currentRetainAid, currentLevel);
                 elementType = TREATMENT_LIST;
                 break;
 
@@ -157,7 +168,9 @@ class XmlReader extends MspXmlReader {
 
             case NAME:
             case DURATION:
+            case RETAINAID:
             case SKILL:
+            case FACILITY_LEVEL:
                 elementType = TREATMENT;
                 break;
 
@@ -180,7 +193,8 @@ class XmlReader extends MspXmlReader {
         super.charData(ch, start, length);
 
         String data = new String(ch, start, length).trim();
-try {
+
+        try {
         switch (elementType) {
             case NAME:
                 currentName = data;
@@ -203,6 +217,12 @@ try {
             case RECOVERY:
                 currentRecovery = Double.parseDouble(data) *
                                         MedicalManager.MINSPERDAY;
+                break;
+            case RETAINAID:
+                currentRetainAid = Boolean.valueOf(data).booleanValue();
+                break;
+            case FACILITY_LEVEL:
+                currentLevel = Integer.parseInt(data);
                 break;
             case DEGRADE:
                 currentDegrade = Double.parseDouble(data) *

@@ -6,11 +6,14 @@ import org.mars_sim.msp.simulation.MarsClock;
  * This class represents a Medical treatment that can be applied to
  * a Person to cure a complaint.
  */
-public class Treatment implements java.io.Serializable {
+public class Treatment implements java.io.Serializable, Comparable {
 
     private String  name;
-    private int     requiredSkill;
-    private double  duration;
+    private int     requiredSkill;  // Optimal MEDICAL skill
+    private int     facilityLevel;  // Required MedicalAid level
+    private double  duration;       // Length of treatment
+    private boolean retainAid;      // Continue to use Aid after Treatment
+    private boolean selfAdmin;      // Can perform the treat
 
     /**
      * Create a Treatment.
@@ -18,10 +21,15 @@ public class Treatment implements java.io.Serializable {
      * @param name The unique name.
      * @param skill Required Medical skill.
      * @param earthDuration The duration of trwatment in earth hours.
+     * @param retainAid Does the recovery after treatment require the medical aid
      */
-    public Treatment(String name, int skill, double earthDuration) {
+    public Treatment(String name, int skill, double earthDuration,
+                     boolean selfAdmin, boolean retainAid, int facilityLevel) {
         this.name = name;
         this.requiredSkill = skill;
+        this.selfAdmin = selfAdmin;
+        this.retainAid = retainAid;
+        this.facilityLevel = facilityLevel;
         if (earthDuration < 0) {
             // Negative duration means, the treatment takes as long as recovery
             duration = -1;
@@ -29,6 +37,13 @@ public class Treatment implements java.io.Serializable {
         else {
             duration = MarsClock.convertSecondsToMillisols(earthDuration * 360D);
         }
+    }
+
+    /**
+     * Compare this object with another
+     */
+    public int compareTo(Object obj) {
+        return name.compareTo(((Treatment)obj).name);
     }
 
     /**
@@ -68,6 +83,13 @@ public class Treatment implements java.io.Serializable {
     }
 
     /**
+     * Get the required facility level
+     */
+    public int getFacilityLevel() {
+        return facilityLevel;
+    }
+
+    /**
      * Return the name of the treatment
      */
     public String getName() {
@@ -75,10 +97,26 @@ public class Treatment implements java.io.Serializable {
     }
 
     /**
+     * Does this Treatment require the sufferer to continue to use
+     * any MedicalAids.
+     * @return boolean flag.
+     */
+    public boolean getRetainAid() {
+        return retainAid;
+    }
+    
+    /**
      * Return the Medical skill requried for this treatment
      */
     public int getSkill() {
         return requiredSkill;
+    }
+
+    /**
+     * Can the treatment be self administered.
+     */
+    public boolean getSelfAdminister() {
+        return selfAdmin;
     }
 
     /**
