@@ -1,5 +1,5 @@
 //************************** Storeroom Facility Panel **************************
-// Last Modified: 5/30/00
+// Last Modified: 5/31/00
 
 // The StoreroomFacilityPanel class displays information about a settlement's storeroom facility in the user interface.
 
@@ -146,17 +146,32 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 	
 	public void updateInfo() { 
 	
-		if (food != storeroom.getFoodStores()) foodValueLabel.setText("" + roundOneDecimal(food));
-		if (oxygen != storeroom.getOxygenStores()) oxygenValueLabel.setText("" + roundOneDecimal(oxygen));
-		if (water != storeroom.getWaterStores()) waterValueLabel.setText("" + roundOneDecimal(water));
-		if (fuel != storeroom.getFuelStores()) fuelValueLabel.setText("" + roundOneDecimal(fuel));
-		if (parts != storeroom.getPartsStores()) partsValueLabel.setText("" + roundOneDecimal(parts));
+		if (food != storeroom.getFoodStores()) {
+			food = storeroom.getFoodStores();
+			foodValueLabel.setText("" + roundOneDecimal(food));
+		}
+		if (oxygen != storeroom.getOxygenStores()) {
+			oxygen = storeroom.getOxygenStores();
+			oxygenValueLabel.setText("" + roundOneDecimal(oxygen));
+		}
+		if (water != storeroom.getWaterStores()) {
+			water = storeroom.getWaterStores();
+			waterValueLabel.setText("" + roundOneDecimal(water));
+		}
+		if (fuel != storeroom.getFuelStores()) {
+			fuel = storeroom.getFuelStores();
+			fuelValueLabel.setText("" + roundOneDecimal(fuel));
+		}
+		if (parts != storeroom.getPartsStores()) {
+			parts = storeroom.getPartsStores();
+			partsValueLabel.setText("" + roundOneDecimal(parts));
+		}
 	}
 	
 	// Returns a double value rounded to one decimal point
 	
 	public double roundOneDecimal(double initial) {
-		return (double) (Math.round(initial * 1000D) / 1000D);
+		return (double) (Math.round(initial * 10D) / 10D);
 	}
 }	
 
