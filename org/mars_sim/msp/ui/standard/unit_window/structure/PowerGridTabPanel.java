@@ -89,7 +89,6 @@ public class PowerGridTabPanel extends TabPanel {
         JTable powerTable = new JTable(powerTableModel);
         powerTable.setCellSelectionEnabled(false);
         powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-        powerTable.setDefaultRenderer(JPanel.class, new JPanelCellRenderer());
         powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
         powerTable.getColumnModel().getColumn(1).setPreferredWidth(120);
         powerTable.getColumnModel().getColumn(2).setPreferredWidth(40);
@@ -170,10 +169,16 @@ public class PowerGridTabPanel extends TabPanel {
         
         Settlement settlement;
         java.util.List buildings;
+        ImageIcon redDot;
+        ImageIcon yellowDot;
+        ImageIcon greenDot;
         
         private PowerTableModel(UnitUIProxy proxy) {
             this.settlement = (Settlement) proxy.getUnit();
             buildings = settlement.getBuildingManager().getBuildings();
+            redDot = new ImageIcon("images/RedDot.gif");
+            yellowDot = new ImageIcon("images/YellowDot.gif");
+            greenDot = new ImageIcon("images/GreenDot.gif");
         }
         
         public int getRowCount() {
@@ -186,7 +191,7 @@ public class PowerGridTabPanel extends TabPanel {
         
         public Class getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
-            if (columnIndex == 0) dataType = JPanel.class;
+            if (columnIndex == 0) dataType = ImageIcon.class;
             else if (columnIndex == 1) dataType = String.class;
             else if (columnIndex == 2) dataType = Double.class;
             else if (columnIndex == 3) dataType = Double.class;
@@ -202,16 +207,21 @@ public class PowerGridTabPanel extends TabPanel {
         }
         
         public Object getValueAt(int row, int column) {
+            
             Building building = (Building) buildings.get(row);
             String powerMode = building.getPowerMode();
             
             if (column == 0) {
-                JPanel statusPanel = new JPanel();
-                statusPanel.setOpaque(true);
-                if (powerMode.equals(Building.FULL_POWER)) statusPanel.setBackground(Color.green);
-                else if (powerMode.equals(Building.POWER_DOWN)) statusPanel.setBackground(Color.yellow);
-                else if (powerMode.equals(Building.NO_POWER)) statusPanel.setBackground(Color.red);
-                return statusPanel;
+                if (powerMode.equals(Building.FULL_POWER)) { 
+                    return greenDot;
+                }
+                else if (powerMode.equals(Building.POWER_DOWN)) {
+                    return yellowDot;
+                }
+                else if (powerMode.equals(Building.NO_POWER)) {
+                    return redDot;
+                }
+                else return null;
             }
             else if (column == 1) return buildings.get(row);
             else if (column == 2) {
@@ -236,25 +246,6 @@ public class PowerGridTabPanel extends TabPanel {
                 buildings = settlement.getBuildingManager().getBuildings();
                 
             fireTableDataChanged();
-        }
-    }
-    
-    /**
-     * Internal JPanel cell renderer.
-     */
-    private class JPanelCellRenderer implements TableCellRenderer {
-        
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                boolean hasFocus, int row, int column) {
-            if (value instanceof JPanel) {
-                JPanel panel = new JPanel(new BorderLayout());
-                panel.setBorder(new EmptyBorder(2, 2, 2, 2));
-                panel.setBackground(Color.white);
-                panel.setOpaque(true);
-                panel.add((JPanel) value, BorderLayout.CENTER);
-                return panel;
-            }
-            else return null;
         }
     }
 }
