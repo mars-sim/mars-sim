@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.76 2004-08-06
+ * @version 2.78 2004-11-12
  * @author Scott Davis
  */
 
