@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 2.75 2003-05-08
+ * @version 2.75 2003-06-18
  * @author Scott Davis
  */
 
@@ -92,7 +92,7 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
     /**
      * Updates this window.
      */
-    protected final void update() {
+    protected void update() {
         
         // Update each of the tab panels.
         Iterator i = tabPanels.iterator();

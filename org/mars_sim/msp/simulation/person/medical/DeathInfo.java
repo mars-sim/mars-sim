@@ -41,46 +41,46 @@ public class DeathInfo implements java.io.Serializable {
     public DeathInfo(Person person) {
 
         // Initialize data members
-	timeOfDeath = person.getMars().getMasterClock().getMarsClock().getTimeStamp();
-	
-	Complaint serious = person.getPhysicalCondition().getMostSerious();
-	if (serious != null) illness = serious.getName();
+        timeOfDeath = person.getMars().getMasterClock().getMarsClock().getTimeStamp();
+    
+        Complaint serious = person.getPhysicalCondition().getMostSerious();
+        if (serious != null) illness = serious.getName();
 
-	if (person.getLocationSituation().equals(Person.OUTSIDE)) placeOfDeath = "Outside";
-	else {
-	    containerUnit = person.getContainerUnit();	
-	    placeOfDeath = containerUnit.getName();
-	}
+        if (person.getLocationSituation().equals(Person.OUTSIDE)) placeOfDeath = "Outside";
+        else {
+            containerUnit = person.getContainerUnit();  
+            placeOfDeath = containerUnit.getName();
+        }
 
         locationOfDeath = person.getCoordinates();
 
-	Mind mind = person.getMind();
-	if (mind.getMission() != null) {
-	    mission = mind.getMission().getName();
-	    missionPhase = mind.getMission().getPhase();
-	}
+        Mind mind = person.getMind();
+        if (mind.getMission() != null) {
+            mission = mind.getMission().getName();
+            missionPhase = mind.getMission().getPhase();
+        }
 
-	TaskManager taskMgr = mind.getTaskManager();
-	if (taskMgr.hasTask()) {
+        TaskManager taskMgr = mind.getTaskManager();
+        if (taskMgr.hasTask()) {
             task = taskMgr.getTaskName();
-	    taskPhase = taskMgr.getPhase();
-	}
+            taskPhase = taskMgr.getPhase();
+        }
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	Malfunction mostSerious = null;
-	int severity = 0;
-	while (i.hasNext()) {
-	    Malfunctionable entity = (Malfunctionable) i.next();
-	    MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
-	    if (malfunctionMgr.hasEmergencyMalfunction()) {
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        Malfunction mostSerious = null;
+        int severity = 0;
+        while (i.hasNext()) {
+            Malfunctionable entity = (Malfunctionable) i.next();
+            MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
+            if (malfunctionMgr.hasEmergencyMalfunction()) {
                 Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
-		if (m.getSeverity() > severity) {
+                if (m.getSeverity() > severity) {
                     mostSerious = m;
-		    severity = m.getSeverity();
-		}
+                    severity = m.getSeverity();
+                }
             }
         }
-	if (mostSerious != null) malfunction = mostSerious.getName();
+        if (mostSerious != null) malfunction = mostSerious.getName();
     }
 
     /**
@@ -89,7 +89,7 @@ public class DeathInfo implements java.io.Serializable {
      */
     public String getTimeOfDeath() {
         if (timeOfDeath != null) return timeOfDeath;
-	else return "";
+        else return "";
     }
 
     /**
@@ -100,7 +100,7 @@ public class DeathInfo implements java.io.Serializable {
      */
     public String getPlaceOfDeath() {
         if (placeOfDeath != null) return placeOfDeath;
-	else return "";
+        else return "";
     }
 
     /** 
@@ -118,7 +118,7 @@ public class DeathInfo implements java.io.Serializable {
      */
     public String getIllness() {
         if (illness != null) return illness;
-	else return "";
+        else return "";
     }
 
     /**
@@ -135,7 +135,7 @@ public class DeathInfo implements java.io.Serializable {
      */
     public String getMission() {
         if (mission != null) return mission;
-	else return "";
+        else return "";
     }
 
     /**
@@ -144,7 +144,7 @@ public class DeathInfo implements java.io.Serializable {
      */
     public String getMissionPhase() {
         if (missionPhase != null) return missionPhase;
-	else return "";
+        else return "";
     }
 
     /**
@@ -153,7 +153,7 @@ public class DeathInfo implements java.io.Serializable {
      */
     public String getTask() {
         if (task != null) return task;
-	else return "";
+        else return "";
     }
 
     /**
@@ -162,7 +162,7 @@ public class DeathInfo implements java.io.Serializable {
      */
     public String getTaskPhase() {
         if (taskPhase != null) return taskPhase;
-	else return "";
+        else return "";
     }
 
     /**
@@ -172,6 +172,6 @@ public class DeathInfo implements java.io.Serializable {
      */
     public String getMalfunction() {
         if (malfunction != null) return malfunction;
-	else return "";
+        else return "";
     }
 }

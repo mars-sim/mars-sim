@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ActivityTabPanel.java
- * @version 2.75 2003-06-12
+ * @version 2.75 2003-06-18
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import javax.swing.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.person.medical.DeathInfo;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
@@ -20,16 +21,16 @@ import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
  */
 public class ActivityTabPanel extends TabPanel {
     
-    JTextArea taskTextArea;
-    JTextArea taskPhaseTextArea;
-    JTextArea missionTextArea;
-    JTextArea missionPhaseTextArea;
+    private JTextArea taskTextArea;
+    private JTextArea taskPhaseTextArea;
+    private JTextArea missionTextArea;
+    private JTextArea missionPhaseTextArea;
     
     // Data cache
-    String taskCache = "";
-    String taskPhaseCache = "";
-    String missionCache = "";
-    String missionPhaseCache = "";
+    private String taskCache = "";
+    private String taskPhaseCache = "";
+    private String missionCache = "";
+    private String missionPhaseCache = "";
     
     /**
      * Constructor
@@ -43,6 +44,8 @@ public class ActivityTabPanel extends TabPanel {
         
         Person person = (Person) proxy.getUnit();
         Mind mind = person.getMind();
+        boolean dead = person.getPhysicalCondition().isDead();
+        DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
         
         // Prepare activity label panel
         JPanel activityLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -70,7 +73,8 @@ public class ActivityTabPanel extends TabPanel {
         taskPanel.add(taskLabel, BorderLayout.NORTH);
         
         // Prepare task text area
-        if (mind != null) taskCache = mind.getTaskManager().getTaskDescription();
+        if (dead) taskCache = deathInfo.getTask();
+        else taskCache = mind.getTaskManager().getTaskDescription();
         taskTextArea = new JTextArea(2, 20);
         if (taskCache != null) taskTextArea.setText(taskCache);
         taskTextArea.setLineWrap(true);
@@ -85,7 +89,8 @@ public class ActivityTabPanel extends TabPanel {
         taskPhasePanel.add(taskPhaseLabel, BorderLayout.NORTH);
         
         // Prepare task phase text area
-        if (mind != null) taskPhaseCache = mind.getTaskManager().getPhase();
+        if (dead) taskPhaseCache = deathInfo.getTaskPhase();
+        else taskPhaseCache = mind.getTaskManager().getPhase();
         taskPhaseTextArea = new JTextArea(2, 20);
         if (taskPhaseCache != null) taskPhaseTextArea.setText(taskPhaseCache);
         taskPhaseTextArea.setLineWrap(true);
@@ -105,8 +110,8 @@ public class ActivityTabPanel extends TabPanel {
         missionPanel.add(missionLabel, BorderLayout.NORTH);
         
         // Prepare mission text area
-        if ((mind != null) && (mind.getMission() != null)) 
-            missionCache = mind.getMission().getDescription();
+        if (dead) missionCache = deathInfo.getMission();
+        else if (mind.getMission() != null) missionCache = mind.getMission().getDescription();
         missionTextArea = new JTextArea(2, 20);
         if (missionCache != null) missionTextArea.setText(missionCache);
         missionTextArea.setLineWrap(true);
@@ -121,8 +126,8 @@ public class ActivityTabPanel extends TabPanel {
         missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
         
         // Prepare mission phase text area
-        if ((mind != null) && (mind.getMission() != null)) 
-            missionPhaseCache = mind.getMission().getPhase();
+        if (dead) missionPhaseCache = deathInfo.getMissionPhase();
+        else if (mind.getMission() != null) missionPhaseCache = mind.getMission().getPhase();
         missionPhaseTextArea = new JTextArea(2, 20);
         if (missionPhaseCache != null) missionPhaseTextArea.setText(missionPhaseCache);
         missionPhaseTextArea.setLineWrap(true);
@@ -136,45 +141,36 @@ public class ActivityTabPanel extends TabPanel {
         
         Person person = (Person) proxy.getUnit();
         Mind mind = person.getMind();
+        boolean dead = person.getPhysicalCondition().isDead();
+        DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
         TaskManager taskManager = null;
         Mission mission = null;
-        if (mind != null) {
+        if (!dead) {
             taskManager = mind.getTaskManager();
             mission = mind.getMission();
         }
         
         // Update task text area if necessary.
-        if (taskManager != null) {
-            if (!taskCache.equals(taskManager.getTaskDescription()))
-                taskCache = taskManager.getTaskDescription();
-        }
-        else taskCache = "";
-        if (!taskCache.equals(taskTextArea.getText())) taskTextArea.setText(taskCache);
+        if (dead) taskCache = deathInfo.getTask();
+        else taskCache = taskManager.getTaskDescription();
+        if (!taskCache.equals(taskTextArea.getText())) 
+            taskTextArea.setText(taskCache);
         
         // Update task phase text area if necessary.
-        if (taskManager != null) {
-            if (!taskPhaseCache.equals(taskManager.getPhase()));
-                taskPhaseCache = taskManager.getPhase();
-        }
-        else taskPhaseCache = "";
+        if (dead) taskPhaseCache = deathInfo.getTaskPhase();
+        else taskPhaseCache = taskManager.getPhase();
         if (!taskPhaseCache.equals(taskPhaseTextArea.getText())) 
             taskPhaseTextArea.setText(taskPhaseCache);
         
         // Update mission text area if necessary.
-        if (mission != null) {
-            if (!missionCache.equals(mission.getDescription()))
-                missionCache = mission.getDescription();
-        }
-        else missionCache = "";
+        if (dead) missionCache = deathInfo.getMission();
+        else if (mission != null) missionCache = mission.getDescription();
         if (!missionCache.equals(missionTextArea.getText())) 
             missionTextArea.setText(missionCache);
         
         // Update mission phase text area if necessary.
-        if (mission != null) {
-            if (!missionPhaseCache.equals(mission.getPhase()))
-                missionPhaseCache = mission.getPhase();
-        }
-        else missionPhaseCache = "";
+        if (dead) missionPhaseCache = deathInfo.getMissionPhase();
+        else if (mission != null) missionPhaseCache = mission.getPhase();
         if (!missionPhaseCache.equals(missionPhaseTextArea.getText())) 
             missionPhaseTextArea.setText(missionPhaseCache);
     }

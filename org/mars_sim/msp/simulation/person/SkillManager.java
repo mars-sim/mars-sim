@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.75 2003-06-11
+ * @version 2.75 2003-06-18
  * @author Scott Davis
  */
 
@@ -31,7 +31,7 @@ public class SkillManager implements Serializable {
 
         for (int x = 0; x < startingSkills.length; x++) {
             // int skillLevel = getInitialSkillLevel(0, 50);
-            int skillLevel = 0;
+            int skillLevel = 1;
             Skill newSkill = new Skill(startingSkills[x]);
             newSkill.setLevel(skillLevel);
             addNewSkill(newSkill);

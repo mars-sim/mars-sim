@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthTabPanel.java
- * @version 2.75 2003-06-16
+ * @version 2.75 2003-06-18
  * @author Scott Davis
  */
 
@@ -46,9 +46,13 @@ public class HealthTabPanel extends TabPanel {
         Person person = (Person) proxy.getUnit();
         PhysicalCondition condition = person.getPhysicalCondition();
         
+        // Create health label panel.
+        JPanel healthLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        topContentPanel.add(healthLabelPanel);
+        
         // Prepare health label
         JLabel healthLabel = new JLabel("Health", JLabel.CENTER);
-        topContentPanel.add(healthLabel);
+        healthLabelPanel.add(healthLabel);
         
         // Prepare condition panel
         JPanel conditionPanel = new JPanel(new GridLayout(3, 2, 0, 0));
