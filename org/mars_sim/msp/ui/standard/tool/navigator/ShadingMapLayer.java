@@ -69,6 +69,7 @@ class ShadingMapLayer implements MapLayer {
                 double sunlight = surfaceFeatures.getSurfaceSunlight(location);
                 int sunlightInt = (int) (127 * sunlight);
                 int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000;
+               
                 shadingArray[x + (y * width)] = shadeColor;
                 shadingArray[x + 1 + (y * width)] = shadeColor;
                 if (y < height -1) {
