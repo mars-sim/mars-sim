@@ -68,6 +68,11 @@ public abstract class UnitWindow extends JInternalFrame {
         // Create center panel
         centerPanel = new JTabbedPane();
         mainPane.add(centerPanel, BorderLayout.CENTER);
+        // add focusListener to play sounds and alert users of critical conditions.
+       
+        //TODO: disabled in CVS while in development
+        //this.addInternalFrameListener(new UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
+        
     }
     
     /**
