@@ -42,13 +42,12 @@ public class Mind implements Serializable {
      *  @param time time in millisols
      */
     public void takeAction(double time) {
-        if ((mission != null) && mission.isDone()) {
-            mission = null;
-        }
+        
+        if ((mission != null) && mission.isDone()) mission = null;
+        
         boolean activeMission = (mission != null);
-
+        
         if (taskManager.hasActiveTask()) {
-	    person.getPerformanceRating();
             taskManager.performTask(time, person.getPerformanceRating());
         }
         else {

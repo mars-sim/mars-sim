@@ -59,7 +59,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         // Determine number of crops.
         // One crop for every 5 square meters of floor space.
         // Minimum of one crop.
-        int numCrops = (int) (floorSpace / 5D);
+        numCrops = (int) (floorSpace / 5D);
         if (numCrops == 0) numCrops = 1;
       
         // Create crops;
@@ -120,18 +120,21 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
      * @return workTime remaining after working on crop (millisols)
      */
     public double addWork(double workTime) {
-        double workTimeRemaining = workTime;
         
+        double workTimeRemaining = workTime;
         int needyCrops = 0;
-        while (((needyCrops = getNeedyCrops()) > 0) && (workTimeRemaining > 0D)) {
-            double maxCropTime = workTimeRemaining / needyCrops;
+        // Scott - I used the comparison criteria 00001D rather than 0D
+        // because sometimes math anomolies result in workTimeRemaining
+        // becoming very small double values and an endless loop occurs.
+        while (((needyCrops = getNeedyCrops()) > 0) && (workTimeRemaining > 00001D)) {
+            double maxCropTime = workTimeRemaining / (double) needyCrops;
             Iterator i = crops.iterator();
             while (i.hasNext()) {
                 Crop crop = (Crop) i.next();
-                workTimeRemaining -= maxCropTime - crop.addWork(maxCropTime);
+                workTimeRemaining -= (maxCropTime - crop.addWork(maxCropTime));
             }
         }
-        
+ 
         return workTimeRemaining;
     }
     
@@ -183,7 +186,8 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         // Add any new crops.
         Settlement settlement = manager.getSettlement();
         for (int x=0; x < newCrops; x++) {
-            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this, settlement.getMars(), settlement));
+            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / (double) numCrops), 
+                this, settlement.getMars(), settlement));
         }    
     }  
     

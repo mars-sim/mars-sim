@@ -198,12 +198,12 @@ public class Person extends Unit implements Serializable {
      *  @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
-
+        
         // If Person is dead, then skip
         if (health.getDeathDetails() == null) {
             SimulationProperties props = mars.getSimulationProperties();
             LifeSupport support = getLifeSupport();
-
+            
             // Pass the time in the physical condition first as this may kill
             // Person
             if (health.timePassing(time, support, props)) {

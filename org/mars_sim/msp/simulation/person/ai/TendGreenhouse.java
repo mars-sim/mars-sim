@@ -74,30 +74,31 @@ public class TendGreenhouse extends Task implements Serializable {
      */
     double performTask(double time) {
         double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
 
+        if (subTask != null) return timeLeft;
+        
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) {
             done = true;
             return timeLeft;
         }
-
+        
         // Add later
         // Check if greenhouse has malfunction.
         // if (greenhouse.getMalfunctionManager().hasMalfunction()) {
         //    done = true;
         //    return timeLeft;
         // }
-
+        
         // Determine amount of effective work time based on "Greenhouse Farming" skill.
         double workTime = timeLeft;
         int greenhouseSkill = person.getSkillManager().getEffectiveSkillLevel("Greenhouse Farming");
         if (greenhouseSkill == 0) workTime /= 2;
         else workTime += workTime * (.2D * (double) greenhouseSkill);
-
+        
         // Add this work to the greenhouse.
         greenhouse.addWork(workTime);
-
+        
         // Keep track of the duration of the task.
         timeCompleted += time;
         if (timeCompleted >= duration) done = true;
@@ -109,10 +110,10 @@ public class TendGreenhouse extends Task implements Serializable {
         double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         experience += experience * ((experienceAptitude - 50D) / 100D);
         person.getSkillManager().addExperience("Greenhouse Farming", experience);
-
+        
         // Check for accident in greenhouse.
         checkForAccident(time);
-	
+	    
         return 0D;
     }
 

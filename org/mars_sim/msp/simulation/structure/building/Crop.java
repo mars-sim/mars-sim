@@ -106,6 +106,7 @@ public class Crop implements Serializable {
         if (phase.equals(GROWING)) {
             if (dailyTendingWorkRequired > currentPhaseWorkCompleted) result = true;
         }
+        
         return result;
     }
     
@@ -119,7 +120,7 @@ public class Crop implements Serializable {
         
         if (phase.equals(PLANTING)) {
             currentPhaseWorkCompleted += remainingWorkTime;
-            if (currentPhaseWorkCompleted > plantingWorkRequired) {
+            if (currentPhaseWorkCompleted >= plantingWorkRequired) {
                 remainingWorkTime = currentPhaseWorkCompleted - plantingWorkRequired;
                 currentPhaseWorkCompleted = 0D;
                 currentSol = ((Building) farm).getBuildingManager().getSettlement()
@@ -133,18 +134,22 @@ public class Crop implements Serializable {
         
         if (phase.equals(GROWING)) {
             currentPhaseWorkCompleted += remainingWorkTime;
-            if (currentPhaseWorkCompleted > dailyTendingWorkRequired) {
+            if (currentPhaseWorkCompleted >= dailyTendingWorkRequired) {
                 remainingWorkTime = currentPhaseWorkCompleted - dailyTendingWorkRequired;
                 currentPhaseWorkCompleted = dailyTendingWorkRequired;
+            }
+            else {
+                remainingWorkTime = 0D;
             }
         }
         
         if (phase.equals(HARVESTING)) {
             currentPhaseWorkCompleted += remainingWorkTime;
-            if (currentPhaseWorkCompleted > harvestingWorkRequired) {
+            if (currentPhaseWorkCompleted >= harvestingWorkRequired) {
                 double overWorkTime = currentPhaseWorkCompleted - harvestingWorkRequired;
                 farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired);
                 remainingWorkTime = overWorkTime;
+                // System.out.println(cropType.getName() + " finished harvesting for " + actualHarvest + "kg. at " + settlement.getName());
                 phase = FINISHED;
             }
             else {

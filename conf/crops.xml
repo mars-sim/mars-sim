@@ -1,34 +1,35 @@
 <?xml version="1.0" ?>
 
-<!-- Crop growing time is in millisols -->
+<!-- Growing time is number of sols between planting and harvest -->
+<!-- Note: Growing times for crops are arbitrary - Scott -->
+<!-- Todo: Find more accurate growing times for crops in greenhouse. -->
 <CROP_LIST>
-    <CROP NAME="strawberries" GROWING_TIME="90000" />
-    <CROP NAME="lettuce" GROWING_TIME="90000" />
-    <CROP NAME="spinach" GROWING_TIME="90000" />
-    <CROP NAME="tomatoes" GROWING_TIME="90000" />
-    <CROP NAME="potatoes" GROWING_TIME="90000" />
-    <CROP NAME="carrots" GROWING_TIME="90000" />
-    <CROP NAME="turnips" GROWING_TIME="90000" />
-    <CROP NAME="rutabaga" GROWING_TIME="90000" />
-    <CROP NAME="beets" GROWING_TIME="90000" />
-    <CROP NAME="zucchini" GROWING_TIME="90000" />
-    <CROP NAME="wheat" GROWING_TIME="90000" />
-    <CROP NAME="cauliflower" GROWING_TIME="90000" />
-    <CROP NAME="broccoli" GROWING_TIME="90000" />
-    <CROP NAME="peas" GROWING_TIME="90000" />
-    <CROP NAME="green beans" GROWING_TIME="90000" />
-    <CROP NAME="peppers" GROWING_TIME="90000" />
-    <CROP NAME="yellow squash" GROWING_TIME="90000" />
-    <CROP NAME="sunflowers" GROWING_TIME="90000" />
-    <CROP NAME="brussel sprouts" GROWING_TIME="90000" />
-    <CROP NAME="kohlrabi" GROWING_TIME="90000" />
-    <CROP NAME="kale" GROWING_TIME="90000" />
-    <CROP NAME="radish" GROWING_TIME="90000" />
-    <CROP NAME="lettuce" GROWING_TIME="90000" />
-    <CROP NAME="cabbage" GROWING_TIME="90000" />
-    <CROP NAME="canoli" GROWING_TIME="90000" />
-    <CROP NAME="rice" GROWING_TIME="90000" />
-    <CROP NAME="peanuts" GROWING_TIME="90000" />
-    <CROP NAME="soybeans" GROWING_TIME="90000" />
-    <CROP NAME="bamboo" GROWING_TIME="90000" />
+    <CROP NAME="strawberries" GROWING_TIME="70" />
+    <CROP NAME="lettuce" GROWING_TIME="76" />
+    <CROP NAME="spinach" GROWING_TIME="80" />
+    <CROP NAME="tomatoes" GROWING_TIME="65" />
+    <CROP NAME="potatoes" GROWING_TIME="90" />
+    <CROP NAME="carrots" GROWING_TIME="87" />
+    <CROP NAME="turnips" GROWING_TIME="87" />
+    <CROP NAME="rutabaga" GROWING_TIME="80" />
+    <CROP NAME="beets" GROWING_TIME="79" />
+    <CROP NAME="zucchini" GROWING_TIME="67" />
+    <CROP NAME="wheat" GROWING_TIME="80" />
+    <CROP NAME="cauliflower" GROWING_TIME="90" />
+    <CROP NAME="broccoli" GROWING_TIME="85" />
+    <CROP NAME="peas" GROWING_TIME="75" />
+    <CROP NAME="green beans" GROWING_TIME="75" />
+    <CROP NAME="peppers" GROWING_TIME="92" />
+    <CROP NAME="yellow squash" GROWING_TIME="75" />
+    <CROP NAME="sunflowers" GROWING_TIME="60" />
+    <CROP NAME="brussel sprouts" GROWING_TIME="88" />
+    <CROP NAME="kohlrabi" GROWING_TIME="92" />
+    <CROP NAME="kale" GROWING_TIME="97" />
+    <CROP NAME="radish" GROWING_TIME="78" />
+    <CROP NAME="cabbage" GROWING_TIME="80" />
+    <CROP NAME="canoli" GROWING_TIME="90" />
+    <CROP NAME="rice" GROWING_TIME="76" />
+    <CROP NAME="peanuts" GROWING_TIME="84" />
+    <CROP NAME="soybeans" GROWING_TIME="90" />
+    <CROP NAME="bamboo" GROWING_TIME="75" />
 </CROP_LIST>

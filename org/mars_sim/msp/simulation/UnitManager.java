@@ -155,7 +155,12 @@ public class UnitManager implements Serializable {
      */
     void timePassing(double time) {
         UnitIterator i = units.iterator();
-        while (i.hasNext()) i.next().timePassing(time);
+        while (i.hasNext()) {
+            Unit unit = i.next();
+            // System.out.println(unit.getName() + " timePassing");
+            unit.timePassing(time);
+        }
+        // while (i.hasNext()) i.next().timePassing(time);
     }
 
     /** Get number of settlements

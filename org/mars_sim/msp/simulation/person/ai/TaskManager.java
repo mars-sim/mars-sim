@@ -132,9 +132,8 @@ public class TaskManager implements Serializable {
         if (currentTask != null) {
             // For effort driven task, reduce the effective time
             if (currentTask.isEffortDriven()) time *= efficiency;
-	    checkForEmergency();
+            checkForEmergency();
             currentTask.performTask(time);
-
             // Log if a significant event
             if (currentTask.isDone() && currentTask.getCreateEvents()) {
                 HistoricalEvent newEvent = new HistoricalEvent("Finished " + currentTask.getName(),

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropXmlReader.java
- * @version 2.75 2003-01-15
+ * @version 2.75 2003-02-22
  * @author Scott Davis
  */
 
@@ -67,7 +67,8 @@ public class CropXmlReader extends MspXmlReader {
         if (name.equals("NAME")) currentName = value;
         else if (name.equals("GROWING_TIME")) {
             try {
-                currentGrowingTime = Double.parseDouble(value);
+                // Get growing time in sols and convert to millisols.
+                currentGrowingTime = Double.parseDouble(value) * 1000D;
             }
             catch (NumberFormatException e) { 
                 System.out.println("Bad crop growing time specified in crops.xml"); 
