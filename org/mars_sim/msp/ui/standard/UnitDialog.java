@@ -5,9 +5,9 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard; 
- 
-import org.mars_sim.msp.simulation.*;  
+package org.mars_sim.msp.ui.standard;
+
+import org.mars_sim.msp.simulation.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -30,14 +30,15 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
     protected JPanel mainPane; // Content pane
     protected Box mainVerticalBox; // Main layout box
     protected Thread updateThread; // Dialog update thread
+    private boolean keepUpdated;  // Keep this update thread running
     protected JButton centerMapButton; // Center map button
 
-    /** Constructs a UnitDialog class 
+    /** Constructs a UnitDialog class
      *  @param parentDesktop the desktop pane
      *  @param unitUIProxy the unit's UI proxy
      */
     public UnitDialog(MainDesktopPane parentDesktop, UnitUIProxy unitUIProxy) {
-        
+
         // Use JInternalFrame constructor
         super(unitUIProxy.getUnit().getName(), false, true, false, true);
 
@@ -57,28 +58,57 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
 
         // Do first update
         generalUpdate();
+    }
 
-        // Start update thread
-        start();
+    /**
+     * This window is closing so stop the Thread and nullify so that it can be
+     * garbage collected.
+     */
+    public void dispose() {
+        keepUpdated = false;
+        if (updateThread != null) {
+            updateThread.interrupt();
+        }
+        updateThread = null;
+        super.dispose();
+    }
+
+    /** Visible method **/
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+
+        if (visible) {
+            start();
+        }
     }
 
     /** Starts display update thread, and creates a new one if necessary */
-    public void start() {
-        if ((updateThread == null) || (!updateThread.isAlive())) {
-            updateThread = new Thread(this, "unit dialog");
+    private void start() {
+
+        keepUpdated = true;
+        if ((updateThread == null) || !updateThread.isAlive()) {
+            updateThread = new Thread(this, "unit dialog : " +
+                                      unitUIProxy.unit.getName());
             updateThread.start();
         }
+        else {
+            updateThread.interrupt();
+        }
+
     }
+
 
     /** Update thread runner */
     public void run() {
 
         // Endless refresh loop
-        while (true) {
+        while (keepUpdated) {
 
-            // Pause for 2 seconds between display refreshs
+            // Pause for 2 seconds between display refresh if visible
+            // otherwise just wait a long time
             try {
-                updateThread.sleep(2000);
+                long sleeptime = (isVisible() ? 2000 : 60000);
+                updateThread.sleep(sleeptime);
             } catch (InterruptedException e) {}
 
             // Update display
@@ -88,19 +118,20 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
                 System.out.println("NullPointerException: " + parentUnit.getName());
             }
         }
+        updateThread = null;
     }
 
-    /** Returns unit's name 
+    /** Returns unit's name
      *  @return unit's name
      */
     public String getUnitName() { return parentUnit.getName(); }
-    
-    /** Returns the unit for this window 
+
+    /** Returns the unit for this window
      *  @return unit
      */
     public Unit getUnit() { return parentUnit; }
 
-    /** Returns the unitProxy for this window 
+    /** Returns the unitProxy for this window
      *  @return unitProxy
      */
     public UnitUIProxy getUnitProxy() { return unitUIProxy; }
@@ -147,7 +178,7 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
         mainPane.add(namePanel, "North");
 
         // Prepare name label
-        JLabel nameLabel = new JLabel(parentUnit.getName(), 
+        JLabel nameLabel = new JLabel(parentUnit.getName(),
                 unitUIProxy.getButtonIcon(), JLabel.CENTER);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
@@ -156,15 +187,15 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
 
     // --- Abstract methods ---
 
-    /** Set up proper window size 
+    /** Set up proper window size
      *  @return the window's size
      */
     protected abstract Dimension setWindowSize();
-    
+
     /** Complete update */
     protected abstract void generalUpdate();
-    
-    /** Returns a double value rounded to one decimal point 
+
+    /** Returns a double value rounded to one decimal point
      *  @param initial the initial double value
      *  @return the rounded value
      */

@@ -241,13 +241,20 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         }
 
         if (tempWindow != null) {
-            if (tempWindow.isClosed()) add(tempWindow, 0);
+            if (tempWindow.isClosed())  add(tempWindow, 0);
+
+            try {
+                tempWindow.setIcon(false);
+            }
+            catch(java.beans.PropertyVetoException e) {
+                System.out.println("Problem reopening " + e);
+            }
+
         }
         else {
             tempWindow = unitUIProxy.getUnitDialog(this);
             add(tempWindow, 0);
-            try { tempWindow.setSelected(true); }
-            catch (java.beans.PropertyVetoException e) {}
+
 
             // Set internal frame listener
             tempWindow.addInternalFrameListener(new UnitWindowListener(this));
@@ -260,9 +267,16 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
             // Create new unit button in tool bar if necessary
             mainWindow.createUnitButton(unitUIProxy);
-        }
 
-        tempWindow.show();
+        }
+        tempWindow.setVisible(true);
+
+        // Correct window becomes selected
+        try {
+            tempWindow.setSelected(true);
+            tempWindow.moveToFront();
+        }
+        catch (java.beans.PropertyVetoException e) {}
     }
 
     /** Disposes a unit window and button

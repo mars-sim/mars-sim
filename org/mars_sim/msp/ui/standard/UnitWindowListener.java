@@ -5,9 +5,9 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
+package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.*;  
+import org.mars_sim.msp.simulation.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -19,20 +19,11 @@ public class UnitWindowListener extends InternalFrameAdapter {
     // Data members
     MainDesktopPane desktop; // Main desktop pane that holds unit windows.
 
-    /** Constructs a UnitWindowListener object 
+    /** Constructs a UnitWindowListener object
      *  @param desktop the desktop pane
      */
     public UnitWindowListener(MainDesktopPane desktop) {
         this.desktop = desktop;
-    }
-
-    /** Overridden parent method */
-    public void internalFrameOpened(InternalFrameEvent e) {
-        JInternalFrame frame = (JInternalFrame) e.getSource();
-        try { frame.setClosed(false); } 
-        catch (java.beans.PropertyVetoException v) {
-            System.out.println(frame.getTitle() + " setClosed() is Vetoed!");
-        }
     }
 
     // Overriden parent method
