@@ -77,7 +77,7 @@
 		<!-- Science tech level of lab (see tech_level.txt) - default: 1 -->
 		<lab tech-level="1">
 			<!-- Science tech speciality -->
-			<tech-speciality value="Aerology" />	
+			<tech-speciality value="Areology" />	
 		</lab>
 
 	</rover>
