@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2002-06-09
  * @author Scott Davis
  */
 
@@ -177,6 +177,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 try {
                     showThread.sleep(2000);
                 } catch (InterruptedException e) {}
+		updateVehicleTrails();
                 repaint();
             }
         }
@@ -228,6 +229,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
             if (!topo && showDayNightShading) drawShading(g);
 
+	    drawVehicleTrails(g);
             drawUnits(g);
         }
     }
@@ -329,6 +331,52 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         }
     }
 
+    /**
+     * Draws vehicle trails.
+     * @param g graphics context
+     */
+    private void drawVehicleTrails(Graphics g) {
+        Iterator i = proxyManager.getUIProxies();
+	while (i.hasNext()) {
+	    Object proxy = i.next();
+	    if (proxy instanceof VehicleUIProxy) {
+                VehicleUIProxy vehicleProxy = (VehicleUIProxy) proxy;
+		Iterator j = vehicleProxy.getTrail().iterator();
+		while (j.hasNext()) {
+		    Coordinates trailSpot = (Coordinates) j.next();
+		    double angle = 0D;
+		    if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
+		    else angle = HALF_MAP_ANGLE_STANDARD;
+
+		    IntPoint oldSpot = null;
+		    if (centerCoords.getAngle(trailSpot) < angle) {
+                        IntPoint spotLocation = getUnitRectPosition(trailSpot);
+			if ((oldSpot == null) || !oldSpot.equals(spotLocation)) {
+			    if (topo) g.setColor(Color.black);
+			    else g.setColor(new Color(0, 96, 0));
+			    g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
+			}
+			oldSpot = spotLocation;
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Updates vehicle trails
+     */
+    private void updateVehicleTrails() {
+        Iterator i = proxyManager.getUIProxies();
+	while (i.hasNext()) {
+            Object proxy = i.next();
+	    if (proxy instanceof VehicleUIProxy) {
+                VehicleUIProxy vehicleProxy = (VehicleUIProxy) proxy;
+		vehicleProxy.addLocationToTrail(vehicleProxy.getUnit().getCoordinates());
+            }
+        }
+    }
+    
     /** MouseListener methods overridden. Perform appropriate action
      *  on mouse click. */
     public void mouseClicked(MouseEvent event) {
