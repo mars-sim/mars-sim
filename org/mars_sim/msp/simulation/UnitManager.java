@@ -45,8 +45,8 @@ public class UnitManager implements Serializable {
         // Create people
         createPeople();
 
-	// Add equipment in inventories.
-	addEquipment();
+	// Add inventoried units.
+	addInventoryUnits();
     }
 
     /** Creates initial settlements from XML config file */
@@ -71,16 +71,13 @@ public class UnitManager implements Serializable {
         units.mergePeople(peopleReader.getPeople());
     }
 
-    /** Adds all equipment in inventories. */
-    private void addEquipment() {
+    /** Adds all units in inventories. */
+    private void addInventoryUnits() {
+	UnitCollection contained = new UnitCollection();
 	UnitIterator i = units.iterator();
-	EquipmentCollection allEquipment = new EquipmentCollection();
-	while (i.hasNext()) {
-	    UnitCollection equipment = i.next().getInventory().getUnitsOfClass(Equipment.class);
-	    UnitIterator e = equipment.iterator();
-	    while (e.hasNext()) allEquipment.add((Equipment) e.next());
-	}
-	units.mergeEquipment(allEquipment);
+	while (i.hasNext()) 
+	    contained.mergeUnits(i.next().getInventory().getAllContainedUnits()); 
+	units.mergeUnits(contained);
     }
 
     /** Notify all the units that time has passed. 

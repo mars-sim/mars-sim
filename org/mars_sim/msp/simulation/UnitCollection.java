@@ -122,6 +122,18 @@ public class UnitCollection extends MspCollection implements Serializable {
 	fireMspCollectionEvent(new MspCollectionEvent(this, "clear"));
         elements.clear();
     }
+
+    /**
+     * Merges a unit collection into this unit collection.
+     * @param units unit collection to merge
+     */
+    public void mergeUnits(UnitCollection units) {
+        UnitIterator i = units.iterator();
+	while (i.hasNext()) {
+	    Unit unit = i.next();
+	    if (!elements.contains(unit)) add(unit);
+	}
+    }
     
     /** Merges a settlement collection into this unit collection.
      *  @param settlements settlement collection to merge

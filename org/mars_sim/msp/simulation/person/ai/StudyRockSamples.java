@@ -104,16 +104,15 @@ public class StudyRockSamples extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-	if (person.getPerformanceRating() == 0D) {
-	    done = true;
-	    lab.removeResearcher();
-	}
+	if (person.getPerformanceRating() == 0D) done = true;
 
 	// Check for laboratory malfunction.
-	if (malfunctions.hasMalfunction()) {
-	    done = true;
+	if (malfunctions.hasMalfunction()) done = true;
+
+	if (done) {
+	    lab.removeResearcher();
 	    return timeLeft;
-	}
+	 }
 	
         // Determine effective research time based on "Areology" skill.
         double researchTime = timeLeft;
@@ -160,7 +159,7 @@ public class StudyRockSamples extends Task implements Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            System.out.println(person.getName() + " has a lab accident while researching rock samples.");
+            // System.out.println(person.getName() + " has a lab accident while researching rock samples.");
 	    
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
                 Settlement settlement = person.getSettlement();

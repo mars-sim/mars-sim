@@ -215,7 +215,7 @@ public class MalfunctionManager implements Serializable {
        Malfunction malfunction = factory.getMalfunction(scope);
        if (malfunction != null) {
            malfunctions.add(malfunction);
-	   System.out.println(entity.getName() + " has new malfunction: " + malfunction.getName());
+	   // System.out.println(entity.getName() + " has new malfunction: " + malfunction.getName());
 	   issueMedicalComplaints(malfunction);
        }
     }
@@ -232,7 +232,7 @@ public class MalfunctionManager implements Serializable {
         double chance = time * .000001D * timeSinceLastMaintenance;
 
 	if (RandomUtil.lessThanRandPercent(chance)) {
-	    System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + timeSinceLastMaintenance);	
+	    // System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + timeSinceLastMaintenance);	
 	    addMalfunction();
 	}
     }
@@ -250,7 +250,7 @@ public class MalfunctionManager implements Serializable {
 	while (i.hasNext()) {
 	    Malfunction malfunction = (Malfunction) i.next();
 	    if (malfunction.isFixed()) {
-		System.out.println(malfunction.getName() + " at " + entity.getName() + " is fully fixed.");    
+		// System.out.println(malfunction.getName() + " at " + entity.getName() + " is fully fixed.");    
 		fixedMalfunctions.add(malfunction);
 	    }
 	}
@@ -332,7 +332,7 @@ public class MalfunctionManager implements Serializable {
      */
     public void accident() {
 
-        System.out.println(entity.getName() + " accident()");
+        // System.out.println(entity.getName() + " accident()");
 	    
         // Multiple malfunctions may have occured.
 	// 50% one malfunction, 25% two etc.

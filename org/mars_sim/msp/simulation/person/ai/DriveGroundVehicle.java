@@ -438,7 +438,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         chance *= ((5D * (127D - lightModifier) / 127D) + 1D);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            System.out.println(person.getName() + " has accident driving " + vehicle.getName());
+            // System.out.println(person.getName() + " has accident driving " + vehicle.getName());
 	    vehicle.getMalfunctionManager().accident();
 	}
     }

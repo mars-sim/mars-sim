@@ -60,27 +60,27 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         boolean result = true;
 
         if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) {
-	    System.out.println("bad oxygen");
+	    // System.out.println("bad oxygen");
 	    result = false;
 	}
         if (inventory.getResourceMass(Inventory.WATER) <= 0D) {
-	    System.out.println("bad water");	
+	    // System.out.println("bad water");	
 	    result = false;
 	}
 	if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-            System.out.println("bad oxygen flow");		
+            // System.out.println("bad oxygen flow");		
 	    result = false;
 	}
 	if (malfunctionManager.getWaterFlowModifier() < 100D) {
-	    System.out.println("bad water flow");
+	    // System.out.println("bad water flow");
 	    result = false;
 	}
 	if (getAirPressure() != NORMAL_AIR_PRESSURE) {
-	    System.out.println("bad air pressure - " + getAirPressure());	
+	    // System.out.println("bad air pressure - " + getAirPressure());	
 	    result = false;
 	}
 	if (getTemperature() != NORMAL_TEMP) {
-	    System.out.println("bad temperature - " + getTemperature());	
+	    // System.out.println("bad temperature - " + getTemperature());	
 	    result = false;
 	}
 
@@ -164,9 +164,6 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         Unit container = getContainerUnit();
 	if (container instanceof Person) malfunctionManager.activeTimePassing(time);
 	malfunctionManager.timePassing(time);
-	if (malfunctionManager.hasMalfunction()) {
-	    System.out.println("EVA Suit has malfunction: " + malfunctionManager.getMostSeriousMalfunction().getName());
-	}
     }
 
     /**

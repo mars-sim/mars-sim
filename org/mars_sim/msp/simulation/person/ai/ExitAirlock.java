@@ -35,7 +35,7 @@ class ExitAirlock extends Task implements Serializable {
 	description = "Exiting " + entity.getName() + " for EVA";
         this.entity = entity;
 
-	System.out.println(person.getName() + " is starting to exit airlock of " + entity.getName());
+	// System.out.println(person.getName() + " is starting to exit airlock of " + entity.getName());
     }
 
     /** 
@@ -60,7 +60,7 @@ class ExitAirlock extends Task implements Serializable {
 	            if (!suit.lifeSupportCheck()) goodSuit = false;
 	            if (suit.getMalfunctionManager().hasMalfunction()) goodSuit = false;
 		    if (goodSuit) {
-		        System.out.println(person.getName() + " taking EVA suit from " + entity.getName());
+		        // System.out.println(person.getName() + " taking EVA suit from " + entity.getName());
 		        if (inv.takeUnit(suit, person)) hasSuit = true;
 		    }
 	        }
@@ -69,7 +69,7 @@ class ExitAirlock extends Task implements Serializable {
 
 	// If person still doesn't have an EVA suit, end task.
 	if (!hasSuit) {
-            System.out.println(person.getName() + " does not have an EVA suit, ExitAirlock ended");
+            // System.out.println(person.getName() + " does not have an EVA suit, ExitAirlock ended");
 	    done = true;
 	    return timeLeft;
 	}

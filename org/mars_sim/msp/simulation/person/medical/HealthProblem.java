@@ -59,7 +59,7 @@ public class HealthProblem implements Serializable {
             // Check if a medical aid is available to help
             canStartTreatment(aid);
         }
-	System.out.println(person.getName() + " has new health problem: " + complaint.getName());
+	// System.out.println(person.getName() + " has new health problem: " + complaint.getName());
     }
 
     /**

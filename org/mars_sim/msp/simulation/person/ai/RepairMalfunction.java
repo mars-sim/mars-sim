@@ -68,10 +68,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
             // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
 	    Malfunctionable entity = (Malfunctionable) i.next();
 	    MalfunctionManager manager = entity.getMalfunctionManager();
-            if (manager.hasNormalMalfunction()) {
-		if (entity instanceof EVASuit) System.out.println(person.getName() + " sees EVA Suit normal malfunction: " + manager.getMostSeriousNormalMalfunction().getName());   
-		result = 50D;
-	    }
+            if (manager.hasNormalMalfunction()) result = 50D;
         }
 
         // Effort-driven task modifier.
@@ -155,7 +152,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            System.out.println(person.getName() + " has accident while " + description);
+            // System.out.println(person.getName() + " has accident while " + description);
 	    if (entity != null) entity.getMalfunctionManager().accident();
         }
     }

@@ -201,6 +201,19 @@ public class Inventory implements Serializable {
     public UnitCollection getContainedUnits() {
         return new UnitCollection(containedUnits);
     }
+
+    /**
+     * Gets a collection of all the units in the inventory
+     * plus all units in their inventories.
+     * @return UnitCollection of all units.
+     */
+    public UnitCollection getAllContainedUnits() {
+        UnitCollection results = new UnitCollection(containedUnits);
+	UnitIterator i = containedUnits.iterator();
+	while (i.hasNext()) 
+	    results.mergeUnits(i.next().getInventory().getAllContainedUnits());
+	return results;
+    }
     
     /**
      * Returns true if inventory contains a given unit.

@@ -120,7 +120,7 @@ public class Malfunction implements Serializable {
         workTimeCompleted += time;
         if (workTimeCompleted >= workTime) {
 	    workTimeCompleted = workTime;
-	    System.out.println("Work time completed: " + name);
+	    // System.out.println("Work time completed: " + name);
 	}
     }
 
@@ -148,7 +148,7 @@ public class Malfunction implements Serializable {
         emergencyWorkTimeCompleted += time;
         if (emergencyWorkTimeCompleted >= emergencyWorkTime) {
 	    emergencyWorkTimeCompleted = emergencyWorkTime;
-	    System.out.println("Emergency work time completed: " + name);
+	    // System.out.println("Emergency work time completed: " + name);
 	}
     }
     
@@ -176,7 +176,7 @@ public class Malfunction implements Serializable {
         EVAWorkTimeCompleted += time;
         if (EVAWorkTimeCompleted >= EVAWorkTime) { 
 	    EVAWorkTimeCompleted = EVAWorkTime;
-	    System.out.println("EVA work time completed: " + name);
+	    // System.out.println("EVA work time completed: " + name);
 	}
     }
 

@@ -119,7 +119,7 @@ public class TendGreenhouse extends Task implements Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            System.out.println(person.getName() + " has accident while tending the greenhouse.");
+            // System.out.println(person.getName() + " has accident while tending the greenhouse.");
             greenhouse.getMalfunctionManager().accident();
         }
     }

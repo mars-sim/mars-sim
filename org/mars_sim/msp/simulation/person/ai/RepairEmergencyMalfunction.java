@@ -46,10 +46,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	    // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
 	    Malfunctionable entity = (Malfunctionable) i.next();
 	    MalfunctionManager manager = entity.getMalfunctionManager();
-	    if (manager.hasEmergencyMalfunction()) {
-                if (entity instanceof EVASuit) System.out.println(person.getName() + " sees EVA Suit emergency malfunction: " + manager.getMostSeriousEmergencyMalfunction().getName());
-		result = true;
-            }
+	    if (manager.hasEmergencyMalfunction()) result = true;
 	}
 
 	return result;

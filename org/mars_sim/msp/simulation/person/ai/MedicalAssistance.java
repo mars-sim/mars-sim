@@ -140,7 +140,7 @@ public class MedicalAssistance extends Task implements Serializable {
 	else chance /= (skill - 2);
 
 	if (RandomUtil.lessThanRandPercent(chance * time)) {
-	    System.out.println(person.getName() + " has accident during medical assistance.");
+	    // System.out.println(person.getName() + " has accident during medical assistance.");
             entity.getMalfunctionManager().accident();
         }
     }
