@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Map.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-10-12
  * @author Greg Whelan
  */
 
@@ -19,8 +19,9 @@ public interface Map {
      * Creates a 2D map at a given center point.
      * 
      * @param newCenter the new center location
+     * @throws Exception if error in drawing map.
      */
-    public void drawMap(Coordinates newCenter);
+    public void drawMap(Coordinates newCenter) throws Exception;
     
     /** 
      * Checks if a requested map is complete.

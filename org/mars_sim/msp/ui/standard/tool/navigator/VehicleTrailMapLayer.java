@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTrailMapLayer.java
- * @version 2.75 2003-09-17
+ * @version 2.75 2003-10-13
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import java.awt.*;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.ui.standard.unit_display_info.*;
 
 /**
  * The VehicleTrailMapLayer is a graphics layer to display vehicle trails.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CannedMarsMap.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-10-12
  * @author Greg Whelan
  */
 
@@ -46,10 +46,13 @@ public abstract class CannedMarsMap implements Map {
         centerCoords = new Coordinates(0D, 0D);
     }
 
-    /** creates a 2D map at a given center point
-     *  @param newCenter new map center location
+    /** 
+     * Creates a 2D map at a given center point.
+     *
+     * @param newCenter new map center location.
+     * @throws Exception if error in drawing map.
      */
-    public void drawMap(Coordinates newCenter) {
+    public void drawMap(Coordinates newCenter) throws Exception {
         createMapImage(newCenter);
         waitForMapLoaded();
     }
@@ -70,12 +73,15 @@ public abstract class CannedMarsMap implements Map {
 
     abstract public RandomAccessFile getMapFile();
 
-    /** constructs a rendering of the map centered about the given
-     *  coordinates. The map is written to the private variable
-     *  mapImage and can be obtained using the getMapImage() method.
-     *  @param newCenter map center location
+    /** 
+     * Constructs a rendering of the map centered about the given
+     * coordinates. The map is written to the private variable
+     * mapImage and can be obtained using the getMapImage() method.
+     *
+     * @param newCenter map center location.
+     * @throws IOException if error in reading from map file.
      */
-    private void createMapImage(Coordinates newCenter) {
+    private void createMapImage(Coordinates newCenter) throws IOException {
         // Adjust coordinates
         Coordinates adjNewCenter =
                 new Coordinates(newCenter.getPhi(), newCenter.getTheta() + Math.PI);
@@ -225,6 +231,7 @@ public abstract class CannedMarsMap implements Map {
         }
         catch (IOException e) {
             System.out.println("File read error: " + e);
+            throw new IOException("Cannot read map file");
         }
 
         // Create image from buffer array

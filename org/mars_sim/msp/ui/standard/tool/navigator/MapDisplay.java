@@ -1,19 +1,16 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2003-09-21
+ * @version 2.75 2003-10-13
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.navigator;
 
 import java.awt.*;
-import java.awt.image.*;
 import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.ui.standard.unit_display_info.*;
 
 /** The MapDisplay class is the visual component for the surface map
@@ -45,6 +42,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private MapLayer unitLayer;  // Display layer for showing units.
     private MapLayer vehicleTrailLayer;  // Display layer for showing vehicle trails.
     private MapLayer shadingLayer; // Display layer for showing day/night shading.
+    private boolean mapError; // True if there is an error in rendering the map.
+    private String mapErrorMessage; // The map error message.
 
     private int width;
     private int height;
@@ -83,6 +82,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         centerCoords = new Coordinates(HALF_PI, 0D);
         showDayNightShading = false;
         showVehicleTrails = true;
+        mapError = false;
+        mapErrorMessage = null;
 
         // Set component size
         setPreferredSize(new Dimension(width, height));
@@ -219,15 +220,31 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private void refreshLoop() {
         while (true) {
             if (recreate) {
-                // Regenerate surface if recreate is true, then display
-                if (topo) topoMap.drawMap(centerCoords);
-                else {
-                	if (useUSGSMap) usgsMap.drawMap(centerCoords);
-                	else surfMap.drawMap(centerCoords);
+                // Regenerate surface if recreate is true, then display.
+                mapError = false;
+                try {
+                    if (topo) topoMap.drawMap(centerCoords);
+                    else {
+                	    if (useUSGSMap) usgsMap.drawMap(centerCoords);
+                	    else surfMap.drawMap(centerCoords);
+                    }
                 }
+                catch (Exception e) {
+                    mapError = true;
+                    mapErrorMessage = e.getMessage();
+                    wait = false;
+                }
+                
                 recreate = false;
                 repaint();
             } else {
+                // Check if bad connection for USGS map.
+                if (useUSGSMap && ((USGSMarsMap) usgsMap).isConnectionTimeout()) {
+                    mapError = true;
+                    mapErrorMessage = "Unable to Connect";
+                    wait = false;
+                }
+                
                 // Pause for 2000 milliseconds between display refreshs
                 try {
                     Thread.sleep(2000);
@@ -243,53 +260,85 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        
+        // Determine map type.
+        Map map = null;
+        if (isTopo()) map = topoMap;
+        else {
+            if (isUsgs()) map = usgsMap;
+            else map = surfMap;
+        }
+        
         if (wait) {
-            // If in waiting mode, display wait string
+            // display previous map image.
             if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
 
-            if (isTopo()) g.setColor(Color.black);
-            else g.setColor(Color.green);
-
+            // Create the message string.
             String message = "Generating Map";
             if (isUsgs()) message = "Downloading Map";
-            Font messageFont = new Font("SansSerif", Font.BOLD, 25);
-            FontMetrics messageMetrics = getFontMetrics(messageFont);
-            int msgHeight = messageMetrics.getHeight();
-            int msgWidth = messageMetrics.stringWidth(message);
-            int x = (width - msgWidth) / 2;
-            int y = (height + msgHeight) / 2;
-            g.setFont(messageFont);
-            g.drawString(message, x, y);
-            wait = false;
+            
+            // Draw message
+            drawCenteredMessage(message, g);
+            
+            if (map.isImageDone() || mapError) wait = false;
         } 
         else {
-            // Paint black background
-            g.setColor(Color.black);
-            g.fillRect(0, 0, width, height);
-
-            // Paint topo, real or USGS surface image
-            Map map = null;
-            if (isTopo()) map = topoMap;
+            if (mapError) {
+                // Display previous map image
+                if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
+                
+                // Draw error message
+                drawCenteredMessage(mapErrorMessage, g);
+            }
             else {
-            	if (isUsgs()) map = usgsMap;
-            	else map = surfMap;
-            }
+                // Paint black background
+                g.setColor(Color.black);
+                g.fillRect(0, 0, width, height);
 
-            if (map.isImageDone()) {
-                mapImage = map.getMapImage();
-                g.drawImage(mapImage, 0, 0, this);
-            }
+                if (map.isImageDone()) {
+                    mapImage = map.getMapImage();
+                    g.drawImage(mapImage, 0, 0, this);
+                }
 
-            // Display day/night shading.
-            if (isSurface() && showDayNightShading) shadingLayer.displayLayer(g);
+                // Display day/night shading.
+                if (isSurface() && showDayNightShading) shadingLayer.displayLayer(g);
             
-            // Display vehicle trails.
-            if (showVehicleTrails) vehicleTrailLayer.displayLayer(g);
+                // Display vehicle trails.
+                if (showVehicleTrails) vehicleTrailLayer.displayLayer(g);
             
-            // Display units.
-            unitLayer.displayLayer(g);
+                // Display units.
+                unitLayer.displayLayer(g);
+            }
         }
+    }
+    
+    /**
+     * Draws a message string in the center of the map display.
+     *
+     * @param message the message string
+     * @param g the graphics context
+     */
+    private void drawCenteredMessage(String message, Graphics g) {
+        
+        // Set message color
+        if (isTopo()) g.setColor(Color.black);
+        else g.setColor(Color.green);
+        
+        // Set up font
+        Font messageFont = new Font("SansSerif", Font.BOLD, 25);
+        g.setFont(messageFont);
+        FontMetrics messageMetrics = getFontMetrics(messageFont);
+        
+        // Determine message dimensions
+        int msgHeight = messageMetrics.getHeight();
+        int msgWidth = messageMetrics.stringWidth(message);
+        
+        // Determine message draw position
+        int x = (width - msgWidth) / 2;
+        int y = (height + msgHeight) / 2;
+    
+        // Draw message
+        g.drawString(message, x, y);
     }
     
     /** MouseListener methods overridden. Perform appropriate action

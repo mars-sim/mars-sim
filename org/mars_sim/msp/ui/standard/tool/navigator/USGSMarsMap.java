@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * USGSMarsMap.java
- * @version 2.75 2003-09-10
+ * @version 2.75 2003-10-12
  * @author Greg Whelan
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.Coordinates;
 import java.io.*;
 import java.net.*;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 
 /** 
@@ -23,7 +24,7 @@ import javax.swing.*;
  * PDS Mars Explorer</a>
  * - Be sure to see the FAQ on the "face".
  */
-public class USGSMarsMap implements Map {
+public class USGSMarsMap implements Map, ActionListener {
 
     // Data members
    
@@ -51,11 +52,11 @@ public class USGSMarsMap implements Map {
 
     private boolean imageDone = false;
     private Component component;
-
+    private boolean goodConnection = false;
+    private boolean connectionTimeout = false;
     private Image img;
-    private Coordinates currentView; // for future use
-
     private Image prefetchedImage;
+    private Timer connectionTimer = null;
 
     /** Constructs a USGSMarsMap object */
     public USGSMarsMap() {}
@@ -67,18 +68,30 @@ public class USGSMarsMap implements Map {
         component = comp;
     }
 
-    /** creates a 2D map at a given center point 
-     *  @param newCenter the center location
+    /** 
+     * Creates a 2D map at a given center point.
+     *
+     * @param newCenter the center location.
+     * @throws Exception if error in drawing map.
      */
-    public void drawMap(Coordinates newCenter) {
-        if (imageInCache(newCenter)) {
-            // simply translate the image
-        } else {
-            img = retrievePdsImage(90 - Math.toDegrees(newCenter.getPhi()),
-                                   360 - Math.toDegrees(newCenter.getTheta()));
-            currentView = newCenter;
-            waitForMapLoaded();
-        }
+    public void drawMap(Coordinates newCenter) throws Exception {
+     
+        connectionTimeout = false;
+        
+        startPdsImageRetrieval(90 - Math.toDegrees(newCenter.getPhi()),
+                               360 - Math.toDegrees(newCenter.getTheta()));
+                               
+        // Starts a 10 second timer to see if the connection times out.
+        connectionTimer = new Timer(10000, this);
+        connectionTimer.start();
+    }
+
+    /**
+     * Checks if the connection has timed out.
+     * @return boolean
+     */
+    public boolean isConnectionTimeout() {
+        return connectionTimeout;
     }
 
     /** determines if a requested map is complete 
@@ -95,75 +108,112 @@ public class USGSMarsMap implements Map {
         return img;
     }
 
-    /** Returns true if map image is cached 
-     *  @return true if map image is cached
+    /**
+     * Starts the PDS image retrieval process.
+     * @param lat the latitude of the center of the image.
+     * @param lon the longitude of the center of the image.
+     * @throws IOException if there is an IO problem.
      */
-    private boolean imageInCache(Coordinates location) {
-        return false;
-    }
-
-    /** 
-     * Requests an image from the PDS web server.
-     *
-     * @param lat latitude
-     * @param lon longitude
-     */
-    private Image retrievePdsImage(double lat, double lon) {
+    private void startPdsImageRetrieval(double lat, double lon) throws IOException {
+        
         imageDone = false;
+        goodConnection = false;
+        URL url = null;
         try {
-            StringBuffer urlBuff = new StringBuffer(psdUrl + psdCgi + "?");
-            urlBuff.append("DATA_SET_NAME=" + dataSet);
-            urlBuff.append("&VERSION=" + version);
-            urlBuff.append("&PIXEL_TYPE=" + pixelType);
-            urlBuff.append("&PROJECTION=" + projection);
-            urlBuff.append("&STRETCH=" + stretch);
-            urlBuff.append("&GRIDLINE_FREQUENCY=" + gridlineFrequency);
-            urlBuff.append("&SCALE=" + URLEncoder.encode(scale, "UTF-8"));
-            urlBuff.append("&RESOLUTION=" + resolution);
-            urlBuff.append("&LATBOX=" + latbox);
-            urlBuff.append("&LONBOX=" + lonbox);
-            urlBuff.append("&BANDS_SELECTED=" + bandsSelected);
-            urlBuff.append("&LAT=" + lat);
-            urlBuff.append("&LON=" + lon);
-            URL url = new URL(urlBuff.toString());
+            // Get URL connection to PDS CGI.
+            url = getPDSURL(lat, lon);
+            HttpURLConnection urlCon = (HttpURLConnection) url.openConnection();
+            
+            // Connect with PDS CGI.
+            PDSConnectionManager connectionManager = new PDSConnectionManager(urlCon, this);
+        } 
+        catch (MalformedURLException e) {
+            System.out.println("URL not valid: " + url.toString());
+            throw new IOException("URL not valid");
+        }
+        catch (IOException e) {
+            throw new IOException("Internet connection required");
+        }
+        catch (Exception e) {
+            throw new IOException("Exception retrieving map image");
+        }
+    }
+    
+    /**
+     * Determines the URL for the USGS PDS server.
+     * @param lat the latitude
+     * @param lon the longitude
+     * @return URL the URL created.
+     * @throws Exception if the URL is malformed.
+     */
+    private URL getPDSURL(double lat, double lon) throws Exception {
 
-            // System.out.println(url);
-
-            BufferedReader in =
-                    new BufferedReader(new InputStreamReader(url.openStream()));
+        StringBuffer urlBuff = new StringBuffer(psdUrl + psdCgi + "?");
+        urlBuff.append("DATA_SET_NAME=" + dataSet);
+        urlBuff.append("&VERSION=" + version);
+        urlBuff.append("&PIXEL_TYPE=" + pixelType);
+        urlBuff.append("&PROJECTION=" + projection);
+        urlBuff.append("&STRETCH=" + stretch);
+        urlBuff.append("&GRIDLINE_FREQUENCY=" + gridlineFrequency);
+        urlBuff.append("&SCALE=" + URLEncoder.encode(scale, "UTF-8"));
+        urlBuff.append("&RESOLUTION=" + resolution);
+        urlBuff.append("&LATBOX=" + latbox);
+        urlBuff.append("&LONBOX=" + lonbox);
+        urlBuff.append("&BANDS_SELECTED=" + bandsSelected);
+        urlBuff.append("&LAT=" + lat);
+        urlBuff.append("&LON=" + lon);
+        
+        return new URL(urlBuff.toString());
+    }
+    
+    /**
+     * Reads HTML data from the connection and determines the image's URL.
+     * @param connection the URL connection to use.
+     * @throws IOException if there is an IO problem.
+     */
+    private void connectionEstablished(URLConnection connection) throws IOException {
+        
+        goodConnection = true;
+        
+        try {
+            // Create a buffered reader from the input stream.
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String result = null;
             String line;
             String imageSrc;
 
             // <fragile>
+            // Get the result from the 6th line.
             int count = 0;
             while ((line = in.readLine()) != null) {
                 if (count == 6) result = line;
                 count++;
             }
-            
-            // System.out.println(result);
+
+            // Find the image URL based on its location within the HTML.
             int startIndex = result.indexOf("<TH COLSPAN=2 ROWSPAN=2><IMG SRC = \"") + 36;
             int endIndex = result.indexOf("\"", startIndex);
             imageSrc = result.substring(startIndex, endIndex);
             // </fragile>
 
+            // Download the image at the image URL.
             URL imageUrl = new URL(imageSrc);
-            // System.out.println(imageUrl);
-
-            return (Toolkit.getDefaultToolkit().getImage(imageUrl));
-            // return null;
-
-        } 
-        catch (MalformedURLException e) {
-            // System.out.println("Weirdness" + e);
+            img = (Toolkit.getDefaultToolkit().getImage(imageUrl));
+            
+            // Wait until the image is fully downloaded.
+            waitForMapLoaded();
         }
         catch (IOException e) {
-            // Should deal with the case where a user has no internet connection
-            // System.out.println("Weirdness" + e);
+            throw new IOException("Internet connection required");
         }
-
-        return null;
+    }
+    
+    /**
+     * Invoked when an action occurs.
+     */
+    public void actionPerformed(ActionEvent e) {
+        connectionTimer.stop();
+        connectionTimeout = !goodConnection;
     }
 
     /** Wait for USGS map image to load */
@@ -176,26 +226,45 @@ public class USGSMarsMap implements Map {
             System.out.println(e);
         }
         imageDone = true;
-        // System.out.println("Done loading USGS image");
     }
-
-    /** for component testing. Creates a frame and fills it with a map */
-    private void test() {
-        JFrame j = new JFrame("USGSMarsMap test");
-        component = j;
-        j.setSize(300, 300);
-        j.setVisible(true);
-        Graphics g = j.getGraphics();
-        waitForMapLoaded();
-        g.drawImage(img, 0, 0, null);
-    }
-
-    /** for component testing 
-     *  @param argv an array of command line arguments
+    
+    /**
+     * Internal class for connecting to the USGS PDS image server.  
+     * Uses its own thread.
      */
-    public static void main(String argv[]) {
-        USGSMarsMap map = new USGSMarsMap();
-        map.retrievePdsImage(0, 0);
-        map.test();
+    private class PDSConnectionManager implements Runnable {
+        
+        private Thread connectionThread = null;
+        private URLConnection connection = null;
+        private USGSMarsMap map = null;
+        
+        /**
+         * Constructor
+         * @param connection the URL connection to use.
+         * @param map the parent map class.
+         */
+        private PDSConnectionManager(URLConnection connection, USGSMarsMap map) {
+           
+            this.connection = connection;
+            this.map = map;
+            
+            if ((connectionThread == null) || (!connectionThread.isAlive())) {
+                connectionThread = new Thread(this, "HTTP connection");
+                connectionThread.start();
+            } 
+        }
+        
+        /**
+         * @see java.lang.Runnable#run()
+         */
+        public void run() {
+            try {
+                connection.connect();
+                map.connectionEstablished(connection);
+            }
+            catch (IOException e) {
+                System.out.println("Unable to connect to: " + e.getMessage());
+            }
+        }
     }
 }
