@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.77 2004-08-09
+ * @version 2.77 2004-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -132,5 +133,15 @@ public class UnloadVehicle extends Task implements Serializable {
 	 */
 	public int getEffectiveSkillLevel() {
 		return 0;	
+	}
+	
+	/**
+	 * Gets a list of the skills associated with this task.
+	 * May be empty list if no associated skills.
+	 * @return list of skills as strings
+	 */
+	public List getAssociatedSkills() {
+		List results = new ArrayList();
+		return results;
 	}
 }

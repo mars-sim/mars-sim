@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.76 2004-06-07
+ * @version 2.77 2004-08-17
  * @author Scott Davis
  */
 
@@ -41,7 +41,8 @@ public class TaskManager implements Serializable {
                                        EnterAirlock.class,
                                        Workout.class,
                                        ResearchBotany.class,
-                                       ResearchMedicine.class };
+                                       ResearchMedicine.class,
+                                       Teach.class };
 
     /** 
      * Constructor
@@ -75,7 +76,7 @@ public class TaskManager implements Serializable {
      */
     public String getTaskName() {
         if (currentTask != null) return currentTask.getName();
-	else return "";
+		else return "";
     }
 
     /** Returns a description of current task for UI purposes.

@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.77 2004-08-09
+ * @version 2.77 2004-08-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.*;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -112,6 +112,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         double experience = timeLeft / 20D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
+		experience *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.MECHANICS, experience);
 
         return (timeLeft * (remainingWorkTime / workTime));
@@ -150,4 +151,15 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.MECHANICS);
 	}  
+	
+	/**
+	 * Gets a list of the skills associated with this task.
+	 * May be empty list if no associated skills.
+	 * @return list of skills as strings
+	 */
+	public List getAssociatedSkills() {
+		List results = new ArrayList();
+		results.add(Skill.MECHANICS);
+		return results;
+	}
 }

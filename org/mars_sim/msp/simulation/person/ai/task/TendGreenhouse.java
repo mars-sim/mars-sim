@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.77 2004-08-09
+ * @version 2.77 2004-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -132,6 +132,7 @@ public class TendGreenhouse extends Task implements Serializable {
         double experience = timeLeft / 100D;
         double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         experience += experience * ((experienceAptitude - 50D) / 100D);
+        experience *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.BOTANY, experience);
         
         // Check for accident in greenhouse.
@@ -224,4 +225,15 @@ public class TendGreenhouse extends Task implements Serializable {
 		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.BOTANY);
 	}  
+	
+	/**
+	 * Gets a list of the skills associated with this task.
+	 * May be empty list if no associated skills.
+	 * @return list of skills as strings
+	 */
+	public List getAssociatedSkills() {
+		List results = new ArrayList();
+		results.add(Skill.BOTANY);
+		return results;
+	}
 }

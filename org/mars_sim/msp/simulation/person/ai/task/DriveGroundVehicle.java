@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.76 2004-08-09
+ * @version 2.77 2004-08-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -178,6 +179,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         double newPoints = time / 100D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
 
         // Check for accident.
@@ -242,6 +244,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         newPoints *= 4D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
 
         // Check for accident.
@@ -281,6 +284,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         double newPoints = time / 100D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
         person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
 
         // Check for accident.
@@ -508,5 +512,16 @@ public class DriveGroundVehicle extends Task implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.DRIVING);
+	}
+	
+	/**
+	 * Gets a list of the skills associated with this task.
+	 * May be empty list if no associated skills.
+	 * @return list of skills as strings
+	 */
+	public List getAssociatedSkills() {
+		List results = new ArrayList();
+		results.add(Skill.DRIVING);
+		return results;
 	}
 }

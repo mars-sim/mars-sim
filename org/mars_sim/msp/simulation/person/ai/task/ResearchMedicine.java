@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * ResearchMedicine.java
- * @version 2.77 2004-08-09
+ * @version 2.77 2004-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -67,4 +68,15 @@ public class ResearchMedicine extends ResearchScience implements Serializable {
 		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.MEDICAL);
 	}  
+	
+	/**
+	 * Gets a list of the skills associated with this task.
+	 * May be empty list if no associated skills.
+	 * @return list of skills as strings
+	 */
+	public List getAssociatedSkills() {
+		List results = new ArrayList();
+		results.add(Skill.MEDICAL);
+		return results;
+	}
 }

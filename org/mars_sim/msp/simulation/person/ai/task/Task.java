@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.77 2004-08-09
+ * @version 2.77 2004-08-17
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
+import java.util.List;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
@@ -37,6 +38,7 @@ public abstract class Task implements Serializable, Comparable {
     protected boolean effortDriven;     // Is this task effort driven
     private boolean createEvents;       // Task should create Historical events
     protected double stressModifier;  // Stress modified by person performing task per millisol.
+    private Person teacher;           // The person teaching this task if any.
 
     /** 
      * Constructs a Task object.
@@ -269,4 +271,51 @@ public abstract class Task implements Serializable, Comparable {
 	 * @return effective skill level
 	 */
 	public abstract int getEffectiveSkillLevel();
+	
+	/**
+	 * Gets a list of the skills associated with this task.
+	 * May be empty list if no associated skills.
+	 * @return list of skills as strings
+	 */
+	public abstract List getAssociatedSkills();
+	
+	/**
+	 * Checks if someone is teaching this task to the person performing it.
+	 * @return true if teacher.
+	 */
+	public boolean hasTeacher() {
+		return (teacher != null);
+	}
+	
+	/**
+	 * Gets the person teaching this task.
+	 * @return teacher or null if none.
+	 */
+	public Person getTeacher() {
+		return teacher;
+	}
+	
+	/**
+	 * Sets the person teaching this task.
+	 * @param newTeacher the new teacher.
+	 */
+	public void setTeacher(Person newTeacher) {
+		this.teacher = newTeacher;
+	}
+	
+	/**
+	 * Gets the experience modifier when being taught by a teacher.
+	 * @return modifier;
+	 */
+	protected double getTeachingExperienceModifier() {
+		double result = 1D;
+		
+		if (hasTeacher()) {
+			int teachingModifier = teacher.getNaturalAttributeManager().getAttribute("Teaching");
+			int learningModifier = person.getNaturalAttributeManager().getAttribute("Academic Aptitude");
+			result+= (double) (teachingModifier + learningModifier) / 100D;
+		}
+		
+		return result;
+	}
 }

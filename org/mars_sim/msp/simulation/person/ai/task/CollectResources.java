@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.76 2004-08-09
+ * @version 2.77 2004-08-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -66,6 +67,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
 		experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
+		experience *= getTeachingExperienceModifier();
 		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
 	
 		return timeLeft;
@@ -213,5 +215,17 @@ public class CollectResources extends EVAOperation implements Serializable {
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
 		int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
 		return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
+	}
+	
+	/**
+	 * Gets a list of the skills associated with this task.
+	 * May be empty list if no associated skills.
+	 * @return list of skills as strings
+	 */
+	public List getAssociatedSkills() {
+		List results = new ArrayList();
+		results.add(Skill.EVA_OPERATIONS);
+		results.add(Skill.AREOLOGY);
+		return results;
 	}
 }

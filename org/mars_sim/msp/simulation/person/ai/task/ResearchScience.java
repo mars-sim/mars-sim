@@ -102,6 +102,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 		// Experience points adjusted by person's "Academic Aptitude" attribute.
 		int academicAptitude = person.getNaturalAttributeManager().getAttribute("Academic Aptitude");
 		experience += experience * (((double) academicAptitude - 50D) / 100D);
+		experience *= getTeachingExperienceModifier();
 		person.getSkillManager().addExperience(science, experience);
 
 		// Keep track of the duration of this task.

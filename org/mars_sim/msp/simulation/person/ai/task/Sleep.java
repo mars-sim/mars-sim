@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.77 2004-08-09
+ * @version 2.77 2004-08-16
  * @author Scott Davis
  */
 
@@ -176,5 +176,15 @@ class Sleep extends Task implements Serializable {
 	 */
 	public int getEffectiveSkillLevel() {
 		return 0;	
+	}
+	
+	/**
+	 * Gets a list of the skills associated with this task.
+	 * May be empty list if no associated skills.
+	 * @return list of skills as strings
+	 */
+	public List getAssociatedSkills() {
+		List results = new ArrayList();
+		return results;
 	}
 }

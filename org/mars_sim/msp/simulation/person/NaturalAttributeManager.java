@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.74 2002-01-13
+ * @version 2.77 2004-08-17
  * @author Scott Davis
  */
 
@@ -17,8 +17,8 @@ import java.util.*;
 public class NaturalAttributeManager implements Serializable {
 
     // List of the person's natural attributes by name.
-    static private String[] attributeKeys = {"Strength", "Endurance", "Agility", "Academic Aptitude", 
-        "Experience Aptitude", "Stress Resilience", "Attractiveness", "Presence", "Leadership", "Conversation"}; 
+    static private String[] attributeKeys = {"Strength", "Endurance", "Agility", "Teaching", "Academic Aptitude", 
+        "Experience Aptitude", "Stress Resilience", "Attractiveness", "Leadership", "Conversation"}; 
 
     // Data members
     private Hashtable attributeList; // List of the person's natural attributes keyed by unique name.
@@ -42,6 +42,7 @@ public class NaturalAttributeManager implements Serializable {
         addSettlerBonus("Endurance", 20);
         addSettlerBonus("Agility", 10);
         addSettlerBonus("Stress Resilience", 40);
+        addSettlerBonus("Teaching", 20);
         addSettlerBonus("Academic Aptitude", 40);
         addSettlerBonus("Experience Aptitude", 30);
     }
