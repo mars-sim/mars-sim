@@ -5,12 +5,14 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
- 
-import org.mars_sim.msp.simulation.*;  
+package org.mars_sim.msp.ui.standard;
+
+import org.mars_sim.msp.simulation.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.*;
 import javax.swing.plaf.metal.*;
 
@@ -27,7 +29,7 @@ public class MainWindow extends JFrame implements WindowListener {
     private MainDesktopPane desktop; // The main desktop
     private UIProxyManager proxyManager; // The unit UI proxy manager
 
-    /** Constructs a MainWindow object 
+    /** Constructs a MainWindow object
      *  @param mars the virtual Mars
      */
     public MainWindow(Mars mars) {
@@ -39,7 +41,7 @@ public class MainWindow extends JFrame implements WindowListener {
 	MetalLookAndFeel.setCurrentTheme(new MarsTheme());
     	try {
 	    UIManager.setLookAndFeel(new MetalLookAndFeel());
-	} 
+	}
   	catch(UnsupportedLookAndFeelException e) {
 	    System.out.println("MainWindow: " + e.toString());
 	}
@@ -56,7 +58,7 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // Prepare tool toolbar
         ToolToolBar toolToolbar = new ToolToolBar(this);
-        mainPane.add(toolToolbar, "West");
+        mainPane.add(toolToolbar, "North");
 
         // Prepare unit toolbar
         unitToolbar = new UnitToolBar(this);
@@ -87,14 +89,14 @@ public class MainWindow extends JFrame implements WindowListener {
 
     }
 
-    /** Returns the virtual Mars instance 
+    /** Returns the virtual Mars instance
      *  @return the virutal Mars instance
      */
     public Mars getMars() {
         return mars;
     }
 
-    /** Set the virtual Mars instance 
+    /** Set the virtual Mars instance
      *  @param newMars The new virtual mars instance
      */
     public void setMars(Mars newMars) {
@@ -108,18 +110,18 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // Create unit UI proxy manager.
         proxyManager = new UIProxyManager(mars.getUnitManager().getUnits());
-        
+
         desktop.setProxyManager(proxyManager);
     }
 
-    /** Create a new unit button in toolbar 
+    /** Create a new unit button in toolbar
      *  @param unitUIProxy the unit UI Proxy
      */
     public void createUnitButton(UnitUIProxy unitUIProxy) {
         unitToolbar.createUnitButton(unitUIProxy);
     }
 
-    /** Return true if tool window is open 
+    /** Return true if tool window is open
      *  @param the name of the tool window
      *  @return true if tool window is open
      */
@@ -134,14 +136,92 @@ public class MainWindow extends JFrame implements WindowListener {
         return desktop.getToolWindow(toolName);
     }
 
-    /** Opens a tool window if necessary 
+    /**
+     * Load a previously saved simulation
+     */
+    public void loadSimulation() {
+        try {
+            JFileChooser chooser = new JFileChooser(Mars.DEFAULT_DIR);
+            chooser.setDialogTitle("Selected stored simulation");
+            int returnVal = chooser.showOpenDialog(this);
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                Mars newmars = Mars.load(chooser.getSelectedFile());
+                if (newmars != null) {
+                    setMars(newmars);
+                    newmars.start();
+                }
+            }
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Problem loading simualtion",
+                        e.toString(), JOptionPane.ERROR_MESSAGE);
+	    }
+    }
+
+    /**
+     * Create a new simulation to execute. This displays the new simulation
+     * dialog.
+     */
+    public void newSimulation() {
+
+        SimulationProperties p = mars.getSimulationProperties();
+	    NewDialog newDialog = new NewDialog(p, this);
+	    if(newDialog.getResult() == JOptionPane.OK_OPTION) {
+		    // ##TODO## this should be shifted into a separate thread
+		    ProgressMonitor pm = new ProgressMonitor(this,
+					"Starting New Simulation...", "",
+					0, 100);
+		    pm.setMillisToPopup(0);
+		    pm.setMillisToDecideToPopup(0);
+		    Mars newmars = new Mars(p);
+		    pm.setProgress(50);
+		    setMars(newmars);
+		    newmars.start();
+		    pm.close();
+        }
+    }
+
+    /**
+     * Save the current simulation. This display a FileChooser to select the
+     * location to save the simulation if the default is not to be used.
+     *
+     * @param useDefault Shoul dhte user be allowed to override location.
+     */
+    public void saveSimulation(boolean useDefault) {
+        File fileLocn = null;
+
+        if (!useDefault) {
+            JFileChooser chooser = new JFileChooser(mars.DEFAULT_DIR);
+            chooser.setDialogTitle("Selected storage location");
+            int returnVal = chooser.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                fileLocn = chooser.getSelectedFile();
+            }
+            else {
+                return;
+            }
+        }
+
+        // Attempt a save
+        try {
+            mars.store(fileLocn);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Problem saving simualtion",
+                        e.toString(), JOptionPane.ERROR_MESSAGE);
+	    }
+    }
+
+    /** Opens a tool window if necessary
      *  @param toolName the name of the tool window
      */
     public void openToolWindow(String toolName) {
         desktop.openToolWindow(toolName);
     }
 
-    /** Closes a tool window if it is open 
+    /** Closes a tool window if it is open
      *  @param the name of the tool window
      */
     public void closeToolWindow(String toolName) {
@@ -149,21 +229,21 @@ public class MainWindow extends JFrame implements WindowListener {
     }
 
     /** Opens a window for a unit if it isn't already open Also makes
-      *  a new unit button in toolbar if necessary 
+      *  a new unit button in toolbar if necessary
       *  @param unitUIProxy the unit UI proxy
       */
     public void openUnitWindow(UnitUIProxy unitUIProxy) {
         desktop.openUnitWindow(unitUIProxy);
     }
 
-    /** Disposes a unit window and button 
+    /** Disposes a unit window and button
      *  @param unitUIProxy the unit UI proxy
      */
     public void disposeUnitWindow(UnitUIProxy unitUIProxy) {
         desktop.disposeUnitWindow(unitUIProxy);
     }
 
-    /** Disposes a unit button in toolbar 
+    /** Disposes a unit button in toolbar
      *  @param unitUIProxy the unit UI proxy
      */
     public void disposeUnitButton(UnitUIProxy unitUIProxy) {
@@ -172,19 +252,19 @@ public class MainWindow extends JFrame implements WindowListener {
 
     // WindowListener methods overridden
     public void windowClosing(WindowEvent event) {
-        exitSimulation(); 
+        exitSimulation();
     }
 
     /**
      * Exit the simulation for running and exit.
      */
     public void exitSimulation() {
-        try { 
+        try {
             mars.store(null);
-        } 
-        catch(Exception e) { 
-            System.out.println("Problem saving simulation " + e); 
-        } 
+        }
+        catch(Exception e) {
+            System.out.println("Problem saving simulation " + e);
+        }
         System.exit(0);
     }
 
