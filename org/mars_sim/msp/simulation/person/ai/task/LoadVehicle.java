@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2004-11-17
  * @author Scott Davis
  */
 
@@ -25,6 +25,9 @@ public class LoadVehicle extends Task implements Serializable {
 
     // The amount of resources (kg) one person of average strength can load per millisol.
     private static double LOAD_RATE = 10D;
+    
+    // The duration of the loading task (millisols).
+    private static double DURATION = 100D;
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
@@ -99,8 +102,13 @@ public class LoadVehicle extends Task implements Serializable {
         else endTask();
 
         if (isFullyLoaded(vehicle)) endTask();
-
-        return 0;
+        
+		timeCompleted += time;
+		if (timeCompleted > DURATION) {
+			endTask();
+			return timeCompleted - DURATION;
+		}
+		else return 0;        
     }
 
     /** Returns true if there are enough supplies in the settlements stores to supply vehicle.

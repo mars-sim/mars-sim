@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.77 2004-09-10
+ * @version 2.78 2004-11-17
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
@@ -278,9 +279,13 @@ public class TravelToSettlement extends Mission implements Serializable {
         // If there isn't enough supplies available, end mission.
         if (isRoverLoaded()) roverLoaded = true;
         if (!roverLoaded) {
-            assignTask(person, new LoadVehicle(person, rover));
-            if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission(); 
-            return;
+			// Random chance of having person load (this allows person to do otherthings sometimes)
+			if (RandomUtil.lessThanRandPercent(50)) {        	
+            	assignTask(person, new LoadVehicle(person, rover));
+            	if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission(); 
+            	return;
+			}
+			else return;
         }
         
         // Have person get in the rover 
@@ -422,8 +427,12 @@ public class TravelToSettlement extends Mission implements Serializable {
         // Unload rover if necessary.
         if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
         if (!roverUnloaded) {
-            assignTask(person, new UnloadVehicle(person, rover));
-            return;
+			// Random chance of having person unload (this allows person to do otherthings sometimes)
+			if (RandomUtil.lessThanRandPercent(50)) {
+            	assignTask(person, new UnloadVehicle(person, rover));
+            	return;
+			}
+			else return;
         }
 
         // If everyone has disembarked and rover is unloaded, end mission.

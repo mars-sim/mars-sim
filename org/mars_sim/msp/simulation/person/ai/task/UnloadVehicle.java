@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2004-11-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -22,6 +22,7 @@ public class UnloadVehicle extends Task implements Serializable {
     // The amount of resources (kg) one person of average strength can unload per millisol.
     private static double UNLOAD_RATE = 10D;
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
+	private static final double DURATION = 100D; // The duration of the task (millisols).
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be unloaded.
@@ -108,7 +109,12 @@ public class UnloadVehicle extends Task implements Serializable {
 
         if (isFullyUnloaded(vehicle)) endTask();
 
-        return 0;
+		timeCompleted += time;
+		if (timeCompleted > DURATION) {
+			endTask();
+			return timeCompleted - DURATION;
+		}
+		else return 0;    
     }
 
     /** 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.77 2004-08-10
+ * @version 2.78 2004-11-17
  * @author Scott Davis
  */
 
@@ -159,9 +159,13 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		// If there isn't enough supplies available, end mission.
 		if (LoadVehicle.isFullyLoaded(rover)) roverLoaded = true;
 		if (!roverLoaded) {
-			assignTask(person, new LoadVehicle(person, rover));
-			if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission();
-			return;
+			// Random chance of having person load (this allows person to do otherthings sometimes)
+			if (RandomUtil.lessThanRandPercent(50)) {
+				assignTask(person, new LoadVehicle(person, rover));
+				if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission();
+				return;
+			}
+			else return;
 		}
         
 		// Have person get in the rover 
@@ -393,8 +397,12 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		// Unload rover if necessary.
 		if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
 		if (!roverUnloaded) {
-			assignTask(person, new UnloadVehicle(person, rover));
-			return;
+			// Random chance of having person unload (this allows person to do otherthings sometimes)
+			if (RandomUtil.lessThanRandPercent(50)) {
+				assignTask(person, new UnloadVehicle(person, rover));
+				return;
+			}
+			else return;
 		}
 
 		// If everyone has disembarked and rover is unloaded, end mission.
