@@ -85,7 +85,7 @@ public class VirtualMars implements Serializable {
      * Stop the simulation
      */
     public void stop() {
-        clockThread.stop();
+        masterClock.stop();
         clockThread = null;
     }
 

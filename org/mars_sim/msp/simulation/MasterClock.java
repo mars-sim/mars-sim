@@ -22,6 +22,7 @@ public class MasterClock implements Runnable, Serializable {
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
+    private boolean keepRunning;  // Runnable flag
 
     // Sleep duration in milliseconds 
     private final static int SLEEP_DURATION = 1000;
@@ -86,8 +87,10 @@ public class MasterClock implements Runnable, Serializable {
 
     /** Run clock */
     public void run() {
-        // Endless clock pulse loop
-        while (true) {
+        keepRunning = true;
+
+        // Keep running until told not to
+        while (keepRunning) {
             try {
                 Thread.currentThread().sleep(SLEEP_DURATION);
             } catch (InterruptedException e) {}
@@ -106,5 +109,12 @@ public class MasterClock implements Runnable, Serializable {
             marsTime.addTime(timePulse);
         }
     }
-}
 
+    /**
+     * Stop the clock 
+     */
+    public void stop() {
+        keepRunning = false;
+    }
+
+}
