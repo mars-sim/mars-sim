@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.74 2002-05-08
+ * @version 2.74 2002-05-20
  * @author Scott Davis
  */
 
@@ -17,8 +17,7 @@ import javax.swing.text.*;
  *  "About The Mars Simulation Project" item in the MainWindowMenu.
  *  It provides information about the project, credit to contributors and the GPL license.
  */
-public class AboutDialog extends JDialog implements ActionListener,
-        ComponentListener {
+public class AboutDialog extends JDialog implements ActionListener, ComponentListener {
 
     // Data members
     private JButton closeButton; // The close button
@@ -62,7 +61,7 @@ public class AboutDialog extends JDialog implements ActionListener,
         buf.append("  Dalen Kruse - Java Programming, debugging\n");
         buf.append("  Daniel L. Thomas - Java Programming\n");
         buf.append("  Barry Evans - Java Programming\n");
-        buf.append("  Jani Patokallio - Java Programming\n");
+        buf.append("  Jani Patokallio - Java Programming\n\n");
 
         buf.append("Testing and Recommendations:\n");
         buf.append("  Paul Speed\n");
@@ -73,6 +72,9 @@ public class AboutDialog extends JDialog implements ActionListener,
         buf.append("  Joe Wagner\n");
         buf.append("  Tom Zanoni\n\n");
 
+        buf.append("8xZoom map results courtesy of the USGS PDS Planetary Atlas:\n");
+	buf.append("http://pdsmaps.wr.usgs.gov/maps.html\n\n");
+	
         buf.append("Martian clock/calendar based on calendars by\n");
         buf.append("Shaun Moss: Areosynchronous Calendar\n(http://www.virtualmars.net/Calendar.asp)\n");
         buf.append("Tom Gangale: Darian Calendar\n(http://www.martiana.org/mars/mst/calendar_clock.htm)\n");

@@ -36,16 +36,20 @@ USA
 
 This Java application requires a Java 2 virtual machine.  The latest
 JVM can be downloaded from Sun at:
-    http://www.javasoft.com/products/jdk/1.3/jre/
+    http://www.javasoft.com/products/jdk/1.4/jre/
 
 1) Unzip MarsProject_X.XX.zip (where XXX is the version number) into a 
-   directory.  ie. "unzip MarsProject_2.73.zip"
+   directory.  ie. "unzip MarsProject_2.74.zip"
 
 2) Start the Mars Simulation Project by running the "MarsProject.bat"
-   batch/script file or by typing: java MarsProject
+   batch/script file. 
 
    You will need to make sure the Java virtual machine is in your system
    path.  
+
+   You will need to set the classpath to include the JAR libraries the
+   program needs.  For Windows environments, see MarsProject.bat.  For 
+   UNIX and Linux environments, see MarsProject.sh.
 
 Command line arguments: java MarsProject [-new | -load file]
 
@@ -65,4 +69,7 @@ people.xml - Adding/configuring people
 settlements.xml - Adding/configuring settlements
 vehicles.xml - Adding/configuring vehicles
 properties.xml - Configuring simulation properties
+medical.xml - Adding/configuring medical complaints
+malfunction.xml - Adding/configuring malfunctions
+
 
