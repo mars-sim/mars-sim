@@ -7,10 +7,17 @@
  
 package org.mars_sim.msp.simulation.equipment;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
+import org.mars_sim.msp.simulation.person.ai.task.Repair;
+import org.mars_sim.msp.simulation.person.ai.task.Task;
 
 /** The Equipment class is an abstract class that represents  
  *  a useful piece of equipment, such as a EVA suite or a

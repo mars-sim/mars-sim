@@ -1,16 +1,20 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.75 2003-11-13
+ * @version 2.75 2004-01-12
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.vehicle.Crewable;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.
@@ -33,7 +37,8 @@ public class VehicleTableModel extends UnitTableModel {
     private final static int  WATER = 11;
     private final static int  FOOD = 12;
     private final static int  ROCK_SAMPLES = 13;
-    private final static int  COLUMNCOUNT = 14; // The number of Columns
+    private final static int  ICE = 14;
+    private final static int  COLUMNCOUNT = 15; // The number of Columns
     private static String columnNames[]; // Names of Columns
     private static Class columnTypes[]; // Names of Columns
 
@@ -71,6 +76,8 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes[METHANE] = Integer.class;
 	    columnNames[ROCK_SAMPLES] = "Rock Samples";
 	    columnTypes[ROCK_SAMPLES] = Integer.class;
+	    columnNames[ICE] = "Ice";
+	    columnTypes[ICE] = Integer.class;
     }
 
     /**
@@ -184,6 +191,11 @@ public class VehicleTableModel extends UnitTableModel {
                 result = new Integer(new Float(
                     vehicle.getDistanceToDestination()).intValue());
             } break;
+            
+			case ICE : {
+				double ice = vehicle.getInventory().getResourceMass(Resource.ICE);
+				result = new Integer((int) ice);
+			} break;
         }
 
         return result;

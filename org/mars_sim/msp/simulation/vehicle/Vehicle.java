@@ -21,9 +21,9 @@ import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.ai.Maintenance;
-import org.mars_sim.msp.simulation.person.ai.Repair;
-import org.mars_sim.msp.simulation.person.ai.Task;
+import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
+import org.mars_sim.msp.simulation.person.ai.task.Repair;
+import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of

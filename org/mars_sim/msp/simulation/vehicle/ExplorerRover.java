@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRover.java
- * @version 2.75 2003-11-27
+ * @version 2.75 2004-01-12
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -27,6 +27,7 @@ public class ExplorerRover extends Rover implements Medical, Serializable {
     private static final double WATER_CAPACITY = 560D; // Water capacity of rover in kg.
     private static final double FOOD_CAPACITY = 210D; // Food capacity of rover in kg.
     private static final double ROCK_SAMPLES_CAPACITY = 2000; // Rock samples capacity of rover in kg.
+    private static final double ICE_CAPACITY = 2000; // Ice capacity of rover in kg.
     private static final int SICKBAY_LEVEL = 1; // Treatment level of sickbay.
     private static final int SICKBAY_BEDS = 1; // Number of beds in sickbay.
 
@@ -77,6 +78,7 @@ public class ExplorerRover extends Rover implements Medical, Serializable {
         inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
         inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);
         inventory.setResourceCapacity(Resource.ROCK_SAMPLES, ROCK_SAMPLES_CAPACITY);
+        inventory.setResourceCapacity(Resource.ICE, ICE_CAPACITY);
         
 	    // Construct mobile lab.
 	    String[] techSpeciality = { "Aerology" };

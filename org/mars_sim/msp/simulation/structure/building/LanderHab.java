@@ -1,42 +1,25 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-06-19
+ * @version 2.75 2004-01-12
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
-import org.mars_sim.msp.simulation.structure.building.function.Communication;
-import org.mars_sim.msp.simulation.structure.building.function.Dining;
-import org.mars_sim.msp.simulation.structure.building.function.EVA;
-import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
-import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
-import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
-import org.mars_sim.msp.simulation.structure.building.function.Recreation;
-import org.mars_sim.msp.simulation.structure.building.function.Research;
-import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
-import org.mars_sim.msp.simulation.structure.building.function.Storage;
-import org.mars_sim.msp.simulation.structure.building.function.impl.SolarPowerGeneration;
-import org.mars_sim.msp.simulation.structure.building.function.impl.StandardLivingAccommodations;
-import org.mars_sim.msp.simulation.structure.building.function.impl.StandardMedicalCare;
-import org.mars_sim.msp.simulation.structure.building.function.impl.StandardResearch;
-import org.mars_sim.msp.simulation.structure.building.function.impl.StandardResourceProcessing;
+import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.function.impl.*;
 
 /**
  * The LanderHab class represents a lander habitat building from a Mars Direct mission.
- * It has water recycling and carbon scrubbing processes.
+ * It has water recycling, carbon scrubbing and ice melting/filtration processes.
  * It also has a 5Kw solar cell.
  */
 public class LanderHab extends InhabitableBuilding 
@@ -110,6 +93,12 @@ public class LanderHab extends InhabitableBuilding
         carbonScrubbing.addMaxOutputResourceRate(Resource.OXYGEN, .00005D, false);
         processManager.addResourceProcess(carbonScrubbing);
         
+        // Create ice melting/filtration process
+        ResourceProcess iceMelting = new ResourceProcess("Ice Melting/Filtration", inv);
+        iceMelting.addMaxInputResourceRate(Resource.ICE, .01D, false);
+        iceMelting.addMaxOutputResourceRate(Resource.WATER, .005D, false);
+        processManager.addResourceProcess(iceMelting);
+        
         // Set up resource storage capacity map.
         resourceStorageCapacity = new HashMap();
         resourceStorageCapacity.put(Resource.OXYGEN, new Double(1000D));
@@ -117,7 +106,8 @@ public class LanderHab extends InhabitableBuilding
         resourceStorageCapacity.put(Resource.WASTE_WATER, new Double(500D));
         resourceStorageCapacity.put(Resource.CARBON_DIOXIDE, new Double(500D));
         resourceStorageCapacity.put(Resource.FOOD, new Double(1000D));
-        resourceStorageCapacity.put(Resource.ROCK_SAMPLES, new Double(1000D));
+        resourceStorageCapacity.put(Resource.ROCK_SAMPLES, new Double(2000D));
+        resourceStorageCapacity.put(Resource.ICE, new Double(2000D));
         
         // Add resource storage capacity to settlement inventory.
         Iterator i = resourceStorageCapacity.keySet().iterator();

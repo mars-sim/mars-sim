@@ -20,12 +20,19 @@ import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.ai.Maintenance;
-import org.mars_sim.msp.simulation.person.ai.Repair;
-import org.mars_sim.msp.simulation.person.ai.Task;
+import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
+import org.mars_sim.msp.simulation.person.ai.task.Repair;
+import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.EVA;
-import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
+import org
+	.mars_sim
+	.msp
+	.simulation
+	.structure
+	.building
+	.function
+	.LivingAccommodations;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
 /** The Settlement class represents a settlement unit on virtual Mars.

@@ -7,14 +7,38 @@
  
 package org.mars_sim.msp.simulation.structure.building;
 
-import java.util.*;
-import org.mars_sim.msp.simulation.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.person.ai.task.Task;
+import org.mars_sim.msp.simulation.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.function.*;
-import org.mars_sim.msp.simulation.structure.building.function.impl.*;
+import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import org
+	.mars_sim
+	.msp
+	.simulation
+	.structure
+	.building
+	.function
+	.ResourceProcessing;
+import org.mars_sim.msp.simulation.structure.building.function.Storage;
+import org
+	.mars_sim
+	.msp
+	.simulation
+	.structure
+	.building
+	.function
+	.impl
+	.StandardResourceProcessing;
 
 /**
  * The InflatableGreenhouse class represents a 

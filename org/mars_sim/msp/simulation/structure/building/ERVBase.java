@@ -7,11 +7,41 @@
  
 package org.mars_sim.msp.simulation.structure.building;
 
-import java.util.*;
-import org.mars_sim.msp.simulation.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.structure.building.function.*;
-import org.mars_sim.msp.simulation.structure.building.function.impl.*;
+import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
+import org
+	.mars_sim
+	.msp
+	.simulation
+	.structure
+	.building
+	.function
+	.ResourceProcessing;
+import org.mars_sim.msp.simulation.structure.building.function.Storage;
+import org
+	.mars_sim
+	.msp
+	.simulation
+	.structure
+	.building
+	.function
+	.impl
+	.SolarPowerGeneration;
+import org
+	.mars_sim
+	.msp
+	.simulation
+	.structure
+	.building
+	.function
+	.impl
+	.StandardResourceProcessing;
 
 /**
  * The ERVBase class represents the base structure of an Earth Return Vehicle (ERV) 

@@ -8,10 +8,16 @@
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.*;
-import org.mars_sim.msp.simulation.malfunction.*;
+
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
+import org.mars_sim.msp.simulation.person.ai.task.Repair;
+import org.mars_sim.msp.simulation.person.ai.task.Task;
 
 /**
  * The Building class is an abstract class representing a 

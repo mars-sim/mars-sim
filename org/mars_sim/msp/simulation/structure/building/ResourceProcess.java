@@ -8,8 +8,14 @@
 package org.mars_sim.msp.simulation.structure.building;
  
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.MarsClock;
  
 /**
  * The ResourceProcess class represents a process of

@@ -7,11 +7,17 @@
 
 package org.mars_sim.msp.simulation.person.medical;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.*;
-import org.mars_sim.msp.simulation.malfunction.*;
 import java.util.Iterator;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.Mind;
+import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
 
 /**
  * This class represents the status of a Person when death occurs. It records

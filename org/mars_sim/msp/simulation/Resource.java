@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resource.java
- * @version 2.75 2003-02-13
+ * @version 2.75 2003-01-12
  * @author Scott Davis
  */
  
@@ -23,6 +23,7 @@ public class Resource {
     public static final String FOOD = "food";
     public static final String ROCK_SAMPLES = "rock samples";
     public static final String WASTE_WATER = "waste water";
+    public static final String ICE = "ice";
     
     // Private constructor
     private Resource() {}

@@ -1,15 +1,19 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2004-01-07
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
+
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.mission.*;
+import org.mars_sim.msp.simulation.person.ai.task.*;
 
 /** The Mind class represents a person's mind.
  *  It keeps track of missions and tasks which

@@ -8,8 +8,9 @@
 package org.mars_sim.msp.simulation.structure.building.function.impl;
  
 import java.io.Serializable;
+
 import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.ai.StudyRockSamples;
+import org.mars_sim.msp.simulation.person.ai.task.StudyRockSamples;
 import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
  

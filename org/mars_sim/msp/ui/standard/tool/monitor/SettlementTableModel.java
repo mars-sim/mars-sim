@@ -1,18 +1,23 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.75 2003-11-25
+ * @version 2.75 2004-01-12
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import java.util.Iterator;
+import java.util.List;
+
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
-import java.util.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.SettlementIterator;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects.
@@ -36,7 +41,8 @@ public class SettlementTableModel extends UnitTableModel {
     private final static int WATER = 12;
     private final static int WASTE_WATER = 13;
     private final static int ROCK_SAMPLES = 14;
-    private final static int COLUMNCOUNT = 15;   // The number of Columns
+    private final static int ICE = 15;
+    private final static int COLUMNCOUNT = 16;   // The number of Columns
     private static String columnNames[];          // Names of Columns
     private static Class columnTypes[];           // Types of columns
 
@@ -73,6 +79,8 @@ public class SettlementTableModel extends UnitTableModel {
         columnTypes[WASTE_WATER] = Integer.class;
         columnNames[CO2] = "CO2";
         columnTypes[CO2] = Integer.class;
+        columnNames[ICE] = "Ice";
+        columnTypes[ICE] = Integer.class;
     };
 
     /**
@@ -190,6 +198,11 @@ public class SettlementTableModel extends UnitTableModel {
             case CO2 : {
                 double co2 = settle.getInventory().getResourceMass(Resource.CARBON_DIOXIDE);
                 result = new Integer((int) co2);
+            } break;
+            
+            case ICE : {
+            	double ice = settle.getInventory().getResourceMass(Resource.ICE);
+            	result = new Integer((int) ice);
             } break;
         }
 
