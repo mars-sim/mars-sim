@@ -56,6 +56,7 @@ public class AboutDialog extends JDialog implements ActionListener {
 		contentArea.setBorder(new EmptyBorder(2, 2, 2, 2));
 		contentArea.setLineWrap(true);
 		contentArea.setWrapStyleWord(true);
+		contentArea.setEditable(false);
 		mainPane.add(new JScrollPane(contentArea), "Center");
 		
 		// Create close button panel
