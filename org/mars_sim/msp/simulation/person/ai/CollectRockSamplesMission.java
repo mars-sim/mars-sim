@@ -43,7 +43,8 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private int siteIndex; // The index of the current collection site.
     private double collectedSamples; // The amount of samples (kg) collected in a collection phase.
     private double collectingStart; // The starting amount of samples in a rover during a collection phase.
-
+    private MarsClock startCollectingTime;
+    
     // Tasks tracked
     ReserveRover reserveRover;
 
@@ -230,6 +231,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 		System.out.println("CollectRockSamplesMission: Collecting phase started.");
 		collectedSamples = 0D;
 		collectingStart = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
+		startCollectingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
             }
             return;
         }
@@ -273,6 +275,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 		System.out.println("CollectRockSamplesMission: collecting phase ended.");
 		System.out.println("CollectRockSamplesMission: collectedSamples: " + collectedSamples);
 		System.out.println("CollectRockSamplesMission: SITE_SAMPLE_AMOUNT: " + SITE_SAMPLE_AMOUNT);
+		MarsClock currentTime = mars.getMasterClock().getMarsClock();
+		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
+		System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
 		endPhase = true;
 	    }
 
@@ -289,6 +294,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	    if (nobodyCollect && (sunlight > 0)) {
 		System.out.println("CollectRockSamplesMission: collecting phase ended.");
 		System.out.println("CollectRockSamplesMission: nobody can collect and not nighttime.");
+		MarsClock currentTime = mars.getMasterClock().getMarsClock();
+		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
+		System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
 		endPhase = true;
 	    }
 	}

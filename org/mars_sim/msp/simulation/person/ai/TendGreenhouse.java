@@ -27,6 +27,7 @@ class TendGreenhouse extends Task implements Serializable {
         super("Tending Greenhouse", person, true, mars);
 
         // Initialize data members
+	description = "Tending Greenhouse at " + person.getSettlement().getName();
         this.settlement = person.getSettlement();
         this.greenhouse = (GreenhouseFacility) settlement.getFacilityManager().getFacility("Greenhouse");
 

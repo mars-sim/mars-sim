@@ -31,8 +31,9 @@ class LoadVehicle extends Task implements Serializable {
      *  @param vehicle the vehicle to be loaded
      */
     public LoadVehicle(Person person, VirtualMars mars, Vehicle vehicle) {
-        super("Loading " + vehicle.getName(), person, true, mars);
+        super("Loading vehicle", person, true, mars);
 
+	description = "Loading " + vehicle.getName();
         this.vehicle = vehicle;
 
         settlement = person.getSettlement();

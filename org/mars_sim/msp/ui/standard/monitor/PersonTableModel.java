@@ -211,7 +211,7 @@ public class PersonTableModel extends UnitTableModel {
             case TASK : {
                 // If the Person is dead, there is no Task Manager
                 TaskManager mgr = person.getMind().getTaskManager();
-                result = ((mgr != null)? mgr.getTaskDescription() : null);
+                result = ((mgr != null)? mgr.getTaskName() : null);
             } break;
 
             case MISSION : {
@@ -219,8 +219,8 @@ public class PersonTableModel extends UnitTableModel {
                 if (mission != null) {
                     StringBuffer cellValue = new StringBuffer();
                     cellValue.append(mission.getName());
-                    cellValue.append(" - ");
-                    cellValue.append(mission.getPhase());
+                    // cellValue.append(" - ");
+                    // cellValue.append(mission.getPhase());
                     result = cellValue.toString();
                 }
             } break;

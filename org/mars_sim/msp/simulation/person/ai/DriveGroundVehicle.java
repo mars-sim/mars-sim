@@ -61,9 +61,10 @@ class DriveGroundVehicle extends Task implements Serializable {
      */
     public DriveGroundVehicle(Person person, VirtualMars mars, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
-        super(DRIVING + " " + vehicle.getName(), person, true, mars);
+        super("Driving vehicle", person, true, mars);
 
         // Set initial parameters
+	description = DRIVING + " " + vehicle.getName();
         this.vehicle = vehicle;
         this.destination = destination;
         vehicle.setDestination(destination);
@@ -454,7 +455,7 @@ class DriveGroundVehicle extends Task implements Serializable {
      *  @return MarsClock instance of date/time for ETA
      */
     private MarsClock getETA() {
-        MarsClock currentTime = (MarsClock) mars.getMasterClock().getMarsClock();
+        MarsClock currentTime = mars.getMasterClock().getMarsClock();
 
         // Determine time difference from start of trip in millisols.
         double millisolsDiff = MarsClock.getTimeDiff(currentTime, startTime);

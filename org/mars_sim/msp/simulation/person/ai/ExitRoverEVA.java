@@ -30,9 +30,10 @@ class ExitRoverEVA extends Task implements Serializable {
      * @param rover the rover to exit
      */
     public ExitRoverEVA(Person person, VirtualMars mars, Rover rover) {
-        super("Exiting " + rover.getName(), person, false, mars);
+        super("Exiting rover for EVA", person, false, mars);
 
         // Initialize data members
+	description = "Exiting " + rover.getName() + " for EVA";
         this.rover = rover;
 
 	System.out.println(person.getName() + " is starting to exit " + rover.getName());

@@ -30,9 +30,10 @@ class EnterRoverEVA extends Task implements Serializable {
      * @param rover the rover to be entered
      */
     public EnterRoverEVA(Person person, VirtualMars mars, Rover rover) {
-        super("Entering " + rover.getName(), person, false, mars);
+        super("Entering rover from EVA", person, false, mars);
 
 	// Initialize data members
+	description = "Entering " + rover.getName() + " from EVA";
         this.rover = rover;
 
 	System.out.println(person.getName() + " is starting to enter " + rover.getName());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.74 2002-01-16
+ * @version 2.74 2002-02-20
  * @author Scott Davis
  */
 
@@ -60,8 +60,17 @@ public class TaskManager implements Serializable {
         else return false;
     }
 
+    /** Returns the name of the current task for UI purposes.
+     *  Returns a blank string if there is no current task.
+     *  @return name of the current task
+     */
+    public String getTaskName() {
+        if (currentTask != null) return currentTask.getName();
+	else return "";
+    }
+    
     /** Returns a description of current task for UI purposes.
-     *  Returns null if there is no current task.
+     *  Returns a blank string if there is no current task.
      *  @return a description of the current task
      */
     public String getTaskDescription() {

@@ -30,6 +30,7 @@ class MaintainSettlement extends Task implements Serializable {
     public MaintainSettlement(Person person, VirtualMars mars) {
         super("Performing Settlement Maintenance", person, true, mars);
 
+	description = "Performing Settlement Maintenance on " + person.getSettlement().getName();
         duration = RandomUtil.getRandomInt(200);
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-02-20
  * @author Scott Davis
  */
 
@@ -24,7 +24,7 @@ class CollectRockSamples extends Task implements Serializable {
     private static final String ENTER_ROVER = "Enter Rover";
 
     // Samples (kg) collected per millisol (base rate). 
-    private static final double COLLECTION_RATE = .2D;
+    private static final double COLLECTION_RATE = .1D;
     
     // Data members
     private Rover rover;

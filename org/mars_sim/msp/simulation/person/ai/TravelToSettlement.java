@@ -135,7 +135,7 @@ class TravelToSettlement extends Mission implements Serializable {
                 return;
             } 
             setMissionCapacity(getSettlementCapacity(destinationSettlement));
-            name = "Travel To " + destinationSettlement.getName();
+            description = "Travel To " + destinationSettlement.getName();
             if (mars.getSurfaceFeatures().inDarkPolarRegion(destinationSettlement.getCoordinates())) {
                 endMission(); 
                 return;

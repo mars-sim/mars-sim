@@ -26,12 +26,11 @@ class RepairMechanicalFailure extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public RepairMechanicalFailure(Person person, VirtualMars mars) {
-        super("Repairing", person, true, mars);
+        super("Repairing vehicle", person, true, mars);
 
         vehicle = person.getVehicle();
         failure = vehicle.getMechanicalFailure();
-        name = "Repairing " + failure.getName() + " on " + vehicle.getName();
-        description = name;
+        description = "Repairing " + failure.getName() + " on " + vehicle.getName();
         // System.out.println(person.getName() + " " + name);
     }
 

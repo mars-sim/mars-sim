@@ -23,6 +23,7 @@ public abstract class Mission implements Serializable {
     protected VirtualMars mars; // Virtual Mars
     protected PersonCollection people; // People in mission
     protected String name; // Name of mission
+    protected String description; // Description of the mission
     protected MissionManager missionManager; // The simulation's mission manager
     protected boolean done; // True if mission is completed
     protected String phase; // The phase of the mission
@@ -37,6 +38,7 @@ public abstract class Mission implements Serializable {
         // Initialize data members
         this.name = name;
         this.missionManager = missionManager;
+	description = name;
         people = new PersonCollection();
         done = false;
         mars = missionManager.getMars();
@@ -104,6 +106,13 @@ public abstract class Mission implements Serializable {
         return name;
     }
 
+    /** Gets the mission's description.
+     *  @return mission description
+     */
+    public String getDescription() {
+        return description;
+    }
+    
     /** Gets the current phase of the mission.
      *  @return phase
      */

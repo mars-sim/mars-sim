@@ -30,7 +30,7 @@ class MaintainVehicle extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public MaintainVehicle(Person person, VirtualMars mars) {
-        super("Performing Maintenance on ", person, true, mars);
+        super("Performing Maintenance on vehicle", person, true, mars);
 
         settlement = person.getSettlement();
         garage = (MaintenanceGarageFacility) settlement.getFacilityManager().getFacility("Maintenance Garage");
@@ -64,9 +64,7 @@ class MaintainVehicle extends Task implements Serializable {
 		if (vehicleNum == count) randVehicle = vehicle;
 	    }
             if (!garage.vehicleInGarage(vehicle)) garage.addVehicle(vehicle);
-            name = "Performing Maintenance on " + vehicle.getName();
-            description = name;
-            // System.out.println(person.getName() + " " + name);
+            description = "Performing Maintenance on " + vehicle.getName();
         } 
 	else done = true;
     }
