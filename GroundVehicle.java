@@ -1,5 +1,5 @@
 //***************** Ground Vehicle Unit *****************
-// Last Modified: 2/28/00
+// Last Modified: 6/20/00
 
 // The GroundVehicle class represents a ground-type vehicle.
 // It is abstract and should be extended to a particular type of ground vehicle.
@@ -42,15 +42,15 @@ public abstract class GroundVehicle extends Vehicle {
 	// Returns true if ground vehicle is stuck
 
 	public boolean getStuck() { 
-		if (status.equals("Stuck")) return true; 
+		if (status.equals("Stuck - Using Winch")) return true; 
 		else return false;
 	}
 	
 	// Sets the ground vehicle's stuck value
 	
 	public void setStuck(boolean stuck) { 
-		if (stuck) status = new String("Stuck");
-		else status = new String("Moving");
+		if (stuck) status = "Stuck - Using Winch";
+		else status = "Moving";
 	}
 
 	// Returns terrain steepness as angle
@@ -63,15 +63,13 @@ public abstract class GroundVehicle extends Vehicle {
 }
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
