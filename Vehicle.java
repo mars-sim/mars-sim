@@ -1,5 +1,5 @@
 //************************** Abstract Basic Vehicle Unit **************************
-// Last Modified: 7/25/00
+// Last Modified: 8/23/00
 
 // The Vehicle class represents a generic vehicle.  It keeps track of generic information about the vehicle.
 // This class needs to be subclassed to represent a specific type of vehicle.
@@ -28,9 +28,12 @@ public abstract class Vehicle extends Unit {
 	protected double distanceToDestination;     // Distance in meters to the destination
 	protected boolean isReserved;               // True if vehicle is currently reserved for a driver and cannot be taken by another
 	protected int vehicleSize;                  // Size of vehicle in arbitrary units.(Value of size units will be established later.)
+	protected int maintenanceWork;              // Work done for vehicle maintenance.
 	
 	protected HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
 	protected MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
+	
+	protected boolean distanceMark;
 
 	// Constructor
 
@@ -63,6 +66,8 @@ public abstract class Vehicle extends Unit {
 		
 		potentialFailures = new HashMap();
 		mechanicalFailure = null;
+		
+		distanceMark = false;
 	}
 
 	// Returns vehicle's current status
@@ -107,7 +112,13 @@ public abstract class Vehicle extends Unit {
 
 	// Adds a distance (in km.) to the vehicle's distance since last maintenance
 	
-	public void addDistanceLastMaintenance(double distance) { distanceMaint += distance; }
+	public void addDistanceLastMaintenance(double distance) { 
+		distanceMaint += distance; 
+		if ((distanceMaint > 5000D) && !distanceMark) {
+			distanceMark = true;
+			System.out.println(name + " has passed the 5000km mark.");
+		}
+	}
 	
 	// Sets vehicle's distance since last maintenance to zero
 	
@@ -270,7 +281,31 @@ public abstract class Vehicle extends Unit {
 		String failureName = (String) keys[failureNum];
 		
 		mechanicalFailure = new MechanicalFailure(failureName);
-		System.out.println(name + " has mechanical failure: " + mechanicalFailure.getName());
+		// System.out.println(name + " has mechanical failure: " + mechanicalFailure.getName());
+	}
+	
+	// Add work to periodic vehicle maintenance.
+	
+	public void addWorkToMaintenance(int seconds) {
+	
+		// Determine total time needed to maintain vehicle for 5,000 km. (8 hr)
+	
+		int totalMaintenanceWork = 8 * 60 * 60;
+		
+		// If vehicle has already been maintained, return.
+		
+		if (distanceMaint == 0D) return;
+		
+		// Add work to maintenance work done.
+		
+		maintenanceWork += seconds;
+		
+		// If maintenance work is complete, vehicle good for 5,000 km.
+		
+		if (maintenanceWork >= totalMaintenanceWork) {
+			maintenanceWork = 0;
+			distanceMaint = 0D;
+		}
 	}
 }
 
