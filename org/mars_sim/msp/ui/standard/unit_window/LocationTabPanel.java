@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 2.75 2003-05-10
+ * @version 2.75 2003-06-11
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window;
 
-import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.ui.standard.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -21,6 +22,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
     private JLabel latitudeLabel;
     private JLabel longitudeLabel;
     private Coordinates locationCache;
+    private JButton centerMapButton;
+    private JPanel locationLabelPanel;
+    private JButton locationButton;
+    private JLabel locationTextLabel;
     
     /**
      * Constructor
@@ -30,7 +35,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
      */
     public LocationTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Location", null, "Location of the settlement", proxy, desktop);
+        super("Location", null, "Location", proxy, desktop);
         
         // Create location panel
         JPanel locationPanel = new JPanel(new BorderLayout());
@@ -38,11 +43,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
         topContentPanel.add(locationPanel);
         
         // Create location label panel
-        JPanel locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         locationPanel.add(locationLabelPanel, BorderLayout.NORTH);
         
         // Create center map button
-        JButton centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
+        centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         locationLabelPanel.add(centerMapButton);
@@ -50,6 +55,29 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
         // Create location label
         JLabel locationLabel = new JLabel("Location: ", JLabel.CENTER);
         locationLabelPanel.add(locationLabel);
+        
+        // Create location button
+        locationButton = new JButton();
+        locationButton.addActionListener(this);
+        
+        // Create location text label
+        locationTextLabel = new JLabel("", JLabel.LEFT);
+        
+        // Add the location button or location text label depending on the situation.
+        Unit container = proxy.getUnit().getContainerUnit();
+        if (container != null) {
+            locationButton.setText(container.getName());
+            addLocationButton();
+        }
+        else {
+            locationTextLabel.setText("Outside");
+            if (proxy instanceof PersonUIProxy) {
+                Person person = (Person) proxy.getUnit();
+                if (person.getLocationSituation().equals(Person.BURIED)) 
+                    locationTextLabel.setText("Buried Outside");
+            }
+            addLocationTextLabel();
+        }   
         
         // Prepare location coordinates panel
         JPanel locationCoordsPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -73,19 +101,80 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
      * @param event the action event
      */
     public void actionPerformed(ActionEvent event) {
+        JComponent source = (JComponent) event.getSource();
+        
         // If the center map button was pressed, update navigator tool.
-        desktop.centerMapGlobe(proxy.getUnit().getCoordinates());
+        if (source == centerMapButton)
+            desktop.centerMapGlobe(proxy.getUnit().getCoordinates());
+            
+        // If the location button was pressed, open the unit window.
+        if (source == locationButton) {
+            Unit container = proxy.getUnit().getContainerUnit();
+            UnitUIProxy containerProxy = desktop.getProxyManager().getUnitUIProxy(container);
+            desktop.openUnitWindow(containerProxy);
+        }
     }
     
     /**
      * Updates the info on this panel.
      */
     public void update() {
+        
         // If unit's location has changed, update location display.
         if (!locationCache.equals(proxy.getUnit().getCoordinates())) {
             locationCache.setCoords(proxy.getUnit().getCoordinates());
             latitudeLabel.setText("Latitude: " + locationCache.getFormattedLatitudeString());
             longitudeLabel.setText("Longitude: " + locationCache.getFormattedLongitudeString());
+        }
+        
+        // Update location button or location text label as necessary.
+        Unit container = proxy.getUnit().getContainerUnit();
+        if (container != null) {
+            locationButton.setText(container.getName());
+            addLocationButton();
+        }
+        else {
+            locationTextLabel.setText("Outside");
+            if (proxy instanceof PersonUIProxy) {
+                Person person = (Person) proxy.getUnit();
+                if (person.getLocationSituation().equals(Person.BURIED)) 
+                    locationTextLabel.setText("Buried Outside");
+            }
+            addLocationTextLabel();
+        }   
+    }
+    
+    /**
+     * Adds the location button to the location label panel if it isn't already on
+     * there and removes the location text label if it's there.
+     */
+    private void addLocationButton() {
+        try {
+            Component lastComponent = locationLabelPanel.getComponent(2);
+            if (lastComponent == locationTextLabel) {
+                locationLabelPanel.remove(locationTextLabel);
+                locationLabelPanel.add(locationButton);
+            }
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            locationLabelPanel.add(locationButton);
+        }
+    }
+    
+    /**
+     * Adds the location text label to the location label panel if it isn't already on
+     * there and removes the location button if it's there.
+     */
+    private void addLocationTextLabel() {
+        try {
+            Component lastComponent = locationLabelPanel.getComponent(2); 
+            if (lastComponent == locationButton) {
+                locationLabelPanel.remove(locationButton);
+                locationLabelPanel.add(locationTextLabel);
+            }
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            locationLabelPanel.add(locationTextLabel);
         }
     }
 }   

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.75 2003-05-11
+ * @version 2.75 2003-06-10
  * @author Scott Davis
  */
 
@@ -11,7 +11,8 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.ui.standard.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.*;
-import org.mars_sim.msp.ui.standard.unit_window.structure.*;
+import org.mars_sim.msp.ui.standard.unit_window.person.PersonWindow;
+import org.mars_sim.msp.ui.standard.unit_window.structure.SettlementWindow;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -280,12 +281,18 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         
         // Open a settlement unit window (remove later)
         if (unitUIProxy instanceof SettlementUIProxy) {
-            System.out.println("Creating settlement window.");
-            SettlementWindow window = new SettlementWindow(this, unitUIProxy);
+            UnitWindow window = new SettlementWindow(this, unitUIProxy);
             add(window, 0);
             window.pack();
             window.setVisible(true);
-            System.out.println("Adding settlement window.");
+        }
+        
+        // Open a person unit window (remove later)
+        if (unitUIProxy instanceof PersonUIProxy) {
+            UnitWindow window = new PersonWindow(this, unitUIProxy);
+            add(window, 0);
+            window.pack();
+            window.setVisible(true);
         }
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.75 2003-05-12
+ * @version 2.75 2003-06-11
  * @author Scott Davis
  */
 
@@ -58,7 +58,9 @@ public class InventoryTabPanel extends TabPanel {
             
         // Create resources table
         JTable resourcesTable = new JTable(resourceTableModel);
-        resourcesTable.setPreferredScrollableViewportSize(new Dimension(100, 100));
+        resourcesTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
+        resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
+        resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
         resourcesTable.setCellSelectionEnabled(false);
         resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
         resourcesPanel.setViewportView(resourcesTable);
@@ -73,7 +75,9 @@ public class InventoryTabPanel extends TabPanel {
         
         // Create equipment table
         JTable equipmentTable = new JTable(equipmentTableModel);
-        equipmentTable.setPreferredScrollableViewportSize(new Dimension(100, 100));
+        equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
+        equipmentTable.getColumnModel().getColumn(0).setPreferredWidth(120);
+        equipmentTable.getColumnModel().getColumn(1).setPreferredWidth(50);
         equipmentTable.setCellSelectionEnabled(false);
         equipmentTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
         equipmentPanel.setViewportView(equipmentTable);
@@ -83,7 +87,6 @@ public class InventoryTabPanel extends TabPanel {
      * Updates the info on this panel.
      */
     public void update() {
-        Inventory inv = proxy.getUnit().getInventory();
         resourceTableModel.update();
         equipmentTableModel.update();
     }
@@ -136,15 +139,19 @@ public class InventoryTabPanel extends TabPanel {
         }
   
         public void update() {
-            resources = proxy.getUnit().getInventory().getAllResources();
-            keys = new ArrayList();
-            Iterator i = resources.keySet().iterator();
-            while (i.hasNext()) {
-                Object key = i.next();
-                double mass = ((Double) resources.get(key)).doubleValue();
-                if (mass > 0D) keys.add(key);
+            java.util.Map newResources = proxy.getUnit().getInventory().getAllResources();
+            if (!resources.equals(newResources)) {
+                resources = newResources;
+                keys = new ArrayList();
+                Iterator i = resources.keySet().iterator();
+                while (i.hasNext()) {
+                    Object key = i.next();
+                    double mass = ((Double) resources.get(key)).doubleValue();
+                    if (mass > 0D) keys.add(key);
+                }
+            
+                fireTableDataChanged();
             }
-            fireTableDataChanged();
         }
     }
     

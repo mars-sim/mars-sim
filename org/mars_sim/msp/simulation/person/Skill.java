@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Skill.java
- * @version 2.74 2002-01-13
+ * @version 2.75 2003-06-11
  * @author Scott Davis
  */
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
 /** The Skill class represents a single skill that a person has.
  *  The skill must have a name unique among the person's collection of skills.
  */
-public class Skill implements Serializable {
+class Skill implements Serializable {
 
     // Data members
     private int level; // The skill level (0 to infinity)

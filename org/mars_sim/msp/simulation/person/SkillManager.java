@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.74 2002-04-23
+ * @version 2.75 2003-06-11
  * @author Scott Davis
  */
 
@@ -30,12 +30,11 @@ public class SkillManager implements Serializable {
                                    "Mechanic", "EVA Operations", "Areology", "Medical"};
 
         for (int x = 0; x < startingSkills.length; x++) {
-            int skillLevel = getInitialSkillLevel(0, 50);
-            if (skillLevel > 0) {
-                Skill newSkill = new Skill(startingSkills[x]);
-                newSkill.setLevel(skillLevel);
-                addNewSkill(newSkill);
-            }
+            // int skillLevel = getInitialSkillLevel(0, 50);
+            int skillLevel = 0;
+            Skill newSkill = new Skill(startingSkills[x]);
+            newSkill.setLevel(skillLevel);
+            addNewSkill(newSkill);
         }
     }
 
