@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -45,8 +45,9 @@ class ExitAirlock extends Task implements Serializable {
      * Performs this task for the given amount of time.
      * @param time the amount of time to perform this task (in millisols)
      * @return amount of time remaining after finishing with task (in millisols)
+     * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 

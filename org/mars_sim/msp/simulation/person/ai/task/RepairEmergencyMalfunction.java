@@ -69,8 +69,9 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
      * Perform the task.
      * @param time the amount of time (millisols) to perform the task
      * @return amount of time remaining after performing the task
+     * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.75 2004-04-02
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -105,11 +105,13 @@ public class StudyRockSamples extends Task implements Serializable {
         return result;
     }
 
-    /** Performs the mechanic task for a given amount of time.
-     *  @param time amount of time to perform the task (in millisols)
-     *  @return amount of time remaining after finishing with task (in millisols)
+    /** 
+     * Performs the mechanic task for a given amount of time.
+     * @param time amount of time to perform the task (in millisols)
+     * @return amount of time remaining after finishing with task (in millisols)
+     * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
@@ -180,14 +182,10 @@ public class StudyRockSamples extends Task implements Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // System.out.println(person.getName() + " has a lab accident while researching rock samples.");
-	    
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-                Building building = (Building) lab;
-                building.getMalfunctionManager().accident();
-            }
-            else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
+                ((Research) lab).getBuilding().getMalfunctionManager().accident();
+            else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
                 person.getVehicle().getMalfunctionManager().accident(); 
-            }
         }
     }
     
@@ -227,10 +225,14 @@ public class StudyRockSamples extends Task implements Serializable {
         List lablist = new ArrayList();
         Iterator i = settlement.getBuildingManager().getBuildings(Research.NAME).iterator();
         while (i.hasNext()) {
-            Research lab = (Research) i.next();
-            boolean malfunction = lab.getBuilding().getMalfunctionManager().hasMalfunction();
-            boolean labSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
-            if (!malfunction && labSpace) lablist.add(lab);
+        	try {
+        		Building building = (Building) i.next();
+            	Research lab = (Research) building.getFunction(Research.NAME);
+            	boolean malfunction = lab.getBuilding().getMalfunctionManager().hasMalfunction();
+            	boolean labSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
+            	if (!malfunction && labSpace) lablist.add(lab);
+        	}
+        	catch (Exception e) {}
         }
         
         if (lablist.size() > 0) {

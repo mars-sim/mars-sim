@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2004-04-03
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -223,18 +223,23 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public void timePassing(double time) throws Exception {
         
-        // If no current population at settlement, power down buildings.
-        if (getCurrentPopulationNum() == 0) {
-        	getPowerGrid().setPowerMode(PowerGrid.POWER_DOWN_MODE);
-        }
-        else {
-        	getPowerGrid().setPowerMode(PowerGrid.POWER_UP_MODE);
-        }
+        try {
+        	// If no current population at settlement, power down buildings.
+        	if (getCurrentPopulationNum() == 0) {
+        		getPowerGrid().setPowerMode(PowerGrid.POWER_DOWN_MODE);
+        	}
+        	else {
+        		getPowerGrid().setPowerMode(PowerGrid.POWER_UP_MODE);
+        	}
         
-        powerGrid.timePassing(time);
-        buildingManager.timePassing(time);
-        if (getCurrentPopulationNum() > 0) malfunctionManager.activeTimePassing(time);
-        malfunctionManager.timePassing(time);
+        	powerGrid.timePassing(time);
+        	buildingManager.timePassing(time);
+        	if (getCurrentPopulationNum() > 0) malfunctionManager.activeTimePassing(time);
+        	malfunctionManager.timePassing(time);
+        }
+        catch (Exception e) {
+        	throw new Exception("Settlement " + getName() + " timePassing(): " + e.getMessage());
+        }
     }
 
     /**

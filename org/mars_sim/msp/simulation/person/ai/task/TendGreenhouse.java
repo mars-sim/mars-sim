@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.75 2004-04-02
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -70,11 +69,13 @@ public class TendGreenhouse extends Task implements Serializable {
         return result;
     }
 
-    /** Performs the tending greenhouse task for a given amount of time.
-     *  @param time amount of time to perform the task (in millisols)
-     *  @return amount of time remaining after finishing with task (in millisols)
+    /** 
+     * Performs the tending greenhouse task for a given amount of time.
+     * @param time amount of time to perform the task (in millisols)
+     * @return amount of time remaining after finishing with task (in millisols)
+     * @throws Exception if error in performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
 
         if (subTask != null) return timeLeft;
@@ -98,7 +99,12 @@ public class TendGreenhouse extends Task implements Serializable {
         else workTime += workTime * (.2D * (double) greenhouseSkill);
         
         // Add this work to the greenhouse.
-        greenhouse.addWork(workTime);
+        try {
+        	greenhouse.addWork(workTime);
+        }
+        catch (Exception e) {
+        	throw new Exception("TendGreenhouse.performTask(): Adding work to greenhouse: " + e.getMessage());
+        }
         
         // Keep track of the duration of the task.
         timeCompleted += time;
@@ -133,8 +139,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // System.out.println(person.getName() + " has accident while tending the greenhouse.");
-            
-            ((Malfunctionable) greenhouse).getMalfunctionManager().accident();
+            greenhouse.getBuilding().getMalfunctionManager().accident();
         }
     }
     

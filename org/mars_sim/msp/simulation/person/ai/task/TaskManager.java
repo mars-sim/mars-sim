@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.75 2004-03-19
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -122,17 +122,25 @@ public class TaskManager implements Serializable {
         else currentTask = newTask;
     }
 
-    /** Perform the current task for a given amount of time.
-     *  @param time amount of time to perform the action
-     *  @param efficiency The performance rating of person performance task.
+    /** 
+     * Perform the current task for a given amount of time.
+     * @param time amount of time to perform the action
+     * @param efficiency The performance rating of person performance task.
+     * @throws Exception if error in performing task.
      */
-    public void performTask(double time, double efficiency) {
+    public void performTask(double time, double efficiency) throws Exception {
         if (currentTask != null) {
             // For effort driven task, reduce the effective time
             if (efficiency < .1D) efficiency = .1D; 
             if (currentTask.isEffortDriven()) time *= efficiency;
             checkForEmergency();
-            currentTask.performTask(time);
+            
+            try {
+            	currentTask.performTask(time);
+            }
+            catch (Exception e) {
+            	throw new Exception("TaskManager.performTask(): " + currentTask.getName() + ": " + e.getMessage());
+            }
         }
     }
 
@@ -155,11 +163,13 @@ public class TaskManager implements Serializable {
 	}
     }
 
-    /** Gets a new task for the person based on tasks available.
-     *  @param totalProbabilityWeight the total of task probability weights
-     *  @return new task
+    /** 
+     * Gets a new task for the person based on tasks available.
+     * @param totalProbabilityWeight the total of task probability weights
+     * @return new task
+     * @throws Exception if new task could not be found.
      */
-    public Task getNewTask(double totalProbabilityWeight) {
+    public Task getNewTask(double totalProbabilityWeight) throws Exception {
 
         // Initialize parameters
         Class[] parametersForFindingMethod = { Person.class, Mars.class };
@@ -194,16 +204,10 @@ public class TaskManager implements Serializable {
         try {
             Constructor construct = (task.getConstructor(parametersForFindingMethod));
             return (Task) construct.newInstance(parametersForInvokingMethod);
-        } catch (InvocationTargetException ie) {
-            Throwable nested = ie.getTargetException();
-            System.out.println("TaskManager.getNewTask() (Construct Invocation Exception): " + nested.toString());
-            System.out.println("Target = " + task);
-            System.out.println("Args = " + parametersForInvokingMethod);
-            nested.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("TaskManager.getNewTask() (2): " + e.toString());
         }
-        return null;
+        catch (Exception e) {
+        	throw new Exception("TaskManager.getNewTask(): " + e.getMessage());
+        }
     }
 
     /** Determines the total probability weight for available tasks.

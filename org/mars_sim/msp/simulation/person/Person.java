@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2004-04-02
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -160,26 +160,32 @@ public class Person extends Unit implements Serializable {
         buryBody();
     }
 
-    /** Person can take action with time passing
-     *  @param time amount of time passing (in millisols)
+    /** 
+     * Person can take action with time passing
+     * @param time amount of time passing (in millisols)
+     * throws Exception if error during time.
      */
-    public void timePassing(double time) {
+    public void timePassing(double time) throws Exception {
         
-        // If Person is dead, then skip
-        if (health.getDeathDetails() == null) {
-            PersonConfig config = mars.getSimulationConfiguration().getPersonConfiguration();
-            LifeSupport support = getLifeSupport();
+        try {
+        	// If Person is dead, then skip
+        	if (health.getDeathDetails() == null) {
+            	PersonConfig config = mars.getSimulationConfiguration().getPersonConfiguration();
+            	LifeSupport support = getLifeSupport();
             
-            // Pass the time in the physical condition first as this may kill
-            // Person
-            if (health.timePassing(time, support, config)) {
-                // Mins action is descreased according to any illness
-                mind.takeAction(time);
-            }
-            else {
-                // Person has died as a result of physical condition
-                setDead();
-            }
+            	// Pass the time in the physical condition first as this may result in death.
+            	if (health.timePassing(time, support, config)) {
+                	// Mins action is descreased according to any illness
+                	mind.takeAction(time);
+            	}
+            	else {
+                	// Person has died as a result of physical condition
+                	setDead();
+            	}
+        	}
+        }
+        catch (Exception e) {
+        	throw new Exception("Person " + getName() + " timePassing(): " + e.getMessage());
         }
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -86,8 +86,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * Perform the task.
      * @param time the amount of time (millisols) to perform the task
      * @return amount of time remaining after performing the task
+     * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -140,8 +140,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * Perform the task.
      * @param time the amount of time (millisols) to perform the task
      * @return amount of time remaining after performing the task
+     * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
@@ -172,7 +173,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             time = exitAirlock(time, airlock);
         }
         catch (Exception e) { 
-            // System.out.println(e.getMessage()); 
+            // System.err.println(e.getMessage()); 
         }
         
         if (exitedAirlock) phase = REPAIR_MALFUNCTION;

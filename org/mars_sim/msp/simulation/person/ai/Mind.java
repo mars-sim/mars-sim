@@ -42,22 +42,29 @@ public class Mind implements Serializable {
         taskManager = new TaskManager(this, mars);
     }
 
-    /** Take appropriate action for a given amount of time
-     *  @param time time in millisols
+    /** 
+     * Take appropriate action for a given amount of time.
+     * @param time time in millisols
+     * @throws Exception if error during action.
      */
-    public void takeAction(double time) {
+    public void takeAction(double time) throws Exception {
         
         if ((mission != null) && mission.isDone()) mission = null;
         
         boolean activeMission = (mission != null);
         
-        if (taskManager.hasActiveTask()) {
-            taskManager.performTask(time, person.getPerformanceRating());
+        try {
+        	if (taskManager.hasActiveTask()) {
+            	taskManager.performTask(time, person.getPerformanceRating());
+        	}
+        	else {
+            	if (activeMission) mission.performMission(person);
+            	if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission, !activeMission);
+            	takeAction(time);
+        	}
         }
-        else {
-            if (activeMission) mission.performMission(person);
-            if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission, !activeMission);
-            takeAction(time);
+        catch (Exception e) {
+        	throw new Exception("Mind.takeAction(): " + e.getMessage());
         }
     }
 
@@ -115,10 +122,15 @@ public class Mind implements Serializable {
         newMission.addPerson(person);
     }
 
-    /** Determines a new action for the person based on
-     *  available tasks, missions and active missions.
+    /** 
+     * Determines a new action for the person based on
+     * available tasks, missions and active missions.
+     * @param tasks can actions be tasks?
+     * @param missions can actions be new missions?
+     * @param activeMissions can actions be active missions?
+     * @throws Exception if new action cannot be found.
      */
-    public void getNewAction(boolean tasks, boolean missions, boolean activeMissions) {
+    public void getNewAction(boolean tasks, boolean missions, boolean activeMissions) throws Exception {
 
         // If this Person is too weak then they can not do Missions
         if (person.getPerformanceRating() < 0.5D) {
@@ -136,6 +148,7 @@ public class Mind implements Serializable {
         if (tasks) weightSum += taskWeights;
         if (missions) weightSum += missionWeights;
         if (activeMissions) weightSum += activeMissionWeights;
+		if (weightSum <= 0D) throw new Exception("Mind.getNewAction(): weight sum: " + weightSum);
 
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);

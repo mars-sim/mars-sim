@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2004-04-02
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -43,10 +43,12 @@ public class UnloadVehicle extends Task implements Serializable {
         // System.out.println(person.getName() + " is unloading " + vehicle.getName());
     }
 
-    /** Performs this task for a given period of time
-     *  @param time amount of time to perform task (in millisols)
+    /** 
+     * Performs this task for a given period of time
+     * @param time amount of time to perform task (in millisols)
+     * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 

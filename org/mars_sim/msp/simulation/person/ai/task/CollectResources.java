@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.75 2004-01-12
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -46,8 +46,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 	/** 
 	 * Performs this task for a given period of time.
 	 * @param time amount of time to perform task (in millisols)
+	 * @throws Exception if error performing task.
 	 */
-	double performTask(double time) {
+	double performTask(double time) throws Exception {
 		double timeLeft = super.performTask(time);
 		if (subTask != null) return timeLeft;
 	
@@ -77,9 +78,10 @@ public class CollectResources extends EVAOperation implements Serializable {
 		try {
 			time = exitAirlock(time, rover.getAirlock());
 		}
-		catch (Exception e) { 
-			System.out.println(e.getMessage()); 
+		catch (Exception e) {
+			// System.err.println(e.getMessage();
 		}
+		
 		if (exitedAirlock) phase = COLLECT_RESOURCES;
 		return time;
 	}

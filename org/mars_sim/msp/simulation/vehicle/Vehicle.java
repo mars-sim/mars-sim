@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.75 2004-02-11
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -338,16 +338,22 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     /**
      * Time passing for vehicle.
      * @param time the amount of time passing (millisols)
+     * @throws Exception if error during time.
      */
-    public void timePassing(double time) {
-        if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
-	    malfunctionManager.timePassing(time);
-	    addToTrail(location);
+    public void timePassing(double time) throws Exception {
+    	try  {
+        	if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
+	    	malfunctionManager.timePassing(time);
+	    	addToTrail(location);
         
-        // Make sure reservedForMaintenance is false if vehicle needs no maintenance.
-        if (getStatus().equals(MAINTENANCE)) {
-            if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
-        }
+        	// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
+        	if (getStatus().equals(MAINTENANCE)) {
+            	if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
+        	}
+    	}
+    	catch (Exception e) {
+    		throw new Exception("Vehicle " + getName() + " timePassing(): " + e.getMessage());
+    	}
     }
 
     /**

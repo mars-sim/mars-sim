@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.75 2004-04-02
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -327,9 +327,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			Building garageBuilding = BuildingManager.getBuilding(rover);
 			garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
 		}
-		catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
+		catch (Exception e) {}
         
 		// Have person exit rover if necessary.
 		if (person.getLocationSituation().equals(Person.INVEHICLE)) {
@@ -339,7 +337,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 					LifeSupport lifeSupport = (LifeSupport) garage.getBuilding().getFunction(LifeSupport.NAME);
 					lifeSupport.addPerson(person);
 				}
-				else BuildingManager.addToRandomBuilding(rover, startingSettlement);
+				else BuildingManager.addToRandomBuilding(person, startingSettlement);
 			}
 			catch (BuildingException e) {}
 		}

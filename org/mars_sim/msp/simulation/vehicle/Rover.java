@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.75 2004-03-23
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -216,10 +216,17 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     /** 
      * Perform time-related processes
      * @param time the amount of time passing (in millisols)
+     * @throws exception if error during time.
      */
-    public void timePassing(double time) {
+    public void timePassing(double time) throws Exception {
         super.timePassing(time);
-        airlock.timePassing(time);
+        
+        try {
+        	airlock.timePassing(time);
+        }
+        catch (Exception e) {
+        	throw new Exception("Rover " + getName() + " timePassing(): " + e.getMessage());
+        }
     }
 
     /**

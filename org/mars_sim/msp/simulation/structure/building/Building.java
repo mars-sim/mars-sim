@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2004-03-31
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
  
@@ -189,15 +189,20 @@ public class Building implements Malfunctionable, Serializable {
         // Check for valid argument.
         if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
         
-        // Send time to each building function.
-        Iterator i = functions.iterator();
-        while (i.hasNext()) ((Function) i.next()).timePassing(time);
+        try {
+        	// Send time to each building function.
+        	Iterator i = functions.iterator();
+        	while (i.hasNext()) ((Function) i.next()).timePassing(time);
         
-        // Update malfunction manager.
-        malfunctionManager.timePassing(time);
+        	// Update malfunction manager.
+        	malfunctionManager.timePassing(time);
         
-        // If powered up, active time passing.
-        if (getPowerMode().equals(FULL_POWER)) malfunctionManager.activeTimePassing(time);
+        	// If powered up, active time passing.
+        	if (getPowerMode().equals(FULL_POWER)) malfunctionManager.activeTimePassing(time);
+        }
+        catch (Exception e) {
+        	throw new BuildingException("Building " + getName() + " timePassing(): " + e.getMessage());
+        }
     }   
     
     /**

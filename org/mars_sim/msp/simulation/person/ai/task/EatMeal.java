@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.75 2004-04-02
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -44,9 +44,10 @@ class EatMeal extends Task implements Serializable {
 					int rand = RandomUtil.getRandomInt(diningBuildings.size() - 1);
 					Building building = (Building) diningBuildings.get(rand);
 					LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-					if (!lifeSupport.containsPerson(person) && (lifeSupport.getAvailableOccupancy() > 0)) 
-						lifeSupport.addPerson(person);
-					else endTask();
+					if (!lifeSupport.containsPerson(person)) {
+						if (lifeSupport.getAvailableOccupancy() > 0) lifeSupport.addPerson(person);
+						else endTask();
+					}
 				}
 				catch (Exception e) {
 					System.err.println("EatMeal.constructor(): " + e.getMessage());
@@ -73,11 +74,13 @@ class EatMeal extends Task implements Serializable {
         return result;
     }
 
-    /** This task allows the person to eat for the duration.
-     *  @param time the amount of time to perform this task (in millisols)
-     *  @return amount of time remaining after finishing with task (in millisols)
+    /** 
+     * This task allows the person to eat for the duration.
+     * @param time the amount of time to perform this task (in millisols)
+     * @return amount of time remaining after finishing with task (in millisols)
+     * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 

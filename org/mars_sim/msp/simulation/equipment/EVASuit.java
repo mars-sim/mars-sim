@@ -1,15 +1,21 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.equipment;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
 import java.io.Serializable;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.LifeSupport;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
 
 /** 
  * The EVASuit class represents an EVA suit which provides life support
@@ -162,11 +168,17 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     /**
      * Time passing for EVA suit.
      * @param time the amount of time passing (millisols)
+     * @throws Exception if error during time.
      */
-    public void timePassing(double time) {
-        Unit container = getContainerUnit();
-        if (container instanceof Person) malfunctionManager.activeTimePassing(time);
-        malfunctionManager.timePassing(time);
+    public void timePassing(double time) throws Exception {
+    	try {
+        	Unit container = getContainerUnit();
+        	if (container instanceof Person) malfunctionManager.activeTimePassing(time);
+        	malfunctionManager.timePassing(time);
+    	}
+    	catch (Exception e) {
+    		throw new Exception("EVASuit.timePassing(): " + e.getMessage());
+    	}
     }
 
     /**

@@ -174,16 +174,21 @@ public class Farming extends Function implements Serializable {
 		// Add time to each crop.
 		Iterator i = crops.iterator();
 		int newCrops = 0;
-		while (i.hasNext()) {
-			Crop crop = (Crop) i.next();
-			crop.timePassing(time);
+		try {
+			while (i.hasNext()) {
+				Crop crop = (Crop) i.next();
+				crop.timePassing(time);
             
-			// Remove old crops.
-			if (crop.getPhase().equals(Crop.FINISHED)) {
-				i.remove();
-				newCrops++;
+				// Remove old crops.
+				if (crop.getPhase().equals(Crop.FINISHED)) {
+					i.remove();
+					newCrops++;
+				}
 			}
-		}
+        }
+        catch (Exception e) {
+        	throw new BuildingException("Farming.timePassing(): Problem with crops");
+        }
         
 		// Add any new crops.
 		try {

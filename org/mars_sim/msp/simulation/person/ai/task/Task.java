@@ -142,12 +142,14 @@ public abstract class Task implements Serializable, Comparable {
      */
     public static double getProbability(Person person, Mars mars) { return 0D; }
 
-    /** Perform the task for the given number of seconds.
-     *  Children should override and implement this.
-     *  @param time amount of time given to perform the task (in microsols)
-     *  @return amount of time remaining after performing the task (in microsols)
+    /** 
+     * Perform the task for the given number of seconds.
+     * Children should override and implement this.
+     * @param time amount of time given to perform the task (in microsols)
+     * @return amount of time remaining after performing the task (in microsols)
+     * @throws Exception if error peforming task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = time;
         if (subTask != null) {
             if (subTask.isDone()) subTask = null;

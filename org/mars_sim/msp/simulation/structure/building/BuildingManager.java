@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.75 2004-04-01
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
  
@@ -91,8 +91,13 @@ public class BuildingManager implements Serializable {
      * @throws Exception if error.
      */
     public void timePassing(double time) throws Exception {
-        Iterator i = buildings.iterator();
-        while (i.hasNext()) ((Building) i.next()).timePassing(time);
+    	try {
+        	Iterator i = buildings.iterator();
+        	while (i.hasNext()) ((Building) i.next()).timePassing(time);
+    	}
+    	catch (BuildingException e) {
+    		throw new Exception("BuildingManager.timePassing(): " + e.getMessage());
+    	}
     }   
 
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.75 2004-03-19
+ * @version 2.75 2004-04-06
  * @author Scott Davis
  */
 
@@ -111,11 +111,13 @@ public class DriveGroundVehicle extends Task implements Serializable {
         else phase = DRIVING;
     }
      
-    /** Perform the driving task
-     *  @param time amount of time to perform the task (in millisols)
-     *  @return time remaining after finishing with task (in millisols
+    /** 
+     * Perform the driving task
+     * @param time amount of time to perform the task (in millisols)
+     * @return time remaining after finishing with task (in millisols
+     * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    double performTask(double time) throws Exception {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
