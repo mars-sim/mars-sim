@@ -29,7 +29,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
     private JButton goThere;                     // Location entry submit button     
     private JCheckBox unitLabelCheckbox;         // Show unit labels checkbox
 
-    public NavigatorWindow(MainDesktopPane desktop) {
+    public NavigatorWindow(MainDesktopPane desktop, VirtualMars mars) {
 		
 	// use ToolWindow constructor
 	super("Mars Navigator");
@@ -56,7 +56,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 	topMainPane.add(leftTopPane);
 		
 	// Prepare globe display
-	globeNav = new GlobeDisplay(this, 150, 150);
+	globeNav = new GlobeDisplay(mars, 150, 150);
 	JPanel globePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 	globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.green)));
 	globePane.add(globeNav);
@@ -73,7 +73,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 	topMainPane.add(Box.createHorizontalStrut(5));
 		
 	// Prepare surface map display
-	map = new MapDisplay(this, 300, 300);
+	map = new MapDisplay(this, 300, 300, mars);
 	JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 	mapPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.green)));
 	//mapPane.setMaximumSize(new Dimension(306, 306));
@@ -224,17 +224,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 	    map.setLabels(unitLabelCheckbox.isSelected());  // Change map's label settings
 	}
     }
-	
-    /** Returns an array of unit info for all moving vehicles */
-    public UnitInfo[] getMovingVehicleInfo() {
-	return desktop.getMovingVehicleInfo();
-    }
-	
-    /** Returns an array of unit info for all settlements */
-    public UnitInfo[] getSettlementInfo() {
-	return desktop.getSettlementInfo();
-    }
-	
+
     /** Opens a unit window on the desktop */
     public void openUnitWindow(int unitID) {
 	desktop.openUnitWindow(unitID);

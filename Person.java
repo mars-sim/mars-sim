@@ -80,11 +80,6 @@ public class Person extends Unit {
 	tasks.takeAction(seconds);
     }
 
-    /** Returns a detail window for the unit */
-    public UnitDialog getDetailWindow(MainDesktopPane parentDesktop) {
-	return new PersonDialog(parentDesktop, this);
-    }
-	
     /** Returns a reference to the Person's natural attribute manager */
     public NaturalAttributeManager getNaturalAttributeManager() {
 	return attributes;
@@ -98,5 +93,10 @@ public class Person extends Unit {
     /** Returns a reference to the Person's task manager */
     public TaskManager getTaskManager() {
 	return tasks;
+    }
+
+    /** Returns a detail window for the unit */
+    public UnitDialog getDetailWindow(MainDesktopPane parentDesktop) {
+	return new PersonDialog(parentDesktop, this);
     }
 }

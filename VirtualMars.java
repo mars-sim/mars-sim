@@ -40,8 +40,11 @@ public class VirtualMars {
 	return elevationMap;
     }
 	
-    //**************************** UI Accessor Methods ****************************
-	
+    /** returns all the units */
+    public UnitManager getAllUnits() {
+	return units;
+    }
+    
     /** returns an array of unit info for all moving vehicles sorted by name */
     public UnitInfo[] getMovingVehicleInfo() {
 	return units.getMovingVehicleInfo();

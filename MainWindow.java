@@ -47,7 +47,7 @@ public class MainWindow extends JFrame implements WindowListener {
 	mainPane.add(unitToolbar, "South");
 		
 	// Prepare desktop
-	desktop = new MainDesktopPane(this);
+	desktop = new MainDesktopPane(this, mars);
 	mainPane.add(desktop, "Center");
 		
 	// Set frame size
@@ -108,26 +108,6 @@ public class MainWindow extends JFrame implements WindowListener {
 	return mars.getDetailWindow(unitID, desktop);
     }
 	
-    /** Returns an array of unit info for all moving vehicles sorted by name */
-    public UnitInfo[] getMovingVehicleInfo() {
-	return mars.getMovingVehicleInfo();
-    }
-	
-    /** Returns an array of unit info for all vehicles sorted by name */
-    public UnitInfo[] getVehicleInfo() {
-	return mars.getVehicleInfo();
-    }
-	
-    /** Returns an array of unit info for all settlements sorted by name */
-    public UnitInfo[] getSettlementInfo() {
-	return mars.getSettlementInfo();
-    }
-	
-    /** Returns an array of unit info for all people sorted by name */
-    public UnitInfo[] getPeopleInfo() {
-	return mars.getPeopleInfo();
-    }
-    
     // WindowListener methods overridden
     public void windowClosing(WindowEvent event) {
 	System.exit(0);

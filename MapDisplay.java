@@ -10,7 +10,7 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
-/** The MapDisplay class is a display component for the surface map of
+/** The MapDisplay class is the visual component for the surface map of
  *  Mars in the UI. It can show either the surface or topographical
  *  maps at a given point. It uses two Map objects to display the
  *  maps.
@@ -20,6 +20,7 @@ import javax.swing.*;
  */
 public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
+    private VirtualMars mars;
     private NavigatorWindow navWindow;        // Navigator Tool Window
     private Map surfMap;                      // Surface image object
     private Map topoMap;                      // Topographical image object
@@ -34,8 +35,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private int width;
     private int height;
 
-    public MapDisplay(NavigatorWindow navWindow, int width, int height) {
+    public MapDisplay(NavigatorWindow navWindow, int width, int height, VirtualMars mars) {
 
+	this.mars = mars;
 	this.width = width;
 	this.height = height;
 	this.navWindow = navWindow;
@@ -67,7 +69,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	this.labels = labels;
     }
 
-    /** Displays real surface map */
+    /** Display real surface image */
     public void showSurf() {
 	if (topo) {
 	    wait = true;
@@ -77,7 +79,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	showMap(centerCoords);
     }
 
-    /** Displays topographical map */
+    /** Display topographical map */
     public void showTopo() {
 	if (!topo) {
 	    wait = true;
@@ -87,7 +89,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	showMap(centerCoords);
     }
 
-    /** Displays surface with new coords, regenerating image if necessary */
+    /** Display surface with new coords, regenerating image if necessary */
     public void showMap(Coordinates newCenter) {
 
 	if (!centerCoords.equals(newCenter)) {
@@ -173,87 +175,37 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 		g.drawImage(mapImage, 0, 0, this);
 	    }
 
-	    drawVehicles(g);
-	    drawSettlements(g);
+	    drawUnits(g);
 	}
     }
 
-    private void drawVehicles(Graphics g) {
-	g.setColor(Vehicle.getLabelColor(topo));
-	g.setFont(Vehicle.getLabelFont());
-
-	// Draw a vehicle symbol for each moving vehicle within the viewing map	
-	UnitInfo[] vehicleInfo = navWindow.getMovingVehicleInfo();
-			
-	for (int x=0; x < vehicleInfo.length; x++) {
-	    // what's this .48587 magic number?
-	    if (centerCoords.getAngle(vehicleInfo[x].getCoords()) < .48587D) {
-		IntPoint rectLocation = getUnitRectPosition(vehicleInfo[x].getCoords());
-		IntPoint imageLocation = getUnitDrawLocation(rectLocation, Vehicle.getSurfIcon());
-		if (topo) {
-		    g.drawImage(Vehicle.getTopoIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
-		} else {
-		    g.drawImage(Vehicle.getSurfIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
-		}
-		    
-		if (labels) {
-		    IntPoint labelLocation = getLabelLocation(rectLocation, Vehicle.getSurfIcon());
-		    g.drawString(vehicleInfo[x].getName(), labelLocation.getiX(), labelLocation.getiY());	
-		}
-	    }
-	}
-    }
-			
-    private void drawSettlements(Graphics g) {
-	g.setColor(Settlement.getLabelColor(topo));
-	g.setFont(Settlement.getLabelFont());
-
-	UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
-
-	for (int x=0; x < settlementInfo.length; x++) {
-	    // what's this .48587 magic number?
-	    if (centerCoords.getAngle(settlementInfo[x].getCoords()) < .48587D) {
-		IntPoint rectLocation = getUnitRectPosition(settlementInfo[x].getCoords());
-		IntPoint imageLocation = getUnitDrawLocation(rectLocation, Settlement.getSurfIcon());
-		if (topo) {
-		    g.drawImage(Settlement.getTopoIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
-		} else {
-		    g.drawImage(Settlement.getSurfIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
-		}
-		if (labels) {
-		    IntPoint labelLocation = getLabelLocation(rectLocation, Settlement.getSurfIcon());
-		    g.drawString(settlementInfo[x].getName(), labelLocation.getiX(), labelLocation.getiY());
-		}
-	    }
-	}
-    }
-
-    /*
     private void drawUnits(Graphics g) {
-	UnitInfo[] info = navWindow.getSettlementInfo();
+	
+	for (int x=0; x < mars.getAllUnits().getUnitCount(); x++) {
+	    Unit u = mars.getAllUnits().getUnit(x);
 
-	for (int x=0; x < info.length; x++) {
+	    if (u.isDrawn()) {
+		UnitInfo info = u.getUnitInfo();
 
-	    // what's this .48587 magic number?
-	    if (centerCoords.getAngle(info[x].getCoords()) < .48587D) {
-		IntPoint rectLocation = getUnitRectPosition(info[x].getCoords());
-		IntPoint imageLocation = getUnitDrawLocation(rectLocation, u.getSurfIcon());
-		if (topo) {
-		    g.drawImage(Settlement.getTopoIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
-		} else {
-		    g.drawImage(Settlement.getSurfIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
-		}
-		if (labels) {
-		    g.setColor(u.getLabelColor(topo));
-		    g.setFont(u.getLabelFont());
-		    IntPoint labelLocation = getLabelLocation(rectLocation, u.getSurfIcon());
-		    g.drawString(info[x].getName(), labelLocation.getiX(), labelLocation.getiY());
+		// what's this .48587 magic number?
+		if (centerCoords.getAngle(info.getCoords()) < .48587D) {
+		    IntPoint rectLocation = getUnitRectPosition(info.getCoords());
+		    IntPoint imageLocation = getUnitDrawLocation(rectLocation, u.getSurfIcon());
+		    if (topo) {
+			g.drawImage(u.getTopoIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
+		    } else {
+			g.drawImage(u.getSurfIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
+		    }
+		    if (labels) {
+			g.setColor(u.getLabelColor(topo));
+			g.setFont(u.getLabelFont());
+			IntPoint labelLocation = getLabelLocation(rectLocation, u.getSurfIcon());
+			g.drawString(info.getName(), labelLocation.getiX(), labelLocation.getiY());
+		    }
 		}
 	    }
 	}
     }
-    */
-
 
     /** MouseListener methods overridden. Perform appropriate action
      *  on mouse release. */
@@ -264,7 +216,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 									  (double) event.getY() - 149D);
 	boolean unitsClicked = false;
 	
-	UnitInfo[] movingVehicleInfo = navWindow.getMovingVehicleInfo();
+	UnitInfo[] movingVehicleInfo = mars.getMovingVehicleInfo();
 
 	// check if user clicked on a vehicle
 	// note: an event should really be generated by the vehicle itself
@@ -275,7 +227,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	    }
 	}
 		
-	UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
+	UnitInfo[] settlementInfo = mars.getSettlementInfo();
 		
 	// check if user clicked on a settlement
 	// note: an event should really be generated by the settlement itself
@@ -312,11 +264,19 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	return new IntPoint(unitPosition.getiX() - Math.round(unitImage.getWidth(this) / 2),
 			    unitPosition.getiY() - Math.round(unitImage.getHeight(this) / 2));
     }
+
+    private static final int labelHorizOffset = 10;
     
     /** Returns label draw postion on map panel */
     private IntPoint getLabelLocation(IntPoint unitPosition, Image unitImage) {
-		
-	return new IntPoint(unitPosition.getiX() + Math.round(unitImage.getWidth(this) / 2) + 10,
+	// this differs from getUnitDrawLocation by adding 10 to the horizontal position
+	return new IntPoint(unitPosition.getiX() + Math.round(unitImage.getWidth(this) / 2) +
+			    labelHorizOffset,
 			    unitPosition.getiY() + Math.round(unitImage.getHeight(this) / 2));
+    }
+
+    private IntPoint getLabelLocation(IntPoint iconLocation) {
+	return new IntPoint(iconLocation.getiX() + labelHorizOffset,
+			    iconLocation.getiY());
     }
 }

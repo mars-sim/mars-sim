@@ -65,19 +65,33 @@ public abstract class Unit {
 	location.setCoords(newLocation);
     }
 
-    /** Returns a detail window for the unit */
-    public abstract UnitDialog getDetailWindow(MainDesktopPane parentDesktop); 
-
-    /*
-    public static Image getSurfIcon() {
-    }
-
-    public static Image getTopoIcon() {
-    }
-    */
-
     // perhaps this should be moved into a seperate Time interface
     /** the opportunity for a unit to handle time passing */
     public void timePasses(int seconds) {
+    }
+
+    // these UI methods will eventually be moved into their own class
+
+    public boolean isDrawn() {
+	return false;
+    }
+
+    /** Returns a detail window for the unit */
+    public abstract UnitDialog getDetailWindow(MainDesktopPane parentDesktop); 
+
+    public Image getSurfIcon() {
+	return null;
+    }
+
+    public Image getTopoIcon() {
+	return null;
+    }
+
+    public Color getLabelColor(boolean topo) {
+	return null;
+    }
+
+    public Font getLabelFont() {
+	return null;
     }
 }

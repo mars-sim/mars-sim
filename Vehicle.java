@@ -378,20 +378,25 @@ public abstract class Vehicle extends Unit {
 	return totalMaintenanceWork;
     }
 
-    public static Image getSurfIcon() {
+    public boolean isDrawn() {
+	// true if the vehicle is moving, false if in a settlement
+	return (getSettlement() == null);
+    }
+
+    public Image getSurfIcon() {
 	return surfImage;
     }
 
-    public static Image getTopoIcon() {
+    public Image getTopoIcon() {
 	return topoImage;
     }
 
-    public static Color getLabelColor(boolean topo) {
+    public Color getLabelColor(boolean topo) {
 	// topo=black, surf=green
 	return (topo ? Color.black : Color.white);
     }
 
-    public static Font getLabelFont() {
+    public Font getLabelFont() {
 	// topo=black, surf=green
 	return new Font("Helvetica", Font.PLAIN, 9);
     }

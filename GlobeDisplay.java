@@ -14,7 +14,7 @@ import javax.swing.*;
  */
 class GlobeDisplay extends JComponent implements Runnable {
 
-    private NavigatorWindow navWindow;      // Navigator Tool Window
+    private VirtualMars mars;
     private MarsGlobe marsSphere;           // Real surface sphere object
     private MarsGlobe topoSphere;           // Topographical sphere object
     private Coordinates centerCoords;       // Spherical coordinates for globe center
@@ -26,8 +26,9 @@ class GlobeDisplay extends JComponent implements Runnable {
     
     private static final double halfPI = (Math.PI / 2);
 
-    public GlobeDisplay(NavigatorWindow navWindow, int width, int height) {
+    public GlobeDisplay(VirtualMars mars, int width, int height) {
 
+	this.mars = mars;
 	this.width = width;
 	this.height = height;
 	
@@ -44,7 +45,6 @@ class GlobeDisplay extends JComponent implements Runnable {
 	centerCoords = new Coordinates(halfPI, 0D);
 	topo = false;
 	recreate = true;
-	this.navWindow = navWindow;
 		
 	// Initially show real surface globe
 	showSurf();
@@ -124,33 +124,21 @@ class GlobeDisplay extends JComponent implements Runnable {
 	    g.drawImage(globe.getGlobeImage(), 0, 0, this);
 	}
 
-	drawVehicles(g);
-	drawSettlements(g);
+	drawUnits(g);
 	drawCrossHair(g);
     }
 
-    /** draw the dots on the globe that identify moving vehicles */
-    protected void drawVehicles(Graphics g) {
-	g.setColor(Vehicle.getLabelColor(topo));
-		
-	UnitInfo[] vehicleInfo = navWindow.getMovingVehicleInfo();
-	for (int x=0; x < vehicleInfo.length; x++) {
-	    if (centerCoords.getAngle(vehicleInfo[x].getCoords()) < halfPI) {
-		IntPoint tempLocation = getUnitDrawLocation(vehicleInfo[x].getCoords());
-		g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
-	    }
-	}
-    }
-
-    /** draw the dots on the globe that identify settlements */    
-    protected void drawSettlements(Graphics g) {
-	g.setColor(Settlement.getLabelColor(topo));
-		
-	UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
-	for (int x=0; x < settlementInfo.length; x++) {
-	    if (centerCoords.getAngle(settlementInfo[x].getCoords()) < halfPI) {
-		IntPoint tempLocation = getUnitDrawLocation(settlementInfo[x].getCoords());
-		g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
+    /** draw the dots on the globe that identify units */
+    protected void drawUnits(Graphics g) {
+	for (int x=0; x < mars.getAllUnits().getUnitCount(); x++) {
+	    Unit u = mars.getAllUnits().getUnit(x);
+	    if (u.isDrawn()) {
+		UnitInfo info = u.getUnitInfo();
+		if (centerCoords.getAngle(info.getCoords()) < halfPI) {
+		    g.setColor(u.getLabelColor(topo));
+		    IntPoint tempLocation = getUnitDrawLocation(info.getCoords());
+		    g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
+		}
 	    }
 	}
     }

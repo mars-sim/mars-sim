@@ -25,7 +25,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private JLabel logoLabel;               // Label that has the centered logo for the project.
     private boolean firstDisplay;           // True if this MainDesktopPane hasn't been displayed yet.
 	
-    public MainDesktopPane(MainWindow mainWindow) {
+    public MainDesktopPane(MainWindow mainWindow, VirtualMars mars) {
 	
 	// Initialize data members
 	this.mainWindow = mainWindow;
@@ -42,7 +42,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	addComponentListener(this);
 		
 	// Prepare tool windows
-	prepareToolWindows();
+	prepareToolWindows(mars);
 		
 	// Create background logo label and make it partially transparent
 	logoLabel = new JLabel(new ImageIcon("logo2.gif"), JLabel.LEFT);
@@ -104,10 +104,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     public void componentHidden(ComponentEvent e) {}
     
     /** Creates tool windows */
-    private void prepareToolWindows() {
+    private void prepareToolWindows(VirtualMars mars) {
 		
 	// Prepare navigator window
-	NavigatorWindow navWindow = new NavigatorWindow(this);
+	NavigatorWindow navWindow = new NavigatorWindow(this, mars);
 	try {
 	    navWindow.setClosed(true);
 	} catch (java.beans.PropertyVetoException e) {}
@@ -115,7 +115,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	toolWindows.addElement(navWindow);
 		
 	// Prepare search tool window
-	SearchWindow searchWindow = new SearchWindow(this);
+	SearchWindow searchWindow = new SearchWindow(this, mars);
 	try {
 	    searchWindow.setClosed(true);
 	} catch (java.beans.PropertyVetoException e) {}
@@ -225,26 +225,6 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		
 	// Have main window dispose of unit button
 	mainWindow.disposeUnitButton(unitID);
-    }
-	
-    /** Returns an array of unit info for all moving vehicles sorted by name */
-    public UnitInfo[] getMovingVehicleInfo() {
-	return mainWindow.getMovingVehicleInfo();
-    }
-	
-    /** Returns an array of unit info for all vehicles sorted by name */
-    public UnitInfo[] getVehicleInfo() {
-	return mainWindow.getVehicleInfo();
-    }
-	
-    /** Returns an array of unit info for all settlements sorted by name */
-    public UnitInfo[] getSettlementInfo() {
-	return mainWindow.getSettlementInfo();
-    }
-	
-    /** Returns an array of unit info for all people sorted by name */
-    public UnitInfo[] getPeopleInfo() {
-	return mainWindow.getPeopleInfo();
     }
 	
     /** Returns a random location on the desktop for a given JInternalFrame */

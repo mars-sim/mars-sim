@@ -219,6 +219,11 @@ public class UnitManager {
         return result;
     }
 
+    /** The total number of units */
+    public int getUnitCount() {
+        return unitVector.size();
+    }
+
     /** Returns an array of unit info sorted by unit name from a vector of units. */
     private UnitInfo[] sortUnitInfo(Vector unsortedUnits) {
 

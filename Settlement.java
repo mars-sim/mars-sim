@@ -101,20 +101,24 @@ public class Settlement extends Unit {
 	facilityManager.timePasses(seconds);
     }
 
-    public static Image getSurfIcon() {
+    public boolean isDrawn() {
+	return true;
+    }
+
+    public Image getSurfIcon() {
 	return surfImage;
     }
 
-    public static Image getTopoIcon() {
+    public Image getTopoIcon() {
 	return topoImage;
     }
 
-    public static Color getLabelColor(boolean topo) {
+    public Color getLabelColor(boolean topo) {
 	// topo=black, surf=green
 	return (topo ? Color.black : Color.green);
     }
 
-    public static Font getLabelFont() {
+    public Font getLabelFont() {
 	// topo=black, surf=green
 	return new Font("Helvetica", Font.PLAIN, 12);
     }
