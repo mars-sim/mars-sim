@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.71 2000-10-18
+ * @version 2.71 2000-12-04
  * @author Scott Davis
  */
 
@@ -251,5 +251,12 @@ public class UnitManager {
         for (int x = 0; x < units.length; x++)
             units[x] = (Unit) unitVector.elementAt(x);
         return units;
+    }
+    
+    public Vehicle[] getVehicles() {
+        Vehicle[] vehicles = new Vehicle[vehiclesVector.size()];
+        for (int x=0; x < vehicles.length; x++)
+            vehicles[x] = (Vehicle) vehiclesVector.elementAt(x);
+        return vehicles;
     }
 }

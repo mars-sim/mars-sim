@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.71 2000-12-03
+ * @version 2.71 2000-12-04
  * @author Scott Davis
  */
 
@@ -13,14 +13,6 @@ package org.mars_sim.msp.simulation;
  *  oxygen, water and methane (fuel).
  */
 public class InsituResourceProcessorFacility extends Facility {
-    
-    // Data members
-    private double oxygenUnits;  /* Number of oxygen units that processor 
-                                    can generate in a day. */
-    private double waterUnits;   /* Number of water units that processor
-                                    can generate in a day. */
-    private double fuelUnits;    /* Number of fuel units that processor
-                                    can generate in a day. */
 
     /** Constructs a InsituResourceProcessorFacility object.
      *  @param manager the manager of the processor facility.
@@ -29,35 +21,42 @@ public class InsituResourceProcessorFacility extends Facility {
         
         // User Facility's constructor
         super(manager, "INSITU Resource Processor");
-        
-        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
-        int normalPop = quarters.getNormalCapacity();
-        
-        // Initialize data members
-        oxygenUnits = (double) normalPop;
-        waterUnits = (double) normalPop;
-        fuelUnits = (double) normalPop;
     }
     
     /** Returns number of oxygen units that processor can generate in a day.
      *  @return number of oxygen units that processor can generate in a day.
      */
     public double getOxygenRate() {
-        return oxygenUnits;
+        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
+        int normalPop = quarters.getNormalCapacity();
+        int currentPop = quarters.getCurrentPopulation();
+        int result = normalPop;
+        if (currentPop > normalPop) result = normalPop;
+        return result;
     }
     
     /** Returns number of water units that processor can generate in a day.
      *  @return number of water units that processor can generate in a day.
      */
     public double getWaterRate() {
-        return waterUnits;
+        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
+        int normalPop = quarters.getNormalCapacity();
+        int currentPop = quarters.getCurrentPopulation();
+        int result = normalPop;
+        if (currentPop > normalPop) result = normalPop;
+        return result;
     }
     
     /** Returns number of fuel units that processor can generate in a day.
      *  @return number of fuel units that processor can generate in a day.
      */
     public double getFuelRate() {
-        return fuelUnits;
+        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
+        int normalPop = quarters.getNormalCapacity();
+        int currentPop = quarters.getCurrentPopulation();
+        int result = normalPop;
+        if (currentPop > normalPop) result = normalPop;
+        return result;
     }
     
     /** Override Facility's timePasses method to allow for resource processing.
@@ -65,9 +64,9 @@ public class InsituResourceProcessorFacility extends Facility {
      */
     void timePasses(int seconds) {
         StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
-        stores.addOxygen(oxygenUnits / 24D / 60D / 60D * (double) seconds);
-        stores.addWater(waterUnits / 24D / 60D / 60D * (double) seconds);
-        stores.addFuel(fuelUnits / 24D / 60D / 60D * (double) seconds);
+        stores.addOxygen(getOxygenRate() / 24D / 60D / 60D * (double) seconds);
+        stores.addWater(getWaterRate() / 24D / 60D / 60D * (double) seconds);
+        stores.addFuel(getFuelRate() / 24D / 60D / 60D * (double) seconds);
     }
 }
 

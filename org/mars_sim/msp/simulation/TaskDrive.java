@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskDrive.java
- * @version 2.71 2000-12-03
+ * @version 2.71 2000-12-04
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ class TaskDrive extends Task {
     private int obstacleTimeCount; // Number of turns driver has not been any closer to destination.
     private double backingUpDistance; // Distance vehicle has backed up to avoid an obstacle.
     private Coordinates startingLocation; // Current location of vehicle.
+    private int destinationSettlementAvailablePop; // Population openings at destination settlement.
 
     /** Constructs a new TaskDrive object
      *  @param person the person performing the task
@@ -257,7 +258,7 @@ class TaskDrive extends Task {
                 
                 // Top off fuel
                 double neededFuel = vehicle.getFuelCapacity() - vehicle.getFuel();
-                if (neededFuel < stores.getFuelStores()) {
+                if (neededFuel < stores.getFuelStores() - 50D) {
                     stores.removeFuel(neededFuel);
                     vehicle.addFuel(neededFuel);
                 }
@@ -268,7 +269,7 @@ class TaskDrive extends Task {
                 
                 // Top off oxygen
                 double neededOxygen = vehicle.getOxygenCapacity() - vehicle.getOxygen();
-                if (neededOxygen < stores.getOxygenStores()) {
+                if (neededOxygen < stores.getOxygenStores() - 50D) {
                     stores.removeOxygen(neededOxygen);
                     vehicle.addOxygen(neededOxygen);
                 }
@@ -279,7 +280,7 @@ class TaskDrive extends Task {
                 
                 // Top off water
                 double neededWater = vehicle.getWaterCapacity() - vehicle.getWater();
-                if (neededWater < stores.getWaterStores()) {
+                if (neededWater < stores.getWaterStores() - 50D) {
                     stores.removeWater(neededWater);
                     vehicle.addWater(neededWater);
                 }
@@ -290,7 +291,7 @@ class TaskDrive extends Task {
                 
                 // Top off food
                 double neededFood = vehicle.getFoodCapacity() - vehicle.getFood();
-                if (neededFood < stores.getFoodStores()) {
+                if (neededFood < stores.getFoodStores() - 50D) {
                     stores.removeFood(neededFood);
                     vehicle.addFood(neededFood);
                 }
@@ -358,6 +359,30 @@ class TaskDrive extends Task {
             description = "Drive " + vehicle.getName() + " to " + destinationSettlement.getName() + ".";
         else description = "Drive " + vehicle.getName() + " to location.";
         
+        // Check how many new residents the settlement can hold
+        if (destinationSettlement != null) {
+            FacilityManager manager = destinationSettlement.getFacilityManager();
+            LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
+            int maxPopCapacity = quarters.getMaximumCapacity();
+            int currentPop = quarters.getCurrentPopulation();
+            destinationSettlementAvailablePop = maxPopCapacity - currentPop;
+            
+            UnitManager unitManager = person.getUnitManager();
+            Vehicle[] vehicles = unitManager.getVehicles();
+            for (int x=0; x < vehicles.length; x++) {
+                if (vehicles[x] != vehicle) {
+                    if (vehicles[x].getDestinationSettlement() == destinationSettlement)
+                        destinationSettlementAvailablePop -= vehicles[x].getPassengerNum();
+                }
+            }
+             
+            if (destinationSettlementAvailablePop < 1) {
+                vehicle.setReserved(false);
+                isDone = true;
+                return seconds;
+            }
+        }
+        
         subPhase = new String("Invite Passengers");
 
         return 0;
@@ -377,10 +402,12 @@ class TaskDrive extends Task {
                     if ((tempTask == null) || tempTask.getName().equals("Relaxing")) {
                         if (RandomUtil.lessThanRandPercent(50)) {
                             if (vehicle.getPassengerNum() < vehicle.getMaxPassengers()) {
-                                vehicle.addPassenger(tempPerson);
-                                embarkingSettlement.personLeave(tempPerson);
-                                tempPerson.setVehicle(vehicle);
-                                tempPerson.setLocationSituation("In Vehicle");
+                                if (vehicle.getPassengerNum() < destinationSettlementAvailablePop) {
+                                    vehicle.addPassenger(tempPerson);
+                                    embarkingSettlement.personLeave(tempPerson);
+                                    tempPerson.setVehicle(vehicle);
+                                    tempPerson.setLocationSituation("In Vehicle");
+                                }
                             }
                         }
                     }
