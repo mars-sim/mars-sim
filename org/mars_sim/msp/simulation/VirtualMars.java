@@ -8,7 +8,7 @@
 package org.mars_sim.msp.simulation;
 
 import org.mars_sim.msp.simulation.person.ai.MissionManager;
-import org.mars_sim.msp.simulation.person.MedicalManager;
+import org.mars_sim.msp.simulation.person.medical.MedicalManager;
 import java.util.*;
 import java.io.*;
 
@@ -62,6 +62,8 @@ public class VirtualMars implements Serializable {
 
         // Initialize and start master clock
         masterClock = new MasterClock(this);
+
+        System.out.println("Create new simulation");
     }
 
     private void initialiseTransients() {
@@ -114,7 +116,7 @@ public class VirtualMars implements Serializable {
         catch(FileNotFoundException e) {
             return null;
         }
-	
+
         ObjectInputStream p = new ObjectInputStream(istream);
 
         VirtualMars mars = (VirtualMars)p.readObject();
