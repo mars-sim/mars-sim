@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.73 2001-11-25
+ * @version 2.73 2001-12-20
  * @author Scott Davis
  */
 
@@ -218,21 +218,21 @@ class GlobeDisplay extends JComponent implements Runnable {
     protected void drawCrossHair(Graphics g) {
         g.setColor(Color.green);
 
-		// If USGS map is used, use small crosshairs.
-		if (useUSGSMap & !topo) {
-			g.drawRect(70, 70, 6, 6);
-			g.drawLine(0, 73, 70, 73);
-			g.drawLine(77, 73, 149, 73);
-			g.drawLine(73, 0, 73, 70);
-			g.drawLine(73, 77, 73, 149);
-		}
-		// If not USGS map, use large crosshairs.
-		else {
-        	g.drawRect(57, 57, 31, 31);
-        	g.drawLine(0, 73, 57, 73);
-        	g.drawLine(90, 73, 149, 73);
-        	g.drawLine(73, 0, 73, 57);
-        	g.drawLine(73, 90, 73, 149);
+        // If USGS map is used, use small crosshairs.
+        if (useUSGSMap & !topo) {
+            g.drawRect(72, 72, 6, 6);
+            g.drawLine(0, 75, 71, 75);
+            g.drawLine(79, 75, 149, 75);
+            g.drawLine(75, 0, 75, 71);
+            g.drawLine(75, 79, 75, 149);
+        }
+        // If not USGS map, use large crosshairs.
+        else {
+            g.drawRect(57, 57, 33, 33);
+            g.drawLine(0, 74, 56, 74);
+            g.drawLine(90, 74, 149, 74);
+            g.drawLine(74, 0, 74, 57);
+            g.drawLine(74, 90, 74, 149);
         }
 
         // Prepare font
