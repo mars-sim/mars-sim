@@ -63,6 +63,6 @@ public abstract class Unit implements Serializable {
      *  Unit should take action or be modified by time as appropriate.
      *  @param time the amount of time passing (in millisols)
      */
-    void timePassing(double time) {
+    public void timePassing(double time) {
     }
 }

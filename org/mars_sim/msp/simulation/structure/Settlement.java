@@ -192,7 +192,7 @@ public class Settlement extends Structure {
     /** Perform time-related processes 
      *  @param time the amount of time passing (in millisols)
      */
-    void timePassing(double time) {
+    public void timePassing(double time) {
         facilityManager.timePassing(time);
     }
 }

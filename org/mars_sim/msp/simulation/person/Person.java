@@ -178,7 +178,7 @@ public class Person extends Unit implements Serializable {
     /** Person can take action with time passing 
      *  @param time amount of time passing (in millisols)
      */
-    void timePassing(double time) {
+    public void timePassing(double time) {
 
         // Consume necessary oxygen and water.
         SimulationProperties properties = mars.getSimulationProperties();
