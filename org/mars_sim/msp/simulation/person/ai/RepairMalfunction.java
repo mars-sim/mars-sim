@@ -24,7 +24,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     // Data members
     private Malfunctionable entity; // Entity being repaired.
     private double duration; // Duration of task in millisols.
-	
+
     /**
      * Constructs a RepairMalfunction object.
      * @param person the person to perform the task
@@ -33,8 +33,10 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     public RepairMalfunction(Person person, Mars mars) {
         super("Repairing Malfunction", person, true, mars);
 
-	// Randomly determine duration, from 0 - 500 millisols.
-	duration = RandomUtil.getRandomDouble(500D);
+        setCreateEvents(true);
+
+        // Randomly determine duration, from 0 - 500 millisols.
+        duration = RandomUtil.getRandomDouble(500D);
     }
 
     /**
@@ -42,7 +44,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @return true if malfunction, false if none.
      */
     public static boolean hasMalfunction(Person person) {
-   
+
         boolean result = false;
 
 	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -53,7 +55,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
 	return result;
     }
-    
+
     /** Returns the weighted probability that a person might perform this task.
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
@@ -76,7 +78,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
         return result;
     }
-    
+
     /**
      * Perform the task.
      * @param time the amount of time (millisols) to perform the task
@@ -89,9 +91,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) done = true;
 
-	// Check if there are no more malfunctions. 
+	// Check if there are no more malfunctions.
         if (!hasMalfunction(person)) done = true;
-	
+
 	if (done) return timeLeft;
 
         // Determine effective work time based on "Mechanic" skill.
@@ -108,11 +110,11 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	    MalfunctionManager manager = e.getMalfunctionManager();
 	    if (manager.hasNormalMalfunction()) {
                 malfunction = manager.getMostSeriousNormalMalfunction();
-		description = "Repairing " + malfunction.getName() + " on " + e.getName();
+		description = "Repairing " + malfunction.getName() + " on " + e;
 		entity = e;
 	    }
 	}
-	
+
 	// Add work to malfunction.
         // System.out.println(description);
         double workTimeLeft = malfunction.addWorkTime(workTime);
@@ -124,14 +126,14 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("Mechanic", experience);
-	
-	// Check if there are no more malfunctions. 
+
+	// Check if there are no more malfunctions.
         if (!hasMalfunction(person)) done = true;
 
         // Keep track of the duration of the task.
         timeCompleted += time;
         if (timeCompleted >= duration) done = true;
-	
+
         // Check if an accident happens during maintenance.
         checkForAccident(timeLeft);
 

@@ -42,7 +42,9 @@ public class Mind implements Serializable {
      *  @param time time in millisols
      */
     public void takeAction(double time) {
-        if ((mission != null) && mission.isDone()) mission = null;
+        if ((mission != null) && mission.isDone()) {
+            mission = null;
+        }
         boolean activeMission = (mission != null);
 
         if (taskManager.hasActiveTask()) {
@@ -103,7 +105,9 @@ public class Mind implements Serializable {
      *  @param newMission the new mission
      */
     public void setMission(Mission newMission) {
-        if (mission != null) mission.removePerson(person);
+        if (mission != null) {
+            mission.removePerson(person);
+        }
         mission = newMission;
         newMission.addPerson(person);
     }
@@ -146,7 +150,7 @@ public class Mind implements Serializable {
                 // System.out.println(person.getName() + " starting a new mission.");
                 Mission newMission = missionManager.getNewMission(person, missionWeights);
                 missionManager.addMission(newMission);
-                newMission.addPerson(person);
+
                 setMission(newMission);
                 return;
             }

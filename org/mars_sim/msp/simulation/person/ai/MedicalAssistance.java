@@ -32,6 +32,7 @@ public class MedicalAssistance extends Task implements Serializable {
      */
     public MedicalAssistance(Person person, Mars mars) {
         super("Medical Assistance", person, true, mars);
+        setCreateEvents(true);
 
         SickBay sickbay = getSickbay(person);
         HealthProblem problem = sickbay.getCurableProblem();
@@ -57,13 +58,17 @@ public class MedicalAssistance extends Task implements Serializable {
         double result = 0D;
 
         SickBay infirmary = getSickbay(person);
-        if ((infirmary != null) && infirmary.hasWaitingPatients()) {
-            result = 50D * person.getPerformanceRating();
+        if (infirmary != null)
+        {
+            if (infirmary.hasWaitingPatients()) {
+                result = 50D * person.getPerformanceRating();
+            }
+
+            if (infirmary.getOwner().getMalfunctionManager().hasMalfunction()) {
+	            result = 0D;
+            }
         }
 
-        if (infirmary.getOwner().getMalfunctionManager().hasMalfunction())
-	    result = 0D;
-	
         return result;
     }
 
@@ -81,7 +86,7 @@ public class MedicalAssistance extends Task implements Serializable {
 	}
 	if (location.equals(person.INVEHICLE)) {
 	    Vehicle vehicle = person.getVehicle();
-	    if (vehicle instanceof TransportRover) 
+	    if (vehicle instanceof TransportRover)
 	        return (SickBay) ((TransportRover) vehicle).getMedicalFacility();
         }
 
@@ -103,10 +108,10 @@ public class MedicalAssistance extends Task implements Serializable {
         if (getSickbay(person).getOwner().getMalfunctionManager().hasMalfunction()) done = true;
 
 	if (done) return timeLeft;
-	
+
         // Check for accident in infirmary.
 	checkForAccident(time);
-	
+
         timeCompleted += time;
         if (timeCompleted > duration) {
             done = true;
@@ -130,10 +135,10 @@ public class MedicalAssistance extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        Malfunctionable entity = getSickbay(person).getOwner();	
-	
+        Malfunctionable entity = getSickbay(person).getOwner();
+
         double chance = .001D;
-	    
+
         // Medical skill modification.
         int skill = person.getSkillManager().getEffectiveSkillLevel("Medical");
         if (skill <= 3) chance *= (4 - skill);

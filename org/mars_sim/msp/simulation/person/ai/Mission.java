@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import java.util.Vector;
 import java.io.Serializable;
 
@@ -18,6 +19,10 @@ import java.io.Serializable;
  *  A Mission may have one or more people associated with it.
  */
 public abstract class Mission implements Serializable {
+
+    // Constant string type for events
+    private static final String START_MISSION = "Start Mission ";
+    private static final String END_MISSION = "End Mission ";
 
     // Data members
     protected Mars mars; // Virtual Mars
@@ -46,31 +51,42 @@ public abstract class Mission implements Serializable {
         missionCapacity = Integer.MAX_VALUE;
 
         // Add starting person to mission.
-        people.add(startingPerson);
+        addPerson(startingPerson);
     }
 
-    /** Adds a person to the mission. 
-     *  @param person to be added 
+    /** Adds a person to the mission.
+     *  @param person to be added
      */
     void addPerson(Person person) {
         if (!people.contains(person)) {
             people.add(person);
+
+            HistoricalEvent newEvent = new HistoricalEvent(START_MISSION + getName(),
+                                                       person,
+                                                       getDescription());
+            mars.getEventManager().registerNewEvent(newEvent);
             // System.out.println(person.getName() + " added to mission: " + name);
         }
     }
 
-    /** Removes a person from the mission 
+    /** Removes a person from the mission
      *  @param person to be removed
      */
     protected void removePerson(Person person) {
         if (people.contains(person)) {
             people.remove(person);
+
+            HistoricalEvent newEvent = new HistoricalEvent(END_MISSION + getName(),
+                                                       person,
+                                                       getDescription());
+            mars.getEventManager().registerNewEvent(newEvent);
+
             if (people.size() == 0) done = true;
             // System.out.println(person.getName() + " removed from mission: " + name);
         }
     }
 
-    /** Determines if a mission includes the given person 
+    /** Determines if a mission includes the given person
      *  @param person person to be checked
      *  @return true if person is member of mission
      */
@@ -85,14 +101,14 @@ public abstract class Mission implements Serializable {
         return people.size();
     }
 
-    /** 
+    /**
      * Gets a collection of the people in the mission.
      * @return collection of people
      */
     public PersonCollection getPeople() {
         return new PersonCollection(people);
     }
-    
+
     /** Returns the mission's manager
      *  @return mission manager
      */
@@ -100,7 +116,7 @@ public abstract class Mission implements Serializable {
         return missionManager;
     }
 
-    /** Determines if mission is completed. 
+    /** Determines if mission is completed.
      *  @return true if mission is completed
      */
     public boolean isDone() {
@@ -120,7 +136,7 @@ public abstract class Mission implements Serializable {
     public String getDescription() {
         return description;
     }
-    
+
     /** Gets the current phase of the mission.
      *  @return phase
      */
@@ -129,12 +145,12 @@ public abstract class Mission implements Serializable {
     }
 
     /** Performs the mission.
-     *  Mission may choose a new task for a person in the mission. 
+     *  Mission may choose a new task for a person in the mission.
      *  @param person the person performing the mission
      */
     public void performMission(Person person) {
 
-    } 
+    }
 
     /** Gets the weighted probability that a given person would start this mission.
      *  @param person the given person
@@ -169,13 +185,16 @@ public abstract class Mission implements Serializable {
 
     /** Finalizes the mission.
      *  Mission can override this to perform necessary finalizing operations.
-     */ 
+     */
     protected void endMission() {
         done = true;
-	people.clear();
+	    Object p[] = people.toArray();
+        for(int i = 0; i < p.length; i++) {
+            removePerson((Person)p[i]);
+        }
     }
 
-    /** 
+    /**
      * Adds a new task for a person in the mission.
      * Task may be not assigned if it is effort-driven and person is too ill
      * to perform it.
@@ -184,11 +203,11 @@ public abstract class Mission implements Serializable {
      */
     protected void assignTask(Person person, Task task) {
         boolean canPerformTask = true;
-	
+
         // If task is effort-driven and person too ill, do not assign task.
-        if (task.isEffortDriven() && (person.getPerformanceRating() < .5D)) 
-            canPerformTask = false;	
+        if (task.isEffortDriven() && (person.getPerformanceRating() < .5D))
+            canPerformTask = false;
 
 	if (canPerformTask) person.getMind().getTaskManager().addTask(task);
     }
-} 
+}

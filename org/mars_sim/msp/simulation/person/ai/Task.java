@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.*;
 
 /** The Task class is an abstract parent class for tasks that allow people to do various things.
@@ -29,6 +30,7 @@ public abstract class Task implements Serializable, Comparable {
     protected double phaseTimeRequired;  // Amount of time required to complete current phase. (in microsols)
     protected double phaseTimeCompleted; // Amount of time completed on the current phase. (in microsols)
     protected boolean effortDriven;     // Is this task effort driven
+    private boolean createEvents;       // Task should create Historical events
 
     /** Constructs a Task object. This is an effort driven task by default.
      *  @param name the name of the task
@@ -42,6 +44,7 @@ public abstract class Task implements Serializable, Comparable {
         this.mars = mars;
 
         done = false;
+        createEvents = false;
         timeCompleted = 0D;
         description = name;
         subTask = null;
@@ -76,6 +79,13 @@ public abstract class Task implements Serializable, Comparable {
         else return description;
     }
 
+    /** Returns a boolean whether this task should generate events
+     *  @return boolean flag.
+     */
+    public boolean getCreateEvents() {
+        return createEvents;
+    }
+
     /** Returns a string of the current phase of the task.
      *  @return the current phase of the task
      */
@@ -99,7 +109,7 @@ public abstract class Task implements Serializable, Comparable {
         else subTask = newSubTask;
     }
 
-    /** 
+    /**
      * Gets the task's subtask.
      * Returns null if none
      * @return subtask
@@ -107,7 +117,7 @@ public abstract class Task implements Serializable, Comparable {
     public Task getSubTask() {
         return subTask;
     }
-    
+
     /** Returns the weighted probability that a person might perform this task.
      *  It should return a 0 if there is no chance to perform this task given the person and the situation.
      *  @param person the person to perform the task
@@ -123,11 +133,28 @@ public abstract class Task implements Serializable, Comparable {
      */
     double performTask(double time) {
         double timeLeft = time;
-        if ((subTask != null) && subTask.isDone()) subTask = null;
+        if ((subTask != null) && subTask.isDone()) {
+            if (subTask.getCreateEvents()) {
+                HistoricalEvent newEvent = new HistoricalEvent("Finished " + subTask.getName(),
+                                                       person,
+                                                       subTask.getDescription());
+                mars.getEventManager().registerNewEvent(newEvent);
+            }
+            subTask = null;
+        }
         if (subTask != null) timeLeft = subTask.performTask(timeLeft);
 
         return timeLeft;
     }
+
+    /**
+     * SHould the start of this task create an historical event.
+     * @param create New flag value.
+     */
+    protected void setCreateEvents(boolean create) {
+        createEvents = create;
+    }
+
 
     /**
      * Get a string representation of this Task. It's content will consist

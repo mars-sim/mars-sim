@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.events.*;
 import java.io.Serializable;
 import java.util.Vector;
 import java.lang.reflect.*;
@@ -28,11 +29,11 @@ public class TaskManager implements Serializable {
 
     // Array of available tasks
     private Class[] availableTasks = { Relax.class, TendGreenhouse.class,
-                                       Maintenance.class, MaintainVehicle.class, 
+                                       Maintenance.class, MaintainVehicle.class,
                                        Sleep.class, EatMeal.class,
                                        MedicalAssistance.class,
                                        StudyRockSamples.class,
-                                       RepairMalfunction.class, 
+                                       RepairMalfunction.class,
                                        RepairEVAMalfunction.class,
                                        EnterAirlock.class };
 
@@ -99,19 +100,29 @@ public class TaskManager implements Serializable {
         return currentTask;
     }
 
-    /** 
+    /**
      * Sets the current task to null.
      */
     public void clearTask() {
+
+
         currentTask = null;
     }
 
     /** Adds a task to the stack of tasks.
-     *  @param Task the task to be added
+     *  @param newTask the task to be added
      */
-    void addTask(Task Task) {
-        if (hasActiveTask()) currentTask.addSubTask(Task);
-        else currentTask = Task;
+    void addTask(Task newTask) {
+        if (hasActiveTask()) currentTask.addSubTask(newTask);
+        else currentTask = newTask;
+
+        // Log if a significant event
+        if (newTask.getCreateEvents()) {
+            HistoricalEvent newEvent = new HistoricalEvent("Start " + newTask.getName(),
+                                                       mind.getPerson(),
+                                                       newTask.getDescription());
+            mars.getEventManager().registerNewEvent(newEvent);
+        }
     }
 
     /** Perform the current task for a given amount of time.
@@ -124,6 +135,14 @@ public class TaskManager implements Serializable {
             if (currentTask.isEffortDriven()) time *= efficiency;
 	    checkForEmergency();
             currentTask.performTask(time);
+
+            // Log if a significant event
+            if (currentTask.isDone() && currentTask.getCreateEvents()) {
+                HistoricalEvent newEvent = new HistoricalEvent("Finished " + currentTask.getName(),
+                                                       mind.getPerson(),
+                                                       currentTask.getDescription());
+                mars.getEventManager().registerNewEvent(newEvent);
+            }
         }
     }
 
@@ -141,7 +160,7 @@ public class TaskManager implements Serializable {
                 if (task instanceof RepairEmergencyMalfunction) hasEmergencyRepair = true;
 		task = task.getSubTask();
 	    }
-            	  
+
 	    if (!hasEmergencyRepair) addTask(new RepairEmergencyMalfunction(mind.getPerson(), mars));
 	}
     }
@@ -171,19 +190,30 @@ public class TaskManager implements Serializable {
                     else r -= weight;
                 }
             }
-            catch (Exception e) {
-                // System.out.println("TaskManager.getNewTask() (1): " + e.toString());
+            catch (InvocationTargetException ie) {
+                Throwable nested = ie.getTargetException();
+                System.out.println("TaskManager.getNewTask() (Invocation Exception): " + nested.toString());
+                System.out.println("Target = " + availableTasks[x]);
+                System.out.println("Args = " + parametersForInvokingMethod);
+                nested.printStackTrace();
             }
+            catch (Exception e) {}
         }
 
         // Construct the task
         try {
             Constructor construct = (task.getConstructor(parametersForFindingMethod));
             return (Task) construct.newInstance(parametersForInvokingMethod);
+        } catch (InvocationTargetException ie) {
+            Throwable nested = ie.getTargetException();
+            System.out.println("TaskManager.getNewTask() (Construct Invocation Exception): " + nested.toString());
+            System.out.println("Target = " + task);
+            System.out.println("Args = " + parametersForInvokingMethod);
+            nested.printStackTrace();
         } catch (Exception e) {
-            // System.out.println("TaskManager.getNewTask() (2): " + e.toString());
-            return null;
+            System.out.println("TaskManager.getNewTask() (2): " + e.toString());
         }
+        return null;
     }
 
     /** Determines the total probability weight for available tasks.
