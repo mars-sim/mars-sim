@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.PersonalityType;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
@@ -45,6 +46,9 @@ public class RelationshipManager implements Serializable {
 	
 	// The base gender bonding modifier per millisol for relationship change.
 	private static final double BASE_GENDER_BONDING_MODIFIER = .02D;
+	
+	// The base personality diff modifier per millisol for relationship change.
+	private static final double PERSONALITY_DIFF_MODIFIER = .1D;
 	
 	private Graph relationshipGraph; // The relationship graph
 	int count = 0;
@@ -260,7 +264,12 @@ public class RelationshipManager implements Serializable {
 				double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
 				if (!oppositeGenders) RandomUtil.getRandomDouble(changeAmount+= genderBondingModifier);
 				
-				// TODO: add additional modifiers here to deal with personality when we add that.
+				// Modify based on personality differences.
+				PersonalityType personPersonality = person.getMind().getPersonalityType();
+				PersonalityType localPersonality = localPerson.getMind().getPersonalityType();
+				double personalityDiffModifier = (2D - (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
+				personalityDiffModifier*= PERSONALITY_DIFF_MODIFIER * time;
+				changeAmount+= RandomUtil.getRandomDouble(personalityDiffModifier);
 				
 				// Modify magnitude based on the collective stress of the two people.
 				double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);

@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.person.ai.social;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.PersonalityType;
 
 /**
  * The Relationship class represents a social relationship between
@@ -159,7 +160,23 @@ public class Relationship implements Serializable {
 		for (int x = 0; x < numberOfIterations; x++) result+= RandomUtil.getRandomDouble(100D);
 		result /= numberOfIterations;
 		
-		// TODO: Add more modifiers here.
+		NaturalAttributeManager attributes = target.getNaturalAttributeManager();
+		
+		// Modify based on conversation attribute.
+		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeManager.CONVERSATION) - 50D;
+		result+= RandomUtil.getRandomDouble(conversationModifier);
+		
+		// Modify based on attractiveness attribute if people are of opposite genders.
+		// Note: We may add sexual orientation later that will add further complexity to this.
+		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeManager.ATTRACTIVENESS) - 50D;
+		boolean oppositeGenders = (!person.getGender().equals(target.getGender()));
+		if (oppositeGenders) result+= RandomUtil.getRandomDouble(attractivenessModifier);
+		
+		// Personality diff modifier
+		PersonalityType personType = person.getMind().getPersonalityType();
+		PersonalityType targetType = target.getMind().getPersonalityType();
+		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString())) * 50D;
+		result+= RandomUtil.getRandomDouble(personalityDiffModifier);
 		
 		return result;
 	}
