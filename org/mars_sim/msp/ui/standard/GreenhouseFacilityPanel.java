@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-19
  * @author Scott Davis
  */
 
@@ -15,7 +15,6 @@ import javax.swing.border.*;
 /**
  * The GreenhouseFacilityPanel class displays information about a settlement's greenhouse facility in the user interface.
  **/
-
 public class GreenhouseFacilityPanel extends FacilityPanel {
 	
     // Data members
@@ -29,7 +28,10 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
 	private float growthPeriodCompleted;    // Number of days completed of current growth period.
 	private float growingWork;              // Number of work-hours tending greenhouse completed for current growth period.
 	
-    /** Constructs a GreenhouseFacilityPanel object */
+    /** Constructs a GreenhouseFacilityPanel object 
+     *  @param greenhouse the greenhouse
+     *  @param desktop the desktop pane
+     */
 	public GreenhouseFacilityPanel(GreenhouseFacility greenhouse, MainDesktopPane desktop) {
 	
 		// Use FacilityPanel's constructor

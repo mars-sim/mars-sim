@@ -37,7 +37,7 @@ class MasterClock extends Thread {
         // Endless clock pulse loop
         while (true) {
             try {
-                sleep(sleepDuration);
+                sleep(SLEEP_DURATION);
             } catch (InterruptedException e) {}
 
             // Send virtual Mars a clock pulse representing 10 minutes (600 seconds)

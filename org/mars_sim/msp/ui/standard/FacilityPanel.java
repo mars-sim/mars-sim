@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityPanel.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-19
  * @author Scott Davis
  */
 
@@ -22,7 +22,9 @@ public abstract class FacilityPanel extends JPanel {
     protected String tabName; // The name for the panel's tab
     protected MainDesktopPane desktop; // The main desktop
 
-    /** Constructs a FacilityPanel object */
+    /** Constructs a FacilityPanel object 
+     *  @param desktop the desktop pane
+     */
     public FacilityPanel(MainDesktopPane desktop) {
 
         // Initialize data members
@@ -36,7 +38,9 @@ public abstract class FacilityPanel extends JPanel {
                 new EmptyBorder(5, 5, 5, 5)));
     }
 
-    /** Returns the tab name for the facility */
+    /** Returns the tab name for the facility 
+     *  @return the tab name for the facility
+     */
     public String getTabName() { return tabName; }
 
     /** Updates the facility panel's information */

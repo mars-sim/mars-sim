@@ -101,7 +101,7 @@ public class StoreroomFacility extends Facility {
      */
     double removeOxygen(double amount) {
         double result = amount;
-        if (amount > oxygenStores)
+        if (amount > oxygenStores) {
             result = oxygenStores;
             oxygenStores = 0;
         }
@@ -130,7 +130,7 @@ public class StoreroomFacility extends Facility {
      */
     double removeWater(double amount) {
         double result = amount;
-        if (amount > waterStores)
+        if (amount > waterStores) {
             result = waterStores;
             waterStores = 0;
         }
@@ -159,7 +159,7 @@ public class StoreroomFacility extends Facility {
      */
     double removeFuel(double amount) {
         double result = amount;
-        if (amount > fuelStores)
+        if (amount > fuelStores) {
             result = fuelStores;
             fuelStores = 0;
         }
@@ -188,7 +188,7 @@ public class StoreroomFacility extends Facility {
      */
     double removeParts(double amount) {
         double result = amount;
-        if (amount > partsStores)
+        if (amount > partsStores) {
             result = partsStores;
             partsStores = 0;
         }

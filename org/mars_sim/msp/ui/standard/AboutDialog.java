@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-19
  * @author Scott Davis
  */
 
@@ -24,7 +24,9 @@ public class AboutDialog extends JDialog implements ActionListener,
     private JButton closeButton; // The close button
     private JViewport viewPort; // The view port for the text pane
 
-    /** Constructs an AboutDialog object */
+    /** Constructs an AboutDialog object 
+     *  @param mainWindow the main window
+     */
     public AboutDialog(MainWindow mainWindow) {
 
         // Use JDialog constructor

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-19
  * @author Scott Davis
  */
 
@@ -17,7 +17,6 @@ import javax.swing.border.*;
  * It is abstract and an appropriate detail window needs to be derived for 
  * a particular type of ground vehicle. (See RoverDialog for an example)
  */
-
 public class GroundVehicleDialog extends VehicleDialog {
     
     // Data members
@@ -31,7 +30,10 @@ public class GroundVehicleDialog extends VehicleDialog {
 	protected double terrainGrade;                       // Cached terrain grade data
 	protected double direction;                          // Cached direction data
 	
-    /** Constructs a GroundVehicleDialog object */
+    /** Constructs a GroundVehicleDialog object 
+     *  @param parentDesktop desktop pane
+     *  @param groundVehicleUIProxy the ground vehicle's UI proxy
+     */
 	public GroundVehicleDialog(MainDesktopPane parentDesktop, GroundVehicleUIProxy groundVehicleUIProxy) {
 		// Use VehicleDialog constructor	
 		super(parentDesktop, groundVehicleUIProxy);
@@ -56,7 +58,9 @@ public class GroundVehicleDialog extends VehicleDialog {
 		super.setupComponents();
 	}
 
-	/** Override setupNavigationPane */
+	/** Override setupNavigationPane 
+     *  @return the navigation pane
+     */
 	protected JPanel setupNavigationPane() {
 		
 		// Prepare navigation pane
@@ -142,9 +146,8 @@ public class GroundVehicleDialog extends VehicleDialog {
 		}
 	}
     
-    /** Override getIcon */
-	public ImageIcon getIcon() { return new ImageIcon("RoverIcon.gif"); }
-    
-    /** Set window size */
+    /** Set window size 
+     *  @return the window's size
+     */
 	protected Dimension setWindowSize() { return new Dimension(300, 430); }
 }

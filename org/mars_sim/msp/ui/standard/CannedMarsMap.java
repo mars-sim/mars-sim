@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CannedMarsMap.java
- * @version 2.71 2000-09-21
+ * @version 2.71 2000-10-19
  * @author Scott Davis
  */
 
@@ -37,25 +37,33 @@ public abstract class CannedMarsMap implements Map {
     protected final static int mapHeight = 1440; // Height of source map in pixels.
     protected final static int mapWidth = mapHeight * 2; // Width of source map in pixels.
 
-    /** Constructs a CannedMarsMap object */
+    /** Constructs a CannedMarsMap object 
+     *  @param displayArea component containing the map
+     */
     public CannedMarsMap(JComponent displayArea) {
         this.displayArea = displayArea;
         imageDone = false;
         centerCoords = new Coordinates(0D, 0D);
     }
 
-    /** creates a 2D map at a given center point */
+    /** creates a 2D map at a given center point 
+     *  @param newCenter new map center location
+     */
     public void drawMap(Coordinates newCenter) {
         createMapImage(newCenter);
         waitForMapLoaded();
     }
 
-    /** determines if a requested map is complete */
+    /** determines if a requested map is complete 
+     *  @return true if requested map is complete
+     */
     public boolean isImageDone() {
         return imageDone;
     }
 
-    /** returns constructed map image */
+    /** returns constructed map image 
+     *  @return constructed map image
+     */
     public Image getMapImage() {
         return mapImage;
     }
@@ -65,6 +73,7 @@ public abstract class CannedMarsMap implements Map {
     /** constructs a rendering of the map centered about the given
      *  coordinates. The map is written to the private variable
      *  mapImage and can be obtained using the getMapImage() method.
+     *  @param newCenter map center location
      */
     private void createMapImage(Coordinates newCenter) {
         // Adjust coordinates

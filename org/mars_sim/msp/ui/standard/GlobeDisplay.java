@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-19
  * @author Scott Davis
  */
 
@@ -30,7 +30,11 @@ class GlobeDisplay extends JComponent implements Runnable {
 
     private static final double HALF_PI = (Math.PI / 2);
 
-    /** Constructs a GlobeDisplay object */
+    /** Constructs a GlobeDisplay object 
+     *  @param proxyManager the UI proxy manager
+     *  @width the width of the globe display
+     *  @height the height of the globe display
+     */
     public GlobeDisplay(UIProxyManager proxyManager, int width, int height) {
 
         this.proxyManager = proxyManager;
@@ -69,7 +73,10 @@ class GlobeDisplay extends JComponent implements Runnable {
         showGlobe(centerCoords);
     }
 
-    /** Displays globe at given center regardless of mode, regenerating if necessary */
+    /** Displays globe at given center regardless of mode, 
+     *  regenerating if necessary 
+     *  @param newCenter the center location for the globe
+     */
     public void showGlobe(Coordinates newCenter) {
         if (!centerCoords.equals(newCenter)) {
             recreate = true;
@@ -114,7 +121,9 @@ class GlobeDisplay extends JComponent implements Runnable {
     }
 
     /** Overrides paintComponent method.  Displays globe, green lines,
-      *  longitude and latitude. */
+     *  longitude and latitude. 
+     *  @param g graphics context
+     */
     public void paintComponent(Graphics g) {
 
         // Paint black background
@@ -132,7 +141,9 @@ class GlobeDisplay extends JComponent implements Runnable {
         drawCrossHair(g);
     }
 
-    /** draw the dots on the globe that identify units */
+    /** draw the dots on the globe that identify units 
+     *  @param g graphics context
+     */
     protected void drawUnits(Graphics g) {
         UnitUIProxy[] proxies = proxyManager.getUIProxies();
         for (int x = 0; x < proxies.length; x++) {
@@ -150,7 +161,9 @@ class GlobeDisplay extends JComponent implements Runnable {
 
     /** Draw green rectanges and lines (cross-hair type thingy), and
       *  write the latitude and logitude of the centerpoint of the
-      *  current glove view. */
+      *  current glove view. 
+      *  @param g graphics context
+      */
     protected void drawCrossHair(Graphics g) {
         g.setColor(Color.green);
 
@@ -185,7 +198,10 @@ class GlobeDisplay extends JComponent implements Runnable {
         g.drawString(longString, longPosition, 142);
     }
 
-    /** Returns unit x, y position on globe panel */
+    /** Returns unit x, y position on globe panel 
+     *  @param unitCoords the unit's location
+     *  @return x, y position on globe panel
+     */
     private IntPoint getUnitDrawLocation(Coordinates unitCoords) {
         double rho = width / Math.PI;
         int half_map = (int)(width / 2);
