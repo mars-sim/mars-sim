@@ -1,5 +1,5 @@
 //************************** Maintenance Garage Facility **************************
-// Last Modified: 5/8/00
+// Last Modified: 5/14/00
 
 // The MaintenanceGarageFacility class represents the pressurized maintenance garage in a settlement.
 // Vehicles can be taken to a maintenance garage for repair and maintenance.
@@ -25,7 +25,11 @@ public class MaintenanceGarageFacility extends Facility {
 	
 		// Use Facility's constructor.
 		
-		super(manager, "Maintenance Garages", "Garage");
+		super(manager, "Maintenance Garages");
+		
+		// Initialize data members
+		
+		vehicles = new Vector();
 	
 		// Initialize random maxVehicleSize from 2 to 5.
 		
@@ -42,10 +46,11 @@ public class MaintenanceGarageFacility extends Facility {
 	
 		// Use Facility's constructor.
 		
-		super(manager, "Maintenance Garage", "Garage");
+		super(manager, "Maintenance Garage");
 		
 		// Initialize data members.
 		
+		vehicles = new Vector();
 		this.maxVehicleSize = maxVehicleSize;
 		this.maxSizeCapacity = maxSizeCapacity;
 	}
@@ -57,6 +62,16 @@ public class MaintenanceGarageFacility extends Facility {
 	// Returns the total size point sum of vehicles the garage can accomidate at any given time.
 	
 	public int getMaxSizeCapacity() { return maxSizeCapacity; }
+	
+	// Returns the sum of vehicle sizes currently in the garage.
+	
+	public int getTotalSize() {
+		
+		int result = 0;
+		for (int x=0; x < vehicles.size(); x++) result += ((Vehicle) vehicles.elementAt(x)).getSize();
+		
+		return result;
+	}
 	
 	// Add vehicle to garage if there's room.
 	// Returns true if vehicle has been added successfully.
@@ -115,28 +130,30 @@ public class MaintenanceGarageFacility extends Facility {
 		return result;
 	}
 	
-	// Returns a vector of vehicles currently in the garage.
+	// Returns an array of vehicles currently in the garage.
 	
-	public Vector getVehicles() {
+	public Vehicle[] getVehicles() {
 		
-		Vector result = new Vector();
+		Vehicle[] result = new Vehicle[vehicles.size()];
 		
-		for (int x=0; x < vehicles.size(); x++) result.addElement(vehicles.elementAt(x));
+		for (int x=0; x < vehicles.size(); x++) result[x] = (Vehicle) vehicles.elementAt(x);
 		
 		return result;
 	}
+	
+	// Returns the UI panel for this facility.
+	
+	public FacilityPanel getUIPanel(MainDesktopPane desktop) { return new MaintenanceGarageFacilityPanel(this, desktop); }
 }	
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

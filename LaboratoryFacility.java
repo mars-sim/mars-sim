@@ -1,5 +1,5 @@
 //************************** Laboratory Facility **************************
-// Last Modified: 5/8/00
+// Last Modified: 5/14/00
 
 // The LaboratoryFacility class represents the research laboratories in a settlement.
 
@@ -21,7 +21,7 @@ public class LaboratoryFacility extends Facility {
 	
 		// Use Facility's constructor.
 		
-		super(manager, "Research Laboratories", "Labs");
+		super(manager, "Research Laboratories");
 		
 		// Initialize random laboratorySize from 1 to 5.
 		
@@ -49,7 +49,7 @@ public class LaboratoryFacility extends Facility {
 	
 		// Use Facility's constructor.
 		
-		super(manager, "Research Laboratories", "Labs");
+		super(manager, "Research Laboratories");
 		
 		// Initialize data members.
 		
@@ -77,18 +77,20 @@ public class LaboratoryFacility extends Facility {
 	
 		return result;
 	}	
+	
+	// Returns the UI panel for this facility.
+	
+	public FacilityPanel getUIPanel(MainDesktopPane desktop) { return new LaboratoryFacilityPanel(this, desktop); }
 }	
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
