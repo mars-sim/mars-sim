@@ -185,7 +185,7 @@
 		<!-- to minimal and forcing them to relax and destress.  The effects do not last -->
 		<!-- long, however. (See "stress-breakdown-chance" in person.xml.) -->
 		<medical-complaint name="Anxiety Attack">
-			<seriousness value="70" />
+			<seriousness value="30" />
 			<recovery-time value="1.0" />
 			<probability value="0.0" />
 			<performance-percent value="0.0" />
