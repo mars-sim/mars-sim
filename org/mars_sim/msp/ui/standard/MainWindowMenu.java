@@ -23,6 +23,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JMenuItem saveItem;                   // Save menu item
     private JMenuItem saveAsItem;                 // Save As menu item
     private JMenuItem exitItem;                   // Exit menu item
+    private JMenuItem newItem;                    // New menu item
     private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
     private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
@@ -42,6 +43,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	// Create file menu
 	JMenu fileMenu = new JMenu("File");
 	add(fileMenu);
+		
+	// Create new menu item
+	newItem = new JMenuItem("New");
+	newItem.addActionListener(this);
+	fileMenu.add(newItem);
 		
 	// Create load menu item
 	loadItem = new JMenuItem("Load");
@@ -100,6 +106,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		
 	    if (selectedItem == exitItem) {
 		    mainWindow.exitSimulation();
+		}
+	    else if (selectedItem == newItem) {
+            VirtualMars mars = new VirtualMars();
+            mainWindow.setVirtualMars(mars);
+            mars.start();
 		}
 		
         try{ 
