@@ -1,5 +1,5 @@
 //************************** Facility Manager **************************
-// Last Modified: 5/14/00
+// Last Modified: 8/19/00
 
 // The FacilityManager class manages a settlement's facilities.
 // There is only one facility manager for each settlement.
@@ -30,11 +30,8 @@ public class FacilityManager {
 		facilityList.addElement(new LivingQuartersFacility(this));
 		facilityList.addElement(new GreenhouseFacility(this));
 		facilityList.addElement(new StoreroomFacility(this));
-		
-		// Add optional facilities to manager.
-		
-		if (RandomUtil.lessThanRandPercent(50)) facilityList.addElement(new MaintenanceGarageFacility(this));
-		if (RandomUtil.lessThanRandPercent(50)) facilityList.addElement(new LaboratoryFacility(this));
+		facilityList.addElement(new MaintenanceGarageFacility(this));
+		facilityList.addElement(new LaboratoryFacility(this));
 	}
 	
 	// Returns the settlement the owns this facility manager.
