@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.75 2003-02-05
+ * @version 2.75 2003-02-10
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -21,7 +21,7 @@ public class TransportRover extends Rover implements Serializable {
     // Static data members
     private static final int CREW_CAPACITY = 12; // Max number of crewmembers.
     private static final double CARGO_CAPACITY = 12000D; // Cargo capacity of rover in kg.
-    private static final double FUEL_CAPACITY = 3750D; // Fuel capacity of rover in kg.
+    private static final double METHANE_CAPACITY = 3750D; // Methane capacity of rover in kg.
     private static final double OXYGEN_CAPACITY = 1000D; // Oxygen capacity of rover in kg.
     private static final double WATER_CAPACITY = 4000D; // Water capacity of rover in kg.
     private static final double FOOD_CAPACITY = 787.5D; // Food capacity of rover in kg.
@@ -59,7 +59,7 @@ public class TransportRover extends Rover implements Serializable {
 	    inventory.setTotalCapacity(CARGO_CAPACITY);
 	
 	    // Set resource capacities of rover
-	    inventory.setResourceCapacity(Resource.FUEL, FUEL_CAPACITY);
+	    inventory.setResourceCapacity(Resource.METHANE, METHANE_CAPACITY);
 	    inventory.setResourceCapacity(Resource.OXYGEN, OXYGEN_CAPACITY);
 	    inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
 	    inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);

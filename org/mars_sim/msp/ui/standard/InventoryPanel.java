@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryPanel.java
- * @version 2.75 2003-02-05
+ * @version 2.75 2003-02-10
  * @author Scott Davis
  */
 
@@ -25,7 +25,7 @@ public class InventoryPanel extends JPanel {
     private JLabel oxygenLabel;  // A label for oxygen resource.
     private JLabel waterLabel;   // A label for water resource.
     private JLabel foodLabel;    // A label for food resource.
-    private JLabel fuelLabel;    // A label for fuel resource.
+    private JLabel methaneLabel;    // A label for methane resource.
     private JLabel rockSamplesLabel; // A Label for rock samples resource.
     private EquipmentCollection cachedEquipment;
     private JPanel equipmentListingPane;
@@ -114,14 +114,14 @@ public class InventoryPanel extends JPanel {
         foodLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
         resourceAmountPane.add(foodLabel);
 
-        // Prepare fuel name label.
-        JLabel fuelNameLabel = new JLabel("Fuel:");
-        resourceAmountPane.add(fuelNameLabel);
+        // Prepare methane name label.
+        JLabel methaneNameLabel = new JLabel("Methane:");
+        resourceAmountPane.add(methaneNameLabel);
 
-        // Prepare fuel label.
-        double fuel = inventory.getResourceMass(Resource.FUEL);
-        fuelLabel = new JLabel("" + roundOneDecimal(fuel) + " kg", JLabel.RIGHT);
-        resourceAmountPane.add(fuelLabel);
+        // Prepare methane label.
+        double methane = inventory.getResourceMass(Resource.METHANE);
+        methaneLabel = new JLabel("" + roundOneDecimal(methane) + " kg", JLabel.RIGHT);
+        resourceAmountPane.add(methaneLabel);
 
         // Prepare rock samples name label.
         JLabel rockSamplesNameLabel = new JLabel("Rock Samples:");
@@ -243,8 +243,8 @@ public class InventoryPanel extends JPanel {
         double food = inventory.getResourceMass(Resource.FOOD);
         foodLabel.setText("" + roundOneDecimal(food) + " kg");
 
-        double fuel = inventory.getResourceMass(Resource.FUEL);
-        fuelLabel.setText("" + roundOneDecimal(fuel) + " kg");
+        double methane = inventory.getResourceMass(Resource.METHANE);
+        methaneLabel.setText("" + roundOneDecimal(methane) + " kg");
 
         double rockSamples = inventory.getResourceMass(Resource.ROCK_SAMPLES);
         rockSamplesLabel.setText("" + roundOneDecimal(rockSamples) + " kg");

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2003-02-05
+ * @version 2.75 2003-02-10
  * @author Scott Davis
  */
 
@@ -54,12 +54,12 @@ class LoadVehicle extends Task implements Serializable {
 
         if (hasEnoughSupplies(settlement, vehicle)) {
 
-            // Load fuel
-	        double fuelAmount = vehicle.getInventory().getResourceRemainingCapacity(Resource.FUEL);
-            if (fuelAmount > amountLoading) fuelAmount = amountLoading;
-	        settlement.getInventory().removeResource(Resource.FUEL, fuelAmount);
-	        vehicle.getInventory().addResource(Resource.FUEL, fuelAmount);
-            amountLoading -= fuelAmount;
+            // Load methane
+	        double methaneAmount = vehicle.getInventory().getResourceRemainingCapacity(Resource.METHANE);
+            if (methaneAmount > amountLoading) methaneAmount = amountLoading;
+	        settlement.getInventory().removeResource(Resource.METHANE, methaneAmount);
+	        vehicle.getInventory().addResource(Resource.METHANE, methaneAmount);
+            amountLoading -= methaneAmount;
 
             // Load oxygen
 	        double oxygenAmount = vehicle.getInventory().getResourceRemainingCapacity(Resource.OXYGEN);
@@ -97,9 +97,9 @@ class LoadVehicle extends Task implements Serializable {
     public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle) {
         boolean enoughSupplies = true;
 
-        double neededFuel = vehicle.getInventory().getResourceRemainingCapacity(Resource.FUEL);
-        double storedFuel = settlement.getInventory().getResourceMass(Resource.FUEL);
-        if (neededFuel > storedFuel - 50D) enoughSupplies = false;
+        double neededMethane = vehicle.getInventory().getResourceRemainingCapacity(Resource.METHANE);
+        double storedMethane = settlement.getInventory().getResourceMass(Resource.METHANE);
+        if (neededMethane > storedMethane - 50D) enoughSupplies = false;
 
         double neededOxygen = vehicle.getInventory().getResourceRemainingCapacity(Resource.OXYGEN);
         double storedOxygen = settlement.getInventory().getResourceMass(Resource.OXYGEN);
@@ -125,7 +125,7 @@ class LoadVehicle extends Task implements Serializable {
 
         Inventory i = vehicle.getInventory();
 
-        if (i.getResourceRemainingCapacity(Resource.FUEL) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(Resource.METHANE) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.OXYGEN) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.WATER) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.FOOD) > 0D) result = false;

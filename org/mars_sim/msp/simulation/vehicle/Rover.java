@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2003-02-10
  * @author Scott Davis
  */
 
@@ -21,7 +21,7 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     private static final double BASE_SPEED = 30D; // Base speed of rover in kph.
     private static final double BASE_MASS = 10000D; // Base mass of rover in kg.
     private static final double CARGO_CAPACITY = 10000D; // Cargo capacity of rover in kg.
-    private static final double FUEL_CAPACITY = 2500D; // Fuel capacity of rover in kg.
+    private static final double METHANE_CAPACITY = 2500D; // Methane capacity of rover in kg.
     private static final double OXYGEN_CAPACITY = 350D; // Oxygen capacity of rover in kg.
     private static final double WATER_CAPACITY = 1400D; // Water capacity of rover in kg.
     private static final double FOOD_CAPACITY = 525D; // Food capacity of rover in kg.
@@ -65,7 +65,7 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
         inventory.setTotalCapacity(CARGO_CAPACITY);
 	
         // Set inventory resource capacities.
-        inventory.setResourceCapacity(Resource.FUEL, FUEL_CAPACITY);
+        inventory.setResourceCapacity(Resource.METHANE, METHANE_CAPACITY);
         inventory.setResourceCapacity(Resource.OXYGEN, OXYGEN_CAPACITY);
         inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
         inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);

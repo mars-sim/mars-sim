@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2003-02-05
+ * @version 2.75 2003-02-10
  * @author Scott Davis
  */
 
@@ -54,12 +54,12 @@ class UnloadVehicle extends Task implements Serializable {
 	
         double amountUnloading = UNLOAD_RATE * time;
 
-        // Unload fuel
-	    double fuelAmount = vehicle.getInventory().getResourceMass(Resource.FUEL);
-        if (fuelAmount > amountUnloading) fuelAmount = amountUnloading;
-	    vehicle.getInventory().removeResource(Resource.FUEL, fuelAmount);
-        settlement.getInventory().addResource(Resource.FUEL, fuelAmount);
-        amountUnloading -= fuelAmount;
+        // Unload methane
+	    double methaneAmount = vehicle.getInventory().getResourceMass(Resource.METHANE);
+        if (methaneAmount > amountUnloading) methaneAmount = amountUnloading;
+	    vehicle.getInventory().removeResource(Resource.METHANE, methaneAmount);
+        settlement.getInventory().addResource(Resource.METHANE, methaneAmount);
+        amountUnloading -= methaneAmount;
 
         // Unload oxygen. 
         double oxygenAmount = vehicle.getInventory().getResourceMass(Resource.OXYGEN);
@@ -102,7 +102,7 @@ class UnloadVehicle extends Task implements Serializable {
     static public boolean isFullyUnloaded(Vehicle vehicle) {
         boolean result = true;
 
-        if (vehicle.getInventory().getResourceMass(Resource.FUEL) != 0D) result = false;
+        if (vehicle.getInventory().getResourceMass(Resource.METHANE) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Resource.OXYGEN) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Resource.WATER) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Resource.FOOD) != 0D) result = false;

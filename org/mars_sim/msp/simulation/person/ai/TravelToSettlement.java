@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.75 2003-02-05
+ * @version 2.75 2003-02-10
  * @author Scott Davis
  */
 
@@ -346,7 +346,7 @@ class TravelToSettlement extends Mission implements Serializable {
 
         Inventory i = rover.getInventory();
 
-        if (i.getResourceRemainingCapacity(Resource.FUEL) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(Resource.METHANE) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.OXYGEN) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.WATER) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.FOOD) > 0D) result = false;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2003-02-10
  * @author Scott Davis
  */
 
@@ -55,8 +55,6 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
     
         // Set inventory resource capacities.
         SimulationProperties properties = mars.getSimulationProperties();
-        double fuelCap = properties.getSettlementFuelStorageCapacity();
-        inventory.setResourceCapacity(Resource.FUEL, fuelCap);
         double oxygenCap = properties.getSettlementOxygenStorageCapacity();
         inventory.setResourceCapacity(Resource.OXYGEN, oxygenCap);
         double waterCap = properties.getSettlementWaterStorageCapacity();
@@ -68,8 +66,6 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         inventory.setResourceCapacity(Resource.METHANE, 10000D);
 
         // Set random initial resources from 1/4 to total capacity.
-        double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(3D * fuelCap / 4D);
-        inventory.addResource(Resource.FUEL, fuel); 
         double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(3D * oxygenCap / 4D);
         inventory.addResource(Resource.OXYGEN, oxygen); 
         double water = (waterCap / 4D) + RandomUtil.getRandomDouble(3D * waterCap / 4D);

@@ -21,7 +21,6 @@ public class Resource {
     public static final String CARBON_DIOXIDE = "carbon dioxide";
     public static final String CARBON_MONOXIDE = "carbon monoxide";
     public static final String FOOD = "food";
-    public static final String FUEL = "fuel";
     public static final String ROCK_SAMPLES = "rock samples";
     
     // Private constructor

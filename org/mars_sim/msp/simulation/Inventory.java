@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resource.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2003-02-10
  * @author Scott Davis 
  */
 
@@ -37,7 +37,6 @@ public class Inventory implements Serializable {
         containedResources.put(Resource.WATER, new Double(0D));
 	    containedResources.put(Resource.OXYGEN, new Double(0D));
 	    containedResources.put(Resource.FOOD, new Double(0D));
-	    containedResources.put(Resource.FUEL, new Double(0D));
 	    containedResources.put(Resource.ROCK_SAMPLES, new Double(0D));
         containedResources.put(Resource.HYDROGEN, new Double(0D));
         containedResources.put(Resource.METHANE, new Double(0D));
