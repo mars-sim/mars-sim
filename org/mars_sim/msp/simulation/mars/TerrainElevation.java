@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TerrainElevation.java
- * @version 2.75 2003-12-20
+ * @version 2.76 2004-07-15
  * @author Scott Davis
  */
 
@@ -25,6 +25,10 @@ public class TerrainElevation {
 	private static final int MAP_HEIGHT = 1440; // Source map height in pixels.
 	private static final int MAP_WIDTH = 2880; // Source map width in pixels.
 	private static final double TWO_PI = Math.PI * 2D;
+	private static final double OLYMPUS_MONS_CALDERA_PHI = 1.246165D;
+	private static final double OLYMPUS_MONS_CALDERA_THETA = 3.944444D;
+	private static final double ASCRAEUS_MONS_PHI = 1.363102D;
+	private static final double ASCRAEUS_MONS_THETA = 4.459316D;
 
 	//	Data members
 	private ArrayList topoColors = null;
@@ -40,8 +44,8 @@ public class TerrainElevation {
 			topoColors = loadMapData(MAP_FILE, index);
 		}
 		catch (IOException e) {
-			System.out.println("Could not find map data files.");
-			System.out.println(e.toString());
+			System.err.println("Could not find map data files.");
+			System.err.println(e.toString());
 		}
     }
     
@@ -125,6 +129,9 @@ public class TerrainElevation {
 		while (phi > Math.PI) phi-= Math.PI;
 		while (phi < 0) phi+= Math.PI;
         
+        // Add PI to theta for offset.
+        theta+= Math.PI;
+        
 		// Make sure theta is between 0 and 2 PI.
 		while (theta > TWO_PI) theta-= TWO_PI;
 		while (theta < 0) theta+= TWO_PI;
@@ -176,10 +183,43 @@ public class TerrainElevation {
         
         // Determine elevation in kilometers.
         elevation = elevation / 1000D;
+        
+        // Patch elevation problems at certain locations.
+		elevation = patchElevation(elevation, location);
 
         return elevation;
     }
     
+    /**
+     * Patches elevation errors around mountain tops.
+     * @param elevation the original elevation for the location.
+     * @param location the coordinates
+     * @return the patched elevation for the location
+     */
+    private double patchElevation(double elevation, Coordinates location) {
+    	double result = elevation;
+    	
+    	// Patch errors at Olympus Mons caldera.
+		if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .04D) {
+			if (Math.abs(location.getPhi() - OLYMPUS_MONS_CALDERA_PHI) < .04D) {
+				if (elevation < 3D) result = 20D;
+			}
+    	}
+    	
+    	// Patch errors at Ascraeus Mons.
+		if (Math.abs(location.getTheta() - ASCRAEUS_MONS_THETA) < .02D) {
+			if (Math.abs(location.getPhi() - ASCRAEUS_MONS_PHI) < .02D) {
+				if (elevation < 3D) result = 20D;
+			}
+		}
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets the cached topographical colors.
+     * @return array list of colors.
+     */
     public ArrayList getTopoColors() {
     	return topoColors;
     }
