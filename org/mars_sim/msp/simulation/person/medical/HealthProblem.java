@@ -175,6 +175,7 @@ public class HealthProblem implements Serializable {
         if ((state == DEGRADING) || (state == TREATMENT)) {
             // If no recovery period, then it's done.
             duration = illness.getRecoveryPeriod();
+	    timePassed = 0;
             if (duration != 0D) {
                 state = RECOVERING;
             }
@@ -211,19 +212,21 @@ public class HealthProblem implements Serializable {
                 }
             }
             else if (state == DEGRADING) {
-                // Illness has moved to next phase, if null then dead
-                Complaint nextPhase = illness.getNextPhase();
-                if (usedAid != null) {
-                    usedAid.stopTreatment(this);
-                }
+		if (duration != 0D) {
+                    // Illness has moved to next phase, if null then dead
+                    Complaint nextPhase = illness.getNextPhase();
+                    if (usedAid != null) {
+                        usedAid.stopTreatment(this);
+                    }
 
-                if (nextPhase == null) {
-                    state = DEAD;
-                    condition.setDead(illness);
-                }
-                else {
-                    result = nextPhase;
-                }
+                    if (nextPhase == null) {
+                        state = DEAD;
+                        condition.setDead(illness);
+                    }
+                    else {
+                        result = nextPhase;
+                    }
+		}
             }
             else if (state == TREATMENT) {
                 if ((usedAid != null) &&
@@ -233,9 +236,8 @@ public class HealthProblem implements Serializable {
                 }
                 startRecovery();
             }
-
-
         }
+
         return result;
     }
 
