@@ -200,6 +200,7 @@ public class UnitManager implements Serializable {
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace(System.err);
 			throw new Exception("Settlements could not be created: " + e.getMessage());
 		}
     }
@@ -256,7 +257,7 @@ public class UnitManager implements Serializable {
      * @throws Exception if error during time passing.
      */
     void timePassing(double time) throws Exception {
-        UnitIterator i = units.iterator();
+        UnitIterator i = getUnits().iterator();
         while (i.hasNext()) i.next().timePassing(time);
     }
 
@@ -331,7 +332,6 @@ public class UnitManager implements Serializable {
      *  @return UnitColleciton of units
      */
     public UnitCollection getUnits() {
-        //return new UnitCollection(units);
-        return units;
+        return new UnitCollection(units);
     }
 }

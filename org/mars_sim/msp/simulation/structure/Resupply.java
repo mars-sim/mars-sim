@@ -1,0 +1,133 @@
+/**
+ * Mars Simulation Project
+ * Resupply.java
+ * @version 2.76 2004-07-06
+ * @author Scott Davis
+ */
+package org.mars_sim.msp.simulation.structure;
+
+import java.io.Serializable;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.time.MarsClock;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+
+/**
+ * Resupply mission from Earth for a settlement.
+ */
+public class Resupply implements Serializable {
+
+	// Data members
+	private String resupplyName;
+	private Settlement settlement;
+	private MarsClock arrivalDate;
+	private boolean isDelivered;
+	private List newBuildings;
+	private List newVehicles;
+	private int newImmigrantNum;
+	private Map newResources;
+
+	/**
+	 * Constructor
+	 * @param arrivalDate the arrival date of the supplies. 
+	 * @param resupplyName the name of the resupply mission.
+	 * @param settlement the settlement receiving the supplies.
+	 */
+	Resupply(MarsClock arrivalDate, String resupplyName, Settlement settlement) throws Exception {
+		
+		// Initialize data members.
+		this.arrivalDate = arrivalDate;
+		this.resupplyName = resupplyName;
+		this.settlement = settlement;
+		isDelivered = false;
+		
+		// Get resupply info from the config file.
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		SettlementConfig config = simConfig.getSettlementConfiguration();
+		
+		// Get new building types.
+		newBuildings = config.getResupplyBuildingTypes(resupplyName);
+			
+		// Get new vehicle types.
+		newVehicles = config.getResupplyVehicleTypes(resupplyName);
+			
+		// Get number of new immigrants.
+		newImmigrantNum = config.getNumberOfResupplyImmigrants(resupplyName);
+			
+		// Get new resources map.
+		newResources = config.getResupplyResources(resupplyName);
+	}
+	
+	/**
+	 * Gets the arrival date of the resupply mission.
+	 * @return arrival date as MarsClock instance.
+	 */
+	public MarsClock getArrivalDate() {
+		return (MarsClock) arrivalDate.clone();
+	}
+	
+	/**
+	 * Gets the name of the resupply mission.
+	 * @return name
+	 */
+	public String getResupplyName() {
+		return resupplyName;
+	}
+	
+	/**
+	 * Checks if the supplies have been delivered to the settlement.
+	 * @return true if delivered
+	 */
+	public boolean isDelivered() {
+		return isDelivered;
+	}
+	
+	/**
+	 * Delivers supplies to the settlement.
+	 * @throws Exception if problem delivering supplies.
+	 */
+	void deliverSupplies() throws Exception {
+		
+		System.out.println(getResupplyName());
+		System.out.println("Delivering supplies to " + settlement.getName());
+		
+		// Deliver buildings.
+		BuildingManager buildingManager = settlement.getBuildingManager();
+		Iterator buildingI = newBuildings.iterator();
+		while (buildingI.hasNext()) {
+			String buildingType = (String) buildingI.next();
+			buildingManager.addBuilding(buildingType);
+		}
+		
+		// Deliver vehicles.
+		UnitManager unitManager = Simulation.instance().getUnitManager();
+		Iterator vehicleI = newVehicles.iterator();
+		while (vehicleI.hasNext()) {
+			String vehicleType = (String) vehicleI.next();
+			String vehicleName = unitManager.getNewName(UnitManager.VEHICLE);
+			Rover rover = new Rover(vehicleName, vehicleType, settlement);
+			unitManager.addUnit(rover);
+		}
+		
+		// Deliver resources.
+		Iterator resourcesI = newResources.keySet().iterator();
+		while (resourcesI.hasNext()) {
+			String resourceType = (String) resourcesI.next();
+			double amount = ((Double) newResources.get(resourceType)).doubleValue();
+			settlement.getInventory().addResource(resourceType, amount);
+		}
+		
+		// Deliver immigrants.
+		for (int x = 0; x < newImmigrantNum; x++) {
+			Person immigrant = new Person(unitManager.getNewName(UnitManager.PERSON), settlement);
+			unitManager.addUnit(immigrant);
+		}
+		
+		// Send resupply delivery event. (add later)
+		
+		// Set isDelivered to true;
+		isDelivered = true;
+	}
+}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-07-02
  * @author Scott Davis
  */
 
@@ -26,6 +26,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 
     // Data members
     private BuildingManager buildingManager; // The settlement's building manager.
+    private ResupplyManager resupplyManager; // The settlement's resupply manager.
     private PowerGrid powerGrid; // The settlement's building power grid.
     private String template; // The settlement template name.
 
@@ -45,8 +46,11 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 		// Set inventory total mass capacity.
 		inventory.setTotalCapacity(Double.MAX_VALUE);
         
-        // Initialize data members
+        // Initialize building manager
         buildingManager = new BuildingManager(this);
+        
+        // Initialize resupply manager
+        resupplyManager = new ResupplyManager(this);
        
         // Initialize power grid
         powerGrid = new PowerGrid(this);
@@ -242,6 +246,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 		}
         
         try {
+        	// Deliver supplies to settlement if they arrive.
+        	resupplyManager.timePassing(time);
+        	
         	// If no current population at settlement, power down buildings.
         	if (getCurrentPopulationNum() == 0) {
         		getPowerGrid().setPowerMode(PowerGrid.POWER_DOWN_MODE);
@@ -292,12 +299,19 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     }
     
     /**
-     * Gets the settlement's building manager.
-     * 
+     * Gets the settlement's building manager. 
      * @return building manager
      */
     public BuildingManager getBuildingManager() {
         return buildingManager;
+    }
+    
+    /**
+     * Gets the settlement's resupply manager.
+     * @return resupply manager
+     */
+    public ResupplyManager getResupplyManager() {
+    	return resupplyManager;
     }
     
     /**

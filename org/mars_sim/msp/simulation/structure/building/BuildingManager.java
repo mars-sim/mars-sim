@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.76 2004-06-10
+ * @version 2.76 2004-07-02
  * @author Scott Davis
  */
  
@@ -43,7 +43,7 @@ public class BuildingManager implements Serializable {
         Iterator i = config.getTemplateBuildingTypes(settlement.getTemplate()).iterator();
         while (i.hasNext()) {
         	String buildingType = (String) i.next();
-        	buildings.add(new Building(buildingType, this));
+        	addBuilding(buildingType);
         }
     }
     
@@ -63,6 +63,16 @@ public class BuildingManager implements Serializable {
      */
     public void addBuilding(Building newBuilding) {
         if (!buildings.contains(newBuilding)) buildings.add(newBuilding);
+    }
+    
+    /**
+     * Adds a building of a specific building type to the settlement.
+     * @param buildingType the type of building.
+     * @throws Exception if error creating or adding building.
+     */
+    public void addBuilding(String buildingType) throws Exception {
+    	Building newBuilding = new Building(buildingType, this);
+    	addBuilding(newBuilding);
     }
     
     /**

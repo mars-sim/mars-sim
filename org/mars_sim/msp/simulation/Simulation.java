@@ -95,9 +95,9 @@ public class Simulation implements Serializable {
 		missionManager = new MissionManager();
 		medicalManager = new MedicalManager();
 		jobManager = new JobManager();
+		masterClock = new MasterClock();
 		unitManager = new UnitManager();
 		unitManager.constructInitialUnits();
-		masterClock = new MasterClock();
 	}
 	
 	/**
