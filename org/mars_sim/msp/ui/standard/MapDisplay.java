@@ -27,6 +27,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private UIProxyManager proxyManager; // Unit UI proxy manager
     private NavigatorWindow navWindow; // Navigator Tool Window
     private Map surfMap; // Surface image object
+    private Map usgsMap; // USGS surface image object
     private Map topoMap; // Topographical image object
     private boolean wait; // True if map is in pause mode
     private Coordinates centerCoords; // Spherical coordinates for center point of map
@@ -35,6 +36,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private boolean recreate; // True if surface needs to be regenerated
     private boolean labels; // True if units should display labels
     private Image mapImage; // Main image
+    private boolean useUSGSMap;  // True if USGS surface map is to be used
 
     private int width;
     private int height;
@@ -42,10 +44,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     // Constant data members
     private static final double HALF_PI = (Math.PI / 2D);
     private static final int HALF_MAP = 150;
-    private static final double HALF_MAP_ANGLE = .48587D;
-
-    public static final int LOCAL_SURFACE_IMAGE = 0;
-    public static final int INTERNET_SURFACE_IMAGE = 1;
+    private static final double HALF_MAP_ANGLE_STANDARD = .48587D;
+    private static final double HALF_MAP_ANGLE_USGS = .06106D;
 
     /** Constructs a MapDisplay object
      *  @param navWindow the navigator window pane
@@ -54,7 +54,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  @param height the height of the map shown
      */
     public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager,
-            int width, int height, int surfaceImageSource) {
+            int width, int height) {
 
         // Initialize data members
         this.navWindow = navWindow;
@@ -79,22 +79,25 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         // Set mouse listener
         addMouseListener(this);
 
-        // Create surface objects for both real and topographical modes
+        // Create surface objects for both real, USGS and topographical modes
         topoMap = new TopoMarsMap(this);
-        selectSurfaceImageSource(surfaceImageSource);
+        surfMap = new SurfMarsMap(this);
+        usgsMap = new USGSMarsMap(this);
+        useUSGSMap = false;
 
         // initially show real surface map (versus topo map)
         showSurf();
     }
 
-    public void selectSurfaceImageSource(int surfaceImageSource) {
-        if (surfaceImageSource == LOCAL_SURFACE_IMAGE) {
-            surfMap = new SurfMarsMap(this);
-        } else {
-            surfMap = new USGSMarsMap(this);
-        }
-    }
-
+	/** Set USGS as surface map
+     *  @param useUSGSMap true if using USGS map.
+     */
+    public void setUSGSMap(boolean useUSGSMap) {
+    	if (!topo && (this.useUSGSMap != useUSGSMap)) 
+    		recreate = true;
+    	this.useUSGSMap = useUSGSMap;
+   	}
+	
     /** Change label display flag
      *  @param labels true if labels are to be displayed
      */
@@ -160,17 +163,17 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
             if (recreate) {
                 // Regenerate surface if recreate is true, then display
-                if (topo) {
-                    topoMap.drawMap(centerCoords);
-                } else {
-                    surfMap.drawMap(centerCoords);
+                if (topo) topoMap.drawMap(centerCoords);
+                else {
+                	if (useUSGSMap) usgsMap.drawMap(centerCoords);
+                	else surfMap.drawMap(centerCoords);
                 }
                 recreate = false;
                 repaint();
             } else {
-                // Pause for 2000 milliseconds between display refreshs
+                // Pause for 1000 milliseconds between display refreshs
                 try {
-                    showThread.sleep(2000);
+                    showThread.sleep(1000);
                 } catch (InterruptedException e) {}
                 repaint();
             }
@@ -188,7 +191,10 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             // If in waiting mode, display "Preparing Map..."
             if (mapImage != null)
                 g.drawImage(mapImage, 0, 0, this);
-            g.setColor(Color.green);
+                
+            if (topo) g.setColor(Color.black);
+            else g.setColor(Color.green);
+            
             String message = "Preparing Map...";
             Font alertFont = new Font("TimesRoman", Font.BOLD, 30);
             FontMetrics alertMetrics = getFontMetrics(alertFont);
@@ -204,8 +210,13 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             g.setColor(Color.black);
             g.fillRect(0, 0, width, height);
 
-            // Paint topo or real surface image
-            Map map = topo ? topoMap : surfMap;
+            // Paint topo, real or USGS surface image
+            Map map = null;
+            if (topo) map = topoMap;
+            else {
+            	if (useUSGSMap) map = usgsMap;
+            	else map = surfMap;
+           	}
 
             if (map.isImageDone()) {
                 mapImage = map.getMapImage();
@@ -224,7 +235,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         for (int x = 0; x < proxies.length; x++) {
             if (proxies[x].isMapDisplayed()) {
                 Coordinates unitCoords = proxies[x].getUnit().getCoordinates();
-                if (centerCoords.getAngle(unitCoords) < HALF_MAP_ANGLE) {
+                double angle = 0D;
+                if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
+                else angle = HALF_MAP_ANGLE_STANDARD;
+                
+                if (centerCoords.getAngle(unitCoords) < angle) {
                     IntPoint rectLocation = getUnitRectPosition(unitCoords);
                     Image positionImage = proxies[x].getSurfMapIcon().getImage();
                     IntPoint imageLocation =
@@ -259,9 +274,13 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  on mouse release. */
     public void mouseReleased(MouseEvent event) {
 
+		double rho;
+		if (useUSGSMap && !topo) rho = 11458D / Math.PI;
+		else rho = 1440D / Math.PI;
+		
         Coordinates clickedPosition = centerCoords.convertRectToSpherical(
                 (double)(event.getX() - HALF_MAP - 1),
-                (double)(event.getY() - HALF_MAP - 1));
+                (double)(event.getY() - HALF_MAP - 1), rho);
         boolean unitsClicked = false;
 
         UnitUIProxy[] proxies = proxyManager.getUIProxies();
@@ -271,7 +290,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             if (proxies[x].isMapDisplayed()) {
                 Coordinates unitCoords = proxies[x].getUnit().getCoordinates();
                 double clickRange = unitCoords.getDistance(clickedPosition);
-                if (clickRange < proxies[x].getMapClickRange()) {
+                double unitClickRange = proxies[x].getMapClickRange();
+                if (useUSGSMap && !topo) unitClickRange *= .1257D;
+                if (clickRange < unitClickRange) {
                     navWindow.openUnitWindow(proxies[x]);
                     unitsClicked = true;
                 }
@@ -293,8 +314,18 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      */
     private IntPoint getUnitRectPosition(Coordinates unitCoords) {
 
-        double rho = 1440D / Math.PI;
-        int half_map = 720;
+		double rho;
+		int half_map;
+		
+		if (useUSGSMap && !topo) {
+			rho = 11458D / Math.PI;
+			half_map = 11458 / 2;
+		}
+		else {
+			rho = 1440D / Math.PI;
+        	half_map = 1440 / 2;
+       	}
+       	
         int low_edge = half_map - 150;
 
         return Coordinates.findRectPosition(unitCoords, centerCoords, rho,

@@ -84,7 +84,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         topMainPane.add(Box.createHorizontalStrut(5));
 
         // Prepare surface map display
-        map = new MapDisplay(this, desktop.getProxyManager(), 300, 300, MapDisplay.LOCAL_SURFACE_IMAGE);
+        map = new MapDisplay(this, desktop.getProxyManager(), 300, 300);
         JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
@@ -192,10 +192,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     }
 
     /** Change topographical mode
-      *  Redraw legend
-      *  Redraw map and globe if necessary
-      *  @param topoMode true if in topographical mode
-      */
+     *  Redraw legend
+     *  Redraw map and globe if necessary
+     *  @param topoMode true if in topographical mode
+     */
     public void updateTopo(boolean topoMode) {
         if (topoMode) {
             legend.showColor();
@@ -207,6 +207,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
             map.showSurf();
         }
     }
+    
+    /** Set USGS as surface map
+     *  @param useUSGSMap true if using USGS map.
+     */
+    public void setUSGSMap(boolean useUSGSMap) {
+    	globeNav.setUSGSMap(useUSGSMap);
+    	map.setUSGSMap(useUSGSMap);
+    	legend.setUSGSMode(useUSGSMap);
+    	if (!topoCheck.isSelected()) legend.showMap();
+   	}
 
     /** ActionListener method overridden */
     public void actionPerformed(ActionEvent event) {

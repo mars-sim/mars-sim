@@ -27,6 +27,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     private boolean recreate; // True if globe needs to be regenerated
     private int width; // width of the globe display component
     private int height; // height of the globe display component
+    private boolean useUSGSMap;  // True if USGS surface map is to be used
 
     private static final double HALF_PI = (Math.PI / 2);
 
@@ -54,6 +55,7 @@ class GlobeDisplay extends JComponent implements Runnable {
         centerCoords = new Coordinates(HALF_PI, 0D);
         topo = false;
         recreate = true;
+        useUSGSMap = false;
 
         // Initially show real surface globe
         showSurf();
@@ -161,17 +163,28 @@ class GlobeDisplay extends JComponent implements Runnable {
 
     /** Draw green rectanges and lines (cross-hair type thingy), and
       *  write the latitude and logitude of the centerpoint of the
-      *  current glove view. 
+      *  current globe view. 
       *  @param g graphics context
       */
     protected void drawCrossHair(Graphics g) {
         g.setColor(Color.green);
 
-        g.drawRect(57, 57, 31, 31);
-        g.drawLine(0, 73, 57, 73);
-        g.drawLine(90, 73, 149, 73);
-        g.drawLine(73, 0, 73, 57);
-        g.drawLine(73, 90, 73, 149);
+		// If USGS map is used, use small crosshairs.
+		if (useUSGSMap & !topo) {
+			g.drawRect(70, 70, 6, 6);
+			g.drawLine(0, 73, 70, 73);
+			g.drawLine(77, 73, 149, 73);
+			g.drawLine(73, 0, 73, 70);
+			g.drawLine(73, 77, 73, 149);
+		}
+		// If not USGS map, use large crosshairs.
+		else {
+        	g.drawRect(57, 57, 31, 31);
+        	g.drawLine(0, 73, 57, 73);
+        	g.drawLine(90, 73, 149, 73);
+        	g.drawLine(73, 0, 73, 57);
+        	g.drawLine(73, 90, 73, 149);
+        }
 
         // Prepare font
         Font positionFont = new Font("Helvetica", Font.PLAIN, 10);
@@ -209,4 +222,11 @@ class GlobeDisplay extends JComponent implements Runnable {
         return Coordinates.findRectPosition(unitCoords, centerCoords, rho,
                 half_map, low_edge);
     }
+    
+    /** Set USGS as surface map
+     *  @param useUSGSMap true if using USGS map.
+     */
+    public void setUSGSMap(boolean useUSGSMap) {
+    	this.useUSGSMap = useUSGSMap;
+   	}
 }

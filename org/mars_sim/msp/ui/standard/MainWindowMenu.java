@@ -64,7 +64,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	add(optionsMenu);
 		
 	// choose terrain image source from web
-	terrainFromWebItem = new JCheckBoxMenuItem("Terrain From Web", false);
+	terrainFromWebItem = new JCheckBoxMenuItem("Use USGS Map", false);
 	terrainFromWebItem.addActionListener(this);
 	optionsMenu.add(terrainFromWebItem);
 		
@@ -103,12 +103,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		
 	if (selectedItem == terrainFromWebItem) {
 	    NavigatorWindow nw = (NavigatorWindow)(mainWindow.getToolWindow("Mars Navigator"));
-	    MapDisplay mapDisplay = nw.getMapDisplay();
-	    if (terrainFromWebItem.isSelected()) {
-		mapDisplay.selectSurfaceImageSource(MapDisplay.INTERNET_SURFACE_IMAGE);
-	    } else {
-		mapDisplay.selectSurfaceImageSource(MapDisplay.LOCAL_SURFACE_IMAGE);
-	    }
+	    nw.setUSGSMap(terrainFromWebItem.isSelected());
 	}
 		
 	if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);

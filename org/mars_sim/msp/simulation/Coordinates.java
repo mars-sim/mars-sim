@@ -263,14 +263,24 @@ public class Coordinates {
         return new IntPoint(buff_x - low_edge, buff_y - low_edge);
     }
 
-    /** Converts linear rectangular XY position change to spherical coordinates 
+	/** Converts linear rectangular XY position change to spherical coordinates 
      *  @param x change in x value (in km)
      *  @param y change in y value (in km)
+     *  @param rho rho value of map used
      *  @return new spherical location
      */
     public Coordinates convertRectToSpherical(double x, double y) {
+    	return convertRectToSpherical(x, y, HALF_CIRCUM_PIXELS / Math.PI);
+   	}
 
-        double rho = HALF_CIRCUM_PIXELS / Math.PI;
+    /** Converts linear rectangular XY position change to spherical coordinates 
+     *  with rho value for map.
+     *  @param x change in x value (in km)
+     *  @param y change in y value (in km)
+     *  @param rho rho value of map used
+     *  @return new spherical location
+     */
+    public Coordinates convertRectToSpherical(double x, double y, double rho) {
 
         double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
 
