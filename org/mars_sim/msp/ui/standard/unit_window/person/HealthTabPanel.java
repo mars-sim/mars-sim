@@ -7,15 +7,25 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.text.DecimalFormat;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.medical.*;
-import org.mars_sim.msp.ui.standard.*;
+import java.util.Iterator;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
+import org.mars_sim.msp.simulation.person.medical.HealthProblem;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
 
@@ -134,7 +144,7 @@ public class HealthTabPanel extends TabPanel {
         // Update performance cache if necessary.
         if (performanceCache != (person.getPerformanceRating() * 100D)) {
             performanceCache = person.getPerformanceRating() * 100D;
-            performanceLabel.setText(formatter.format(hungerCache) + "%");
+            performanceLabel.setText(formatter.format(performanceCache) + "%");
         }
         
         // Update health problem table model.
