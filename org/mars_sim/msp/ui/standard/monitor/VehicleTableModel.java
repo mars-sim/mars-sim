@@ -138,7 +138,12 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case DRIVER : {
-                result = vehicle.getDriver().getName();
+                if (vehicle.getDriver() != null) {
+                    result = vehicle.getDriver().getName();
+		}
+		else {
+                    result = null;
+		}
             } break;
 
             // Status is a combination of Mechincal failure and maintenance
