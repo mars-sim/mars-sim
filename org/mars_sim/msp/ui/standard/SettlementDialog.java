@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementDialog.java
- * @version 2.71 2000-10-23
+ * @version 2.71 2001-1-29
  * @author Scott Davis
  */
 
@@ -119,7 +119,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         // Prepare and add each facility pane
         FacilityManager facilityManager = settlement.getFacilityManager();
         
-        facilityPanes = new FacilityPanel[5];
+        facilityPanes = new FacilityPanel[6];
         
         // Prepare greenhouse pane
         GreenhouseFacility greenhouse = (GreenhouseFacility) facilityManager.getFacility("Greenhouse");
@@ -150,6 +150,12 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         StoreroomFacilityPanel storeroomPane = new StoreroomFacilityPanel(storeroom, parentDesktop);
         tabPane.add(storeroomPane, storeroomPane.getTabName());
         facilityPanes[4] = storeroomPane;
+
+        // Prepare INSITU resoruce processor pane
+        InsituResourceProcessorFacility processor = (InsituResourceProcessorFacility) facilityManager.getFacility("INSITU Resource Processor");
+        InsituResourceProcessorFacilityPanel processorPane = new InsituResourceProcessorFacilityPanel(processor, parentDesktop);
+        tabPane.add(processorPane, processorPane.getTabName());
+        facilityPanes[5] = processorPane;
     }
 
     /** Prepare vehicles pane 
