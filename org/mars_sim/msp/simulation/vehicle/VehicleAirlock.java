@@ -46,7 +46,11 @@ public class VehicleAirlock extends Airlock {
         
         if (inAirlock(person)) {
             if (pressurized) inv.addUnit(person);
-            else inv.dropUnitOutside(person);
+            else {
+            	// Drop person outside.  If person, for some reason, is not in vehicle,
+            	// put them outside anyway.
+            	if (!inv.dropUnitOutside(person)) person.setContainerUnit(null);
+            } 
         }
         else throw new Exception(person.getName() + " not in airlock of " + getEntityName());
     }

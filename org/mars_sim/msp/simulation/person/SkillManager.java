@@ -129,7 +129,9 @@ public class SkillManager implements Serializable {
             addExperience(skillName, experiencePoints);
         }
         
-        // int finalSkill = getSkillLevel(skillName);
-        // if (finalSkill > initialSkill) System.out.println(person.getName() + " increases " + skillName + " skill to " + finalSkill);
+        int finalSkill = getSkillLevel(skillName);
+        // if (finalSkill > initialSkill) 
+        //	System.out.println(person.getMind().getJob().getName() + " " + person.getName() + 
+		//		" increases " + skillName + " skill to " + finalSkill);
     }
 }
