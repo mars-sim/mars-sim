@@ -155,6 +155,7 @@ class PieChartTab extends MonitorTab {
 
         pieModel = new TablePieDataset(model, column);
         chart = ChartFactory.createPieChart(title, pieModel, true);
+        chart.setChartBackgroundPaint(getBackground());
         pieModel.calculate();
 
         // then customise it a little...

@@ -11,7 +11,7 @@ import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
-import java.awt.Component;
+import javax.swing.JComponent;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +31,10 @@ class BarChartTab extends MonitorTab {
 
     public final static Icon BARICON = new ImageIcon("images/BarChart.gif");
 
-    private final static int MAXLABEL = 12;
-    private final static int COLUMNWIDTH = 2;
-    private final static int LABELWIDTH = 10;
+    private final static int MAXLABEL = 12;         // Maximum label length
+    private final static int COLUMNWIDTH = 4;
+    private final static int LABELWIDTH = 8;
+    private final static int SCROLLTHRESHOLD = 400; // Large non-scroll chart
 
     /**
      *  Basic Bar Dataset to map a table model onto a Category Data set for
@@ -179,18 +180,23 @@ class BarChartTab extends MonitorTab {
         if (columnWidth < LABELWIDTH) {
             columnWidth = LABELWIDTH;
         }
-        int chartwidth = columnWidth * barModel.getCategoryCount();
 
-        Component panel = new JFreeChartPanel(chart);
-        Dimension size = panel.getSize();
-        /*
-        if (chartwidth > size.width) {
-            size.width = chartwidth;
-            panel.setSize(size);
+        // Create a panel for chart
+        JComponent panel = new JFreeChartPanel(chart);
+        chart.setChartBackgroundPaint(getBackground());
+
+        // Check the width for possible scrolling
+        int chartwidth = columnWidth * barModel.getCategoryCount();
+        System.out.println("Calculated width = " + chartwidth);
+        if (chartwidth > SCROLLTHRESHOLD) {
+            // Scrolling will kick in, then fix the hieght so that it
+            // automatically adjusts to Scroll Viewport hieght; the width
+            // fix so that label are not too compressed.
+            Dimension preferredSize = new Dimension(chartwidth, 0);
+            panel.setPreferredSize(preferredSize);
             panel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         }
-        */
 
         add(panel, "Center");
     }
