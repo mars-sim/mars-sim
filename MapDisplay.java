@@ -121,6 +121,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	}
     }
 
+    /** the run method for the runnable interface */
     public void run() {
 	refreshLoop();
     }
@@ -177,72 +178,68 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	    g.fillRect(0, 0, width, height);
 	    
 	    // Paint topo or real surface image
-	    boolean image_done = false;
-	    SurfaceMap tempMap;
-	    if (topo) tempMap = topoSurface;
-	    else tempMap = marsSurface;
+	    SurfaceMap map = topo ? topoSurface : marsSurface;
 			
-	    if (tempMap.imageDone) {
-		image_done = true;
-		mapImage = tempMap.getMapImage();
+	    if (map.isImageDone()) {
+		mapImage = map.getMapImage();
 		g.drawImage(mapImage, 0, 0, this);
 	    }
 
 	    // Set unit label color
-	    if (topo) {
-		g.setColor(Color.black);
-	    } else {
-		g.setColor(Color.green);
-	    }
+	    g.setColor(topo ? Color.black : Color.green);
 
-	    // Draw a vehicle symbol for each moving vehicle within the viewing map
-	    g.setFont(new Font("Helvetica", Font.PLAIN, 9));
+	    drawVehicles(g);
+	    drawSettlements(g);
+	}
+    }
+
+    private void drawVehicles(Graphics g) {
+	// Draw a vehicle symbol for each moving vehicle within the viewing map
+	g.setFont(new Font("Helvetica", Font.PLAIN, 9));
 	
-	    UnitInfo[] vehicleInfo = navWindow.getMovingVehicleInfo();
+	UnitInfo[] vehicleInfo = navWindow.getMovingVehicleInfo();
 			
-	    int counter = 0;
-			
-	    for (int x=0; x < vehicleInfo.length; x++) {
-		if (centerCoords.getAngle(vehicleInfo[x].getCoords()) < .48587D) {
-		    IntPoint rectLocation = getUnitRectPosition(vehicleInfo[x].getCoords());
-		    IntPoint imageLocation = getUnitDrawLocation(rectLocation, vehicleSymbol);
-		    if (topo) {
-			g.drawImage(topoVehicleSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
-		    } else {
-			g.drawImage(vehicleSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
-		    }
-		    
-		    if (labels) {
-			IntPoint labelLocation = getLabelLocation(rectLocation, vehicleSymbol);
-			g.drawString(vehicleInfo[x].getName(), labelLocation.getiX(), labelLocation.getiY());	
-		    }
-
-		    counter++;
+	for (int x=0; x < vehicleInfo.length; x++) {
+	    if (centerCoords.getAngle(vehicleInfo[x].getCoords()) < .48587D) {
+		IntPoint rectLocation = getUnitRectPosition(vehicleInfo[x].getCoords());
+		IntPoint imageLocation = getUnitDrawLocation(rectLocation, vehicleSymbol);
+		if (topo) {
+		    g.drawImage(topoVehicleSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
+		} else {
+		    g.drawImage(vehicleSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
 		}
-	    }
-			
-	    // Draw a settlement symbol for each settlement within the viewing map
-	    g.setFont(new Font("Helvetica", Font.PLAIN, 12));
-
-	    UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
-
-	    for (int x=0; x < settlementInfo.length; x++) {
-		if (centerCoords.getAngle(settlementInfo[x].getCoords()) < .48587D) {
-		    IntPoint rectLocation = getUnitRectPosition(settlementInfo[x].getCoords());
-		    IntPoint imageLocation = getUnitDrawLocation(rectLocation, settlementSymbol);
-		    if (topo) {
-			g.drawImage(topoSettlementSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
-		    } else {
-			g.drawImage(settlementSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
-		    }
-		    if (labels) {
-			IntPoint labelLocation = getLabelLocation(rectLocation, settlementSymbol);
-			g.drawString(settlementInfo[x].getName(), labelLocation.getiX(), labelLocation.getiY());
-		    }
+		    
+		if (labels) {
+		    IntPoint labelLocation = getLabelLocation(rectLocation, vehicleSymbol);
+		    g.drawString(vehicleInfo[x].getName(), labelLocation.getiX(), labelLocation.getiY());	
 		}
 	    }
 	}
     }
+			
+    private void drawSettlements(Graphics g) {
+	// Draw a settlement symbol for each settlement within the viewing map
+	g.setFont(new Font("Helvetica", Font.PLAIN, 12));
+
+	UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
+
+	for (int x=0; x < settlementInfo.length; x++) {
+	    if (centerCoords.getAngle(settlementInfo[x].getCoords()) < .48587D) {
+		IntPoint rectLocation = getUnitRectPosition(settlementInfo[x].getCoords());
+		IntPoint imageLocation = getUnitDrawLocation(rectLocation, settlementSymbol);
+		if (topo) {
+		    g.drawImage(topoSettlementSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
+		} else {
+		    g.drawImage(settlementSymbol, imageLocation.getiX(), imageLocation.getiY(), this);
+		}
+		if (labels) {
+		    IntPoint labelLocation = getLabelLocation(rectLocation, settlementSymbol);
+		    g.drawString(settlementInfo[x].getName(), labelLocation.getiX(), labelLocation.getiY());
+		}
+	    }
+	}
+    }
+
 
     /** MouseListener methods overridden. Perform appropriate action
      *  on mouse release. */

@@ -20,7 +20,7 @@ public class SurfaceMap {
     private String mapType;                   // Either "surface" or "topo"
     private Image mapImage;                   // Finished image of sphere
     private Coordinates centerCoords;         // Center coordinates
-    public boolean imageDone;                 // True if image is complete
+    private boolean imageDone;                 // True if image is complete
     private JComponent displayArea;           // Parent display area
     private int[] index;                      // Map index information
     private long[] sum;                       // Map sum information
@@ -252,6 +252,10 @@ public class SurfaceMap {
 	imageDone = true;
     }
 	
+    public boolean isImageDone() {
+	return imageDone;
+    }
+
     /** Returns map image */
     public Image getMapImage() {
 	return mapImage;
