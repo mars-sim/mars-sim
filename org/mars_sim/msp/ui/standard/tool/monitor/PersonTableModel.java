@@ -125,7 +125,7 @@ public class PersonTableModel extends UnitTableModel {
     }
 
     /**
-     * Defines the soruce data from this table
+     * Defines the source data from this table
      */
     private void setSource(PersonCollection source) {
         PersonIterator iter = source.iterator();
