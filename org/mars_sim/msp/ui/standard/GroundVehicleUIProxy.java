@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleUIProxy.java
- * @version 2.71 2000-10-22
+ * @version 2.71 2001-1-9
  * @author Scott Davis
  */
 
@@ -20,7 +20,7 @@ public class GroundVehicleUIProxy extends VehicleUIProxy {
     private GroundVehicle groundVehicle;
     private static ImageIcon surfMapIcon = new ImageIcon("images/VehicleSymbol.gif");
     private static ImageIcon topoMapIcon = new ImageIcon("images/VehicleSymbolBlack.gif");
-    private static Font mapLabelFont = new Font("Helvetica", Font.PLAIN, 9);
+    private static Font mapLabelFont = new Font("SansSerif", Font.PLAIN, 9);
     private ImageIcon buttonIcon;
     private UnitDialog unitDialog;
 

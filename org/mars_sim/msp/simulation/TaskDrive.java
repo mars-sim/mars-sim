@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskDrive.java
- * @version 2.71 2000-12-09
+ * @version 2.71 2001-1-9
  * @author Scott Davis
  */
 
@@ -262,10 +262,7 @@ class TaskDrive extends Task {
                     stores.removeFuel(neededFuel);
                     vehicle.addFuel(neededFuel);
                 }
-                else {
-                    System.out.println(vehicle.getName() + " cannot acquire enough fuel from " + embarkingSettlement.getName());
-                    resourcesAvailable = false;
-                }
+                else resourcesAvailable = false;
                 
                 // Top off oxygen
                 double neededOxygen = vehicle.getOxygenCapacity() - vehicle.getOxygen();
@@ -273,10 +270,7 @@ class TaskDrive extends Task {
                     stores.removeOxygen(neededOxygen);
                     vehicle.addOxygen(neededOxygen);
                 }
-                else {
-                    System.out.println(vehicle.getName() + " cannot acquire enough oxygen from " + embarkingSettlement.getName());
-                    resourcesAvailable = false;
-                }
+                else resourcesAvailable = false;
                 
                 // Top off water
                 double neededWater = vehicle.getWaterCapacity() - vehicle.getWater();
@@ -284,21 +278,15 @@ class TaskDrive extends Task {
                     stores.removeWater(neededWater);
                     vehicle.addWater(neededWater);
                 }
-                else {
-                    System.out.println(vehicle.getName() + " cannot acquire enough water from " + embarkingSettlement.getName());
-                    resourcesAvailable = false;
-                }
+                else resourcesAvailable = false;
                 
                 // Top off food
                 double neededFood = vehicle.getFoodCapacity() - vehicle.getFood();
-                if (neededFood < stores.getFoodStores() - 50D) {
+                if (neededFood < stores.getFoodStores() - 100D) {
                     stores.removeFood(neededFood);
                     vehicle.addFood(neededFood);
                 }
-                else {
-                    System.out.println(vehicle.getName() + " cannot acquire enough food from " + embarkingSettlement.getName());
-                    resourcesAvailable = false;
-                }
+                else resourcesAvailable = false;
                 
                 // If not enough resources in storage, cancel trip.
                 if (!resourcesAvailable) {

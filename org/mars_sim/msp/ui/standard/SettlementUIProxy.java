@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementUIProxy.java
- * @version 2.71 2000-10-23
+ * @version 2.71 2001-1-9
  * @author Scott Davis
  */
 
@@ -18,7 +18,7 @@ public class SettlementUIProxy extends UnitUIProxy {
     // Data members
     private static ImageIcon surfMapIcon = new ImageIcon("images/SettlementSymbol.gif");
     private static ImageIcon topoMapIcon = new ImageIcon("images/SettlementSymbolBlack.gif");
-    private static Font mapLabelFont = new Font("Helvetica", Font.PLAIN, 12);
+    private static Font mapLabelFont = new Font("SansSerif", Font.PLAIN, 12);
     private static ImageIcon buttonIcon = new ImageIcon("images/SettlementIcon.gif");
     private UnitDialog unitDialog;
 
