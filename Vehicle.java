@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.70 2000-09-01
+ * @version 2.70 2000-09-08
  * @author Scott Davis
  */
 

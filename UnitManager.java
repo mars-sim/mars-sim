@@ -33,7 +33,11 @@ public class UnitManager {
         settlementsVector = new Vector();
         vehiclesVector = new Vector();
         peopleVector = new Vector();
-        
+
+        createEntities();
+    }
+
+    private void createEntities() {
         createSettlements();
         createVehicles();
         createPeople();

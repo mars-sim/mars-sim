@@ -11,8 +11,9 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-/** The NavigatorWindow is a tool window that displays virtual Mars
- *  and allows the user to navigate around.
+/** The NavigatorWindow is a tool window that displays a map and a
+ *  globe showing Mars, and various other elements. It is the primary
+ *  interface component that presents the simulation to the user.
  */
 public class NavigatorWindow extends ToolWindow implements ActionListener, ItemListener {
 

@@ -72,6 +72,7 @@ public abstract class Unit {
 
     // these UI methods will eventually be moved into their own class
 
+    /** should this unit be drawn on the globe or on the map */
     public boolean isDrawn() {
 	return false;
     }
@@ -79,18 +80,22 @@ public abstract class Unit {
     /** Returns a detail window for the unit */
     public abstract UnitDialog getDetailWindow(MainDesktopPane parentDesktop); 
 
+    /** the image to be drawn on the surface map to represent this unit */
     public Image getSurfIcon() {
 	return null;
     }
 
+    /** the image to be drawn on the topo map to represent this unit */
     public Image getTopoIcon() {
 	return null;
     }
 
+    /** the color of this unit's label */
     public Color getLabelColor(boolean topo) {
 	return null;
     }
 
+    /** the font of this unit's label */
     public Font getLabelFont() {
 	return null;
     }

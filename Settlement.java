@@ -101,6 +101,8 @@ public class Settlement extends Unit {
 	facilityManager.timePasses(seconds);
     }
 
+    // UI methods (will be relocated to a seperate class soon)
+
     public boolean isDrawn() {
 	return true;
     }
