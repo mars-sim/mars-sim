@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * PhysicalCondition.java 
+ * PhysicalCondition.java
  * @version 2.74 2002-02-25
  * @author Barry Evans
  */
@@ -8,8 +8,13 @@
 package org.mars_sim.msp.simulation.person;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * This class represents the Physical Condition of a Person. It is models the
@@ -19,11 +24,11 @@ public class PhysicalCondition implements Serializable {
 
 
     private boolean isAlive;            // Is the person alive
-    private MedicalComplaint illness;   // Injury/Illness effecting person
-    private boolean isRecovering;       // Persion is recovering
-    private double illnessDuration;     // Time Physicla condition has been ill
+    private HashMap problems;           // Injury/Illness effecting person
+    private HealthProblem serious;     // Mosr serious problem
     private double fatigue;             // Person's fatigue level
     private double hunger;              // Person's hunger level
+    private double performance;         // Performance factor
     private MedicalManager medic;       // Simulation Medical manager
     private Person person;              // Person's of this physical
 
@@ -36,14 +41,25 @@ public class PhysicalCondition implements Serializable {
      */
     public PhysicalCondition(Person newPerson, VirtualMars mars) {
         isAlive = true;
-        illness = null;
-        isRecovering = false;
-        illnessDuration = 0;
         person = newPerson;
+        problems = new HashMap();
+        performance = 1.0D;
 
         medic = mars.getMedicalManager();
         fatigue = RandomUtil.getRandomDouble(1000D);
         hunger = RandomUtil.getRandomDouble(1000D);
+    }
+
+    /**
+     * Can any of the existing problem be heeled by this FirstAidUnit
+     * @param unit FirstAidUnit that can heal.
+     */
+    void canStartRecovery(MedicalAid unit) {
+        Iterator iter = problems.values().iterator();
+        while(iter.hasNext()) {
+            HealthProblem prob = (HealthProblem)iter.next();
+            prob.canStartRecovery(unit);
+        }
     }
 
     /**
@@ -60,141 +76,165 @@ public class PhysicalCondition implements Serializable {
      */
     boolean timePassing(double time, LifeSupport support,
                         SimulationProperties props) {
+        boolean recalculate = false;
 
-        // If already has an illness then update the time period.
-        if (illness != null) {
-            illnessDuration += time;
+        // Check the existing problems
+        if (!problems.isEmpty()) {
+            ArrayList newProblems = new ArrayList();
 
-            // Recoving so has the recovery period expired
-            if (isRecovering) {
-                if (illnessDuration > illness.getRecoveryPeriod()) {
-                    illness = null;
+            Iterator iter = problems.values().iterator();
+            while(getAlive() && iter.hasNext()) {
+                HealthProblem problem = (HealthProblem)iter.next();
+
+                // Advance each problem, they may change into a worse problem.
+                // If the current is completed or a new problem exists then
+                // remove this one.
+                Complaint next = problem.timePassing(time, this);
+                if (problem.getCured() || (next != null)) {
+                    iter.remove();
+                    recalculate = true;
+                }
+
+                // If a new problem, check it doesn't exist already
+                if (next != null) {
+                    newProblems.add(next);
+
+                    recalculate = true;
                 }
             }
-            else if (illnessDuration > illness.getDegradePeriod()) {
-                // Illness has moved to next phase, if null then dead
-                MedicalComplaint nextPhase = illness.getNextPhase();
-                if (nextPhase == null) {
-                    setDead();
-                }
-                else {
-                    setProblem(nextPhase);
+
+            // Add the new problems
+            Iterator newIter = newProblems.iterator();
+            while(newIter.hasNext()) {
+                Complaint illness = (Complaint)newIter.next();
+                if (!problems.containsKey(illness)) {
+                    problems.put(illness, new HealthProblem(illness, person));
                 }
             }
         }
-        else {
-            // See if a random illness catches this Person out
-            MedicalComplaint newComplaint = medic.getProbableComplaint(person);
-            if (newComplaint != null) {
-                setProblem(newComplaint);
+
+        // See if a random illness catches this Person out if nothing new
+        if (!recalculate) {
+            Complaint randomComplaint = medic.getProbableComplaint(person);
+
+            // New complaint must not exist already
+            if ((randomComplaint != null) &&
+                        !problems.containsKey(randomComplaint)) {
+                problems.put(randomComplaint,
+                                new HealthProblem(randomComplaint, person));
+                recalculate = true;
             }
         }
 
         // Consume necessary oxygen and water.
-        consumeOxygen(support, props.getPersonOxygenConsumption() * (time / 1000D));
-        consumeWater(support, props.getPersonWaterConsumption() * (time / 1000D));
-	requireAirPressure(support, props.getPersonMinAirPressure());
-	requireTemperature(support, props.getPersonMinTemperature());
+        recalculate |= consumeOxygen(support, props.getPersonOxygenConsumption() * (time / 1000D));
+        recalculate |= consumeWater(support, props.getPersonWaterConsumption() * (time / 1000D));
+	    recalculate |= requireAirPressure(support, props.getPersonMinAirPressure());
+	    recalculate |= requireTemperature(support, props.getPersonMinTemperature());
 
         // Build up fatigue & hunger for given time passing.
         fatigue += time;
         hunger += time;
 
-
+        if (recalculate) {
+            recalculate();
+        }
         return isAlive;
     }
 
     /** Person consumes given amount of food
      *  @param amount amount of food to consume (in kg).
-     *  @param container unit to get food from 
+     *  @param holder unit to get food from
      *  @param props Simulation proerties.
      */
     public void consumeFood(double amount, Unit container,
                             SimulationProperties props) {
-        double amountRecieved = container.getInventory().removeResource(Inventory.FOOD, amount);
+        double amountRecieved =
+                container.getInventory().removeResource(Inventory.FOOD, amount);
 
-        if (amountRecieved != amount) {
-            setProblem(medic.getStarvation());
-        }
-        else {
-            // If Person is straving, then start recovery has there is food
-            if ((illness != null) && illness.equals(medic.getStarvation())) {
-                startRecovery();
-            }
+        if (checkResourceConsumption(amountRecieved, amount,
+                                     medic.getStarvation())) {
+            recalculate();
         }
     }
 
     /** Person consumes given amount of oxygen
      *  @param support Life support system providing oxygen.
      *  @param amount amount of oxygen to consume (in kg)
+     *  @return new problem added.
      */
-    private void consumeOxygen(LifeSupport support, double amount) {
+    private boolean consumeOxygen(LifeSupport support, double amount) {
         double amountRecieved = support.provideOxygen(amount);
 
-        if (amountRecieved != amount) {
-            setProblem(medic.getSuffocation());
-        }
-        else {
-            // If Person is suffocating, then start recovery has there is oxygen
-            if ((illness != null) && illness.equals(medic.getSuffocation())) {
-                startRecovery();
-            }
-        }
+        return checkResourceConsumption(amountRecieved, amount,
+                                        medic.getSuffocation());
     }
 
     /** Person consumes given amount of water
      *
      *  @param support Life support system providing water.
      *  @param amount amount of water to consume (in kg)
+     *  @return new problem added.
      */
-    private void consumeWater(LifeSupport support, double amount) {
-        double amountRecieved = support.provideWater(amount);
+    private boolean consumeWater(LifeSupport support, double amount) {
+        double amountReceived = support.provideWater(amount);
 
-        if (amountRecieved != amount) {
-            setProblem(medic.getDehydration());
-        }
-        else {
-            // If Person is dehydrating, then start recovery has there is water 
-            if ((illness != null) && illness.equals(medic.getDehydration())) {
-                startRecovery();
-            }
-        }
+        return checkResourceConsumption(amountReceived, amount,
+                                        medic.getDehydration());
     }
 
-    /** 
+    /**
+     * This method checks the consume values of a resource. If the
+     * actual is less than the required then a HealthProblem is
+     * generated. If the required amount is statisfied, then any problem
+     * is recovered.
+     *
+     * @param actual The amount of resource provided.
+     * @param require The amount of resouce required.
+     * @param complaint Problem assocoiated to this resource.
+     * @return Has a new problem been added.
+     */
+    private boolean checkResourceConsumption(double actual, double required,
+                                Complaint complaint) {
+        boolean newProblem = false;
+
+        if (actual < required) {
+            problems.put(complaint, new HealthProblem(complaint, person));
+            newProblem = true;
+        }
+        else {
+            //Is the person suffering from the illness, if so recovery
+            // as the amount has been provided
+            HealthProblem illness = (HealthProblem)problems.get(complaint);
+            if (illness != null) {
+                illness.startRecovery();
+            }
+        }
+        return newProblem;
+    }
+
+    /**
      * Person requires minimum air pressure.
      * @param support Life support system providing air pressure.
      * @param pressure minimum air pressure person requires (in atm)
+     * @return new problem added.
      */
-    private void requireAirPressure(LifeSupport support, double pressure) {
-        if (support.getAirPressure() < pressure) {
-            setProblem(medic.getDecompression());
-	}
-	else {
-	    // If person is decompressing, then start the recovery process.
-	    if ((illness != null) && illness.equals(medic.getDecompression())) {
-	        startRecovery();
-	    }
-	}
+    private boolean requireAirPressure(LifeSupport support, double pressure) {
+        return checkResourceConsumption(support.getAirPressure(), pressure,
+                                        medic.getDecompression());
     }
 
     /**
      * Person requires minimum temperature.
      * @param support Life support system providing temperature.
      * @param temperature minimum temperature person requires (in degrees Celsius)
+     * @return new problem added.
      */
-    private void requireTemperature(LifeSupport support, double temperature) {
-        if (support.getTemperature() < temperature) {
-	    setProblem(medic.getFreezing());
-	}
-	else {
-	    // If person is freezing, then start the recovery process.
-	    if ((illness != null) && illness.equals(medic.getFreezing())) {
-                startRecovery();
-	    }
-	}
+    private boolean requireTemperature(LifeSupport support, double temperature) {
+        return checkResourceConsumption(support.getTemperature(), temperature,
+                                        medic.getFreezing());
     }
-	    
+
     /**
      * Predicate to check if the Person is alive.
      * @return Boolean of alive state.
@@ -208,6 +248,19 @@ public class PhysicalCondition implements Serializable {
      */
     public double getFatigue() {
         return fatigue;
+    }
+
+    /**
+     * Get the performance factor that effect Person with the complaint.
+     * @return The value is between 0 -> 1.
+     */
+    public double getPerformanceFactor() {
+        //return performance * ((1000 - fatigue)/1000);
+        return performance;
+    }
+
+    Person getPerson() {
+        return person;
     }
 
     /**
@@ -234,114 +287,59 @@ public class PhysicalCondition implements Serializable {
     }
 
     /**
-     * Get the associated medical complaint
-     */
-    public MedicalComplaint getIllness() {
-        return illness;
-    }
-
-    /**
      * This Person is now dead.
      */
-    private void setDead() {
+    void setDead() {
         fatigue = 0;
         hunger = 0;
         isAlive = false;
-        isRecovering = false;
     }
 
     /**
-     * Get a string description of the health situation.
+     * Get a string description of the most serious health situation.
      * @return A string containing the current illness if any.
      */
     public String getHealthSituation() {
         String situation = "Well";
-        if (illness != null) {
-            if (isRecovering) {
-                situation = "Recovery, " + illness.getName();
-            }
-            else if (!isAlive) {
-                situation = "Dead, " + illness.getName();
+        if (serious != null) {
+            if (!isAlive) {
+                situation = "Dead, " + serious.getIllness().getName();
             }
             else {
-                situation = illness.getName();
+                situation = serious.getSituation();
             }
         }
         return situation;
     }
 
     /**
-     * Get a rating of the current health situation. This is a percentage value
-     * and may either represent the recovering or degradation of the current
-     * illness.
-     * @return Percentage value.
+     * The collection of known Medical Problems.
      */
-    public int getHealthRating() {
-        int rating = 0;
-        if (illness != null) {
-            double max = (isRecovering ? illness.getRecoveryPeriod() :
-                                         illness.getDegradePeriod());
-            rating = (int)((illnessDuration * 100D) / max);
-        }
-        return rating;
+    public Collection getProblems() {
+        return problems.values();
     }
 
     /**
-     * This physical condition is being effected by a Medical Complaint. If
-     * there is an assigned illness already, the specified complaint must
-     * have a higher seriousness rating to take control.
-     *
-     * @param complaint Complaint effecting the condition.
+     * Calculate the most serious problem and the most performanc effecting
      */
-    private void setProblem(MedicalComplaint complaint) {
-        // If the new complaint is less serious than the current, reject.
-        if ((illness != null) && (illness.getSeriousness() >=
-                                  complaint.getSeriousness())) {
-            return;
-        }
+    private void recalculate() {
 
-        illness = complaint;
-        illnessDuration = 0;
-        isRecovering = false;
+        performance = 1.0D;
+        serious = null;
 
-        // If no degrade period, then can do self heel
-        if (complaint.getDegradePeriod() == 0D) {
-            startRecovery();
-        }
-        else if (person.getSettlement() != null) {
-            // If in a settlement, then maybe shelf heel
-            canStartRecovery(person.getSettlement());
-        }
-
-        System.out.println(person.getName() + " = " + getHealthSituation());
-    }
-
-    /**
-     * Move to a recovery state if the Settlement has the write stuff.
-     */
-    public void canStartRecovery(Settlement newHome) {
-        if (!isRecovering && (illness != null)) {
-
-            // Ideally this should check for Medical facilities but now
-            // any Settlement can fix random illness. Random illnesses are
-            // ones with a positive probability rating.
-            if (illness.getProbability() != 0) {
-                startRecovery();
+        // Check the existing problems. find most serious & performance
+        // effecting
+        Iterator iter = problems.values().iterator();
+        while(iter.hasNext()) {
+            HealthProblem problem = (HealthProblem)iter.next();
+            Complaint illness = problem.getIllness();
+            if (illness.getPerformanceFactor() < performance) {
+                performance = illness.getPerformanceFactor();
             }
-        }
-    }
 
-    /**
-     * This is now moving to a recovery state.
-     */
-    public void startRecovery() {
-        if (!isRecovering) {
-            illnessDuration = 0;
-
-            // If no recovery period, then it's done.
-            isRecovering = (illness.getRecoveryPeriod() > 0);
-            if (!isRecovering) {
-                illness = null;
+            if ((serious == null) || (serious.getIllness().getSeriousness() <
+                                      illness.getSeriousness())) {
+                serious = problem;
             }
         }
     }

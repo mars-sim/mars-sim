@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.person.medical.*;
 
 /** The Person class represents a person on the virtual Mars. It keeps
  *  track of everything related to that person and provides
@@ -27,15 +28,15 @@ public class Person extends Unit implements Serializable {
     public final static String INSETTLEMENT = "In Settlement";
 
     /**
-     * Status string used when Person resides in a vehicle 
+     * Status string used when Person resides in a vehicle
      */
     public final static String INVEHICLE = "In Vehicle";
 
-    /** 
+    /**
      * Status string used when Person is outside
      */
     public final static String OUTSIDE = "Outside";
-    
+
     /**
      * Status string used when Person has been buried
      */
@@ -122,7 +123,7 @@ public class Person extends Unit implements Serializable {
 	    else if (container instanceof Settlement) location = INSETTLEMENT;
 	    else if (container instanceof Vehicle) location = INVEHICLE;
 	}
-	    
+
         return location;
     }
 
@@ -131,10 +132,10 @@ public class Person extends Unit implements Serializable {
      *  @return the person's settlement
      */
     public Settlement getSettlement() {
-        
+
         Unit topUnit = getTopContainerUnit();
-	if ((topUnit != null) && (topUnit instanceof Settlement)) {
-	    return (Settlement) topUnit;
+        if ((topUnit != null) && (topUnit instanceof Settlement)) {
+	        return (Settlement) topUnit;
         }
         else return null;
     }
@@ -143,7 +144,7 @@ public class Person extends Unit implements Serializable {
      *  @return the person's vehicle
      */
     public Vehicle getVehicle() {
-        
+
         if ((containerUnit != null) && (containerUnit instanceof Vehicle)) {
 	    return (Vehicle) containerUnit;
 	}
@@ -157,11 +158,11 @@ public class Person extends Unit implements Serializable {
     public void setContainerUnit(Unit containerUnit) {
         super.setContainerUnit(containerUnit);
 
-	if (containerUnit instanceof Settlement) {
-	    health.canStartRecovery((Settlement) containerUnit);
-	}
+	    if (containerUnit instanceof Settlement) {
+	        health.canStartRecovery(getAccessibleAid());
+	    }
     }
-    
+
     /** Sets the person's fatigue level
      *  @param fatigue new fatigue level
      */
@@ -182,7 +183,7 @@ public class Person extends Unit implements Serializable {
      * of the containing unit.
      */
     public void buryBody() {
-	
+
         containerUnit.getInventory().dropUnitOutside(this);
 	isBuried = true;
     }
@@ -228,17 +229,11 @@ public class Person extends Unit implements Serializable {
     }
 
     /**
-     * Get the performance rating of this Person
-     *
-     * @return A value in the range of 0 to 1.
+     * Get the performance factor that effect Person with the complaint.
+     * @return The value is between 0 -> 1.
      */
     public double getPerformanceRating() {
-        double rating = 1D;
-        MedicalComplaint illness = health.getIllness();
-        if (illness != null) {
-            rating = illness.getPerformanceFactor();
-        }
-        return rating;
+        return health.getPerformanceFactor();
     }
 
     /** Returns a reference to the Person's physical condition
@@ -253,6 +248,22 @@ public class Person extends Unit implements Serializable {
      */
     public SkillManager getSkillManager() {
         return skills;
+    }
+
+    /**
+     * Find a medical aid according to the current location.
+     * @return Accessible aid.
+     */
+    MedicalAid getAccessibleAid() {
+        MedicalAid found = null;
+        Unit topUnit = getTopContainerUnit();
+        if ((topUnit != null) && (topUnit instanceof Settlement)) {
+            Settlement settlement = (Settlement)topUnit;
+	        found =
+                (Infirmary)settlement.getFacilityManager().getFacility(Infirmary.NAME);
+        }
+
+        return found;
     }
 
     /** Returns the person's mind
@@ -279,7 +290,7 @@ public class Person extends Unit implements Serializable {
             return (LifeSupport) inventory.findUnit(LifeSupport.class);
 	}
 
-	return null; 
+	return null;
     }
 
     /** Person consumes given amount of food
