@@ -1,5 +1,5 @@
 //*********************** Main UI Window ***********************
-// Last Modified: 4/9/00
+// Last Modified: 4/10/00
 
 // The MainWindow class is the primary UI frame for the project.
 // It contains the tool bars and main desktop pane.
@@ -14,7 +14,7 @@ public class MainWindow extends JFrame implements WindowListener {
 	// Data members
 
 	private VirtualMars mars;        // The virtual Mars
-	private UnitToolBar toolbar;     // The tool bar
+	private UnitToolBar unitToolbar; // The unit tool bar
 	private MainDesktopPane desktop; // The main desktop
 
 	// Constructor
@@ -23,7 +23,7 @@ public class MainWindow extends JFrame implements WindowListener {
 		
 		// Use JFrame constructor
 		
-		super("Mars Simulation Project (version 2.6)");
+		super("Mars Simulation Project (version 2.7)");
 
 		// Initialize data member to parameter.
 		
@@ -43,10 +43,15 @@ public class MainWindow extends JFrame implements WindowListener {
 		JPanel mainPane = new JPanel(new BorderLayout());
 		setContentPane(mainPane);
 		
-		// Prepare toolbar
+		// Prepare tool toolbar
 		
-		toolbar = new UnitToolBar(this);
-		mainPane.add(toolbar, "North");
+		ToolToolBar toolToolbar = new ToolToolBar(this);
+		mainPane.add(toolToolbar, "West");
+		
+		// Prepare unit toolbar
+		
+		unitToolbar = new UnitToolBar(this);
+		mainPane.add(unitToolbar, "South");
 		
 		// Prepare desktop
 		
@@ -71,7 +76,7 @@ public class MainWindow extends JFrame implements WindowListener {
 	
 	// Create a new unit button in toolbar
 	
-	public void createUnitButton(int unitID, String unitName, ImageIcon unitIcon) { toolbar.createUnitButton(unitID, unitName, unitIcon); }
+	public void createUnitButton(int unitID, String unitName, ImageIcon unitIcon) { unitToolbar.createUnitButton(unitID, unitName, unitIcon); }
 	
 	// Return true if tool window is open
 	
@@ -96,7 +101,7 @@ public class MainWindow extends JFrame implements WindowListener {
 	
 	// Disposes a unit button in toolbar
 	
-	public void disposeUnitButton(int unitID) { toolbar.disposeUnitButton(unitID); }
+	public void disposeUnitButton(int unitID) { unitToolbar.disposeUnitButton(unitID); }
 	
 	// Returns a unit dialog for a given unit ID
 	
