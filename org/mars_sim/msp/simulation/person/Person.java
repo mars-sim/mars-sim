@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.77 2004-08-20
+ * @version 2.77 2004-08-31
  * @author Scott Davis
  */
 
@@ -69,7 +69,7 @@ public class Person extends Unit implements Serializable {
 		
 		// Initialize data members
 		this.gender = gender;
-		attributes = new NaturalAttributeManager();
+		attributes = new NaturalAttributeManager(this);
 		skills = new SkillManager(this);
 		mind = new Mind(this);
 		isBuried = false;

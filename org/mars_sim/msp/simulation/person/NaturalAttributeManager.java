@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.77 2004-08-25
+ * @version 2.77 2004-08-31
  * @author Scott Davis
  */
 
@@ -36,40 +36,53 @@ public class NaturalAttributeManager implements Serializable {
     // Data members
     private Hashtable attributeList; // List of the person's natural attributes keyed by unique name.
 
-    /** Constructs a NaturalAttributeManager object **/
-    NaturalAttributeManager() {
+    /**
+     * Constructor
+     * @param person the person with the attributes.
+     */
+    NaturalAttributeManager(Person person) {
 
         attributeList = new Hashtable();
 
-        // Create natural attributes using random values,
+        // Create natural attributes using random values (averaged for bell curve around 50%).
         // Note: this may change later.
         for (int x = 0; x < attributeKeys.length; x++) {
-            int attributeValue = 0;
-            for (int y = 0; y < 10; y++)
-                attributeValue += RandomUtil.getRandomInt(10);
+        	int attributeValue = 0;
+        	int numberOfIterations = 3;
+        	for (int y = 0; y < numberOfIterations; y++) attributeValue+= RandomUtil.getRandomInt(100);
+        	attributeValue /= numberOfIterations;
             attributeList.put(attributeKeys[x], new Integer(attributeValue));
         }
 
         // Adjust certain attributes reflective of Martian settlers.
-        addSettlerBonus(STRENGTH, 20);
-        addSettlerBonus(ENDURANCE, 20);
-        addSettlerBonus(AGILITY, 10);
-        addSettlerBonus(STRESS_RESILIENCE, 40);
-        addSettlerBonus(TEACHING, 20);
-        addSettlerBonus(ACADEMIC_APTITUDE, 40);
-        addSettlerBonus(EXPERIENCE_APTITUDE, 30);
+		addAttributeModifier(STRENGTH, 40);
+		addAttributeModifier(ENDURANCE, 40);
+		addAttributeModifier(AGILITY, 20);
+		addAttributeModifier(STRESS_RESILIENCE, 80);
+		addAttributeModifier(TEACHING, 40);
+		addAttributeModifier(ACADEMIC_APTITUDE, 80);
+		addAttributeModifier(EXPERIENCE_APTITUDE, 60);
+        
+        // Adjust certain attributes reflective of differences between the genders.
+        // TODO: Do more research on this and cite references if possible.
+        if (person.getGender().equals(Person.MALE)) {
+			addAttributeModifier(STRENGTH, 40);
+        }
+        else if (person.getGender().equals(Person.FEMALE)) {
+			addAttributeModifier(STRENGTH, -40);
+			addAttributeModifier(ENDURANCE, 20);
+        }
     }
 
-    /** Adds a random bonus for Martian settlers in a given attribute. 
-     *  @param attributeName the name of the attribute
-     *  @param bonus the settler bonus to be added to the attribute
-     */
-    private void addSettlerBonus(String attributeName, int bonus) {
-        int newValue = getAttribute(attributeName) + RandomUtil.getRandomInt(bonus);
-        if (newValue > 100) newValue = 100;
-        if (newValue < 0) newValue = 0;
-        attributeList.put(attributeName, new Integer(newValue));
-    }
+	/**
+	 * Adds a random modifier to an attribute.
+	 * @param attributeName the name of the attribute
+	 * @param modifier the random ceiling of the modifier
+	 */
+	private void addAttributeModifier(String attributeName, int modifier) {
+		int random = RandomUtil.getRandomInt(modifier);
+		setAttribute(attributeName, getAttribute(attributeName) + random);
+	}
 
     /** Returns the number of natural attributes. 
      *  @return the number of natural attributes
@@ -81,7 +94,7 @@ public class NaturalAttributeManager implements Serializable {
     /** Returns an array of the natural attribute names as strings. 
      *  @return an array of the natural attribute names
      */
-    public String[] getKeys() {
+    public static String[] getKeys() {
         String[] result = new String[attributeKeys.length];
         for (int x = 0; x < result.length; x++) result[x] = attributeKeys[x];
         return result;
@@ -105,7 +118,7 @@ public class NaturalAttributeManager implements Serializable {
      *  @param name the name of the attribute
      *  @param level the level the attribute is to be set
      */
-    public void setAttribute(String name, int level) {
+    private void setAttribute(String name, int level) {
 
         if (level > 100) level = 100;
         if (level < 0) level = 0;
