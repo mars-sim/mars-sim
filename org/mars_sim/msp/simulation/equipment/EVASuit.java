@@ -34,8 +34,8 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         super("EVA Suit", location);
 
         // Add scope to malfunction manager.
-        malfunctionManager.addScopeString("EVASuit");
-        malfunctionManager.addScopeString("LifeSupport");
+        malfunctionManager.addScopeString("EVA Suit");
+        malfunctionManager.addScopeString("Life Support");
         
         // Set maintenance work time.
         malfunctionManager.setMaintenanceWorkTime(500D);
