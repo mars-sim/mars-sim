@@ -188,10 +188,6 @@ public class USGSMarsMap implements Map {
         } catch (MalformedURLException e) {
             System.out.println("Weirdness" + e);
         }
-        catch (IOException e) {
-            // should deal with the case where a user has no internet connection
-            System.out.println("Weirdness" + e);
-        }
 
         return null;
     }
