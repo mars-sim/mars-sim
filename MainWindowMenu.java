@@ -1,5 +1,5 @@
 //*********************** Main Window Menu ***********************
-// Last Modified: 4/9/00
+// Last Modified: 4/10/00
 
 // The MainWindowMenu class is the menu for the main window.
 
@@ -89,7 +89,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			else mainWindow.closeToolWindow("Search Tool");
 		}
 		
-		if (selectedItem == aboutMspItem) System.out.println("About The Mars Simulation Project");
+		if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
 	}
 	
 	// MenuListener method implementations
