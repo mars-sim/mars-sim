@@ -1,5 +1,5 @@
 //************************** Abstract Basic Vehicle Unit **************************
-// Last Modified: 7/10/00
+// Last Modified: 7/25/00
 
 // The Vehicle class represents a generic vehicle.  It keeps track of generic information about the vehicle.
 // This class needs to be subclassed to represent a specific type of vehicle.
@@ -28,6 +28,9 @@ public abstract class Vehicle extends Unit {
 	protected double distanceToDestination;     // Distance in meters to the destination
 	protected boolean isReserved;               // True if vehicle is currently reserved for a driver and cannot be taken by another
 	protected int vehicleSize;                  // Size of vehicle in arbitrary units.(Value of size units will be established later.)
+	
+	protected HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
+	protected MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
 
 	// Constructor
 
@@ -56,6 +59,10 @@ public abstract class Vehicle extends Unit {
 		distanceToDestination = 0;
 		
 		isReserved = false;
+		vehicleSize = 1;
+		
+		potentialFailures = new HashMap();
+		mechanicalFailure = null;
 	}
 
 	// Returns vehicle's current status
@@ -101,6 +108,10 @@ public abstract class Vehicle extends Unit {
 	// Adds a distance (in km.) to the vehicle's distance since last maintenance
 	
 	public void addDistanceLastMaintenance(double distance) { distanceMaint += distance; }
+	
+	// Sets vehicle's distance since last maintenance to zero
+	
+	public void clearDistanceLastMaintenance() { distanceMaint = 0; }
 
 	// Returns direction of vehicle (0 = north, clockwise in radians)
 
@@ -227,19 +238,51 @@ public abstract class Vehicle extends Unit {
 	// Returns the vehicle's size.
 	
 	public int getSize() { return vehicleSize; }
+	
+	// Returns a vector of the vehicle's current failures.
+	
+	public MechanicalFailure getMechanicalFailure() { return mechanicalFailure; }
+	
+	// Creates a new mechanical failure for the vehicle from its list of potential failures.
+	
+	public void newMechanicalFailure() {
+		
+		Object keys[] = potentialFailures.keySet().toArray();
+		
+		// Sum weights
+		
+		int totalWeight = 0;
+		
+		for (int x=0; x < keys.length; x++) totalWeight += ((Integer) potentialFailures.get((String) keys[x])).intValue();
+		
+		// Get a random number from 0 to the total weight	
+			
+		int r = (int) Math.round(Math.random() * (double) totalWeight);
+		
+		// Determine which failure is selected  
+		  
+		int tempWeight = ((Integer) potentialFailures.get((String) keys[0])).intValue();
+		int failureNum = 0;
+		while (tempWeight < r) {
+			failureNum++;
+			tempWeight += ((Integer) potentialFailures.get((String) keys[failureNum])).intValue();
+		}
+		String failureName = (String) keys[failureNum];
+		
+		mechanicalFailure = new MechanicalFailure(failureName);
+		System.out.println(name + " has mechanical failure: " + mechanicalFailure.getName());
+	}
 }
 
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
