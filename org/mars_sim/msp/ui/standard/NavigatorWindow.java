@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.74 2002-03-17
+ * @version 2.75 2002-06-13
  * @author Scott Davis
  */
 
@@ -36,6 +36,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     private JCheckBox unitLabelCheckbox; // Show unit labels checkbox
     private JCheckBox dayNightCheckbox; // Day/night tracking checkbox
     private JCheckBox usgsCheckbox; // Show USGS map mode
+    private JCheckBox trailCheckbox; // Show vehicle trails
 
     /** Constructs a NavigatorWindow object 
      *  @param desktop the desktop pane
@@ -110,7 +111,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         mainPane.add(topoPane);
 
         // Prepare checkbox panel
-        JPanel checkBoxPane = new JPanel(new GridLayout(4, 1));
+        JPanel checkBoxPane = new JPanel(new GridLayout(5, 1));
         topoPane.add(checkBoxPane, "West");
 
         // Prepare show topographical map checkbox
@@ -136,6 +137,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         usgsCheckbox.addItemListener(this);
         checkBoxPane.add(usgsCheckbox);
 
+        // Prepare vehicle trails checkbox
+	trailCheckbox = new JCheckBox("Show Vehicle Trails");
+	trailCheckbox.setSelected(false);
+	trailCheckbox.addItemListener(this);
+	checkBoxPane.add(trailCheckbox);
+	
         // Prepare legend icon
         legend = new LegendDisplay();
         legend.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
@@ -287,6 +294,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         else if (object == usgsCheckbox) {
             setUSGSMap(usgsCheckbox.isSelected());
         }
+	else if (object == trailCheckbox) {
+	    map.setVehicleTrails(trailCheckbox.isSelected());
+	}
     }
 
     /** Opens a unit window on the desktop 

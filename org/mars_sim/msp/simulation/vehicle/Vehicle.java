@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-05-13
+ * @version 2.75 2002-06-12
  * @author Scott Davis
  */
 
@@ -44,6 +44,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private boolean isReserved = false; // True if vehicle is currently reserved for a driver and cannot be taken by another
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
+    private ArrayList trail; // A collection of locations that make up the vehicle's trail.
 
     /** Constructs a Vehicle object with a given settlement
      *  @param name the vehicle's name
@@ -94,6 +95,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    
         setDestinationType("None");
         direction = new Direction(0);
+	trail = new ArrayList();
     }
 
     /** Returns vehicle's current status
@@ -368,6 +370,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public void timePassing(double time) {
         if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
 	malfunctionManager.timePassing(time);
+	addToTrail(location);
     }
 
     /**
@@ -399,5 +402,30 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         }
 
         return people;
+    }
+
+    /**
+     * Gets the vehicle's trail as a collection of coordinate locations.
+     * @return trail collection
+     */
+    public Collection getTrail() {
+        return trail;
+    }
+
+    /**
+     * Adds a location to the vehicle's trail if appropriate.
+     * @param location location to be added to trail
+     */
+    public void addToTrail(Coordinates location) {
+	    
+        if (getSettlement() != null) {
+            if (trail.size() > 0) trail.clear();
+	}
+	else if (trail.size() > 0) {
+	    Coordinates lastLocation = (Coordinates) trail.get(trail.size() - 1);
+	    if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D)) 
+	        trail.add(new Coordinates(location));
+	}
+	else trail.add(new Coordinates(location));
     }
 }

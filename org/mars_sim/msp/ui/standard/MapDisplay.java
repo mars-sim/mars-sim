@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2002-06-09
+ * @version 2.75 2002-06-13
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -41,6 +42,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private boolean useUSGSMap;  // True if USGS surface map is to be used
     private int[] shadingArray;  // Array used to generate day/night shading image
     private boolean showDayNightShading; // True if day/night shading is to be used
+    private boolean showVehicleTrails; // True if vehicle trails are to be displayed.
 
     private int width;
     private int height;
@@ -74,6 +76,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         centerCoords = new Coordinates(HALF_PI, 0D);
         shadingArray = new int[width * height];
         showDayNightShading = false;
+	showVehicleTrails = false;
 
         // Set component size
         setPreferredSize(new Dimension(width, height));
@@ -177,7 +180,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 try {
                     showThread.sleep(2000);
                 } catch (InterruptedException e) {}
-		updateVehicleTrails();
                 repaint();
             }
         }
@@ -229,7 +231,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
             if (!topo && showDayNightShading) drawShading(g);
 
-	    drawVehicleTrails(g);
+	    if (showVehicleTrails) drawVehicleTrails(g);
             drawUnits(g);
         }
     }
@@ -341,7 +343,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	    Object proxy = i.next();
 	    if (proxy instanceof VehicleUIProxy) {
                 VehicleUIProxy vehicleProxy = (VehicleUIProxy) proxy;
-		Iterator j = vehicleProxy.getTrail().iterator();
+		Vehicle vehicle = (Vehicle) vehicleProxy.getUnit();
+		Iterator j = (new ArrayList(vehicle.getTrail())).iterator();
 		while (j.hasNext()) {
 		    Coordinates trailSpot = (Coordinates) j.next();
 		    double angle = 0D;
@@ -359,20 +362,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 			oldSpot = spotLocation;
                     }
                 }
-            }
-        }
-    }
-    
-    /**
-     * Updates vehicle trails
-     */
-    private void updateVehicleTrails() {
-        Iterator i = proxyManager.getUIProxies();
-	while (i.hasNext()) {
-            Object proxy = i.next();
-	    if (proxy instanceof VehicleUIProxy) {
-                VehicleUIProxy vehicleProxy = (VehicleUIProxy) proxy;
-		vehicleProxy.addLocationToTrail(vehicleProxy.getUnit().getCoordinates());
             }
         }
     }
@@ -472,5 +461,13 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      */
     public void setDayNightTracking(boolean showDayNightShading) {
         this.showDayNightShading = showDayNightShading;
+    }
+
+    /**
+     * Sets the vehicle trails flag.
+     * @param showVehicleTrails true if vehicle trails are to be displayed.
+     */
+    public void setVehicleTrails(boolean showVehicleTrails) {
+        this.showVehicleTrails = showVehicleTrails;
     }
 }
