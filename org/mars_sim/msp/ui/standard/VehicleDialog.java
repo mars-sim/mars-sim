@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.72 2001-07-14
+ * @version 2.72 2001-07-16
  * @author Scott Davis
  */
 
@@ -250,8 +250,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // Prepare destination coordinates pane
-        JPanel destinationCoordsPane = new JPanel(new GridLayout(2, 2, 0, 0));
-        destinationPane.add(destinationCoordsPane, "South");
+        JPanel destinationCoordsPane = new JPanel(new GridLayout(1, 2, 0, 0));
+        destinationPane.add(destinationCoordsPane, "Center");
 
         // Prepare destination latitude label
         destinationLatitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
@@ -266,7 +266,16 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             destinationLongitudeLabel.setText("Longitude: ");
         destinationLongitudeLabel.setForeground(Color.black);
         destinationCoordsPane.add(destinationLongitudeLabel);
-        
+       
+        // Prepare destination info pane
+        JPanel destinationInfoPane = new JPanel(new GridLayout(2, 1, 0, 0));
+        destinationPane.add(destinationInfoPane, "South");
+ 
+        // Prepare ETA to destination label
+        etaDestinationLabel = new JLabel("ETA: " + vehicle.getETA(), JLabel.LEFT);
+        etaDestinationLabel.setForeground(Color.black);
+        destinationInfoPane.add(etaDestinationLabel);
+
         // Prepare distance to destination label
         distanceDestinationLabel = new JLabel("Distance: ", JLabel.LEFT);
         if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
@@ -274,13 +283,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             distanceDestinationLabel.setText("Distance: " + tempDistance + " km.");
         }
         distanceDestinationLabel.setForeground(Color.black);
-        destinationCoordsPane.add(distanceDestinationLabel);
+        destinationInfoPane.add(distanceDestinationLabel);
         
-        // Prepare ETA to destination label
-        etaDestinationLabel = new JLabel("ETA: " + vehicle.getETA(), JLabel.LEFT);
-        etaDestinationLabel.setForeground(Color.black);
-        destinationCoordsPane.add(etaDestinationLabel);
-
         // Prepare navigation info pane
         navigationInfoPane = new JPanel();
         navigationInfoPane.setLayout(

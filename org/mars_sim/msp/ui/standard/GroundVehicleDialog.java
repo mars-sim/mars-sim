@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.72 2001-07-14
+ * @version 2.72 2001-07-16
  * @author Scott Davis
  */
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DisembarkAtSettlement.java
- * @version 2.72 2001-07-11
+ * @version 2.72 2001-07-16
  * @author Scott Davis
  */
 
@@ -47,6 +47,7 @@ class DisembarkAtSettlement extends Task {
             vehicle.setDestinationSettlement(null);
             vehicle.setDestinationType("None");
             vehicle.setStatus("Parked");
+            vehicle.setETA(null);
 
             // Exit passengers
             while (vehicle.getPassengerNum() > 0) {

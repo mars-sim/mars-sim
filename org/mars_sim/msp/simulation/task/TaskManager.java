@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-07-16
  * @author Scott Davis
  */
 
@@ -38,7 +38,7 @@ public class TaskManager {
         // Create an array of general task classes.
         // (Add additional general tasks as they are created)
         try {
-            generalTasks = new Class[]{ TravelToSettlement.class, Relax.class, TendGreenhouse.class };
+            generalTasks = new Class[]{ TravelToSettlement.class, Relax.class, TendGreenhouse.class, MaintainVehicle.class };
         } catch (Exception e) {
             System.out.println("TaskManager.constructor(): " + e.toString());
         }

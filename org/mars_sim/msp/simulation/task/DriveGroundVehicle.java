@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.72 2001-07-14
+ * @version 2.72 2001-07-16
  * @author Scott Davis
  */
 
@@ -234,6 +234,8 @@ class DriveGroundVehicle extends Task {
         // If backing up, add distanceTraveled to backingUpDistance 
         if (phase.equals("Backing Up")) backingUpDistance += distanceTraveled;
 
+        double result = 0;
+
         // If starting distance to destination is less than distance traveled, stop at destination.
         if (distanceToDestination < distanceTraveled) {
             distanceTraveled = vehicle.getDistanceToDestination();
@@ -241,7 +243,7 @@ class DriveGroundVehicle extends Task {
             vehicle.setDistanceToDestination(distanceToDestination);
             vehicle.setCoordinates(destination);
             isDone = true;
-            return time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
+            result = time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
         }
         else {
             // Determine new position.
@@ -252,16 +254,17 @@ class DriveGroundVehicle extends Task {
             // Update distance to destination.
             distanceToDestination = vehicle.getCoordinates().getDistance(destination);
             vehicle.setDistanceToDestination(distanceToDestination);
+            result = 0D;
         }
+
+        // Update vehicle's ETA
+        vehicle.setETA(getETA());
 
         // Update every passenger's location.
         for (int x = 0; x < vehicle.getPassengerNum(); x++)
             vehicle.getPassenger(x).setCoordinates(vehicle.getCoordinates());
             
-        // Update vehicle's ETA (Estimated Time of Arrival).
-        vehicle.setETA(getETA());
-
-        return 0D;
+        return result;
     }
 
     /** Returns the elevation at the vehicle's position. 
@@ -322,7 +325,7 @@ class DriveGroundVehicle extends Task {
         double tempAngle = terrainGrade / angleModifier;
         if (tempAngle > (Math.PI / 2D)) tempAngle = Math.PI / 2D;
 
-        // Modify base speed by driver's skill level.
+        // Determine skill modifier based on driver's skill level.
         speedSkillModifier = 0D;
         double baseSpeed = vehicle.getBaseSpeed();
         if (skillLevel <= 5) speedSkillModifier = 0D - ((baseSpeed / 2D) * ((5D - skillLevel) / 5D));
@@ -334,7 +337,11 @@ class DriveGroundVehicle extends Task {
             }
         }   
 
-        double speed = (vehicle.getBaseSpeed() + speedSkillModifier) * Math.cos(tempAngle);
+        // Determine light condition modifier based on available sunlight
+        double lightModifier = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
+        lightModifier = ((lightModifier / 127D) * .9D) + .1D;
+
+        double speed = (vehicle.getBaseSpeed() + speedSkillModifier) * Math.cos(tempAngle) * lightModifier;
         if (speed < 0D) speed = 0D;
 
         return speed;
@@ -374,8 +381,13 @@ class DriveGroundVehicle extends Task {
         }
         else if (phase.equals("Winching Stuck Vehicle")) phaseModifier = .3D;
 
+        // Determine light condition modifier based on available sunlight
+        double lightModifier = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
+        lightModifier = ((127D - lightModifier) / 127D) * .5D;
+
         // Add modifiers to base chance.
-        percentChance += maintenanceModifier - skillModifier + terrainModifier - handlingModifier + phaseModifier;
+        percentChance += maintenanceModifier - skillModifier + terrainModifier - handlingModifier 
+            + phaseModifier + lightModifier;
 
         // Determine if failure happens and, if so, have the crew repair the failure.
         if (RandomUtil.lessThanRandPercent(percentChance)) {
@@ -402,10 +414,11 @@ class DriveGroundVehicle extends Task {
         double hoursDiff = MarsClock.convertMillisolsToSeconds(millisolsDiff) / 60D / 60D;
         
         // Determine average speed so far in km/hr.
-        double avgSpeed = (distanceToDestination - startDistance) / hoursDiff;
+        double avgSpeed = (startDistance - distanceToDestination) / hoursDiff;
         
         // Determine estimated speed in km/hr.
-        double estimatedSpeed = .9D * (vehicle.getBaseSpeed() + speedSkillModifier);
+        double estimatorConstant = .5D;
+        double estimatedSpeed = estimatorConstant * (vehicle.getBaseSpeed() + speedSkillModifier);
         
         // Determine final estimated speed in km/hr.
         double tempAvgSpeed = avgSpeed * ((startDistance - distanceToDestination) / startDistance);
