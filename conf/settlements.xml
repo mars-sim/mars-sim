@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+
+<SETTLEMENTS_LIST>
+    <SETTLEMENT>
+        <NAME>Port Zubrin</NAME>
+        <LOCATION>
+            <LATITUDE>0.0 N</LATITUDE>
+            <LONGITUDE>0.0 E</LONGITUDE>
+        </LOCATION>
+    </SETTLEMENT>
+</SETTLEMENTS_LIST>

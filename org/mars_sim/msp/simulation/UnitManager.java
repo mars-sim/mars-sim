@@ -45,8 +45,13 @@ public class UnitManager {
     /** Create the units */
     private void createEntities() {
 
-        createSettlements();
+        SettlementsXmlReader settlementsReader = new SettlementsXmlReader(this, mars);
+        settlementsReader.parse();
+        settlementsVector = settlementsReader.getSettlements();
+        for (int x=0; x < settlementsVector.size(); x++) 
+            unitVector.addElement(settlementsVector.elementAt(x));
 
+        // createSettlements();
         
         VehiclesXmlReader vehiclesReader = new VehiclesXmlReader(this, mars);
         vehiclesReader.parse();
