@@ -1,15 +1,15 @@
 /**
  * Mars Simulation Project
  * VehicleTemplate.java
- * @version 2.75 2003-01-05
+ * @version 2.75 2004-03-24
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure.template;
 
-import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.simulation.structure.*;
 
 /** 
  * The VehicleTemplate class represents a template from 
@@ -42,13 +42,14 @@ public class VehicleTemplate {
     
     /**
      * Constructs an instance of the template's vehicle.
-     *
-     * @param manager the vehicle manager
+     * @param vehicleType the vehicle description
+     * @param settlement the settlement
+     * @param mars the Mars instance.
      * @return vehicle
      */
-    public Vehicle constructVehicle(String nameOfVehicle, Settlement settlement, Mars mars) throws Exception {
-        if (name.equals(EXPLORER_ROVER)) return new ExplorerRover(nameOfVehicle, settlement, mars);
-        else if (name.equals(TRANSPORT_ROVER)) return new TransportRover(nameOfVehicle, settlement, mars);
-        else throw new Exception("Vehicle of type " + name + " cannot be constructed");
+    public Vehicle constructVehicle(String name, String vehicleType, Settlement settlement, Mars mars) throws Exception {
+        if (vehicleType.equals(EXPLORER_ROVER)) return new Rover(name, vehicleType, settlement, mars);
+        else if (vehicleType.equals(TRANSPORT_ROVER)) return new Rover(name, vehicleType, settlement, mars);
+        else throw new Exception("Vehicle of type " + vehicleType + " cannot be constructed");
     }
 }

@@ -1,42 +1,20 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.75 2003-11-27
+ * @version 2.75 2004-03-24
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
-
-import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.MarsClock;
-import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.UnitManager;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
-import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
-import org.mars_sim.msp.simulation.structure.building.BuildingException;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
-import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.VehicleMaintenance;
-import org.mars_sim.msp.simulation.vehicle.Crewable;
-import org.mars_sim.msp.simulation.vehicle.Rover;
-import org.mars_sim.msp.simulation.vehicle.TransportRover;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /** The TravelToSettlement class is a mission to travel from one settlement 
  *  to another randomly selected one within range of an available rover.  
@@ -53,7 +31,7 @@ class TravelToSettlement extends Mission implements Serializable {
     // Data members
     private Settlement startingSettlement;
     private Settlement destinationSettlement;
-    private TransportRover rover;
+    private Rover rover;
     private MarsClock startingTime;
     private double startingDistance;
     private Person lastDriver;
@@ -101,7 +79,7 @@ class TravelToSettlement extends Mission implements Serializable {
             Settlement currentSettlement = person.getSettlement();
             boolean possible = true;
 	    
-            if (ReserveRover.availableRovers(TransportRover.class, currentSettlement)) {
+            if (ReserveRover.availableRovers(ReserveRover.TRANSPORT_ROVER, currentSettlement)) {
 		        if (currentSettlement.getCurrentPopulationNum() > 1) result = 1D;
             }
         }
@@ -173,14 +151,14 @@ class TravelToSettlement extends Mission implements Serializable {
         // If a rover cannot be reserved, end mission.
         if (rover == null) {
             if (reserveRover == null) {
-                reserveRover = new ReserveRover(TransportRover.class, person, mars, 
+                reserveRover = new ReserveRover(ReserveRover.TRANSPORT_ROVER, person, mars, 
 		        destinationSettlement.getCoordinates());
                 assignTask(person, reserveRover);
                 return;
             }
             else { 
                 if (reserveRover.isDone()) {
-                    rover = (TransportRover) reserveRover.getReservedRover();
+                    rover = reserveRover.getReservedRover();
                     if (rover == null) {
                         endMission(); 
                         return;
@@ -398,7 +376,7 @@ class TravelToSettlement extends Mission implements Serializable {
         if (rover != null) rover.setReserved(false);
         else {
             if ((reserveRover != null) && reserveRover.isDone()) {
-                rover = (TransportRover) reserveRover.getReservedRover();
+                rover = reserveRover.getReservedRover();
                 if (rover != null) rover.setReserved(false); 
             }
         }

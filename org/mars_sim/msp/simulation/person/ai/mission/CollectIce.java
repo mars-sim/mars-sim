@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 2.75 04-02-15
+ * @version 2.75 04-03-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -10,7 +10,6 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.task.ReserveRover;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.ExplorerRover;
 
 /** 
  * The Exploration class is a mission to travel in a rover to several
@@ -49,7 +48,7 @@ public class CollectIce extends CollectResourcesMission {
             
 			boolean darkArea = mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates());
 	    
-			boolean reservableRover = ReserveRover.availableRovers(ExplorerRover.class, settlement);
+			boolean reservableRover = ReserveRover.availableRovers(ReserveRover.EXPLORER_ROVER, settlement);
 
 			double water = settlement.getInventory().getResourceMass(Resource.WATER);
 			boolean enoughWater = (water >= 5000D);

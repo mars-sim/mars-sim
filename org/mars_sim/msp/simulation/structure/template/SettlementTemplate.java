@@ -7,12 +7,17 @@
 
 package org.mars_sim.msp.simulation.structure.template;
 
-import java.util.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.equipment.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.UnitManager;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 
 /** 
  * The SettlementTemplate class represents a template from 
@@ -106,7 +111,7 @@ public class SettlementTemplate {
         while (vehicleIter.hasNext()) {
             VehicleTemplate vehicleTemplate = (VehicleTemplate) vehicleIter.next();
             try {
-                unitManager.addUnit(vehicleTemplate.constructVehicle(unitManager.getNewName(UnitManager.VEHICLE), settlement, mars));
+                unitManager.addUnit(vehicleTemplate.constructVehicle(unitManager.getNewName(UnitManager.VEHICLE), vehicleTemplate.getName(), settlement, mars));
             }
             catch (Exception e) {
                 System.out.println("Error while constructing vehicle: " + vehicleTemplate.getName() + ": " + e.getMessage());

@@ -1,31 +1,21 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-03-24
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Lab;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.Resource;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
-import org.mars_sim.msp.simulation.structure.building.BuildingException;
-import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
-import org.mars_sim.msp.simulation.vehicle.ExplorerRover;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
  * The StudyRockSamples class is a task for scientific research on 
@@ -258,16 +248,15 @@ public class StudyRockSamples extends Task implements Serializable {
         
         Lab result = null;
         
-        if (vehicle instanceof ExplorerRover) {
-            ExplorerRover rover = (ExplorerRover) vehicle;
+        if (vehicle instanceof Rover) {
+            Rover rover = (Rover) vehicle;
             Inventory inv = rover.getInventory();
             if (inv.getResourceMass(Resource.ROCK_SAMPLES) <= 0D) return null;
-            
-            Lab lab = rover.getLab();
-            if (lab.getResearcherNum() == lab.getLaboratorySize()) {
-                if (rover.getMalfunctionManager().hasMalfunction()) {
-                    result = lab;
-                }
+            if (rover.hasLab()) {
+            	Lab lab = rover.getLab();
+            	if (lab.getResearcherNum() == lab.getLaboratorySize()) {
+            		if (rover.getMalfunctionManager().hasMalfunction()) result = lab;
+            	}
             }
         }
         

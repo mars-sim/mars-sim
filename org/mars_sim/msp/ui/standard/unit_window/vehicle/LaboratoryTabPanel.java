@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LaboratoryTabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.75 2004-03-24
  * @author Scott Davis
  */
 
@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.standard.unit_window.vehicle;
 
 import java.awt.*;
 import javax.swing.*;
-import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
@@ -35,8 +35,8 @@ public class LaboratoryTabPanel extends TabPanel {
         // Use the TabPanel constructor
         super("Lab", null, "Laboratory", unit, desktop);
         
-        ExplorerRover rover = (ExplorerRover) unit;
-        MobileLaboratory lab = rover.getLab();
+        Rover rover = (Rover) unit;
+        Lab lab = rover.getLab();
         
         // Prepare laboratory panel
         JPanel laboratoryPanel = new JPanel(new BorderLayout());
@@ -89,8 +89,8 @@ public class LaboratoryTabPanel extends TabPanel {
      */
     public void update() {
         
-        ExplorerRover rover = (ExplorerRover) unit;
-        MobileLaboratory lab = rover.getLab();
+        Rover rover = (Rover) unit;
+        Lab lab = rover.getLab();
         
         // Update researchers label if necessary.
         if (researchersCache != lab.getResearcherNum()) {

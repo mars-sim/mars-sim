@@ -179,6 +179,22 @@ public class VehicleConfig {
 	}
 	
 	/**
+	 * Checks if the rover has a sickbay.
+	 * @param roverType the rover type
+	 * @return true if sickbay
+	 * @throws Exception if rover type could not be found or XML parsing error.
+	 */
+	public boolean hasSickbay(String roverType) throws Exception {
+		boolean result = false;
+		
+		Element roverElement = getRoverElement(roverType);
+		NodeList sickbayNodes = roverElement.getElementsByTagName(SICKBAY);
+		if (sickbayNodes.getLength() > 0) result = true;
+		
+		return result;
+	}
+	
+	/**
 	 * Gets the rover's sickbay tech level.
 	 * @param roverType the rover type
 	 * @return tech level or -1 if no sickbay.
@@ -215,6 +231,22 @@ public class VehicleConfig {
 		
 		return sickbayBeds;
 	}
+	
+	/**
+	 * Checks if the rover has a lab.
+	 * @param roverType the rover type
+	 * @return true if lab
+	 * @throws Exception if rover type could not be found or XML parsing error.
+	 */
+	public boolean hasLab(String roverType) throws Exception {
+		boolean result = false;
+		
+		Element roverElement = getRoverElement(roverType);
+		NodeList labNodes = roverElement.getElementsByTagName(SICKBAY);
+		if (labNodes.getLength() > 0) result = true;
+		
+		return result;
+	}	
 	
 	/**
 	 * Gets the rover's lab tech level.

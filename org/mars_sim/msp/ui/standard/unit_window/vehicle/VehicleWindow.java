@@ -1,15 +1,20 @@
 /**
  * Mars Simulation Project
  * VehicleWindow.java
- * @version 2.75 2003-07-22
+ * @version 2.75 2004-03-24
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.vehicle;
 
-import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.unit_window.*;
+import org.mars_sim.msp.simulation.vehicle.Crewable;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.unit_window.InventoryTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.MaintenanceTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.
@@ -32,6 +37,10 @@ public class VehicleWindow extends UnitWindow {
         addTabPanel(new LocationTabPanel(vehicle, desktop));
         addTabPanel(new InventoryTabPanel(vehicle, desktop));
         addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
-        if (vehicle instanceof ExplorerRover) addTabPanel(new LaboratoryTabPanel(vehicle, desktop));
+        if (vehicle instanceof Rover) {
+        	Rover rover = (Rover) vehicle;
+        	if (rover.hasLab()) addTabPanel(new LaboratoryTabPanel(rover, desktop));
+        	// To do: Add sickbay tab panel.
+        }
     }
 }

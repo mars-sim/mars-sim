@@ -7,29 +7,26 @@
 
 package org.mars_sim.msp.simulation.vehicle;
 
-import org.mars_sim.msp.simulation.Airlock;
-import org.mars_sim.msp.simulation.LifeSupport;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** The Rover class represents the rover type of ground vehicle.  It
  *  contains information about the rover.
  */
-public abstract class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable {
+public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable {
 
     // Static data members
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private double NORMAL_TEMP = 25D; // Normal temperature (celsius)
     
     // Data members
-    protected int crewCapacity = 0; // The rover's capacity for crewmembers.
-    protected Airlock airlock; // The rover's airlock.
-    protected double range; // Operating range of rover in km.
+    private int crewCapacity = 0; // The rover's capacity for crewmembers.
+    private Airlock airlock; // The rover's airlock.
+    private double range; // Operating range of rover in km.
+	private Lab lab; // The rover's lab.
+	private SickBay sickbay; // The rover's sick bay.
 	
     /** 
      * Constructs a Rover object at a given settlement
@@ -38,44 +35,70 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      * @param mars the virtual Mars
      * @throws Exception if rover could not be constructed.
      */
-    Rover(String name, Settlement settlement, Mars mars) throws Exception {
+    public Rover(String name, String description, Settlement settlement, Mars mars) throws Exception {
         // Use GroundVehicle constructor
         super(name, settlement, mars);
 
-        initRoverData();
-    }
-    
-    /** 
-     * Initialize rover data 
-     * @throws Exception if rover data cannot be initialized.
-     */
-    private void initRoverData() throws Exception {
+		this.description = description;
+		
+		// Get vehicle configuration.
+		VehicleConfig config = mars.getSimulationConfiguration().getVehicleConfiguration();
+		
+		// Add scope to malfunction manager.
+		malfunctionManager.addScopeString("Rover");
+		malfunctionManager.addScopeString("Crewable");
+		malfunctionManager.addScopeString("LifeSupport");
+		malfunctionManager.addScopeString(description);
+		if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
+		if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
+		
+		// Set base speed to 30kph.
+		setBaseSpeed(config.getBaseSpeed(description));
 
-        // Add scope to malfunction manager.
-        malfunctionManager.addScopeString("Rover");
-        malfunctionManager.addScopeString("Crewable");
-        malfunctionManager.addScopeString("LifeSupport");
+		// Set the empty mass of the rover.
+		baseMass = config.getEmptyMass(description);
 	    
-        // Set rover terrain modifier
-        setTerrainHandlingCapability(0D);
+		// Set the operating range of rover.
+		range = config.getRange(description);
+        
+		// Set crew capacity
+		crewCapacity = config.getCrewSize(description);
 
-        // Create the rover's airlock.
-        try { airlock = new VehicleAirlock(this, 2); }
-        catch (Exception e) { System.out.println(e.getMessage()); }
-    }
+		// Set inventory total mass capacity.
+		inventory.setTotalCapacity(config.getTotalCapacity(description));
+	
+		// Set inventory resource capacities.
+		inventory.setResourceCapacity(Resource.METHANE, config.getCargoCapacity(description, Resource.METHANE));
+		inventory.setResourceCapacity(Resource.OXYGEN, config.getCargoCapacity(description, Resource.OXYGEN));
+		inventory.setResourceCapacity(Resource.WATER, config.getCargoCapacity(description, Resource.WATER));
+		inventory.setResourceCapacity(Resource.FOOD, config.getCargoCapacity(description, Resource.FOOD));
+		inventory.setResourceCapacity(Resource.ROCK_SAMPLES, config.getCargoCapacity(description, Resource.ROCK_SAMPLES));
+		inventory.setResourceCapacity(Resource.ICE, config.getCargoCapacity(description, Resource.ICE));
+	
+		// Construct sickbay.
+		if (config.hasSickbay(description)) 
+			sickbay = new SickBay(this, config.getSickbayTechLevel(description), config.getSickbayBeds(description));
+		
+		// Construct lab.
+		if (config.hasLab(description)) 
+			lab = new MobileLaboratory(1, config.getLabTechLevel(description), config.getLabTechSpecialities(description));
+		
+		// Set rover terrain modifier
+		setTerrainHandlingCapability(0D);
 
-    /** 
-     * Adds enough EVA suits to inventory to match crew capacity.
-     */
-    protected void addEVASuits() throws Exception {
-    	try {
-    		int suitNum = mars.getSimulationConfiguration().getVehicleConfiguration().getEvaSuits(description);
-        	for (int x=0; x < suitNum; x++) 
-	    	inventory.addUnit(new EVASuit(location, mars));
-    	}
-    	catch (Exception e) {
-    		throw new Exception("Could not add EVA suits.: " + e.getMessage());
-    	}
+		// Create the rover's airlock.
+		try { airlock = new VehicleAirlock(this, 2); }
+		catch (Exception e) { System.out.println(e.getMessage()); }
+		
+		// Add EVA suits to inventory.
+		try {
+			int suitNum = mars.getSimulationConfiguration().getVehicleConfiguration().getEvaSuits(description);
+			for (int x=0; x < suitNum; x++) 
+			inventory.addUnit(new EVASuit(location, mars));
+		}
+		catch (Exception e) {
+			throw new Exception("Could not add EVA suits.: " + e.getMessage());
+		}
     }
 
     /** Gets the range of the rover
@@ -215,4 +238,38 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
 
         return people;
     }
+    
+    /**
+     * Checks if the rover has a laboratory.
+     * @return true if lab.
+     */
+    public boolean hasLab() {
+    	if (lab != null) return true;
+    	else return false;
+    }
+
+	/**
+	 * Gets the rover's laboratory
+	 * @return lab
+	 */
+	public Lab getLab() {
+		return lab;
+	}
+	
+	/**
+	 * Checks if the rover has a sickbay.
+	 * @return true if sickbay
+	 */
+	public boolean hasSickbay() {
+		if (sickbay != null) return true;
+		else return false;
+	}
+	
+	/**
+	 * Gets the rover's sickbay.
+	 * @return sickbay
+	 */
+	public SickBay getSickbay() {
+		return sickbay;
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.75 2004-03-19
+ * @version 2.75 2004-03-24
  * @author Scott Davis
  */
 
@@ -485,19 +485,19 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	 * @return reserved rover or null if still in the process of reserving one.
 	 * @throws Exception if a rover could not be reserved.
 	 */
-	private ExplorerRover getReservedRover(Person person) throws Exception {
+	private Rover getReservedRover(Person person) throws Exception {
         
-		ExplorerRover result = null;
+		Rover result = null;
         
 		// If reserve rover task is currently underway, check status.
 		if (reserveRoverTask != null) {
 			if (reserveRoverTask.isDone()) {
-				result = (ExplorerRover) reserveRoverTask.getReservedRover();
+				result = reserveRoverTask.getReservedRover();
 				if (result == null) throw new Exception("Explorer rover could not be reserved.");
 			}
 		}
 		else {
-			reserveRoverTask = new ReserveRover(ExplorerRover.class, person, mars);
+			reserveRoverTask = new ReserveRover(ReserveRover.EXPLORER_ROVER, person, mars);
 			assignTask(person, reserveRoverTask);
 		}
         
