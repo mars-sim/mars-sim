@@ -39,6 +39,7 @@ public class PersonDialog extends UnitDialog {
     private JLabel performanceLabel;   // Performance rating
     private JList  illnessList;      // Health state in current phase
     private InventoryPanel inventoryPane; // The inventory panel
+    private DefaultListModel problemListModel;
 
     // Cached person data
     private Coordinates unitCoords;
@@ -210,6 +211,34 @@ public class PersonDialog extends UnitDialog {
 
         double performance = roundOneDecimal(person.getPerformanceRating() * 100D);
         performanceLabel.setText("" + performance + " %");
+
+        // Update complaint list
+        boolean match = false;
+
+        // Remove missing conditions first
+        Collection currentProblems = condition.getProblems();
+        int i = 0;
+        while(i < problemListModel.getSize()) {
+            if (!currentProblems.contains(problemListModel.elementAt(i))) {
+                problemListModel.remove(i);
+            }
+            else {
+                i++;
+            }
+        }
+
+        // Add new one in
+	    Iterator iter = currentProblems.iterator();
+	    while (iter.hasNext()) {
+            Object problem = iter.next();
+            if (!problemListModel.contains(problem)) {
+                problemListModel.addElement(problem);
+            }
+        }
+
+        // This prevents the list from sizing strange due to having no contents
+        if (problemListModel.getSize() == 0) problemListModel.addElement(" ");
+        illnessList.validate();
     }
 
 	/** ActionListener method overriden */
@@ -453,7 +482,7 @@ public class PersonDialog extends UnitDialog {
         conditionListPane.add(performanceLabel);
 
         // Prepare problem list
-        DefaultListModel problemListModel = new DefaultListModel();
+        problemListModel = new DefaultListModel();
 
 	    Iterator i = condition.getProblems().iterator();
 	    while (i.hasNext()) {
