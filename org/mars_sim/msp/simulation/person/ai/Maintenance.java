@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.74 2002-05-04
+ * @version 2.74 2002-05-11
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
@@ -41,8 +42,11 @@ public class Maintenance extends Task implements Serializable {
 	// Total probabilities for all malfunctionable entities in person's local.
         Iterator i = MalfunctionFactory.getMalfunctionables(person);
 	while (i.hasNext()) {
-	    MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-	    totalProbabilityWeight += manager.getTimeSinceLastMaintenance();
+            Malfunctionable e = (Malfunctionable) i.next();
+	    if (!(e instanceof Vehicle)) {
+	        MalfunctionManager manager = e.getMalfunctionManager();
+	        totalProbabilityWeight += manager.getTimeSinceLastMaintenance();
+	    }
 	}
 	
 	// Randomly determine a malfunctionable entity.
@@ -53,7 +57,7 @@ public class Maintenance extends Task implements Serializable {
 	while (i.hasNext()) {
 	    Malfunctionable e = (Malfunctionable) i.next();
 	    double lastMaint = e.getMalfunctionManager().getTimeSinceLastMaintenance();
-	    if (chance < lastMaint) {
+	    if ((chance < lastMaint) && !(e instanceof Vehicle)) {
 	        entity = e;
 		description = "Performing maintenance on " + entity.getName();
 		// System.out.println(person.getName() + " " + description + " - " + lastMaint);
@@ -77,8 +81,9 @@ public class Maintenance extends Task implements Serializable {
         // Total probabilities for all malfunctionable entities in person's local.
         Iterator i = MalfunctionFactory.getMalfunctionables(person);
 	while (i.hasNext()) {
-	    MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-	    if (!manager.hasMalfunction())
+	    Malfunctionable entity = (Malfunctionable) i.next();
+	    MalfunctionManager manager = entity.getMalfunctionManager();
+	    if (!manager.hasMalfunction() && !(entity instanceof Vehicle))
 	        result += (manager.getTimeSinceLastMaintenance() / 200D);
 	}
 	
