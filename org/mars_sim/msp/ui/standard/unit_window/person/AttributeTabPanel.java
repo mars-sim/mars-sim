@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AttributeTabPanel.java
- * @version 2.75 2003-09-10
+ * @version 2.77 2004-08-31
  * @author Scott Davis
  */
 
@@ -50,10 +50,10 @@ public class AttributeTabPanel extends TabPanel {
         // Create attribute table
         JTable attributeTable = new JTable(attributeTableModel);
         attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
-        attributeTable.getColumnModel().getColumn(0).setPreferredWidth(120);
-        attributeTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+        attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
         attributeTable.setCellSelectionEnabled(false);
-        attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+        // attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
         attributeScrollPanel.setViewportView(attributeTable);
     }
     
@@ -84,7 +84,7 @@ public class AttributeTabPanel extends TabPanel {
         public Class getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
-            if (columnIndex == 1) dataType = Integer.class;
+            if (columnIndex == 1) dataType = String.class;
             return dataType;
         }
         
@@ -95,12 +95,28 @@ public class AttributeTabPanel extends TabPanel {
         }
         
         public Object getValueAt(int row, int column) {
-            String[] attributeNames = manager.getKeys();
+            String[] attributeNames = NaturalAttributeManager.getKeys();
             if (column == 0) return attributeNames[row];
-            else if (column == 1) return new Integer(manager.getAttribute(attributeNames[row]));
+            else if (column == 1) return getLevelString(manager.getAttribute(attributeNames[row]));
             else return "unknown";
         }
   
         public void update() {}
+        
+        public String getLevelString(int level) {
+        	String result = "";
+        	
+        	if (level < 5) result = "Terrible";
+        	else if (level < 20) result = "Very Poor";
+        	else if (level < 35) result = "Poor";
+        	else if (level < 45) result = "Below Average";
+        	else if (level < 55) result = "Average";
+        	else if (level < 65) result = "Above Average";
+        	else if (level < 80) result = "Good";
+        	else if (level < 95) result = "Very Good";
+        	else result = "Exceptional";
+        	
+        	return result;
+        }
     }
 }
