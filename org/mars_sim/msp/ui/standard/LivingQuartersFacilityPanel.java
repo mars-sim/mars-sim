@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingQuartersFacilityPanel.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -28,7 +28,10 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 	private Unit[] inhabitants;                     // An array of the current inhabitants.
 	private int currentPopulation;                  // The current population number.
 	
-    /** Constructs a LivingQuartersFacilityPanel object */
+    /** Constructs a LivingQuartersFacilityPanel object 
+     *  @param livingQuarters the living quarters
+     *  @param desktop the desktop pane
+     */
 	public LivingQuartersFacilityPanel(LivingQuartersFacility livingQuarters, MainDesktopPane desktop) {
 	
 		// Use FacilityPanel's constructor

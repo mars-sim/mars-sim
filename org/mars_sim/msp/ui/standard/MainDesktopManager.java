@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopManager.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -19,6 +19,8 @@ class MainDesktopManager extends DefaultDesktopManager {
 	/** Constructs a MainDesktopManager object */
 	public MainDesktopManager() { super(); }
 	
-	/** Iconifies frame (overridden) */
+	/** Iconifies frame (overridden) 
+     *  @param frame the internal frame
+     */
 	public void iconifyFrame(JInternalFrame frame) { frame.setVisible(false); }
 }

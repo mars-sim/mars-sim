@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleUIProxy.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -24,7 +24,11 @@ public class GroundVehicleUIProxy extends VehicleUIProxy {
     private ImageIcon buttonIcon;
     private UnitDialog unitDialog;
 
-    /** Constructs a GroundVehicleUIProxy object */
+    /** Constructs a GroundVehicleUIProxy object 
+     *  @param groundVehicle the ground vehicle
+     *  @param proxyManager the unit UI proxy manager
+     *  @param buttonIcon the unit button image
+     */
     public GroundVehicleUIProxy(GroundVehicle groundVehicle,
             UIProxyManager proxyManager, ImageIcon buttonIcon) {
         super(groundVehicle, proxyManager);
@@ -35,64 +39,88 @@ public class GroundVehicleUIProxy extends VehicleUIProxy {
         unitDialog = null;
     }
 
-    /** Returns true if this ground vehicle is to be displayed on navigator map. */    
+    /** Returns true if this ground vehicle is to be displayed on navigator map. 
+     *  @return true if displayed on navigator map
+     */
     public boolean isMapDisplayed() {
         if (groundVehicle.getSettlement() == null) return true;
         else return false;
     }
 
-    /** Returns image icon for surface navigator map. */
+    /** Returns image icon for surface navigator map. 
+     *  @return image icon for surface navigator map
+     */
     public ImageIcon getSurfMapIcon() {
         return surfMapIcon;
     }
 
-    /** Returns image icon for topo navigator map. */
+    /** Returns image icon for topo navigator map. 
+     *  @return image icon for topo navigator map
+     */
     public ImageIcon getTopoMapIcon() {
         return topoMapIcon;
     }
 
-    /** returns label color for surface navigator map. */
+    /** returns label color for surface navigator map. 
+     *  @return label color for surface navigator map
+     */
     public Color getSurfMapLabelColor() {
         return Color.white;
     }
 
-    /** returns label color for topo navigator map. */
+    /** returns label color for topo navigator map. 
+     *  @return label color for topo navigator map
+     */
     public Color getTopoMapLabelColor() {
         return Color.black;
     }
 
-    /** returns label font for navigator map. */
+    /** returns label font for navigator map. 
+     *  @return label font for navigator map
+     */
     public Font getMapLabelFont() {
         return mapLabelFont;
     }
 
-    /** returns range (km) for clicking on this ground vehicle on navigator map. */
+    /** returns range (km) for clicking on this ground vehicle on navigator map. 
+     *  @return range (km) for clicking on this ground vehicle on navigator map
+     */
     public double getMapClickRange() {
         return 40D;
     }
 
-    /** Returns true if ground vehicle is to be displayed on globe. */
+    /** Returns true if ground vehicle is to be displayed on globe. 
+     *  @return true if ground vehicle is to be displayed on globe
+     */
     public boolean isGlobeDisplayed() {
         if (groundVehicle.getSettlement() == null) return true;
         else return false;
     }
 
-    /** Returns label color for surface globe. */
+    /** Returns label color for surface globe. 
+     *  @return label color for surface globe
+     */
     public Color getSurfGlobeColor() {
         return Color.white;
     }
 
-    /** Returns label color for topo globe. */
+    /** Returns label color for topo globe. 
+     *  @return label color for topo globe
+     */
     public Color getTopoGlobeColor() {
         return Color.black;
     }
 
-    /** Returns image icon for unit button. */
+    /** Returns image icon for unit button. 
+     *  @return image icon for unit button
+     */
     public ImageIcon getButtonIcon() {
         return buttonIcon;
     }
 
-    /** Returns dialog window for ground vehicle. */
+    /** Returns dialog window for ground vehicle. 
+     *  @return dialog window for ground vehicle
+     */
     public UnitDialog getUnitDialog(MainDesktopPane desktop) {
         if (unitDialog == null)
             unitDialog = new GroundVehicleDialog(desktop, this);

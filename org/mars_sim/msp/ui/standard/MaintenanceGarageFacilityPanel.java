@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarageFacilityPanel.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -31,7 +31,10 @@ public class MaintenanceGarageFacilityPanel extends FacilityPanel implements Act
 	// Cached garage data
 	private int currentTotalSize;        // The current total size of vehicles in the garage.
 	
-	/** Constructs a MaintenanceGarageFacilityPanel */
+	/** Constructs a MaintenanceGarageFacilityPanel 
+     *  @param maintenanceGarage the maintenance garage facility
+     *  @param desktop the desktop pane
+     */
 	public MaintenanceGarageFacilityPanel(MaintenanceGarageFacility maintenanceGarage, MainDesktopPane desktop) {
 	
 		// Use FacilityPanel's constructor

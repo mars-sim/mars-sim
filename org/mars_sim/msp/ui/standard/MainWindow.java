@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -23,7 +23,9 @@ public class MainWindow extends JFrame implements WindowListener {
     private MainDesktopPane desktop; // The main desktop
     private UIProxyManager proxyManager; // The unit UI proxy manager
 
-    /** Constructs a MainWindow object */
+    /** Constructs a MainWindow object 
+     *  @param mars the virtual Mars
+     */
     public MainWindow(VirtualMars mars) {
 
         // use JFrame constructor
@@ -74,38 +76,53 @@ public class MainWindow extends JFrame implements WindowListener {
         setVisible(true);
     }
 
-    /** Create a new unit button in toolbar */
+    /** Create a new unit button in toolbar 
+     *  @param unitUIProxy the unit UI Proxy
+     */
     public void createUnitButton(UnitUIProxy unitUIProxy) {
         unitToolbar.createUnitButton(unitUIProxy);
     }
 
-    /** Return true if tool window is open */
+    /** Return true if tool window is open 
+     *  @param the name of the tool window
+     *  @return true if tool window is open
+     */
     public boolean isToolWindowOpen(String toolName) {
         return desktop.isToolWindowOpen(toolName);
     }
 
-    /** Opens a tool window if necessary */
+    /** Opens a tool window if necessary 
+     *  @param toolName the name of the tool window
+     */
     public void openToolWindow(String toolName) {
         desktop.openToolWindow(toolName);
     }
 
-    /** Closes a tool window if it is open */
+    /** Closes a tool window if it is open 
+     *  @param the name of the tool window
+     */
     public void closeToolWindow(String toolName) {
         desktop.closeToolWindow(toolName);
     }
 
     /** Opens a window for a unit if it isn't already open Also makes
-      *  a new unit button in toolbar if necessary */
+      *  a new unit button in toolbar if necessary 
+      *  @param unitUIProxy the unit UI proxy
+      */
     public void openUnitWindow(UnitUIProxy unitUIProxy) {
         desktop.openUnitWindow(unitUIProxy);
     }
 
-    /** Disposes a unit window and button */
+    /** Disposes a unit window and button 
+     *  @param unitUIProxy the unit UI proxy
+     */
     public void disposeUnitWindow(UnitUIProxy unitUIProxy) {
         desktop.disposeUnitWindow(unitUIProxy);
     }
 
-    /** Disposes a unit button in toolbar */
+    /** Disposes a unit button in toolbar 
+     *  @param unitUIProxy the unit UI proxy
+     */
     public void disposeUnitButton(UnitUIProxy unitUIProxy) {
         unitToolbar.disposeUnitButton(unitUIProxy);
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LegendDisplay.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  * @author Greg Whelan
  */

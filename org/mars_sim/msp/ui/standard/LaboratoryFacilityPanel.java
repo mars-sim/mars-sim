@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LaboratoryFacilityPanel.java
- * @version 2.71 2000-10-07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -20,7 +20,10 @@ public class LaboratoryFacilityPanel extends FacilityPanel {
     // Data members
     private LaboratoryFacility laboratory; // The laboratory facility this panel displays.
 
-    /** Constructs a LaboratoryFacilityPanel object */
+    /** Constructs a LaboratoryFacilityPanel object 
+     *  @param laboratory the laboratory facility
+     *  @param desktop the desktop pane
+     */
     public LaboratoryFacilityPanel(LaboratoryFacility laboratory,
             MainDesktopPane desktop) {
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.71 2000-10/07
+ * @version 2.71 2000-10-22
  * @author Scott Davis
  */
 
@@ -29,7 +29,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private JLabel logoLabel; // Label that has the centered logo for the project.
     private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
 
-    /** Constructs a MainDesktopPane object */
+    /** Constructs a MainDesktopPane object 
+     *  @param mainWindow the main outer window
+     *  @param proxyManager the unit UI proxy manager
+     */
     public MainDesktopPane(MainWindow mainWindow, UIProxyManager proxyManager) {
 
         // Initialize data members
@@ -69,6 +72,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     /** Create background tile when MainDesktopPane is first
       *  displayed. Recenter logoLabel on MainWindow and set
       *  backgroundLabel to the size of MainDesktopPane.
+      *  @param e the component event
       */
     public void componentResized(ComponentEvent e) {
 
@@ -135,7 +139,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         toolWindows.addElement(searchWindow);
     }
 
-    /** Returns a tool window for a given tool name */
+    /** Returns a tool window for a given tool name 
+     *  @param toolName the name of the tool window
+     *  @return the tool window
+     */
     private ToolWindow getToolWindow(String toolName) {
         ToolWindow resultWindow = null;
         for (int x = 0; x < toolWindows.size(); x++) {
@@ -147,13 +154,18 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         return resultWindow;
     }
 
-    /** Centers the map and the globe on given coordinates */
+    /** Centers the map and the globe on given coordinates 
+     *  @param targetLocation the new center location
+     */
     public void centerMapGlobe(Coordinates targetLocation) {
         ((NavigatorWindow) getToolWindow("Mars Navigator")).
                 updateCoords(targetLocation);
     }
 
-    /** Return true if tool window is open */
+    /** Return true if tool window is open 
+     *  @param toolName the name of the tool window
+     *  @return true true if tool window is open
+     */
     public boolean isToolWindowOpen(String toolName) {
         ToolWindow tempWindow = getToolWindow(toolName);
         if (tempWindow != null) {
@@ -163,7 +175,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         }
     }
 
-    /** Opens a tool window if necessary */
+    /** Opens a tool window if necessary 
+     *  @param toolName the name of the tool window
+     */
     public void openToolWindow(String toolName) {
         ToolWindow tempWindow = getToolWindow(toolName);
         if (tempWindow != null) {
@@ -183,7 +197,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         }
     }
 
-    /** Closes a tool window if it is open */
+    /** Closes a tool window if it is open 
+     *  @param toolName the name of the tool window
+     */
     public void closeToolWindow(String toolName) {
         ToolWindow tempWindow = getToolWindow(toolName);
         if ((tempWindow != null) && !tempWindow.isClosed()) {
@@ -193,7 +209,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         }
     }
 
-    /** Creates and opens a window for a unit if it isn't already in existance and open */
+    /** Creates and opens a window for a unit if it isn't already in existance and open 
+     *  @param unitUIProxy the unit UI proxy
+     */
     public void openUnitWindow(UnitUIProxy unitUIProxy) {
 
         UnitDialog tempWindow = null;
@@ -230,7 +248,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         tempWindow.show();
     }
 
-    /** Disposes a unit window and button */
+    /** Disposes a unit window and button 
+     *  @param unitUIProxy the unit UI proxy
+     */
     public void disposeUnitWindow(UnitUIProxy unitUIProxy) {
 
         // Dispose unit window
@@ -246,10 +266,15 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         mainWindow.disposeUnitButton(unitUIProxy);
     }
 
-    /** Returns the unit UI proxy manager. */
+    /** Returns the unit UI proxy manager. 
+     *  @return the unit UI proxy manager
+     */
     public UIProxyManager getProxyManager() { return proxyManager; }
     
-    /** Returns a random location on the desktop for a given JInternalFrame */
+    /** Returns a random location on the desktop for a given JInternalFrame 
+     *  @param tempWindow an internal window
+     *  @return random point on the desktop
+     */
     private Point getRandomLocation(JInternalFrame tempWindow) {
 
         Dimension desktop_size = getSize();
