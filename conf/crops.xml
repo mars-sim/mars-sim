@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 
+<!-- Crop growing time is in millisols -->
 <CROP_LIST>
     <CROP NAME="strawberries" GROWING_TIME="90000" />
     <CROP NAME="lettuce" GROWING_TIME="90000" />
