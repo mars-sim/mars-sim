@@ -17,7 +17,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 public abstract class Job implements Serializable {
 
 	// Probability penalty for starting a non-job-related task.
-	private static final double NON_JOB_TASK_PENALTY = .2D;
+	private static final double NON_JOB_TASK_PENALTY = .1D;
 	
 	// Probability penalty for starting a non-job-related mission.
 	private static final double NON_JOB_MISSION_START_PENALTY = .1D;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.76 2004-06-10
+ * @version 2.76 2004-06-12
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
 /** The Mission class represents a large multi-person task
  *
@@ -217,4 +218,10 @@ public abstract class Mission implements Serializable {
      * @return home settlement or null if none.
      */
     public abstract Settlement getHomeSettlement();
+    
+    /**
+     * Gets a collection of the vehicles associated with this mission.
+     * @return collection of vehicles.
+     */
+    public abstract VehicleCollection getMissionVehicles();
 }

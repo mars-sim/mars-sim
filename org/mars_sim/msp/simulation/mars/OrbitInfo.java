@@ -1,15 +1,15 @@
 /**
  * Mars Simulation Project
  * OrbitInfo.java
- * @version 2.75 2002-01-14
+ * @version 2.76 2004-06-11
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.mars;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /** 
  * The OrbitInfo class keeps track of the orbital position of Mars 
@@ -41,10 +41,14 @@ public class OrbitInfo implements Serializable {
     }
 
     /** 
-     * Adds time (in seconds) to the orbit
-     * @param seconds seconds of time added
+     * Adds time to the orbit
+     * @param time time added (millisols)
      */
-    public void addTime(double seconds) {
+    public void addTime(double millisols) {
+    	
+    	// Convert millisols into seconds.
+    	double seconds = MarsClock.convertMillisolsToSeconds(millisols);
+    	
         // Determine orbit time
         orbitTime += seconds;
         while (orbitTime > ORBIT_PERIOD) orbitTime -= ORBIT_PERIOD;
@@ -79,12 +83,16 @@ public class OrbitInfo implements Serializable {
      *  Angle is clockwise starting at aphelion.
      *  @return the theta angle of Mars's orbit
      */
-    public double getTheta() { return theta; }
+    public double getTheta() { 
+    	return theta; 
+    }
 
     /** Returns the radius of Mars's orbit in A.U.
      * @return the radius of Mars's orbit
      */
-    public double getRadius() { return radius; }
+    public double getRadius() { 
+    	return radius; 
+    }
 
     /**
      * Gets the current distance to the Sun.
@@ -106,5 +114,7 @@ public class OrbitInfo implements Serializable {
     /** The point on the surface of Mars perpendicular to the Sun as Mars rotates. 
      *  @return the surface point on Mars perpendicular to the sun
      */
-    public Coordinates getSunDirection() { return sunDirection; }
+    public Coordinates getSunDirection() { 
+    	return sunDirection; 
+    }
 }

@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 2.76 2004-06-10
+ * @version 2.76 2004-06-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
@@ -85,13 +85,27 @@ public class Areologist extends Job implements Serializable {
 			}
 		}
 		
-		// Add number of exploration-capable rovers.
+		// Add number of exploration-capable rovers parked at the settlement.
 		VehicleCollection vehicles = settlement.getParkedVehicles();
 		VehicleIterator j = vehicles.iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			if (vehicle instanceof Rover) {
 				if (vehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) > 0D) result++;
+			}
+		}
+		
+		// Add number of exploration-capable rovers out on missions for the settlement.
+		MissionManager missionManager = Simulation.instance().getMissionManager();
+		Iterator k = missionManager.getMissionsForSettlement(settlement).iterator();
+		while (k.hasNext()) {
+			Mission mission = (Mission) k.next();
+			VehicleIterator l = mission.getMissionVehicles().iterator();
+			while (l.hasNext()) {
+				Vehicle vehicle = l.next();
+				if ((vehicle instanceof Rover) && (vehicle.getSettlement() == null)) {
+					if (vehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) > 0D) result++;
+				} 
 			}
 		}
 		

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-06-12
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -142,7 +143,17 @@ public class TravelToSettlement extends Mission implements Serializable {
 						remainingInhabitant = true;
 				}
 				
-				if (inStartingSettlement && withinMissionCapacity && remainingInhabitant) 
+				// Better job prospect at destination settlement.
+				JobManager jobManager = Simulation.instance().getJobManager();
+				Job currentJob = person.getMind().getJob();
+				double currentJobProspect = jobManager.getJobProspect(person, currentJob, startingSettlement, true);
+				double destinationJobProspect = jobManager.getJobProspect(person, currentJob, destinationSettlement, false);
+				boolean betterJobProspect = (destinationJobProspect > currentJobProspect);
+				
+				// Does person have a driver job?
+				boolean isDriver = (currentJob instanceof Driver);
+				
+				if (inStartingSettlement && withinMissionCapacity && remainingInhabitant && (betterJobProspect || isDriver)) 
 					result = 50D;
 				
 				// Crowding modifier.
@@ -185,7 +196,7 @@ public class TravelToSettlement extends Mission implements Serializable {
 
         // Determine the destination settlement.
         if (destinationSettlement == null) { 
-            destinationSettlement = getRandomDestinationSettlement(startingSettlement);
+            destinationSettlement = getRandomDestinationSettlement(person, startingSettlement);
             if (destinationSettlement == null) {
                 endMission();
                 return;
@@ -355,23 +366,31 @@ public class TravelToSettlement extends Mission implements Serializable {
         if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) endMission(); 
     }
 
-    /** Determines a random destination settlement other than current one.
-     *  @param startingSettlement the settlement the mission is starting at
-     *  @return randomly determined settlement
+    /** 
+     * Determines a random destination settlement other than current one.
+     * @param person the person searching for a settlement.
+     * @param startingSettlement the settlement the mission is starting at.
+     * @return randomly determined settlement
      */
-    private Settlement getRandomDestinationSettlement(Settlement startingSettlement) {
+    private Settlement getRandomDestinationSettlement(Person person, Settlement startingSettlement) {
         UnitManager unitManager = startingSettlement.getUnitManager();
         Settlement result = null;
 
         SettlementCollection settlements = unitManager.getSettlements();
 
-        // Create collection of valid destination settlements that have available population capacity.
-        SettlementIterator iterator = settlements.iterator();
-        while (iterator.hasNext()) {
-            Settlement tempSettlement = iterator.next();
-            if (tempSettlement == startingSettlement) iterator.remove();
-            else if (tempSettlement.getAvailablePopulationCapacity() <= 0) iterator.remove();
-        } 
+		// Create collection of destination settlements that have better job prospects.
+		JobManager jobManager = Simulation.instance().getJobManager();
+		Job currentJob = person.getMind().getJob();
+		double currentJobProspect = jobManager.getJobProspect(person, currentJob, startingSettlement, true);
+		SettlementIterator iterator = settlements.iterator();
+		while (iterator.hasNext()) {
+			Settlement tempSettlement = iterator.next();
+			if (tempSettlement == startingSettlement) iterator.remove();
+			else {
+				double jobProspect = jobManager.getBestJobProspect(person, tempSettlement, false);
+				if (jobProspect <= currentJobProspect) iterator.remove(); 
+			}
+		}
 
         // Get settlements sorted by proximity to current settlement.
         SettlementCollection sortedSettlements = settlements.sortByProximity(startingSettlement.getCoordinates());
@@ -421,4 +440,22 @@ public class TravelToSettlement extends Mission implements Serializable {
 	public Settlement getHomeSettlement() {
 		return destinationSettlement;
 	}
+	
+	/**
+	 * Gets the mission's rover. 
+	 * @return rover or null if none.
+	 */
+	public Rover getRover() {
+		return rover;
+	}	
+	
+	/**
+	 * Gets a collection of the vehicles associated with this mission.
+	 * @return collection of vehicles.
+	 */
+	public VehicleCollection getMissionVehicles() {
+		VehicleCollection result = new VehicleCollection();
+		if (getRover() != null) result.add(getRover());
+		return result;
+	}	
 }

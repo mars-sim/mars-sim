@@ -1,15 +1,19 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 2.76 2004-06-10
+ * @version 2.76 2004-06-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
+import java.util.*;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
  * The Driver class represents a rover driver job.
@@ -23,7 +27,11 @@ public class Driver extends Job implements Serializable {
 		// Use Job constructor
 		super("Driver");
 		
-		// No tasks related to driver job.
+		// Add driver-related tasks.
+		jobTasks.add(MaintainGroundVehicleGarage.class);
+		jobTasks.add(MaintainGroundVehicleEVA.class);
+		jobTasks.add(RepairMalfunction.class);
+		jobTasks.add(RepairEVAMalfunction.class);
 		
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);
@@ -58,11 +66,20 @@ public class Driver extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 		
-		double result = 0D;
+		// Get number of vehicles parked at a settlement.
+		double settlementVehicleNum = settlement.getParkedVehicleNum();
 		
-		// Add vehicles parked at settlement.
-		result+= settlement.getParkedVehicleNum() * 3D;
+		// Add number of vehicles out on missions for the settlement.
+		MissionManager missionManager = Simulation.instance().getMissionManager();
+		Iterator i = missionManager.getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			Mission mission = (Mission) i.next();
+			VehicleIterator j = mission.getMissionVehicles().iterator();
+			while (j.hasNext()) {
+				if (j.next().getSettlement() == null) settlementVehicleNum++;
+			}
+		}
 		
-		return result;	
+		return settlementVehicleNum * 3D;	
 	}
 }

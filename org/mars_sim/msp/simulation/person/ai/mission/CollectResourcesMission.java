@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.76 2004-06-10
+ * @version 2.76 2004-06-12
  * @author Scott Davis
  */
 
@@ -538,5 +538,15 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	 */
 	public Settlement getHomeSettlement() {
 		return startingSettlement;	
+	}
+	
+	/**
+	 * Gets a collection of the vehicles associated with this mission.
+	 * @return collection of vehicles.
+	 */
+	public VehicleCollection getMissionVehicles() {
+		VehicleCollection result = new VehicleCollection();
+		if (getRover() != null) result.add(getRover());
+		return result;
 	}
 }
