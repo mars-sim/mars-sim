@@ -40,13 +40,13 @@ class XmlReader extends MspXmlReader {
     private int elementType;                // The current element type being parsed
     private String currentName;             // The current person name parsed
     private Complaint nextComplaint;        // Next complaint
-    private int currentProbability;         // Current probability
-    private int currentSerious;             // Currrent seriousness
-    private int currentPerformance;         // Current performance
-    private double currentDegrade;          // Currect degrade time
-    private double currentRecovery;         // Current recoevery time
-    private double currentDuration;         // Current treatment length
-    private boolean currentRetainAid;       // Curretn retain Aid setting
+    private double currentProbability;     // Current probability
+    private int currentSerious;            // Currrent seriousness
+    private int currentPerformance;        // Current performance
+    private double currentDegrade;         // Currect degrade time
+    private double currentRecovery;        // Current recoevery time
+    private double currentDuration;        // Current treatment length
+    private boolean currentRetainAid;      // Curretn retain Aid setting
     private Treatment currentTreatment;     // Current recovery treatment
     private int currentSkill;               // Skill for Treatment
     private int currentLevel;               // Level for Treatment
@@ -206,7 +206,7 @@ class XmlReader extends MspXmlReader {
                 currentSkill = Integer.parseInt(data);
                 break;
             case PROBABILITY:
-                currentProbability = Integer.parseInt(data);
+                currentProbability = Double.parseDouble(data);
                 break;
             case DURATION:
                 currentDuration = Double.parseDouble(data) * 60;

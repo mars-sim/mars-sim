@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * @author Barry Evans
- * @version 2.74
+ * @version 2.75 2003-11-27
  */
 
 package org.mars_sim.msp.simulation.person.medical;
@@ -30,10 +30,10 @@ public class Complaint implements Serializable {
     private int seriousness;                // Seriousness of this illness
     private double degradePeriod;           // Time before complaint degrades
     private double recoveryPeriod;          // Time before Person recovers
-    private int probability;                // Probability of occuring
+    private double probability;             // Probability of occuring
     private double performanceFactor;       // Factor effecting Person performance
-    private Treatment recoveryTreatment;    // Treatment needed for recovery
-    Complaint nextPhase;                    // Next phase of this illness
+    private Treatment recoveryTreatment;     // Treatment needed for recovery
+    Complaint nextPhase;                      // Next phase of this illness
 
     /**
      * Create a Medical Complaint instance.
@@ -54,7 +54,7 @@ public class Complaint implements Serializable {
      */
     Complaint(String name, int seriousness,
                              double degrade, double recovery,
-                             int probability,
+                             double probability,
                              int performance,
                              Treatment recoveryTreatment, Complaint next) {
         this.name = name;
@@ -102,9 +102,9 @@ public class Complaint implements Serializable {
 
     /**
      * Get the probabity of this complaint.
-     * @return Probabity from 0 to 1.
+     * @return Probabity from 0 to 100.
      */
-    public int getProbability() {
+    public double getProbability() {
         return probability;
     }
 

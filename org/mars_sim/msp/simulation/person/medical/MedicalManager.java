@@ -143,7 +143,7 @@ public class MedicalManager implements Serializable {
      */
     void createComplaint(String name, int seriousness,
                              double degrade, double recovery,
-                             int probability,
+                             double probability,
                              int performance, Treatment recoveryTreatment,
                              Complaint next) {
 
