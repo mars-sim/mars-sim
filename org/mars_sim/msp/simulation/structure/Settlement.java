@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-02-20
  * @author Scott Davis
  */
 
@@ -100,7 +100,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      */
     public int getPopulationCapacity() {
         int result = 0;
-        Iterator i = buildingManager.getBuildings(LivingAccommodations.class);
+        Iterator i = buildingManager.getBuildings(LivingAccommodations.class).iterator();
         while (i.hasNext()) {
             result += ((LivingAccommodations) i.next()).getAccommodationCapacity();
         }

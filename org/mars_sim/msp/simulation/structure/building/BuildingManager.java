@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.75 2003-01-09
+ * @version 2.75 2003-02-20
  * @author Scott Davis
  */
  
@@ -48,20 +48,20 @@ public class BuildingManager implements Serializable {
     }
     
     /**
-     * Gets an iterator for the settlement's collection of buildings.
+     * Gets the settlement's collection of buildings.
      *
-     * @return iterator for collection of buildings
+     * @return collection of buildings
      */
-    public Iterator getBuildings() {
-        return buildings.iterator();
+    public Collection getBuildings() {
+        return buildings;
     }
     
     /**
      * Gets the buildings in a settlement that implement the given function.
      *
-     * @return iterator to collection of buildings.
+     * @return collection of buildings.
      */
-    public Iterator getBuildings(Class function) {   
+    public Collection getBuildings(Class function) {   
         Collection functionBuildings = new ArrayList();
         
         Iterator i = buildings.iterator();
@@ -70,7 +70,7 @@ public class BuildingManager implements Serializable {
             if (function.isInstance(building)) functionBuildings.add(building);
         }
          
-        return functionBuildings.iterator();
+        return functionBuildings;
     }
     
     /**

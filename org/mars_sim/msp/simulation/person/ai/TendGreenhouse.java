@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.75 2003-01-20
+ * @version 2.75 2003-20-20
  * @author Scott Davis
  */
 
@@ -32,7 +32,7 @@ public class TendGreenhouse extends Task implements Serializable {
         // Initialize data members
         description = "Tending Greenhouse at " + person.getSettlement().getName();
         this.settlement = person.getSettlement();
-        Iterator i = settlement.getBuildingManager().getBuildings(Farming.class);
+        Iterator i = settlement.getBuildingManager().getBuildings(Farming.class).iterator();
         while (i.hasNext()) {
             Farming farm = (Farming) i.next();
             if (farm.requiresWork()) greenhouse = farm;
@@ -51,7 +51,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	    
         boolean workableFarm = false;
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Iterator i = person.getSettlement().getBuildingManager().getBuildings(Farming.class);
+            Iterator i = person.getSettlement().getBuildingManager().getBuildings(Farming.class).iterator();
             while (i.hasNext()) {
                 Farming farm = (Farming) i.next();
                 if (farm.requiresWork()) workableFarm = true;
