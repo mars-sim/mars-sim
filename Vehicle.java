@@ -1,5 +1,5 @@
 //************************** Abstract Basic Vehicle Unit **************************
-// Last Modified: 2/27/00
+// Last Modified: 5/6/00
 
 // The Vehicle class represents a generic vehicle.  It keeps track of generic information about the vehicle.
 // This class needs to be subclassed to represent a specific type of vehicle.
@@ -25,6 +25,7 @@ public abstract class Vehicle extends Unit {
 	protected String destinationType;           // Type of destination ("None", "Settlement" or "Coordinates")
 	protected double distanceToDestination;     // Distance in meters to the destination
 	protected boolean isReserved;               // True if vehicle is currently reserved for a driver and cannot be taken by another
+	protected int vehicleSize;                  // Size of vehicle in arbitrary units.(Value of size units will be established later.)
 
 	// Constructor
 
@@ -202,6 +203,10 @@ public abstract class Vehicle extends Unit {
 		if (destinationSettlement != null) return destinationSettlement;
 		else return null;
 	}
+	
+	// Returns the vehicle's size.
+	
+	public int getSize() { return vehicleSize; }
 }
 
 
