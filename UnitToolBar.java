@@ -1,5 +1,5 @@
 //*********************** Unit Button Toolbar ***********************
-// Last Modified: 2/23/00
+// Last Modified: 4/5/00
 
 // The UnitToolBar class is a UI toolbar for holding unit and tool buttons.
 // The should only be one instance and is contained in the MainWindow instance.
@@ -54,6 +54,13 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		navButton.addActionListener(this);
 		add(navButton);
 		toolButtons.addElement(navButton);
+		
+		// Add search tool button
+		
+		ToolButton searchButton = new ToolButton("Search Tool", "SearchIcon.gif");
+		searchButton.addActionListener(this);
+		add(searchButton);
+		toolButtons.addElement(searchButton);
 	}
 	
 	// Create a new unit button in toolbar
