@@ -1,13 +1,13 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.71 2000-10-22
+ * @version 2.71 2000-11-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
- 
-import org.mars_sim.msp.simulation.*; 
+package org.mars_sim.msp.ui.standard;
+
+import org.mars_sim.msp.simulation.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -38,7 +38,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
     private int width;
     private int height;
-    
+
     // Constant data members
     private static final double HALF_PI = (Math.PI / 2D);
     private static final int HALF_MAP = 150;
@@ -47,13 +47,13 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     public static final int LOCAL_SURFACE_IMAGE = 0;
     public static final int INTERNET_SURFACE_IMAGE = 1;
 
-    /** Constructs a MapDisplay object 
+    /** Constructs a MapDisplay object
      *  @param navWindow the navigator window pane
      *  @param proxyManager the UI proxy manager
      *  @param width the width of the map shown
      *  @param height the height of the map shown
      */
-    public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager, 
+    public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager,
             int width, int height, int surfaceImageSource) {
 
         // Initialize data members
@@ -61,7 +61,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         this.proxyManager = proxyManager;
         this.width = width;
         this.height = height;
-      
+
         wait = false;
         recreate = true;
         topo = false;
@@ -73,26 +73,29 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         setMaximumSize(getPreferredSize());
         setMinimumSize(getPreferredSize());
 
+        // Set background color to black
+        setBackground(Color.black);
+
         // Set mouse listener
         addMouseListener(this);
 
         // Create surface objects for both real and topographical modes
-	topoMap = new TopoMarsMap(this);
-	selectSurfaceImageSource(surfaceImageSource);
-	
+        topoMap = new TopoMarsMap(this);
+        selectSurfaceImageSource(surfaceImageSource);
+
         // initially show real surface map (versus topo map)
         showSurf();
     }
 
     public void selectSurfaceImageSource(int surfaceImageSource) {
-	if (surfaceImageSource == LOCAL_SURFACE_IMAGE) {
-	    surfMap = new SurfMarsMap(this);
-	} else {
-	    surfMap = new USGSMarsMap(this);
-	}
+        if (surfaceImageSource == LOCAL_SURFACE_IMAGE) {
+            surfMap = new SurfMarsMap(this);
+        } else {
+            surfMap = new USGSMarsMap(this);
+        }
     }
 
-    /** Change label display flag 
+    /** Change label display flag
      *  @param labels true if labels are to be displayed
      */
     public void setLabels(boolean labels) {
@@ -119,7 +122,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         showMap(centerCoords);
     }
 
-    /** Display surface with new coords, regenerating image if necessary 
+    /** Display surface with new coords, regenerating image if necessary
      *  @param newCenter new center location for map
      */
     public void showMap(Coordinates newCenter) {
@@ -151,11 +154,10 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private void refreshLoop() {
         while (true) {
             /*
-             try {
-             wait();
-             } catch (InterruptedException e) {}
-             */
-           
+            try { wait(); } 
+            catch (InterruptedException e) {}
+            */
+
             if (recreate) {
                 // Regenerate surface if recreate is true, then display
                 if (topo) {
@@ -176,8 +178,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     }
 
     /** Overrides paintComponent method.  Displays map image or
-     *  "Preparing Map..." message. 
-     *  @param g graphics context 
+     *  "Preparing Map..." message.
+     *  @param g graphics context
      */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -214,7 +216,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         }
     }
 
-    /** Draws units on map 
+    /** Draws units on map
      *  @param g graphics context
      */
     private void drawUnits(Graphics g) {
@@ -227,22 +229,26 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                     Image positionImage = proxies[x].getSurfMapIcon().getImage();
                     IntPoint imageLocation =
                             getUnitDrawLocation(rectLocation, positionImage);
-                            
+
                     if (topo) {
-                        g.drawImage(proxies[x].getTopoMapIcon().getImage(), 
+                        g.drawImage(proxies[x].getTopoMapIcon().getImage(),
                                 imageLocation.getiX(), imageLocation.getiY(), this);
                     } else {
-                        g.drawImage(proxies[x].getSurfMapIcon().getImage(), 
+                        g.drawImage(proxies[x].getSurfMapIcon().getImage(),
                                 imageLocation.getiX(), imageLocation.getiY(), this);
                     }
-                    
+
                     if (labels) {
-                        if (topo) g.setColor(proxies[x].getTopoMapLabelColor());
-                        else g.setColor(proxies[x].getSurfMapLabelColor());
+                        if (topo)
+                            g.setColor(proxies[x].getTopoMapLabelColor());
+                        else
+                            g.setColor(proxies[x].getSurfMapLabelColor());
                         g.setFont(proxies[x].getMapLabelFont());
-                        IntPoint labelLocation = getLabelLocation(rectLocation, positionImage);
-                        g.drawString(proxies[x].getUnit().getName(), labelLocation.getiX() + 
-                                labelHorizOffset, labelLocation.getiY());
+                        IntPoint labelLocation =
+                                getLabelLocation(rectLocation, positionImage);
+                        g.drawString(proxies[x].getUnit().getName(),
+                                labelLocation.getiX() + labelHorizOffset,
+                                labelLocation.getiY());
                     }
                 }
             }
@@ -250,18 +256,18 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     }
 
     /** MouseListener methods overridden. Perform appropriate action
-      *  on mouse release. */
+     *  on mouse release. */
     public void mouseReleased(MouseEvent event) {
 
-        Coordinates clickedPosition =
-                centerCoords.convertRectToSpherical((double) (event.getX() -
-                HALF_MAP - 1), (double) (event.getY() - HALF_MAP - 1));
+        Coordinates clickedPosition = centerCoords.convertRectToSpherical(
+                (double)(event.getX() - HALF_MAP - 1),
+                (double)(event.getY() - HALF_MAP - 1));
         boolean unitsClicked = false;
 
         UnitUIProxy[] proxies = proxyManager.getUIProxies();
-        
+
         // Open window if unit is clicked on the map
-        for (int x=0; x < proxies.length; x++) {
+        for (int x = 0; x < proxies.length; x++) {
             if (proxies[x].isMapDisplayed()) {
                 Coordinates unitCoords = proxies[x].getUnit().getCoordinates();
                 double clickRange = unitCoords.getDistance(clickedPosition);
@@ -272,7 +278,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             }
         }
 
-        if (!unitsClicked) navWindow.updateCoords(clickedPosition);
+        if (!unitsClicked)
+            navWindow.updateCoords(clickedPosition);
     }
 
     public void mousePressed(MouseEvent event) {}
@@ -280,7 +287,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
-    /** Returns unit x, y position on map panel 
+    /** Returns unit x, y position on map panel
      *  @param unitCoords location of unit
      *  @return display point on map
      */
@@ -294,7 +301,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 half_map, low_edge);
     }
 
-    /** Returns unit image draw position on map panel 
+    /** Returns unit image draw position on map panel
      *  @param unitPosition absolute unit position
      *  @param unitImage unit's map image
      *  @return draw position for unit image
@@ -306,18 +313,20 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
     private static final int labelHorizOffset = 2;
 
-    /** Returns label draw postion on map panel 
+    /** Returns label draw postion on map panel
      *  @param unitPosition absolute unit position
      *  @param unitImage unit's map image
      *  @return draw position for unit label
      */
     private IntPoint getLabelLocation(IntPoint unitPosition, Image unitImage) {
         // this differs from getUnitDrawLocation by adding 10 to the horizontal position
-        return new IntPoint(unitPosition.getiX() + (unitImage.getWidth(this) / 2) + labelHorizOffset,
-			    unitPosition.getiY() + (unitImage.getHeight(this) / 2));
-	/*
+        return new IntPoint(unitPosition.getiX() +
+                (unitImage.getWidth(this) / 2) + labelHorizOffset,
+                unitPosition.getiY() + (unitImage.getHeight(this) / 2));
+        /*
         return new IntPoint(unitPosition.getiX() + labelHorizOffset,
-			    unitPosition.getiY() + (unitImage.getHeight(this) / 2));
-	*/
+        unitPosition.getiY() + (unitImage.getHeight(this) / 2));
+        */
     }
 }
+

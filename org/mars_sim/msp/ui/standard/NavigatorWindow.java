@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.71 2000-10-22
+ * @version 2.71 2000-11-13
  * @author Scott Davis
  */
 
@@ -88,6 +88,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
+        mapPane.setBackground(Color.black);
         //mapPane.setMaximumSize(new Dimension(306, 306));
         mapPane.add(map);
         topMainPane.add(mapPane);
