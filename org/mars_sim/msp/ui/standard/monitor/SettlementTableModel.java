@@ -75,7 +75,7 @@ public class SettlementTableModel extends UnitTableModel {
      * @param unitManager Unit manager that holds settlements.
      */
     public SettlementTableModel(UnitManager unitManager) {
-        super("All Settlement", columnNames, columnTypes);
+        super("All Settlement", " settlements", columnNames, columnTypes);
 
         SettlementIterator iter = unitManager.getSettlements().sortByName().iterator();
         while(iter.hasNext()) {

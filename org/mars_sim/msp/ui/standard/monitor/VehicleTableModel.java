@@ -85,7 +85,7 @@ public class VehicleTableModel extends UnitTableModel {
      * @param unitManager Proxy manager contains displayable Vehicles.
      */
     public VehicleTableModel(UnitManager unitManager) {
-        super("All Vehicles", columnNames, columnTypes);
+        super("All Vehicles", " vehicles", columnNames, columnTypes);
 
         VehicleIterator iter = unitManager.getVehicles().sortByName().iterator();
         while(iter.hasNext()) {

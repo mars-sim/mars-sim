@@ -72,12 +72,9 @@ public class PersonTableModel extends UnitTableModel {
      * @param unitManager Manager containing Person objects.
      */
     public PersonTableModel(UnitManager unitManager) {
-        super("All People", columnNames, columnTypes);
+        super("All People", " people", columnNames, columnTypes);
 
-        PersonIterator iter = unitManager.getPeople().sortByName().iterator();
-        while(iter.hasNext()) {
-            add(iter.next());
-        }
+        setSource(unitManager.getPeople());
     }
 
     /**
@@ -87,14 +84,11 @@ public class PersonTableModel extends UnitTableModel {
      * @param vehicle Monitored vehicle Person objects.
      */
     public PersonTableModel(Crewable vehicle) {
-        super(((Unit) vehicle).getName() + " - People", columnNames, columnTypes);
+        super(((Unit) vehicle).getName() + " - People", " people",
+              columnNames, columnTypes);
 
         this.vehicle = vehicle;
-
-        PersonIterator iter = vehicle.getCrew().iterator();
-        while(iter.hasNext()) {
-            add(iter.next());
-        }
+        setSource(vehicle.getCrew());
     }
 
     /**
@@ -104,14 +98,12 @@ public class PersonTableModel extends UnitTableModel {
      * @param settlement Monitored settlement Person objects.
      */
     public PersonTableModel(Settlement settlement) {
-        super(settlement.getName() + " - People", columnNames, columnTypes);
+        super(settlement.getName() + " - People", " residents",
+              columnNames, columnTypes);
 
         this.settlement = settlement;
 
-        PersonIterator iter = settlement.getInhabitants().iterator();
-        while(iter.hasNext()) {
-            add(iter.next());
-        }
+        setSource(settlement.getInhabitants());
     }
 
     /**
@@ -121,14 +113,24 @@ public class PersonTableModel extends UnitTableModel {
      * @param mission Monitored mission Person objects.
      */
     public PersonTableModel(Mission mission) {
-        super(mission.getName() + " - People", columnNames, columnTypes);
+        super(mission.getName() + " - People", " mission members",
+              columnNames, columnTypes);
 
-	this.mission = mission;
+	    this.mission = mission;
 
-	PersonIterator iter = mission.getPeople().iterator();
-	while(iter.hasNext()) {
+	    setSource(mission.getPeople());
+    }
+
+    /**
+     * Defines the soruce data from this table
+     */
+    private void setSource(PersonCollection source) {
+        PersonIterator iter = source.iterator();
+        while(iter.hasNext()) {
             add(iter.next());
-	}
+        }
+
+        source.addMspCollectionEventListener(this);
     }
 
     /**
@@ -139,6 +141,7 @@ public class PersonTableModel extends UnitTableModel {
      * @param contents The contents of this model.
      */
     protected void checkContents(List contents) {
+        /**
         PersonCollection people = null;
 
         // Find an appropriate source collection,
@@ -181,6 +184,7 @@ public class PersonTableModel extends UnitTableModel {
                 }
             }
         }
+        **/
     }
 
     /**

@@ -142,7 +142,7 @@ class TableTab extends MonitorTab {
      * @param model The model of Units to display.
      * @param mandatory Is this table view mandatory.
      */
-    public TableTab(UnitTableModel model, boolean mandatory) {
+    public TableTab(MonitorModel model, boolean mandatory) {
         super(model, mandatory, TABLEICON);
 
         // Can not create icons until UIManager is up and running
@@ -153,19 +153,22 @@ class TableTab extends MonitorTab {
             descendingIcon = new ColumnSortIcon(true, baseColor);
         }
 
-        // Create a sortable model to act as a proxy
-        sortedModel = new TableSorter(model);
+        // If the model is not ordered, allow user the facility
+        if (!model.getOrdered()) {
+            // Create a sortable model to act as a proxy
+            sortedModel = new TableSorter(model);
 
-        // Create scrollable table window
-        table = new JTable(sortedModel) {
-            /**
-             * Display the cell contents as a tooltip. Useful when cell
-             * contents in wider than the cell
-             */
-            public String getToolTipText(MouseEvent e) {
-                return getCellText(e);
+            // Create scrollable table window
+            table = new JTable(sortedModel) {
+
+                /**
+                 * Display the cell contents as a tooltip. Useful when cell
+                 * contents in wider than the cell
+                 */
+                public String getToolTipText(MouseEvent e) {
+                    return getCellText(e);
+                };
             };
-        };
 
         // Get the TableColumn header to display sorted column
         JTableHeader theHeader = table.getTableHeader();
@@ -183,6 +186,20 @@ class TableTab extends MonitorTab {
                 table.getTableHeader().repaint();
              }
         });
+        }
+        else {
+            // Simple JTable
+            table = new JTable(model) {
+
+                /**
+                 * Display the cell contents as a tooltip. Useful when cell
+                 * contents in wider than the cell
+                 */
+                public String getToolTipText(MouseEvent e) {
+                    return getCellText(e);
+                };
+            };
+        }
 
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);
@@ -211,10 +228,12 @@ class TableTab extends MonitorTab {
      * @return array of row indexes.
      */
     protected List getSelection() {
+        MonitorModel target = (sortedModel != null ? sortedModel : getModel());
+
         int indexes[] = table.getSelectedRows();
         ArrayList selectedRows = new ArrayList();
         for(int i = 0; i < indexes.length; i++) {
-            selectedRows.add(sortedModel.getObject(indexes[i]));
+            selectedRows.add(target.getObject(indexes[i]));
         }
 
         return selectedRows;
@@ -250,10 +269,12 @@ class TableTab extends MonitorTab {
     }
 
     private void setSortColumn(int index) {
-        if (sortedColumn == index) {
-            sortAscending = !sortAscending;
+        if (sortedModel != null) {
+            if (sortedColumn == index) {
+                sortAscending = !sortAscending;
+            }
+            sortedColumn = index;
+            sortedModel.sortByColumn(sortedColumn, sortAscending);
         }
-        sortedColumn = index;
-        sortedModel.sortByColumn(sortedColumn, sortAscending);
     }
 }

@@ -36,6 +36,14 @@ public class TableSorter extends AbstractTableModel
     }
 
     /**
+     * This method signifies whether this model has a natural ordering.
+     * @return TRUE as this model has embedded sorting.
+     */
+    public boolean getOrdered() {
+        return true;
+    }
+
+    /**
      * Compare two rows according to their cell values
      */
     private int compare(int row1, int row2) {
@@ -238,8 +246,14 @@ public class TableSorter extends AbstractTableModel
         sourceModel.setValueAt(aValue, indexes[aRow], aColumn);
     }
 
-    public void update() {
-        sourceModel.update();
+    /**
+     * The sorting model has no data so pass the update request to the
+     * source model.
+     *
+     * @return Status of the soruce model.
+     */
+    public String update() {
+        return sourceModel.update();
     }
 
     /**

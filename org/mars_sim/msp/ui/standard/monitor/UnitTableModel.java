@@ -18,11 +18,12 @@ import javax.swing.table.AbstractTableModel;
  * It is only a partial implementation of the TableModel interface.
  */
 abstract public class UnitTableModel extends AbstractTableModel
-            implements MonitorModel {
+            implements MonitorModel, MspCollectionEventListener {
 
     // Data members
     private ArrayList units;        // Collection of units
     private String name;            // Model name
+    private String statusSuffix;    // Suffix to added to status message
     private String columnNames[];   // Names of the displayed columns
     private Class  columnTypes[];   // Types of the individual columns
 
@@ -30,13 +31,16 @@ abstract public class UnitTableModel extends AbstractTableModel
      * Constructs a UnitTableModel object.
      *
      *  @param name Name of the model.
+     *  @param suffix A string to add to the status message.
      *  @param names Names of the columns displayed.
      *  @param types The Classes of the individual columns.
      */
-    protected UnitTableModel(String name, String names[], Class types[]) {
+    protected UnitTableModel(String name, String suffix,
+                             String names[], Class types[]) {
 
         // Initialize data members
         this.name = name;
+        this.statusSuffix = suffix;
         this.units = new ArrayList();
         this.columnNames = names;
         this.columnTypes = types;
@@ -53,6 +57,36 @@ abstract public class UnitTableModel extends AbstractTableModel
 
             // Inform listeners of new row
             fireTableRowsInserted(size, size);
+        }
+    }
+
+    /**
+     * Remove a unit to the model.
+     * @param oldUnit Unit to remove from the model.
+     */
+    protected void remove(Unit oldUnit) {
+        if (units.contains(oldUnit)) {
+            int index = units.indexOf(oldUnit);
+            units.add(oldUnit);
+
+            // Inform listeners of new row
+            fireTableRowsDeleted(index, index);
+        }
+    }
+    /**
+     * Source collection has changed
+     */
+    public void collectionModified(MspCollectionEvent event) {
+
+        if (event.getType().equals(event.CLEAR)) {
+            units.clear();
+            fireTableDataChanged();
+        }
+        else if (event.getType().equals(event.ADD)) {
+            add(event.getTrigger());
+        }
+        else if (event.getType().equals(event.REMOVE)) {
+            remove(event.getTrigger());
         }
     }
 
@@ -106,6 +140,14 @@ abstract public class UnitTableModel extends AbstractTableModel
     }
 
     /**
+     * Is this model already ordered according to some external criteria.
+     * @return FALSE as the Units have no natural order.
+     */
+    public boolean getOrdered() {
+        return false;
+    }
+
+    /**
      * Get the unit at the specified row.
      * @param index Index of the row.
      * @return Unit matching row
@@ -136,9 +178,10 @@ abstract public class UnitTableModel extends AbstractTableModel
      * model should be event driven and always know about the current
      * Unit state.
      *
-     * It also check whether the contents have changed
+     * It also check whether the contents have changed.
+     * @return a Status string.
      */
-    public void update() {
+    public String update() {
         // Check the contents first
         checkContents(units);
 
@@ -147,5 +190,7 @@ abstract public class UnitTableModel extends AbstractTableModel
         if (units.size() > 0) {
             fireTableRowsUpdated(0, units.size() - 1);
         }
+
+        return units.size() + statusSuffix;
     }
 }
