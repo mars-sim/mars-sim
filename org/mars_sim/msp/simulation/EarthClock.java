@@ -1,17 +1,21 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.72 2001-04-29
+ * @version 2.75 2004-02-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
-import java.util.*;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.SimpleTimeZone;
 
-/** The EarthClock class keeps track of Earth Greenwich Mean Time.
+/** The EarthClock class keeps track of Earth Universal Time.
  *  It should be synchronized with the Mars clock. 
  */
 public class EarthClock extends GregorianCalendar implements Serializable {
@@ -30,7 +34,7 @@ public class EarthClock extends GregorianCalendar implements Serializable {
         setTimeZone(zone);
 
         // Initialize formatter
-        formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss z");
+        formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
         formatter.setTimeZone(zone);
 
         // Set Earth clock to Martian Zero-orbit date-time
@@ -52,10 +56,10 @@ public class EarthClock extends GregorianCalendar implements Serializable {
     }
 
     /** Returns the date/time formatted in a string 
-     *  @return date/time formatted in a string. ex "2055-05-06 03:37:22 GMT"
+     *  @return date/time formatted in a string. ex "2055-05-06 03:37:22 UT"
      */
     public String getTimeStamp() {
-        return formatter.format(getTime());
+        return formatter.format(getTime()) + " UT";
     }
     
     /** Adds time to the calendar 
