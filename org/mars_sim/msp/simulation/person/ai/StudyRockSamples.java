@@ -18,7 +18,7 @@ import java.util.*;
  * The StudyRockSamples class is a task for scientific research on 
  * collected rock samples. 
  */
-class StudyRockSamples extends Task implements Serializable {
+public class StudyRockSamples extends Task implements Serializable {
 
     // Rate of rock sample research (kg / millisol)
     private static final double RESEARCH_RATE = .01D;
@@ -140,7 +140,7 @@ class StudyRockSamples extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .01D;
+        double chance = .001D;
 
 	// Areology skill modification.
 	int skill = person.getSkillManager().getEffectiveSkillLevel("Areology");

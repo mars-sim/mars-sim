@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainSettlement.java
- * @version 2.74 2002-03-22
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
 
@@ -17,7 +17,7 @@ import java.util.*;
 /** The MaintainSettlement class is a task for cleaning, organizing and performing
  *  preventive maintenance on a settlement.
  */
-class MaintainSettlement extends Task implements Serializable {
+public class MaintainSettlement extends Task implements Serializable {
 
     // Data members
     private Malfunctionable entity; // Settlement or facility to be maintained.
@@ -155,7 +155,7 @@ class MaintainSettlement extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
     
-        double chance = .01D;
+        double chance = .001D;
 
         // Mechanic skill modification.
 	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
@@ -166,5 +166,14 @@ class MaintainSettlement extends Task implements Serializable {
             System.out.println(person.getName() + " has accident while performing maintenance on " + entity.getName() + ".");
             entity.getMalfunctionManager().accident();
         }
+    }
+
+    /**
+     * Gets the entity the person is maintaining.
+     * Returns null if none
+     * @return malfunctionable entity 
+     */
+    public Malfunctionable getEntity() {
+        return entity;
     }
 }

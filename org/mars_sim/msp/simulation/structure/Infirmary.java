@@ -8,11 +8,12 @@
 package org.mars_sim.msp.simulation.structure;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.structure.Facility;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.person.medical.MedicalAid;
-import org.mars_sim.msp.simulation.person.medical.HealthProblem;
-import org.mars_sim.msp.simulation.person.medical.SickBay;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.person.medical.*;
+import org.mars_sim.msp.simulation.structure.*;
 
 /**
  * This class represents a Infirmary that is based in a Settlement. It uses a
@@ -83,5 +84,32 @@ public class Infirmary extends Facility
     public void timePassing(double time) {
         if (sickBay.getTreatedPatientCount() > 0) 
 	    malfunctionManager.activeTimePassing(time);
+    }
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        PersonCollection people = super.getAffectedPeople();
+
+	// Check for people in sick bay.
+        Iterator i = sickBay.getPatients().iterator();
+        while (i.hasNext()) {
+            Person person = ((HealthProblem) i.next()).getSufferer();
+	    if (!people.contains(person)) people.add(person);
+	}
+
+	// Check for people treating medical problems.
+	PersonIterator i2 = getFacilityManager().getSettlement().getInhabitants().iterator();
+        while (i2.hasNext()) {
+	    Person person = i2.next();
+	    Task task = person.getMind().getTaskManager().getTask();
+            if (task instanceof MedicalAssistance) {
+	        if (!people.contains(person)) people.add(person);
+	    }
+	}
+	
+	return people;
     }
 }

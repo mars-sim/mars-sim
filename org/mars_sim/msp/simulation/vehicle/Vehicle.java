@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-04-22
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
+import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
 import java.util.*;
@@ -365,5 +366,36 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void timePassing(double time) {
         if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
+    }
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        PersonCollection people = new PersonCollection();
+
+        // Check all people.
+        PersonIterator i = mars.getUnitManager().getPeople().iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+            Task task = person.getMind().getTaskManager().getTask();
+
+            // Add all people maintaining this vehicle.
+            if (task instanceof MaintainVehicle) {
+                if (((MaintainVehicle) task).getVehicle() == this)
+                    people.add(person);
+            }
+
+            // Add all people repairing this vehicle.
+            /*
+            if (task instanceof RepairVehicle) {
+                if (((RepairVehicle) task).getVehicle() == this)
+                    people.add(person);
+            }
+            */
+        }
+
+        return people;
     }
 }

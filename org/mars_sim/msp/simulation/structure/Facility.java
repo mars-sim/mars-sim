@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * Facility.java
- * @version 2.74 2002-04-25
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure;
 
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
 
@@ -18,8 +20,8 @@ import java.io.Serializable;
 public abstract class Facility implements Malfunctionable, Serializable {
 
     // Data members
-    String name; // Name of the facility.
-    FacilityManager manager; // The Settlement's FacilityManager.
+    String name;                           // Name of the facility.
+    FacilityManager manager;               // The Settlement's FacilityManager.
     MalfunctionManager malfunctionManager; // The facility's malfunction manager.
 
     /** Constructs a Facility object 
@@ -68,6 +70,32 @@ public abstract class Facility implements Malfunctionable, Serializable {
      * @return person collection
      */
     public PersonCollection getAffectedPeople() {
-        return getFacilityManager().getSettlement().getInhabitants();
+        PersonCollection people = new PersonCollection();
+
+	// Check all people.
+	Mars mars = getFacilityManager().getSettlement().getMars();
+	PersonIterator i = mars.getUnitManager().getPeople().iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+            Task task = person.getMind().getTaskManager().getTask();
+
+            // Add all people maintaining this facility. 
+            if (task instanceof MaintainSettlement) {
+                if (((MaintainSettlement) task).getEntity() == this) {
+                    if (!people.contains(person)) people.add(person);
+                }
+            }
+
+            // Add all people repairing this facility.
+            /*
+            if (task instanceof RepairSettlement) {
+                if (((RepairSettlement) task).getEntity() == this) {
+                    if (!people.contains(person) people.add(person);
+                }
+            }
+            */
+        }
+
+        return people;
     }
 }

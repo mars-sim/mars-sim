@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Equipment.java
- * @version 2.74 2002-04-17
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
  
@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.equipment;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
 
 /** The Equipment class is an abstract class that represents  
  *  a useful piece of equipment, such as a EVA suite or a
@@ -38,5 +40,36 @@ public abstract class Equipment extends Unit implements Malfunctionable {
      */
     public MalfunctionManager getMalfunctionManager() {
         return malfunctionManager;
+    }
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        PersonCollection people = new PersonCollection();
+
+	// Check all people.
+        PersonIterator i = mars.getUnitManager().getPeople().iterator(); 
+        while (i.hasNext()) {
+	    Person person = i.next();
+	    Task task = person.getMind().getTaskManager().getTask();
+
+	    // Add all people maintaining this equipment.
+	    if (task instanceof MaintainEquipment) {
+	        if (((MaintainEquipment) task).getEquipment() == this)
+		    people.add(person);
+	    }
+	    
+	    // Add all people repairing this equipment.
+	    /*
+	    if (task instanceof RepairEquipment) {
+	        if (((RepairEquipment) task).getEquipment() == this)
+	            people.add(person);
+	    }
+	    */
+	}
+	
+	return people;
     }
 }

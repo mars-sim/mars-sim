@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-04-21
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
@@ -261,6 +262,31 @@ public class Settlement extends Structure implements LifeSupport {
      * @return person collection
      */
     public PersonCollection getAffectedPeople() {
-        return getInhabitants();
+	PersonCollection people = new PersonCollection(getInhabitants());
+
+        // Check all people.
+        PersonIterator i = mars.getUnitManager().getPeople().iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+            Task task = person.getMind().getTaskManager().getTask();
+
+            // Add all people maintaining this settlement. 
+            if (task instanceof MaintainSettlement) {
+                if (((MaintainSettlement) task).getEntity() == this) {
+                    if (!people.contains(person)) people.add(person);
+		}
+            }
+
+            // Add all people repairing this settlement.
+            /*
+            if (task instanceof RepairSettlement) {
+                if (((RepairSettlement) task).getEntity() == this) {
+                    if (!people.contains(person) people.add(person);
+		}
+            }
+            */
+        }
+
+        return people;
     }
 }

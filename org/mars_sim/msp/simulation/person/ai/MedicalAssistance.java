@@ -110,7 +110,7 @@ public class MedicalAssistance extends Task implements Serializable {
 	Settlement settlement = person.getSettlement();
 	if (settlement != null) {
 	
-            double chance = .01D;
+            double chance = .001D;
 	    
             // Medical skill modification.
 	    int skill = person.getSkillManager().getEffectiveSkillLevel("Medical");

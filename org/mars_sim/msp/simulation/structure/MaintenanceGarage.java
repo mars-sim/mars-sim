@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarage.java
- * @version 2.74 2002-04-21
+ * @version 2.74 2002-04-28
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
 import java.util.Vector;
@@ -155,5 +157,25 @@ public class MaintenanceGarage extends Facility implements Serializable {
      */
     public void timePassing(double time) {
         if (vehicles.size() > 0) malfunctionManager.activeTimePassing(time);
+    }
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        PersonCollection people = super.getAffectedPeople();
+
+        // Check for people in settlement using laboratory.
+        PersonIterator i2 = getFacilityManager().getSettlement().getInhabitants().iterator();
+        while (i2.hasNext()) {
+            Person person = i2.next();
+            Task task = person.getMind().getTaskManager().getTask();
+            if (task instanceof MaintainVehicle) {
+                if (!people.contains(person)) people.add(person);
+            }
+        }
+
+        return people;
     }
 }

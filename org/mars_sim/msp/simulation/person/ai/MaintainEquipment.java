@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainEquipment.java
- * @version 2.74 2002-04-23
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
 
@@ -17,7 +17,7 @@ import java.util.*;
 /** The MaintainEquipment class is a task for performing
  *  preventive maintenance on equipment.
  */
-class MaintainEquipment extends Task implements Serializable {
+public class MaintainEquipment extends Task implements Serializable {
 
     // Data members
     private Equipment equipment; // Equipment to be maintained.
@@ -186,7 +186,7 @@ class MaintainEquipment extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .01D;
+        double chance = .001D;
 
 	// Mechanic skill modification.
 	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
@@ -198,5 +198,13 @@ class MaintainEquipment extends Task implements Serializable {
             equipment.getMalfunctionManager().accident();
         }
     }
-}
 
+    /** 
+     * Gets the equipment the person is maintaining.
+     * Returns null if none.
+     * @return equipment
+     */
+    public Equipment getEquipment() {
+        return equipment;
+    }
+}

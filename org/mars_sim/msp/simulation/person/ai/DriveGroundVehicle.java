@@ -413,7 +413,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .01D;
+        double chance = .001D;
 
 	// Driver skill modification.
 	int skill = person.getSkillManager().getEffectiveSkillLevel("Driving");

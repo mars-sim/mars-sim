@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.74 2002-04-23
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
 
@@ -16,7 +16,7 @@ import org.mars_sim.msp.simulation.structure.*;
  *  It has the phases, "Planting", "Tending" and "Harvesting".
  *  This is an effort driven task.
  */
-class TendGreenhouse extends Task implements Serializable {
+public class TendGreenhouse extends Task implements Serializable {
 
     private Greenhouse greenhouse; // The greenhouse the person is tending.
     private Settlement settlement; // The settlement the greenhouse is in.
@@ -105,7 +105,7 @@ class TendGreenhouse extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .01D;
+        double chance = .001D;
 
 	// Greenhouse farming skill modification.
 	int skill = person.getSkillManager().getEffectiveSkillLevel("Greenhouse Farming");
@@ -118,4 +118,3 @@ class TendGreenhouse extends Task implements Serializable {
         }
     }
 }
-

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.74 2002-04-13
+ * @version 2.74 2002-04-28
  * @author Scott Davis
  */
 
@@ -238,6 +238,7 @@ public class Mars implements Serializable {
         // Store the persistent values in sequence
         out.writeObject(units);
         out.writeObject(missionManager);
+	out.writeObject(medicalManager);
         out.writeObject(orbitInfo);
         out.writeObject(masterClock);
     }
@@ -251,6 +252,7 @@ public class Mars implements Serializable {
         // Load in the persistent values in sequence
         units = (UnitManager)in.readObject();
         missionManager = (MissionManager)in.readObject();
+	medicalManager = (MedicalManager)in.readObject();
         orbitInfo = (OrbitInfo)in.readObject();
         masterClock = (MasterClock)in.readObject();
     }

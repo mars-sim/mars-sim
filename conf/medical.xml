@@ -63,6 +63,15 @@
             <RETAINAID>True</RETAINAID>
             <FACILITY_LEVEL>5</FACILITY_LEVEL>
         </TREATMENT>
+
+        <TREATMENT>
+	    <NAME>Skin Graft</NAME>
+	    <SKILL>4</SKILL>
+	    <DURATION>10</DURATION>
+	    <RETAINAID>True</RETAINAID>
+	    <FACILITY_LEVEL>5</FACILITY_LEVEL>
+        </TREATMENT>
+    
     </TREATMENT_LIST>
 
     <COMPLAINT_LIST>   
@@ -168,14 +177,30 @@
         </COMPLAINT>
 
         <COMPLAINT>
-            <NAME>Burns</NAME>
-	    <SERIOUS>25</SERIOUS>
+            <NAME>Minor Burns</NAME>
+	    <SERIOUS>20</SERIOUS>
 	    <RECOVERY>10</RECOVERY>
-	    <PROBABILITY>10</PROBABILITY>
-	    <PERFORMANCE>65</PERFORMANCE>
+	    <PROBABILITY>15</PROBABILITY>
+	    <PERFORMANCE>75</PERFORMANCE>
+        </COMPLAINT>
+
+        <COMPLAINT>
+            <NAME>Burns</NAME>
+	    <SERIOUS>50</SERIOUS>
+	    <RECOVERY>20</RECOVERY>
+	    <PERFORMANCE>50</PERFORMANCE>
 	    <CURE>Dressing</CURE>
         </COMPLAINT>
     
+        <COMPLAINT>
+            <NAME>Major Burns</NAME>
+	    <SERIOUS>80</SERIOUS>
+	    <DEGRADE>10</DEGRADE>
+	    <RECOVERY>40</RECOVERY>
+	    <PERFORMANCE>0</PERFORMANCE>
+	    <CURE>Skin Graft</CURE>
+        </COMPLAINT>
+
     </COMPLAINT_LIST>
 </MEDICAL>
 

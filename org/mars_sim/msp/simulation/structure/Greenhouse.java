@@ -8,6 +8,8 @@
 package org.mars_sim.msp.simulation.structure;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
 import java.io.Serializable;
 
 /**
@@ -148,5 +150,25 @@ public class Greenhouse extends Facility implements Serializable {
         }
 
 	malfunctionManager.activeTimePassing(time);
+    }
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        PersonCollection people = super.getAffectedPeople();
+
+	// Check for people in settlement using greenhouse.
+	PersonIterator i = getFacilityManager().getSettlement().getInhabitants().iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+            Task task = person.getMind().getTaskManager().getTask();
+	    if (task instanceof TendGreenhouse) {
+                if (!people.contains(person)) people.add(person);
+	    }
+	}
+
+	return people;
     }
 }

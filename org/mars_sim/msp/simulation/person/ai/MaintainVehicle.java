@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.74 2002-04-22
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
 
@@ -17,7 +17,7 @@ import java.util.*;
 /** The MaintainVehicle class is a task for performing periodic maintenance on a vehicle
  *  in a settlements maintenance garage.
  */
-class MaintainVehicle extends Task implements Serializable {
+public class MaintainVehicle extends Task implements Serializable {
 
     // Data members
     private Vehicle vehicle; // Vehicle that person is performing the task on.
@@ -153,7 +153,7 @@ class MaintainVehicle extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .01D;
+        double chance = .001D;
 	    
         // Mechanic skill modification.
 	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
@@ -171,5 +171,14 @@ class MaintainVehicle extends Task implements Serializable {
 		garage.getMalfunctionManager().accident();
 	    }
         }
+    }
+
+    /**
+     * Gets the vehicle the person is maintaining.
+     * Return null if none.
+     * @return vehicle
+     */
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 }

@@ -50,7 +50,7 @@ public class MalfunctionFactory {
 	while (i.hasNext()) {
 	    Malfunction temp = (Malfunction) i.next();
 	    if (temp.unitScopeMatch(scope)) 
-	        totalProbability = temp.getProbability();
+	        totalProbability += temp.getProbability();
 	}
 
         double r = RandomUtil.getRandomDouble(totalProbability);

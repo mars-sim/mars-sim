@@ -25,8 +25,8 @@
     </MALFUNCTION>
 
     <MALFUNCTION>
-        <NAME>Electrical Fire</NAME>
-        <SEVERITY>90</SEVERITY>
+        <NAME>Minor Electrical Fire</NAME>
+        <SEVERITY>50</SEVERITY>
         <PROBABILITY>15.0</PROBABILITY>
 	<EMERGENCY_WORK_TIME>10.0</EMERGENCY_WORK_TIME>
 	<WORK_TIME>100.0</WORK_TIME>
@@ -35,9 +35,76 @@
 	    <ENTITY>Settlement</ENTITY>
 	    <ENTITY>Facility</ENTITY>
 	    <ENTITY>Vehicle</ENTITY>
+	    <ENTITY>EVASuit</ENTITY>
         </SCOPE>
+        <EFFECTS>
+	    <LIFE_SUPPORT>
+	        <NAME>Oxygen</NAME>
+		<CHANGE_RATE>-.5</CHANGE_RATE>
+	    </LIFE_SUPPORT>
+	</EFFECTS>
+	<MEDICAL_COMPLAINT>
+            <NAME>Minor Burns</NAME>
+            <PROBABILITY>5.0</PROBABILITY>
+        </MEDICAL_COMPLAINT>
+    </MALFUNCTION>
+
+    <MALFUNCTION>
+        <NAME>Electrical Fire</NAME>
+        <SEVERITY>70</SEVERITY>
+        <PROBABILITY>7.0</PROBABILITY>
+	<EMERGENCY_WORK_TIME>20.0</EMERGENCY_WORK_TIME>
+	<WORK_TIME>200.0</WORK_TIME>
+	<EVA_WORK_TIME>0.0</EVA_WORK_TIME>
+        <SCOPE>
+	    <ENTITY>Settlement</ENTITY>
+	    <ENTITY>Facility</ENTITY>
+	    <ENTITY>Vehicle</ENTITY>
+        </SCOPE>
+        <EFFECTS>
+	    <LIFE_SUPPORT>
+	        <NAME>Oxygen</NAME>
+		<CHANGE_RATE>-1.0</CHANGE_RATE>
+	    </LIFE_SUPPORT>
+	</EFFECTS>
+	<MEDICAL_COMPLAINT>
+            <NAME>Minor Burns</NAME>
+            <PROBABILITY>15.0</PROBABILITY>
+        </MEDICAL_COMPLAINT>
 	<MEDICAL_COMPLAINT>
             <NAME>Burns</NAME>
+            <PROBABILITY>5.0</PROBABILITY>
+        </MEDICAL_COMPLAINT>
+    </MALFUNCTION>
+
+    <MALFUNCTION>
+	<NAME>Major Electrical Fire</NAME>
+        <SEVERITY>90</SEVERITY>
+        <PROBABILITY>2.0</PROBABILITY>
+	<EMERGENCY_WORK_TIME>30.0</EMERGENCY_WORK_TIME>
+	<WORK_TIME>300.0</WORK_TIME>
+	<EVA_WORK_TIME>0.0</EVA_WORK_TIME>
+        <SCOPE>
+	    <ENTITY>Settlement</ENTITY>
+	    <ENTITY>Facility</ENTITY>
+	    <ENTITY>Vehicle</ENTITY>
+        </SCOPE>
+        <EFFECTS>
+	    <LIFE_SUPPORT>
+	        <NAME>Oxygen</NAME>
+		<CHANGE_RATE>-2.0</CHANGE_RATE>
+	    </LIFE_SUPPORT>
+	</EFFECTS>
+	<MEDICAL_COMPLAINT>
+            <NAME>Minor Burns</NAME>
+            <PROBABILITY>30.0</PROBABILITY>
+        </MEDICAL_COMPLAINT>
+	<MEDICAL_COMPLAINT>
+            <NAME>Burns</NAME>
+            <PROBABILITY>15.0</PROBABILITY>
+        </MEDICAL_COMPLAINT>
+	<MEDICAL_COMPLAINT>
+            <NAME>Major Burns</NAME>
             <PROBABILITY>5.0</PROBABILITY>
         </MEDICAL_COMPLAINT>
     </MALFUNCTION>

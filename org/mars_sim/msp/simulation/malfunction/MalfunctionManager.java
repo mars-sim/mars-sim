@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.74 2002-04-25
+ * @version 2.74 2002-04-28
  * @author Scott Davis
  */
 
@@ -38,7 +38,7 @@ public class MalfunctionManager implements Serializable {
 	this.mars = mars;
 	scope = new ArrayList();
 	malfunctions = new ArrayList();
-	maintenanceWorkTime = 1000D;
+	maintenanceWorkTime = 2000D;
     }
 
     /**
@@ -118,12 +118,13 @@ public class MalfunctionManager implements Serializable {
 
         timeSinceLastMaintenance += time;
 
-        // double chance = .01D + (.0001D * timeSinceLastMaintenance);
-        double chance1 = .01D + (.00001D * timeSinceLastMaintenance);
-	// chance *= time;
-	double chance2 = chance1 * time;
+	// Check for malfunction due to lack of maintenance.
+        double chance = time * .000001D * timeSinceLastMaintenance;
 
-	if (RandomUtil.lessThanRandPercent(chance2)) addMalfunction();
+	if (RandomUtil.lessThanRandPercent(chance)) {
+	    System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + timeSinceLastMaintenance);	
+	    addMalfunction();
+	}
     }
 
     /**
@@ -136,7 +137,7 @@ public class MalfunctionManager implements Serializable {
         // Multiple malfunctions may have occured.
 	// 50% one malfunction, 25% two etc.
 	boolean done = false;
-	double chance = 50D;
+	double chance = 100D;
 	while (!done) {
             if (RandomUtil.lessThanRandPercent(chance)) {
 	        addMalfunction();
@@ -195,9 +196,12 @@ public class MalfunctionManager implements Serializable {
      * @param malfunction the new malfunction
      */
     public void issueMedicalComplaints(Malfunction malfunction) {
-        
+       
+	// Get people who can be affected by this malfunction.
         PersonCollection people = entity.getAffectedPeople();
 
+
+	// Determine medical complaints for each malfunction.
 	Iterator i1 = malfunction.getMedicalComplaints().keySet().iterator();
 	while (i1.hasNext()) {
 	    String complaintName = (String) i1.next();
@@ -205,7 +209,6 @@ public class MalfunctionManager implements Serializable {
 	    MedicalManager medic = mars.getMedicalManager();
             Complaint complaint = medic.getComplaintByName(complaintName);
             if (complaint != null) {
-	    
 	        PersonIterator i2 = people.iterator();
 	        while (i2.hasNext()) {
 	            Person person = i2.next();

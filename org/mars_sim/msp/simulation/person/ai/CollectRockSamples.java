@@ -267,7 +267,7 @@ class CollectRockSamples extends Task implements Serializable {
         EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
 	if (suit != null) {
 	    
-            double chance = .01D;
+            double chance = .001D;
 
 	    // EVA operations skill modification.
 	    int skill = person.getSkillManager().getEffectiveSkillLevel("EVA Operations");

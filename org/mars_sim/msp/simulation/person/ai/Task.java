@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-27
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ import org.mars_sim.msp.simulation.person.*;
  *  A person's TaskManager keeps track of one current task for the person, but a task may use other
  *  tasks internally to accomplish things.
  */
-abstract class Task implements Serializable, Comparable {
+public abstract class Task implements Serializable, Comparable {
 
     // Data members
     protected String name;            // The name of the task
