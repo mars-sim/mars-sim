@@ -12,13 +12,25 @@
         <!-- Default: 1.0 -->
         <OXYGEN_CONSUMPTION>1.0</OXYGEN_CONSUMPTION>
 
+        <!-- Number of Martian Sol that a person can survive without Oxygen -->
+        <!-- Default: 5.0 -->
+        <LACK_OF_OXYGEN>5.0</LACK_OF_OXYGEN>
+
         <!-- The average amount of water (kg) drank by a person each Martian Sol -->
         <!-- Default: 4.0 -->
         <WATER_CONSUMPTION>4.0</WATER_CONSUMPTION>
 
+        <!-- Number of Martian Sol that a person can survive without Water-->
+        <!-- Default: 300.0 -->
+        <LACK_OF_WATER>300.0</LACK_OF_WATER>
+
         <!-- The average amount of food (kg) eaten by a person each Martian Sol -->
         <!-- Default: 1.5 -->
         <FOOD_CONSUMPTION>1.5</FOOD_CONSUMPTION>
+
+        <!-- Number of Martian Sol that a person can survive without Food-->
+        <!-- Default: 1500.0 -->
+        <LACK_OF_FOOD>1500.0</LACK_OF_FOOD>
     
     </PERSON_PROPERTIES>
 
