@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation;
 
 import org.mars_sim.msp.simulation.person.ai.MissionManager;
+import org.mars_sim.msp.simulation.person.MedicalManager;
 import java.util.*;
 import java.io.*;
 
@@ -37,6 +38,7 @@ public class VirtualMars implements Serializable {
     private String stateFile; // Name of file to load/store this simulation.
     private UnitManager units; // Unit controller
     private MissionManager missionManager; // Mission controller
+    private MedicalManager medicalManager; // Medical complaints
     private MasterClock masterClock; // Master clock for virtual world
     private OrbitInfo orbitInfo; // Orbital information
 
@@ -45,6 +47,9 @@ public class VirtualMars implements Serializable {
 
         initialiseTransients();
         setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
+
+        // Initialize the Medical conditions
+        medicalManager = new MedicalManager(properties);
 
         // Initialize mission manager
         missionManager = new MissionManager(this);
@@ -189,6 +194,13 @@ public class VirtualMars implements Serializable {
      */
     public MissionManager getMissionManager() {
         return missionManager;
+    }
+
+    /** Returns the medical manager
+     *  @return medical manager for virtual Mars
+     */
+    public MedicalManager getMedicalManager() {
+        return medicalManager;
     }
 
     /** Returns the master clock
