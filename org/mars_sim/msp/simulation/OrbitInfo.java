@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OrbitInfo.java
- * @version 2.72 2001-04-30
+ * @version 2.72 2001-05-06
  * @author Scott Davis
  */
 
@@ -17,17 +17,19 @@ public class OrbitInfo {
     private static final double SEMIMAJOR_AXIS = 1.524D;  // Mars orbit semimajor axis in au
     private static final double TILT=.4396D;              // Mars tilt in radians
     private static final double SOLAR_DAY = 88775.244D;   // Mars solar day in seconds
+    private static final double ORBIT_AREA = 9.5340749D;  // The area of Mars' orbit in au squared
 
     // Data members
+    private double orbitTime;  // The total time in the current orbit (in seconds) 
     private double theta;   // The angle of Mars's position to the Sun (in radians)
     private double radius;  // The distance from the Sun to Mars (in au).
     private Coordinates sunDirection; // The point on the surface of Mars perpendicular to the Sun as Mars rotates.
 
     /** Constructs an OrbitInfo object */
-    public OrbitInfo() {
-    
+    public OrbitInfo() {   
 	// Initialize data members
         // Set orbit coordinates to start of orbit.
+        orbitTime = 0D;
         theta = 0D;
         radius = 1.665732D;
         sunDirection = new Coordinates((Math.PI / 2D) + TILT, 0D);
@@ -37,10 +39,18 @@ public class OrbitInfo {
      * @param seconds seconds of time added
      */
     public void addTime(double seconds) {
+        // Determine orbit time
+        orbitTime += seconds;
+        while (orbitTime > ORBIT_PERIOD) orbitTime -= ORBIT_PERIOD;
 
         // Determine new theta
-        // (the correct equation needs to be implemented later)
-        theta += (2D * Math.PI) * (seconds / ORBIT_PERIOD);
+        double area = ORBIT_AREA * orbitTime / ORBIT_PERIOD;
+        double areaTemp = 0D;
+        if (area > (ORBIT_AREA / 2D)) areaTemp = area - (ORBIT_AREA / 2D);
+        else areaTemp = (ORBIT_AREA / 2D) - area;
+        theta = Math.abs(2D * Math.atan(1.097757562D * Math.tan(.329512059D * areaTemp)));
+        if (area < (ORBIT_AREA / 2D)) theta = 0D - theta;
+        theta += Math.PI;
         if (theta >= (2 * Math.PI)) theta -= (2 * Math.PI);
 
         // Determine new radius
