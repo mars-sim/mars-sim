@@ -82,7 +82,7 @@ public class VirtualMars implements Serializable {
      */
     public void start() {
 
-        clockThread = new Thread(masterClock);
+        clockThread = new Thread("Master Clock", masterClock);
         clockThread.start();
     }
 
