@@ -25,6 +25,8 @@ public class ColumnSelector extends JDialog {
 
     private final static String PIE_MESSAGE =
                         "Select a single column to display in the Pie chart";
+    private final static String BAR_MESSAGE =
+                        "Select a multiple columns to display in the Bar chart";
 
     // Data members
     private JList columnList = null; // Check boxes
@@ -37,8 +39,9 @@ public class ColumnSelector extends JDialog {
      *
      * @param frame Owner of the dialog.
      * @param model Model driving the columns.
+     * @param bar Display selection for a Bar chart.
      */
-    public ColumnSelector(Frame owner, UnitTableModel model) {
+    public ColumnSelector(Frame owner, UnitTableModel model, boolean bar) {
         super(owner, model.getName(), true);
 
         // Add all valid columns into the list
@@ -46,7 +49,16 @@ public class ColumnSelector extends JDialog {
         columnMappings = new int[model.getColumnCount()-1];
         for(int i = 1; i < model.getColumnCount(); i++) {
             // If a valid column then add to model.
-            if (isCategory(model.getColumnClass(i))) {
+            Class columnType = model.getColumnClass(i);
+
+            // If a bar, look for Number classes
+            if (bar) {
+                if (Number.class.isAssignableFrom(columnType)) {
+                    columnMappings[items.size()] = i;
+                    items.add(model.getColumnName(i));
+                }
+            }
+            else if (isCategory(columnType)) {
                 columnMappings[items.size()] = i;
                 items.add(model.getColumnName(i));
             }
@@ -56,7 +68,13 @@ public class ColumnSelector extends JDialog {
         JPanel centerPane = new JPanel(new BorderLayout());
         centerPane.setBorder(BorderFactory.createRaisedBevelBorder());
         columnList = new JList(items);
-        centerPane.add(new JLabel(PIE_MESSAGE), "North");
+        if (bar) {
+            columnList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            centerPane.add(new JLabel(BAR_MESSAGE), "North");
+        }
+        else {
+            centerPane.add(new JLabel(PIE_MESSAGE), "North");
+        }
         centerPane.add(new JScrollPane(columnList), "Center");
 
         // Buttons
@@ -84,6 +102,26 @@ public class ColumnSelector extends JDialog {
         getContentPane().add(pane);
 
         pack();
+    }
+
+    public static int[] createBarSelector(Frame window,
+                                          UnitTableModel model) {
+        ColumnSelector select = new ColumnSelector(window, model, true);
+        select.show();
+        return select.getSelectedColumns();
+    }
+
+    public static int createPieSelector(Frame window,
+                                          UnitTableModel model) {
+        ColumnSelector select = new ColumnSelector(window, model, false);
+        select.show();
+        int [] columns = select.getSelectedColumns();
+        if (columns.length > 0) {
+            return columns[0];
+        }
+        else {
+            return -1;
+        }
     }
 
     /**

@@ -31,7 +31,7 @@ import com.jrefinery.chart.TextTitle;
  */
 class PieChartTab extends MonitorTab {
 
-    private final static Icon PIEICON = new ImageIcon("images/PieChart.gif");
+    public final static Icon PIEICON = new ImageIcon("images/PieChart.gif");
 
     /**
      * The percentage below which segment goes to others
@@ -184,13 +184,10 @@ class PieChartTab extends MonitorTab {
     public void displayProps(MainDesktopPane desktop) {
 
         // Show modal column selector
-        ColumnSelector select = new ColumnSelector(desktop.getMainWindow(),
-                                                   getModel());
-        select.show();
-
-        int columns[] = select.getSelectedColumns();
-        if (columns.length > 0) {
-            setColumn(columns[0]);
+        int column = ColumnSelector.createPieSelector(desktop.getMainWindow(),
+                                                         getModel());
+        if (column >= 0) {
+            setColumn(column);
         }
 
     }

@@ -65,21 +65,24 @@ implements Runnable {
 
 
         // Create graph button
-        JButton pieButton = new JButton(new ImageIcon("images/PieChart.gif"));
+        JButton pieButton = new JButton(PieChartTab.PIEICON);
         pieButton.setToolTipText("Create a Pie chart of a single column");
         pieButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
-                            createChart();
+                            createPieChart();
                         }
                     });
 
         toolbar.add(pieButton);
 
-        /*
-        JButton barButton = new JButton(new ImageIcon("images/BarChart.gif"));
+        JButton barButton = new JButton(BarChartTab.BARICON);
         barButton.setToolTipText("Create a Bar chart of multiple columns");
+        barButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            createBarChart();
+                        }
+                    });
         toolbar.add(barButton);
-        */
 
         JButton tabRemove = new JButton(new ImageIcon("images/TabRemove.gif"));
         tabRemove.setToolTipText("Remove selected tab");
@@ -205,22 +208,30 @@ implements Runnable {
 
     /**
      * This method creates a new chart window based on the model of the
-     * currently selected window.
+     * currently selected window. The chart is added as a seperate tab to the
+     * window.
      */
-    private void createChart() {
+    private void createBarChart() {
         UnitTableModel model = getSelected().getModel();
 
         // Show modal column selector
-        ColumnSelector select = new ColumnSelector(desktop.getMainWindow(),
-                                                   model);
-        select.show();
-
-        int columns[] = select.getSelectedColumns();
+        int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow(),
+                                                        model);
         if (columns.length > 0) {
-            addTab(new PieChartTab(model, columns[0]));
+            addTab(new BarChartTab(model, columns));
         }
     }
 
+    private void createPieChart() {
+        UnitTableModel model = getSelected().getModel();
+
+        // Show modal column selector
+        int column = ColumnSelector.createPieSelector(desktop.getMainWindow(),
+                                                        model);
+        if (column >= 0) {
+            addTab(new PieChartTab(model, column));
+        }
+    }
     /**
      * Return the currently selected tab.
      *
