@@ -65,6 +65,9 @@ class TendGreenhouse extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+        // If person is incompacitated, end task.
+	if (person.getPerformanceRating() == 0D) done = true;
+	
         // Get the phase from the greenhouse's phase of operation.
         phase = greenhouse.getPhase();
 

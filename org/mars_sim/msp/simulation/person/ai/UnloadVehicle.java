@@ -48,6 +48,9 @@ class UnloadVehicle extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+        // If person is incompacitated, end task.
+	if (person.getPerformanceRating() == 0D) done = true;
+	
         double amountUnloading = UNLOAD_RATE * time;
 
         // Unload fuel

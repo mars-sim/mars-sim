@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.74 2002-02-22
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -173,5 +173,22 @@ public abstract class Mission implements Serializable {
     protected void endMission() {
         done = true;
 	people.clear();
+    }
+
+    /** 
+     * Adds a new task for a person in the mission.
+     * Task may be not assigned if it is effort-driven and person is too ill
+     * to perform it.
+     * @param person the person to assign to the task
+     * @param task the new task to be assigned
+     */
+    protected void assignTask(Person person, Task task) {
+        boolean canPerformTask = true;
+	
+        // If task is effort-driven and person too ill, do not assign task.
+        if (task.isEffortDriven() && (person.getPerformanceRating() < .5D)) 
+            canPerformTask = false;	
+
+	if (canPerformTask) person.getMind().getTaskManager().addTask(task);
     }
 } 

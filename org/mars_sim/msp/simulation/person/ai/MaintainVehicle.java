@@ -101,6 +101,9 @@ class MaintainVehicle extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+        // If person is incompacitated, end task.
+	if (person.getPerformanceRating() == 0D) done = true;
+	
         // Determine effective work time based on "Vehicle Mechanic" skill.
         double workTime = timeLeft;
         int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Vehicle Mechanic");

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -53,7 +53,7 @@ abstract class Task implements Serializable, Comparable {
      * Return the value of the effort driven flag.
      * @return Effort driven.
      */
-    public boolean getEffortDriven() {
+    public boolean isEffortDriven() {
         return effortDriven;
     }
 

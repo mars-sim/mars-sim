@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.74 2002-02-20
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -184,7 +184,7 @@ class CollectRockSamples extends Task implements Serializable {
 	if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) == 0) result = false;
 
 	// Check if person's medical condition will not allow task.
-	// (implement later)
+        if (person.getPerformanceRating() < .5D) result = false;
 	
         return result;
     }
@@ -230,7 +230,10 @@ class CollectRockSamples extends Task implements Serializable {
 	}
 
 	// Check if person's medical condition is sufficient to continue phase.
-	// (implement later)
+        if (person.getPerformanceRating() < .5D) {
+	    System.out.println(person.getName() + " should end collection phase: medical problems.");	
+	    result = true;
+	}
 	
 	return result;
     }

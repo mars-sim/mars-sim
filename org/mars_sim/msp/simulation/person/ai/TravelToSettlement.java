@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-02-22
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -147,7 +147,7 @@ class TravelToSettlement extends Mission implements Serializable {
         if (rover == null) {
             if (reserveRover == null) {
                 reserveRover = new ReserveRover(person, mars, destinationSettlement.getCoordinates());
-                person.getMind().getTaskManager().addTask(reserveRover);
+		assignTask(person, reserveRover);
                 return;
             }
             else { 
@@ -170,8 +170,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // If there isn't enough supplies available, end mission.
         if (isRoverLoaded()) roverLoaded = true;
         if (!roverLoaded) {
-            LoadVehicle loadRover = new LoadVehicle(person, mars, rover);
-            person.getMind().getTaskManager().addTask(loadRover);
+	    assignTask(person, new LoadVehicle(person, mars, rover));
             if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission(); 
             return;
         }
@@ -225,7 +224,7 @@ class TravelToSettlement extends Mission implements Serializable {
                 if ((rover.getDriver() == null) && (rover.getStatus().equals(Rover.PARKED))) {
                     DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, 
 				    destinationSettlement.getCoordinates(), startingTime, startingDistance); 
-                    person.getMind().getTaskManager().addTask(driveTask);
+		    assignTask(person, driveTask);
                     lastDriver = person;
                 }   
             }
@@ -251,7 +250,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // Unload rover if necessary.
         if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
         if (!roverUnloaded) {
-            person.getMind().getTaskManager().addTask(new UnloadVehicle(person, mars, rover));
+	    assignTask(person, new UnloadVehicle(person, mars, rover));
             return;
         }
 

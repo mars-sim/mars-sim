@@ -46,6 +46,9 @@ class LoadVehicle extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+        // If person is incompacitated, end task.
+	if (person.getPerformanceRating() == 0D) done = true;
+	
         double amountLoading = LOAD_RATE * time;
 
         if (hasEnoughSupplies(settlement, vehicle)) {

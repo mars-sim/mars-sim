@@ -62,6 +62,9 @@ class RepairMechanicalFailure extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+        // If person is incompacitated, end task.
+	if (person.getPerformanceRating() == 0D) done = true;
+	
         if (!failure.isFixed()) {
             // Determine effective work time person completes based on "Vehicle Mechanic" skill.
             double workTime = timeLeft;

@@ -92,6 +92,9 @@ class DriveGroundVehicle extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+        // If person is incompacitated, end task.
+	if (person.getPerformanceRating() == 0D) done = true;
+	
         // If night time, end task.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) == 0D) {
             // System.out.println(person.getName() + " stopped driving due to darkness.");

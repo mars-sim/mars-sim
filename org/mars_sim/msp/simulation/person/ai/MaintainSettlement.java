@@ -59,6 +59,9 @@ class MaintainSettlement extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+	// If person is incompacitated, end task.
+        if (person.getPerformanceRating() == 0D) done = true;
+	
         timeCompleted += time;
         if (timeCompleted > duration) {
             done = true;

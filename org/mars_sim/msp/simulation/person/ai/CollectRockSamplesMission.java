@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-02-22
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -150,7 +150,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         if (rover == null) {
             if (reserveRover == null) {
                 reserveRover = new ReserveRover(person, mars, startingSettlement.getCoordinates());
-                person.getMind().getTaskManager().addTask(reserveRover);
+		assignTask(person, reserveRover);
                 return;
             }
             else {
@@ -182,8 +182,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If there isn't enough supplies available, end mission.
         if (LoadVehicle.isFullyLoaded(rover)) roverLoaded = true;
         if (!roverLoaded) {
-            LoadVehicle loadRover = new LoadVehicle(person, mars, rover);
-            person.getMind().getTaskManager().addTask(loadRover);
+	    assignTask(person, new LoadVehicle(person, mars, rover));
             if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission();
             return;
         }
@@ -245,7 +244,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             else {
                 if ((rover.getDriver() == null) && (rover.getStatus().equals(Vehicle.PARKED))) {
                     DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, destination, startingTime, startingDistance);
-                    person.getMind().getTaskManager().addTask(driveTask);
+		    assignTask(person, driveTask);
                     lastDriver = person;
                 }
             }
@@ -307,7 +306,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
                 CollectRockSamples collectRocks = new CollectRockSamples(person, rover, mars, 
 				SITE_SAMPLE_AMOUNT - collectedSamples, 
 				rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES));
-	        person.getMind().getTaskManager().addTask(collectRocks);
+		assignTask(person, collectRocks);
             }
 	}
 	else {
@@ -349,7 +348,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // Unload rover if necessary.
         if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
         if (!roverUnloaded) {
-            person.getMind().getTaskManager().addTask(new UnloadVehicle(person, mars, rover));
+	    assignTask(person, new UnloadVehicle(person, mars, rover));
             return;
         }
 
