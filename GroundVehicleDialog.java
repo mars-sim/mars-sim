@@ -65,7 +65,7 @@ public abstract class GroundVehicleDialog extends VehicleDialog {
 		
 		// Prepare elevation label
 		
-		double tempElevation = Math.round(groundVehicle.elevation * 100D) / 100D;
+		double tempElevation = Math.round(groundVehicle.getElevation() * 100D) / 100D;
 		elevationLabel = new JLabel("Elevation: " + tempElevation + " km.");
 		elevationLabel.setForeground(Color.black);
 		JPanel elevationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));

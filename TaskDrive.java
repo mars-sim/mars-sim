@@ -336,7 +336,7 @@ class TaskDrive extends Task {
 		
 		// If driver has failed to get around an obstacle after 20 turns, mark vehicle as stuck and end task
 		
-		if ((obstacleTimeCount >= 20) && !vehicle.getStuck()) {
+		if ((obstacleTimeCount >= 20) && !vehicle.isStuck()) {
 			vehicle.setStuck(true);
 			subPhase = "Winching Stuck Vehicle";
 			obstacleTimeCount = 0;

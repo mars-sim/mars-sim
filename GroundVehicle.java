@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.70 2000-07-14
+ * @version 2.70 2000-09-01
  * @author Scott Davis
  */
 
@@ -11,9 +11,9 @@
 */
 public abstract class GroundVehicle extends Vehicle {
 
-    protected double elevation;                 // Current elevation in km
-    protected double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability	
-    protected double terrainGrade;              // Average angle of terrain over next 7.4km distance in direction vehicle is traveling
+    private double elevation;                 // Current elevation in km
+    private double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability	
+    private double terrainGrade;              // Average angle of terrain over next 7.4km distance in direction vehicle is traveling
 
     public GroundVehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 		
@@ -21,21 +21,21 @@ public abstract class GroundVehicle extends Vehicle {
 	super(name, location, mars, manager); 
 		
 	// Initialize public variables
-	terrainHandlingCapability = 0D;  // Default terrain capability
-	terrainGrade = 0D;
+	setTerrainHandlingCapability(0D);  // Default terrain capability
+	setTerrainGrade(0D);
 	elevation = mars.getSurfaceTerrain().getElevation(location);
 		
-	// Initialize potential vehicle failures.
-	potentialFailures.put("Fuel Leak", new Integer(1));
-	potentialFailures.put("Air Leak", new Integer(1));
-	potentialFailures.put("Life Support Failure", new Integer(1));
-	potentialFailures.put("Engine Problems", new Integer(1));
-	potentialFailures.put("Battery Failure", new Integer(1));
-	potentialFailures.put("Flat Tire", new Integer(1));
-	potentialFailures.put("Transmission Failure", new Integer(1));
-	potentialFailures.put("Coolant Leak", new Integer(1));
-	potentialFailures.put("Navigation System Failure", new Integer(1));
-	potentialFailures.put("Communications Failure", new Integer(1));
+	// initialize potential vehicle failures.
+	addPotentialFailure("Fuel Leak");
+	addPotentialFailure("Air Leak");
+	addPotentialFailure("Life Support Failure");
+	addPotentialFailure("Engine Problems");
+	addPotentialFailure("Battery Failure");
+	addPotentialFailure("Flat Tire");
+	addPotentialFailure("Transmission Failure");
+	addPotentialFailure("Coolant Leak");
+	addPotentialFailure("Navigation System Failure");
+	addPotentialFailure("Communications Failure");
     }
 	
     /** Returns the elevation of the vehicle in km. */
@@ -53,21 +53,22 @@ public abstract class GroundVehicle extends Vehicle {
 	return terrainHandlingCapability;
     }
 
+    /** Returns the vehicle's terrain capability */
+    public void setTerrainHandlingCapability(double c) {
+	terrainHandlingCapability = c;
+    }
+
     /** Returns true if ground vehicle is stuck */
-    public boolean getStuck() { 
-	if (status.equals("Stuck - Using Winch")) {
-	    return true;
-	} else {
-	    return false;
-	}
+    public boolean isStuck() { 
+	return (getStatus().equals("Stuck - Using Winch"));
     }
 	
     /** Sets the ground vehicle's stuck value */
     public void setStuck(boolean stuck) { 
 	if (stuck) {
-	    status = "Stuck - Using Winch";
+	    setStatus("Stuck - Using Winch");
 	} else {
-	    status = "Moving";
+	    setStatus("Moving");
 	}
     }
 

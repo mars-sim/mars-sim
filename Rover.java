@@ -19,16 +19,16 @@ class Rover extends GroundVehicle {
 	super(name, location, mars, manager); 
 		
 	// Set rover terrain modifier
-	terrainHandlingCapability = 0D;
+	setTerrainHandlingCapability(0D);
 		
 	// Set the vehicle size of the rover.
-	vehicleSize = 2;
+	setSize(2);
 
 	// Set default maximum passengers for a rover.
-	maxPassengers = 8;
+	setMaxPassengers(8);
 		
 	// Set default fuel capacity for a rover.
-	fuelCapacity = 10D;
+	setFuelCapacity(10D);
     }
 
     /** Returns a detail window for the unit */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.70 2000-08-31
+ * @version 2.70 2000-09-01
  * @author Scott Davis
  */
 
@@ -15,78 +15,55 @@ import javax.swing.*;
  */
 public abstract class Vehicle extends Unit {
 
-    protected double direction;            // Direction vehicle is traveling in
-    protected double speed;                // Current speed of vehicle in kph
-    protected double baseSpeed;            // Base speed of vehicle in kph (can be set in child class)
-    protected String status;               // Current status of vehicle ("Moving", "Parked") (other child-specific status allowed)
-    protected Settlement settlement;       // The settlement which the vehicle is parked at
-    protected Vector passengers;           // List of people who are passengers in vehicle
-    protected Person driver;               // Driver of the vehicle
-    protected double distanceTraveled;     // Total distance traveled by vehicle
-    protected double distanceMaint;        // Distance traveled by vehicle since last maintenance
-    protected int maxPassengers;           // Maximum number of passengers the vehicle can carry.
-    protected double fuel;                 // Current amount of fuel in the vehicle.
-    protected double fuelCapacity;         // Maximum amount of fuel the vehicle can carry.
+    private double direction = 0;     // Direction vehicle is traveling in
+    private double speed = 0;         // Current speed of vehicle in kph
+    private double baseSpeed = 30;            // Base speed of vehicle in kph (can be set in child class)
+    private String status;                 // Current status of vehicle ("Moving", "Parked") (other child-specific status allowed)
+    private Settlement settlement;       // The settlement which the vehicle is parked at
+    private Vector passengers;           // List of people who are passengers in vehicle
+    private Person driver;               // Driver of the vehicle
+    private double distanceTraveled = 0;     // Total distance traveled by vehicle
+    private double distanceMaint = 0;        // Distance traveled by vehicle since last maintenance
+    private int maxPassengers = 0;              // Maximum number of passengers the vehicle can carry.
+    private double fuel = 0;                      // Current amount of fuel in the vehicle.
+    private double fuelCapacity = 0;              // Maximum amount of fuel the vehicle can carry.
 	
-    protected Coordinates destinationCoords;    // Coordinates of the destination
-    protected Settlement destinationSettlement; // Destination settlement (it applicable)
-    protected String destinationType;           // Type of destination ("None", "Settlement" or "Coordinates")
-    protected double distanceToDestination;     // Distance in meters to the destination
-    protected boolean isReserved;               // True if vehicle is currently reserved for a driver and cannot be taken by another
-    protected int vehicleSize;                  // Size of vehicle in arbitrary units.(Value of size units will be established later.)
-    protected int maintenanceWork;              // Work done for vehicle maintenance.
-    protected int totalMaintenanceWork;         // Total amount of work necessary for vehicle maintenance.
+    private Coordinates destinationCoords;    // Coordinates of the destination
+    private Settlement destinationSettlement; // Destination settlement (it applicable)
+    private String destinationType;           // Type of destination ("None", "Settlement" or "Coordinates")
+    private double distanceToDestination = 0;     // Distance in meters to the destination
+    private boolean isReserved = false;       // True if vehicle is currently reserved for a driver and cannot be taken by another
+    private int vehicleSize = 1;              // Size of vehicle in arbitrary units.(Value of size units will be established later.)
+    private int maintenanceWork = 0;              // Work done for vehicle maintenance.
+    private int totalMaintenanceWork;         // Total amount of work necessary for vehicle maintenance.
 	
-    protected HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
-    protected MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
+    private HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
+    private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
 	
-    protected boolean distanceMark;
+    private boolean distanceMark = false;
 
     
     public Vehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
-	// Use Unit constructor
+	// use Unit constructor
 	super(name, location, mars, manager);
 		
 	// Initialize globals
-	direction = 0D;
-	speed = 0D;
-	baseSpeed = 30D;  // Child vehicles should change this as appropriate
-	status = new String("Parked");
-	distanceTraveled = 0D;
-	distanceMaint = 0D;
-
-	settlement = null;
+	setStatus("Parked");
 	passengers = new Vector();
-	driver = null;
-	maxPassengers = 0;  // Child vehicles should change this as appropriate.
-	fuel = 0D;
-	fuelCapacity = 0D;  // Child vehicles should change this as appropriate.
-
-	destinationCoords = null;
-	destinationSettlement = null;
-	destinationType = new String("None");
-	distanceToDestination = 0;
-	
-	isReserved = false;
-	vehicleSize = 1;
-		
+	setDestinationType("None");
 	potentialFailures = new HashMap();
-	mechanicalFailure = null;
-	maintenanceWork = 0;
 	totalMaintenanceWork = 12 * 60 * 60; // (12 hours)
-	
-	distanceMark = false;
     }
 
     /** Returns vehicle's current status */
     public String getStatus() {
-	return new String(status);
+	return status;
     }
 	
     /** Sets vehicle's current status */
     public void setStatus(String status) {
-	this.status = new String(status);
+	this.status = status;
     }
 	
     /** Returns true if vehicle is reserved by someone */
@@ -114,6 +91,11 @@ public abstract class Vehicle extends Unit {
 	return baseSpeed;
     }
 	
+    /** Returns base speed of vehicle */
+    public void setBaseSpeed(double speed) {
+	baseSpeed = speed;
+    }
+	
     /** Returns the current amount of fuel in the vehicle. */
     public double getFuel() {
 	return fuel;
@@ -134,6 +116,11 @@ public abstract class Vehicle extends Unit {
     /** Returns the fuel capacity of the vehicle. */
     public double getFuelCapacity() {
 	return fuelCapacity;
+    }
+	
+    /** Returns the fuel capacity of the vehicle. */
+    public void setFuelCapacity(double capacity) {
+	fuelCapacity = capacity;
     }
 	
     /** Returns total distance traveled by vehicle (in km.) */
@@ -175,6 +162,11 @@ public abstract class Vehicle extends Unit {
     /** Returns the maximum passenger capacity of the vehicle (including the driver). */
     public int getMaxPassengers() {
 	return maxPassengers;
+    }
+
+    /** Returns the maximum passenger capacity of the vehicle (including the driver). */
+    public void setMaxPassengers(int num) {
+	maxPassengers = num;
     }
 
     /** Returns number of passengers in vehicle */
@@ -256,28 +248,24 @@ public abstract class Vehicle extends Unit {
 
     /** Gets the type of destination for the vehicle */
     public String getDestinationType() {
-	return new String(destinationType);
+	return destinationType;
     }
 
     /** Sets the type of destination for the vehicle ("Coordinates", "Settlement" or "None") */
     public void setDestinationType(String destinationType) {
-	this.destinationType = new String(destinationType);
+	this.destinationType = destinationType;
     }
 
     /** Sets the destination coordinates */
     public void setDestination(Coordinates destinationCoords) {
-	this.destinationCoords = new Coordinates(destinationCoords);
-	destinationType = new String("Coordinates");
+	this.destinationCoords = destinationCoords;
+	destinationType = "Coordinates";
     }
 	
     /** Returns the destination coordinates.
-     *  Returns null if there is no destination. */
+     *  (null if no destination). */
     public Coordinates getDestination() { 
-	if (destinationCoords != null) {
-	    return new Coordinates(destinationCoords);
-	} else {
-	    return null;
-	}
+	return destinationCoords;
     }
 	
     /** Sets the destination settlement */
@@ -285,18 +273,14 @@ public abstract class Vehicle extends Unit {
 	this.destinationSettlement = destinationSettlement;
 	if (destinationSettlement != null) {
 	    setDestination(destinationSettlement.getCoordinates());
-	    destinationType = new String("Settlement");
+	    destinationType = "Settlement";
 	}
     }
 
     /** Returns the destination settlement.
-     *  Returns null if there is no destination settlement. */
+     *  (null if no destination settlement). */
     public Settlement getDestinationSettlement() {
-	if (destinationSettlement != null) {
-	    return destinationSettlement;
-	} else {
-	    return null;
-	}
+	return destinationSettlement;
     }
 	
     /** Returns the vehicle's size. */
@@ -304,6 +288,15 @@ public abstract class Vehicle extends Unit {
 	return vehicleSize;
     }
 	
+    /** sets the vehicle's size. */
+    public void setSize(int size) {
+	vehicleSize = size;
+    }
+	
+    public void addPotentialFailure(String failureName) {
+	potentialFailures.put(failureName, new Integer(1));
+    }
+
     /** Returns a vector of the vehicle's current failures. */
     public MechanicalFailure getMechanicalFailure() {
 	return mechanicalFailure;
