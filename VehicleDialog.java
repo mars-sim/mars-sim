@@ -1,5 +1,5 @@
 //************************** Vehicle Detail Window **************************
-// Last Modified: 3/1/00
+// Last Modified: 5/19/00
 
 // The VehicleDialog class is an abstract detail window for a vehicle.
 // It displays information about the vehicle as well as its current status.
@@ -124,7 +124,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		tabPane.addTab("Navigation", setupNavigationPane());
 		tabPane.addTab("Crew", setupCrewPane());
 		tabPane.addTab("Damage", setupDamagePane());
-		mainPane.add(tabPane);
+		mainPane.add(tabPane, "Center");
 	}
 
 	// Set up navigation panel
@@ -134,6 +134,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		// Prepare navigation pane
 
 		JPanel navigationPane = new JPanel();
+		navigationPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		navigationPane.setLayout(new BoxLayout(navigationPane, BoxLayout.Y_AXIS));
 
 		// Prepare status label
@@ -279,6 +280,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		// Prepare crew pane
 		
 		JPanel crewPane = new JPanel();
+		crewPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		crewPane.setLayout(new BoxLayout(crewPane, BoxLayout.Y_AXIS));
 
 		// Prepare driver pane
@@ -357,6 +359,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		// Prepare damage pane
 
 		JPanel damagePane = new JPanel();
+		damagePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		damagePane.setLayout(new BoxLayout(damagePane, BoxLayout.Y_AXIS));
 
 		// Prepare damage label
