@@ -26,7 +26,7 @@ class EatMeal extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public EatMeal(Person person, VirtualMars mars) {
-        super("Eating a meal", person, mars);
+        super("Eating a meal", person, false, mars);
     }
 
     /** Returns the weighted probability that a person might perform this task.

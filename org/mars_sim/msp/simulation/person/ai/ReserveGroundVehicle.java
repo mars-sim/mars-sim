@@ -13,7 +13,7 @@ import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
 
-/** The ReserveGroundVehicle class is a task for reserving a ground 
+/** The ReserveGroundVehicle class is a task for reserving a ground
  *  vehicle at a settlement for a trip.
  *  The duration of the task is 50 millisols.
  */
@@ -30,9 +30,9 @@ class ReserveGroundVehicle extends Task implements Serializable {
      *  @param destination the destination of the trip
      */
     public ReserveGroundVehicle(Person person, VirtualMars mars, Coordinates destination) {
-        super("Reserving a vehicle", person, mars);
-       
-        this.destination = destination; 
+        super("Reserving a vehicle", person, false, mars);
+
+        this.destination = destination;
         reservedVehicle = null;
     }
 
@@ -41,13 +41,13 @@ class ReserveGroundVehicle extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public ReserveGroundVehicle(Person person, VirtualMars mars) {
-        super("Reserving a vehicle", person, mars);
+        super("Reserving a vehicle", person, false, mars);
 
         destination = null;
         reservedVehicle = null;
     }
 
-    /** Perform this task for the given amount of time. 
+    /** Perform this task for the given amount of time.
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */
@@ -57,24 +57,24 @@ class ReserveGroundVehicle extends Task implements Serializable {
 
         timeCompleted += time;
         if (timeCompleted > duration) {
-            
+
             Settlement settlement = person.getSettlement();
             FacilityManager facilities = settlement.getFacilityManager();
             MaintenanceGarageFacility garage = (MaintenanceGarageFacility) facilities.getFacility("Maintenance Garage");
-            
+
             for (int x=0; x < settlement.getVehicleNum(); x++) {
                 if (reservedVehicle == null) {
                     Vehicle tempVehicle = settlement.getVehicle(x);
                     boolean reservable = true;
 
                     if (!(tempVehicle instanceof GroundVehicle)) reservable = false;
-                    if (tempVehicle.isReserved()) reservable = false; 
+                    if (tempVehicle.isReserved()) reservable = false;
                     if (garage.vehicleInGarage(tempVehicle)) reservable = false;
                     if (destination != null) {
                         if (tempVehicle.getRange() < person.getCoordinates().getDistance(destination)) reservable = false;
                     }
 
-                    if (reservable) { 
+                    if (reservable) {
                         reservedVehicle = (GroundVehicle) tempVehicle;
                         reservedVehicle.setReserved(true);
                     }
@@ -88,11 +88,11 @@ class ReserveGroundVehicle extends Task implements Serializable {
     }
 
     /** Returns true if settlement has an available ground vehicle.
-     *  @param settlement 
+     *  @param settlement
      *  @return are there any available ground vehicles
      */
     public static boolean availableVehicles(Settlement settlement) {
-    
+
         boolean result = false;
 
         FacilityManager facilities = settlement.getFacilityManager();

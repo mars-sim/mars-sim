@@ -34,7 +34,7 @@ class UnloadVehicle extends Task implements Serializable {
      *  @param vehicle the vehicle to be unloaded
      */
     public UnloadVehicle(Person person, VirtualMars mars, Vehicle vehicle) {
-        super("Unloading " + vehicle.getName(), person, mars);
+        super("Unloading " + vehicle.getName(), person, true, mars);
 
         this.vehicle = vehicle;
 

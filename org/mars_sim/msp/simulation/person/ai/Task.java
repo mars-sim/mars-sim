@@ -15,7 +15,7 @@ import org.mars_sim.msp.simulation.person.*;
  *  A person's TaskManager keeps track of one current task for the person, but a task may use other
  *  tasks internally to accomplish things.
  */
-abstract class Task implements Serializable {
+abstract class Task implements Serializable, Comparable {
 
     // Data members
     protected String name;            // The name of the task
@@ -30,12 +30,13 @@ abstract class Task implements Serializable {
     protected double phaseTimeCompleted; // Amount of time completed on the current phase. (in microsols)
     protected boolean effortDriven;     // Is this task effort driven
 
-    /** Constructs a Task object
+    /** Constructs a Task object. This is an effort driven task by default.
      *  @param name the name of the task
      *  @param person the person performing the task
+     *  @param effort Does this task require physical effort
      *  @param mars the virtual Mars
      */
-    public Task(String name, Person person, VirtualMars mars) {
+    public Task(String name, Person person, boolean effort, VirtualMars mars) {
         this.name = name;
         this.person = person;
         this.mars = mars;
@@ -45,7 +46,7 @@ abstract class Task implements Serializable {
         description = name;
         subTask = null;
         phase = "";
-        effortDriven = false;
+        effortDriven = effort;
     }
 
     /**
@@ -128,5 +129,17 @@ abstract class Task implements Serializable {
      */
     public String toString() {
         return description;
+    }
+
+    /**
+     * Comapre this object to another for an ordering. THe ordering is based
+     * on the alphabetic ordering of the Name attribute.
+     *
+     * @param other Object to compare against.
+     * @return integer comparasion of the two objects.
+     * @throw ClassCastException if the object in not of a Task.
+     */
+    public int compareTo(Object other) {
+        return name.compareTo(((Task)other).name);
     }
 }

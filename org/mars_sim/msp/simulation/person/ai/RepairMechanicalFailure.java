@@ -12,7 +12,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
 
-/** The RepairMechanicalFailure class is a task for fixing a mechanical failure on a vehicle. 
+/** The RepairMechanicalFailure class is a task for fixing a mechanical failure on a vehicle.
  */
 class RepairMechanicalFailure extends Task implements Serializable {
 
@@ -20,19 +20,19 @@ class RepairMechanicalFailure extends Task implements Serializable {
     private Vehicle vehicle;
     private MechanicalFailure failure;
 
-    /** Constructs a RepairMechanicalFailure object. 
+    /** Constructs a RepairMechanicalFailure object.
      *
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
     public RepairMechanicalFailure(Person person, VirtualMars mars) {
-        super("Repairing", person, mars);
+        super("Repairing", person, true, mars);
 
         vehicle = person.getVehicle();
         failure = vehicle.getMechanicalFailure();
         name = "Repairing " + failure.getName() + " on " + vehicle.getName();
         description = name;
-        // System.out.println(person.getName() + " " + name); 
+        // System.out.println(person.getName() + " " + name);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -44,7 +44,7 @@ class RepairMechanicalFailure extends Task implements Serializable {
     public static double getProbability(Person person, VirtualMars mars) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals("In Vehicle")) {
+        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
             Vehicle vehicle = person.getVehicle();
             MechanicalFailure failure = vehicle.getMechanicalFailure();
             if ((failure != null) && !failure.isFixed()) result = 100D;
@@ -53,8 +53,8 @@ class RepairMechanicalFailure extends Task implements Serializable {
         return result;
     }
 
-    /** Performs this task for a given period of time 
-     *  @param time amount of time to perform task (in millisols) 
+    /** Performs this task for a given period of time
+     *  @param time amount of time to perform task (in millisols)
      */
     double performTask(double time) {
         double timeLeft = super.performTask(time);

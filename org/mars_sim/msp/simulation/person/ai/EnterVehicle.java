@@ -13,8 +13,8 @@ import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
 
-/** The EnterVehicle class is a task for entering a vehicle 
- *  and strapping in for a trip. 
+/** The EnterVehicle class is a task for entering a vehicle
+ *  and strapping in for a trip.
  *  The duration of the task is 20 millisols.
  */
 class EnterVehicle extends Task implements Serializable {
@@ -26,16 +26,17 @@ class EnterVehicle extends Task implements Serializable {
     /** Constructs a EnterVehicle object
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
-     *  @param vehicle the vehicle to be entered 
+     *  @param vehicle the vehicle to be entered
      */
     public EnterVehicle(Person person, VirtualMars mars, Vehicle vehicle) {
-        super("Entering " + vehicle.getName(), person, mars);
-       
+        super("Entering " + vehicle.getName(), person, false, mars);
+
+
         this.vehicle = vehicle;
         // System.out.println(person.getName() + " is entering " + vehicle.getName());
     }
 
-    /** Performs this task for the given amount of time. 
+    /** Performs this task for the given amount of time.
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */
@@ -45,10 +46,10 @@ class EnterVehicle extends Task implements Serializable {
 
         timeCompleted += time;
         if (timeCompleted > duration) {
-            
+
             Settlement settlement = person.getSettlement();
             person.setVehicle(vehicle);
-            person.setLocationSituation("In Vehicle");
+            person.setLocationSituation(Person.INVEHICLE);
             vehicle.addPassenger(person);
             settlement.personLeave(person);
 

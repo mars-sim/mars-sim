@@ -26,7 +26,7 @@ class Relax extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public Relax(Person person, VirtualMars mars) {
-        super("Relaxing", person, mars);
+        super("Relaxing", person, false, mars);
 
         duration = RandomUtil.getRandomInt(100);
     }
@@ -41,7 +41,7 @@ class Relax extends Task implements Serializable {
         return 50D;
     }
 
-    /** This task simply waits until the set duration of the task is complete, then ends the task. 
+    /** This task simply waits until the set duration of the task is complete, then ends the task.
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */

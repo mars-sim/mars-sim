@@ -13,7 +13,7 @@ import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
 
-/** The LoadVehicle class is a task for loading a vehicle with fuel and supplies. 
+/** The LoadVehicle class is a task for loading a vehicle with fuel and supplies.
  */
 class LoadVehicle extends Task implements Serializable {
 
@@ -25,14 +25,14 @@ class LoadVehicle extends Task implements Serializable {
     private StoreroomFacility stores;  // The settlement's stores.
     private Settlement settlement; // The person's settlement.
 
-    /** Constructs a LoadVehicle object. 
+    /** Constructs a LoadVehicle object.
      *
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      *  @param vehicle the vehicle to be loaded
      */
     public LoadVehicle(Person person, VirtualMars mars, Vehicle vehicle) {
-        super("Loading " + vehicle.getName(), person, mars);
+        super("Loading " + vehicle.getName(), person, true, mars);
 
         this.vehicle = vehicle;
 
@@ -41,8 +41,8 @@ class LoadVehicle extends Task implements Serializable {
         stores = (StoreroomFacility) facilities.getFacility("Storerooms");
     }
 
-    /** Performs this task for a given period of time 
-     *  @param time amount of time to perform task (in millisols) 
+    /** Performs this task for a given period of time
+     *  @param time amount of time to perform task (in millisols)
      */
     double performTask(double time) {
         double timeLeft = super.performTask(time);
@@ -51,7 +51,7 @@ class LoadVehicle extends Task implements Serializable {
         double amountLoading = LOAD_RATE * time;
 
         if (hasEnoughSupplies(settlement, vehicle)) {
-         
+
             // Load fuel
             double fuelAmount = vehicle.getFuelCapacity() - vehicle.getFuel();
             if (fuelAmount > amountLoading) fuelAmount = amountLoading;
@@ -59,21 +59,21 @@ class LoadVehicle extends Task implements Serializable {
             vehicle.addFuel(fuelAmount);
             amountLoading -= fuelAmount;
 
-            // Load oxygen 
+            // Load oxygen
             double oxygenAmount = vehicle.getOxygenCapacity() - vehicle.getOxygen();
             if (oxygenAmount > amountLoading) oxygenAmount = amountLoading;
             stores.removeOxygen(oxygenAmount);
             vehicle.addOxygen(oxygenAmount);
             amountLoading -= oxygenAmount;
 
-            // Load water 
+            // Load water
             double waterAmount = vehicle.getWaterCapacity() - vehicle.getWater();
             if (waterAmount > amountLoading) waterAmount = amountLoading;
             stores.removeWater(waterAmount);
             vehicle.addWater(waterAmount);
             amountLoading -= waterAmount;
 
-            // Load Food 
+            // Load Food
             double foodAmount = vehicle.getFoodCapacity() - vehicle.getFood();
             if (foodAmount > amountLoading) foodAmount = amountLoading;
             stores.removeFood(foodAmount);
@@ -100,13 +100,13 @@ class LoadVehicle extends Task implements Serializable {
 
         double neededFuel = vehicle.getFuelCapacity() - vehicle.getFuel();
         if (neededFuel > stores.getFuelStores() - 50D) enoughSupplies = false;
-        
+
         double neededOxygen = vehicle.getOxygenCapacity() - vehicle.getOxygen();
         if (neededOxygen > stores.getOxygenStores() - 50D) enoughSupplies = false;
 
         double neededWater = vehicle.getWaterCapacity() - vehicle.getWater();
         if (neededWater > stores.getWaterStores() - 50D) enoughSupplies = false;
- 
+
         double neededFood = vehicle.getFoodCapacity() - vehicle.getFood();
         if (neededFood > stores.getFoodStores() - 50D) enoughSupplies = false;
 
@@ -119,7 +119,7 @@ class LoadVehicle extends Task implements Serializable {
      */
     public static boolean isFullyLoaded(Vehicle vehicle) {
         boolean result = true;
-     
+
         if (vehicle.getFuel() != vehicle.getFuelCapacity()) result = false;
         if (vehicle.getOxygen() != vehicle.getOxygenCapacity()) result = false;
         if (vehicle.getWater() != vehicle.getWaterCapacity()) result = false;

@@ -12,7 +12,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
 
-/** 
+/**
  *  The Drive Ground Vehicle class is a task for driving a ground vehicle to a destination.
  */
 class DriveGroundVehicle extends Task implements Serializable {
@@ -46,12 +46,12 @@ class DriveGroundVehicle extends Task implements Serializable {
      * Vehicle status description
      */
     public static final String MOVING = "Moving";
-    
+
     // Data members
     private GroundVehicle vehicle; // Vehicle person is driving.
     private Coordinates destination; // Destination coordinates.
     private double distanceToDestination; // Current distance to destination.
-    private double closestDistance; // Closest distance to destination vehicle has been so far. 
+    private double closestDistance; // Closest distance to destination vehicle has been so far.
     private double obstacleTimeCount; // Amount of time driver has not been any closer to destination. (in millisols)
     private double backingUpDistance; // Distance vehicle has backed up to avoid an obstacle.
     private Coordinates startingLocation; // Current location of vehicle.
@@ -69,12 +69,12 @@ class DriveGroundVehicle extends Task implements Serializable {
      *  @param startTripTime the starting time of the trip
      *  @param startTripDistance the starting distance to destination for the trip
      */
-    public DriveGroundVehicle(Person person, VirtualMars mars, GroundVehicle vehicle, 
+    public DriveGroundVehicle(Person person, VirtualMars mars, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
-        super(DRIVING + vehicle.getName(), person, mars);
+        super(DRIVING + vehicle.getName(), person, true, mars);
 
         // Set initial parameters
-        this.vehicle = vehicle; 
+        this.vehicle = vehicle;
         this.destination = destination;
         vehicle.setDestination(destination);
         closestDistance = Double.MAX_VALUE;
@@ -92,7 +92,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         // System.out.println(person.getName() + " is driving " + vehicle.getName());
     }
 
-    /** Perform the driving task 
+    /** Perform the driving task
      *  @param time amount of time to perform the task (in millisols)
      *  @return time remaining after finishing with task (in millisols
      */
@@ -101,14 +101,14 @@ class DriveGroundVehicle extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        // If night time, end task. 
+        // If night time, end task.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) == 0D) {
             // System.out.println(person.getName() + " stopped driving due to darkness.");
             vehicle.setStatus(PARKED);
             vehicle.setDriver(null);
             done = true;
             return 0D;
-        } 
+        }
 
 
         while ((timeLeft > 0D) && !done) {
@@ -117,7 +117,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             else if (phase.equals(AVOID_OBSTACLE)) timeLeft = obstaclePhase(timeLeft);
             else if (phase.equals(WINCH_VEHICLE)) timeLeft = winchingPhase(timeLeft);
         }
-   
+
         // Keep track of the duration of the task.
         timeCompleted += time;
         if (timeCompleted >= duration) {
@@ -126,7 +126,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             vehicle.setDriver(null);
             done = true;
         }
- 
+
         return timeLeft;
     }
 
@@ -141,10 +141,10 @@ class DriveGroundVehicle extends Task implements Serializable {
         // Find current direction and update vehicle.
         startingLocation = vehicle.getCoordinates();
         vehicle.setDirection(startingLocation.getDirectionToPoint(destination));
-    
+
         // Update vehicle elevation.
         vehicle.setElevation(getVehicleElevation());
-   
+
         // Update vehicle speed.
         double speed = getSpeed(vehicle.getDirection());
         vehicle.setSpeed(speed);
@@ -154,10 +154,10 @@ class DriveGroundVehicle extends Task implements Serializable {
             phase = AVOID_OBSTACLE;
             return(time);
         }
- 
+
         // Drive vehicle
         timeUsed = time - drive(time);
-        
+
         // Add experience points for driver's 'Driving' skill.
         // Add one point for every 100 millisols.
         double newPoints = time / 100D;
@@ -170,16 +170,16 @@ class DriveGroundVehicle extends Task implements Serializable {
 
         return time - timeUsed;
     }
- 
+
     /** Perform task in obstace phase.
-     *  @param time the amount of time to perform the task (in millisols) 
-     *  @return time remaining after performing phase (in millisols) 
+     *  @param time the amount of time to perform the task (in millisols)
+     *  @return time remaining after performing phase (in millisols)
      */
     private double obstaclePhase(double time) {
 
         double timeUsed = 0D;
 
-        // If driver has failed to get around an obstacle after 100 millisols, 
+        // If driver has failed to get around an obstacle after 100 millisols,
         // vehicle should be considered stuck and needs to be winched free.
         if ((obstacleTimeCount >= 100D) && !vehicle.isStuck()) {
             vehicle.setStuck(true);
@@ -231,12 +231,12 @@ class DriveGroundVehicle extends Task implements Serializable {
         // Check for mechanical breakdown.
         if (!done) checkMechanicalBreakdown(timeUsed);
 
-        return time - timeUsed; 
+        return time - timeUsed;
     }
 
     /** Perform task in winching phase.
-     *  @param time the amount of time to perform the phase. 
-     *  @return time remaining after performing the phase. 
+     *  @param time the amount of time to perform the phase.
+     *  @return time remaining after performing the phase.
      */
     private double winchingPhase(double time) {
 
@@ -255,7 +255,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             phase = DRIVING;
             vehicle.setStuck(false);
             return(time);
-        } 
+        }
         else vehicle.setSpeed(.2D);
 
         // Drive in the direction
@@ -276,7 +276,7 @@ class DriveGroundVehicle extends Task implements Serializable {
     /** Drive vehicle in current driving speed.
      *  Stop if reaching destination.
      *
-     *  @param time the amount if time vehicle is driven 
+     *  @param time the amount if time vehicle is driven
      *  @return time remaining after driving complete.
      */
     private double drive(double time) {
@@ -296,7 +296,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         vehicle.addTotalDistanceTraveled(distanceTraveled);
         vehicle.addDistanceLastMaintenance(distanceTraveled);
 
-        // If backing up, add distanceTraveled to backingUpDistance 
+        // If backing up, add distanceTraveled to backingUpDistance
         if (phase.equals(BACKUP)) backingUpDistance += distanceTraveled;
 
         double result = 0;
@@ -322,7 +322,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             vehicle.setCoordinates(startingLocation.convertRectToSpherical(newX, newY));
             */
             vehicle.setCoordinates(startingLocation.getNewLocation(vehicle.getDirection(), distanceTraveled));
-            
+
             // Update distance to destination.
             distanceToDestination = vehicle.getCoordinates().getDistance(destination);
             vehicle.setDistanceToDestination(distanceToDestination);
@@ -335,11 +335,11 @@ class DriveGroundVehicle extends Task implements Serializable {
         // Update every passenger's location.
         for (int x = 0; x < vehicle.getPassengerNum(); x++)
             vehicle.getPassenger(x).setCoordinates(vehicle.getCoordinates());
-            
+
         return result;
     }
 
-    /** Returns the elevation at the vehicle's position. 
+    /** Returns the elevation at the vehicle's position.
      *  @return elevation in km.
      */
     private double getVehicleElevation() {
@@ -369,17 +369,17 @@ class DriveGroundVehicle extends Task implements Serializable {
         }
 
         if (foundGoodPath) phase = DRIVING;
-        else backingUp = true; 
+        else backingUp = true;
 
         return resultDirection;
-    }  
+    }
 
     /** Determine vehicle speed for a given direction.
      *  @param direction the direction of travel
      *  @return speed in km/hr
      */
     private double getSpeed(Direction direction) {
-        
+
         // Determine the terrain grade in the vehicle's current direction.
         TerrainElevation terrain = mars.getSurfaceFeatures().getSurfaceTerrain();
         double terrainGrade = terrain.determineTerrainDifficulty(startingLocation, direction);
@@ -404,10 +404,10 @@ class DriveGroundVehicle extends Task implements Serializable {
         else if (skillLevel > 5) {
             double tempSpeed = baseSpeed;
             for (int x=0; x < skillLevel - 5; x++) {
-                tempSpeed /= 2D; 
+                tempSpeed /= 2D;
                 speedSkillModifier += tempSpeed;
             }
-        }   
+        }
 
         // Determine light condition modifier based on available sunlight
         double lightModifier = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
@@ -419,12 +419,12 @@ class DriveGroundVehicle extends Task implements Serializable {
         return speed;
     }
 
-    /** Checks for vehicle breakdown to mechanical failure. 
+    /** Checks for vehicle breakdown to mechanical failure.
      *  @param time the amount of time vehicle is driven (millisols)
      */
     private void checkMechanicalBreakdown(double time) {
         // Base 1% of breakdown per 100 millisols of driving.
-        double percentChance = time / 100D; 
+        double percentChance = time / 100D;
 
         // Modify by total mileage on vehicle.
         // Taken out until vehicle construction/scrapping is implemented.
@@ -432,9 +432,9 @@ class DriveGroundVehicle extends Task implements Serializable {
 
         // Modify by distance since last maintenance if over 5,000 km.
         double maintenanceModifier = 0D;
-        if (vehicle.getDistanceLastMaintenance() > 5000D) 
+        if (vehicle.getDistanceLastMaintenance() > 5000D)
             maintenanceModifier = 1D * (vehicle.getDistanceLastMaintenance() / 5000D);
-        
+
         // Modify by driver's skill level.
         int skillLevel = person.getSkillManager().getEffectiveSkillLevel("Driving");
         double skillModifier = .1D * (double) skillLevel;
@@ -458,7 +458,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         lightModifier = ((127D - lightModifier) / 127D) * .5D;
 
         // Add modifiers to base chance.
-        percentChance += maintenanceModifier - skillModifier + terrainModifier - handlingModifier 
+        percentChance += maintenanceModifier - skillModifier + terrainModifier - handlingModifier
             + phaseModifier + lightModifier;
 
         // Determine if failure happens.
@@ -470,37 +470,37 @@ class DriveGroundVehicle extends Task implements Serializable {
             done = true;
         }
     }
-    
+
     /** Determines the ETA (Estimated Time of Arrival) to the destination.
      *  @return MarsClock instance of date/time for ETA
      */
     private MarsClock getETA() {
         MarsClock currentTime = (MarsClock) mars.getMasterClock().getMarsClock();
-        
+
         // Determine time difference from start of trip in millisols.
         double millisolsDiff = MarsClock.getTimeDiff(currentTime, startTime);
         double hoursDiff = MarsClock.convertMillisolsToSeconds(millisolsDiff) / 60D / 60D;
-        
+
         // Determine average speed so far in km/hr.
         double avgSpeed = (startDistance - distanceToDestination) / hoursDiff;
-        
+
         // Determine estimated speed in km/hr.
         double estimatorConstant = .5D;
         double estimatedSpeed = estimatorConstant * (vehicle.getBaseSpeed() + speedSkillModifier);
-        
+
         // Determine final estimated speed in km/hr.
         double tempAvgSpeed = avgSpeed * ((startDistance - distanceToDestination) / startDistance);
         double tempEstimatedSpeed = estimatedSpeed * (distanceToDestination / startDistance);
         double finalEstimatedSpeed = tempAvgSpeed + tempEstimatedSpeed;
-        
+
         // Determine time to destination in millisols.
         double hoursToDestination = distanceToDestination / finalEstimatedSpeed;
         double millisolsToDestination = MarsClock.convertSecondsToMillisols(hoursToDestination * 60D * 60D);
-        
+
         // Determine ETA
         MarsClock eta = (MarsClock) currentTime.clone();
         eta.addTime(millisolsToDestination);
-        
+
         return eta;
     }
 }

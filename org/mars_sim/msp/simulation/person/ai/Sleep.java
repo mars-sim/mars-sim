@@ -26,9 +26,10 @@ class Sleep extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public Sleep(Person person, VirtualMars mars) {
-        super("Sleeping", person, mars);
+        super("Sleeping", person, false, mars);
 
         duration = 250D + RandomUtil.getRandomInt(100);
+
         // System.out.println(person.getName() + " sleeping with " + person.getFatigue() + " fatigue and visibility: " + mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()));
     }
 

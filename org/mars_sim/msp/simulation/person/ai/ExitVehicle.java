@@ -26,18 +26,18 @@ class ExitVehicle extends Task implements Serializable {
     /** Constructs a ExitVehicle object
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
-     *  @param destinationSettlement the settlement being exited to 
+     *  @param destinationSettlement the settlement being exited to
      */
     public ExitVehicle(Person person, VirtualMars mars, Vehicle vehicle, Settlement destinationSettlement) {
-        super("Exiting " + vehicle.getName(), person, mars);
-      
+        super("Exiting " + vehicle.getName(), person, false, mars);
+
         // Initialize data members
-        this.vehicle = vehicle; 
+        this.vehicle = vehicle;
         this.destinationSettlement = destinationSettlement;
         // System.out.println(person.getName() + " is exiting " + vehicle.getName());
     }
 
-    /** Performs this task for the given amount of time. 
+    /** Performs this task for the given amount of time.
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */
@@ -47,10 +47,10 @@ class ExitVehicle extends Task implements Serializable {
 
         timeCompleted += time;
         if (timeCompleted > duration) {
-            
+
             vehicle.removePassenger(person);
             person.setVehicle(null);
-            person.setLocationSituation("In Settlement");
+            person.setLocationSituation(Person.INSETTLEMENT);
             person.setSettlement(destinationSettlement);
             destinationSettlement.addPerson(person);
 

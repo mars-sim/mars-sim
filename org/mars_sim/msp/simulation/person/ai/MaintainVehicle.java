@@ -24,12 +24,13 @@ class MaintainVehicle extends Task implements Serializable {
     private MaintenanceGarageFacility garage; // The maintenance garage at the settlement.
     private Settlement settlement; // The settlement the person is at.
 
-    /** Constructor for periodic vehicle maintenance in a garage. 
+    /** Constructor for periodic vehicle maintenance in a garage. This is an
+     *  effort driven task.
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
     public MaintainVehicle(Person person, VirtualMars mars) {
-        super("Performing Maintenance on ", person, mars);
+        super("Performing Maintenance on ", person, true, mars);
 
         settlement = person.getSettlement();
         garage = (MaintenanceGarageFacility) settlement.getFacilityManager().getFacility("Maintenance Garage");
@@ -64,7 +65,7 @@ class MaintainVehicle extends Task implements Serializable {
         } else done = true;
     }
 
-    /** Returns the weighted probability that a person might perform this task. 
+    /** Returns the weighted probability that a person might perform this task.
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
@@ -72,7 +73,7 @@ class MaintainVehicle extends Task implements Serializable {
     public static double getProbability(Person person, VirtualMars mars) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals("In Settlement")) {
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
             for (int x = 0; x < settlement.getVehicleNum(); x++) {
                 Vehicle vehicle = settlement.getVehicle(x);
@@ -84,9 +85,9 @@ class MaintainVehicle extends Task implements Serializable {
         return result;
     }
 
-    /** Performs the mechanic task for a given amount of time. 
+    /** Performs the mechanic task for a given amount of time.
      *  @param time amount of time to perform the task (in millisols)
-     *  @return amount of time remaining after finishing with task (in millisols) 
+     *  @return amount of time remaining after finishing with task (in millisols)
      */
     double performTask(double time) {
         double timeLeft = super.performTask(time);

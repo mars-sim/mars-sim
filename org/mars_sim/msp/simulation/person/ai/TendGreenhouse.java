@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.structure.*;
 
 /** The TendGreenhouse class is a task for tending the greenhouse in a settlement.
  *  It has the phases, "Planting", "Tending" and "Harvesting".
+ *  This is an effort driven task.
  */
 class TendGreenhouse extends Task implements Serializable {
 
@@ -23,7 +24,7 @@ class TendGreenhouse extends Task implements Serializable {
 
     public TendGreenhouse(Person person, VirtualMars mars) {
         // Use Task constructor
-        super("Tending Greenhouse", person, mars);
+        super("Tending Greenhouse", person, true, mars);
 
         // Initialize data members
         this.settlement = person.getSettlement();
@@ -38,7 +39,7 @@ class TendGreenhouse extends Task implements Serializable {
      *  Returns a 0 if not.
      */
     public static double getProbability(Person person, VirtualMars mars) {
-        if (person.getLocationSituation().equals("In Settlement")) {
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             GreenhouseFacility greenhouse =
                    (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
             if ((greenhouse.getPhase().equals("Growing")) &&
@@ -52,7 +53,7 @@ class TendGreenhouse extends Task implements Serializable {
 
     /** Performs the tending greenhouse task for a given amount of time.
      *  @param time amount of time to perform the task (in millisols)
-     *  @return amount of time remaining after finishing with task (in millisols) 
+     *  @return amount of time remaining after finishing with task (in millisols)
      */
     double performTask(double time) {
         double timeLeft = super.performTask(time);

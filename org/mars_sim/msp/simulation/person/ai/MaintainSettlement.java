@@ -28,7 +28,7 @@ class MaintainSettlement extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public MaintainSettlement(Person person, VirtualMars mars) {
-        super("Performing Settlement Maintenance", person, mars);
+        super("Performing Settlement Maintenance", person, true, mars);
 
         duration = RandomUtil.getRandomInt(200);
     }
@@ -44,7 +44,7 @@ class MaintainSettlement extends Task implements Serializable {
         else return 0D;
     }
 
-    /** This task simply waits until the set duration of the task is complete, then ends the task. 
+    /** This task simply waits until the set duration of the task is complete, then ends the task.
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */
