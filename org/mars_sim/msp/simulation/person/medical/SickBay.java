@@ -110,8 +110,7 @@ public class SickBay implements MedicalAid, Serializable {
             Iterator iter = patients.iterator();
             while (iter.hasNext()) {
                 HealthProblem problem = (HealthProblem)iter.next();
-                if (!problem.getRecovering() &&
-                    !problem.getIllness().getRecoveryTreatment().getSelfAdminister()) {
+                if (problem.getAwaitingTreatment()) {
                     return true;
                 }
             }
@@ -201,6 +200,6 @@ public class SickBay implements MedicalAid, Serializable {
      * @return owner entity
      */
     public Malfunctionable getOwner() {
-        return owner; 
+        return owner;
     }
 }
