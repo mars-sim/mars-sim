@@ -1,5 +1,5 @@
 //*********************** Main Desktop Pane ***********************
-// Last Modified: 4/9/00
+// Last Modified: 4/30/00
 
 // The MainDesktopPane class is the desktop part of the project's UI.
 // It contains all tool and unit windows, and is itself contained, along
@@ -10,13 +10,18 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
-public class MainDesktopPane extends JDesktopPane {
+public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
 	// Data members
 	
 	private Vector unitWindows;     // List of open or buttoned unit windows.
 	private Vector toolWindows;     // List of tool windows.
 	private MainWindow mainWindow;  // The main window frame.
+	
+	private ImageIcon backgroundImageIcon;
+	private JLabel backgroundLabel;
+	private JLabel logoLabel;
+	private boolean firstDisplay;
 	
 	// Constructor
 
@@ -36,14 +41,79 @@ public class MainDesktopPane extends JDesktopPane {
 		
 		setBackground(Color.black);
 		
-		// Prepare desktop manager
+		// set desktop manager
 		
 		setDesktopManager(new MainDesktopManager());
+		
+		// Set component listener
+		
+		addComponentListener(this);
 		
 		// Prepare tool windows
 		
 		prepareToolWindows();
+		
+		// Create background logo label and make it partially transparent
+		
+		logoLabel = new JLabel(new ImageIcon("logo2.gif"), JLabel.LEFT);
+		add(logoLabel, Integer.MIN_VALUE);
+		logoLabel.setOpaque(false);
+		
+		// Create background label and set it to the back layer
+			
+		backgroundImageIcon = new ImageIcon();
+		backgroundLabel = new JLabel(backgroundImageIcon);
+		add(backgroundLabel, Integer.MIN_VALUE);
+		backgroundLabel.setLocation(0, 0);
+		moveToBack(backgroundLabel);
+		
+		// Initialize firstDisplay to true
+		
+		firstDisplay = true;
 	}
+	
+	
+	
+	public void componentResized(ComponentEvent e) {
+		
+		// If displayed for the first time, create background image tile.
+		// The size of the background tile cannot be determined during construction
+		// since it requires the MainDesktopPane be displayed first.
+		
+		if (firstDisplay) {
+			ImageIcon baseImageIcon = new ImageIcon("background.gif");
+			Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+			Image backgroundImage = createImage((int) screen_size.getWidth(), (int) screen_size.getHeight());
+			Graphics backgroundGraphics = backgroundImage.getGraphics();
+		
+			for (int x=0; x < backgroundImage.getWidth(this); x += baseImageIcon.getIconWidth()) {
+				for (int y=0; y < backgroundImage.getHeight(this); y += baseImageIcon.getIconHeight()) {
+					backgroundGraphics.drawImage(baseImageIcon.getImage(), x, y, this);
+				}
+			}
+			
+			backgroundImageIcon.setImage(backgroundImage);
+			
+			backgroundLabel.setSize(getSize());
+			logoLabel.setSize(logoLabel.getPreferredSize());
+			
+			firstDisplay = false;
+		}
+		
+		// Set the backgroundLabel size to the size of the desktop
+		
+		backgroundLabel.setSize(getSize());
+		
+		// Recenter the logo on the window
+		
+		int Xpos = ((mainWindow.getWidth() - logoLabel.getWidth()) / 2) - (int) getLocation().getX();
+		int Ypos = ((mainWindow.getHeight() - logoLabel.getHeight()) / 2) - 45;
+		logoLabel.setLocation(Xpos, Ypos);
+	}
+	
+	public void componentMoved(ComponentEvent e) {}
+	public void componentShown(ComponentEvent e) {}
+	public void componentHidden(ComponentEvent e) {}
 	
 	// Creates tool windows
 	
