@@ -1,5 +1,5 @@
 //************************** TaskDrive **************************
-// Last Modified: 8/23/00
+// Last Modified: 8/30/00
 
 // The TaskDrive class is a task for driving a ground vehicle.  It has the phases, "Embarking", "Driving" and "Disembarking".
 // If the task is called as part of a larger task, embarking and/or disembarking may be ignored by setting the proper constructor parameters.
@@ -243,10 +243,12 @@ class TaskDrive extends Task {
 					Task tempTask = tempPerson.getTaskManager().getCurrentTask();
 					if ((tempTask == null) || tempTask.getName().equals("Relaxing")) {
 						if (RandomUtil.lessThanRandPercent(50)) {
-							vehicle.addPassenger(tempPerson);
-							embarkingSettlement.personLeave(tempPerson);
-							tempPerson.setVehicle(vehicle);
-							tempPerson.setLocationSituation("In Vehicle");
+							if (vehicle.getPassengerNum() < vehicle.getMaxPassengers()) {
+								vehicle.addPassenger(tempPerson);
+								embarkingSettlement.personLeave(tempPerson);
+								tempPerson.setVehicle(vehicle);
+								tempPerson.setLocationSituation("In Vehicle");
+							}
 						}
 					}
 				}
@@ -257,12 +259,25 @@ class TaskDrive extends Task {
 		return 0;
 	}
 	
-	// Stub.
-	// Later add additional vehicle preparation checks here. (100 seconds)
+	// Vehicle preparation checks here. (100 seconds)
+	// Fill vehicle with fuel from settlement storage if applicable.
 		
 	private int prepareVehicle(int seconds) {
 	
 		if (doSubPhase(seconds, 100)) {
+	
+			// Fill vehicle with fuel if at a settlement.
+	
+			if (embarkingSettlement != null) {
+				double neededFuel = vehicle.getFuelCapacity() - vehicle.getFuel();
+				StoreroomFacility stores = (StoreroomFacility) embarkingSettlement.getFacilityManager().getFacility("Storerooms");
+				double fuelAdded = neededFuel;
+				if (fuelAdded > stores.getFuelStores()) fuelAdded = stores.getFuelStores();
+				stores.removeFuel(fuelAdded);
+				vehicle.addFuel(fuelAdded);
+			}
+			
+			// Set description
 	
 			if (destinationSettlement != null) description = "Drive " + vehicle.getName() + " to " + destinationSettlement.getName() + ".";
 			else description = "Drive " + vehicle.getName() + " to location.";
@@ -377,6 +392,10 @@ class TaskDrive extends Task {
 		// Determine distance traveled in time given
 
 		double distanceTraveled = seconds * ((speed / 60D) / 60D);
+		
+		// Consume fuel for distance traveled.
+		
+		vehicle.consumeFuel(distanceTraveled / 1000D);
 		
 		// Add distance traveled to vehicle's odometer
 		
