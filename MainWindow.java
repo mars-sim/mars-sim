@@ -1,5 +1,5 @@
 //*********************** Main UI Window ***********************
-// Last Modified: 4/10/00
+// Last Modified: 5/23/00
 
 // The MainWindow class is the primary UI frame for the project.
 // It contains the tool bars and main desktop pane.
@@ -23,7 +23,7 @@ public class MainWindow extends JFrame implements WindowListener {
 		
 		// Use JFrame constructor
 		
-		super("Mars Simulation Project (version 2.7)");
+		super("Mars Simulation Project (version 2.65)");
 
 		// Initialize data member to parameter.
 		
@@ -135,15 +135,13 @@ public class MainWindow extends JFrame implements WindowListener {
 }	
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
