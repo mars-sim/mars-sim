@@ -34,7 +34,7 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
     /**
      * Constructor
      *
-     * @param inhabitable The inhabitable building this panel is for.
+     * @param farm the farming building this panel is for.
      * @param desktop The main desktop.
      */
     public FarmingBuildingPanel(Farming farm, MainDesktopPane desktop) {
@@ -49,8 +49,12 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
         setLayout(new BorderLayout());
         
         // Create label panel
-        JPanel labelPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        JPanel labelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
         add(labelPanel, BorderLayout.NORTH);
+        
+        // Prepare farming label
+        JLabel farmingLabel = new JLabel("Farming", JLabel.CENTER);
+        labelPanel.add(farmingLabel);
         
         // Prepare farmers label
         farmersCache = farm.getFarmerNum();

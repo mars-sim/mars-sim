@@ -59,11 +59,18 @@ public class BuildingPanel extends JPanel {
             functionListPanel.add(inhabitablePanel);
         }
         
-        // Prepare farming panel
+        // Prepare farming panel if building has farming.
         if (building instanceof Farming) {
             BuildingFunctionPanel farmingPanel = new FarmingBuildingPanel((Farming) building, desktop);
             functionPanels.add(farmingPanel);
             functionListPanel.add(farmingPanel);
+        }
+        
+        // Prepare research panel if building has research.
+        if (building instanceof Research) {
+            BuildingFunctionPanel researchPanel = new ResearchBuildingPanel((Research) building, desktop);
+            functionPanels.add(researchPanel);
+            functionListPanel.add(researchPanel);
         }
         
         // Prepare power panel.
