@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.72 2001-08-12
+ * @version 2.72 2001-08-29
  * @author Scott Davis
  */
 
@@ -189,7 +189,6 @@ class TravelToSettlement extends Mission {
         // Make final preperations on vehicle.
         startingSettlement.vehicleLeave(vehicle);
         vehicle.setSettlement(null);
-        vehicle.setReserved(false);
         vehicle.setDestinationSettlement(destinationSettlement);
         vehicle.setDestinationType("Settlement");
 
@@ -265,7 +264,10 @@ class TravelToSettlement extends Mission {
             Person tempPerson = (Person) people.elementAt(x);
             if (tempPerson.getLocationSituation().equals("In Vehicle")) allDisembarked = false;
         }
-        if (allDisembarked && isVehicleUnloaded()) done = true;
+        if (allDisembarked && isVehicleUnloaded()) {
+            vehicle.setReserved(false);
+            done = true;
+        }
     }
 
     /** Determines a random destination settlement other than current one.

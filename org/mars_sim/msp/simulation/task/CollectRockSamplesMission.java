@@ -187,7 +187,6 @@ class CollectRockSamplesMission extends Mission {
         // Make final preperations on vehicle.
         startingSettlement.vehicleLeave(vehicle);
         vehicle.setSettlement(null);
-        vehicle.setReserved(false);
         destination = (Coordinates) collectionSites.elementAt(0);
         vehicle.setDestination(destination);
         vehicle.setDestinationType("Coordinates");
@@ -300,7 +299,10 @@ class CollectRockSamplesMission extends Mission {
             Person tempPerson = (Person) people.elementAt(x);
             if (tempPerson.getLocationSituation().equals("In Vehicle")) allDisembarked = false;
         }
-        if (allDisembarked && isVehicleUnloaded()) done = true;
+        if (allDisembarked && isVehicleUnloaded()) {
+            vehicle.setReserved(false);
+            done = true;
+        }
     }
 
     /** Determine the locations of the sample collection sites.
