@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 2.71 2001-1-7
+ * @version 2.75 2003-07-20
  * @author Scott Davis
  */
 
@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.standard;
 
 import java.awt.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.ui.standard.unit_display_info.*;
 
 /**
  * The UnitButton class is a UI button for a given unit.
@@ -17,18 +19,21 @@ import javax.swing.*;
 public class UnitButton extends JButton {
 
     // Data members	
-	private UnitUIProxy unitUIProxy;  // Unit UI proxy for button.
+	private Unit unit;
 
-    /** Constructs a UnitButton object 
-     *  @param unitUIProxy the unit UI proxy
+    /** 
+     * Constructor
+     *
+     * @param unit the unit the button is for.
      */
-	public UnitButton(UnitUIProxy unitUIProxy) {
+	public UnitButton(Unit unit) {
 		
 		// Use JButton constructor	
-		super(unitUIProxy.getUnit().getName(), unitUIProxy.getButtonIcon()); 
+		super(unit.getName(), 
+            UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getButtonIcon()); 
 		
 		// Initialize unit
-		this.unitUIProxy = unitUIProxy;
+		this.unit = unit;
 		
 		// Prepare default unit button values
 		setFont(new Font("SansSerif", Font.PLAIN, 9));
@@ -38,8 +43,12 @@ public class UnitButton extends JButton {
 		setAlignmentY(.5F);
 	}
 	
-	/** Returns the button's unit proxy 
-     *  @return the unit's UI proxy
+	/** 
+     * Gets the button's unit.
+     *
+     * @return the button's unit
      */
-	public UnitUIProxy getUnitProxy() { return unitUIProxy; }
+	public Unit getUnit() { 
+        return unit; 
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillTabPanel.java
- * @version 2.75 2003-06-11
+ * @version 2.75 2003-07-22
  * @author Scott Davis
  */
 
@@ -26,12 +26,12 @@ public class SkillTabPanel extends TabPanel {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param person the person.
      * @param desktop the main desktop.
      */
-    public SkillTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public SkillTabPanel(Person person, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Skills", null, "Skills", proxy, desktop);
+        super("Skills", null, "Skills", person, desktop);
         
         // Create skill label panel.
         JPanel skillLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -47,7 +47,7 @@ public class SkillTabPanel extends TabPanel {
         centerContentPanel.add(skillScrollPanel);
         
         // Create skill table model
-        skillTableModel = new SkillTableModel(proxy);
+        skillTableModel = new SkillTableModel(person);
             
         // Create skill table
         JTable skillTable = new JTable(skillTableModel);
@@ -75,8 +75,7 @@ public class SkillTabPanel extends TabPanel {
         java.util.Map skills;
         java.util.List skillNames;
         
-        private SkillTableModel(UnitUIProxy proxy) {
-            Person person = (Person) proxy.getUnit();
+        private SkillTableModel(Person person) {
             manager = person.getSkillManager();
             
             String[] keys = manager.getKeys();

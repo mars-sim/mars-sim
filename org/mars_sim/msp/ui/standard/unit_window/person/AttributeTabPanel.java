@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AttributeTabPanel.java
- * @version 2.75 2003-06-11
+ * @version 2.75 2003-07-22
  * @author Scott Davis
  */
 
@@ -25,12 +25,12 @@ public class AttributeTabPanel extends TabPanel {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param person the person.
      * @param desktop the main desktop.
      */
-    public AttributeTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public AttributeTabPanel(Person person, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Attributes", null, "Natural Attributes", proxy, desktop);
+        super("Attributes", null, "Natural Attributes", person, desktop);
         
         // Create attribute label panel.
         JPanel attributeLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -46,7 +46,7 @@ public class AttributeTabPanel extends TabPanel {
         centerContentPanel.add(attributeScrollPanel);
         
         // Create attribute table model
-        attributeTableModel = new AttributeTableModel(proxy);
+        attributeTableModel = new AttributeTableModel(person);
             
         // Create attribute table
         JTable attributeTable = new JTable(attributeTableModel);
@@ -70,8 +70,7 @@ public class AttributeTabPanel extends TabPanel {
         
         NaturalAttributeManager manager;
         
-        private AttributeTableModel(UnitUIProxy proxy) {
-            Person person = (Person) proxy.getUnit();
+        private AttributeTableModel(Person person) {
             manager = person.getNaturalAttributeManager();
         }
         

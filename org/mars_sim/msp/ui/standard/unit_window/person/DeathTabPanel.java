@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathTabPanel.java
- * @version 2.75 2003-06-18
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -25,14 +25,14 @@ public class DeathTabPanel extends TabPanel implements ActionListener {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public DeathTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public DeathTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Death", null, "Death Info", proxy, desktop);
+        super("Death", null, "Death Info", unit, desktop);
         
-        Person person = (Person) proxy.getUnit();
+        Person person = (Person) unit;
         PhysicalCondition condition = person.getPhysicalCondition();
         DeathInfo death = condition.getDeathDetails();
         
@@ -116,7 +116,7 @@ public class DeathTabPanel extends TabPanel implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         
         // Update navigator tool.
-        desktop.centerMapGlobe(proxy.getUnit().getCoordinates());
+        desktop.centerMapGlobe(unit.getCoordinates());
     }
 }
        

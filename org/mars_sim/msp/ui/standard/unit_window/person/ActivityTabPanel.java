@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ActivityTabPanel.java
- * @version 2.75 2003-06-24
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -37,14 +37,14 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public ActivityTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public ActivityTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Activity", null, "Activity", proxy, desktop);
+        super("Activity", null, "Activity", unit, desktop);
         
-        Person person = (Person) proxy.getUnit();
+        Person person = (Person) unit;
         Mind mind = person.getMind();
         boolean dead = person.getPhysicalCondition().isDead();
         DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
@@ -150,7 +150,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
      */
     public void update() {
         
-        Person person = (Person) proxy.getUnit();
+        Person person = (Person) unit;
         Mind mind = person.getMind();
         boolean dead = person.getPhysicalCondition().isDead();
         DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
@@ -192,7 +192,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
      * @param event the action event
      */
     public void actionPerformed(ActionEvent event) {
-        Person person = (Person) proxy.getUnit();
+        Person person = (Person) unit;
         if (!person.getPhysicalCondition().isDead()) {
             Mind mind = person.getMind();
             if (mind.hasActiveMission()) 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -54,14 +54,14 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public NavigationTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public NavigationTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Navigation", null, "Navigation", proxy, desktop);
+        super("Navigation", null, "Navigation", unit, desktop);
         
-        Vehicle vehicle = (Vehicle) proxy.getUnit();
+        Vehicle vehicle = (Vehicle) unit;
         
         // Prepare main panel
         JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
@@ -212,7 +212,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      */
     public void update() {
         
-        Vehicle vehicle = (Vehicle) proxy.getUnit();
+        Vehicle vehicle = (Vehicle) unit;
         
         // Update driver button if necessary.
         boolean driverChange = false;

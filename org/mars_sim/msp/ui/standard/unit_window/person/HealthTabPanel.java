@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthTabPanel.java
- * @version 2.75 2003-06-18
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -38,14 +38,14 @@ public class HealthTabPanel extends TabPanel {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public HealthTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public HealthTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Health", null, "Health", proxy, desktop);
+        super("Health", null, "Health", unit, desktop);
         
-        Person person = (Person) proxy.getUnit();
+        Person person = (Person) unit;
         PhysicalCondition condition = person.getPhysicalCondition();
         
         // Create health label panel.
@@ -102,7 +102,7 @@ public class HealthTabPanel extends TabPanel {
         healthProblemPanel.add(healthProblemScrollPanel, BorderLayout.CENTER);
         
         // Prepare health problem table model
-        healthProblemTableModel = new HealthProblemTableModel(proxy);
+        healthProblemTableModel = new HealthProblemTableModel(person);
         
         // Create health problem table
         JTable healthProblemTable = new JTable(healthProblemTableModel);
@@ -116,7 +116,7 @@ public class HealthTabPanel extends TabPanel {
      */
     public void update() {
         
-        Person person = (Person) proxy.getUnit();
+        Person person = (Person) unit;
         PhysicalCondition condition = person.getPhysicalCondition();
         
         // Update fatigue if necessary.
@@ -149,8 +149,7 @@ public class HealthTabPanel extends TabPanel {
         PhysicalCondition condition;
         java.util.Collection problemsCache;
         
-        private HealthProblemTableModel(UnitUIProxy proxy) {
-            Person person = (Person) proxy.getUnit();
+        private HealthProblemTableModel(Person person) {
             condition = person.getPhysicalCondition();
             problemsCache = condition.getProblems();
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CrewTabPanel.java
- * @version 2.75 2003-07-06
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -32,14 +32,13 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param vehicle the vehicle.
      * @param desktop the main desktop.
      */
-    public CrewTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public CrewTabPanel(Vehicle vehicle, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Crew", null, "Vehicle's Crew", proxy, desktop);
+        super("Crew", null, "Vehicle's Crew", vehicle, desktop);
         
-        Vehicle vehicle = (Vehicle) proxy.getUnit();
         Crewable crewable = (Crewable) vehicle;
         
         // Create crew count panel
@@ -89,7 +88,7 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
      * Updates the info on this panel.
      */
     public void update() {
-        Vehicle vehicle = (Vehicle) proxy.getUnit();
+        Vehicle vehicle = (Vehicle) unit;
         Crewable crewable = (Crewable) vehicle;
         
         // Update crew num
@@ -121,7 +120,7 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
      */
     public void actionPerformed(ActionEvent event) {
         // If the crew monitor button was pressed, create tab in monitor tool.
-        Vehicle vehicle = (Vehicle) proxy.getUnit();
+        Vehicle vehicle = (Vehicle) unit;
         Crewable crewable = (Crewable) vehicle;
         desktop.addModel(new PersonTableModel(crewable));
     }
@@ -134,11 +133,8 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
     public void mouseClicked(MouseEvent event) {
 
         // If double-click, open person window.
-        if (event.getClickCount() >= 2) {
-            Person person = (Person) crewList.getSelectedValue();
-            UnitUIProxy proxy = desktop.getProxyManager().getUnitUIProxy(person);
-            desktop.openUnitWindow(proxy);
-        }
+        if (event.getClickCount() >= 2) 
+            desktop.openUnitWindow((Person) crewList.getSelectedValue());
     }
 
     public void mousePressed(MouseEvent event) {}

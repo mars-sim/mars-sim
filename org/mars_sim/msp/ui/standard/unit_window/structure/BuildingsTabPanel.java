@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingsTabPanel.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.ui.standard.*;
@@ -33,14 +34,14 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public BuildingsTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) {
+    public BuildingsTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
-        super("Buildings", null, "Settlement Buildings", proxy, desktop);
+        super("Buildings", null, "Settlement Buildings", unit, desktop);
         
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         java.util.List buildings = settlement.getBuildingManager().getBuildings();
         
         // Create building select panel.
@@ -85,7 +86,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
      */
     public void update() {
         
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         java.util.List buildings = settlement.getBuildingManager().getBuildings();
         
         // Update buildings if necessary.

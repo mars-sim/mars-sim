@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.75 2003-01-21
+ * @version 2.75 2003-07-22
  * @author Scott Davis
  */
 
@@ -13,9 +13,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-/** The NavigatorWindow is a tool window that displays a map and a
- *  globe showing Mars, and various other elements. It is the primary
- *  interface component that presents the simulation to the user.
+/** 
+ * The NavigatorWindow is a tool window that displays a map and a
+ * globe showing Mars, and various other elements. It is the primary
+ * interface component that presents the simulation to the user.
  */
 public class NavigatorWindow extends ToolWindow implements ActionListener,
         ItemListener {
@@ -68,7 +69,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
         // Prepare globe display
         Mars mars = desktop.getMainWindow().getMars();
-        globeNav = new GlobeDisplay(desktop.getProxyManager(), 150, 150, mars);
+        globeNav = new GlobeDisplay(150, 150, mars);
         JPanel globePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
@@ -91,7 +92,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         topMainPane.add(rightTopPane);
 
         // Prepare surface map display
-        map = new MapDisplay(this, desktop.getProxyManager(), 300, 300, mars);
+        map = new MapDisplay(this, 300, 300, mars);
         JPanel mapPane = new JPanel(new BorderLayout(0, 0));
         mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
@@ -298,11 +299,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         }
     }
 
-    /** Opens a unit window on the desktop 
-     *  @param unitProxy the unit UI proxy
+    /** 
+     * Opens a unit window on the desktop.
+     *
+     * @param unit the unit the window is for.
      */
-    public void openUnitWindow(UnitUIProxy unitProxy) {
-        desktop.openUnitWindow(unitProxy);
+    public void openUnitWindow(Unit unit) {
+        desktop.openUnitWindow(unit);
     }
 
     /** accessor for the MapDisplay */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.75 2003-07-10
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -29,14 +29,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public InventoryTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public InventoryTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Inventory", null, "Inventory", proxy, desktop);
+        super("Inventory", null, "Inventory", unit, desktop);
  
-        Inventory inv = proxy.getUnit().getInventory();
+        Inventory inv = unit.getInventory();
  
         // Create inventory label panel.
         JPanel inventoryLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -56,7 +56,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(resourcesPanel);
         
         // Create resources table model
-        resourceTableModel = new ResourceTableModel(proxy);
+        resourceTableModel = new ResourceTableModel(inv);
             
         // Create resources table
         JTable resourcesTable = new JTable(resourceTableModel);
@@ -73,7 +73,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         inventoryContentPanel.add(equipmentPanel);
         
         // Create equipment table model
-        equipmentTableModel = new EquipmentTableModel(proxy);
+        equipmentTableModel = new EquipmentTableModel(inv);
         
         // Create equipment table
         equipmentTable = new JTable(equipmentTableModel);
@@ -100,10 +100,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public void valueChanged(ListSelectionEvent e) {
         int index = equipmentTable.getSelectedRow();
         Equipment selectedEquipment = (Equipment) equipmentTable.getValueAt(index, 0);
-        if (selectedEquipment != null) {
-            UnitUIProxy itemProxy = desktop.getProxyManager().getUnitUIProxy(selectedEquipment);
-            desktop.openUnitWindow(itemProxy);
-        }
+        if (selectedEquipment != null) desktop.openUnitWindow(selectedEquipment);
     }
     
     /** 
@@ -111,13 +108,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      */
     private class ResourceTableModel extends AbstractTableModel {
         
-        UnitUIProxy proxy;
+        Inventory inventory;
         java.util.Map resources;
         java.util.List keys;
         
-        private ResourceTableModel(UnitUIProxy proxy) {
-            this.proxy = proxy;
-            resources = proxy.getUnit().getInventory().getAllResources();
+        private ResourceTableModel(Inventory inventory) {
+            this.inventory = inventory;
+            resources = inventory.getAllResources();
             keys = new ArrayList();
             Iterator i = resources.keySet().iterator();
             while (i.hasNext()) {
@@ -154,7 +151,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
   
         public void update() {
-            java.util.Map newResources = proxy.getUnit().getInventory().getAllResources();
+            java.util.Map newResources = inventory.getAllResources();
             if (!resources.equals(newResources)) {
                 resources = newResources;
                 keys = new ArrayList();
@@ -175,12 +172,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      */
     private class EquipmentTableModel extends AbstractTableModel {
         
-        UnitUIProxy proxy;
+        Inventory inventory;
         UnitCollection equipment;
         
-        private EquipmentTableModel(UnitUIProxy proxy) {
-            this.proxy = proxy;
-            equipment = proxy.getUnit().getInventory().getUnitsOfClass(Equipment.class);
+        private EquipmentTableModel(Inventory inventory) {
+            this.inventory = inventory;
+            equipment = inventory.getUnitsOfClass(Equipment.class);
         }
         
         public int getRowCount() {
@@ -217,7 +214,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
   
         public void update() {
-            UnitCollection newEquipment = proxy.getUnit().getInventory().getUnitsOfClass(Equipment.class);
+            UnitCollection newEquipment = inventory.getUnitsOfClass(Equipment.class);
             if (!equipment.equals(newEquipment)) {
                 equipment = newEquipment;
                 fireTableDataChanged();

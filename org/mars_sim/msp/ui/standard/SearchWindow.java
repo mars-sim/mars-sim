@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.74 2002-03-17
+ * @version 2.75 2003-07-20
  * @author Scott Davis
  */
 
@@ -13,16 +13,18 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.PersonIterator;
 
-/** The SearchWindow is a tool window that allows the user to search
- *  for individual units by name and category.
+/** 
+ * The SearchWindow is a tool window that allows the user to search
+ * for individual units by name and category.
  */
 public class SearchWindow extends ToolWindow implements ActionListener,
         ItemListener, MouseListener, DocumentListener {
 
     // Data members
     private MainDesktopPane desktop; // Desktop pane
-    private UIProxyManager proxyManager; // UI proxy manager
     private JComboBox searchForSelect; // Category selecter
     private JList unitList; // List of selectable units
     private DefaultListModel unitListModel; // Model for unit select list
@@ -34,8 +36,10 @@ public class SearchWindow extends ToolWindow implements ActionListener,
     private boolean lockSearchText; // True if selectTextField events should be ignored.
     private String[] unitCategoryNames; // Array of category names.
 
-    /** Constructs a SearchWindow object 
-     *  @param desktop the desktop pane
+    /** 
+     * Constructor
+     *
+     * @param desktop the desktop pane
      */
     public SearchWindow(MainDesktopPane desktop) {
 
@@ -57,7 +61,6 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Initialize data members
         this.desktop = desktop;
-        proxyManager = desktop.getProxyManager();
 
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
@@ -90,16 +93,14 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Create unit list
         unitListModel = new DefaultListModel();
-        Iterator peopleProxies = proxyManager.getOrderedPersonProxies();
-        while (peopleProxies.hasNext()) {
-            UnitUIProxy proxy = (UnitUIProxy) peopleProxies.next();
-            unitListModel.addElement(proxy.getUnit().getName());
-        }
+        UnitManager unitManager = desktop.getMainWindow().getMars().getUnitManager();
+        PersonIterator people = unitManager.getPeople().sortByName().iterator();
+        while (people.hasNext()) unitListModel.addElement(people.next());
         unitList = new JList(unitListModel);
         unitList.setSelectedIndex(0);
         unitList.addMouseListener(this);
         selectUnitPane.add(new JScrollPane(unitList), "Center");
-	
+    
         // Create bottom panel
         JPanel bottomPane = new JPanel(new BorderLayout());
         mainPane.add(bottomPane, "South");
@@ -140,32 +141,33 @@ public class SearchWindow extends ToolWindow implements ActionListener,
      * Retrieve info on all units of selected category.
      */
     private void search() {
-        Iterator unitProxies = null;
+        UnitCollection units = new UnitCollection();
         String category = (String) searchForSelect.getSelectedItem();
+        UnitManager unitManager = desktop.getMainWindow().getMars().getUnitManager();
         if (category.equals("People"))
-            unitProxies = proxyManager.getOrderedPersonProxies();
+            units.mergePeople(unitManager.getPeople().sortByName());
         if (category.equals("Settlements"))
-            unitProxies = proxyManager.getOrderedSettlementProxies();
+            units.mergeSettlements(unitManager.getSettlements().sortByName());
         if (category.equals("Vehicles"))
-            unitProxies = proxyManager.getOrderedVehicleProxies();
+            units.mergeVehicles(unitManager.getVehicles().sortByName());
+        UnitIterator unitI = units.iterator();
 
         // If entered text equals the name of a unit in this category, take appropriate action.
         boolean foundUnit = false;
-        while (unitProxies.hasNext()) {
-            UnitUIProxy proxy = (UnitUIProxy) unitProxies.next();
-            if (selectTextField.getText().equalsIgnoreCase(proxy.getUnit().getName())) {
+        while (unitI.hasNext()) {
+            Unit unit = unitI.next();
+            if (selectTextField.getText().equalsIgnoreCase(unit.getName())) {
                 foundUnit = true;
-                if (openWindowCheck.isSelected()) desktop.openUnitWindow(proxy);
+                if (openWindowCheck.isSelected()) desktop.openUnitWindow(unit);
                 if (centerMapCheck.isSelected())
-                    desktop.centerMapGlobe(proxy.getUnit().getCoordinates());
+                    desktop.centerMapGlobe(unit.getCoordinates());
             }
         }
 
         String tempName = unitCategoryNames[searchForSelect.getSelectedIndex()];
 
         // If not found, display "'Category' Not Found" in statusLabel.
-        if (!foundUnit)
-            statusLabel.setText(tempName + " Not Found");
+        if (!foundUnit) statusLabel.setText(tempName + " Not Found");
 
         // If there is no text entered, display "Enter The Name of a 'Category'" in statusLabel.
         if (selectTextField.getText().equals(""))
@@ -177,20 +179,19 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Change unitList to the appropriate category list
         unitListModel.clear();
-        Iterator unitProxies = null;
+        UnitCollection units = new UnitCollection();
         String category = (String) searchForSelect.getSelectedItem();
+        UnitManager unitManager = desktop.getMainWindow().getMars().getUnitManager();
         if (category.equals("People"))
-            unitProxies = proxyManager.getOrderedPersonProxies();
+            units.mergePeople(unitManager.getPeople().sortByName());
         if (category.equals("Settlements"))
-            unitProxies = proxyManager.getOrderedSettlementProxies();
+            units.mergeSettlements(unitManager.getSettlements().sortByName());
         if (category.equals("Vehicles"))
-            unitProxies = proxyManager.getOrderedVehicleProxies();
+            units.mergeVehicles(unitManager.getVehicles().sortByName());
+        UnitIterator unitI = units.iterator();
 
         lockUnitList = true;
-        while (unitProxies.hasNext()) {
-            UnitUIProxy proxy = (UnitUIProxy) unitProxies.next();
-            unitListModel.addElement(proxy.getUnit().getName());
-        }
+        while (unitI.hasNext()) unitListModel.addElement(unitI.next());
         unitList.setSelectedIndex(0);
         unitList.ensureIndexIsVisible(0);
         lockUnitList = false;
@@ -201,7 +202,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
     /** ActionListener method overridden */
     public void actionPerformed(ActionEvent event) {
-	search();
+        search();
     }
 
     // MouseListener methods overridden
@@ -211,18 +212,17 @@ public class SearchWindow extends ToolWindow implements ActionListener,
     public void mouseExited(MouseEvent event) {}
 
     public void mouseReleased(MouseEvent event) {
-	if(event.getClickCount() == 2) {
-	    search();
-	    return;
-	}
+        if(event.getClickCount() == 2) {
+            search();
+            return;
+        }
 
         if (!lockUnitList) {
             // Change search text to selected name.
-            String selectedUnitName = (String) unitList.getSelectedValue();
+            String selectedUnitName = ((Unit) unitList.getSelectedValue()).getName();
             lockSearchText = true;
-            if (!selectTextField.getText().equals(selectedUnitName)) {
+            if (!selectTextField.getText().equals(selectedUnitName))
                 selectTextField.setText(selectedUnitName);
-            }
             lockSearchText = false;
         }
     }
@@ -236,14 +236,18 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         searchTextChange();
     }
 
-    /** Make selection in list depending on what unit names begin with the changed text. */
+    /** 
+     * Make selection in list depending on what unit names 
+     * begin with the changed text. 
+     */
     private void searchTextChange() {
         if (!lockSearchText) {
             String searchText = selectTextField.getText().toLowerCase();
             int fitIndex = 0;
             boolean goodFit = false;
             for (int x = unitListModel.size() - 1; x > -1; x--) {
-                String unitString = ((String) unitListModel.elementAt(x)).toLowerCase();
+                Unit unit = (Unit) unitListModel.elementAt(x);
+                String unitString = unit.getName().toLowerCase();
                 if (unitString.startsWith(searchText)) {
                     fitIndex = x;
                     goodFit = true;

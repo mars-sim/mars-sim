@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 2.71 2000-10-23
+ * @version 2.75 2003-07-20
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import org.mars_sim.msp.simulation.Unit;
 
 /** The UnitToolBar class is a UI toolbar for holding unit buttons.
  *  There should only be one instance and it is contained in the
@@ -20,7 +21,7 @@ import javax.swing.border.*;
 public class UnitToolBar extends JToolBar implements ActionListener {
 
     // Data members
-    private Vector unitButtons; // List of unit buttons
+    private java.util.List unitButtons; // List of unit buttons
     private MainWindow parentMainWindow; // Main window that contains this toolbar.
 
     /** Constructs a UnitToolBar object 
@@ -32,7 +33,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
         super();
 
         // Initialize data members
-        unitButtons = new Vector();
+        unitButtons = new ArrayList();
         this.parentMainWindow = parentMainWindow;
 
         // Set name
@@ -48,41 +49,45 @@ public class UnitToolBar extends JToolBar implements ActionListener {
         setBorder(new BevelBorder(BevelBorder.RAISED));
     }
 
-    /** Create a new unit button in toolbar 
-     *  @param unitUIProxy unit's UI proxy
+    /** 
+     * Create a new unit button in the toolbar.
+     *
+     * @param unit the unit to make a button for.
      */
-    public void createUnitButton(UnitUIProxy unitUIProxy) {
+    public void createUnitButton(Unit unit) {
 
         // Check if unit button already exists
         boolean alreadyExists = false;
-        for (int x = 0; x < unitButtons.size(); x++) {
-            if (((UnitButton) unitButtons.elementAt(x)).getUnitProxy() ==
-                    unitUIProxy) {
-                alreadyExists = true;
-            }
+        Iterator i = unitButtons.iterator();
+        while (i.hasNext()) {
+            UnitButton unitButton = (UnitButton) i.next();
+            if (unitButton.getUnit() == unit) alreadyExists = true;
         }
 
         if (!alreadyExists) {
-            UnitButton tempButton = new UnitButton(unitUIProxy);
+            UnitButton tempButton = new UnitButton(unit);
             tempButton.addActionListener(this);
             add(tempButton);
             validate();
             repaint();
-            unitButtons.addElement(tempButton);
+            unitButtons.add(tempButton);
         }
     }
 
-    /** Disposes a unit button in toolbar 
-     *  @param unitUIProxy the unit's UI Proxy
+    /** 
+     * Disposes a unit button in toolbar.
+     *
+     * @param unit the unit whose button is to be removed.
      */
-    public void disposeUnitButton(UnitUIProxy unitUIProxy) {
-        for (int x = 0; x < unitButtons.size(); x++) {
-            UnitButton tempButton = (UnitButton) unitButtons.elementAt(x);
-            if (tempButton.getUnitProxy() == unitUIProxy) {
-                unitButtons.removeElement(tempButton);
-                remove(tempButton);
+    public void disposeUnitButton(Unit unit) {
+        Iterator i = unitButtons.iterator();
+        while (i.hasNext()) {
+            UnitButton unitButton = (UnitButton) i.next();
+            if (unitButton.getUnit() == unit) {
+                remove(unitButton);
                 validate();
                 repaint();
+                i.remove();
             }
         }
     }
@@ -90,7 +95,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
     /** ActionListener method overriden */
     public void actionPerformed(ActionEvent event) {
         // show unit window on desktop
-        UnitUIProxy proxy = ((UnitButton) event.getSource()).getUnitProxy();
-        parentMainWindow.openUnitWindow(proxy);
+        Unit unit = ((UnitButton) event.getSource()).getUnit();
+        parentMainWindow.openUnitWindow(unit);
     }
 }

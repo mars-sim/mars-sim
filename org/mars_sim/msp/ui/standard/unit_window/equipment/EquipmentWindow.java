@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EquipmentWindow.java
- * @version 2.75 2003-07-10
+ * @version 2.75 2003-07-22
  * @author Scott Davis
  */
 
@@ -20,17 +20,15 @@ public class EquipmentWindow extends UnitWindow {
      * Constructor
      *
      * @param desktop the main desktop panel.
-     * @param proxy the unit UI proxy for this window.
+     * @param equipment the equipment this window is for.
      */
-    public EquipmentWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
+    public EquipmentWindow(MainDesktopPane desktop, Equipment equipment) {
         // Use UnitWindow constructor
-        super(desktop, proxy, false);
-        
-        Equipment equipment = (Equipment) proxy.getUnit();
+        super(desktop, equipment, false);
         
         // Add tab panels
-        addTabPanel(new LocationTabPanel(proxy, desktop));
-        addTabPanel(new InventoryTabPanel(proxy, desktop));
-        addTabPanel(new MaintenanceTabPanel(proxy, desktop));
+        addTabPanel(new LocationTabPanel(equipment, desktop));
+        addTabPanel(new InventoryTabPanel(equipment, desktop));
+        addTabPanel(new MaintenanceTabPanel(equipment, desktop));
     }
 }

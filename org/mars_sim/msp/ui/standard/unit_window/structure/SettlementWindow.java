@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.*;
 
@@ -19,19 +20,18 @@ public class SettlementWindow extends UnitWindow {
      * Constructor
      *
      * @param desktop the main desktop panel.
-     * @param proxy the unit UI proxy for this window.
+     * @param unit the unit to display.
      */
-    public SettlementWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
+    public SettlementWindow(MainDesktopPane desktop, Unit unit) {
         // Use UnitWindow constructor
-        super(desktop, proxy, false);
+        super(desktop, unit, false);
         
         // Add tab panels
-        SettlementUIProxy settlementProxy = (SettlementUIProxy) proxy;
-        addTabPanel(new LocationTabPanel(proxy, desktop));
-        addTabPanel(new PopulationTabPanel(proxy, desktop));
-        addTabPanel(new VehicleTabPanel(proxy, desktop));
-        addTabPanel(new InventoryTabPanel(proxy, desktop));
-        addTabPanel(new PowerGridTabPanel(proxy, desktop));
-        addTabPanel(new BuildingsTabPanel(proxy, desktop));
+        addTabPanel(new LocationTabPanel(unit, desktop));
+        addTabPanel(new PopulationTabPanel(unit, desktop));
+        addTabPanel(new VehicleTabPanel(unit, desktop));
+        addTabPanel(new InventoryTabPanel(unit, desktop));
+        addTabPanel(new PowerGridTabPanel(unit, desktop));
+        addTabPanel(new BuildingsTabPanel(unit, desktop));
     }
 }

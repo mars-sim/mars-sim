@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * PopulationTabPanel.java
- * @version 2.75 2003-05-11
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.ui.standard.*;
@@ -32,14 +33,14 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public PopulationTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public PopulationTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Population", null, "Population of the settlement", proxy, desktop);
+        super("Population", null, "Population of the settlement", unit, desktop);
         
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         
         // Create population count panel
         JPanel populationCountPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -88,7 +89,7 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
      * Updates the info on this panel.
      */
     public void update() {
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         
         // Update population num
         if (populationNumCache != settlement.getCurrentPopulationNum()) {
@@ -119,8 +120,7 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
      */
     public void actionPerformed(ActionEvent event) {
         // If the population monitor button was pressed, create tab in monitor tool.
-        Settlement settlement = (Settlement) proxy.getUnit();
-        desktop.addModel(new PersonTableModel(settlement));
+        desktop.addModel(new PersonTableModel((Settlement) unit));
     }
     
     /** 
@@ -131,11 +131,8 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
     public void mouseClicked(MouseEvent event) {
 
         // If double-click, open person window.
-        if (event.getClickCount() >= 2) {
-            Person person = (Person) populationList.getSelectedValue();
-            UnitUIProxy proxy = desktop.getProxyManager().getUnitUIProxy(person);
-            desktop.openUnitWindow(proxy);
-        }
+        if (event.getClickCount() >= 2) 
+            desktop.openUnitWindow((Person) populationList.getSelectedValue());
     }
 
     public void mousePressed(MouseEvent event) {}

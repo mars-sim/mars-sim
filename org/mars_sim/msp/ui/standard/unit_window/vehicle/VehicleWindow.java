@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleWindow.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2003-07-22
  * @author Scott Davis
  */
 
@@ -20,20 +20,18 @@ public class VehicleWindow extends UnitWindow {
      * Constructor
      *
      * @param desktop the main desktop panel.
-     * @param proxy the unit UI proxy for this window.
+     * @param vehicle the vehicle for this window.
      */
-    public VehicleWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
+    public VehicleWindow(MainDesktopPane desktop, Vehicle vehicle) {
         // Use UnitWindow constructor
-        super(desktop, proxy, true);
-        
-        Vehicle vehicle = (Vehicle) proxy.getUnit();
+        super(desktop, vehicle, true);
         
         // Add tab panels
-        addTabPanel(new NavigationTabPanel(proxy, desktop));
-        if (vehicle instanceof Crewable) addTabPanel(new CrewTabPanel(proxy, desktop));
-        addTabPanel(new LocationTabPanel(proxy, desktop));
-        addTabPanel(new InventoryTabPanel(proxy, desktop));
-        addTabPanel(new MaintenanceTabPanel(proxy, desktop));
-        if (vehicle instanceof ExplorerRover) addTabPanel(new LaboratoryTabPanel(proxy, desktop));
+        addTabPanel(new NavigationTabPanel(vehicle, desktop));
+        if (vehicle instanceof Crewable) addTabPanel(new CrewTabPanel(vehicle, desktop));
+        addTabPanel(new LocationTabPanel(vehicle, desktop));
+        addTabPanel(new InventoryTabPanel(vehicle, desktop));
+        addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
+        if (vehicle instanceof ExplorerRover) addTabPanel(new LaboratoryTabPanel(vehicle, desktop));
     }
 }

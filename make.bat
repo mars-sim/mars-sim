@@ -23,6 +23,7 @@ set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\person\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\vehicle\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\structure\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\structure\building\*.java
+set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_display_info\*.java
 
 javac -classpath %CLASSPATH% %SOURCE%
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InhabitableBuildingPanel.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -99,11 +99,8 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
     public void mouseClicked(MouseEvent event) {
 
         // If double-click, open person window.
-        if (event.getClickCount() >= 2) {
-            Person person = (Person) inhabitantList.getSelectedValue();
-            UnitUIProxy proxy = desktop.getProxyManager().getUnitUIProxy(person);
-            desktop.openUnitWindow(proxy);
-        }
+        if (event.getClickCount() >= 2) 
+            desktop.openUnitWindow((Person) inhabitantList.getSelectedValue());
     }
 
     public void mousePressed(MouseEvent event) {}

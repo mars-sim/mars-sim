@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.75 2003-05-11
+ * @version 2.75 2003-07-20
  * @author Scott Davis
  */
 
@@ -26,7 +26,6 @@ public class MainWindow extends JFrame implements WindowListener {
     private Mars mars;               // The virtual Mars
     private UnitToolBar unitToolbar; // The unit tool bar
     private MainDesktopPane desktop; // The main desktop
-    private UIProxyManager proxyManager; // The unit UI proxy manager
 
     /** Constructs a MainWindow object
      *  @param mars the virtual Mars
@@ -44,6 +43,9 @@ public class MainWindow extends JFrame implements WindowListener {
         catch(UnsupportedLookAndFeelException e) {
             System.out.println("MainWindow: " + e.toString());
         }
+        
+        // Set the Mars instance.
+        setMars(mars);             
         
         // Prepare frame
         setVisible(false);
@@ -82,8 +84,6 @@ public class MainWindow extends JFrame implements WindowListener {
         setLocation(((screen_size.width - frame_size.width) / 2),
                 ((screen_size.height - frame_size.height) / 2));
 
-        setMars(mars);
-
         // Show frame
         setVisible(true);
     }
@@ -106,37 +106,38 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // Initialize data members
         mars = newMars;
-
-        // Create unit UI proxy manager.
-        proxyManager = new UIProxyManager(mars.getUnitManager().getUnits());
-
-        desktop.setProxyManager(proxyManager);
     }
 
-    /** Create a new unit button in toolbar
-     *  @param unitUIProxy the unit UI Proxy
+    /** 
+     * Create a new unit button in toolbar.
+     *
+     * @param unit the unit the button is for.
      */
-    public void createUnitButton(UnitUIProxy unitUIProxy) {
-        unitToolbar.createUnitButton(unitUIProxy);
+    public void createUnitButton(Unit unit) {
+        unitToolbar.createUnitButton(unit);
     }
 
-    /** Return true if tool window is open
-     *  @param the name of the tool window
-     *  @return true if tool window is open
+    /** 
+     * Checks if tool window is open.
+     *
+     * @param the name of the tool window
+     * @return true if tool window is open
      */
     public boolean isToolWindowOpen(String toolName) {
         return desktop.isToolWindowOpen(toolName);
     }
 
-    /** Finds a tool window
-     *  @param toolName the name of the tool window
+    /** 
+     * Finds a tool window.
+     *
+     * @param toolName the name of the tool window
      */
     public ToolWindow getToolWindow(String toolName) {
         return desktop.getToolWindow(toolName);
     }
 
     /**
-     * Load a previously saved simulation
+     * Load a previously saved simulation.
      */
     public void loadSimulation() {
         try {
@@ -148,6 +149,7 @@ public class MainWindow extends JFrame implements WindowListener {
                 if (newmars != null) {
                     setMars(newmars);
                     newmars.start();
+                    desktop.resetDesktop();
                 }
             }
         }
@@ -178,6 +180,7 @@ public class MainWindow extends JFrame implements WindowListener {
 		    setMars(newmars);
 		    newmars.start();
 		    pm.close();
+            desktop.resetDesktop();
         }
     }
 
@@ -213,40 +216,50 @@ public class MainWindow extends JFrame implements WindowListener {
 	    }
     }
 
-    /** Opens a tool window if necessary
-     *  @param toolName the name of the tool window
+    /** 
+     * Opens a tool window if necessary.
+     *
+     * @param toolName the name of the tool window
      */
     public void openToolWindow(String toolName) {
         desktop.openToolWindow(toolName);
     }
 
-    /** Closes a tool window if it is open
-     *  @param the name of the tool window
+    /** 
+     * Closes a tool window if it is open.
+     *
+     * @param the name of the tool window
      */
     public void closeToolWindow(String toolName) {
         desktop.closeToolWindow(toolName);
     }
 
-    /** Opens a window for a unit if it isn't already open Also makes
-      *  a new unit button in toolbar if necessary
-      *  @param unitUIProxy the unit UI proxy
-      */
-    public void openUnitWindow(UnitUIProxy unitUIProxy) {
-        desktop.openUnitWindow(unitUIProxy);
+    /** 
+     * Opens a window for a unit if it isn't already open.
+     * Also makes a new unit button in toolbar if necessary.
+     *
+     * @param unit the unit the window is for.
+     */
+    public void openUnitWindow(Unit unit) {
+        desktop.openUnitWindow(unit);
     }
 
-    /** Disposes a unit window and button
-     *  @param unitUIProxy the unit UI proxy
+    /** 
+     * Disposes a unit window.
+     *
+     * @param unit the unit to dispose.
      */
-    public void disposeUnitWindow(UnitUIProxy unitUIProxy) {
-        desktop.disposeUnitWindow(unitUIProxy);
+    public void disposeUnitWindow(Unit unit) {
+        desktop.disposeUnitWindow(unit);
     }
 
-    /** Disposes a unit button in toolbar
-     *  @param unitUIProxy the unit UI proxy
+    /** 
+     * Disposes a unit button in toolbar.
+     *
+     * @param unit the unit to dispose.
      */
-    public void disposeUnitButton(UnitUIProxy unitUIProxy) {
-        unitToolbar.disposeUnitButton(unitUIProxy);
+    public void disposeUnitButton(Unit unit) {
+        unitToolbar.disposeUnitButton(unit);
     }
 
     // WindowListener methods overridden
@@ -274,4 +287,3 @@ public class MainWindow extends JFrame implements WindowListener {
     public void windowDeactivated(WindowEvent event) {}
     public void windowOpened(WindowEvent event) {}
 }
-

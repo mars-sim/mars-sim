@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.75 2003-07-10
+ * @version 2.75 2003-07-20
  * @author Scott Davis
  */
 
@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.*;
@@ -20,9 +20,10 @@ import org.mars_sim.msp.ui.standard.unit_window.person.PersonWindow;
 import org.mars_sim.msp.ui.standard.unit_window.vehicle.VehicleWindow;
 import org.mars_sim.msp.ui.standard.unit_window.structure.SettlementWindow;
 
-/** The MainDesktopPane class is the desktop part of the project's UI.
- *  It contains all tool and unit windows, and is itself contained,
- *  along with the tool bars, by the main window.
+/** 
+ * The MainDesktopPane class is the desktop part of the project's UI.
+ * It contains all tool and unit windows, and is itself contained,
+ * along with the tool bars, by the main window.
  */
 public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
@@ -30,14 +31,15 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private Collection unitWindows; // List of open or buttoned unit windows.
     private Collection toolWindows; // List of tool windows.
     private MainWindow mainWindow; // The main window frame.
-    private UIProxyManager proxyManager;  // The unit UI proxy manager.
     private ImageIcon backgroundImageIcon; // ImageIcon that contains the tiled background.
     private JLabel backgroundLabel; // Label that contains the tiled background.
     private JLabel logoLabel; // Label that has the centered logo for the project.
     private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
 
-    /** Constructs a MainDesktopPane object
-     *  @param mainWindow the main outer window
+    /** 
+     * Constructor
+     *
+     * @param mainWindow the main outer window
      */
     public MainDesktopPane(MainWindow mainWindow) {
 
@@ -69,6 +71,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Initialize firstDisplay to true
         firstDisplay = true;
+        
+        // Prepare tool windows.
+        prepareToolWindows();
     }
 
     /** Returns the MainWindow instance
@@ -132,7 +137,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
     /** Creates tool windows */
     private void prepareToolWindows() {
-
+        
         toolWindows.clear();
 
         // Prepare navigator window
@@ -234,16 +239,16 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      * Creates and opens a window for a unit if it isn't 
      * already in existance and open.
      *
-     * @param unitUIProxy the unit UI proxy
+     * @param unit the unit the window is for.
      */
-    public void openUnitWindow(UnitUIProxy unitUIProxy) {
+    public void openUnitWindow(Unit unit) {
 
         UnitWindow tempWindow = null;
 
         Iterator i = unitWindows.iterator();
         while (i.hasNext()) {
             UnitWindow window = (UnitWindow) i.next();
-            if (unitUIProxy.getUnit() == window.getProxy().getUnit()) tempWindow = window;
+            if (window.getUnit() == unit) tempWindow = window;
         }
         
         if (tempWindow != null) {
@@ -257,7 +262,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             }
         }
         else {
-            tempWindow = unitUIProxy.getUnitWindow(this);
+            // Create new window for unit.
+            tempWindow = UnitWindowFactory.getUnitWindow(unit, this);
     
             add(tempWindow, 0);
             tempWindow.pack();
@@ -272,7 +278,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             unitWindows.add(tempWindow);
 
             // Create new unit button in tool bar if necessary
-            mainWindow.createUnitButton(unitUIProxy);
+            mainWindow.createUnitButton(unit);
         }
 
         tempWindow.setVisible(true);
@@ -285,18 +291,19 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         catch (java.beans.PropertyVetoException e) {}
     }
 
-    /** Disposes a unit window and button
-     *  @param unitUIProxy the unit UI proxy
+    /** 
+     * Disposes a unit window and button.
+     *
+     * @param unit the unit the window is for.
      */
-    public void disposeUnitWindow(UnitUIProxy proxy) {
+    public void disposeUnitWindow(Unit unit) {
 
         // Dispose unit window
         UnitWindow deadWindow = null;
         Iterator i = unitWindows.iterator();
         while (i.hasNext()) {
             UnitWindow window = (UnitWindow) i.next();
-            if (proxy.getUnit() == window.getProxy().getUnit()) 
-                deadWindow = window;
+            if (unit == window.getUnit()) deadWindow = window;
         }
         
         unitWindows.remove(deadWindow);
@@ -304,31 +311,39 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         if (deadWindow != null) deadWindow.dispose();
 
         // Have main window dispose of unit button
-        mainWindow.disposeUnitButton(proxy);
+        mainWindow.disposeUnitButton(unit);
+    }
+    
+    /** 
+     * Disposes a unit window and button.
+     *
+     * @param window the unit window to dispose.
+     */
+    public void disposeUnitWindow(UnitWindow window) {
+        
+        if (window != null) {    
+            unitWindows.remove(window);
+            window.dispose();
+        
+            // Have main window dispose of unit button
+            mainWindow.disposeUnitButton(window.getUnit());
+        }
     }
 
-    /** Returns the unit UI proxy manager.
-     *  @return the unit UI proxy manager
+    /**
+     * Resets all windows on the desktop.  Disposes of all unit windows
+     * and tool windows, and reconstructs the tool windows.
      */
-    public UIProxyManager getProxyManager() { return proxyManager; }
-
-    /** 
-     * Set the unit UI proxy manager.
-     *
-     * @param manager The unit UI proxy manager
-     */
-    public void setProxyManager(UIProxyManager manager) {
-        proxyManager = manager;
-
+    void resetDesktop() {
+        
         // Dispose unit windows
         Iterator i1 = unitWindows.iterator();
         while (i1.hasNext()) {
             UnitWindow window = (UnitWindow) i1.next();
             window.dispose();
-            mainWindow.disposeUnitButton(window.getProxy());
+            mainWindow.disposeUnitButton(window.getUnit());
         }
-        unitWindows.clear();
-
+        
         // Dispose tool windows
         Iterator i2 = toolWindows.iterator();
         while (i2.hasNext()) {
@@ -340,9 +355,11 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         prepareToolWindows();
     }
 
-    /** Returns a random location on the desktop for a given JInternalFrame
-     *  @param tempWindow an internal window
-     *  @return random point on the desktop
+    /** 
+     * Gets a random location on the desktop for a given JInternalFrame.
+     *
+     * @param tempWindow an internal window
+     * @return random point on the desktop
      */
     private Point getRandomLocation(JInternalFrame tempWindow) {
 
@@ -357,4 +374,3 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         return new Point(rX, rY);
     }
 }
-

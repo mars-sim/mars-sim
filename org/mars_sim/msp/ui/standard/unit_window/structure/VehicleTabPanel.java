@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * VehicleTabPanel.java
- * @version 2.75 2003-05-12
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.ui.standard.*;
@@ -28,14 +29,14 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display
      * @param desktop the main desktop.
      */
-    public VehicleTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public VehicleTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Vehicles", null, "Vehicles parked at the settlement", proxy, desktop);
+        super("Vehicles", null, "Vehicles parked at the settlement", unit, desktop);
         
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         
         // Create vehicle label panel
         JPanel vehicleLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -71,7 +72,7 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
      * Updates the info on this panel.
      */
     public void update() {
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         
         // Update vehicle list
         if (!vehicleCache.equals(settlement.getParkedVehicles())) {
@@ -90,11 +91,8 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
     public void mouseClicked(MouseEvent event) {
 
         // If double-click, open person window.
-        if (event.getClickCount() >= 2) {
-            Vehicle vehicle = (Vehicle) vehicleList.getSelectedValue();
-            UnitUIProxy proxy = desktop.getProxyManager().getUnitUIProxy(vehicle);
-            desktop.openUnitWindow(proxy);
-        }
+        if (event.getClickCount() >= 2) 
+            desktop.openUnitWindow((Vehicle) vehicleList.getSelectedValue());
     }
 
     public void mousePressed(MouseEvent event) {}

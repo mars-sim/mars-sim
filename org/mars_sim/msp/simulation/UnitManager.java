@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2003-01-28
+ * @version 2.75 2003-07-20
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.equipment.*;
 import java.io.*;
 import java.util.*;
 
@@ -198,6 +199,24 @@ public class UnitManager implements Serializable {
      */
     public PersonCollection getPeople() {
         return units.getPeople();
+    }
+    
+    /** 
+     * Get number of equipment
+     *
+     * @return the number of equipment
+     */
+    public int getEquipmentNum() {
+        return units.getEquipment().size();
+    }
+
+    /** 
+     * Get all of the equipment.
+     *
+     * @return EquipmentCollection of equipment
+     */
+    public EquipmentCollection getEquipment() {
+        return units.getEquipment();
     }
 
     /** The total number of units

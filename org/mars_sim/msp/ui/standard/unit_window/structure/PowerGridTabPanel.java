@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGridTabPanel.java
- * @version 2.75 2003-06-03
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
@@ -37,15 +38,15 @@ public class PowerGridTabPanel extends TabPanel {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public PowerGridTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public PowerGridTabPanel(Unit unit, MainDesktopPane desktop) { 
         
         // Use the TabPanel constructor
-        super("Power", null, "Power Grid", proxy, desktop);
+        super("Power", null, "Power Grid", unit, desktop);
         
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         
         // Prepare power grid label panel.
         JPanel powerGridLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -82,7 +83,7 @@ public class PowerGridTabPanel extends TabPanel {
         outerTablePanel.add(powerTablePanel);
         
         // Prepare power table model.
-        powerTableModel = new PowerTableModel(proxy);
+        powerTableModel = new PowerTableModel(settlement);
         
         // Prepare power table.
         JTable powerTable = new JTable(powerTableModel);
@@ -100,7 +101,7 @@ public class PowerGridTabPanel extends TabPanel {
      * Updates the info on this panel.
      */
     public void update() {
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         
         // Update power generated label.
         if (powerGeneratedCache != getTotalPowerGenerated()) {
@@ -128,7 +129,7 @@ public class PowerGridTabPanel extends TabPanel {
     private double getTotalPowerGenerated() {
         
         double result = 0D;
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         Iterator i = settlement.getBuildingManager().getBuildings(PowerGeneration.class).iterator();
         while (i.hasNext()) {
             PowerGeneration generator = (PowerGeneration) i.next();
@@ -146,7 +147,7 @@ public class PowerGridTabPanel extends TabPanel {
     private double getTotalPowerUsed() {
         
         double result = 0D;
-        Settlement settlement = (Settlement) proxy.getUnit();
+        Settlement settlement = (Settlement) unit;
         Iterator i = settlement.getBuildingManager().getBuildings().iterator();
         while (i.hasNext()) {
             Building building = (Building) i.next();
@@ -172,8 +173,8 @@ public class PowerGridTabPanel extends TabPanel {
         ImageIcon yellowDot;
         ImageIcon greenDot;
         
-        private PowerTableModel(UnitUIProxy proxy) {
-            this.settlement = (Settlement) proxy.getUnit();
+        private PowerTableModel(Settlement settlement) {
+            this.settlement = settlement;
             buildings = settlement.getBuildingManager().getBuildings();
             redDot = new ImageIcon("images/RedDot.gif");
             yellowDot = new ImageIcon("images/YellowDot.gif");

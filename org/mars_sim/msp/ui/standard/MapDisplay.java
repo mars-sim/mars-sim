@@ -1,19 +1,20 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2003-01-21
+ * @version 2.75 2003-07-22
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.ui.standard.unit_display_info.*;
 
 /** The MapDisplay class is the visual component for the surface map
  *  of Mars in the UI. It can show either the surface or topographical
@@ -27,7 +28,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
     // Data members
     private Mars mars; // Virtual Mars object
-    private UIProxyManager proxyManager; // Unit UI proxy manager
     private NavigatorWindow navWindow; // Navigator Tool Window
     private Map surfMap; // Surface image object
     private Map usgsMap; // USGS surface image object
@@ -52,19 +52,20 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private static final int HALF_MAP = 150;
     private static final double HALF_MAP_ANGLE_STANDARD = .48587D;
     private static final double HALF_MAP_ANGLE_USGS = .06106D;
+    private static final int LABEL_HORIZONTAL_OFFSET = 2;
 
-    /** Constructs a MapDisplay object
-     *  @param navWindow the navigator window pane
-     *  @param proxyManager the UI proxy manager
-     *  @param width the width of the map shown
-     *  @param height the height of the map shown
+    /** 
+     * Constructor
+     *
+     * @param navWindow the navigator window pane
+     * @param width the width of the map shown
+     * @param height the height of the map shown
+     * @param mars the Mars instance.
      */
-    public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager,
-            int width, int height, Mars mars) {
+    public MapDisplay(NavigatorWindow navWindow, int width, int height, Mars mars) {
 
         // Initialize data members
         this.navWindow = navWindow;
-        this.proxyManager = proxyManager;
         this.width = width;
         this.height = height;
         this.mars = mars;
@@ -291,40 +292,32 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  @param g graphics context
      */
     private void drawUnits(Graphics g) {
-        Iterator i = proxyManager.getUIProxies();
+        UnitIterator i = mars.getUnitManager().getUnits().iterator();
         while (i.hasNext()) {
-            UnitUIProxy proxy = (UnitUIProxy) i.next();
-            if (proxy.isMapDisplayed()) {
-                Coordinates unitCoords = proxy.getUnit().getCoordinates();
+            Unit unit = i.next();
+            UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+            if (displayInfo.isMapDisplayed(unit)) {
+                Coordinates unitCoords = unit.getCoordinates();
                 double angle = 0D;
                 if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
                 else angle = HALF_MAP_ANGLE_STANDARD;
 
                 if (centerCoords.getAngle(unitCoords) < angle) {
                     IntPoint rectLocation = getUnitRectPosition(unitCoords);
-                    Image positionImage = proxy.getSurfMapIcon().getImage();
                     IntPoint imageLocation =
-                            getUnitDrawLocation(rectLocation, positionImage);
+                            getUnitDrawLocation(rectLocation, displayInfo.getSurfMapIcon());
 
-                    if (topo) {
-                        g.drawImage(proxy.getTopoMapIcon().getImage(),
-                                imageLocation.getiX(), imageLocation.getiY(), this);
-                    } else {
-                        g.drawImage(proxy.getSurfMapIcon().getImage(),
-                                imageLocation.getiX(), imageLocation.getiY(), this);
-                    }
+                    if (topo) displayInfo.getTopoMapIcon().paintIcon(this, g, 
+                        imageLocation.getiX(), imageLocation.getiY());
+                    else displayInfo.getSurfMapIcon().paintIcon(this, g, 
+                        imageLocation.getiX(), imageLocation.getiY());
 
                     if (labels) {
-                        if (topo)
-                            g.setColor(proxy.getTopoMapLabelColor());
-                        else
-                            g.setColor(proxy.getSurfMapLabelColor());
-                        g.setFont(proxy.getMapLabelFont());
-                        IntPoint labelLocation =
-                                getLabelLocation(rectLocation, positionImage);
-                        g.drawString(proxy.getUnit().getName(),
-                                labelLocation.getiX() + labelHorizOffset,
-                                labelLocation.getiY());
+                        if (topo) g.setColor(displayInfo.getTopoMapLabelColor());
+                        else g.setColor(displayInfo.getSurfMapLabelColor());
+                        g.setFont(displayInfo.getMapLabelFont());
+                        IntPoint labelLocation = getLabelLocation(rectLocation, displayInfo.getSurfMapIcon());
+                        g.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
                     }
                 }
             }
@@ -347,24 +340,20 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         else angle = HALF_MAP_ANGLE_STANDARD;
         
         // Draw trail
-        Iterator i = proxyManager.getUIProxies();
+        VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
         while (i.hasNext()) {
-            Object proxy = i.next();
-            if (proxy instanceof VehicleUIProxy) {
-                VehicleUIProxy vehicleProxy = (VehicleUIProxy) proxy;
-                Vehicle vehicle = (Vehicle) vehicleProxy.getUnit();
-                IntPoint oldSpot = null;
-                Iterator j = (new ArrayList(vehicle.getTrail())).iterator();
-                while (j.hasNext()) {
-                    Coordinates trailSpot = (Coordinates) j.next();
-                    if (centerCoords.getAngle(trailSpot) < angle) {
-                        IntPoint spotLocation = getUnitRectPosition(trailSpot);
-                        if ((oldSpot == null))                            
-                            g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
-                        else if (!spotLocation.equals(oldSpot))
-                            g.drawLine(oldSpot.getiX(), oldSpot.getiY(), spotLocation.getiX(), spotLocation.getiY());
-                        oldSpot = spotLocation;
-                    }
+            Vehicle vehicle = i.next();
+            IntPoint oldSpot = null;
+            Iterator j = (new ArrayList(vehicle.getTrail())).iterator();
+            while (j.hasNext()) {
+                Coordinates trailSpot = (Coordinates) j.next();
+                if (centerCoords.getAngle(trailSpot) < angle) {
+                    IntPoint spotLocation = getUnitRectPosition(trailSpot);
+                    if ((oldSpot == null))                            
+                        g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
+                    else if (!spotLocation.equals(oldSpot))
+                        g.drawLine(oldSpot.getiX(), oldSpot.getiY(), spotLocation.getiX(), spotLocation.getiY());
+                    oldSpot = spotLocation;
                 }
             }
         }
@@ -383,18 +372,19 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 (double)(event.getY() - HALF_MAP - 1), rho);
         boolean unitsClicked = false;
 
-        Iterator i = proxyManager.getUIProxies();
+        UnitIterator i = mars.getUnitManager().getUnits().iterator();
 
         // Open window if unit is clicked on the map
         while (i.hasNext()) {
-            UnitUIProxy proxy = (UnitUIProxy) i.next();
-            if (proxy.isMapDisplayed()) {
-                Coordinates unitCoords = proxy.getUnit().getCoordinates();
+            Unit unit = i.next();
+            UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+            if (displayInfo.isMapDisplayed(unit)) {
+                Coordinates unitCoords = unit.getCoordinates();
                 double clickRange = unitCoords.getDistance(clickedPosition);
-                double unitClickRange = proxy.getMapClickRange();
+                double unitClickRange = displayInfo.getMapClickRange();
                 if (useUSGSMap && !topo) unitClickRange *= .1257D;
                 if (clickRange < unitClickRange) {
-                    navWindow.openUnitWindow(proxy);
+                    navWindow.openUnitWindow(unit);
                     unitsClicked = true;
                 }
             }
@@ -431,28 +421,29 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         return Coordinates.findRectPosition(unitCoords, centerCoords, rho, half_map, low_edge);
     }
 
-    /** Returns unit image draw position on map panel
-     *  @param unitPosition absolute unit position
-     *  @param unitImage unit's map image
-     *  @return draw position for unit image
+    /** 
+     * Gets the unit image draw position on map panel.
+     *
+     * @param unitPosition absolute unit position
+     * @param unitIcon unit's map image icon
+     * @return draw position for unit image
      */
-    private IntPoint getUnitDrawLocation(IntPoint unitPosition, Image unitImage) {
-        return new IntPoint(unitPosition.getiX() - (unitImage.getWidth(this) / 2),
-                unitPosition.getiY() - (unitImage.getHeight(this) / 2));
+    private IntPoint getUnitDrawLocation(IntPoint unitPosition, Icon unitIcon) {
+        return new IntPoint(unitPosition.getiX() - (unitIcon.getIconWidth() / 2),
+                unitPosition.getiY() - (unitIcon.getIconHeight() / 2));
     }
 
-    private static final int labelHorizOffset = 2;
-
-    /** Returns label draw postion on map panel
-     *  @param unitPosition absolute unit position
-     *  @param unitImage unit's map image
-     *  @return draw position for unit label
+    /** 
+     * Gets the label draw postion on map panel.
+     *
+     * @param unitPosition absolute unit position
+     * @param unitIcon unit's map icon
+     * @return draw position for unit label
      */
-    private IntPoint getLabelLocation(IntPoint unitPosition, Image unitImage) {
+    private IntPoint getLabelLocation(IntPoint unitPosition, Icon unitIcon) {
         // this differs from getUnitDrawLocation by adding 10 to the horizontal position
-        return new IntPoint(unitPosition.getiX() +
-                (unitImage.getWidth(this) / 2) + labelHorizOffset,
-                unitPosition.getiY() + (unitImage.getHeight(this) / 2));
+        return new IntPoint(unitPosition.getiX() + (unitIcon.getIconWidth() / 2) + 
+            LABEL_HORIZONTAL_OFFSET, unitPosition.getiY() + (unitIcon.getIconHeight() / 2));
     }
 
     /** Sets day/night tracking to on or off.

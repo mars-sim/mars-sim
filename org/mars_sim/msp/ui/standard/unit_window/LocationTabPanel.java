@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocationTabPanel.java
- * @version 2.75 2003-06-11
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -30,12 +30,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public LocationTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public LocationTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Location", null, "Location", proxy, desktop);
+        super("Location", null, "Location", unit, desktop);
         
         // Create location panel
         JPanel locationPanel = new JPanel(new BorderLayout());
@@ -64,15 +64,15 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
         locationTextLabel = new JLabel("", JLabel.LEFT);
         
         // Add the location button or location text label depending on the situation.
-        Unit container = proxy.getUnit().getContainerUnit();
+        Unit container = unit.getContainerUnit();
         if (container != null) {
             locationButton.setText(container.getName());
             addLocationButton();
         }
         else {
             locationTextLabel.setText("Outside");
-            if (proxy instanceof PersonUIProxy) {
-                Person person = (Person) proxy.getUnit();
+            if (unit instanceof Person) {
+                Person person = (Person) unit;
                 if (person.getLocationSituation().equals(Person.BURIED)) 
                     locationTextLabel.setText("Buried Outside");
             }
@@ -84,7 +84,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
         locationPanel.add(locationCoordsPanel, "Center");
 
         // Initialize location cache
-        locationCache = new Coordinates(proxy.getUnit().getCoordinates());
+        locationCache = new Coordinates(unit.getCoordinates());
         
         // Prepare latitude label
         latitudeLabel = new JLabel("Latitude: " + locationCache.getFormattedLatitudeString(), JLabel.LEFT);
@@ -105,14 +105,11 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
         
         // If the center map button was pressed, update navigator tool.
         if (source == centerMapButton)
-            desktop.centerMapGlobe(proxy.getUnit().getCoordinates());
+            desktop.centerMapGlobe(unit.getCoordinates());
             
         // If the location button was pressed, open the unit window.
-        if (source == locationButton) {
-            Unit container = proxy.getUnit().getContainerUnit();
-            UnitUIProxy containerProxy = desktop.getProxyManager().getUnitUIProxy(container);
-            desktop.openUnitWindow(containerProxy);
-        }
+        if (source == locationButton) 
+            desktop.openUnitWindow(unit.getContainerUnit());
     }
     
     /**
@@ -121,22 +118,22 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
     public void update() {
         
         // If unit's location has changed, update location display.
-        if (!locationCache.equals(proxy.getUnit().getCoordinates())) {
-            locationCache.setCoords(proxy.getUnit().getCoordinates());
+        if (!locationCache.equals(unit.getCoordinates())) {
+            locationCache.setCoords(unit.getCoordinates());
             latitudeLabel.setText("Latitude: " + locationCache.getFormattedLatitudeString());
             longitudeLabel.setText("Longitude: " + locationCache.getFormattedLongitudeString());
         }
         
         // Update location button or location text label as necessary.
-        Unit container = proxy.getUnit().getContainerUnit();
+        Unit container = unit.getContainerUnit();
         if (container != null) {
             locationButton.setText(container.getName());
             addLocationButton();
         }
         else {
             locationTextLabel.setText("Outside");
-            if (proxy instanceof PersonUIProxy) {
-                Person person = (Person) proxy.getUnit();
+            if (unit instanceof Person) {
+                Person person = (Person) unit;
                 if (person.getLocationSituation().equals(Person.BURIED)) 
                     locationTextLabel.setText("Buried Outside");
             }

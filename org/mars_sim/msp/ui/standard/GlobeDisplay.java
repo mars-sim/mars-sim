@@ -1,17 +1,18 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.74 2001-03-11
+ * @version 2.75 2003-07-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
  
-import org.mars_sim.msp.simulation.*;  
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.*;  
+import org.mars_sim.msp.ui.standard.unit_display_info.*;
 
 /** The Globe Display class displays a graphical globe of Mars in the
  *  "Mars Navigator" tool.
@@ -19,7 +20,6 @@ import javax.swing.*;
 class GlobeDisplay extends JComponent implements Runnable {
 
     // Data members
-    private UIProxyManager proxyManager; // Unit UI proxy manager
     private MarsGlobe marsSphere; // Real surface sphere object
     private MarsGlobe topoSphere; // Topographical sphere object
     private Coordinates centerCoords; // Spherical coordinates for globe center
@@ -35,14 +35,15 @@ class GlobeDisplay extends JComponent implements Runnable {
 
     private static final double HALF_PI = (Math.PI / 2);
 
-    /** Constructs a GlobeDisplay object 
-     *  @param proxyManager the UI proxy manager
-     *  @width the width of the globe display
-     *  @height the height of the globe display
+    /** 
+     * Constructor 
+     *
+     * @param width the width of the globe display
+     * @param height the height of the globe display
+     * @param mars the Mars instance
      */
-    public GlobeDisplay(UIProxyManager proxyManager, int width, int height, Mars mars) {
+    public GlobeDisplay(int width, int height, Mars mars) {
 
-        this.proxyManager = proxyManager;
         this.width = width;
         this.height = height;
         this.mars = mars;
@@ -195,14 +196,15 @@ class GlobeDisplay extends JComponent implements Runnable {
      *  @param g graphics context
      */
     protected void drawUnits(Graphics g) {
-        Iterator i = proxyManager.getUIProxies();
+        UnitIterator i = mars.getUnitManager().getUnits().iterator();
         while (i.hasNext()) {
-            UnitUIProxy proxy = (UnitUIProxy) i.next();
-            if (proxy.isGlobeDisplayed()) {
-                Coordinates unitCoords = proxy.getUnit().getCoordinates();
+            Unit unit = i.next();
+            UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+            if (displayInfo.isGlobeDisplayed(unit)) {
+                Coordinates unitCoords = unit.getCoordinates();
                 if (centerCoords.getAngle(unitCoords) < HALF_PI) {
-                    if (topo) g.setColor(proxy.getTopoGlobeColor());
-                    else g.setColor(proxy.getSurfGlobeColor());
+                    if (topo) g.setColor(displayInfo.getTopoGlobeColor());
+                    else g.setColor(displayInfo.getSurfGlobeColor());
                     IntPoint tempLocation = getUnitDrawLocation(unitCoords);
                     g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
                 }
@@ -286,4 +288,3 @@ class GlobeDisplay extends JComponent implements Runnable {
         this.showDayNightShading = showDayNightShading;
     }
 }
-

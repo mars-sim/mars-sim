@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindowListener.java
- * @version 2.75 2003-07-13
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
@@ -25,12 +25,13 @@ public class UnitWindowListener extends InternalFrameAdapter {
         this.desktop = desktop;
     }
 
-    // Overriden parent method
-    /** Removes unit button from toolbar when unit window is closed. */
+    /** 
+     * Removes unit button from toolbar when unit window is closed. 
+     *
+     * @param e internal frame event.
+     */
     public void internalFrameClosing(InternalFrameEvent e) {
-        UnitWindow window = (UnitWindow) e.getSource();
-        UnitUIProxy proxy = window.getProxy();
-        desktop.disposeUnitWindow(proxy);
+        desktop.disposeUnitWindow((UnitWindow) e.getSource());
     }
 }
 

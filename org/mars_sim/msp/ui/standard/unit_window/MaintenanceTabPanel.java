@@ -29,14 +29,14 @@ public class MaintenanceTabPanel extends TabPanel {
     /**
      * Constructor
      *
-     * @param proxy the UI proxy for the unit.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public MaintenanceTabPanel(UnitUIProxy proxy, MainDesktopPane desktop) { 
+    public MaintenanceTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
-        super("Maint", null, "Maintenance", proxy, desktop);
+        super("Maint", null, "Maintenance", unit, desktop);
         
-        Malfunctionable malfunctionable = (Malfunctionable) proxy.getUnit();
+        Malfunctionable malfunctionable = (Malfunctionable) unit;
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
         
         // Create maintenance panel
@@ -109,7 +109,7 @@ public class MaintenanceTabPanel extends TabPanel {
      */
     public void update() {
     
-        Malfunctionable malfunctionable = (Malfunctionable) proxy.getUnit();
+        Malfunctionable malfunctionable = (Malfunctionable) unit;
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
     
         // Update last completed label.

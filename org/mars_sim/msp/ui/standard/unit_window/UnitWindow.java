@@ -1,18 +1,19 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2003-07-22
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.ui.standard.*;
 import java.awt.BorderLayout;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.unit_display_info.*;
 
 /**
  * The UnitWindow is the base window for displaying units.
@@ -21,27 +22,27 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
     
     // Data members
     protected MainDesktopPane desktop; // Main window
-    protected UnitUIProxy proxy;       // Unit's UI proxy
+    protected Unit unit;               // Unit for this window
     private Collection tabPanels;      // The tab panels
     private JTabbedPane centerPanel;   // The center panel
-    private Thread updateThread; // temp update thread
-    private boolean keepUpdated; // temp
+    private Thread updateThread;       // temp update thread
+    private boolean keepUpdated;       // temp
     
     /**
      * Constructor
      *
      * @param desktop the main desktop panel.
-     * @param proxy the unit UI proxy for this window.
+     * @param unit the unit for this window.
      * @param displayDescription true if unit description is to be displayed.
      */
-    public UnitWindow(MainDesktopPane desktop, UnitUIProxy proxy, boolean displayDescription) {
+    public UnitWindow(MainDesktopPane desktop, Unit unit, boolean displayDescription) {
         
         // Use JInternalFrame constructor
-        super(proxy.getUnit().getName(), false, true, false, true);
+        super(unit.getName(), false, true, false, true);
 
         // Initialize data members
         this.desktop = desktop;
-        this.proxy = proxy;
+        this.unit = unit;
         tabPanels = new ArrayList();
         
         // Create main panel
@@ -54,15 +55,15 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
         mainPane.add(namePanel, BorderLayout.NORTH);
 
         // Create name label
-        JLabel nameLabel = new JLabel(proxy.getUnit().getName(),
-            proxy.getButtonIcon(), JLabel.CENTER);
+        UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+        JLabel nameLabel = new JLabel(unit.getName(), displayInfo.getButtonIcon(), JLabel.CENTER);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
         namePanel.add(nameLabel, BorderLayout.NORTH);
         
         // Create description label if necessary.
         if (displayDescription) {
-            JLabel descriptionLabel = new JLabel(proxy.getUnit().getDescription(), JLabel.CENTER);
+            JLabel descriptionLabel = new JLabel(unit.getDescription(), JLabel.CENTER);
             namePanel.add(descriptionLabel, BorderLayout.SOUTH);
         }
         
@@ -88,12 +89,12 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
     }
      
     /**
-     * Gets the proxy for this window.
+     * Gets the unit for this window.
      *
-     * @return unit UI proxy
+     * @return unit 
      */
-    public UnitUIProxy getProxy() {
-        return proxy;
+    public Unit getUnit() {
+        return unit;
     }
     
     /**
@@ -114,7 +115,7 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
 
         keepUpdated = true;
         if ((updateThread == null) || !updateThread.isAlive()) {
-            updateThread = new Thread(this, "unit window : " + proxy.getUnit().getName());
+            updateThread = new Thread(this, "unit window : " + unit.getName());
             updateThread.start();
         }
         else {

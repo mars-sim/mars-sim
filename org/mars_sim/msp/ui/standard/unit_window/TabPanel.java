@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * TabPanel.java
- * @version 2.75 2003-05-08
+ * @version 2.75 2003-07-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window;
 
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.*;
 import java.awt.*;
 import javax.swing.*;
@@ -19,7 +20,7 @@ public abstract class TabPanel extends JScrollPane {
     protected String tabToolTip;
     protected JPanel topContentPanel;
     protected JPanel centerContentPanel;
-    protected UnitUIProxy proxy;
+    protected Unit unit;
     protected MainDesktopPane desktop;
     
     /**
@@ -28,11 +29,11 @@ public abstract class TabPanel extends JScrollPane {
      * @param tabTitle the title to be displayed in the tab (may be null).
      * @param tabIcon the icon to be displayed in the tab (may be null).
      * @param tabToolTip the tool tip to be displayed in the icon (may be null).
-     * @param proxy the unit UI proxy.
+     * @param unit the unit to display.
      * @param desktop the main desktop.
      */
     public TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, 
-            UnitUIProxy proxy, MainDesktopPane desktop) {
+            Unit unit, MainDesktopPane desktop) {
                 
         // Use JScrollPane constructor
         super();
@@ -41,7 +42,7 @@ public abstract class TabPanel extends JScrollPane {
         this.tabTitle = tabTitle;
         this.tabIcon = tabIcon;
         this.tabToolTip = tabToolTip;
-        this.proxy = proxy;
+        this.unit = unit;
         this.desktop = desktop;
         
         // Create the view panel
