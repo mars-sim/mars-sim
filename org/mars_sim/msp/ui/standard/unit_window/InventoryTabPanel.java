@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.75 2003-06-11
+ * @version 2.75 2003-07-06
  * @author Scott Davis
  */
 
@@ -176,7 +176,7 @@ public class InventoryTabPanel extends TabPanel {
                 String name = i.next().getName();
                 if (keys.contains(name)) {
                     int num = ((Integer) equipmentMap.get(name)).intValue();
-                    equipmentMap.put(name, new Integer(num + 1));
+                    equipmentMap.put(name, new Integer(++num));
                 }
                 else equipmentMap.put(name, new Integer(1));
             }
@@ -236,7 +236,7 @@ public class InventoryTabPanel extends TabPanel {
                 String name = i.next().getName();
                 if (tempKeys.contains(name)) {
                     int num = ((Integer) tempMap.get(name)).intValue();
-                    tempMap.put(name, new Integer(num++));
+                    tempMap.put(name, new Integer(++num));
                 }
                 else tempMap.put(name, new Integer(1));
             }
