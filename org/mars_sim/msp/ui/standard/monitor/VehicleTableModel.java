@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.74 2002-02-09
+ * @version 2.74 2002-02-21
  * @author Barry Evans
  */
 
@@ -32,7 +32,8 @@ public class VehicleTableModel extends UnitTableModel {
     private final static int  FUEL = 9;
     private final static int  WATER = 10;
     private final static int  FOOD = 11;
-    private final static int  COLUMNCOUNT = 12;    // The number of Columns
+    private final static int  ROCK_SAMPLES = 12;
+    private final static int  COLUMNCOUNT = 13; // The number of Columns
     private static String columnNames[]; // Names of Columns
     private static Class columnTypes[]; // Names of Columns
 
@@ -66,6 +67,8 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes[WATER] = Integer.class;
         columnNames[FUEL] = "Fuel";
         columnTypes[FUEL] = Integer.class;
+	columnNames[ROCK_SAMPLES] = "Rock Samples";
+	columnTypes[ROCK_SAMPLES] = Integer.class;
     }
 
     /**
@@ -121,6 +124,11 @@ public class VehicleTableModel extends UnitTableModel {
             case FUEL : {
 	        double fuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
 	        result = new Integer((int) fuel);
+            } break;
+
+            case ROCK_SAMPLES : {
+	        double rockSamples = vehicle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
+	        result = new Integer((int) rockSamples);
             } break;
 
             case SPEED : {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.74 2002-02-11
+ * @version 2.74 2002-02-21
  * @author Barry Evans
  */
 
@@ -29,7 +29,8 @@ public class SettlementTableModel extends UnitTableModel {
     private final static int WATER = 8;
     private final static int FOOD = 9;
     private final static int FUEL = 10;
-    private final static int COLUMNCOUNT = 11;    // The number of Columns
+    private final static int ROCK_SAMPLES = 11;
+    private final static int COLUMNCOUNT = 12;    // The number of Columns
     private static String columnNames[];          // Names of Columns
     private static Class columnTypes[];           // Types of columns
 
@@ -58,6 +59,8 @@ public class SettlementTableModel extends UnitTableModel {
         columnTypes[WATER] = Integer.class;
         columnNames[FUEL] = "Fuel";
         columnTypes[FUEL] = Integer.class;
+	columnNames[ROCK_SAMPLES] = "Rock Samples";
+	columnTypes[ROCK_SAMPLES] = Integer.class;
     };
 
     /**
@@ -112,6 +115,11 @@ public class SettlementTableModel extends UnitTableModel {
                 result = new Integer((int) fuel);
             } break;
 
+            case ROCK_SAMPLES : {
+                double rockSamples = settle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
+		result = new Integer((int) rockSamples);
+	    } break;
+			
             case POPULATION : {
                 result = new Integer(settle.getCurrentPopulationNum());
             } break;
