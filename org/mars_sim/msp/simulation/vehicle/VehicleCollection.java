@@ -1,19 +1,20 @@
 /**
  * Mars Simulation Project
  * VehicleCollection.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-26
  * @author Scott Davis 
  */
 
 package org.mars_sim.msp.simulation.vehicle;
 
+import org.mars_sim.msp.simulation.*;
 import java.util.*; // ArrayList
 import java.io.Serializable;
 
 /** The VehicleCollection class is a homogenous collection of Vehicle objects
  *  with useful methods for accessing and sorting them. 
  */
-public class VehicleCollection implements Serializable {
+public class VehicleCollection extends MspCollection implements Serializable {
 
     // We can replace this with another type of collection if we need to.
     private ArrayList elements;  // Used internally to hold elements.
@@ -107,6 +108,7 @@ public class VehicleCollection implements Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean add(Vehicle o) {
+        fireMspCollectionEvent(new MspCollectionEvent(this, "add"));
         return elements.add(o);
     }
 
@@ -117,6 +119,7 @@ public class VehicleCollection implements Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean remove(Vehicle o) {
+        fireMspCollectionEvent(new MspCollectionEvent(this, "remove"));
         return elements.remove(o);
     }
 
@@ -124,6 +127,7 @@ public class VehicleCollection implements Serializable {
      *  Removes all of the elements from this collection.
      */
     public void clear() {
+        fireMspCollectionEvent(new MspCollectionEvent(this, "clear"));
         elements.clear();
     }
     

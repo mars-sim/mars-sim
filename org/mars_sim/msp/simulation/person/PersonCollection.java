@@ -1,19 +1,20 @@
 /**
  * Mars Simulation Project
  * PersonCollection.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-26
  * @author Edgar Crisostomo 
  */
 
 package org.mars_sim.msp.simulation.person;
 
+import org.mars_sim.msp.simulation.*;
 import java.util.*; // ArrayList
 import java.io.Serializable;
 
 /** The PersonCollection class is a homogenous collection of Person objects
  *  with useful methods for accessing and sorting them. 
  */
-public class PersonCollection implements Serializable {
+public class PersonCollection extends MspCollection implements Serializable {
 
     // We can replace this with another type of collection if we need to.
     private ArrayList elements;  // Used internally to hold elements.
@@ -63,7 +64,7 @@ public class PersonCollection implements Serializable {
     public PersonCollection(PersonCollection collection) {
         elements = new ArrayList();
         PersonIterator iterator = collection.iterator();
-        while(iterator.hasNext()) elements.add(iterator.next());
+        while(iterator.hasNext()) add(iterator.next());
     }
 
     /** 
@@ -107,6 +108,7 @@ public class PersonCollection implements Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean add(Person o) {
+	fireMspCollectionEvent(new MspCollectionEvent(this, "add"));
         return elements.add(o);
     }
 
@@ -117,6 +119,7 @@ public class PersonCollection implements Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean remove(Person o) {
+        fireMspCollectionEvent(new MspCollectionEvent(this, "remove"));
         return elements.remove(o);
     }
 
@@ -124,6 +127,7 @@ public class PersonCollection implements Serializable {
      *  Removes all of the elements from this collection.
      */
     public void clear() {
+        fireMspCollectionEvent(new MspCollectionEvent(this, "clear"));
         elements.clear();
     }
     

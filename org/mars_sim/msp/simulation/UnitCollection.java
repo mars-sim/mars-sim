@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitCollection.java
- * @version 2.73 2001-11-25
+ * @version 2.74 2002-02-26
  * @author Scott Davis 
  */
 
@@ -17,7 +17,7 @@ import java.io.Serializable;
 /** The UnitCollection class is a homogenous collection of Unit objects
  *  with useful methods for accessing and sorting them. 
  */
-public class UnitCollection implements Serializable {
+public class UnitCollection extends MspCollection implements Serializable {
 
     // We can replace this with another type of collection if we need to.
     private ArrayList elements;  // Used internally to hold elements.
@@ -64,7 +64,7 @@ public class UnitCollection implements Serializable {
     public UnitCollection(UnitCollection collection) {
         elements = new ArrayList();
         UnitIterator iterator = collection.iterator();
-        while(iterator.hasNext()) elements.add(iterator.next());
+        while(iterator.hasNext()) add(iterator.next());
     }
 
     /** Returns the number of elements in this collection.
@@ -103,6 +103,7 @@ public class UnitCollection implements Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean add(Unit o) {
+	fireMspCollectionEvent(new MspCollectionEvent(this, "add"));
         return elements.add(o);
     }
 
@@ -112,11 +113,13 @@ public class UnitCollection implements Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean remove(Unit o) {
+	fireMspCollectionEvent(new MspCollectionEvent(this, "remove"));
         return elements.remove(o);
     }
 
     /** Removes all of the elements from this collection. */
     public void clear() {
+	fireMspCollectionEvent(new MspCollectionEvent(this, "clear"));
         elements.clear();
     }
     
@@ -127,7 +130,7 @@ public class UnitCollection implements Serializable {
         SettlementIterator i = settlements.iterator();
         while (i.hasNext()) {
             Settlement settlement = i.next();
-            if (!elements.contains(settlement)) elements.add(settlement);
+            if (!elements.contains(settlement)) add(settlement);
         }
     }
     
@@ -151,7 +154,7 @@ public class UnitCollection implements Serializable {
         VehicleIterator i = vehicles.iterator();
         while (i.hasNext()) {
             Vehicle vehicle = i.next();
-            if (!elements.contains(vehicle)) elements.add(vehicle);
+            if (!elements.contains(vehicle)) add(vehicle);
         }
     }
     
@@ -175,7 +178,7 @@ public class UnitCollection implements Serializable {
         PersonIterator i = people.iterator();
         while (i.hasNext()) {
             Person person = i.next();
-            if (!elements.contains(person)) elements.add(person);
+            if (!elements.contains(person)) add(person);
         }
     }
     
@@ -199,7 +202,7 @@ public class UnitCollection implements Serializable {
         EquipmentIterator i = equipment.iterator();
         while (i.hasNext()) {
             Equipment equipmentUnit = i.next();
-            if (!elements.contains(equipmentUnit)) elements.add(equipmentUnit);
+            if (!elements.contains(equipmentUnit)) add(equipmentUnit);
         }
     }
 

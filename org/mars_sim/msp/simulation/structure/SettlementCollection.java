@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementCollection.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-26
  * @author Scott Davis 
  */
 
@@ -14,7 +14,7 @@ import java.io.Serializable;
 /** The SettlementCollection class is a homogenous collection of Settlement objects
  *  with useful methods for accessing and sorting them. 
  */
-public class SettlementCollection implements Serializable {
+public class SettlementCollection extends MspCollection implements Serializable {
 
     // We can replace this with another type of collection if we need to.
     private ArrayList elements;  // Used internally to hold elements.
@@ -63,7 +63,7 @@ public class SettlementCollection implements Serializable {
     public SettlementCollection(SettlementCollection collection) {
         elements = new ArrayList();
         SettlementIterator iterator = collection.iterator();
-        while(iterator.hasNext()) elements.add(iterator.next());
+        while(iterator.hasNext()) add(iterator.next());
     }
 
     /** Returns the number of elements in this collection.
@@ -102,6 +102,7 @@ public class SettlementCollection implements Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean add(Settlement o) {
+	fireMspCollectionEvent(new MspCollectionEvent(this, "add"));
         return elements.add(o);
     }
 
@@ -111,11 +112,13 @@ public class SettlementCollection implements Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean remove(Settlement o) {
+	fireMspCollectionEvent(new MspCollectionEvent(this, "remove"));
         return elements.remove(o);
     }
 
     /** Removes all of the elements from this collection. */
     public void clear() {
+	fireMspCollectionEvent(new MspCollectionEvent(this, "clear"));
         elements.clear();
     }
     
