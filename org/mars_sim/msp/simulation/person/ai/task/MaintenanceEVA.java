@@ -12,7 +12,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.structure.Structure;
+import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 
@@ -92,6 +92,12 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			if (!surface.inDarkPolarRegion(person.getCoordinates()))
 				result = 0D;
 		} 
+		
+		// Crowded settlement modifier
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			Settlement settlement = person.getSettlement();
+			if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) result *= 2D;
+		}
 	
 		// Effort-driven task modifier.
 		result *= person.getPerformanceRating();

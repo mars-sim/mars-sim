@@ -84,6 +84,12 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         	if (!surface.inDarkPolarRegion(person.getCoordinates()))
         		result = 0D;
         } 
+        
+		// Crowded settlement modifier
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			Settlement settlement = person.getSettlement();
+			if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) result *= 2D;
+		}
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
