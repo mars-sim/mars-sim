@@ -72,8 +72,6 @@ public class Airlock implements Serializable {
 
 	if (!activated && (occupants.size() < capacity)) {
 	    if ((inside && innerDoorOpen) || (!inside && outerDoorOpen)) {
-		if (inside) System.out.println(person.getName() + " entering " + unit.getName() + " airlock from inside.");
-		else System.out.println(person.getName() + " entering " + unit.getName() + " airlock from outside.");
 	        occupants.add(person);
 		result = true;
 	    }
@@ -91,7 +89,6 @@ public class Airlock implements Serializable {
         boolean result = false;
 
 	if (!activated) {
-	    System.out.println(unit.getName() + " airlock activated.");
 	    innerDoorOpen = false;
 	    outerDoorOpen = false;
 	    activated = true;
@@ -108,25 +105,16 @@ public class Airlock implements Serializable {
      */
     private void deactivateAirlock() {
         if (activated) {
-	    System.out.println(unit.getName() + " airlock deactivated.");
 	    activated = false;
 	    activationTime = 0D;
 	    pressurized = !pressurized;
 	    if (pressurized) innerDoorOpen = true;
 	    else outerDoorOpen = true;
-	    if (innerDoorOpen) System.out.println(unit.getName() + " airlock inner door open.");
-	    if (outerDoorOpen) System.out.println(unit.getName() + " airlock outer door open.");
 	    PersonIterator i = occupants.iterator();
 	    while (i.hasNext()) {
 		Person person = i.next();
-	        if (pressurized) {
-		    unit.getInventory().addUnit(person);
-		    System.out.println(person.getName() + " entering " + unit.getName() + ".");
-		}
-		else {
-		    unit.getInventory().dropUnitOutside(person);
-		    System.out.println(person.getName() + " exiting " + unit.getName() + ".");
-		}
+	        if (pressurized) unit.getInventory().addUnit(person);
+		else unit.getInventory().dropUnitOutside(person);
 	    }
 	    occupants.clear();
 	}
