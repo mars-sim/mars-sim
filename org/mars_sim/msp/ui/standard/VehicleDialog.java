@@ -5,11 +5,12 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
- 
+package org.mars_sim.msp.ui.standard;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.ui.standard.monitor.PersonTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -74,7 +75,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected double water; // Cached water stores in vehicle
     protected double food; // Cached food stores in vehicle
 
-    /** Constructs a VehicleDialog object 
+    /** Constructs a VehicleDialog object
      *  @param parentDesktop the desktop pane
      *  @param vehicleUIProxy the vehicle's UI proxy
      */
@@ -116,7 +117,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                             !((String) crewList.getSelectedValue()).equals(" ")) {
                         UnitUIProxy personProxy = (UnitUIProxy) crewInfo.elementAt(
                                 crewList.getSelectedIndex());
-                        try { parentDesktop.openUnitWindow(personProxy); } 
+                        try { parentDesktop.openUnitWindow(personProxy); }
                         catch (NullPointerException e) {}
                     }
                 }
@@ -131,20 +132,20 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     /** ActionListener method overriden */
     public void actionPerformed(ActionEvent event) {
         super.actionPerformed(event);
-        
+
         Object button = event.getSource();
 
         // If destination center map button, center map on destination
-	if (button == destinationCenterMapButton) 
+	if (button == destinationCenterMapButton)
             parentDesktop.centerMapGlobe(vehicle.getDestination());
 
-        // If location button, open window for settlement. 
+        // If location button, open window for settlement.
         if ((button == locationButton) && (vehicle.getSettlement() != null)) {
             parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(vehicle.getSettlement()));
 	}
 
 	// If destination button, open window for destination settlement.
-        if ((button == destinationButton) && (vehicle.getDestinationSettlement() != null)) { 
+        if ((button == destinationButton) && (vehicle.getDestinationSettlement() != null)) {
             parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(vehicle.getDestinationSettlement()));
 	}
 
@@ -171,7 +172,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         mainPane.add(tabPane, "Center");
     }
 
-    /** Set up navigation panel 
+    /** Set up navigation panel
      *  @return navigation pane
      */
     protected JPanel setupNavigationPane() {
@@ -247,7 +248,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	destinationCenterMapButton.setMargin(new Insets(1, 1, 1, 1));
 	destinationCenterMapButton.addActionListener(this);
 	destinationLabelPane.add(destinationCenterMapButton);
-	
+
         // Prepare destination label
         destinationLabel = new JLabel("Destination: ", JLabel.LEFT);
         if (vehicle.getDestinationType().equals("Coordinates")) destinationLabel.setText("Destination: Coordinates");
@@ -284,11 +285,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         if (vehicle.getDestination() != null) destinationLongitudeLabel.setText("Longitude: ");
         destinationLongitudeLabel.setForeground(Color.black);
         destinationCoordsPane.add(destinationLongitudeLabel);
-       
+
         // Prepare destination info pane
         JPanel destinationInfoPane = new JPanel(new GridLayout(2, 1, 0, 0));
         destinationPane.add(destinationInfoPane, "South");
- 
+
         // Prepare ETA to destination label
         etaDestinationLabel = new JLabel("ETA: " + vehicle.getETA(), JLabel.LEFT);
         etaDestinationLabel.setForeground(Color.black);
@@ -303,7 +304,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
         distanceDestinationLabel.setForeground(Color.black);
         destinationInfoPane.add(distanceDestinationLabel);
-        
+
         // Prepare navigation info pane
         navigationInfoPane = new JPanel();
         navigationInfoPane.setLayout(
@@ -321,16 +322,16 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         speedLabel = new JLabel("Speed: " + tempSpeed + " kph.", JLabel.LEFT);
         speedLabel.setForeground(Color.black);
         speedPane.add(speedLabel);
-        
+
         // Return navigation pane
         return navigationPane;
     }
 
-    /** Set up crew pane 
+    /** Set up crew pane
      *  @return crew pane
      */
     protected JPanel setupCrewPane() {
-        
+
         // Prepare crew pane
         JPanel crewPane = new JPanel();
         crewPane.setBorder(
@@ -348,7 +349,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 vehicle.getMaxPassengers(), JLabel.CENTER);
         maxCrewLabel.setForeground(Color.black);
         maxCrewPane.add(maxCrewLabel, "Center");
-        
+
         // Prepare driver pane
         JPanel driverPane = new JPanel(new BorderLayout());
         driverPane.setBorder(
@@ -363,17 +364,17 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         // Prepare driver button pane
         driverButtonPane = new JPanel();
         driverPane.add(driverButtonPane, "Center");
-        
+
         // Prepare driver button
         driverButton = new JButton();
         driverButton.setMargin(new Insets(1, 1, 1, 1));
         driverButton.addActionListener(this);
-       
+
         if (vehicle.getSpeed() != 0D) {
             driverButton.setText(vehicle.getDriver().getName());
             driverButtonPane.add(driverButton);
         }
-        
+
         // Prepare crew list pane
         JPanel crewListPane = new JPanel(new BorderLayout());
         crewListPane.setBorder(
@@ -385,19 +386,31 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         peopleLabel.setForeground(Color.black);
         crewListPane.add(peopleLabel, "North");
 
+        // Add monitor button
+        JButton monitorButton = new JButton(new ImageIcon("images/Monitor.gif"));
+        monitorButton.setMargin(new Insets(1, 1, 1, 1));
+        monitorButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        parentDesktop.addModel(new PersonTableModel(vehicle));
+                    }
+                });
+        JPanel monitorPanel = new JPanel();
+        monitorPanel.add(monitorButton);
+        crewListPane.add(monitorPanel, "East");
+
         // Prepare crew list
         DefaultListModel crewListModel = new DefaultListModel();
 
-	PersonIterator i = vehicle.getPassengers().iterator();
-	while (i.hasNext()) {
-	    Person person = i.next();
+	    PersonIterator i = vehicle.getPassengers().iterator();
+	    while (i.hasNext()) {
+	        Person person = i.next();
             if (person != vehicle.getDriver()) {
                 PersonUIProxy tempCrew = (PersonUIProxy) proxyManager.getUnitUIProxy(person);
                 crewInfo.addElement(tempCrew);
                 crewListModel.addElement(tempCrew.getUnit().getName());
             }
         }
-        
+
         // This prevents the list from sizing strange due to having no contents
         if (crewInfo.size() == 0) crewListModel.addElement(" ");
 
@@ -410,12 +423,12 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         JPanel crewScrollPane = new JPanel();
         crewScrollPane.add(crewScroll);
         crewListPane.add(crewScrollPane, "Center");
-        
+
         // Return crew pane
         return crewPane;
     }
 
-    /** Set up damage pane 
+    /** Set up damage pane
      *  @return damage pane
      */
     protected JPanel setupDamagePane() {
@@ -542,7 +555,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         return damagePane;
     }
 
-    /** Set up storage pane 
+    /** Set up storage pane
      *  @return storage pane
      */
     protected JPanel setupStoragePane() {
@@ -562,59 +575,59 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         contentPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         storagePane.add(contentPane, "Center");
-        
+
         // Prepare label pane
 	JPanel labelPane = new JPanel(new GridLayout(5, 2, 5, 3));
 	contentPane.add(labelPane);
-        
+
         // Prepare fuel label
 	JLabel fuelLabel = new JLabel("Fuel:");
 	fuelLabel.setForeground(Color.black);
 	labelPane.add(fuelLabel);
-		
+
 	// Prepare fuel value label
 	fuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
 	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel) + " kg", JLabel.RIGHT);
 	fuelValueLabel.setForeground(Color.black);
 	labelPane.add(fuelValueLabel);
-        
-        // Prepare oxygen label		
+
+        // Prepare oxygen label
 	JLabel oxygenLabel = new JLabel("Oxygen:");
 	oxygenLabel.setForeground(Color.black);
 	labelPane.add(oxygenLabel);
-		
+
 	// Prepare oxygen value label
 	oxygen = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
 	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen) + " kg", JLabel.RIGHT);
 	oxygenValueLabel.setForeground(Color.black);
 	labelPane.add(oxygenValueLabel);
-        
+
         // Prepare water label
 	JLabel waterLabel = new JLabel("Water:");
 	waterLabel.setForeground(Color.black);
 	labelPane.add(waterLabel);
-		
+
 	// Prepare water value label
 	water = vehicle.getInventory().getResourceMass(Inventory.WATER);
 	waterValueLabel = new JLabel("" + roundOneDecimal(water) + " kg", JLabel.RIGHT);
 	waterValueLabel.setForeground(Color.black);
 	labelPane.add(waterValueLabel);
-        
+
         // Prepare food label
 	JLabel foodLabel = new JLabel("Food:");
 	foodLabel.setForeground(Color.black);
 	labelPane.add(foodLabel);
-		
+
 	// Prepare food value label
 	food = vehicle.getInventory().getResourceMass(Inventory.FOOD);
 	foodValueLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
 	foodValueLabel.setForeground(Color.black);
 	labelPane.add(foodValueLabel);
-        
+
         // Return storage pane
         return storagePane;
     }
-    
+
     /** Update status info */
     protected void updateStatus() {
 
@@ -655,7 +668,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	// Update destination center map button
 	if (destinationCoords == null) destinationCenterMapButton.setVisible(false);
 	else destinationCenterMapButton.setVisible(true);
-	    
+
         String destinationType = vehicle.getDestinationType();
 
         // Update destination button
@@ -667,7 +680,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 destinationLabelPane.add(destinationButton);
             }
         } else {
-            if (destinationLabelPane.getComponentCount() > 2) 
+            if (destinationLabelPane.getComponentCount() > 2)
                 destinationLabelPane.remove(destinationButton);
             if (destinationType.equals("Coordinates"))
                 destinationLabel.setText("Destination: Coordinates");
@@ -698,7 +711,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 distanceDestinationLabel.setText("Distance: " + distance + " km.");
             }
         }
-        
+
         etaDestinationLabel.setText("ETA: " + vehicle.getETA());
     }
 
@@ -715,11 +728,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     /** Update crew info */
     protected void updateCrew() {
         boolean vehicleMoving = (vehicle.getStatus() == Vehicle.MOVING);
-      
+
         // Update driver button
         if (!vehicleMoving) {
             if (driverButtonPane.getComponentCount() > 0) driverButtonPane.remove(driverButton);
-        } 
+        }
         else {
             if (!driverButton.getText().equals(vehicle.getDriver().getName()))
                 driverButton.setText(vehicle.getDriver().getName());
@@ -734,7 +747,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         // Check if model matches passengers
         PersonCollection tempPassengers = new PersonCollection(vehicle.getPassengers());
         tempPassengers.remove(vehicle.getDriver());
-	
+
         if (model.getSize() == tempPassengers.size()) {
             match = true;
 	    PersonIterator i = tempPassengers.iterator();
@@ -829,31 +842,31 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             maintenanceProgressBar.setValue(maintenanceProgress);
         }
     }
-    
+
     /** Update storage */
     protected void updateStorage() {
-        
+
         // Update fuel
 	double newFuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
         if (fuel != newFuel) {
 	    fuel = newFuel;
 	    fuelValueLabel.setText("" + roundOneDecimal(fuel) + " kg");
 	}
-        
+
         // Update oxygen
 	double newOxygen = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
 	if (oxygen != newOxygen) {
 	    oxygen = newOxygen;
 	    oxygenValueLabel.setText("" + roundOneDecimal(oxygen) + " kg");
 	}
-        
+
         // Update water
 	double newWater = vehicle.getInventory().getResourceMass(Inventory.WATER);
 	if (water != newWater) {
 	    water = newWater;
 	    waterValueLabel.setText("" + roundOneDecimal(water) + " kg");
 	}
-        
+
         // Update food
 	double newFood = vehicle.getInventory().getResourceMass(Inventory.FOOD);
         if (food != newFood) {
