@@ -26,7 +26,6 @@
 		<!-- List of entities that are susceptible to this malfunction. (min 1 entity required) -->
 		<entity-list>
 			<entity name="Life Support" />
-			<entity name="Inhabitable Building" />
 		</entity-list>
 		
 		<!-- List of effects this malfunction can produce. (optional) -->
@@ -34,14 +33,17 @@
 		
 			<!-- Resource effects have a change rate for a given resource in inventory. -->
 			<!-- Values: Change rate of resource in inventory. (kg/second) -->
+			<!-- See resources.txt -->
 			<effect type="resource" name="Oxygen" change-rate="-.1" />
 			
 			<!-- Life support effects have a change rate in life support provided. -->
 			<!-- Values: Change rate of life support. (kg/second) -->
+			<!-- See resources.txt -->
 			<effect type="life support" name="Oxygen" change-rate="-.01" />
 			
 			<!-- Life support effects have a change rate in life support provided. -->
 			<!-- Values: Change rate of life support. (kg/second) -->
+			<!-- See resources.txt -->
 			<effect type="life support" name="Air Pressure" change-rate=".01" />
 		</effect-list>
 		

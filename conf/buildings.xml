@@ -56,6 +56,7 @@
 				
 					<!-- Waste water influx. -->
 					<!-- resource: the resource added to the process. -->
+					<!-- See resources.txt -->
 					<!-- rate: the rate (kg/millisol) the resource is being added to the process. -->
 					<!-- ambient: true if resource is being drown from the external environment, -->
 					<!-- false if resource is being drawn from the settlement's inventory. -->
@@ -63,6 +64,7 @@
 					
 					<!-- Clean water outflux. -->
 					<!-- resource: the resource resulting from the process. -->
+					<!-- See resources.txt -->
 					<!-- rate: the rate (kg/millisol) the resource is being produced by the process. -->
 					<!-- ambient: true if resource is being released into the external environment, -->
 					<!-- false if resource is stored in the settlement's inventory. -->
@@ -89,6 +91,7 @@
 			
 				<!-- The building's storage capacity for oxygen. -->
 				<!-- resource: the resource that the building can store. -->
+				<!-- See resources.txt -->
 				<!-- capacity: the building's capacity (kg) for the resource. -->
 				<resource-storage resource="Oxygen" capacity="1000.0" />
 				<resource-storage resource="Water" capacity="5000.0" />
@@ -100,6 +103,7 @@
 				
 				<!-- The initial resources in the building. -->
 				<!-- resource: the resource initially in the building. -->
+				<!-- See resources.txt -->
 				<!-- amount: the amount (kg) of the resource. -->
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />

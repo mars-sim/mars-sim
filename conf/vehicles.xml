@@ -33,26 +33,32 @@
 		<cargo total-capacity="5500.0">
  
 			<!-- The methane cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
 			<!-- Default: 1600.0 -->
 			<capacity resource="Methane" value="1600.0" />
 
 			<!-- The oxygen cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
 			<!-- Default: 140.0 -->
 			<capacity resource="Oxygen" value="140.0" />
 
 			<!-- The water cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
 			<!-- Default: 560.0 -->
 			<capacity resource="Water" value="560.0" />
 
 			<!-- The food cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
 			<!-- Default: 210.0 -->
 			<capacity resource="Food" value="210.0" />
 
 			<!-- The rock samples cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
 			<!-- Default: 2000.0 -->
 			<capacity resource="Rock Samples" value="2000.0" />
 
 			<!-- The ice cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
 			<!-- Default: 2000.0 -->
 			<capacity resource="Ice" value="2000.0" />
 

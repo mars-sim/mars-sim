@@ -1,0 +1,32 @@
+Resources
+---------
+
+Resources are materials that are used and stored in the simulation.  
+Resources are measured in kg.
+
+Here are the resources used in version 2.75:
+
+Water
+Hydrogen
+Oxygen
+Methane
+Carbon Dioxide
+Carbon Monoxide
+Food
+Rock Samples
+Waste Water
+Ice
+
+The food resource represents dried or frozen food that will not spoil with time.  
+Food is harvested from crops in a greenhouse.
+
+The rock samples resource are rock specimens collected for areological research.
+
+The waste water resource is sewage water that can be used as fertilizer for crops.
+The crops help filter the waste water back to potable/drinking water.
+
+The ice resource is actually an ice/soil mixture collected from Martian permafrost
+in the ice prospecting mission.  It can be melted and filtered to produce 
+potable/drinking water.
+
+The resource names in the configuration files are not case-sensitive.
