@@ -105,7 +105,7 @@ class Sleep extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
 		// Reduce person's fatigue
-		double newFatigue = person.getPhysicalCondition().getFatigue() - (time * 10D);
+		double newFatigue = person.getPhysicalCondition().getFatigue() - (4D * time);
 		if (newFatigue < 0D) newFatigue = 0D;
         person.getPhysicalCondition().setFatigue(newFatigue);
         

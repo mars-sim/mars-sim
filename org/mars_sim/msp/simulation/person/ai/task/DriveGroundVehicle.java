@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 
@@ -83,8 +83,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
         startTime = startTripTime;
         startDistance = startTripDistance;
 
-        // Determine duration (from 200 to 300 millisols)
-        duration = 200D + RandomUtil.getRandomDouble(100D);
+        // Determine duration (from 50 to 100 millisols)
+        duration = 50D + RandomUtil.getRandomDouble(50D);
 
         // System.out.println(person.getName() + " is driving " + vehicle.getName());
     }

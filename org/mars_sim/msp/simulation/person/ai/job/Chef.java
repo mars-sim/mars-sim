@@ -73,9 +73,9 @@ public class Chef extends Job implements Serializable {
 			}
 		}
 		
-		// Add total population
+		// Add total population / 2.
 		int population = settlement.getCurrentPopulationNum();
-		result+= population;
+		result+= ((double) population / 2D);
 		
 		return result;			
 	}
