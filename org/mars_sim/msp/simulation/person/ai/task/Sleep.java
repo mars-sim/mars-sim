@@ -25,10 +25,12 @@ class Sleep extends Task implements Serializable {
 
 	// Static members
 	private static final double STRESS_MODIFIER = -.3D; // The stress modified per millisol.
+	private static final double BASE_ALARM_TIME = 300D; // The base alarm time (millisols) at 0 degrees longitude.
 
     // Data members
     private double duration; // The duration of task in millisols
     private LivingAccommodations accommodations; // The living accommodations if any.
+    private double previousTime; // The previous time (millisols)
 
     /** 
      * Constructor
@@ -52,6 +54,8 @@ class Sleep extends Task implements Serializable {
         		endTask();
         	}
         }
+        
+        previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         
         duration = 250D + RandomUtil.getRandomInt(100);
     }
@@ -100,9 +104,21 @@ class Sleep extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+		// Reduce person's fatigue
 		double newFatigue = person.getPhysicalCondition().getFatigue() - (time * 10D);
 		if (newFatigue < 0D) newFatigue = 0D;
         person.getPhysicalCondition().setFatigue(newFatigue);
+        
+        // Check if alarm went off.
+        double newTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+        double alarmTime = getAlarmTime();
+        if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+        	endTask();
+        	// System.out.println(person.getName() + " woke up from alarm.");
+        	return 0;
+        }
+        else previousTime = newTime;
+        
         timeCompleted += time;
         if (timeCompleted > duration) {
             endTask();
@@ -171,6 +187,17 @@ class Sleep extends Task implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the wakeup alarm time for the person's longitude.
+	 * @return alarm time in millisols.
+	 */
+	private double getAlarmTime() {
+		double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
+		double modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;
+		if (modifiedAlarmTime < 0D) modifiedAlarmTime += 1000D;
+		return modifiedAlarmTime;
 	}
 	
 	/**
