@@ -19,6 +19,10 @@ public class LaboratoryPanel extends FacilityPanel {
 
     // Data members
     private Lab laboratory; // The laboratory facility this panel displays.
+    private JLabel currentResearchersLabel; // Label for current number of researchers.
+
+    // Cached data
+    private int currentResearchers;
 
     /** Constructs a LaboratoryPanel object 
      *  @param laboratory the laboratory facility
@@ -49,11 +53,17 @@ public class LaboratoryPanel extends FacilityPanel {
         contentPane.add(infoPane, "Center");
 
         // Prepare label panel
-        JPanel labelPane = new JPanel(new GridLayout(2, 1, 0, 5));
+        JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 5));
         labelPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         infoPane.add(labelPane, "North");
 
+	// Prepare current researchers label
+	currentResearchers = laboratory.getResearcherNum();
+        currentResearchersLabel = new JLabel("Current Researchers: " + 
+			currentResearchers, JLabel.CENTER);
+	labelPane.add(currentResearchersLabel);
+	
         // Prepare lab size label
         JLabel labSizeLabel =
                 new JLabel("Researcher Capacity: " + laboratory.getLaboratorySize(),
@@ -97,6 +107,10 @@ public class LaboratoryPanel extends FacilityPanel {
 
     /** Updates the facility panel's information */
     public void updateInfo() {
-        // Implement later
+        // Update current researcher num.
+	if (currentResearchers != laboratory.getResearcherNum()) {
+	    currentResearchers = laboratory.getResearcherNum();
+	    currentResearchersLabel.setText("Current Researchers: " + currentResearchers);
+	}
     }
 }
