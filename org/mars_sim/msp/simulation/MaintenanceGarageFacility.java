@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarageFacility.java
- * @version 2.71 2000-10-12
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
@@ -86,7 +86,7 @@ public class MaintenanceGarageFacility extends Facility {
       * @return true if vehicle has been added successfully.
       * False if vehicle could not be added.
       */
-    boolean addVehicle(Vehicle vehicle) {
+    public boolean addVehicle(Vehicle vehicle) {
         int vehicleSize = vehicle.getSize();
 
         // If vehicle is within the size limitations of the garage, add it.
@@ -105,7 +105,7 @@ public class MaintenanceGarageFacility extends Facility {
      *  If the vehicle is not in the garage, does nothing.
      *  @param vehicle vehicle to be removed
      */
-    void removeVehicle(Vehicle vehicle) {
+    public void removeVehicle(Vehicle vehicle) {
         if (vehicleInGarage(vehicle)) {
             vehicles.removeElement(vehicle);
             currentSizeSum -= vehicle.getSize();

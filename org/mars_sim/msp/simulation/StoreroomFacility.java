@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StoreroomFacility.java
- * @version 2.71 2000-12-03
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
@@ -74,7 +74,7 @@ public class StoreroomFacility extends Facility {
      *  @param amount the amount of food requested from storage (in units)
      *  @return the amount of food actually received from storage (in units)
      */
-    double removeFood(double amount) {
+    public double removeFood(double amount) {
         double result = amount;
         if (amount > foodStores) {
             result = foodStores;
@@ -104,7 +104,7 @@ public class StoreroomFacility extends Facility {
      *  @param amount the amount of oxygen requested from storage (in units)
      *  @return the amount of oxygen actually received from storage (in units)
      */
-    double removeOxygen(double amount) {
+    public double removeOxygen(double amount) {
         double result = amount;
         if (amount > oxygenStores) {
             result = oxygenStores;
@@ -134,7 +134,7 @@ public class StoreroomFacility extends Facility {
      *  @param amount the amount of water requested from storage (in units)
      *  @return the amount of water actually received from storage (in units)
      */
-    double removeWater(double amount) {
+    public double removeWater(double amount) {
         double result = amount;
         if (amount > waterStores) {
             result = waterStores;
@@ -164,7 +164,7 @@ public class StoreroomFacility extends Facility {
      *  @param amount the amount of fuel requested from storage (in units)
      *  @return the amount of fuel actually received from storage (in units)
      */
-    double removeFuel(double amount) {
+    public double removeFuel(double amount) {
         double result = amount;
         if (amount > fuelStores) {
             result = fuelStores;
@@ -194,7 +194,7 @@ public class StoreroomFacility extends Facility {
      *  @param amount the amount of parts requested from storage (in units)
      *  @return the amount of parts actually received from storage (in units)
      */
-    double removeParts(double amount) {
+    public double removeParts(double amount) {
         double result = amount;
         if (amount > partsStores) {
             result = partsStores;

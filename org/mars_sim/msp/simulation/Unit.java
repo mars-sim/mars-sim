@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
@@ -57,7 +57,7 @@ public abstract class Unit {
     /** Sets unit's location coordinates 
      *  @param newLocation the new location of the unit
      */
-    void setCoordinates(Coordinates newLocation) {
+    public void setCoordinates(Coordinates newLocation) {
         location.setCoords(newLocation);
     }
 

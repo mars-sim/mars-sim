@@ -1,11 +1,13 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
+
+import org.mars_sim.msp.simulation.task.*;
 
 /** The Person class represents a person on the virtual Mars. It keeps
  *  track of everything related to that person and provides
@@ -53,7 +55,7 @@ public class Person extends Unit {
      *  Vehicle" or "Outside"
      *  @param newLocation the new location
      */
-    void setLocationSituation(String newLocation) {
+    public void setLocationSituation(String newLocation) {
         locationSituation = newLocation;
     }
 
@@ -75,7 +77,7 @@ public class Person extends Unit {
     /** Makes the person an inhabitant of a given settlement 
      *  @param settlement the person's settlement
      */
-    void setSettlement(Settlement settlement) {
+    public void setSettlement(Settlement settlement) {
         this.settlement = settlement;
         location.setCoords(settlement.getCoordinates());
         settlement.addPerson(this);
@@ -85,7 +87,7 @@ public class Person extends Unit {
     /** Makes the person a passenger in a vehicle 
      *  @param vehicle the person's vehicle
      */
-    void setVehicle(Vehicle vehicle) {
+    public void setVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
         settlement = null;
     }

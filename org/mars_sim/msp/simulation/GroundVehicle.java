@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.71 2000-10-30
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
@@ -57,7 +57,7 @@ public abstract class GroundVehicle extends Vehicle {
     /** Sets the elevation of the vehicle (in km.) 
      *  @param elevation new elevation for ground vehicle
      */
-    void setElevation(double elevation) {
+    public void setElevation(double elevation) {
         this.elevation = elevation;
     }
 
@@ -71,7 +71,7 @@ public abstract class GroundVehicle extends Vehicle {
     /** Sets the vehicle's terrain capability 
      *  @param c sets the ground vehicle's terrain handling capability
      */
-    void setTerrainHandlingCapability(double c) {
+    public void setTerrainHandlingCapability(double c) {
         terrainHandlingCapability = c;
     }
 
@@ -85,7 +85,7 @@ public abstract class GroundVehicle extends Vehicle {
     /** Sets the terrain grade with an angle 
      *  @param terrainGrade new terrain grade for the ground vehicle
      */
-    void setTerrainGrade(double terrainGrade) {
+    public void setTerrainGrade(double terrainGrade) {
         this.terrainGrade = terrainGrade;
     }
 
@@ -99,7 +99,7 @@ public abstract class GroundVehicle extends Vehicle {
     /** Sets the ground vehicle's stuck value 
      *  @param stuck true if vehicle is currently stuck, false otherwise
      */
-    void setStuck(boolean stuck) {
+    public void setStuck(boolean stuck) {
         if (stuck) setStatus("Stuck - Using Winch");
         else setStatus("Moving");
     }

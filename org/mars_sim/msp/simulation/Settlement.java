@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
@@ -84,14 +84,14 @@ public class Settlement extends Structure {
     /** Bring in a new inhabitant 
      *  @param newPerson the new person
      */
-    void addPerson(Person newPerson) {
+    public void addPerson(Person newPerson) {
         people.addElement(newPerson);
     }
 
     /** Make a given inhabitant leave the settlement 
      *  @param person the person leaving
      */
-    void personLeave(Person person) {
+    public void personLeave(Person person) {
         if (people.contains(person)) {
             people.removeElement(person);
         }
@@ -100,14 +100,14 @@ public class Settlement extends Structure {
     /** Bring in a new vehicle to be parked 
      *  @param newVehicle the new vehicle
      */
-    void addVehicle(Vehicle newVehicle) {
+    public void addVehicle(Vehicle newVehicle) {
         vehicles.addElement(newVehicle);
     }
 
     /** Make a given vehicle leave the settlement 
      *  @param vehicle the vehicle leaving
      */
-    void vehicleLeave(Vehicle vehicle) {
+    public void vehicleLeave(Vehicle vehicle) {
         if (vehicles.contains(vehicle)) {
             vehicles.removeElement(vehicle);
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
@@ -177,7 +177,7 @@ public class UnitManager {
     /** Get a random settlement 
      *  @return a random settlement
      */
-    Settlement getRandomSettlement() {
+    public Settlement getRandomSettlement() {
         int r = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
         return (Settlement) settlementsVector.elementAt(r);
     }
@@ -185,7 +185,7 @@ public class UnitManager {
     /** Get a random settlement other than given current one. 
      *  @return a random settlement
      */
-    Settlement getRandomSettlement(Settlement current) {
+    public Settlement getRandomSettlement(Settlement current) {
         Settlement newSettlement;
         do {
             newSettlement = getRandomSettlement();
@@ -199,7 +199,7 @@ public class UnitManager {
      *  the given location.
      *  @return a random settlement  
      */
-    Settlement getRandomOfThreeClosestSettlements(Coordinates location) {
+    public Settlement getRandomOfThreeClosestSettlements(Coordinates location) {
         Vector tempVector = new Vector();
         Vector resultVector = new Vector();
 
@@ -232,7 +232,7 @@ public class UnitManager {
      *  the given settlement
      *  @return a random settlement  
      */
-    Settlement getRandomOfThreeClosestSettlements(Settlement current) {
+    public Settlement getRandomOfThreeClosestSettlements(Settlement current) {
         return getRandomOfThreeClosestSettlements(current.getCoordinates());
     }
 

@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.71 2001-02-16
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;  
  
-import org.mars_sim.msp.simulation.*;  
+import org.mars_sim.msp.simulation.*; 
+import org.mars_sim.msp.simulation.task.*; 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
@@ -77,7 +77,7 @@ public abstract class Vehicle extends Unit {
     /** Sets vehicle's current status 
      *  @param status the vehicle's current status
      */
-    void setStatus(String status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -91,7 +91,7 @@ public abstract class Vehicle extends Unit {
     /** Reserves a vehicle or cancels a reservation 
      *  @param status the vehicle's reserved status
      */
-    void setReserved(boolean status) {
+    public void setReserved(boolean status) {
         isReserved = status;
     }
 
@@ -105,7 +105,7 @@ public abstract class Vehicle extends Unit {
     /** Sets the vehicle's current speed 
      *  @param speed the vehicle's speed (in km/hr)
      */
-    void setSpeed(double speed) {
+    public void setSpeed(double speed) {
         this.speed = speed;
     }
 
@@ -133,7 +133,7 @@ public abstract class Vehicle extends Unit {
     /** Adds fuel to the vehicle. 
      *  @param addedFuel the amount of fuel to be added (in units)
      */
-    void addFuel(double addedFuel) {
+    public void addFuel(double addedFuel) {
         fuel += addedFuel;
         if (fuel > fuelCapacity) {
             fuel = fuelCapacity;
@@ -143,7 +143,7 @@ public abstract class Vehicle extends Unit {
     /** Consumes a portion of the vehicle's fuel. 
      *  @param consumedFuel the amount of fuel consumed (in units)
      */
-    void consumeFuel(double consumedFuel) {
+    public void consumeFuel(double consumedFuel) {
         boolean noFuel = (fuel == 0D);
         fuel -= consumedFuel;
         if (fuel < 0D) fuel = 0D;
@@ -173,7 +173,7 @@ public abstract class Vehicle extends Unit {
     /** Adds oxygen to the vehicle. 
      *  @param addedOxygen the amount of oxygen to be added (in units)
      */
-    void addOxygen(double addedOxygen) {
+    public void addOxygen(double addedOxygen) {
         oxygen += addedOxygen;
         if (oxygen > oxygenCapacity) {
             oxygen = oxygenCapacity;
@@ -184,7 +184,7 @@ public abstract class Vehicle extends Unit {
      *  @param amount the amount of oxygen removed (in units)
      *  @return Amount of oxygen actually removed (in units)
      */
-    double removeOxygen(double amount) {
+    public double removeOxygen(double amount) {
        double result = amount;
         if (amount > oxygen) {
             result = oxygen;
@@ -219,7 +219,7 @@ public abstract class Vehicle extends Unit {
     /** Adds water to the vehicle. 
      *  @param addedWater the amount of water to be added (in units)
      */
-    void addWater(double addedWater) {
+    public void addWater(double addedWater) {
         water += addedWater;
         if (water > waterCapacity) {
             water = waterCapacity;
@@ -230,7 +230,7 @@ public abstract class Vehicle extends Unit {
      *  @param amount the amount of water requested (in units)
      *  @return the amount of water actually received (in units)
      */
-    double removeWater(double amount) {
+    public double removeWater(double amount) {
         double result = amount;
         if (amount > water) {
             result = water;
@@ -265,7 +265,7 @@ public abstract class Vehicle extends Unit {
     /** Adds food to the vehicle. 
      *  @param addedFood the amount of food to be added (in units)
      */
-    void addFood(double addedFood) {
+    public void addFood(double addedFood) {
         food += addedFood;
         if (food > foodCapacity) {
             food = foodCapacity;
@@ -276,7 +276,7 @@ public abstract class Vehicle extends Unit {
      *  @param amount the amount of food requested from storage (in units)
      *  @return the amount of food actually received from storage (in units)
      */
-    double removeFood(double amount) {
+    public double removeFood(double amount) {
         double result = amount;
         if (amount > food) {
             result = food;
@@ -311,7 +311,7 @@ public abstract class Vehicle extends Unit {
     /** Adds a distance (in km.) to the vehicle's total distance traveled 
      *  @param distance distance to add to total distance traveled (in km)
      */
-    void addTotalDistanceTraveled(double distance) {
+    public void addTotalDistanceTraveled(double distance) {
         distanceTraveled += distance;
     }
 
@@ -325,7 +325,7 @@ public abstract class Vehicle extends Unit {
     /** Adds a distance (in km.) to the vehicle's distance since last maintenance 
      *  @param distance distance to add (in km)
      */
-    void addDistanceLastMaintenance(double distance) {
+    public void addDistanceLastMaintenance(double distance) {
         distanceMaint += distance;
         if ((distanceMaint > 5000D) && !distanceMark) {
             distanceMark = true;
@@ -333,7 +333,7 @@ public abstract class Vehicle extends Unit {
     }
 
     /** Sets vehicle's distance since last maintenance to zero */
-    void clearDistanceLastMaintenance() {
+    public void clearDistanceLastMaintenance() {
         distanceMaint = 0;
     }
 
@@ -347,7 +347,7 @@ public abstract class Vehicle extends Unit {
     /** Sets the vehicle's facing direction (0 = north, clockwise in radians) 
      *  @param direction the direction the vehicle is travleling (in radians)
      */
-    void setDirection(Direction direction) {
+    public void setDirection(Direction direction) {
         this.direction.setDirection(direction.getDirection());
     }
 
@@ -401,7 +401,7 @@ public abstract class Vehicle extends Unit {
     /** Add a new passenger to the vehicle if enough capacity and person is not alreay aboard. 
      *  @param passenger a new passenger
      */
-    void addPassenger(Person passenger) {
+    public void addPassenger(Person passenger) {
         if ((passengers.size() < maxPassengers) && !isPassenger(passenger)) {
             passengers.addElement(passenger);
         }
@@ -410,7 +410,7 @@ public abstract class Vehicle extends Unit {
     /** Removes a passenger from a vehicle 
      *  @param passenger passenger leaving vehicle
      */
-    void removePassenger(Person passenger) {
+    public void removePassenger(Person passenger) {
         if (isPassenger(passenger)) {
             passengers.removeElement(passenger);
             if (passenger == driver) {
@@ -429,7 +429,7 @@ public abstract class Vehicle extends Unit {
     /** Sets the driver of the vehicle 
      *  @param driver the driver
      */
-    void setDriver(Person driver) {
+    public void setDriver(Person driver) {
         this.driver = driver;
     }
 
@@ -448,7 +448,7 @@ public abstract class Vehicle extends Unit {
     /** Sets the settlement which the vehicle is parked at 
      *  @param settlement the settlement the vehicle is parked at
      */
-    void setSettlement(Settlement settlement) {
+    public void setSettlement(Settlement settlement) {
         this.settlement = settlement;
         if (settlement != null) {
             location.setCoords(settlement.getCoordinates());
@@ -467,7 +467,7 @@ public abstract class Vehicle extends Unit {
     /** Sets the vehicle's distance to its destination 
      *  @param distanceToDestination the distance to the vehicle's destination
      */
-    void setDistanceToDestination(double distanceToDestination) {
+    public void setDistanceToDestination(double distanceToDestination) {
         this.distanceToDestination = distanceToDestination;
     }
 
@@ -481,14 +481,14 @@ public abstract class Vehicle extends Unit {
     /** Sets the type of destination for the vehicle ("Coordinates", "Settlement" or "None") 
      *  @param the vehicle's destination type
      */
-    void setDestinationType(String destinationType) {
+    public void setDestinationType(String destinationType) {
         this.destinationType = destinationType;
     }
 
     /** Sets the destination coordinates 
      *  @param destinationCoords the vehicle's destination location
      */
-    void setDestination(Coordinates destinationCoords) {
+    public void setDestination(Coordinates destinationCoords) {
         this.destinationCoords = destinationCoords;
         destinationType = "Coordinates";
     }
@@ -504,7 +504,7 @@ public abstract class Vehicle extends Unit {
     /** Sets the destination settlement 
      *  @param destinationSettlement the vehicle's destination settlement
      */
-    void setDestinationSettlement(Settlement destinationSettlement) {
+    public void setDestinationSettlement(Settlement destinationSettlement) {
         this.destinationSettlement = destinationSettlement;
         if (destinationSettlement != null) {
             setDestination(destinationSettlement.getCoordinates());
@@ -537,7 +537,7 @@ public abstract class Vehicle extends Unit {
     /** Adds a potential mechanical failure for the vehicle. 
      *  @param failureName the name of the mechanical failure
      */
-    void addPotentialFailure(String failureName) {
+    public void addPotentialFailure(String failureName) {
         potentialFailures.put(failureName, new Integer(1));
     }
 
@@ -551,7 +551,7 @@ public abstract class Vehicle extends Unit {
     /** Creates a new mechanical failure for the vehicle from its list
      *  of potential failures. 
      */
-    void newMechanicalFailure() {
+    public void newMechanicalFailure() {
         Object keys[] = potentialFailures.keySet().toArray();
 
         // Sum weights
@@ -580,7 +580,7 @@ public abstract class Vehicle extends Unit {
     /** Add work to periodic vehicle maintenance. 
      *  @param seconds amount of work time added to vehicle maintenance (in seconds)
      */
-    void addWorkToMaintenance(double seconds) {
+    public void addWorkToMaintenance(double seconds) {
         // If vehicle has already been maintained, return.
         if (distanceMaint == 0D) {
             return;

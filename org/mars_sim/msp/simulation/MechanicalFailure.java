@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MechanicalFailure.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-05-31
  * @author Scott Davis
  */
 
@@ -63,7 +63,7 @@ public class MechanicalFailure {
     /** Adds some work time (in seconds) to the failure. 
      *  @param seconds work time (in seconds)
      */
-    void addWorkTime(double seconds) {
+    public void addWorkTime(double seconds) {
 
         // Convert seconds to work hours.
         double hours = (seconds / 60) / 60;
