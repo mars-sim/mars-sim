@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementsXmlReader.java
- * @version 2.75 2003-01-06
+ * @version 2.75 2003-01-28
  * @author Scott Davis
  */
 
@@ -48,13 +48,6 @@ public class SettlementsXmlReader extends MspXmlReader {
         super("settlements");
         this.mars = mars;
     }
-
-    /** Returns the collection of initial settlements created from the XML file.
-     *  @return the collection of settlements
-     */
-    public SettlementCollection getInitialSettlements() {
-        return initialSettlements;
-    }
     
     /**
      * Returns the collection of settlement templates created from the XML file.
@@ -92,7 +85,6 @@ public class SettlementsXmlReader extends MspXmlReader {
         }   
         else if (name.equals("INITIAL_SETTLEMENT_LIST")) {
             elementType = INITIAL_SETTLEMENT_LIST;
-            initialSettlements = new SettlementCollection();
         }
         else if (name.equals("SETTLEMENT")) {
             elementType = SETTLEMENT;
@@ -174,8 +166,10 @@ public class SettlementsXmlReader extends MspXmlReader {
                     SettlementTemplate settlementTemplate = (SettlementTemplate) i.next();
                     if (currentTemplate.equals(settlementTemplate.getName())) template = settlementTemplate;
                 }
-                if (template != null)
-                    initialSettlements.add(template.constructSettlement(currentName, currentLocation, mars));
+                if (template != null) {
+                    Settlement settlement = template.constructSettlement(currentName, currentLocation, mars);
+                    mars.getUnitManager().addUnit(settlement);
+                }
 		        elementType = INITIAL_SETTLEMENT_LIST;
                 currentName = "";
                 currentTemplate = "";

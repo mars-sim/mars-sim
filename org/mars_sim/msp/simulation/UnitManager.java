@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2003-01-19
+ * @version 2.75 2003-01-28
  * @author Scott Davis
  */
 
@@ -57,9 +57,6 @@ public class UnitManager implements Serializable {
         
         // Create initial settlements
         createInitialSettlements();
-
-	    // Add any inventoried units.
-	    addInventoryUnits();
     }
 
     /**
@@ -95,7 +92,10 @@ public class UnitManager implements Serializable {
      * @param unit new unit to add.
      */
     public void addUnit(Unit unit) {
-        if (!units.contains(unit)) units.add(unit);
+        if (!units.contains(unit)) {
+            units.add(unit);
+            units.mergeUnits(unit.getInventory().getContainedUnits());
+        }
     }
     
     /**
@@ -105,7 +105,8 @@ public class UnitManager implements Serializable {
      * @return new name
      * @throws IllegalArgumentException if unitType is not valid.
      */
-    public String getNewName(String unitType) throws IllegalArgumentException {
+    public String getNewName(String unitType) {
+        
         Collection initialNameList = null;
         ArrayList usedNames = new ArrayList();
         
@@ -146,16 +147,6 @@ public class UnitManager implements Serializable {
     private void createInitialSettlements() {
         SettlementsXmlReader settlementsReader = new SettlementsXmlReader(mars);
         settlementsReader.parse();
-        units.mergeSettlements(settlementsReader.getInitialSettlements());
-    }
-
-    /** Adds all units in inventories. */
-    private void addInventoryUnits() {
-	    UnitCollection contained = new UnitCollection();
-	    UnitIterator i = units.iterator();
-	    while (i.hasNext())
-	        contained.mergeUnits(i.next().getInventory().getAllContainedUnits());
-	    units.mergeUnits(contained);
     }
 
     /** Notify all the units that time has passed.
