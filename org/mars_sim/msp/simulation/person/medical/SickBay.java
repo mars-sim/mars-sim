@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.List;
 import org.mars_sim.msp.simulation.Mars;
 
 /**
@@ -26,8 +27,10 @@ import org.mars_sim.msp.simulation.Mars;
 public class SickBay implements MedicalAid, Serializable {
 
     private String name;                            // Type name of Sickbay
+    private int level;                              // Level of facility
     private int sickBeds;                           // Number of sick beds
-    private ArrayList patients = new ArrayList();   // Patients
+    private int treatedPatients;                    // Number of patients treated
+    private ArrayList patients = new ArrayList();   // Patients treated & queuing
     private Collection  supportedTreatments;        // Shared treatments
 
     /** Construct a Sick Bay.
@@ -35,12 +38,14 @@ public class SickBay implements MedicalAid, Serializable {
      *  @param sickBeds Number of sickbeds.
      *  @param mars Overall simulation control.
      */
-    public SickBay(String name, int sickBeds, Mars mars) {
+    public SickBay(String name, int sickBeds, int level, Mars mars) {
         this.name = name;
         this.sickBeds = sickBeds;
+        this.level = level;
+        this.treatedPatients = 0;
 
         supportedTreatments =
-                    mars.getMedicalManager().getSupportedTreatments(name);
+                    mars.getMedicalManager().getSupportedTreatments(level);
     }
 
     /**
@@ -54,12 +59,43 @@ public class SickBay implements MedicalAid, Serializable {
         while (iter.hasNext()) {
             HealthProblem problem = (HealthProblem)iter.next();
 
-            // Find the first rpoblem that is not recovering and curable
+            // Find the first problem that is not awaiting Treatment here.
             if (problem.getAwaitingTreatment()) {
                 return problem;
             }
         }
         return null;
+    }
+
+    /**
+     * Get the patients both treated and queuing.
+     * @return List of HealthProblems.
+     */
+    public List getPatients() {
+        return patients;
+    }
+
+    /**
+     * Reutnrs the nunber of Sick beds
+     * @return Sick bed count.
+     */
+    public int getSickBeds() {
+        return sickBeds;
+    }
+
+    /**
+     * This method returns the number of pateints being treated.
+     * @return Patient count.
+     */
+    public int getTreatedPatientCount() {
+        return treatedPatients;
+    }
+
+    /**
+     * Get a list of supported Treatments at this SickBay.
+     */
+    public Collection getTreatments() {
+        return supportedTreatments;
     }
 
     /**
@@ -72,7 +108,8 @@ public class SickBay implements MedicalAid, Serializable {
         Iterator iter = patients.iterator();
         while (iter.hasNext()) {
             HealthProblem problem = (HealthProblem)iter.next();
-            if (!problem.getRecovering()) {
+            if (!problem.getRecovering() &&
+                !problem.getIllness().getRecoveryTreatment().getSelfAdminister()) {
                 return true;
             }
         }
@@ -92,18 +129,17 @@ public class SickBay implements MedicalAid, Serializable {
     public boolean requestTreatment(HealthProblem problem) {
 
         Treatment required = problem.getIllness().getRecoveryTreatment();
+        boolean canHeal = supportedTreatments.contains(required);
 
-        // Check the Treatment against supported and there is an available bed
-        boolean canHeal = ((patients.size() < sickBeds) &&
-                            ((supportedTreatments == null) ||
-                            supportedTreatments.contains(required)));
-
+        // Check the Treatment against supported
         if (canHeal) {
             patients.add(problem);
 
-            if (required.getSkill() == 0) {
+            // If the patient can administer the Treatment them selves then.
+            if (required.getSelfAdminister() && (treatedPatients < sickBeds)) {
                 // Start now, no other help
                 problem.startTreatment(required.getDuration());
+                treatedPatients++;
             }
         }
 
@@ -111,11 +147,49 @@ public class SickBay implements MedicalAid, Serializable {
     }
 
     /**
+     * This problem has now started its treatment
+     */
+    public void startTreatment(HealthProblem started) {
+        if (patients.contains(started)) {
+            treatedPatients++;
+        }
+        else {
+            System.out.println("WARNING : Unexpected patient is startTreatment " +
+                                started);
+        }
+    }
+
+    /**
      * Stop a previously started treatment.
      *
-     * @param problem Person with problem.
+     * @param stopped Person with problem.
      */
-    public void stopTreatment(HealthProblem problem) {
-        patients.remove(problem);
+    public void stopTreatment(HealthProblem stopped) {
+        if (patients.remove(stopped)) {
+            treatedPatients--;
+
+            // See if first one awaiting treatment can heal themselves
+            if (patients.size() >= sickBeds) {
+                boolean found = false;
+                Iterator iter = patients.iterator();
+                while (iter.hasNext() && !found) {
+                    HealthProblem problem = (HealthProblem)iter.next();
+
+                    // Find the first rpoblem that is not recovering and curable
+                    if (problem.getAwaitingTreatment()) {
+                        Treatment required = problem.getIllness().getRecoveryTreatment();
+                        if (required.getSelfAdminister()) {
+                            problem.startTreatment(required.getDuration());
+                            treatedPatients++;
+                        }
+                        found = true;
+                    }
+                }
+            }
+        }
+        else {
+            System.out.println("WARNING : Unexpected patient is stopTreatment " +
+                                stopped);
+        }
     }
 }

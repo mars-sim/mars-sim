@@ -10,8 +10,10 @@ package org.mars_sim.msp.simulation.person.medical;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import org.mars_sim.msp.simulation.SimulationProperties;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
@@ -30,6 +32,7 @@ public class MedicalManager implements Serializable {
     private HashMap complaints = new HashMap(); // Possible Complaints
     private HashMap treatments = new HashMap(); // Possible Treatments
     private HashMap supported = new HashMap();  // Treatments 2 Facilities
+    private Collection allTreatments = null;    // Collection of Treatments
     private Complaint starvation;        // Pre-defined complaint
     private Complaint suffocation;       // Pre-defined complaint
     private Complaint dehydration;       // Pre-defined complaint
@@ -148,8 +151,10 @@ public class MedicalManager implements Serializable {
     /**
      * Package friendly factory method.
      */
-    void createTreatment(String name, int skill, double duration) {
-        Treatment newTreatment = new Treatment(name, skill, duration);
+    void createTreatment(String name, int skill, double duration,
+                         boolean selfHeal, boolean retainAid, int level) {
+        Treatment newTreatment = new Treatment(name, skill, duration,
+                                               selfHeal, retainAid, level);
         treatments.put(name, newTreatment);
     }
 
@@ -228,13 +233,29 @@ public class MedicalManager implements Serializable {
     }
 
     /**
-     * Get the supported Treatments for a Medical Facility of a name.
+     * Get the supported Treatments for a Medical Facility of a particular
+     * level. This will be a combination of all the Treatments of the
+     * specified level and all those lower.
      *
-     * @param name Name of Medical facility.
+     * @param level Level of Medical facility.
      * @return Collection of Treatments
      */
-    public Collection getSupportedTreatments(String name) {
-        return (Collection)supported.get(name);
+    public Collection getSupportedTreatments(int level) {
+        Integer key = new Integer(level);
+        List results = (List)supported.get(key);
+        if (results == null) {
+            results = new ArrayList();
+            Iterator iter = treatments.values().iterator();
+            while(iter.hasNext()) {
+                Treatment next = (Treatment)iter.next();
+                if (next.getFacilityLevel() <= level) {
+                    results.add(next);
+                }
+            }
+            Collections.sort(results);
+            supported.put(key, results);
+        }
+        return results;
     }
 
     /**
