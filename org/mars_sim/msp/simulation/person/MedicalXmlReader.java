@@ -68,6 +68,8 @@ public class MedicalXmlReader extends MspXmlReader {
         if (name.equals("COMPLAINT")) {
             elementType = COMPLAINT;
             currentName = "";
+            currentDegrade = 0D;
+            nextComplaint = null;
         }
         if (name.equals("NAME")) {
             elementType = NAME;
@@ -86,11 +88,9 @@ public class MedicalXmlReader extends MspXmlReader {
         }
         if (name.equals("DEGRADE")) {
             elementType = DEGRADE;
-            currentDegrade = 0D;
         }
         if (name.equals("NEXT")) {
             elementType = NEXT;
-            nextComplaint = null;
         }
     }
 
