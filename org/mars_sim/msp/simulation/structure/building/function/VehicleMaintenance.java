@@ -45,7 +45,7 @@ public interface VehicleMaintenance extends Function {
      * @param vehicle the vehicle to be removed.
      * @throws BuildingException if vehicle is not in the building.
      */
-    public void RemoveVehicle(Vehicle vehicle) throws BuildingException;
+    public void removeVehicle(Vehicle vehicle) throws BuildingException;
     
     /**
      * Checks if a vehicle is in the building.

@@ -42,7 +42,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     private void initGroundVehicleData() {
         
         // Add scope to malfunction manager.
-	malfunctionManager.addScopeString("GroundVehicle");
+        malfunctionManager.addScopeString("GroundVehicle");
 	    
         setTerrainHandlingCapability(0D); // Default terrain capability
         setTerrainGrade(0D);
@@ -55,10 +55,10 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     public String getStatus() {
         String status = null;
 
-	if (isStuck) status = STUCK;
-	else status = super.getStatus();
+        if (isStuck) status = STUCK;
+        else status = super.getStatus();
 
-	return status;
+        return status;
     }
     
     /** Returns the elevation of the vehicle in km. 
@@ -114,7 +114,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      *  @param stuck true if vehicle is currently stuck, false otherwise
      */
     public void setStuck(boolean stuck) {
-	isStuck = stuck;
-	if (isStuck) setSpeed(0D);
+        isStuck = stuck;
+        if (isStuck) setSpeed(0D);
     }
 }
