@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.75 2004-03-23
+ * @version 2.75 2004-03-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -11,6 +11,7 @@ import javax.xml.parsers.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
+import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.CropConfig;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 import org.w3c.dom.*;
@@ -31,8 +32,8 @@ public class SimulationConfig {
 	private static final String MEDICAL_FILE = "medical2";
 	private static final String MALFUNCTION_FILE = "malfunctions2";
 	private static final String CROP_FILE = "crops2";
-	private static final String LANDMARKS_FILE = "landmarks2";
-	private static final String BUILDINGS_FILE = "buildings2";
+	private static final String LANDMARK_FILE = "landmarks2";
+	private static final String BUILDING_FILE = "buildings2";
 	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -50,6 +51,7 @@ public class SimulationConfig {
 	private MalfunctionConfig malfunctionConfig;
 	private CropConfig cropConfig;
 	private VehicleConfig vehicleConfig;
+	private BuildingConfig buildingConfig;
 
 	/**
 	 * Constructor
@@ -62,10 +64,11 @@ public class SimulationConfig {
 		// Load subset configuration classes.
 		personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
 		medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
-		landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARKS_FILE));
+		landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARK_FILE));
 		malfunctionConfig = new MalfunctionConfig(parseXMLFile(MALFUNCTION_FILE));
 		cropConfig = new CropConfig(parseXMLFile(CROP_FILE));
 		vehicleConfig = new VehicleConfig(parseXMLFile(VEHICLE_FILE));
+		buildingConfig = new BuildingConfig(parseXMLFile(BUILDING_FILE));
 	}
 	
 	/**
@@ -196,5 +199,13 @@ public class SimulationConfig {
 	 */
 	public VehicleConfig getVehicleConfiguration() {
 		return vehicleConfig;
+	}
+	
+	/**
+	 * Gets the building config subset.
+	 * @return building config
+	 */
+	public BuildingConfig getBuildingConfiguration() {
+		return buildingConfig;
 	}
 }

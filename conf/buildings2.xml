@@ -57,7 +57,7 @@
 			</storage>
 			
 			<power-generation>
-				<power-source type="Solar Cells" power="5.0" />
+				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			
 			<medical-care tech-level="4" beds="2" />
@@ -89,7 +89,7 @@
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Generator" power="80.0" />
+				<power-source type="Standard Power Source" power="80.0" />
 			</power-generation>
 		</functions>
 	</building>
@@ -97,7 +97,7 @@
 	<building name="Starting ERV Base" >
 		<power-required base-power="10.0" base-power-down-power="5.0" />
 		<functions>
-			<resource-processing power-down-level="5.0">
+			<resource-processing power-down-level=".5">
 				<process name="Sebatier">
 					<input resource="Carbon Dioxide" rate=".0011" ambient="true" />
 					<input resource="Hydrogen" rate=".0002" ambient="false" />
@@ -123,7 +123,7 @@
 				<resource-initial resource="Hydrogen" amount="6300.0" />
 			</storage>
 			<power-generation>
-				<power-source type="Solar Cells" power="5.0" />
+				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 		</functions>
 	</building>
@@ -131,7 +131,7 @@
 	<building name="ERV Base" >
 		<power-required base-power="10.0" base-power-down-power="5.0" />
 		<functions>
-			<resource-processing power-down-level="5.0">
+			<resource-processing power-down-level=".5">
 				<process name="Sebatier">
 					<input resource="Carbon Dioxide" rate=".0011" ambient="true" />
 					<input resource="Hydrogen" rate=".0002" ambient="false" />
@@ -156,7 +156,7 @@
 				<resource-storage resource="Water" capacity="9000.0" />
 			</storage>
 			<power-generation>
-				<power-source type="Solar Cells" power="5.0" />
+				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 		</functions>
 	</building>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ERVBase.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2004-03-27
  * @author Scott Davis
  */
  
@@ -85,7 +85,7 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
         // Create sabatier resource process.
         // CO2 + 4H2 = CH4 + 2H2O
         // Carbon Dioxide is pumped in from outside air.
-        ResourceProcess sabatier = new ResourceProcess("Sebatier", inv);
+        ResourceProcess sabatier = new ResourceProcess("Sebatier");
         sabatier.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .0011D, true);
         sabatier.addMaxInputResourceRate(Resource.HYDROGEN, .0002D, false);
         sabatier.addMaxOutputResourceRate(Resource.METHANE, .0004D, false);
@@ -94,7 +94,7 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
         
         // Create water electrolysis resource process.
         // 2H2O = 2H2 + O2
-        ResourceProcess electrolysis = new ResourceProcess("Water Electrolysis", inv);
+        ResourceProcess electrolysis = new ResourceProcess("Water Electrolysis");
         electrolysis.addMaxInputResourceRate(Resource.WATER, .0001D, false);
         electrolysis.addMaxOutputResourceRate(Resource.HYDROGEN, .000011D, false);
         electrolysis.addMaxOutputResourceRate(Resource.OXYGEN, .000089D, false);
@@ -104,7 +104,7 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
         // 2CO2 = 2CO + O2
         // Carbon Dioxide is pumped in from outside air.
         // Carbon Monoxide is pumped out to outside air.
-        ResourceProcess co2Reduction = new ResourceProcess("CO2 Reduction", inv);
+        ResourceProcess co2Reduction = new ResourceProcess("CO2 Reduction");
         co2Reduction.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .000825D, true);
         co2Reduction.addMaxOutputResourceRate(Resource.OXYGEN, .0003D, false);
         co2Reduction.addMaxOutputResourceRate(Resource.CARBON_MONOXIDE, .000525D, true);

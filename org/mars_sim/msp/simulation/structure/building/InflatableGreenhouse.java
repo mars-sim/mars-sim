@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2004-03-18
+ * @version 2.75 2004-03-27
  * @author Scott Davis
  */
  
@@ -60,7 +60,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         Inventory inv = getInventory();
         
         // Create carbon dioxide pump process
-        ResourceProcess carbonDioxidePump = new ResourceProcess("Carbon Dioxide Pump", inv);
+        ResourceProcess carbonDioxidePump = new ResourceProcess("Carbon Dioxide Pump");
         carbonDioxidePump.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .0001D, true);
         carbonDioxidePump.addMaxOutputResourceRate(Resource.CARBON_DIOXIDE, .0001D, false);
         processManager.addResourceProcess(carbonDioxidePump);

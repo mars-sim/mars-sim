@@ -1,15 +1,18 @@
 /**
  * Mars Simulation Project
  * ResourceProcessManager.java
- * @version 2.75 2003-04-16
+ * @version 2.75 2004-03-27
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
-import org.mars_sim.msp.simulation.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.mars_sim.msp.simulation.Inventory;
  
 /**
  * The ResourceProcessManager class is a manager of 
@@ -82,7 +85,7 @@ public class ResourceProcessManager implements Serializable {
         Iterator i = processes.iterator();
         while (i.hasNext()) {
             ResourceProcess process = (ResourceProcess) i.next();
-            process.processResources(time, productionLevel);
+            process.processResources(time, productionLevel, inventory);
         }
     }   
 }

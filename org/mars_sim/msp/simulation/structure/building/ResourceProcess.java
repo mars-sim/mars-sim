@@ -1,21 +1,15 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2004-03-27
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
  
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.MarsClock;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
  
 /**
  * The ResourceProcess class represents a process of
@@ -28,18 +22,15 @@ public class ResourceProcess implements Serializable {
     private Map maxAmbientInputResourceRates;
     private Map maxOutputResourceRates;
     private Map maxWasteOutputResourceRates;
-    private Inventory inventory;
     private boolean runningProcess;
     private double currentProductionLevel;
     
     /**
      * Constructor
      * @param name the name of the process.
-     * @param inventory inventory object to use as resource pool
      */
-    public ResourceProcess(String name, Inventory inventory) {
+    public ResourceProcess(String name) {
         this.name = name;
-        this.inventory = inventory;
         maxInputResourceRates = new HashMap();
         maxAmbientInputResourceRates = new HashMap();
         maxOutputResourceRates = new HashMap();
@@ -166,8 +157,9 @@ public class ResourceProcess implements Serializable {
      * Processes resources for a given amount of time.
      * @param time (millisols)
      * @param productionLevel proportion of max process rate (0.0D - 1.0D)
+     * @param inventory the inventory pool to use for processes.
      */
-    public void processResources(double time, double productionLevel) {
+    public void processResources(double time, double productionLevel, Inventory inventory) {
         if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
             throw new IllegalArgumentException();
         
@@ -178,7 +170,7 @@ public class ResourceProcess implements Serializable {
             double timeSec = MarsClock.convertMillisolsToSeconds(time);
             
             // Get resource bottleneck
-            double bottleneck = getInputBottleneck(time);
+            double bottleneck = getInputBottleneck(time, inventory);
             if (productionLevel > bottleneck) productionLevel = bottleneck;
             
             // System.out.println(name + " production level: " + productionLevel);
@@ -214,9 +206,10 @@ public class ResourceProcess implements Serializable {
     /**
      * Finds the bottleneck of input resources from inventory pool.
      * @param time (millisols)
+     * @param inventory the inventory pool the process uses.
      * @return bottleneck (0.0D - 1.0D)
      */
-    private double getInputBottleneck(double time) {
+    private double getInputBottleneck(double time, Inventory inventory) {
         
         // Check for illegal argument.
         if (time < 0D) throw new IllegalArgumentException("time must be > 0D");
