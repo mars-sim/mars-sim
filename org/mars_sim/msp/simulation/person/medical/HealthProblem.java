@@ -293,4 +293,13 @@ public class HealthProblem implements Serializable {
 
         return buffer.toString();
     }
+    
+    /**
+     * Checks if this problem is an environmental problem.
+     * 
+     * @return true if environmental problem.
+     */
+    public boolean isEnvironmentalProblem() {
+        return sufferer.getMars().getMedicalManager().isEnvironmentalComplaint(illness);
+    }
 }

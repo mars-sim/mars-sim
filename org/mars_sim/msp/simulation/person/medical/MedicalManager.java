@@ -314,4 +314,23 @@ public class MedicalManager implements Serializable {
     public Complaint getHeatStroke() {
         return heatStroke;
     }
+    
+    /**
+     * Checks if a health complaint is an environmental complaint.
+     * 
+     * @param complaint the complaint to check.
+     * @return true if complaint is environmental complaint.
+     */
+    public boolean isEnvironmentalComplaint(Complaint complaint) {
+        boolean result = false;
+        
+        if (complaint == suffocation) result = true;
+        if (complaint == dehydration) result = true;
+        if (complaint == starvation) result = true;
+        if (complaint == decompression) result = true;
+        if (complaint == freezing) result = true;
+        if (complaint == heatStroke) result = true;
+        
+        return result;
+    }
 }
