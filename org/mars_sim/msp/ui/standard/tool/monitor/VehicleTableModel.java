@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-11-13
  * @author Barry Evans
  */
 
@@ -20,21 +20,20 @@ public class VehicleTableModel extends UnitTableModel {
 
     // Column indexes
     private final static int  NAME = 0;
-    private final static int DESCRIPTION = 1;
+    private final static int  LOCATION = 1;
     private final static int  DESTINATION = 2;
     private final static int  DESTDIST = 3;
-    private final static int  LOCATION = 4;
-    private final static int  CREW = 5;
-    private final static int  SPEED = 6;
-    private final static int  DRIVER = 7;
-    private final static int  STATUS = 8;
-    private final static int  MALFUNCTION = 9;
-    private final static int  OXYGEN = 10;
-    private final static int  METHANE = 11;
-    private final static int  WATER = 12;
-    private final static int  FOOD = 13;
-    private final static int  ROCK_SAMPLES = 14;
-    private final static int  COLUMNCOUNT = 15; // The number of Columns
+    private final static int  CREW = 4;
+    private final static int  DRIVER = 5;
+    private final static int  STATUS = 6;
+    private final static int  SPEED = 7;
+    private final static int  MALFUNCTION = 8;
+    private final static int  OXYGEN = 9;
+    private final static int  METHANE = 10;
+    private final static int  WATER = 11;
+    private final static int  FOOD = 12;
+    private final static int  ROCK_SAMPLES = 13;
+    private final static int  COLUMNCOUNT = 14; // The number of Columns
     private static String columnNames[]; // Names of Columns
     private static Class columnTypes[]; // Names of Columns
 
@@ -46,8 +45,6 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes = new Class[COLUMNCOUNT];
         columnNames[NAME] = "Name";
         columnTypes[NAME] = String.class;
-        columnNames[DESCRIPTION] = "Description";
-        columnTypes[DESCRIPTION] = String.class;
         columnNames[DRIVER] = "Driver";
         columnTypes[DRIVER] = String.class;
         columnNames[STATUS] = "Status";
@@ -105,10 +102,6 @@ public class VehicleTableModel extends UnitTableModel {
         switch (columnIndex) {
             case NAME : {
                 result = vehicle.getName();
-            } break;
-
-            case DESCRIPTION : {
-                result = vehicle.getDescription();
             } break;
 
             case CREW : {

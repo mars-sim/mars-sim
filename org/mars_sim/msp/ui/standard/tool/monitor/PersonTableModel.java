@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-11-13
  * @author Barry Evans
  */
 
@@ -24,16 +24,16 @@ public class PersonTableModel extends UnitTableModel {
 
     // Column indexes
     private final static int  NAME = 0;           // Person name column
-    private final static int  LOCATION = 1;      // Situation column
-    private final static int  COORDS = 2;       // Location column
-    private final static int  HUNGER = 3;         // Hunger column
-    private final static int  FATIGUE = 4;        // Fatigue column
+    private final static int  LOCATION = 1;       // Location column
+    private final static int  HUNGER = 2;         // Hunger column
+    private final static int  FATIGUE = 3;        // Fatigue column
+    private final static int  PERFORMANCE = 4;    // Performance conlumn
     private final static int  TASK = 5;           // Task column
     private final static int  MISSION = 6;        // Mission column
     private final static int  HEALTH = 7;         // Health column
     private final static int  COLUMNCOUNT = 8;    // The number of Columns
-    private static String columnNames[];          // Names of Columns
-    private static Class columnTypes[];           // Types of Columns
+    private static String columnNames[];           // Names of Columns
+    private static Class columnTypes[];            // Types of Columns
     /**
      * The static initialisier creates the name & type arrays.
      */
@@ -46,8 +46,8 @@ public class PersonTableModel extends UnitTableModel {
         columnTypes[HUNGER] = Integer.class;
         columnNames[FATIGUE] = "Fatigue";
         columnTypes[FATIGUE] = Integer.class;
-        columnNames[COORDS] = "Coordinates";
-        columnTypes[COORDS] = Coordinates.class;
+        columnNames[PERFORMANCE] = "Performance %";
+        columnTypes[PERFORMANCE] = Integer.class;
         columnNames[LOCATION] = "Location";
         columnTypes[LOCATION] = String.class;
         columnNames[MISSION] = "Mission";
@@ -208,29 +208,28 @@ public class PersonTableModel extends UnitTableModel {
 
             case FATIGUE : {
                 double fatigue = person.getPhysicalCondition().getFatigue();
-                result = new Integer(new Float(fatigue).intValue());;
+                result = new Integer(new Float(fatigue).intValue());
             } break;
 
-            case COORDS : {
-                result = person.getCoordinates();
+            case PERFORMANCE : {
+                double performance = person.getPhysicalCondition().getPerformanceFactor();
+                result = new Integer(new Float(performance * 100D).intValue());
             } break;
 
             case HEALTH : {
                 result = person.getPhysicalCondition().getHealthSituation();
             } break;
 
-            // Create a composite sdtring containing Vehicle & Settlement
+            // Create a diplay vehicle, settlement, outside or buried.
             case LOCATION : {
-                Settlement house = person.getSettlement();
-                if (house != null) {
-                    result = house.getName();
+                String locationSituation = person.getLocationSituation();
+                if (locationSituation.equals(Person.INSETTLEMENT)) {
+                    if (person.getSettlement() != null) result = person.getSettlement().getName();
                 }
-                else {
-                    Vehicle vech = person.getVehicle();
-                    if (vech != null) {
-                        result = vech.getName();
-                    }
+                else if (locationSituation.equals(Person.INVEHICLE)) {
+                    if (person.getVehicle() != null) result = person.getVehicle().getName();
                 }
+                else result = locationSituation;
             } break;
 
             case TASK : {

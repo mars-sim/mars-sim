@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-04-25
+ * @version 2.75 2003-11-13
  * @author Scott Davis
  */
 
@@ -341,5 +341,14 @@ public class Settlement extends Structure implements LifeSupport {
         }
         
         return result;
+    }
+    
+    /**
+     * Gets the settlement's power grid.
+     * 
+     * @return the power grid.
+     */
+    public PowerGrid getPowerGrid() {   
+        return powerGrid;
     }
 }
