@@ -1,5 +1,5 @@
 //************************** Natural Attribute Manager **************************
-// Last Modified: 3/3/00
+// Last Modified: 5/25/00
 
 // The NaturalAttributeManager class manages a person's natural attributes.
 // There is only natural attribute manager for each person.
@@ -27,9 +27,28 @@ public class NaturalAttributeManager {
 		// Note: this may change later.
 		
 		for (int x=0; x < attributeKeys.length; x++) {
-			int attributeValue = RandomUtil.getRandomInteger(50) + RandomUtil.getRandomInteger(50);
+			int attributeValue = 0;
+			for (int y=0; y < 10; y++) attributeValue += RandomUtil.getRandomInteger(10);
 			attributeList.put(attributeKeys[x], new Integer(attributeValue));
 		}
+		
+		// Adjust certain attributes reflective of Martian settlers.
+		
+		addSettlerBonus("Strength", 20);
+		addSettlerBonus("Endurance", 20);
+		addSettlerBonus("Agility", 10);
+		addSettlerBonus("Academic Aptitude", 40);
+		addSettlerBonus("Experience Aptitude", 30);
+	}
+	
+	// Adds a random bonus for Martian settlers in a given attribute.
+	
+	private void addSettlerBonus(String attributeName, int bonus) {
+		
+		int newValue = getAttribute(attributeName) + RandomUtil.getRandomInteger(bonus);
+		if (newValue > 100) newValue = 100;
+		if (newValue < 0) newValue = 0;
+		attributeList.put(attributeName, new Integer(newValue));
 	}
 	
 	// Returns the number of natural attributes.
@@ -58,15 +77,13 @@ public class NaturalAttributeManager {
 }	
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
