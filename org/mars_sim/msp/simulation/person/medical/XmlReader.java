@@ -61,7 +61,7 @@ class XmlReader extends MspXmlReader {
      * @param manager Medical manager to load
      */
     XmlReader(MedicalManager manager) {
-        super("conf/medical.xml");
+        super("medical");
 
         this.manager = manager;
     }

@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.*;
 import com.microstar.xml.*;
 
-/** The SettlementsXmlReader class parses the settlements.xml XML file and 
+/** The SettlementsXmlReader class parses the settlements.xml XML file and
  *  creates settlement unit objects.
  */
 public class SettlementsXmlReader extends MspXmlReader {
@@ -41,7 +41,7 @@ public class SettlementsXmlReader extends MspXmlReader {
      *  @param mars the virtual Mars instance
      */
     public SettlementsXmlReader(Mars mars) {
-        super("conf/settlements.xml");
+        super("settlements");
 	settlementMax = mars.getSimulationProperties().getInitSettlements();
         this.mars = mars;
     }
@@ -50,7 +50,7 @@ public class SettlementsXmlReader extends MspXmlReader {
      *  @return the collection of settlements
      */
     public SettlementCollection getSettlements() {
-        return settlements; 
+        return settlements;
     }
 
     /** Handle the start of an element by printing an event.
@@ -87,7 +87,7 @@ public class SettlementsXmlReader extends MspXmlReader {
      */
     public void endElement(String name) throws Exception {
         super.endElement(name);
-     
+
         switch (elementType) {
             case NAME:
             case LOCATION:
@@ -100,7 +100,7 @@ public class SettlementsXmlReader extends MspXmlReader {
                 break;
   	    case SETTLEMENT:
 		if(settlementMax == 0 || settlements.size() < settlementMax) {
-		    settlements.add(createSettlement());    
+		    settlements.add(createSettlement());
 		}
 		elementType = SETTLEMENTS_LIST;
                 break;
@@ -135,12 +135,12 @@ public class SettlementsXmlReader extends MspXmlReader {
         }
     }
 
-    /** Creates a settlement based on parsed information. 
+    /** Creates a settlement based on parsed information.
      *  @return constructed settlment based on parsed information
      */
     private Settlement createSettlement() {
         Settlement settlement = null;
-        
+
         if (currentLocation == null) {
             settlement = new Settlement(currentName, currentPopulationCapacity, mars);
         }
@@ -150,24 +150,24 @@ public class SettlementsXmlReader extends MspXmlReader {
 
         return settlement;
     }
-    
-    /** Create a coordinates location if parameters are valid. 
+
+    /** Create a coordinates location if parameters are valid.
      *  @return coordinates object based on parsed longitude and latitude
      */
     private Coordinates createLocation() {
         double phi = 0D;
         double theta = 0D;
-        
+
         try {
             phi = parseLatitude(currentLatitude);
             theta = parseLongitude(currentLongitude);
             return new Coordinates(phi, theta);
         }
         catch(IllegalArgumentException e) {}
-        
+
         return new Coordinates(phi, theta);
     }
-    
+
     /** Parse a latitude string into a phi value
      *  ex. "25.344 N"
      *  @param latitude as string
@@ -177,7 +177,7 @@ public class SettlementsXmlReader extends MspXmlReader {
     private double parseLatitude(String latitude) throws IllegalArgumentException {
         boolean badLatitude = false;
         double latValue = 0D;
-        
+
         if (latitude.trim().equals("")) badLatitude = true;
         try {
             latValue = Double.parseDouble(latitude.substring(0, latitude.length() - 2));
@@ -188,9 +188,9 @@ public class SettlementsXmlReader extends MspXmlReader {
         if (direction == 'N') latValue = 90D - latValue;
         else if (direction == 'S') latValue += 90D;
         else badLatitude = true;
-        
+
         if (badLatitude) throw new IllegalArgumentException();
-        
+
         double phi = Math.PI * (latValue / 180D);
         return phi;
     }
@@ -204,7 +204,7 @@ public class SettlementsXmlReader extends MspXmlReader {
     private double parseLongitude(String longitude) throws IllegalArgumentException {
         boolean badLongitude = false;
         double longValue = 0D;
-        
+
         if (longitude.trim().equals("")) badLongitude = true;
         try {
             longValue = Double.parseDouble(longitude.substring(0, longitude.length() - 2));
@@ -214,9 +214,9 @@ public class SettlementsXmlReader extends MspXmlReader {
         char direction = longitude.charAt(longitude.length() - 1);
         if (direction == 'W') longValue = 360D - longValue;
         else if (direction != 'E') badLongitude = true;
-        
+
         if (badLongitude) throw new IllegalArgumentException();
-        
+
         double theta = (2 * Math.PI) * (longValue / 360D);
         return theta;
     }

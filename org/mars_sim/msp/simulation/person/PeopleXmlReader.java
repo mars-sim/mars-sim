@@ -50,8 +50,8 @@ public class PeopleXmlReader extends MspXmlReader {
      *  @param mars the virtual Mars instance
      */
     public PeopleXmlReader(UnitManager manager, Mars mars) {
-        super("conf/people.xml");
-	peopleMax = mars.getSimulationProperties().getInitPeople();
+        super("people");
+	    peopleMax = mars.getSimulationProperties().getInitPeople();
         this.manager = manager;
         this.mars = mars;
     }
@@ -92,7 +92,7 @@ public class PeopleXmlReader extends MspXmlReader {
             elementType = SKILL;
             currentSkillName = "";
             currentSkillLevel = 0;
-        } 
+        }
         if (name.equals("ATTRIBUTE")) {
             elementType = ATTRIBUTE;
             currentAttributeName = "";
@@ -111,7 +111,7 @@ public class PeopleXmlReader extends MspXmlReader {
      */
     public void endElement(String name) throws Exception {
         super.endElement(name);
-     
+
         switch (elementType) {
             case NAME:
             case SETTLEMENT:
@@ -132,7 +132,7 @@ public class PeopleXmlReader extends MspXmlReader {
                 elementType = PERSON;
                 break;
             case ATTRIBUTE_NAME:
-            case ATTRIBUTE_LEVEL: 
+            case ATTRIBUTE_LEVEL:
                 elementType = ATTRIBUTE;
                 break;
             case PERSON:
@@ -203,7 +203,7 @@ public class PeopleXmlReader extends MspXmlReader {
                 String attributeName = (String) i.next();
                 int attributeLevel = ((Integer) attributes.get(attributeName)).intValue();
                 attributeManager.setAttribute(attributeName, attributeLevel);
-            } 
+            }
         }
 
         return person;

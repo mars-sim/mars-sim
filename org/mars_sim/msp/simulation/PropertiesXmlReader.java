@@ -44,7 +44,7 @@ class PropertiesXmlReader extends MspXmlReader {
 
     private static final int INIT_PROPERTIES = 100;
     private static final int INIT_SETTLEMENTS = 101;
-    
+
     // Data members
     private int elementType; // The current element type being parsed
     private int propertyCatagory; // The property catagory
@@ -73,7 +73,7 @@ class PropertiesXmlReader extends MspXmlReader {
 
     /** Constructor */
     public PropertiesXmlReader() {
-        super("conf/properties.xml");
+        super("properties");
     }
 
     /** Handle the start of an element by printing an event.
@@ -298,8 +298,8 @@ class PropertiesXmlReader extends MspXmlReader {
         return timeRatio;
     }
 
-    /** 
-     * Gets the airlock pressurization/depressurization time. 
+    /**
+     * Gets the airlock pressurization/depressurization time.
      * Value must be > 0.
      * Default value is 10 millisols.
      * @return airlock cycle time in millisols
@@ -308,7 +308,7 @@ class PropertiesXmlReader extends MspXmlReader {
         if (airlockCycleTime <= 0D) airlockCycleTime = 10D;
 	return airlockCycleTime;
     }
-    
+
     /** Gets the number of Earth minutes a person can survive without oxygen.
      *  Value must be > 0.
      *  Default value is 5 Earth minutes
@@ -408,7 +408,7 @@ class PropertiesXmlReader extends MspXmlReader {
         if (personFreezingTime < 0D) personFreezingTime = 240D;
 	return personFreezingTime;
     }
-    
+
     /** Gets the rover fuel efficiency property.
      *  Value must be > 0.
      *  Default value is 2.0.

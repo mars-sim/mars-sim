@@ -13,7 +13,7 @@ import java.io.*;
 import java.util.*;
 import com.microstar.xml.*;
 
-/** The VehiclesXmlReader class parses the vehicles.xml XML file and 
+/** The VehiclesXmlReader class parses the vehicles.xml XML file and
  *  creates vehicle unit objects.
  */
 public class VehiclesXmlReader extends MspXmlReader {
@@ -40,7 +40,7 @@ public class VehiclesXmlReader extends MspXmlReader {
      *  @param mars the virtual Mars instance
      */
     public VehiclesXmlReader(UnitManager manager, Mars mars) {
-        super("conf/vehicles.xml");
+        super("vehicles");
 	vehiclesMax = mars.getSimulationProperties().getInitVehicles();
 	this.manager = manager;
         this.mars = mars;
@@ -88,7 +88,7 @@ public class VehiclesXmlReader extends MspXmlReader {
      */
     public void endElement(String name) throws Exception {
         super.endElement(name);
-     
+
         switch (elementType) {
             case NAME:
             case SETTLEMENT:
@@ -122,18 +122,18 @@ public class VehiclesXmlReader extends MspXmlReader {
                 break;
         }
     }
-    
+
     /** Creates a rover object
-     *  @param roverType type of rover 
+     *  @param roverType type of rover
      *  @return a rover or null if rover could not be constructed
      */
     private Rover createRover(int roverType) {
 
         Rover rover = null;
         if (currentSettlement != null) {
-	    if (roverType == EXPLORER_ROVER) 
+	    if (roverType == EXPLORER_ROVER)
                 rover = new ExplorerRover(currentName, currentSettlement, mars);
-	    else if (roverType == TRANSPORT_ROVER) 
+	    else if (roverType == TRANSPORT_ROVER)
                 rover = new TransportRover(currentName, currentSettlement, mars);
         }
         else {
@@ -145,7 +145,7 @@ public class VehiclesXmlReader extends MspXmlReader {
             }
             catch (Exception e) {}
         }
-        
+
         return rover;
     }
 }

@@ -19,17 +19,27 @@ public abstract class MspXmlReader extends HandlerBase {
         this.documentName = documentName;
     }
 
-    /** Parses the XML document */ 
+    /** Parses the XML document */
     public void parse() {
-        try {
-            Reader reader = new FileReader(documentName);
-            XmlParser parser = new XmlParser();
-            parser.setHandler(this);
-            parser.parse(null, null, reader);
-            reader.close();
+        String fullName = "conf/" + documentName + ".xml";
+        InputStream inStream =
+                getClass().getClassLoader().getResourceAsStream(fullName);
+        if (inStream == null) {
+            System.err.println("Can not find configurations for " + documentName);
         }
-        catch (Exception e) {
-	    e.printStackTrace();
+        else {
+            try {
+                Reader reader = new InputStreamReader(inStream);
+
+                XmlParser parser = new XmlParser();
+                parser.setHandler(this);
+                parser.parse(null, null, reader);
+                reader.close();
+            }
+            catch (Exception e) {
+                System.err.println("Problem reading config. stream " + fullName);
+                e.printStackTrace();
+            }
         }
     }
 
