@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Installer.java
- * @version 2.71 2000-09-25
+ * @version 2.71 2000-10-24
  * @author Scott Davis
  */
 
@@ -13,34 +13,36 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-// This stand alone application decompresses the data files needed by the Mars Simulation Project.
-// By default it decompresses both the surface and topographical data files.
-// Type:  "java Installer surface" to decompress just the surface data file.
-// Type:  "java Installer topo" to decompress just the topographical data file.
-
+/** This stand alone application decompresses the data files needed by the Mars Simulation Project.
+ *  By default it decompresses both the surface and topographical data files.
+ *  Type:  "java Installer surface" to decompress just the surface data file.
+ *  Type:  "java Installer topo" to decompress just the topographical data file.
+ */
 public class Installer extends JFrame implements ActionListener, WindowListener {
 
+    // Static data members
     private final static int compressedMapWidth = 3359;
     private final static int compressedMapHeight = 786;
 
+    // Data members
     private FileOutputStream dataOut; // Output stream to file.
     private BufferedOutputStream buffOut; // The output stream buffer.
     private JFrame frame; // Primary window frame.
     private JLabel statusLabel; // Status label.
     private JProgressBar fileBar, totalBar; // The file and tool progress bars.
 
+    /** Constructs a Installer object
+     *  @param args the command line arguments
+     */
     public Installer(String args[]) {
 
         // Use JFrame constructor
-
         super("Mars Simulation Project Map Data Installer");
 
         // Create UI window.
-        
         setupWindow();
 
         // Decompress data files
-
         decompressDataFiles(args);
     }
 
@@ -48,62 +50,51 @@ public class Installer extends JFrame implements ActionListener, WindowListener 
     private void setupWindow() {
 
         // Setup frame
-
         addWindowListener(this);
         setVisible(false);
 
         // Create Main Pane
-
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.RAISED),
                 new EmptyBorder(10, 10, 10, 10)));
         setContentPane(panel);
 
         // Create Title Pane
-
         JPanel titlePanel = new JPanel(new GridLayout(2, 1, 10, 10));
         panel.add("North", titlePanel);
 
         // Create Title Label
-
         JLabel titleLabel = new JLabel("Mars Simulation Installer", JLabel.CENTER);
         titleLabel.setFont(new Font("Helvetica", Font.BOLD, 20));
         titleLabel.setForeground(Color.red);
         titlePanel.add(titleLabel);
 
         // Create Status Label
-
         statusLabel = new JLabel("Loading Compressed Files", JLabel.CENTER);
         titlePanel.add(statusLabel);
 
         // Create Progress Bar Pane
-
         JPanel progressPanel = new JPanel(new GridLayout(2, 1, 10, 10));
         panel.add("Center", progressPanel);
 
         // Create File Progress Bar
-
         fileBar = new JProgressBar(0, 100);
         progressPanel.add(fileBar);
 
         // Create Total Progress Bar
-
         totalBar = new JProgressBar(0, 100);
         progressPanel.add(totalBar);
 
         // Create Cancel Button Pane
-
         JPanel cancelPanel = new JPanel();
         panel.add("South", cancelPanel);
 
         // Create Cancel Button
-
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(this);
         cancelPanel.add(cancelButton);
 
         // Prepare and Show Window
-
         pack();
         Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frame_size = getSize();
@@ -116,7 +107,6 @@ public class Installer extends JFrame implements ActionListener, WindowListener 
     private void decompressDataFiles(String args[]) {
 
         // Prepare File Names
-
         String[] mapNames = {"Surface", "Topo"};
 
         int numFiles = 2;
@@ -130,40 +120,32 @@ public class Installer extends JFrame implements ActionListener, WindowListener 
         }
 
         // Convert both JPEG's into DAT Files
-
         for (int x = 0; x < numFiles; x++) {
 
             // Display status of image being loaded
-
             statusLabel.setText("Loading " + mapNames[x] + "MarsMap.jpg");
 
             // Load image as ImageIcon to make sure image loads completely
-
             Image compressedMap = (new ImageIcon("map_data/" + mapNames[x] + "MarsMap.jpg")). getImage();
 
             // Display status of data file being created
-
             statusLabel.setText("Creating " + mapNames[x] + "MarsMap.dat");
 
             int count = 0;
             try {
                 // Prepare Buffered Output Stream To Create DAT File
-
                 dataOut = new FileOutputStream("map_data/" + mapNames[x] + "MarsMap.dat");
                 buffOut = new BufferedOutputStream(dataOut);
 
                 // Create Array To Hold Compressed Row Of Data
-
                 int[] rowArray = new int[compressedMapWidth];
                 ColorModel dColorModel = ColorModel.getRGBdefault();
                 int rows = compressedMapHeight;
 
                 // Go Through Each Row In JPEG File
-
                 for (int z = 0; z < rows; z++) {
 
                     // Grab Row Of Pixels And Put In Array
-
                     PixelGrabber grabber =
                             new PixelGrabber(compressedMap, 0, z, compressedMapWidth, 1, rowArray,
                             0, compressedMapWidth);
@@ -176,7 +158,6 @@ public class Installer extends JFrame implements ActionListener, WindowListener 
                         System.err.println("image fetch aborted or errored");
 
                     // Go Through Each Pixel In Row And Write Pixel Value To DAT File
-
                     for (int y = 0; y < rowArray.length; y++) {
                         int pixel = rowArray[y];
                         buffOut.write((byte) dColorModel.getRed(pixel));
@@ -185,7 +166,6 @@ public class Installer extends JFrame implements ActionListener, WindowListener 
                     }
 
                     // Update Progress Bars If New Percentage Done
-
                     int newCount = (int) Math.round(((float) z / (float) compressedMapHeight) * 100F);
                     if (newCount > count) {
                         count = newCount;
@@ -198,7 +178,6 @@ public class Installer extends JFrame implements ActionListener, WindowListener 
                 }
 
                 // Close Output Streams
-
                 buffOut.close();
                 dataOut.close();
             }
@@ -238,7 +217,9 @@ public class Installer extends JFrame implements ActionListener, WindowListener 
         System.exit(0);
     }
 
-    /** Main Method */
+    /** Main Method 
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         Installer installer = new Installer(args);
         System.exit(0);

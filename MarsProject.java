@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.71 2000-09-25
+ * @version 2.71 2000-10-24
  * @author Scott Davis
  */
 
@@ -17,6 +17,7 @@ import java.awt.*;
  */
 public class MarsProject {
 
+    /** Constructs a MarsProject object */
     public MarsProject() {
 
         // prepare custom UI color theme
@@ -36,7 +37,7 @@ public class MarsProject {
         splashWindow = null;
     }
 
-    /** Set error output to a text file (for debugging). */
+    /** Set error output to a text file (for debugging) */
     private void setDebugMode() {
         try {
             FileOutputStream errFileStream = new FileOutputStream("err.txt");
@@ -46,7 +47,9 @@ public class MarsProject {
         }
     }
 
-    /** The starting method for the application */
+    /** The starting method for the application 
+     *  @param args the command line arguments
+     */
     public static void main(String args[]) {
         MarsProject marsSim = new MarsProject();
     }
