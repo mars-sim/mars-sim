@@ -7,9 +7,6 @@
 
 package org.mars_sim.msp.simulation;
 
-import java.io.*;
-import java.util.*;
-import com.microstar.xml.*;
 
 /** The LandmarksXmlReader class parses the landmarks.xml XML file and
  *  ???creates surface feature unit objects???.

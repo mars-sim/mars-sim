@@ -7,14 +7,26 @@
 
 package org.mars_sim.msp.simulation.structure;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.*;
-import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.LifeSupport;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.Maintenance;
+import org.mars_sim.msp.simulation.person.ai.Repair;
+import org.mars_sim.msp.simulation.person.ai.Task;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.function.EVA;
+import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
 /** The Settlement class represents a settlement unit on virtual Mars.
  *  It contains information related to the state of the settlement.

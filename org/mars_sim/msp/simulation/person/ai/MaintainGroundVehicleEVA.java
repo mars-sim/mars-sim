@@ -9,13 +9,20 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.simulation.person.*;
+
+import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing

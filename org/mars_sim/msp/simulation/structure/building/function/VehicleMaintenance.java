@@ -7,9 +7,9 @@
  
 package org.mars_sim.msp.simulation.structure.building.function;
 
-import java.util.Collection;
-import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
  
 /**
  * The VehicleMaintenance interface is a building function for a building

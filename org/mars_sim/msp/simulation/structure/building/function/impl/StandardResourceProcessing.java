@@ -8,9 +8,9 @@
 package org.mars_sim.msp.simulation.structure.building.function.impl;
  
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.*;
+
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.ResourceProcessManager;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
  
 /**

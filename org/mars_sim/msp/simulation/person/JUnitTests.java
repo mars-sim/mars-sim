@@ -3,17 +3,12 @@ package org.mars_sim.msp.simulation.person;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-// include any ONE of the following...
-//import junit.textui.TestRunner;
-//import junit.awtui.TestRunner;
 import junit.swingui.TestRunner;
 
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.SimulationProperties;
-import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.LanderHab;
 
 /**
  * JUnit test suite

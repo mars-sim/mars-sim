@@ -8,11 +8,15 @@
 package org.mars_sim.msp.simulation.structure.building.function.impl;
  
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.*;
-import org.mars_sim.msp.simulation.person.medical.*;
-import org.mars_sim.msp.simulation.structure.building.*;
+
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.MedicalAssistance;
+import org.mars_sim.msp.simulation.person.ai.Task;
+import org.mars_sim.msp.simulation.person.medical.HealthProblem;
+import org.mars_sim.msp.simulation.person.medical.MedicalAid;
+import org.mars_sim.msp.simulation.person.medical.MedicalStation;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
  
 /**

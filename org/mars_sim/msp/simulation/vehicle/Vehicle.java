@@ -7,14 +7,24 @@
 
 package org.mars_sim.msp.simulation.vehicle;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.medical.MedicalAid;
-import org.mars_sim.msp.simulation.person.ai.*;
-import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Direction;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.MarsClock;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.Maintenance;
+import org.mars_sim.msp.simulation.person.ai.Repair;
+import org.mars_sim.msp.simulation.person.ai.Task;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be

@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.simulation;
 
-import java.io.*;
 
 /** The LocationConver class creates a Coordinate object based on
  *  parsed latitude and longitude values.

@@ -7,15 +7,32 @@
  
 package org.mars_sim.msp.simulation.structure.building;
 
-import org.mars_sim.msp.simulation.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.*;
-import org.mars_sim.msp.simulation.person.medical.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.function.*;
-import org.mars_sim.msp.simulation.structure.building.function.impl.*;
-import java.util.*;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.medical.HealthProblem;
+import org.mars_sim.msp.simulation.structure.building.function.Communication;
+import org.mars_sim.msp.simulation.structure.building.function.Dining;
+import org.mars_sim.msp.simulation.structure.building.function.EVA;
+import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
+import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
+import org.mars_sim.msp.simulation.structure.building.function.Recreation;
+import org.mars_sim.msp.simulation.structure.building.function.Research;
+import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.simulation.structure.building.function.Storage;
+import org.mars_sim.msp.simulation.structure.building.function.impl.SolarPowerGeneration;
+import org.mars_sim.msp.simulation.structure.building.function.impl.StandardLivingAccommodations;
+import org.mars_sim.msp.simulation.structure.building.function.impl.StandardMedicalCare;
+import org.mars_sim.msp.simulation.structure.building.function.impl.StandardResearch;
+import org.mars_sim.msp.simulation.structure.building.function.impl.StandardResourceProcessing;
 
 /**
  * The LanderHab class represents a lander habitat building from a Mars Direct mission.

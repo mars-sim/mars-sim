@@ -8,9 +8,11 @@
 package org.mars_sim.msp.simulation.structure.building.function.impl;
  
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.*;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
  
 /**

@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.simulation;
 
-import java.io.*;
 
 /** The Landmark class represents a surface landmark on virtual Mars.
  *  It contains information related to the landmark.
