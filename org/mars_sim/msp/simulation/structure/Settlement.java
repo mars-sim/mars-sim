@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2004-04-08
+ * @version 2.76 2004-05-5
  * @author Scott Davis
  */
 
@@ -228,6 +228,18 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * @throws Exception if error during time passing.
      */
     public void timePassing(double time) throws Exception {
+        
+		// If settlement is overcrowded, increase inhabitant's stress.
+		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
+		if (overCrowding > 0) {
+			System.out.println("Overcrowding at " + getName());
+			double stressModifier = .1D * overCrowding * time;
+			PersonIterator i = getInhabitants().iterator();
+			while (i.hasNext()) {
+				PhysicalCondition condition = i.next().getPhysicalCondition();
+				condition.setStress(condition.getStress() + stressModifier);
+			}
+		}
         
         try {
         	// If no current population at settlement, power down buildings.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 2.75 2004-03-29
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -19,6 +19,7 @@ public class LifeSupport extends Function implements Serializable {
 
 	public static final String NAME = "Life Support";
 	
+	// Data members
 	private int occupantCapacity;
 	private double powerRequired;
 	private PersonCollection occupants;
@@ -140,6 +141,18 @@ public class LifeSupport extends Function implements Serializable {
 		PersonIterator i = occupants.iterator();
 		while (i.hasNext()) {
 			if (!inv.containsUnit(i.next())) i.remove();
+		}
+		
+		// Add stress if building is overcrowded.
+		int overcrowding = getOccupantNumber() - getOccupantCapacity();
+		if (overcrowding > 0) {
+			// System.out.println("Overcrowding at " + getBuilding());
+			double stressModifier = .1D * overcrowding * time;
+			PersonIterator j = getOccupants().iterator();
+			while (j.hasNext()) {
+				PhysicalCondition condition = j.next().getPhysicalCondition();
+				condition.setStress(condition.getStress() + stressModifier);
+			}
 		}
 	}
 
