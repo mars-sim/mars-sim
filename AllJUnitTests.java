@@ -1,3 +1,11 @@
+import junit.framework.Test; 	 
+import junit.framework.TestCase; 	 
+import junit.framework.TestSuite; 	 
+  	 
+// include any ONE of the following... 	 
+//import junit.textui.TestRunner; 	 
+//import junit.awtui.TestRunner; 	 
+import junit.swingui.TestRunner;
 
 /**
  * JUnit test suite
