@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.75 2003-06-18
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 
@@ -26,8 +26,8 @@ public class SkillManager implements Serializable {
         skills = new Hashtable();
 
         // Add starting skills randomly for person.
-        String[] startingSkills = {"Driving", "Greenhouse Farming",
-                                   "Mechanic", "EVA Operations", "Areology", "Medical"};
+        String[] startingSkills = { Skill.DRIVING, Skill.FARMING, Skill.MECHANICS,
+                                    Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL };
 
         for (int x = 0; x < startingSkills.length; x++) {
             // int skillLevel = getInitialSkillLevel(0, 50);
@@ -46,8 +46,7 @@ public class SkillManager implements Serializable {
     private int getInitialSkillLevel(int level, int chance) {
         if (RandomUtil.lessThanRandPercent(chance))
             return getInitialSkillLevel(level + 1, chance / 2);
-        else
-            return level;
+        else return level;
     }
 
     /** Returns the number of skills.
@@ -74,10 +73,8 @@ public class SkillManager implements Serializable {
      *  @return true if the manager has the named skill
      */
     public boolean hasSkill(String skillName) {
-        if (skills.containsKey(skillName))
-            return true;
-        else
-            return false;
+        if (skills.containsKey(skillName)) return true;
+        else return false;
     }
 
     /** Returns the integer skill level from a named skill if it exists in the SkillManager.
@@ -113,9 +110,7 @@ public class SkillManager implements Serializable {
      */
     public void addNewSkill(Skill newSkill) {
         String skillName = newSkill.getName();
-        if (hasSkill(skillName)) {
-            ((Skill) skills.get(skillName)).setLevel(newSkill.getLevel());
-        }
+        if (hasSkill(skillName)) ((Skill) skills.get(skillName)).setLevel(newSkill.getLevel());
         else skills.put(newSkill.getName(), newSkill);
     }
 
@@ -125,8 +120,7 @@ public class SkillManager implements Serializable {
      *  @param experiencePoints the experience points to be added
      */
     public void addExperience(String skillName, double experiencePoints) {
-        if (hasSkill(skillName))
-            ((Skill) skills.get(skillName)).addExperience(experiencePoints);
+        if (hasSkill(skillName)) ((Skill) skills.get(skillName)).addExperience(experiencePoints);
         else {
             addNewSkill(new Skill(skillName));
             addExperience(skillName, experiencePoints);
