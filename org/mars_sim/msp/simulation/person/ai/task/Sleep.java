@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-04
  * @author Scott Davis
  */
 
@@ -72,14 +72,11 @@ class Sleep extends Task implements Serializable {
 
 		double fatigue = person.getPhysicalCondition().getFatigue();
 
-        if (fatigue > 750D) {
-            result = 25D;
+        if (fatigue > 500D) {
+            result = (fatigue - 500D) / 10D;
             if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0)
-                result += 50D;
+                result *= 2D;
         }
-        
-        // If fatigue is higher than 1000, add 1 to result for every 5 points over 1000.
-        if (fatigue > 1000D) result += (fatigue - 1000D) / 5D;
 
         return result;
     }
