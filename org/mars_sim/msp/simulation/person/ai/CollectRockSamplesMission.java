@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-02-19
+ * @version 2.74 2002-02-20
  * @author Scott Davis
  */
 
@@ -83,7 +83,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == Person.INSETTLEMENT) {
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement currentSettlement = person.getSettlement();
 	    boolean possible = true;
 	    
@@ -109,7 +109,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         double result = 0D;
 
-        if ((phase == EMBARK) && !hasPerson(person)) {
+        if ((phase.equals(EMBARK)) && !hasPerson(person)) {
             if (person.getSettlement() == startingSettlement) {
                 if (people.size() < missionCapacity) result = 50D;
             }
@@ -133,10 +133,10 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         // If the mission is not yet completed, perform the mission phase.
         if (!done) {
-            if (phase == EMBARK) embarkingPhase(person);
+            if (phase.equals(EMBARK)) embarkingPhase(person);
             if (phase.startsWith(DRIVING)) drivingPhase(person);
             if (phase.startsWith(COLLECTSAMPLES)) collectingPhase(person);
-            if (phase == DISEMBARK) disembarkingPhase(person);
+            if (phase.equals(DISEMBARK)) disembarkingPhase(person);
         }
     }
 
@@ -190,14 +190,14 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         // Have person get in the rover 
         // When every person in mission is in rover, go to Driving phase.
-        if (person.getLocationSituation() != Person.INVEHICLE) 
+        if (!person.getLocationSituation().equals(Person.INVEHICLE)) 
 	    person.getSettlement().getInventory().takeUnit(person, rover);
 
         // If any people in mission haven't entered the rover, return.
 	PersonIterator i = people.iterator();
 	while (i.hasNext()) {
             Person tempPerson = i.next();
-            if (tempPerson.getLocationSituation() != Person.INVEHICLE) return;
+            if (!tempPerson.getLocationSituation().equals(Person.INVEHICLE)) return;
         }
 
         // Make final preperations on rover.
@@ -243,7 +243,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
                 lastDriver = null;
             }
             else {
-                if ((rover.getDriver() == null) && (rover.getStatus() == Vehicle.PARKED)) {
+                if ((rover.getDriver() == null) && (rover.getStatus().equals(Vehicle.PARKED))) {
                     DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, destination, startingTime, startingDistance);
                     person.getMind().getTaskManager().addTask(driveTask);
                     lastDriver = person;
@@ -266,7 +266,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	boolean everyoneInRover = true;
 	PersonIterator i = people.iterator();
 	while (i.hasNext()) {
-	    if (i.next().getLocationSituation() == Person.OUTSIDE) everyoneInRover = false;
+	    if (i.next().getLocationSituation().equals(Person.OUTSIDE)) everyoneInRover = false;
 	}
 
 	if (everyoneInRover) {
@@ -342,7 +342,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         rover.setETA(null);
 
         // Have person exit rover if necessary.
-        if (person.getLocationSituation() == Person.INVEHICLE) 
+        if (person.getLocationSituation().equals(Person.INVEHICLE)) 
 	    rover.getInventory().takeUnit(person, startingSettlement);
 
         // Unload rover if necessary.
@@ -357,7 +357,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	PersonIterator i = people.iterator();
 	while (i.hasNext()) {
             Person tempPerson = i.next();
-            if (tempPerson.getLocationSituation() == Person.INVEHICLE) allDisembarked = false;
+            if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
         }
         if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) endMission();
     }

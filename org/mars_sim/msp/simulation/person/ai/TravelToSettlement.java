@@ -72,7 +72,7 @@ class TravelToSettlement extends Mission implements Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == Person.INSETTLEMENT) {
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement currentSettlement = person.getSettlement();
             boolean possible = true;
 	    
@@ -178,7 +178,7 @@ class TravelToSettlement extends Mission implements Serializable {
         
         // Have person get in the rover 
         // When every person in mission is in rover, go to Driving phase.
-        if (person.getLocationSituation() != Person.INVEHICLE) {
+        if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
 	    startingSettlement.getInventory().takeUnit(person, rover);
         }
         
@@ -186,7 +186,7 @@ class TravelToSettlement extends Mission implements Serializable {
 	PersonIterator i = people.iterator();
 	while (i.hasNext()) {
             Person tempPerson = i.next();
-            if (tempPerson.getLocationSituation() != Person.INVEHICLE) return;
+            if (!tempPerson.getLocationSituation().equals(Person.INVEHICLE)) return;
         }
 
         // Make final preperations on rover.
@@ -222,7 +222,7 @@ class TravelToSettlement extends Mission implements Serializable {
                 lastDriver = null;
             }
             else {
-                if ((rover.getDriver() == null) && (rover.getStatus() == Rover.PARKED)) {
+                if ((rover.getDriver() == null) && (rover.getStatus().equals(Rover.PARKED))) {
                     DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, 
 				    destinationSettlement.getCoordinates(), startingTime, startingDistance); 
                     person.getMind().getTaskManager().addTask(driveTask);
@@ -244,7 +244,7 @@ class TravelToSettlement extends Mission implements Serializable {
         rover.setETA(null);
 
         // Have person exit rover if necessary. 
-        if (person.getLocationSituation() == Person.INVEHICLE) {
+        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
 	    rover.getInventory().takeUnit(person, destinationSettlement);
         }
 
@@ -260,7 +260,7 @@ class TravelToSettlement extends Mission implements Serializable {
 	PersonIterator i = people.iterator();
 	while (i.hasNext()) {
             Person tempPerson = i.next();
-            if (tempPerson.getLocationSituation() == Person.INVEHICLE) allDisembarked = false;
+            if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
         }
         if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) endMission(); 
     }

@@ -43,7 +43,7 @@ class RepairMechanicalFailure extends Task implements Serializable {
     public static double getProbability(Person person, VirtualMars mars) {
         double result = 0D;
 
-        if (person.getLocationSituation() == Person.INVEHICLE) {
+        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
             Vehicle vehicle = person.getVehicle();
             MechanicalFailure failure = vehicle.getMechanicalFailure();
             if ((failure != null) && !failure.isFixed()) result = 100D;

@@ -77,7 +77,7 @@ class MaintainVehicle extends Task implements Serializable {
     public static double getProbability(Person person, VirtualMars mars) {
         double result = 0D;
 
-        if (person.getLocationSituation() == Person.INSETTLEMENT) {
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
 	    VehicleIterator i = settlement.getParkedVehicles().iterator();
 	    while (i.hasNext()) {

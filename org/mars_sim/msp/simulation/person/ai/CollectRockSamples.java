@@ -58,11 +58,11 @@ class CollectRockSamples extends Task implements Serializable {
     double performTask(double time) {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
-
+	
 	while ((timeLeft > 0D) && !done) {
-            if (phase == EXIT_ROVER) timeLeft = exitRover(timeLeft);
-	    else if (phase == COLLECT_ROCKS) timeLeft = collectRocks(timeLeft);
-	    else if (phase == ENTER_ROVER) timeLeft = enterRover(timeLeft);
+            if (phase.equals(EXIT_ROVER)) timeLeft = exitRover(timeLeft);
+	    else if (phase.equals(COLLECT_ROCKS)) timeLeft = collectRocks(timeLeft);
+	    else if (phase.equals(ENTER_ROVER)) timeLeft = enterRover(timeLeft);
 	}
 	
         return timeLeft;
@@ -75,7 +75,7 @@ class CollectRockSamples extends Task implements Serializable {
      */
     private double exitRover(double time) {
 
-	if (person.getLocationSituation() == Person.INVEHICLE) {
+	if (person.getLocationSituation().equals(Person.INVEHICLE)) {
 	    if (ExitRoverEVA.canExitRover(person, rover)) {
 	        addSubTask(new ExitRoverEVA(person, mars, rover));
 	        return 0D;
@@ -145,7 +145,7 @@ class CollectRockSamples extends Task implements Serializable {
      */
     private double enterRover(double time) {
 
-        if (person.getLocationSituation() == Person.OUTSIDE) {
+        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
 	    addSubTask(new EnterRoverEVA(person, mars, rover));
 	    return 0D;
 	}

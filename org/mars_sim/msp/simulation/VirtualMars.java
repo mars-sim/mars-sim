@@ -114,10 +114,11 @@ public class VirtualMars implements Serializable {
         catch(FileNotFoundException e) {
             return null;
         }
-
+	
         ObjectInputStream p = new ObjectInputStream(istream);
 
         VirtualMars mars = (VirtualMars)p.readObject();
+
         mars.setStateFile(fileName.getAbsolutePath());
         istream.close();
 
