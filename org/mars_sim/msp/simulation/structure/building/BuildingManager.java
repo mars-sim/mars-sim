@@ -101,9 +101,9 @@ public class BuildingManager implements Serializable {
      *
      * @param person the person to add.
      * @param settlement the settlement to find a building.
-     * @throw Exception if person cannot be added to any building.
+     * @throw BuildingException if person cannot be added to any building.
      */
-    public static void addToRandomBuilding(Person person, Settlement settlement) throws Exception {
+    public static void addToRandomBuilding(Person person, Settlement settlement) throws BuildingException {
         
         Collection habs = settlement.getBuildingManager().getBuildings(InhabitableBuilding.class);
         
@@ -119,7 +119,7 @@ public class BuildingManager implements Serializable {
         }
         
         if (building != null) building.addPerson(person);
-        else throw new Exception("No inhabitable buildings available for " + person.getName());
+        else throw new BuildingException("No inhabitable buildings available for " + person.getName());
     }
     
     /**
@@ -127,9 +127,9 @@ public class BuildingManager implements Serializable {
      *
      * @param vehicle the ground vehicle to add.
      * @param settlement the settlement to find a building.
-     * @throw Exception if vehicle cannot be added to any building.
+     * @throw BuildingException if vehicle cannot be added to any building.
      */
-    public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) throws Exception {
+    public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) throws BuildingException {
         
         Collection garages = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.class);
         List openGarages = new ArrayList();
@@ -145,7 +145,7 @@ public class BuildingManager implements Serializable {
             ((VehicleMaintenance) openGarages.get(rand)).addVehicle(vehicle);
         }
         else {
-            throw new Exception("No available garage space for " + vehicle.getName());
+            throw new BuildingException("No available garage space for " + vehicle.getName());
         }
     }
         

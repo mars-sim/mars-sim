@@ -13,6 +13,8 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** The CollectRockSamplesMission class is a mission to travel to several
@@ -381,15 +383,31 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         rover.setSpeed(0D);
         rover.setETA(null);
 
+        // Add rover to a garage if possible.
+        VehicleMaintenance garage = null;
+        try {
+            BuildingManager.addToRandomBuilding(rover, startingSettlement);
+            garage = BuildingManager.getBuilding(rover);
+        }
+        catch (Exception e) {}
+        
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
             rover.getInventory().takeUnit(person, startingSettlement);
+            try {
+                if ((garage != null) && (garage instanceof InhabitableBuilding))
+                    ((InhabitableBuilding) garage).addPerson(person);
+                else BuildingManager.addToRandomBuilding(rover, startingSettlement);
+            }
+            catch (BuildingException e) { 
+                System.out.println("CollectRockSamplesMission.disembarkingPhase(): " + e.getMessage()); 
+            }
         }
 
         // Unload rover if necessary.
         if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
         if (!roverUnloaded) {
-	    assignTask(person, new UnloadVehicle(person, mars, rover));
+            assignTask(person, new UnloadVehicle(person, mars, rover));
             return;
         }
 

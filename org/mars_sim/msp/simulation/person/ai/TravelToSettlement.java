@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.75 2003-04-24
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -11,6 +11,8 @@ import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** The TravelToSettlement class is a mission to travel from one settlement 
@@ -265,9 +267,25 @@ class TravelToSettlement extends Mission implements Serializable {
         rover.setDestinationType("None");
         rover.setETA(null);
 
-        // Have person exit rover if necessary. 
+        // Add rover to a garage if possible.
+        VehicleMaintenance garage = null;
+        try {
+            BuildingManager.addToRandomBuilding(rover, destinationSettlement);
+            garage = BuildingManager.getBuilding(rover);
+        }
+        catch (Exception e) {}
+        
+        // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
             rover.getInventory().takeUnit(person, destinationSettlement);
+            try {
+                if ((garage != null) && (garage instanceof InhabitableBuilding))
+                    ((InhabitableBuilding) garage).addPerson(person);
+                else BuildingManager.addToRandomBuilding(rover, destinationSettlement);
+            }
+            catch (BuildingException e) { 
+                System.out.println("CollectRockSamplesMission.disembarkingPhase(): " + e.getMessage()); 
+            }
         }
 
         // Unload rover if necessary.
