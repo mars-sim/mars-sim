@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.77 2004-08-31
+ * @version 2.77 2004-09-01
  * @author Scott Davis
  */
 

@@ -60,7 +60,7 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 
         // Create the document contents string
         StringBuffer buf = new StringBuffer();
-        buf.append("The Mars Simulation Project v2.76\n\n");
+        buf.append("The Mars Simulation Project v2.77\n\n");
         buf.append("Web Site: http://mars-sim.sourceforge.net\n\n");
 
         buf.append("Developers:\n");

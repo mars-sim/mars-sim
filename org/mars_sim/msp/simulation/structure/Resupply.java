@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 2.77 2004-08-20
+ * @version 2.77 2004-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;
@@ -11,6 +11,7 @@ import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.events.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Rover;
@@ -118,12 +119,16 @@ public class Resupply implements Serializable {
 		}
 		
 		// Deliver immigrants.
+		PersonCollection immigrants = new PersonCollection();
+		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		for (int x = 0; x < newImmigrantNum; x++) {
 			PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
 			String gender = Person.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
 			Person immigrant = new Person(unitManager.getNewName(UnitManager.PERSON, gender), gender, settlement);
 			unitManager.addUnit(immigrant);
+			relationshipManager.addNewImmigrant(immigrant, immigrants);
+			immigrants.add(immigrant);
 		}
 		
 		// Send resupply delivery event.

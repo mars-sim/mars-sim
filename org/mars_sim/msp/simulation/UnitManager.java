@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.77 2004-08-11
+ * @version 2.77 2004-09-01
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
@@ -251,6 +252,7 @@ public class UnitManager implements Serializable {
     private void createInitialPeople() throws Exception {
     	
     	PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
     	
     	try {
     		SettlementIterator i = getSettlements().iterator();
@@ -259,7 +261,9 @@ public class UnitManager implements Serializable {
     			while (settlement.getAvailablePopulationCapacity() > 0) {
     				String gender = Person.FEMALE;
     				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
-    				addUnit(new Person(getNewName(PERSON, gender), gender, settlement));
+    				Person person = new Person(getNewName(PERSON, gender), gender, settlement);
+    				addUnit(person);
+    				relationshipManager.addInitialSettler(person, settlement);
     			}
     		}
     	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relationship.java
- * @version 2.77 2004-08-31
+ * @version 2.77 2004-09-01
  * @author Scott Davis
  */
 
@@ -18,8 +18,8 @@ import org.mars_sim.msp.simulation.person.*;
 public class Relationship implements Serializable {
 
 	// Types of starting relationships.
-	public static final String FIRST_IMPRESSION = "First Impression";
-	public static final String EXISTING_RELATIONSHIP = "Existing Relationship";
+	static final String FIRST_IMPRESSION = "First Impression";
+	static final String EXISTING_RELATIONSHIP = "Existing Relationship";
 
 	// Data members
 	private Person person1;
@@ -34,7 +34,7 @@ public class Relationship implements Serializable {
 	 * @param startingRelationship the type of starting relationship (see static strings above)
 	 * @throws IllegalArgumentException if invalid parameters
 	 */
-	public Relationship(Person person1, Person person2, String startingRelationship) throws IllegalArgumentException {
+	Relationship(Person person1, Person person2, String startingRelationship) throws IllegalArgumentException {
 		
 		// Initialize data members
 		this.person1 = person1;
@@ -52,19 +52,24 @@ public class Relationship implements Serializable {
 	}
 	
 	/**
-	 * Gets person 1
-	 * @return person 1
+	 * Gets the two people in relationship.
+	 * @return array of two people
 	 */
-	public Person getPerson1() {
-		return person1;
+	public Person[] getPeople() {
+		Person[] result = { person1, person2 };
+		return result;
 	}
 	
 	/**
-	 * Gets person 1's opinion of person 2
-	 * @return person 1's opinion as a value from 0 to 100.
+	 * Checks if a given person is in this relationship.
+	 * @param person the person to check
+	 * @return true if person is in this relationship
 	 */
-	public double getPerson1Opinion() {
-		return person1Opinion;
+	public boolean hasPerson(Person person) {
+		boolean result = false;
+		if (person1 == person) result = true;
+		else if (person2 == person) result = true;
+		return result;
 	}
 	
 	/**
@@ -75,22 +80,6 @@ public class Relationship implements Serializable {
 		person1Opinion = opinion;
 		if (person1Opinion < 0D) person1Opinion = 0D;
 		if (person1Opinion > 100D) person1Opinion = 100D;
-	}
-	
-	/**
-	 * Gets person 2
-	 * @return person 2
-	 */
-	public Person getPerson2() {
-		return person2;
-	}
-	
-	/**
-	 * Gets person 2's opinion of person 1
-	 * @return person 2's opinion as a value from 0 to 100.
-	 */
-	public double getPerson2Opinion() {
-		return person2Opinion;
 	}
 	
 	/**
@@ -110,8 +99,8 @@ public class Relationship implements Serializable {
 	 * @throws IllegalArgumentException if person is not one the two people in the relationship.
 	 */
 	public double getPersonOpinion(Person person) throws IllegalArgumentException {
-		if (person == person1) return getPerson1Opinion();
-		if (person == person2) return getPerson2Opinion();
+		if (person == person1) return person1Opinion;
+		if (person == person2) return person2Opinion;
 		else throw new IllegalArgumentException("Invalid person: " + person);
 	}
 	

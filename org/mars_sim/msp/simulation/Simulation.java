@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 2.76 2004-08-06
+ * @version 2.77 2004-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -12,6 +12,7 @@ import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.medical.MedicalManager;
 import org.mars_sim.msp.simulation.time.*;
 
@@ -30,16 +31,17 @@ public class Simulation implements Serializable {
 	// Singleton instance
 	private static final Simulation instance = new Simulation();
 	
-	// Transient data members
+	// Transient data members (aren't stored in save file)
 	private transient MalfunctionFactory malfunctionFactory; // The malfunction factory
 	private transient HistoricalEventManager eventManager; // All historical info.
 	private transient SimulationConfig simConfig; // The simulation configuration.
 	private transient Thread clockThread;
 	
-	// Intransient data members
+	// Intransient data members (stored in save file)
 	private Mars mars; // Planet Mars
 	private UnitManager unitManager; // Manager for all units in simulation.
 	private MissionManager missionManager; // Mission controller
+	private RelationshipManager relationshipManager; // Manages all personal relationships.
 	private MedicalManager medicalManager; // Medical complaints
 	private JobManager jobManager; // Job manager
 	private MasterClock masterClock; // Master clock for the simulation.
@@ -104,6 +106,7 @@ public class Simulation implements Serializable {
 	private void initializeIntransientData() throws Exception {
 		mars = new Mars();
 		missionManager = new MissionManager();
+		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
 		jobManager = new JobManager();
 		masterClock = new MasterClock();
@@ -130,6 +133,7 @@ public class Simulation implements Serializable {
 			mars = (Mars) p.readObject();
 			mars.initializeTransientData();
 			missionManager = (MissionManager) p.readObject();
+			relationshipManager = (RelationshipManager) p.readObject();
 			medicalManager = (MedicalManager) p.readObject();
 			jobManager = (JobManager) p.readObject();
 			unitManager = (UnitManager) p.readObject();
@@ -160,6 +164,7 @@ public class Simulation implements Serializable {
 		// Store the intransient objects.
 		p.writeObject(mars);
 		p.writeObject(missionManager);
+		p.writeObject(relationshipManager);
 		p.writeObject(medicalManager);
 		p.writeObject(jobManager);
 		p.writeObject(unitManager);
@@ -233,6 +238,14 @@ public class Simulation implements Serializable {
 	 */
 	public MissionManager getMissionManager() {
 		return missionManager;
+	}
+	
+	/**
+	 * Get the relationship manager.
+	 * @return relationship manager.
+	 */
+	public RelationshipManager getRelationshipManager() {
+		return relationshipManager;
 	}
 	
 	/**
