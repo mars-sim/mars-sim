@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.72 2001-02-18
+ * @version 2.72 2001-02-21
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ class MasterClock extends Thread {
     // Data members
     private VirtualMars mars;     // Virtual Mars
     private EarthClock earthTime; // Earth Clock
+    private UpTimer uptimer;      // Uptime Timer
 
     /** sleep duration in milliseconds */
     private final static int SLEEP_DURATION = 1000;
@@ -35,7 +36,11 @@ class MasterClock extends Thread {
         // Create an Earth clock
         earthTime = new EarthClock();
 
+        // Create an Uptime Timer
+        uptimer = new UpTimer();
+
         System.out.println("Earth Time (GMT): " + earthTime.getDateTimeString());
+        System.out.println("Simulation Uptime: " + uptimer.getUptime());
     }
 
     /** Run clock */
@@ -51,8 +56,10 @@ class MasterClock extends Thread {
 
             // Add ten minutes to Earth clock
             earthTime.addTenMinutes();
-
+            
+            System.out.println(" ");
             System.out.println("Earth Time (GMT): " + earthTime.getDateTimeString());
+            System.out.println("Simulation Uptime: " + uptimer.getUptime());
         }
     }
 }
