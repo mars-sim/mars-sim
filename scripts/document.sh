@@ -28,7 +28,7 @@ set PACKAGES := ${PACKAGES}: org.mars_sim.msp.ui.standard.unit_window.structure.
 set PACKAGES := ${PACKAGES}: org.mars_sim.msp.ui.standard.unit_display.info
 
 set CLASSPATH = .:jars/jcommon.jar:jars/jfreechart.jar
-set VERSION = 2.75
+set VERSION = 2.76
 
 
 cd ../

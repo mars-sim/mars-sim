@@ -148,8 +148,8 @@
             version="false"
             use="true"
             overview="${mars.scripts}/overview.html"
-            windowtitle="Mars Simulation Project v 2.75 API Specification"
-            doctitle="Mars Simulation Project v 2.75 &lt;br>API Specification"> 
+            windowtitle="Mars Simulation Project v 2.76 API Specification"
+            doctitle="Mars Simulation Project v 2.76 &lt;br>API Specification"> 
         </javadoc>
 
       </target>

@@ -30,5 +30,5 @@ set PACKAGES=%PACKAGES% org.mars_sim.msp.ui.standard.unit_display_info
 echo on
 
 cd ../
-javadoc -classpath .;jars\jfreechart.jar;jars\jcommon.jar -d docs/javadoc -overview overview.html -use -author -windowtitle "Mars Simulation Project v 2.75 API Specification" -doctitle "Mars Simulation Project v 2.75<BR>API Specification" -header "<b>Mars Simulation Project</b><br><font size=\"-1\">v2.75</font>" %PACKAGES%
+javadoc -classpath .;jars\jfreechart.jar;jars\jcommon.jar -d docs/javadoc -overview overview.html -use -author -windowtitle "Mars Simulation Project v 2.76 API Specification" -doctitle "Mars Simulation Project v 2.76<BR>API Specification" -header "<b>Mars Simulation Project</b><br><font size=\"-1\">v2.76</font>" %PACKAGES%
 cd scripts
