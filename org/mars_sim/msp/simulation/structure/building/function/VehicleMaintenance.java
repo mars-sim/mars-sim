@@ -58,6 +58,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
      */
     public void addVehicle(Vehicle vehicle) throws BuildingException {
         
+        System.out.println("Trying to add " + vehicle.getName() + " to vehicle maintenance building.");
+        
 		// Check if vehicle cannot be added to building.
 		if (vehicles.contains(vehicle)) 
 			throw new BuildingException("Building already contains vehicle.");

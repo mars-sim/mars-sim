@@ -61,7 +61,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
         
-        // System.out.println(person.getName() + " starting MaintainGroundVehicleGarage task.");
+        System.out.println(person.getName() + " starting MaintainGroundVehicleGarage task.");
     }
 
     /** 
