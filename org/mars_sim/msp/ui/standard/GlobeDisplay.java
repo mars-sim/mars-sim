@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.72 2001-05-11
+ * @version 2.72 2001-05-15
  * @author Scott Davis
  */
 
@@ -145,6 +145,7 @@ class GlobeDisplay extends JComponent implements Runnable {
         }
 
         if (!topo) drawShading(g);
+
         drawUnits(g);
         drawCrossHair(g);
     }
@@ -166,7 +167,7 @@ class GlobeDisplay extends JComponent implements Runnable {
                 if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
                     centerCoords.convertRectToSpherical(xDiff, yDiff, 47.74648293D, location);
                     int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
-                    shadingArray[x + (y * 150)] = ((127 - sunlight) << 24) & 0xFF000000;
+                    shadingArray[x + (y * width)] = ((127 - sunlight) << 24) & 0xFF000000;
                 }
                 else shadingArray[x + (y * 150)] = 0xFF000000;
             }
@@ -174,6 +175,15 @@ class GlobeDisplay extends JComponent implements Runnable {
 
         // Create shading image for map
         Image shadingMap = this.createImage(new MemoryImageSource(width, height, shadingArray, 0, width));
+
+        MediaTracker mt = new MediaTracker(this);
+        mt.addImage(shadingMap, 0);
+        try {
+            mt.waitForID(0);
+        }
+        catch (InterruptedException e) {
+            System.out.println("GlobeDisplay - ShadingMap interrupted: " + e);
+        }
 
         // Draw the shading image
         g.drawImage(shadingMap, 0, 0, this);

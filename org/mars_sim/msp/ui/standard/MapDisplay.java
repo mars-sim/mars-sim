@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.72 2001-05-11
+ * @version 2.72 2001-05-15
  * @author Scott Davis
  */
 
@@ -161,11 +161,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     /** loop, refreshing the display when necessary */
     private void refreshLoop() {
         while (true) {
-            /*
-            try { wait(); } 
-            catch (InterruptedException e) {}
-            */
-
             if (recreate) {
                 // Regenerate surface if recreate is true, then display
                 if (topo) topoMap.drawMap(centerCoords);
@@ -243,24 +238,26 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         
-        // Color[] twilightShading = new Color[128];
-        // for (int x=0; x < 128; x++) twilightShading[x] = new Color(0, 0, 0, x);
-
         double rho = 1440D / Math.PI;
         if (useUSGSMap) rho = 11458D / Math.PI;
 
         boolean nightTime = true;
         boolean dayTime = true;
         Coordinates location = new Coordinates(0D, 0D);
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x+=2) {
+            for (int y = 0; y < height; y+=2) {
                 centerCoords.convertRectToSpherical(x - centerX, y - centerY, rho, location);
                 int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
-                shadingArray[x + (y * width)] = ((127 - sunlight) << 24) & 0xFF000000;
+                int shadeColor = ((127 - sunlight) << 24) & 0xFF000000;
+                shadingArray[x + (y * width)] = shadeColor;
+                shadingArray[x + 1 + (y * width)] = shadeColor;
+                if (y < height -1) {
+                    shadingArray[x + ((y + 1) * width)] = shadeColor;
+                    shadingArray[x + 1 + ((y + 1) * width)] = shadeColor;
+                }
+                // shadingArray[x + (y * width)] = ((127 - sunlight) << 24) & 0xFF000000;
                 if (sunlight > 0) nightTime = false;
                 if (sunlight < 127) dayTime = false;
-                //g.setColor(twilightShading[127 - sunlight]);
-                //g.fillRect(x, y, 1, 1);
             }
         }
         if (nightTime) {
@@ -271,9 +268,18 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             // Create shading image for map
             Image shadingMap = this.createImage(new MemoryImageSource(width, height, shadingArray, 0, width));
 
+            MediaTracker mt = new MediaTracker(this);
+            mt.addImage(shadingMap, 0);
+            try {
+                mt.waitForID(0);
+            }
+            catch (InterruptedException e) {
+                System.out.println("MapDisplay - ShadingMap interrupted: " + e);
+            }
+
             // Draw the shading image
             g.drawImage(shadingMap, 0, 0, this);
-        }
+        } 
     }
 
     /** Draws units on map
