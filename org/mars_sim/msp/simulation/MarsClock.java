@@ -146,11 +146,11 @@ public class MarsClock {
     }
 
     /** Returns formatted time stamp string
-     *  ex. "13-Adir-05:056.349"
+     *  ex. "13-Adir-05  056.349"
      *  @return formatted timestamp string
      */
     public String getTimeStamp() {
-        return getDateString() + ":" + getTimeString(); 
+        return getDateString() + "  " + getTimeString(); 
     }
 
     /** Returns the current date string

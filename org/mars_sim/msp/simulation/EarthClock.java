@@ -29,7 +29,7 @@ public class EarthClock extends GregorianCalendar {
         setTimeZone(zone);
 
         // Initialize formatter
-        formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a z");
+        formatter = new SimpleDateFormat("MM/dd/yyyy  hh:mm:ss a z");
         formatter.setTimeZone(zone);
 
         // Set starting date/time to midnight, January 1st, 2035

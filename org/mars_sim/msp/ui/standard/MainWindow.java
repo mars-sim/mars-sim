@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.72 2001-02-i8
+ * @version 2.72 2001-04-02
  * @author Scott Davis
  */
 
@@ -22,6 +22,7 @@ public class MainWindow extends JFrame implements WindowListener {
     private static final String VERSION = "2.72";
 
     // Data members
+    private VirtualMars mars;        // The virtual Mars
     private UnitToolBar unitToolbar; // The unit tool bar
     private MainDesktopPane desktop; // The main desktop
     private UIProxyManager proxyManager; // The unit UI proxy manager
@@ -33,6 +34,9 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // use JFrame constructor
         super("Mars Simulation Project (version " + VERSION + ")");
+
+        // Initialize data members
+        this.mars = mars;
 
 	// Prepare custom Mars UI theme
 	MetalLookAndFeel.setCurrentTheme(new MarsTheme());
@@ -86,6 +90,13 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // Show frame
         setVisible(true);
+    }
+
+    /** Returns the virtual Mars instance 
+     *  @return the virutal Mars instance
+     */
+    public VirtualMars getVirtualMars() {
+        return mars;
     }
 
     /** Create a new unit button in toolbar 

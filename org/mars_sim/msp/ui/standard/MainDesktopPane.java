@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.71 2000-10-22
+ * @version 2.72 2001-04-02
  * @author Scott Davis
  */
 
@@ -67,6 +67,13 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Initialize firstDisplay to true
         firstDisplay = true;
+    }
+
+    /** Returns the MainWindow instance
+     *  @return MainWindow instance
+     */
+    public MainWindow getMainWindow() {
+        return mainWindow;
     }
 
     /** Create background tile when MainDesktopPane is first
@@ -139,6 +146,14 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	} catch (java.beans.PropertyVetoException e) { }
 
         toolWindows.addElement(searchWindow);
+
+        // Prepare time tool window
+        TimeWindow timeWindow = new TimeWindow(this);
+        try {
+            timeWindow.setClosed(true);
+        } catch (java.beans.PropertyVetoException e) { }
+
+        toolWindows.addElement(timeWindow);
     }
 
     /** Returns a tool window for a given tool name 

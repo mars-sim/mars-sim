@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.72 2001-03-29
+ * @version 2.72 2001-04-02
  * @author Scott Davis
  */
 
@@ -16,7 +16,7 @@ package org.mars_sim.msp.simulation;
  *  Note: Later the master clock will control calendaring information
  *  as well, so Martian calendars and clocks can be displayed.
  */
-class MasterClock extends Thread {
+public class MasterClock extends Thread {
 
     // Data members
     private VirtualMars mars;     // Virtual Mars
@@ -43,9 +43,30 @@ class MasterClock extends Thread {
         // Create an Uptime Timer
         uptimer = new UpTimer();
 
-        System.out.println("Martian Time: " + marsTime.getTimeStamp());
-        System.out.println("Earth Time (GMT): " + earthTime.getTimeStamp());
-        System.out.println("Simulation Uptime: " + uptimer.getUptime());
+        // System.out.println("Martian Time: " + marsTime.getTimeStamp());
+        // System.out.println("Earth Time (GMT): " + earthTime.getTimeStamp());
+        // System.out.println("Simulation Uptime: " + uptimer.getUptime());
+    }
+
+    /** Returns the Martian clock
+     *  @return Martian clock instance
+     */
+    public MarsClock getMarsClock() {
+        return marsTime;
+    }
+
+    /** Returns the Earth clock
+     *  @return Earth clock instance
+     */
+    public EarthClock getEarthClock() {
+        return earthTime;
+    }
+
+    /** Returns uptime timer
+     *  @return uptimer instance
+     */
+    public UpTimer getUpTimer() {
+        return uptimer;
     }
 
     /** Run clock */
@@ -63,10 +84,10 @@ class MasterClock extends Thread {
             earthTime.addTime(600);
             marsTime.addTime(MarsClock.convertSecondsToMillisols(600));
             
-            System.out.println(" ");
-            System.out.println("Martian Time: " + marsTime.getTimeStamp());
-            System.out.println("Earth Time (GMT): " + earthTime.getTimeStamp());
-            System.out.println("Simulation Uptime: " + uptimer.getUptime());
+            // System.out.println(" ");
+            // System.out.println("Martian Time: " + marsTime.getTimeStamp());
+            // System.out.println("Earth Time (GMT): " + earthTime.getTimeStamp());
+            // System.out.println("Simulation Uptime: " + uptimer.getUptime());
         }
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.71 2000-10-30
+ * @version 2.72 2001-04-02
  * @author Scott Davis
  */
 
@@ -52,6 +52,13 @@ public class VirtualMars {
      */
     public UnitManager getUnitManager() {
         return units;
+    }
+
+    /** Returns the master clock
+     *  @return master clock instance
+     */
+    public MasterClock getMasterClock() {
+        return masterClock;
     }
 }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 2.71 2000-10-23
+ * @version 2.72 2001-04-02
  * @author Scott Davis
  */
 
@@ -61,6 +61,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		searchButton.addActionListener(this);
 		add(searchButton);
 		toolButtons.addElement(searchButton);
+
+                
+		// Add time tool button
+		ToolButton timeButton = new ToolButton("Time Tool", "images/SearchIcon.gif");
+		timeButton.addActionListener(this);
+		add(timeButton);
+		toolButtons.addElement(timeButton);
 	}
 	
 	/** ActionListener method overriden */
