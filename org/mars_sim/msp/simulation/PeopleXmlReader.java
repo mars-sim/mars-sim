@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeopleXmlReader.java
- * @version 2.73 2001-11-17
+ * @version 2.73 2001-11-18
  * @author Scott Davis
  */
 
@@ -11,8 +11,12 @@ import java.io.*;
 import java.util.*;
 import com.microstar.xml.*;
 
+/** The PeopleXmlReader class parses the people.xml XML file and
+ *  creates person unit objects.
+ */
 class PeopleXmlReader extends MspXmlReader {
 
+    // XML element types
     private static int PEOPLE_LIST = 0;
     private static int PERSON = 1;
     private static int NAME = 2;
@@ -24,20 +28,24 @@ class PeopleXmlReader extends MspXmlReader {
     private static int ATTRIBUTE_NAME = 8;
     private static int ATTRIBUTE_LEVEL = 9;
 
-    private int elementType;
+    // Data members
+    private int elementType; // The current element type being parsed
+    private Vector people; // The vector of created settlements
+    private VirtualMars mars; // The virtual Mars instance
+    private UnitManager manager; // The unit manager
+    private String currentName; // The current person name parsed
+    private Settlement currentSettlement; // The current settlement
+    private Vector skills; // The collection of skills for the current person
+    private String currentSkillName; // The current skill name
+    private int currentSkillLevel; // The current skill level
+    private HashMap attributes; // The collection of natural attributes for the current person
+    private String currentAttributeName; // The current attribute name
+    private int currentAttributeLevel; // The current attribute level
 
-    private Vector people;
-    private VirtualMars mars;
-    private UnitManager manager;
-    private String currentName;
-    private Settlement currentSettlement;
-    private Vector skills;
-    private String currentSkillName;
-    private int currentSkillLevel;
-    private HashMap attributes;
-    private String currentAttributeName;
-    private int currentAttributeLevel;
-
+    /** Constructor
+     *  @param manager the unit manager
+     *  @param mars the virtual Mars instance
+     */
     public PeopleXmlReader(UnitManager manager, VirtualMars mars) {
         super("conf/people.xml");
 
@@ -45,15 +53,19 @@ class PeopleXmlReader extends MspXmlReader {
         this.mars = mars;
     }
 
+    /** Returns the vector of people created from the XML file
+     *  @return the vector of people
+     */
     public Vector getPeople() {
         return people;
     }
 
-    /**
-     * Handle the start of an element by printing an event.
-     * @see com.microstar.xml.XmlHandler#startElement
+    /** Handle the start of an element by printing an event.
+     *  @param name the name of the started element
+     *  @throws Exception throws an exception if there is an error
+     *  @see com.microstar.xml.XmlHandler#startElement
      */
-    public void startElement(String name) {
+    public void startElement(String name) throws Exception {
         super.startElement(name);
 
         if (name.equals("PEOPLE_LIST")) {
@@ -89,11 +101,12 @@ class PeopleXmlReader extends MspXmlReader {
         }
     }
 
-    /**
-     * Handle the end of an element by printing an event.
-     * @see com.microstar.xml.XmlHandler#endElement
+    /** Handle the end of an element by printing an event.
+     *  @param name the name of the ending element
+     *  @throws Exception throws an exception if there is an error
+     *  @see com.microstar.xml.XmlHandler#endElement
      */
-    public void endElement(String name) {
+    public void endElement(String name) throws Exception {
         super.endElement(name);
       
         if (elementType == NAME) {
@@ -140,9 +153,8 @@ class PeopleXmlReader extends MspXmlReader {
         }
     }
 
-    /**
-     * Handle character data by printing an event.
-     * @see com.microstar.xml.XmlHandler#charData
+    /** Handle character data by printing an event.
+     *  @see com.microstar.xml.XmlHandler#charData
      */
     public void charData(char ch[], int start, int length) {
         super.charData(ch, start, length);
@@ -189,4 +201,3 @@ class PeopleXmlReader extends MspXmlReader {
         return person;
     }
 }
-

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementsXmlReader.java
- * @version 2.73 2001-11-14
+ * @version 2.73 2001-11-18
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ class SettlementsXmlReader extends MspXmlReader {
     private int elementType; // The current element type being parsed
     private Vector settlements; // The vector of created settlements
     private VirtualMars mars; // The virtual Mars instance
-    private String currentName; // The current settlement named parsed
+    private String currentName; // The current settlement name parsed
     private String currentLatitude; // The current latitude string parsed
     private String currentLongitude; // The current longitude string parsed
     private Coordinates currentLocation; // The current settlement location created
@@ -52,9 +52,11 @@ class SettlementsXmlReader extends MspXmlReader {
     }
 
     /** Handle the start of an element by printing an event.
+     *  @param name the name of the started element
+     *  @throws Exception throws an exception if there is an error
      *  @see com.microstar.xml.XmlHandler#startElement
      */
-    public void startElement(String name) {
+    public void startElement(String name) throws Exception {
         super.startElement(name);
 
         if (name.equals("SETTLEMENTS_LIST")) {
@@ -77,9 +79,11 @@ class SettlementsXmlReader extends MspXmlReader {
     }
 
     /** Handle the end of an element by printing an event.
+     *  @param name the name of the ended element
+     *  @throws Exception throws an exception if there is an error
      *  @see com.microstar.xml.XmlHandler#endElement
      */
-    public void endElement(String name) {
+    public void endElement(String name) throws Exception {
         super.endElement(name);
       
         if (elementType == NAME) {

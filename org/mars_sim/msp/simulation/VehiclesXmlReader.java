@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclesXmlReader.java
- * @version 2.73 2001-11-15
+ * @version 2.73 2001-11-18
  * @author Scott Davis
  */
 
@@ -50,9 +50,11 @@ class VehiclesXmlReader extends MspXmlReader {
     }
 
     /** Handle the start of an element by printing an event.
+     *  @param name the name of the started element
+     *  @throws Exception throws an exception if there is an error
      *  @see com.microstar.xml.XmlHandler#startElement
      */
-    public void startElement(String name) {
+    public void startElement(String name) throws Exception {
         super.startElement(name);
 
         if (name.equals("VEHICLES_LIST")) {
@@ -70,9 +72,11 @@ class VehiclesXmlReader extends MspXmlReader {
     }
 
     /** Handle the end of an element by printing an event.
+     *  @param name the name of the ended element
+     *  @throws Exception throws an exception if there is an error
      *  @see com.microstar.xml.XmlHandler#endElement
      */
-    public void endElement(String name) {
+    public void endElement(String name) throws Exception {
         super.endElement(name);
       
         if (elementType == NAME) {
