@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.72 2001-07-28
+ * @version 2.72 2001-08-05
  * @author Scott Davis
  */
 
@@ -51,8 +51,8 @@ class TendGreenhouse extends Task {
      *  @param time amount of time to perform the task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols) 
      */
-    double doTask(double time) {
-        double timeLeft = super.doTask(time);
+    double performTask(double time) {
+        double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
         // Get the phase from the greenhouse's phase of operation.
@@ -69,7 +69,7 @@ class TendGreenhouse extends Task {
 
         // Keep track of the duration of the task.
         timeCompleted += timeLeft;
-        if (timeCompleted >= duration) isDone = true;
+        if (timeCompleted >= duration) done = true;
 
         // Add experience to "Greenhouse Farming" skill
         // (1 base experience point per 100 millisols of work)

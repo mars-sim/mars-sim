@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-08-05
  * @author Scott Davis
  */
 
@@ -16,16 +16,16 @@ import org.mars_sim.msp.simulation.*;
 abstract class Task {
 
     // Data members
-    String name;            // The name of the task
-    Person person;          // The person performing the task.
-    VirtualMars mars;       // The virtual Mars
-    boolean isDone;         // True if task is finished
-    double timeCompleted;   // The current amount of time spent on the task (in microsols)
-    String description;     // Description of the task
-    Task subTask;           // Sub-task of the current task
-    String phase;           // Phase of task completion
-    double phaseTimeRequired;  // Amount of time required to complete current phase. (in microsols)
-    double phaseTimeCompleted; // Amount of time completed on the current phase. (in microsols)
+    protected String name;            // The name of the task
+    protected Person person;          // The person performing the task.
+    protected VirtualMars mars;       // The virtual Mars
+    protected boolean done;         // True if task is finished
+    protected double timeCompleted;   // The current amount of time spent on the task (in microsols)
+    protected String description;     // Description of the task
+    protected Task subTask;           // Sub-task of the current task
+    protected String phase;           // Phase of task completion
+    protected double phaseTimeRequired;  // Amount of time required to complete current phase. (in microsols)
+    protected double phaseTimeCompleted; // Amount of time completed on the current phase. (in microsols)
 
     /** Constructs a Task object
      *  @param name the name of the task
@@ -37,7 +37,7 @@ abstract class Task {
         this.person = person;
         this.mars = mars;
 		
-        isDone = false;
+        done = false;
         timeCompleted = 0D;
         description = name;
         subTask = null;
@@ -75,9 +75,9 @@ abstract class Task {
      *  @return true if task is completed
      */
     public boolean isDone() {
-        return isDone;
+        return done;
     }
-	
+
     /** Adds a new sub-task. 
      *  @param newSubTask the new sub-task to be added
      */
@@ -92,17 +92,17 @@ abstract class Task {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) { return 50; }
+    public static double getProbability(Person person, VirtualMars mars) { return 0; }
 	
     /** Perform the task for the given number of seconds.
      *  Children should override and implement this.
      *  @param time amount of time given to perform the task (in microsols)
      *  @return amount of time remaining after performing the task (in microsols)
      */
-    double doTask(double time) {	
+    double performTask(double time) {	
         double timeLeft = time;
         if ((subTask != null) && subTask.isDone()) subTask = null;
-        if (subTask != null) timeLeft = subTask.doTask(timeLeft);
+        if (subTask != null) timeLeft = subTask.performTask(timeLeft);
 
         return timeLeft;
     }

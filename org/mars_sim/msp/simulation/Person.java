@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.72 2001-07-28
+ * @version 2.72 2001-08-02
  * @author Scott Davis
  */
 
@@ -20,7 +20,7 @@ public class Person extends Unit {
     private Vehicle vehicle; // Vehicle person is riding in
     private NaturalAttributeManager attributes; // Manager for Person's natural attributes
     private SkillManager skills; // Manager for Person's skills
-    private TaskManager tasks; // Manager for Person's tasks
+    private Mind mind; // Person's mind
     private String locationSituation; // Where person is ("In Settlement", "In Vehicle", "Outside")
     private double fatigue; // Person's fatigue level
     private double hunger; // Person's hunger level
@@ -41,7 +41,7 @@ public class Person extends Unit {
         vehicle = null;
         attributes = new NaturalAttributeManager();
         skills = new SkillManager(this);
-        tasks = new TaskManager(this, mars);
+        mind = new Mind(this, mars);
         locationSituation = new String("In Settlement");
         fatigue = RandomUtil.getRandomDouble(1000D);
         hunger = RandomUtil.getRandomDouble(1000D);
@@ -145,16 +145,13 @@ public class Person extends Unit {
         consumeOxygen(time / 1000D);
         consumeWater(time / 1000D);
         
-        // Later to be replaced with a eat meal task.
-        consumeFood(time / 1000D);
-
         // Build up fatigue for given time passing.
         addFatigue(time);
         
         // Build up hunger for given time passing.
         addHunger(time);
 
-        tasks.takeAction(time);
+        mind.takeAction(time);
     }
 
     /** Returns a reference to the Person's natural attribute manager 
@@ -171,13 +168,13 @@ public class Person extends Unit {
         return skills;
     }
 
-    /** Returns a reference to the Person's task manager 
-     *  @return the person's task manager
+    /** Returns the person's mind 
+     *  @return the person's mind 
      */
-    public TaskManager getTaskManager() {
-        return tasks;
+    public Mind getMind() {
+        return mind;
     }
-    
+   
     /** Person consumes given amount of oxygen
      *  @param amount amount of oxygen to consume (in units)
      */

@@ -65,7 +65,6 @@ public class MechanicalFailure {
      */
     public void addWorkTime(double time) {
         remainingWorkTime -= time;
-        if (remainingWorkTime <= 0F)
-            fixed = true;
+        if (remainingWorkTime <= 0F) fixed = true;
     }
 }

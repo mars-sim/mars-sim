@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.72 2001-06-24
+ * @version 2.72 2001-08-05
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
+import org.mars_sim.msp.simulation.task.MissionManager;
 import java.util.*;
 
 /** VirtualMars represents Mars in the simulation. It contains all the
@@ -18,6 +19,7 @@ public class VirtualMars {
     private OrbitInfo orbitInfo; // Orbital information
     private SurfaceFeatures surfaceFeatures; // Surface features
     private UnitManager units; // Unit controller
+    private MissionManager missionManager; // Mission controller
     private MasterClock masterClock; // Master clock for virtual world
 
     /** Constructs a VirtualMars object */
@@ -28,6 +30,9 @@ public class VirtualMars {
  
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
+
+        // Initialize mission manager
+        missionManager = new MissionManager(this);
 
         // Initialize all units
         units = new UnitManager(this);
@@ -64,6 +69,13 @@ public class VirtualMars {
      */
     public UnitManager getUnitManager() {
         return units;
+    }
+
+    /** Returns the mission manager
+     *  @return mission manager for virtual Mars
+     */
+    public MissionManager getMissionManager() {
+        return missionManager;
     }
 
     /** Returns the master clock

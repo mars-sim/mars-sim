@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.72 2001-07-30
+ * @version 2.72 2001-08-05
  * @author Scott Davis
  */
 
@@ -47,15 +47,15 @@ class EatMeal extends Task {
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */
-    double doTask(double time) {
-        double timeLeft = super.doTask(time);
+    double performTask(double time) {
+        double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
         person.setHunger(0D);
         timeCompleted += time;
         if (timeCompleted > duration) {
             person.consumeFood(1D / 3D);
-            isDone = true;
+            done = true;
             return timeCompleted - duration;
         }
         else return 0;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.72 2001-07-23
+ * @version 2.72 2001-08-05
  * @author Scott Davis
  */
 
@@ -56,7 +56,8 @@ class MaintainVehicle extends Task {
             name = "Performing Maintenance on " + vehicle.getName();
             description = name;
             vehicle.setStatus("Periodic Maintenance");
-        } else isDone = true;
+            System.out.println(person.getName() + " " + name);
+        } else done = true;
     }
 
     /** Returns the weighted probability that a person might perform this task. 
@@ -83,8 +84,8 @@ class MaintainVehicle extends Task {
      *  @param time amount of time to perform the task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols) 
      */
-    double doTask(double time) {
-        double timeLeft = super.doTask(time);
+    double performTask(double time) {
+        double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
         // Determine effective work time based on "Vehicle Mechanic" skill.
@@ -109,7 +110,7 @@ class MaintainVehicle extends Task {
         if (vehicle.getDistanceLastMaintenance() == 0) {
             garage.removeVehicle(vehicle);
             vehicle.setStatus("Parked");
-            isDone = true;
+            done = true;
         }
 
         return 0D;

@@ -1,55 +1,63 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.72 2001-07-08
+ * @version 2.72 2001-08-07
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.task;
 
+import java.util.*;
 import org.mars_sim.msp.simulation.*;
 
-/** The TravelToSettlement class is a task to travel from one settlement to another randomly
+/** The TravelToSettlement class is a mission to travel from one settlement to another randomly
  *  selected one within range of an available vehicle.  
  *
  *  May also be constructed with predetermined destination. 
  */
-class TravelToSettlement extends Task {
+class TravelToSettlement extends Mission {
 
     // Data members
-    Settlement destination;
+    private Settlement startingSettlement;
+    private Settlement destinationSettlement;
+    private Vehicle vehicle;
+    private MarsClock startingTime;
+    private double startingDistance;
+    private Person lastDriver;
+    private boolean vehicleLoaded;
+    private boolean vehicleUnloaded;
+
+    // Tasks tracked
+    ReserveGroundVehicle reserveVehicle;
 
     /** Constructs a TravelToSettlement object with destination settlement
      *  randomly determined.
-     *
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
+     *  @param missionManager the mission manager 
      */
-    public TravelToSettlement(Person person, VirtualMars mars) {
-        super("Travel To Settlement", person, mars);
+    public TravelToSettlement(MissionManager missionManager) {
+        super("Travel To Settlement", missionManager);
 
-        destination = getRandomDestinationSettlement();
+        startingSettlement = null;
+        destinationSettlement = null;
+        vehicle = null;
+        startingTime = null;
+        startingDistance = 0D;
+        lastDriver = null;
+        vehicleLoaded = false;
+        vehicleUnloaded = false;
+
+        // Initialize tracked tasks to null;
+        reserveVehicle = null;
+
+        System.out.println(name + " started");
     }
 
-    /** Constructs a TravelToSettlement object with given destination settlement.
-     *  
-     *  @param person the person to perform the task
+    /** Gets the weighted probability that a given person would start this mission.
+     *  @param person the given person
      *  @param mars the virtual Mars
-     *  @param destination the destination settlement
+     *  @return the weighted probability
      */
-    public TravelToSettlement(Person person, VirtualMars mars, Settlement destination) {
-        super("Travel To " + destination.getName(), person, mars);
-
-        this.destination = destination;
-    }
-
-    /** Returns the weighted probability that a person might perform this task.
-     *  It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
-     *  @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person, VirtualMars mars) {
+    public static double getNewMissionProbability(Person person, VirtualMars mars) {
 
         double result = 0D;
 
@@ -66,51 +74,268 @@ class TravelToSettlement extends Task {
         return result;
     }
 
+    /** Gets the weighted probability that a given person join this mission.
+     *  @param person the given person
+     *  @return the weighted probability
+     */
+    public double getJoiningProbability(Person person) {
+
+        double result = 0D;
+
+        if (phase.equals("Embarking")) { 
+            if (startingSettlement == null) {
+                Person tempPerson = (Person) people.elementAt(0); 
+                startingSettlement = tempPerson.getSettlement();
+            }
+
+            if (person.getSettlement() == startingSettlement) {
+                if (people.size() < missionCapacity) result = 50D;
+            }
+        }
+
+        if (hasPerson(person)) result = 0D;
+
+        return result;
+    }
+
+    /** Performs the mission.
+     *  Mission may determine a new task for a person in the mission. 
+     *  @param person the person performing the mission 
+     */
+    public void performMission(Person person) {
+
+        // System.out.println(person.getName() + " performing mission: " + name);
+
+        // If the mission has too many people, remove this person.
+        if (people.size() > missionCapacity) {
+            removePerson(person);
+            return;
+        }
+        if (missionCapacity == 0) done = true;
+
+        // If the mission is not yet completed, perform the mission phase.
+        if (!done) {
+            if (phase.equals("")) {
+                phase = "Embarking";
+                System.out.println(name + " mission phase: Embarking");
+            }
+            if (phase.equals("Embarking")) embarkingPhase(person);
+            if (phase.equals("Driving")) drivingPhase(person);
+            if (phase.equals("Disembarking")) disembarkingPhase(person); 
+        }
+    }
+
+    /** Performs the embarking phase of the mission.
+     *  @param person the person currently performing the mission
+     */ 
+    private void embarkingPhase(Person person) {
+        
+        // Make sure starting settlement is set.
+        if (startingSettlement == null) startingSettlement = person.getSettlement();
+
+        // Determine the destination settlement.
+        if (destinationSettlement == null) { 
+            destinationSettlement = getRandomDestinationSettlement(startingSettlement); 
+            setMissionCapacity(getDestinationSettlementCapacity(destinationSettlement));
+            name = "Travel To " + destinationSettlement.getName();
+            System.out.println("Destination determined: " + destinationSettlement.getName());
+        }
+
+        // Reserve a ground vehicle.
+        // If a ground vehicle cannot be reserved, end mission.
+        if (vehicle == null) {
+            if (reserveVehicle == null) {
+                reserveVehicle = new ReserveGroundVehicle(person, mars, destinationSettlement.getCoordinates());
+                person.getMind().getTaskManager().addTask(reserveVehicle);
+                return;
+            }
+            else { 
+                if (reserveVehicle.isDone()) {
+                    vehicle = reserveVehicle.getReservedVehicle();
+                    if (vehicle == null) {
+                        done = true;
+                        return;
+                    }
+                    else {
+                        if (vehicle.getMaxPassengers() < missionCapacity) 
+                            setMissionCapacity(vehicle.getMaxPassengers());
+                    }
+                }
+            }
+        }
+        if (vehicle == null) return;
+                    
+        // Load the vehicle with fuel and supplies.
+        // If there isn't enough supplies available, end mission.
+        if (isVehicleLoaded()) vehicleLoaded = true;
+        if (!vehicleLoaded) {
+            LoadVehicle loadVehicle = new LoadVehicle(person, mars, vehicle);
+            person.getMind().getTaskManager().addTask(loadVehicle);
+            if (!loadVehicle.hasEnoughSupplies()) done = true;
+            return;
+        }
+        
+        // Have person get in vehicle
+        // When every person in mission is in vehicle, go to Driving phase.
+        if (!person.getLocationSituation().equals("In Vehicle")) {
+            person.getMind().getTaskManager().addTask(new EnterVehicle(person, mars, vehicle));
+            return;
+        }
+        
+        // If any people in mission haven't entered the vehicle, return.
+        for (int x=0; x < people.size(); x++) {
+            Person tempPerson = (Person) people.elementAt(x);
+            if (!tempPerson.getLocationSituation().equals("In Vehicle")) return;
+        }
+
+        // Make final preperations on vehicle.
+        startingSettlement.vehicleLeave(vehicle);
+        vehicle.setSettlement(null);
+        vehicle.setReserved(false);
+        vehicle.setDestination(destinationSettlement.getCoordinates());
+        vehicle.setDestinationType("Settlement");
+        vehicle.setDestinationSettlement(destinationSettlement);
+
+        // Transition phase to Driving.
+        phase = "Driving";
+        System.out.println(name + " mission phase: Driving");
+    }
+
+    /** Performs the driving phase of the mission.
+     *  @param person the person currently performing the mission
+     */ 
+    private void drivingPhase(Person person) {
+       
+        // Record starting time and distance to destination.
+        if ((startingTime == null) || (startingDistance == 0D)) {
+            startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
+            System.out.println(name + ": starting time: " + startingTime.getTimeStamp());
+            startingDistance = vehicle.getCoordinates().getDistance(destinationSettlement.getCoordinates());
+            System.out.println(name + ": distance to " + destinationSettlement.getName() + ": " + startingDistance + " km.");
+        }
+
+        // If vehicle has reached destination, transition to Disembarking phase.
+        if (person.getCoordinates().equals(destinationSettlement.getCoordinates())) {
+            phase = "Disembarking";
+            System.out.println(name + " mission phase: Disembarking");
+            return;
+        }
+ 
+        // If vehicle doesn't currently have a driver, start drive task for person.
+        // Can't be immediate last driver and can't be at night time.
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) > 0D) {
+            if (person == lastDriver) {
+                lastDriver = null;
+            }
+            else {
+                if ((vehicle.getDriver() == null) && vehicle.getStatus().equals("Parked")) {
+                    DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, (GroundVehicle) vehicle, destinationSettlement.getCoordinates(), startingTime, startingDistance); 
+                    person.getMind().getTaskManager().addTask(driveTask);
+                    lastDriver = person;
+                }   
+            }
+        }     
+    }
+
+    /** Performs the disembarking phase of the mission.
+     *  @param person the person currently performing the mission
+     */ 
+    private void disembarkingPhase(Person person) {
+        
+        // Make sure vehicle is parked at settlement.
+        vehicle.setSettlement(destinationSettlement);
+        vehicle.setDestinationSettlement(null);
+        vehicle.setDestinationType("None");
+        vehicle.setStatus("Parked");
+        vehicle.setETA(null);
+
+        // Have person exit vehicle if necessary. 
+        if (person.getLocationSituation().equals("In Vehicle")) {
+            person.getMind().getTaskManager().addTask(new ExitVehicle(person, mars, vehicle, destinationSettlement));
+            return;
+        }
+
+        // Unload vehicle if necessary.
+        if (isVehicleUnloaded()) vehicleUnloaded = true;
+        if (!vehicleUnloaded) {
+            person.getMind().getTaskManager().addTask(new UnloadVehicle(person, mars, vehicle));
+            return;
+        }
+
+        // If everyone has disembarked and vehicle is unloaded, end mission.
+        boolean allDisembarked = true;
+        for (int x=0; x < people.size(); x++) {
+            Person tempPerson = (Person) people.elementAt(x);
+            if (tempPerson.getLocationSituation().equals("In Vehicle")) allDisembarked = false;
+        }
+        if (allDisembarked && isVehicleUnloaded()) done = true;
+    }
+
     /** Determines a random destination settlement other than current one.
+     *  @param startingSettlement the settlement the mission is starting at
      *  @return randomly determined settlement
      */
-    private Settlement getRandomDestinationSettlement() {
-        UnitManager unitManager = person.getUnitManager();
-        Settlement embarkingSettlement = person.getSettlement();
+    private Settlement getRandomDestinationSettlement(Settlement startingSettlement) {
+        UnitManager unitManager = startingSettlement.getUnitManager();
         Settlement result = null;
 
         // Choose a random settlement other than current one.
         // 75% chance of selecting ove of the closest three settlements.
         if (RandomUtil.lessThanRandPercent(75)) 
-            result = unitManager.getRandomOfThreeClosestSettlements(embarkingSettlement);
-        else result = unitManager.getRandomSettlement(embarkingSettlement);
+            result = unitManager.getRandomOfThreeClosestSettlements(startingSettlement);
+        else result = unitManager.getRandomSettlement(startingSettlement);
     
         return result;
-    } 
-
-    /** Performs this task for a given period of time 
-     *  @param time amount of time to perform task (in millisols) 
+    }
+ 
+    /** Determines destination settlement capacity.
+     *  @param destinationSettlement the destination settlement of the mission
+     *  @return destination settlement capacity as int
      */
-    double doTask(double time) {
-        double timeLeft = super.doTask(time);
-        if (subTask != null) return timeLeft;
-
-        if (phase.equals("")) {
-            phase = "Embarking";
-            subTask = new EmbarkFromSettlement(person, mars, destination);
-        }
-        else if (phase.equals("Embarking")) {
-            phase = "Driving";
-            if (person.getVehicle() != null) {
-                subTask = new DriveGroundVehicle(person, mars, (GroundVehicle) person.getVehicle(), destination.getCoordinates());
-            }
-            else isDone = true;
-        }
-        else if (phase.equals("Driving")) {
-            phase = "Disembarking";
-            subTask = new DisembarkAtSettlement(person, mars, destination);
-        }
-        else if (phase.equals("Disembarking")) {
-            subTask = null;
-            isDone = true;
+    private int getDestinationSettlementCapacity(Settlement destinationSettlement) {
+        int result = 0;
+     
+        // Determine current capacity of settlement.
+        FacilityManager manager = destinationSettlement.getFacilityManager();
+        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
+        result += quarters.getMaximumCapacity() - quarters.getCurrentPopulation();
+        
+        // Subtract number of people currently traveling to settlement.
+        Vehicle[] vehicles = mars.getUnitManager().getVehicles();
+        for (int x=0; x < vehicles.length; x++) {
+            Settlement tempSettlement = vehicles[x].getDestinationSettlement();
+            if ((tempSettlement != null) && (tempSettlement == destinationSettlement))
+                result -= vehicles[x].getPassengerNum();
         }
 
-        return timeLeft; 
+        return result;
+    }
+
+    /** Determine if a vehicle is fully loaded with fuel and supplies.
+     *  @return true if vehicle is fully loaded.
+     */
+    private boolean isVehicleLoaded() {
+        boolean result = true;
+
+        if (vehicle.getFuel() < vehicle.getFuelCapacity()) result = false;
+        if (vehicle.getOxygen() < vehicle.getOxygenCapacity()) result = false;
+        if (vehicle.getWater() < vehicle.getWaterCapacity()) result = false;
+        if (vehicle.getFood() < vehicle.getFoodCapacity()) result = false;
+
+        return result;
+    }
+
+    /** Determine if a vehicle is fully unloaded.
+     *  @return true if vehicle is fully unloaded.
+     */
+    private boolean isVehicleUnloaded() {
+        boolean result = true;
+
+        if (vehicle.getFuel() != 0D) result = false;
+        if (vehicle.getOxygen() != 0D) result = false;
+        if (vehicle.getWater() != 0D) result = false;
+        if (vehicle.getFood() != 0D) result = false;
+
+        return result;
     }
 }
-

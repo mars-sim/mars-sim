@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.72 2001-07-28
+ * @version 2.72 2001-08-05
  * @author Scott Davis
  */
 
@@ -53,14 +53,14 @@ class Sleep extends Task {
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */
-    double doTask(double time) {
-        double timeLeft = super.doTask(time);
+    double performTask(double time) {
+        double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
         person.setFatigue(0D);
         timeCompleted += time;
         if (timeCompleted > duration) {
-            isDone = true;
+            done = true;
             return timeCompleted - duration;
         }
         else return 0;

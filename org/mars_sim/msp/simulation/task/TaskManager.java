@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.72 2001-07-23
+ * @version 2.72 2001-08-07
  * @author Scott Davis
  */
 
@@ -21,156 +21,152 @@ public class TaskManager {
 
     // Data members
     private Task currentTask; // The current task the person is doing.
-    private Person person; // The person the task manager is responsible for.
+    private Mind mind; // The mind of the person the task manager is responsible for.
     private VirtualMars mars; // The virtual Mars
-    private Class[] generalTasks; // A collection of general tasks a person can do.
+
+    // Array of available tasks
+    private Class[] availableTasks = { Relax.class, TendGreenhouse.class, MaintainVehicle.class, 
+                                       Sleep.class, EatMeal.class, RepairMechanicalFailure.class,
+                                       ReserveGroundVehicle.class, LoadVehicle.class, EnterVehicle.class,
+                                       DriveGroundVehicle.class, ExitVehicle.class, UnloadVehicle.class };
 
     /** Constructs a TaskManager object
      *  @param person the person the task manager is for
      *  @param mars the virtual Mars
      */
-    public TaskManager(Person person, VirtualMars mars) {
+    public TaskManager(Mind mind, VirtualMars mars) {
         // Initialize data members
-        this.person = person;
+        this.mind = mind; 
         this.mars = mars;
         currentTask = null;
-
-        // Create an array of general task classes.
-        // (Add additional general tasks as they are created)
-        try {
-            generalTasks = new Class[]{ TravelToSettlement.class, Relax.class, 
-                TendGreenhouse.class, MaintainVehicle.class, Sleep.class, EatMeal.class };
-        } catch (Exception e) {
-            System.out.println("TaskManager.constructor(): " + e.toString());
-        }
     }
 
-    /** Returns true if person has a current task. 
-     *  @return true if person has a current task
+    /** Returns true if person has an active task. 
+     *  @return true if person has an active task
      */
-    public boolean hasCurrentTask() {
-        if (currentTask != null)
-            return true;
-        else
-            return false;
+    public boolean hasActiveTask() {
+        if ((currentTask != null) && !currentTask.isDone()) return true;
+        else return false;
+    }
+
+    /** Returns true if perosn has a task (may be inactive).
+     *  @return true if person has a task
+     */
+    public boolean hasTask() {
+        if (currentTask != null) return true;
+        else return false;
     }
 
     /** Returns a description of current task for UI purposes.
      *  Returns null if there is no current task.
      *  @return a description of the current task
      */
-    public String getCurrentTaskDescription() {
-        if (currentTask != null)
-            return currentTask.getDescription();
-        else
-            return "";
+    public String getTaskDescription() {
+        if (currentTask != null) return currentTask.getDescription();
+        else return "";
     }
 
     /** Returns the name of current task phase if there is one.
-      *  Returns black string if current task has no phase.
-      *  Returns null if there is no current task.
-      *  @return the name of the current task phase
-      */
-    public String getCurrentPhase() {
-        if (currentTask != null)
-            return currentTask.getPhase();
-        else
-            return "";
+     *  Returns blank string if current task has no phase.
+     *  Returns blank string if there is no current task.
+     *  @return the name of the current task phase
+     */
+    public String getPhase() {
+        if (currentTask != null) return currentTask.getPhase();
+        else return "";
     }
 
     /** Returns the current task.
      *  Return null if there is no current task.
      *  @return the current task
      */
-    public Task getCurrentTask() {
+    public Task getTask() {
         return currentTask;
     }
 
-    /** Sets a new task for the person, stopping any current tasks.
-     * 
-     */
-    public void setCurrentTask(Task newTask) {
-        currentTask = newTask;
-    }
-   
     /** Sets the current task to null.
      *
      */
-    public void clearCurrentTask() {
+    public void clearTask() {
         currentTask = null;
     }
 
-    /** Adds a sub-task to the stack of tasks. 
-     *  @param subTask the sub-task to be added
+    /** Adds a task to the stack of tasks. 
+     *  @param Task the task to be added
      */
-    void addSubTask(Task subTask) {
-        if (currentTask != null)
-            currentTask.addSubTask(subTask);
-        else
-            currentTask = subTask;
+    void addTask(Task Task) {
+        if (hasActiveTask()) currentTask.addSubTask(Task);
+        else currentTask = Task;
     }
 
-    /** Perform a task for a given amount of time.
-     *  If person has no task or the current task is done, assign a new task to him/her.
+    /** Perform the current task for a given amount of time.
      *  @param time amount of time to perform the action
      */
-    public void takeAction(double time) {
-        if ((currentTask == null) || currentTask.isDone()) {
-            setCurrentTask(getNewTask());
-        }
-        currentTask.doTask(time);
+    public void performTask(double time) {
+        if (currentTask != null) currentTask.performTask(time);
+        else System.out.println("TaskManager.performTask(): currentTask is null");
     }
 
-    /** Assigns a new task to a person based on general tasks available.
-     *  (Add support for role-based tasks later)
+    /** Gets a new task for the person based on tasks available.
+     *  @param totalProbabilityWeight the total of task probability weights
+     *  @return new task
      */
-    public Task getNewTask() {
-        // Initialize variables
-        Vector probableTasks = new Vector();
-        Vector weights = new Vector();
+    public Task getNewTask(double totalProbabilityWeight) {
+
+        // Initialize parameters 
         Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
-        Object[] parametersForInvokingMethod = { person, mars };
+        Object[] parametersForInvokingMethod = { mind.getPerson(), mars };
         
-        // Find the probable weights of each possible general task.
-        for (int x = 0; x < generalTasks.length; x++) {
+        // Get a random number from 0 to the total weight
+        double r = RandomUtil.getRandomDouble(totalProbabilityWeight);
+
+        // Determine which task is selected.
+        Class task = null;
+        for (int x=0; x < availableTasks.length; x++) {
             try {
-                Method probability =
-                        generalTasks[x].getMethod("getProbability", parametersForFindingMethod);
+                Method probability = availableTasks[x].getMethod("getProbability", parametersForFindingMethod);
                 double weight = ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
 
-                if (weight > 0D) {
-                    probableTasks.addElement(generalTasks[x]);
-                    weights.addElement(new Double(weight));
+                if (task == null) {
+                    if (r < weight) task = availableTasks[x];
+                    else r -= weight;
                 }
-            } catch (Exception e) {
+            } 
+            catch (Exception e) {
                 System.out.println("TaskManager.getNewTask() (1): " + e.toString());
             }
         }
         
-        // Total up the weights
-        double totalWeight = 0;
-        for (int x = 0; x < weights.size(); x++)
-            totalWeight += ((Double) weights.elementAt(x)).doubleValue();
-
-        // Get a random number from 0 to the total weight
-        double r = RandomUtil.getRandomDouble(totalWeight);
-        
-        // Determine which task is selected
-        double tempWeight = ((Double) weights.elementAt(0)).doubleValue();
-        int taskNum = 0;
-        while (tempWeight < r) {
-            taskNum++;
-            tempWeight += ((Double) weights.elementAt(taskNum)).doubleValue();
-        }
-        
-        // Create an instance of that task and set it as the current task
+        // Construct the task
         try {
-            Constructor construct = ((Class) probableTasks.elementAt(taskNum)).getConstructor(
-                    parametersForFindingMethod);
+            Constructor construct = (task.getConstructor(parametersForFindingMethod));
             return (Task) construct.newInstance(parametersForInvokingMethod);
         } catch (Exception e) {
             System.out.println("TaskManager.getNewTask() (2): " + e.toString());
             return null;
         }
+    }
+
+    /** Determines the total probability weight for available tasks.
+     *  @return total probability weight
+     */
+    public double getTotalTaskProbability() {
+        double result = 0D;
+
+        // Initialize parameters 
+        Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
+        Object[] parametersForInvokingMethod = { mind.getPerson(), mars };
+        
+        // Sum the probable weights of each available task.
+        for (int x = 0; x < availableTasks.length; x++) {
+            try {
+                Method probability = availableTasks[x].getMethod("getProbability", parametersForFindingMethod);
+                result += ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
+            } catch (Exception e) {
+                System.out.println("TaskManager.getTotalTaskProbability(): " + e.toString());
+            }
+        }
+
+        return result;
     }
 }

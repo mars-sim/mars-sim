@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.72 2001-07-25
+ * @version 2.72 2001-08-07
  * @author Scott Davis
  */
 
@@ -26,14 +26,18 @@ class DriveGroundVehicle extends Task {
     private double speedSkillModifier;  // Skill modifier to vehicle speed.
     private MarsClock startTime; // Starting date/time of the trip.
     private double startDistance; // Starting distance to destination of the trip.
+    private double duration;  // Duration of the driving task.
 
     /** Constructs a DriveGroundVehicle object
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      *  @param vehicle the vehicle to be driven
      *  @param destination location to be driven to
+     *  @param startTripTime the starting time of the trip
+     *  @param startTripDistance the starting distance to destination for the trip
      */
-    public DriveGroundVehicle(Person person, VirtualMars mars, GroundVehicle vehicle, Coordinates destination) {
+    public DriveGroundVehicle(Person person, VirtualMars mars, GroundVehicle vehicle, 
+            Coordinates destination, MarsClock startTripTime, double startTripDistance) {
         super("Driving " + vehicle.getName(), person, mars);
 
         // Set initial parameters
@@ -43,37 +47,51 @@ class DriveGroundVehicle extends Task {
         obstacleTimeCount = 0D;
         backingUpDistance = 0D;
         phase = "Driving";
-        vehicle.setStatus("Moving");
+        vehicle.setDriver(person);
         backingUp = false;
-        startTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
-        startDistance = vehicle.getCoordinates().getDistance(destination);
+        startTime = startTripTime;
+        startDistance = startTripDistance;
+
+        // Determine duration (from 200 to 300 millisols)
+        duration = 200D + RandomUtil.getRandomDouble(100D);
+
+        System.out.println(person.getName() + " is driving " + vehicle.getName());
     }
 
     /** Perform the driving task 
      *  @param time amount of time to perform the task (in millisols)
      *  @return time remaining after finishing with task (in millisols
      */
-    double doTask(double time) {
+    double performTask(double time) {
 
-        double timeLeft = super.doTask(time);
-        if ((subTask != null) && subTask.isDone()) subTask = null;
+        double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        // If night time, find something else to do other than drive.
+        // If night time, end task. 
         if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0D) {
+            System.out.println(person.getName() + " stopped driving " + vehicle.getName() + " due to darkness.");
             vehicle.setStatus("Parked");
-            TaskManager taskManager = person.getTaskManager();
-            taskManager.addSubTask(taskManager.getNewTask());
+            vehicle.setDriver(null);
+            done = true;
             return 0D;
         } 
 
-        while ((timeLeft > 0D) && !isDone) {
+        while ((timeLeft > 0D) && !done) {
             vehicle.setStatus("Moving");
             if (phase.equals("Driving")) timeLeft = drivingPhase(timeLeft);
             else if (phase.equals("Avoiding Obstacle")) timeLeft = obstaclePhase(timeLeft);
             else if (phase.equals("Winching Stuck Vehicle")) timeLeft = winchingPhase(timeLeft);
         }
-    
+   
+        // Keep track of the duration of the task.
+        timeCompleted += time;
+        if (timeCompleted >= duration) {
+            System.out.println(person.getName() + " stopped driving " + vehicle.getName());
+            vehicle.setStatus("Parked");
+            vehicle.setDriver(null);
+            done = true;
+        }
+ 
         return timeLeft;
     }
 
@@ -253,7 +271,7 @@ class DriveGroundVehicle extends Task {
             distanceToDestination = 0D;
             vehicle.setDistanceToDestination(distanceToDestination);
             vehicle.setCoordinates(destination);
-            isDone = true;
+            done = true;
             result = time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
         }
         else {
@@ -400,16 +418,13 @@ class DriveGroundVehicle extends Task {
         percentChance += maintenanceModifier - skillModifier + terrainModifier - handlingModifier 
             + phaseModifier + lightModifier;
 
-        // Determine if failure happens and, if so, have the crew repair the failure.
+        // Determine if failure happens.
         if (RandomUtil.lessThanRandPercent(percentChance)) {
             vehicle.setStatus("Broken Down");
             vehicle.newMechanicalFailure();
-
-            for (int x=0; x < vehicle.getPassengerNum(); x++) {
-                Person crewmember = vehicle.getPassenger(x);
-                Task mechanicTask = new RepairMechanicalFailure(crewmember, mars, vehicle.getMechanicalFailure());
-                crewmember.getTaskManager().addSubTask(mechanicTask);
-            }
+            System.out.println(person.getName() + " stopped driving " + vehicle.getName() + " due to mechanical failure.");
+            vehicle.setDriver(null);
+            done = true;
         }
     }
     

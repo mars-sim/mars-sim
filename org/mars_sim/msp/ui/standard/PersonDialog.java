@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.72 2001-07-28
+ * @version 2.72 2001-08-09
  * @author Scott Davis
  */
 
@@ -20,14 +20,16 @@ import javax.swing.border.*;
  */
 public class PersonDialog extends UnitDialog {
 
-	// Data members
-	private Person person;          // Person detail window is about
-	private JButton locationButton; // Location button
-	private JLabel latitudeLabel;   // Latitude label
-	private JLabel longitudeLabel;  // Longitude label
-	private JPanel skillListPane;   // Panel containing list of person's skills and their levels.
-	private JLabel taskDescription; // Current task description label
-	private JLabel taskPhase;       // Current task phase label
+    // Data members
+    private Person person;          // Person detail window is about
+    private JButton locationButton; // Location button
+    private JLabel latitudeLabel;   // Latitude label
+    private JLabel longitudeLabel;  // Longitude label
+    private JPanel skillListPane;   // Panel containing list of person's skills and their levels.
+    private JLabel missionLabel;    // Current mission description label
+    private JLabel missionPhaseLabel; // Current mission phase label
+    private JLabel taskDescription; // Current task description label
+    private JLabel taskPhase;       // Current task phase label
     private JLabel fatigueLabel;    // Fatigue label
     private JLabel hungerLabel;     // Hunger label
 
@@ -40,9 +42,9 @@ public class PersonDialog extends UnitDialog {
     private double hunger;
 
 	/** Constructs a PersonDialog object 
-     	 *  @param parentDesktop the desktop pane
-     	 *  @param personUIProxy the person's UI proxy
-     	 */
+  	 *  @param parentDesktop the desktop pane
+   	 *  @param personUIProxy the person's UI proxy
+     */
 	public PersonDialog(MainDesktopPane parentDesktop, PersonUIProxy personUIProxy) {
 
 		// Use UnitDialog constructor
@@ -153,20 +155,29 @@ public class PersonDialog extends UnitDialog {
 	/** Update task info */
 	private void updateTask() {
 		
-            TaskManager taskManager = person.getTaskManager();
+        TaskManager taskManager = person.getMind().getTaskManager();
+        Mind mind = person.getMind();
+
+        // Update mission
+        if (mind.hasActiveMission()) missionLabel.setText("Mission: " + mind.getMission().getName());
+        else missionLabel.setText("Mission: None");
+
+        // Update mission phase
+        if (mind.hasActiveMission()) missionPhaseLabel.setText("Mission Phase: " + mind.getMission().getPhase());
+        else missionPhaseLabel.setText("Mission Phase:");
 	
 	    // Update task description
-            String cacheDescription = "None";
-            if (taskManager.hasCurrentTask()) cacheDescription = taskManager.getCurrentTaskDescription();
-	    if (!cacheDescription.equals(taskDescription.getText())) taskDescription.setText(cacheDescription);
+        String cacheDescription = "None";
+        if (taskManager.hasTask()) cacheDescription = taskManager.getTaskDescription();
+	    if (!cacheDescription.equals(taskDescription.getText())) taskDescription.setText("Task: " + cacheDescription);
 		
-            // Update task phase
-            String cachePhase = "";
-            if (taskManager.hasCurrentTask()) {
-                String phase = taskManager.getCurrentPhase();
-                if ((phase != null) && !phase.equals("")) cachePhase = "Phase: " + phase;
-            }
-            if (!cachePhase.equals(taskPhase.getText())) taskPhase.setText(cachePhase);
+        // Update task phase
+        String cachePhase = "";
+        if (taskManager.hasTask()) {
+            String phase = taskManager.getPhase();
+            if ((phase != null) && !phase.equals("")) cachePhase = phase;
+        }
+        if (!cachePhase.equals(taskPhase.getText())) taskPhase.setText("Task Phase: " + cachePhase);
 	}
     
     /** Update condition info */
@@ -237,35 +248,50 @@ public class PersonDialog extends UnitDialog {
 		taskPane.add(taskLabelPane, "North");
 		
 		// Prepare task label
-		JLabel taskLabel = new JLabel("Current Task", JLabel.CENTER);
+		JLabel taskLabel = new JLabel("Task", JLabel.CENTER);
 		taskLabel.setForeground(Color.black);
 		taskLabelPane.add(taskLabel);
 		
 		// Use person's task manager.
-		TaskManager taskManager = person.getTaskManager();
+		TaskManager taskManager = person.getMind().getTaskManager();
+        Mind mind = person.getMind();
 		
 		// Prepare task description pane
-		JPanel taskDescriptionPane = new JPanel(new GridLayout(3, 1));
+		JPanel taskDescriptionPane = new JPanel(new GridLayout(5, 1));
 		JPanel taskDescriptionTopPane = new JPanel(new BorderLayout());
 		taskDescriptionTopPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		taskDescriptionTopPane.add(taskDescriptionPane, "North");
 		taskPane.add(new JScrollPane(taskDescriptionTopPane), "Center");
-		
+	
+        // Display current mission.
+        // Display "Mission: None" if person currently has no task.
+        missionLabel = new JLabel("Mission: None", JLabel.LEFT);
+        if (mind.hasActiveMission()) missionLabel.setText("Mission: " + mind.getMission().getName());
+        missionLabel.setForeground(Color.black);
+        taskDescriptionPane.add(missionLabel);
+
+        // Display current mission phase.
+        // Display "Mission Phase:" if person doesn't have an active mission phase.
+        missionPhaseLabel = new JLabel("Mission Phase:", JLabel.LEFT);
+        if (mind.hasActiveMission()) missionPhaseLabel.setText("Mission Phase: " + mind.getMission().getPhase());
+        missionPhaseLabel.setForeground(Color.black);
+        taskDescriptionPane.add(missionPhaseLabel);
+
+        // Add spacer label
+        JLabel spacerLabel = new JLabel("  ", JLabel.LEFT);
+        taskDescriptionPane.add(spacerLabel);
+	
 		// Display description of current task.
 		// Display 'None' if person is currently doing nothing.
-		taskDescription = new JLabel("None", JLabel.LEFT);
-		if (taskManager.hasCurrentTask()) taskDescription.setText(taskManager.getCurrentTaskDescription());
+		taskDescription = new JLabel("Task: None", JLabel.LEFT);
+		if (taskManager.hasTask()) taskDescription.setText("Task: " + taskManager.getTaskDescription());
 		taskDescription.setForeground(Color.black);
 		taskDescriptionPane.add(taskDescription);
 		
 		// Display name of current phase.
-		// Display nothing if current task has no current phase.
-		// Display nothing if person is currently doing nothing.
-		taskPhase = new JLabel("", JLabel.LEFT);
-		if (taskManager.hasCurrentTask()) {
-			String phase = taskManager.getCurrentPhase();
-			if ((phase != null) && !phase.equals("")) taskPhase.setText("Phase: " + phase);
-		}
+		// Display "Task Phase:" if current task has no current phase.
+		taskPhase = new JLabel("Task Phase:", JLabel.LEFT);
+		if (taskManager.hasTask()) taskPhase.setText("Task Phase: " + taskManager.getPhase()); 
 		taskPhase.setForeground(Color.black);
 		taskDescriptionPane.add(taskPhase);
 		
