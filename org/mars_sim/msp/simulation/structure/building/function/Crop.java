@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.76 2004-06-02
+ * @version 2.78 2004-11-20
  * @author Scott Davis
  */
  
@@ -45,8 +45,9 @@ public class Crop implements Serializable {
      * @param growingPeiod - Length of growing phase for crop. (millisols)
      * @param farm - Farm crop being grown in.
      * @param settlement - the settlement the crop is located at.
+     * @param newCrop - true if this crop starts in it's planting phase.
      */
-    public Crop(CropType cropType, double maxHarvest, Farming farm, Settlement settlement) {
+    public Crop(CropType cropType, double maxHarvest, Farming farm, Settlement settlement, boolean newCrop) {
         this.cropType = cropType;
         this.maxHarvest = maxHarvest;
         this.farm = farm;
@@ -57,8 +58,15 @@ public class Crop implements Serializable {
         dailyTendingWorkRequired = maxHarvest;
         harvestingWorkRequired = maxHarvest * 5D;
         
-        phase = PLANTING;
-        actualHarvest = 0D;
+        if (newCrop) {
+        	phase = PLANTING;
+        	actualHarvest = 0D;
+        } 
+        else {
+        	phase = GROWING;
+        	growingTimeCompleted = RandomUtil.getRandomDouble(cropType.getGrowingTime());
+        	actualHarvest = maxHarvest * (growingTimeCompleted / cropType.getGrowingTime());
+        }
     }
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 2.76 2004-06-10
+ * @version 2.78 2004-11-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -55,14 +55,14 @@ public class Farming extends Function implements Serializable {
 		// Determine maximum harvest.
 		maxHarvest = growingArea * HARVEST_MULTIPLIER;
 		
-		// Plant initial crops.
+		// Create initial crops.
 		crops = new ArrayList();
 		try {
 			Settlement settlement = building.getBuildingManager().getSettlement();
 			CropConfig cropConfig = simConfig.getCropConfiguration();
 			for (int x=0; x < cropNum; x++) {
 				crops.add(new Crop(Crop.getRandomCropType(cropConfig), 
-					(maxHarvest / (double) cropNum), this, settlement));
+					(maxHarvest / (double) cropNum), this, settlement, false));
 			}
 		}
 		catch (Exception e) {
@@ -197,7 +197,7 @@ public class Farming extends Function implements Serializable {
 			CropConfig cropConfig = simConfig.getCropConfiguration();
 			for (int x=0; x < newCrops; x++) {
 				crops.add(new Crop(Crop.getRandomCropType(cropConfig), 
-					(maxHarvest / (double) cropNum), this, settlement));
+					(maxHarvest / (double) cropNum), this, settlement, true));
 			}
 		}
 		catch (Exception e) {
