@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-05-16
  * @author Scott Davis
  */
 
@@ -37,6 +37,7 @@ class TravelToSettlement extends Mission implements Serializable {
     private boolean roverUnloaded;
 
     // Tasks tracked
+    private DriveGroundVehicle driveTask; // The current driving task.
     ReserveRover reserveRover;
 
     /** Constructs a TravelToSettlement object with destination settlement
@@ -230,8 +231,11 @@ class TravelToSettlement extends Mission implements Serializable {
                 }
                 else {
                     if ((rover.getDriver() == null) && (rover.getStatus().equals(Rover.PARKED))) {
-                        DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, 
-			        destinationSettlement.getCoordinates(), startingTime, startingDistance); 
+			Coordinates destination = destinationSettlement.getCoordinates();
+			if (driveTask != null) driveTask = new DriveGroundVehicle(person, mars, rover, 
+			        destination, startingTime, startingDistance, driveTask.getPhase()); 
+			else driveTask = new DriveGroundVehicle(person, mars, rover, destination, 
+                                startingTime, startingDistance); 
 		        assignTask(person, driveTask);
                         lastDriver = person;
 		    }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-05-13
+ * @version 2.74 2002-05-16
  * @author Scott Davis
  */
 
@@ -47,6 +47,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private MarsClock startCollectingTime; // The time the rock sample collecting is started.
     
     // Tasks tracked
+    private DriveGroundVehicle driveTask; // The current driving task.
     ReserveRover reserveRover;
 
     /** Constructs a CollectRockSamplesMission object.
@@ -250,8 +251,10 @@ class CollectRockSamplesMission extends Mission implements Serializable {
                 }
                 else {
                     if ((rover.getDriver() == null) && (rover.getStatus().equals(Vehicle.PARKED))) {
-                        DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, 
-			        destination, startingTime, startingDistance);
+			if (driveTask != null) driveTask = new DriveGroundVehicle(person, mars, rover, 
+                                destination, startingTime, startingDistance, driveTask.getPhase());
+			else driveTask = new DriveGroundVehicle(person, mars, rover, destination, 
+                                startingTime, startingDistance);
 		        assignTask(person, driveTask);
                         lastDriver = person;
 		    }

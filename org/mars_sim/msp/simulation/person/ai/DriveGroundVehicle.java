@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.74 2002-04-30
+ * @version 2.74 2002-05-16
  * @author Scott Davis
  */
 
@@ -82,6 +82,23 @@ public class DriveGroundVehicle extends Task implements Serializable {
         // System.out.println(person.getName() + " is driving " + vehicle.getName());
     }
 
+    /**
+     * Constructs a DriveGroundVehicle object with a given starting phase.
+     * @param person the person to perform the task
+     * @param mars the virtual Mars
+     * @param vehicle the vehicle to be driven
+     * @param destination location to be driven to
+     * @param startTripTime the starting time of the trip
+     * @param startTripDistance the starting distance to destination for the trip
+     * @param startingPhase the starting phase for the task
+     */
+    public DriveGroundVehicle(Person person, Mars mars, GroundVehicle vehicle, Coordinates destination, 
+            MarsClock startTripTime, double startTripDistance, String startingPhase) {
+        this(person, mars, vehicle, destination, startTripTime, startTripDistance);
+
+	if (startingPhase != null) phase = startingPhase;
+    }
+     
     /** Perform the driving task
      *  @param time amount of time to perform the task (in millisols)
      *  @return time remaining after finishing with task (in millisols
