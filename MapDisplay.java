@@ -59,8 +59,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	addMouseListener(this);
 
 	// Create surface objects for both real and topographical modes
-	//surfMap = new SurfMarsMap(this);
-	surfMap = new USGSMarsMap(this);
+	surfMap = new SurfMarsMap(this);
+	//surfMap = new USGSMarsMap(this);
 	topoMap = new TopoMarsMap(this);
 
 	// initially show real surface map (versus topo map)
