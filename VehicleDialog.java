@@ -1,5 +1,5 @@
 //************************** Vehicle Detail Window **************************
-// Last Modified: 7/29/00
+// Last Modified: 8/27/00
 
 // The VehicleDialog class is an abstract detail window for a vehicle.
 // It displays information about the vehicle as well as its current status.
@@ -38,6 +38,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	protected JLabel lastMaintLabel;            // Distance Since Last Maintenance Label
 	protected JLabel failureDetailLabel;        // Mechanical failure name label
 	protected JProgressBar repairProgressBar;   // Failure repair progress bar
+	protected JProgressBar maintenanceProgressBar;  // Maintenance progress bar
 
 	// Cached data members
 	
@@ -51,6 +52,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	protected double distanceMaint;             // Cached distance traveled by vehicle since last maintenance.
 	protected String failureName;               // Cached mechanical failure name.
 	protected int repairProgress;               // Cached repair progress percentage.
+	protected int maintenanceProgress;          // Cached maintenance progress percentage;
 
 	// Constructor
 
@@ -81,6 +83,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			updateCrew();
 			updateOdometer();
 			updateMechanicalFailure();
+			updateMaintenance();
 	}
 	
 	// Implement MouseListener Methods
@@ -113,9 +116,9 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			
 		// If location button, open window for selected unit
 			
-		if ((button == locationButton) && vehicle.getStatus().equals("Parked")) parentDesktop.openUnitWindow(vehicle.getSettlement().getID());
-		if ((button == destinationButton) && !vehicle.getStatus().equals("Parked")) parentDesktop.openUnitWindow(vehicle.getDestinationSettlement().getID());
-		if ((button == driverButton) && !vehicle.getStatus().equals("Parked")) parentDesktop.openUnitWindow(vehicle.getDriver().getID());
+		if ((button == locationButton) && (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) parentDesktop.openUnitWindow(vehicle.getSettlement().getID());
+		if ((button == destinationButton) && !(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) parentDesktop.openUnitWindow(vehicle.getDestinationSettlement().getID());
+		if ((button == driverButton) && !(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) parentDesktop.openUnitWindow(vehicle.getDriver().getID());
 	}
 
 	// Prepare and add components to window
@@ -184,7 +187,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		locationButton = new JButton();
 		locationButton.setMargin(new Insets(1, 1, 1, 1));
 		locationButton.addActionListener(this);
-		if (vehicle.getStatus().equals("Parked") && (vehicle.getSettlement() != null)) {
+		if ((vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")) && (vehicle.getSettlement() != null)) {
 			locationButton.setText(vehicle.getSettlement().getName());
 			locationLabelPane.add(locationButton);
 		}
@@ -226,7 +229,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		destinationButton = new JButton();
 		destinationButton.setMargin(new Insets(1, 1, 1, 1));
 		destinationButton.addActionListener(this);
-		if (!vehicle.getStatus().equals("Parked")) {
+		if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
 			if (vehicle.getDestinationType().equals("Settlement")) {
 				destinationButton.setText(vehicle.getDestinationSettlement().getName());
 				destinationLabelPane.add(destinationButton);
@@ -241,21 +244,21 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		// Prepare destination latitude label
 
 		destinationLatitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
-		if (!vehicle.getStatus().equals("Parked")) destinationLatitudeLabel.setText("Latitude: ");
+		if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) destinationLatitudeLabel.setText("Latitude: ");
 		destinationLatitudeLabel.setForeground(Color.black);
 		destinationCoordsPane.add(destinationLatitudeLabel);
 
 		// Prepare destination longitude label
 
 		destinationLongitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
-		if (!vehicle.getStatus().equals("Parked")) destinationLongitudeLabel.setText("Longitude: ");
+		if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) destinationLongitudeLabel.setText("Longitude: ");
 		destinationLongitudeLabel.setForeground(Color.black);
 		destinationCoordsPane.add(destinationLongitudeLabel);
 		
 		// Prepare distance to destination label
 
 		distanceDestinationLabel = new JLabel("Distance: ", JLabel.LEFT);
-		if (!vehicle.getStatus().equals("Parked")) {
+		if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
 			int tempDistance = (int) Math.round(vehicle.getDistanceToDestination());
 			distanceDestinationLabel.setText("Distance: " + tempDistance + " km.");
 		}
@@ -315,7 +318,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		driverButton = new JButton();
 		driverButton.setMargin(new Insets(1, 1, 1, 1));
 		driverButton.addActionListener(this);
-		if (!vehicle.getStatus().equals("Parked")) {
+		if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
 			driverButton.setText(vehicle.getDriver().getName());
 			driverButtonPane.add(driverButton);
 		}
@@ -379,7 +382,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
 		// Prepare content pane
 		
-		JPanel contentPane = new JPanel(new BorderLayout());
+		JPanel contentPane = new JPanel();
+		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 		contentPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		damagePane.add(contentPane, "Center");
 
@@ -387,7 +391,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		
 		JPanel odometerPane = new JPanel(new BorderLayout());
 		odometerPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		contentPane.add(odometerPane, "North");
+		contentPane.add(odometerPane);
 		
 		// Prepare title pane
 		
@@ -423,28 +427,45 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		lastMaintLabel.setForeground(Color.black);
 		valuePane.add(lastMaintLabel);
 		
+		// Prepare maintenance pane
+		
+		JPanel maintenancePane = new JPanel(new BorderLayout());
+		maintenancePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+		contentPane.add(maintenancePane);
+		
+		// Prepare maintenance label
+		
+		JLabel maintenanceLabel = new JLabel("Periodic Maintenance:", JLabel.CENTER);
+		maintenanceLabel.setForeground(Color.black);
+		maintenancePane.add(maintenanceLabel, "North");
+		
+		// Prepare maintenance progress bar
+		
+		maintenanceProgressBar = new JProgressBar();
+		maintenanceProgressBar.setStringPainted(true);
+		maintenancePane.add(maintenanceProgressBar, "South");
+		maintenanceProgress = 0;
+		if (vehicle.getStatus().equals("Periodic Maintenance")) 
+			maintenanceProgress = (int) (100F * ((float) vehicle.getCurrentMaintenanceWork() / (float) vehicle.getTotalMaintenanceWork()));
+		maintenanceProgressBar.setValue(maintenanceProgress);
+		
 		// Prepare failure pane
 		
-		JPanel failurePane = new JPanel(new BorderLayout());
+		JPanel failurePane = new JPanel(new GridLayout(4, 1));
 		failurePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		contentPane.add(failurePane, "Center");
+		contentPane.add(failurePane);
 
 		// Prepare failure label
 		
 		JLabel failureLabel = new JLabel("Mechanical Failure:", JLabel.CENTER);
 		failureLabel.setForeground(Color.black);
-		failurePane.add(failureLabel, "North");
-		
-		// Prepare failure content pane
-		
-		JPanel failureContentPane = new JPanel(new BorderLayout());
-		failurePane.add(failureContentPane, "Center");
+		failurePane.add(failureLabel);
 		
 		// Prepare failure detail label
 		
 		failureDetailLabel = new JLabel("None", JLabel.CENTER);
 		failureDetailLabel.setForeground(Color.black);
-		failureContentPane.add(failureDetailLabel, "North");
+		failurePane.add(failureDetailLabel);
 		MechanicalFailure failure = vehicle.getMechanicalFailure();
 		if ((failure != null) && !failure.isFixed()) {
 			failureDetailLabel.setText(failure.getName());
@@ -452,27 +473,17 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		}
 		else failureName = "None";
 
-		// Prepare south pane
-		
-		JPanel southPane = new JPanel(new BorderLayout());
-		failureContentPane.add(southPane, "Center");
-
-		// Prepare repair pane
-		
-		JPanel repairPane = new JPanel(new GridLayout(2, 1));
-		southPane.add(repairPane, "North");
-
 		// Prepare repair label
 		
 		JLabel repairLabel = new JLabel("Repair Progress:", JLabel.CENTER);
 		repairLabel.setForeground(Color.black);
-		repairPane.add(repairLabel);
+		failurePane.add(repairLabel);
 
 		// Prepare repair progress bar
 		
 		repairProgressBar = new JProgressBar();
 		repairProgressBar.setStringPainted(true);
-		repairPane.add(repairProgressBar);
+		failurePane.add(repairProgressBar);
 		repairProgress = 0;
 		if ((failure != null) && !failure.isFixed()) {
 			float totalHours = failure.getTotalWorkHours();
@@ -480,6 +491,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			repairProgress = (int) (100F * (totalHours - remainingHours) / totalHours);
 		}
 		repairProgressBar.setValue(repairProgress);
+		
+		// Create vertical glue
+		
+		contentPane.add(Box.createVerticalStrut(25));
 		
 		// Return damage pane
 
@@ -504,7 +519,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		
 		if (!location.equals(vehicle.getCoordinates())) {
 			location = new Coordinates(vehicle.getCoordinates());
-			if (vehicle.getStatus().equals("Parked") && (vehicle.getSettlement() != null)) {
+			if ((vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")) && (vehicle.getSettlement() != null)) {
 				if (!locationButton.getText().equals(vehicle.getSettlement().getName())) locationButton.setText(vehicle.getSettlement().getName());
 				if (locationLabelPane.getComponentCount() == 2) locationLabelPane.add(locationButton);
 			}
@@ -580,7 +595,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		
 		// Update driver button
 		
-		if (vehicle.getStatus().equals("Parked")) {
+		if ((vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
 			if (driverButtonPane.getComponentCount() > 0) driverButtonPane.remove(driverButton);
 		}
 		else {
@@ -670,7 +685,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		
 		if (change) failureDetailLabel.setText(failureName);
 		
-		// Update repair progress label
+		// Update repair progress bar
 		
 		int repairProgressTemp = 0;
 		if ((failure != null) && !failure.isFixed()) {
@@ -681,6 +696,21 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		if (repairProgress != repairProgressTemp) {
 			repairProgress = repairProgressTemp;
 			repairProgressBar.setValue(repairProgress);
+		}
+	}
+	
+	// Update maintenance progress
+	
+	protected void updateMaintenance() {
+		
+		// Update maintenance progress bar
+		
+		int maintenanceProgressTemp = 0;
+		if (vehicle.getStatus().equals("Periodic Maintenance"))  
+			maintenanceProgressTemp = (int) (100F * ((float) vehicle.getCurrentMaintenanceWork() / (float) vehicle.getTotalMaintenanceWork()));
+		if (maintenanceProgress != maintenanceProgressTemp) {
+			maintenanceProgress = maintenanceProgressTemp;
+			maintenanceProgressBar.setValue(maintenanceProgress);
 		}
 	}
 }
