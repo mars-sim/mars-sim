@@ -1,5 +1,5 @@
 //************************** TaskDrive **************************
-// Last Modified: 3/2/00
+// Last Modified: 6/21/00
 
 // The TaskDrive class is a task for driving a ground vehicle.  It has the phases, "Embarking", "Driving" and "Disembarking".
 // If the task is called as part of a larger task, embarking and/or disembarking may be ignored by setting the proper constructor parameters.
@@ -317,12 +317,10 @@ class TaskDrive extends Task {
 		
 		// If driver has failed to get around an obstacle after 20 turns, mark vehicle as stuck and end task
 		
-		if (obstacleTimeCount >= 20) {
-			vehicle.setSpeed(0);
+		if ((obstacleTimeCount >= 20) && !vehicle.getStuck()) {
 			vehicle.setStuck(true);
-			isDone = true;
-			
-			return 0;
+			subPhase = "Winching Stuck Vehicle";
+			obstacleTimeCount = 0;
 		}
 	
 		// Find starting location of vehicle
@@ -333,7 +331,8 @@ class TaskDrive extends Task {
 
 		double direction = 0;
 
-		if (subPhase.equals("Normal Driving")) direction = startingLocation.getDirectionToPoint(destinationCoordinates);
+		if (subPhase.equals("Normal Driving") || subPhase.equals("Winching Stuck Vehicle")) 
+			direction = startingLocation.getDirectionToPoint(destinationCoordinates);
 		else if (subPhase.equals("Avoiding Obstacle")) direction = avoidObstacle();
 		else if (subPhase.equals("Backing Up")) direction = Coordinates.cleanAngle(vehicle.getDirection() + Math.PI);
 		
@@ -347,11 +346,25 @@ class TaskDrive extends Task {
 		// Determine vehicle's speed in given direction
 
 		double speed = getSpeed(direction);
+		
+		// If vehicle is stuck and terrain speed is better than 1kph, return to normal driving.
+		// Otherwise, set speed to .2kph as vehicle is being winched along.
+		
+		if (subPhase.equals("Winching Stuck Vehicle")) {
+			if (speed > 1) {
+				subPhase = "Normal Driving";
+				vehicle.setStuck(false);
+			}
+			else speed = .2;
+		}
+		
+		// Set the vehicle's speed
+		
 		vehicle.setSpeed(speed);
 		
-		// If speed is less than 1kph, go into obstacle avoidance subphase
+		// If speed is less than 1kph and vehicle isn't being winched, go into obstacle avoidance subphase
 		
-		if (speed < 1D) subPhase = new String("Avoiding Obstacle");
+		if ((speed < 1D) && !subPhase.equals("Winching Stuck Vehicle")) subPhase = new String("Avoiding Obstacle");
 
 		// Find starting distance to destination
 		
@@ -517,15 +530,13 @@ class TaskDrive extends Task {
 }	
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
