@@ -20,7 +20,7 @@ public class Settlement extends Structure {
     // Default population capacity for a settlement
     private static int DEFAULT_POPULATION_CAPACITY = 20;
     private static Random rand = new Random();
-    
+
     // Data members
     Vector people; // List of inhabitants
     Vector vehicles; // List of parked vehicles
@@ -44,17 +44,17 @@ public class Settlement extends Structure {
         else this.populationCapacity = populationCapacity;
         facilityManager = new FacilityManager(this, mars);
     }
-    
+
     /** Constructs a Settlement object at a random location
      *  @param name the settlement's name
      *  @param populationCapacity the settlement's population capacity
      *  @param mars the virtual Mars
      */
     Settlement(String name, int populationCapacity, VirtualMars mars) {
-        
+
         // Use Unit constructor
         super(name, new Coordinates(0D, 0D), mars);
-        
+
         // Determine random location of settlement, adjust so it will be less likely to be near the poles
         double settlementPhi = (rand.nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
         // double settlementPhi = (new Random().nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
@@ -62,7 +62,7 @@ public class Settlement extends Structure {
         if (settlementPhi < 0D) settlementPhi = 0D;
         double settlementTheta = (double)(Math.random() * (2D * Math.PI));
         setCoordinates(new Coordinates(settlementPhi, settlementTheta));
-      
+
         // Initialize data members
         people = new Vector();
         vehicles = new Vector();
@@ -71,7 +71,7 @@ public class Settlement extends Structure {
         facilityManager = new FacilityManager(this, mars);
     }
 
-    /** Returns the facility manager for the settlement 
+    /** Returns the facility manager for the settlement
      *  @return the settlement's facility manager
      */
     public FacilityManager getFacilityManager() {
@@ -91,8 +91,8 @@ public class Settlement extends Structure {
     public int getCurrentPopulation() {
         return people.size();
     }
-    
-    /** Gets the current available population capacity 
+
+    /** Gets the current available population capacity
      *  of the settlement
      *  @return the available population capacity
      */
@@ -105,26 +105,39 @@ public class Settlement extends Structure {
      */
     public Person[] getInhabitantArray() {
         Person[] personArray = new Person[people.size()];
-        for (int x=0; x < people.size(); x++) 
-            personArray[x] = (Person) people.elementAt(x); 
+        for (int x=0; x < people.size(); x++)
+            personArray[x] = (Person) people.elementAt(x);
         return personArray;
     }
 
-    /** Get number of inhabitants in settlement 
+    /**
+     * Get the Life Support sytsem of this settlement. This is actually the
+     * Storeroom Facility object.
+     *
+     * @return local Life Support system.
+     */
+    public LifeSupport getLifeSupport() {
+        StoreroomFacility store =
+                    (StoreroomFacility)facilityManager.getFacility("Storerooms");
+
+        return store;
+    }
+
+    /** Get number of inhabitants in settlement
      *  @return the number of inhabitants
      */
     public int getPeopleNum() {
         return people.size();
     }
 
-    /** Get number of parked vehicles in settlement 
+    /** Get number of parked vehicles in settlement
      *  @return the number of parked vehicles
      */
     public int getVehicleNum() {
         return vehicles.size();
     }
 
-    /** Get an inhabitant at a given vector index 
+    /** Get an inhabitant at a given vector index
      *  @param index the inhabitant's index
      *  @return the inhabitant
      */
@@ -136,7 +149,7 @@ public class Settlement extends Structure {
         }
     }
 
-    /** Get a parked vehicle at a given vector index. 
+    /** Get a parked vehicle at a given vector index.
      *  @param the vehicle's index
      *  @return the vehicle
      */
@@ -157,16 +170,16 @@ public class Settlement extends Structure {
             if (people.contains(person)) result = true;
         }
         return result;
-    } 
+    }
 
-    /** Bring in a new inhabitant 
+    /** Bring in a new inhabitant
      *  @param newPerson the new person
      */
     public void addPerson(Person newPerson) {
         if (!isInhabitant(newPerson)) people.addElement(newPerson);
     }
 
-    /** Make a given inhabitant leave the settlement 
+    /** Make a given inhabitant leave the settlement
      *  @param person the person leaving
      */
     public void personLeave(Person person) {
@@ -175,21 +188,21 @@ public class Settlement extends Structure {
         }
     }
 
-    /** Bring in a new vehicle to be parked 
+    /** Bring in a new vehicle to be parked
      *  @param newVehicle the new vehicle
      */
     public void addVehicle(Vehicle newVehicle) {
         if (!vehicles.contains(newVehicle)) vehicles.addElement(newVehicle);
     }
 
-    /** Make a given vehicle leave the settlement 
+    /** Make a given vehicle leave the settlement
      *  @param vehicle the vehicle leaving
      */
     public void vehicleLeave(Vehicle vehicle) {
         if (vehicles.contains(vehicle)) vehicles.removeElement(vehicle);
     }
 
-    /** Perform time-related processes 
+    /** Perform time-related processes
      *  @param time the amount of time passing (in millisols)
      */
     public void timePassing(double time) {

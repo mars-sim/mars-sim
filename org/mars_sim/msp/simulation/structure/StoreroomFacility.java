@@ -13,16 +13,19 @@ import java.io.Serializable;
 /**
  * The StoreroomFacility class represents the collective storerooms in a settlement.
  * It defines the settlement's storage of food, oxygen, water and fuel.
+ *
+ * As the Person basics are supported by this class it also implements a Life
+ * Support system.
  */
-public class StoreroomFacility extends Facility implements Serializable {
+public class StoreroomFacility extends Facility implements LifeSupport, Serializable {
 
     // Data members
     private double foodStores; // The settlement's stores of food.
     private double oxygenStores; // The settlement's stores of oxygen.
     private double waterStores; // The settlement's stores of water.
     private double fuelStores; // The settlement's stores of fuel (methane and other fuel).
-    
-    /** Constructor for random creation. 
+
+    /** Constructor for random creation.
      *  @param manager the storeroom's facility manager
      */
     StoreroomFacility(FacilityManager manager) {
@@ -41,7 +44,7 @@ public class StoreroomFacility extends Facility implements Serializable {
         fuelStores = (fuelCapacity / 4D) + RandomUtil.getRandomDouble(fuelCapacity / 4D);
     }
 
-    /** Constructor for set storage values (used later when facilities can be built or upgraded.) 
+    /** Constructor for set storage values (used later when facilities can be built or upgraded.)
      *  @param manager the storeroom's facility manager
      *  @param food the initial food stores (kg)
      *  @param oxygen the initial oxygen stores (kg)
@@ -53,21 +56,21 @@ public class StoreroomFacility extends Facility implements Serializable {
         // Use Facility's constructor.
         super(manager, "Storerooms");
 
-        // Set resources 
+        // Set resources
         addFood(food);
         addOxygen(oxygen);
         addWater(water);
         addFuel(fuel);
     }
 
-    /** Returns the amount of food stored at the settlement. 
+    /** Returns the amount of food stored at the settlement.
      *  @return the amount of food in storage (kg)
      */
     public double getFoodStores() {
         return foodStores;
     }
 
-    /** Removes food from storage. 
+    /** Removes food from storage.
      *  @param amount the amount of food requested from storage (kg)
      *  @return the amount of food actually received from storage (kg)
      */
@@ -82,7 +85,7 @@ public class StoreroomFacility extends Facility implements Serializable {
         return result;
     }
 
-    /** Adds food to storage. 
+    /** Adds food to storage.
      *  @param amount the amount of food to be added (kg)
      */
     public void addFood(double amount) {
@@ -100,14 +103,14 @@ public class StoreroomFacility extends Facility implements Serializable {
         return properties.getSettlementFoodStorageCapacity();
     }
 
-    /** Returns the amount of oxygen stored at the settlement. 
+    /** Returns the amount of oxygen stored at the settlement.
      *  @return the amount of oxygen in storage (in units)
      */
     public double getOxygenStores() {
         return oxygenStores;
     }
 
-    /** Removes oxygen from storage. 
+    /** Removes oxygen from storage.
      *  @param amount the amount of oxygen requested from storage (in units)
      *  @return the amount of oxygen actually received from storage (in units)
      */
@@ -122,7 +125,7 @@ public class StoreroomFacility extends Facility implements Serializable {
         return result;
     }
 
-    /** Adds oxygen to storage. 
+    /** Adds oxygen to storage.
      *  @param amount the amount of oxygen to be added (kg)
      */
     public void addOxygen(double amount) {
@@ -140,14 +143,14 @@ public class StoreroomFacility extends Facility implements Serializable {
         return properties.getSettlementOxygenStorageCapacity();
     }
 
-    /** Returns the amount of water stored at the settlement. 
+    /** Returns the amount of water stored at the settlement.
      *  @return the  amount of water in storage (in units)
      */
     public double getWaterStores() {
         return waterStores;
     }
 
-    /** Removes water from storage. 
+    /** Removes water from storage.
      *  @param amount the amount of water requested from storage (in units)
      *  @return the amount of water actually received from storage (in units)
      */
@@ -162,7 +165,7 @@ public class StoreroomFacility extends Facility implements Serializable {
         return result;
     }
 
-    /** Adds water to storage. 
+    /** Adds water to storage.
      *  @param amount the amount of water to be added (kg)
      */
     public void addWater(double amount) {
@@ -180,14 +183,14 @@ public class StoreroomFacility extends Facility implements Serializable {
         return properties.getSettlementWaterStorageCapacity();
     }
 
-    /** Returns the amount of fuel stored at the settlement. 
+    /** Returns the amount of fuel stored at the settlement.
      *  @return the amount of fuel in storage (in units)
      */
     public double getFuelStores() {
         return fuelStores;
     }
 
-    /** Removes fuel from storage. 
+    /** Removes fuel from storage.
      *  @param amount the amount of fuel requested from storage (in units)
      *  @return the amount of fuel actually received from storage (in units)
      */
@@ -202,7 +205,7 @@ public class StoreroomFacility extends Facility implements Serializable {
         return result;
     }
 
-    /** Adds fuel to storage. 
+    /** Adds fuel to storage.
      *  @param amount the amount of fuel to be added (kg)
      */
     public void addFuel(double amount) {
