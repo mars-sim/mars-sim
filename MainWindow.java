@@ -1,5 +1,5 @@
 //*********************** Main UI Window ***********************
-// Last Modified: 3/15/00
+// Last Modified: 3/20/00
 
 // The MainWindow class is the primary UI frame for the project.
 // It contains the tool bars and main desktop pane.
@@ -105,18 +105,6 @@ public class MainWindow extends JFrame implements WindowListener {
 	// Returns an array of unit info for all people sorted by name
 	
 	public UnitInfo[] getPeopleInfo() { return mars.getPeopleInfo(); }
-
-	/*
-	
-	// Returns the coordinates of a named unit
-	
-	public Coordinates getUnitCoords(String unitName) { return mars.getUnitCoords(unitName); }
-	
-	// Returns sorted array of unit names with a given category
-	
-	public String[] getSortedUnitNames(String unitCategory) { return mars.getSortedUnitNames(unitCategory); }
-
-	*/
 
 	// WindowListener methods overridden
 
