@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.72 2001-05-31
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -22,12 +22,11 @@ public abstract class GroundVehicle extends Vehicle {
      *  @param name name of the ground vehicle
      *  @param location coordinate location of the ground vehicle
      *  @param mars simulated Mars
-     *  @param manager unit manager for the ground vehicle
      */
-    GroundVehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
+    GroundVehicle(String name, Coordinates location, VirtualMars mars) {
 
         // use Vehicle constructor
-        super(name, location, mars, manager);
+        super(name, location, mars);
 
         // initialize variables
         setTerrainHandlingCapability(0D); // Default terrain capability

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.72 2001-10-29
+ * @version 2.73 2001-11-11
  * @author Barry Evans
  */
 
@@ -124,12 +124,10 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case POPULATION : {
-                LivingQuartersFacility living = (LivingQuartersFacility)
-                                fMgr.getFacility("Living Quarters");
                 StringBuffer buffer = new StringBuffer();
-                buffer.append(living.getCurrentPopulation());
+                buffer.append(settle.getCurrentPopulation());
                 buffer.append('/');
-                buffer.append(living.getNormalCapacity());
+                buffer.append(settle.getPopulationCapacity());
                 result = buffer.toString();
             } break;
 

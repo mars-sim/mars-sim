@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.73 2001-10-30
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -23,14 +23,13 @@ public abstract class Unit {
      *  @param name the name of the unit
      *  @param location the unit's location
      *  @param mars the virtual Mars
-     *  @param manager the unit's unit manager
      */
-    Unit(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
+    Unit(String name, Coordinates location, VirtualMars mars) {
         // Initialize data members from parameters
         this.name = name;
         this.location = new Coordinates(location);
         this.mars = mars;
-        this.manager = manager;
+        this.manager = mars.getUnitManager();
     }
 
     /** Returns unit's UnitManager 

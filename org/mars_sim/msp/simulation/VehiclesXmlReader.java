@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclesXmlReader.java
- * @version 2.73 2001-10-30
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -22,15 +22,15 @@ class VehiclesXmlReader extends MspXmlReader {
     private int vehicleType;
 
     private Vector vehicles;
-    private UnitManager unitManager;
     private VirtualMars mars;
+    private UnitManager manager;
     private String currentName;
     private String currentSettlement;
 
-    public VehiclesXmlReader(UnitManager unitManager, VirtualMars mars) {
+    public VehiclesXmlReader(UnitManager manager, VirtualMars mars) {
         super("conf/vehicles.xml");
 
-        this.unitManager = unitManager;
+        this.manager = manager;
         this.mars = mars;
     }
 
@@ -77,8 +77,8 @@ class VehiclesXmlReader extends MspXmlReader {
         // Will need to modify this to support more types of vehicles.
         if (elementType == ROVER) {
             elementType = VEHICLES_LIST;
-            Settlement settlement = unitManager.getSettlement(currentSettlement);
-            Vehicle currentVehicle = new Rover(currentName, settlement.getCoordinates(), mars, unitManager);
+            Settlement settlement = manager.getSettlement(currentSettlement);
+            Vehicle currentVehicle = new Rover(currentName, settlement.getCoordinates(), mars);
             currentVehicle.setSettlement(settlement);
             vehicles.addElement(currentVehicle);
             return;

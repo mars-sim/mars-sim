@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.71 2001-06-28
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -16,12 +16,11 @@ public class Rover extends GroundVehicle {
      *  @param name the name of the rover
      *  @param location the location of the rover
      *  @param mars the virtual Mars
-     *  @param manager the rover's unit manager
      */
-    Rover(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
+    Rover(String name, Coordinates location, VirtualMars mars) {
 
         // Use GroundVehicle constructor
-        super(name, location, mars, manager);
+        super(name, location, mars);
 
         // Set rover terrain modifier
         setTerrainHandlingCapability(0D);

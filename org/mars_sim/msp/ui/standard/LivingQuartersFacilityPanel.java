@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingQuartersFacilityPanel.java
- * @version 2.71 2000-10-22
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -20,27 +20,29 @@ import javax.swing.border.*;
 public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseListener {
 
     // Data members
-	private LivingQuartersFacility livingQuarters;  // The living quarters facility this panel displays.
-	private JLabel currentPopulationLabel;          // A label that displays the current population.
-	private JList inhabitantList;                   // A list to display the names of the current inhabitants.
+    private LivingQuartersFacility livingQuarters;  // The living quarters facility this panel displays.
+    private Settlement settlement;                  // The settlement
+    private JLabel currentPopulationLabel;          // A label that displays the current population.
+    private JList inhabitantList;                   // A list to display the names of the current inhabitants.
 	
-	// Update data cache
-	private Unit[] inhabitants;                     // An array of the current inhabitants.
-	private int currentPopulation;                  // The current population number.
+    // Update data cache
+    private Person[] inhabitants;                     // An array of the current inhabitants.
+    private int currentPopulation;                  // The current population number.
 	
     /** Constructs a LivingQuartersFacilityPanel object 
      *  @param livingQuarters the living quarters
      *  @param desktop the desktop pane
      */
-	public LivingQuartersFacilityPanel(LivingQuartersFacility livingQuarters, MainDesktopPane desktop) {
+    public LivingQuartersFacilityPanel(LivingQuartersFacility livingQuarters, MainDesktopPane desktop) {
 	
-		// Use FacilityPanel's constructor
-		super(desktop);
+        // Use FacilityPanel's constructor
+        super(desktop);
 		
 		// Initialize data members
 		this.livingQuarters = livingQuarters;
+                this.settlement = livingQuarters.getFacilityManager().getSettlement();
 		tabName = "Quarters";
-		currentPopulation = livingQuarters.getCurrentPopulation();
+		currentPopulation = settlement.getCurrentPopulation();
 		
 		// Set up components
 		setLayout(new BorderLayout());
@@ -59,19 +61,14 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 		contentPane.add(infoPane, "Center");
 		
 		// Prepare label pane
-		JPanel labelPane = new JPanel(new GridLayout(3, 1));
+		JPanel labelPane = new JPanel(new GridLayout(2, 1));
 		labelPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		infoPane.add(labelPane, "North");
 		
-		// Prepare normal capacity label
-		JLabel normalCapacityLabel = new JLabel("Normal Capacity: " + livingQuarters.getNormalCapacity(), JLabel.CENTER);
-		normalCapacityLabel.setForeground(Color.black);
-		labelPane.add(normalCapacityLabel);
-		
-		// Prepare maximum capacity label
-		JLabel maximumCapacityLabel = new JLabel("Maximum Capacity: " + livingQuarters.getMaximumCapacity(), JLabel.CENTER);
-		maximumCapacityLabel.setForeground(Color.black);
-		labelPane.add(maximumCapacityLabel);
+		// Prepare population capacity label
+		JLabel populationCapacityLabel = new JLabel("Population Capacity: " + settlement.getPopulationCapacity(), JLabel.CENTER);
+		populationCapacityLabel.setForeground(Color.black);
+		labelPane.add(populationCapacityLabel);
 		
 		// Prepare current population label
 		currentPopulationLabel = new JLabel("Current Population: " + currentPopulation, JLabel.CENTER);
@@ -89,10 +86,10 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 		inhabitantPane.add(innerInhabitantPane);
 		
 		// Prepare inhabitant list
-		inhabitants = livingQuarters.getPopulationUnits();
+		inhabitants = settlement.getInhabitantArray();
 		DefaultListModel inhabitantListModel = new DefaultListModel();
-		for (int x=0; x < livingQuarters.getCurrentPopulation(); x++) 
-            inhabitantListModel.addElement(inhabitants[x].getName());
+		for (int x=0; x < settlement.getCurrentPopulation(); x++) 
+                    inhabitantListModel.addElement(inhabitants[x].getName());
 		inhabitantList = new JList(inhabitantListModel);
 		inhabitantList.setVisibleRowCount(6);
 		inhabitantList.addMouseListener(this);
@@ -103,15 +100,15 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
 	public void updateInfo() { 
 		
 		// Update current population	
-		int population = livingQuarters.getCurrentPopulation();
+		int population = settlement.getCurrentPopulation();
 		if (currentPopulation != population) {
-			currentPopulation = population;
-			currentPopulationLabel.setText("Current Population: " + currentPopulation);
+                    currentPopulation = population;
+                    currentPopulationLabel.setText("Current Population: " + currentPopulation);
 		}
 		
 		// Update inhabitant list
 		DefaultListModel model = (DefaultListModel) inhabitantList.getModel();
-		inhabitants = livingQuarters.getPopulationUnits();
+		inhabitants = settlement.getInhabitantArray();
 		
 		boolean match = false;
 		

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.72 2001-08-02
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -29,12 +29,11 @@ public class Person extends Unit {
      *  @param name the person's name
      *  @param location the person's location
      *  @param mars the virtual Mars
-     *  @param manager the person's unit manager
      */
-    Person(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
+    Person(String name, Coordinates location, VirtualMars mars) {
 
         // Use Unit constructor
-        super(name, location, mars, manager);
+        super(name, location, mars);
 
         // Initialize data members
         settlement = null;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.73 2001-10-07
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -25,7 +25,6 @@ public class InsituResourceProcessorFacility extends Facility {
         // User Facility's constructor
         super(manager, "INSITU Resource Processor");
 
-        quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
         stores = (StoreroomFacility) manager.getFacility("Storerooms");
     }
     
@@ -33,7 +32,7 @@ public class InsituResourceProcessorFacility extends Facility {
      *  @return amount of oxygen (in units)
      */
     public double getOxygenRate() {
-        int currentPop = quarters.getCurrentPopulation();
+        int currentPop = manager.getSettlement().getCurrentPopulation();
         double result = currentPop + 2D;
         result /= 1000D;
         return result;
@@ -43,7 +42,7 @@ public class InsituResourceProcessorFacility extends Facility {
      *  @return amount of water (in units)
      */
     public double getWaterRate() {
-        int currentPop = quarters.getCurrentPopulation();
+        int currentPop = manager.getSettlement().getCurrentPopulation();
         double result = currentPop + 2D;
         result /= 1000D;
         return result;
@@ -53,7 +52,7 @@ public class InsituResourceProcessorFacility extends Facility {
      *  @return amount of fuel (in units) 
      */
     public double getFuelRate() {
-        int currentPop = quarters.getCurrentPopulation();
+        int currentPop = manager.getSettlement().getCurrentPopulation();
         double result = currentPop + 2D;
         result /= 1000D;
         return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.73 2001-11-08
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -24,17 +24,16 @@ public class Settlement extends Structure {
      *  @param name the settlement's name
      *  @param location the settlement's location
      *  @param mars the virtual Mars
-     *  @param manager the settlement's unit manager
      */
-    Settlement(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
+    Settlement(String name, Coordinates location, int populationCapacity, VirtualMars mars) {
 
         // Use Unit constructor
-        super(name, location, mars, manager);
+        super(name, location, mars);
 
         // Initialize data members
         people = new Vector();
         vehicles = new Vector();
-        populationCapacity = 0;
+        this.populationCapacity = populationCapacity;
         facilityManager = new FacilityManager(this);
     }
 
@@ -57,6 +56,16 @@ public class Settlement extends Structure {
      */
     public int getCurrentPopulation() {
         return people.size();
+    }
+
+    /** Gets an array of current inhabitants of the settlement
+     *  @return array of inhabitants
+     */
+    public Person[] getInhabitantArray() {
+        Person[] personArray = new Person[people.size()];
+        for (int x=0; x < people.size(); x++) 
+            personArray[x] = (Person) people.elementAt(x); 
+        return personArray;
     }
 
     /** Get number of inhabitants in settlement 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.72 2001-07-22
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -52,11 +52,10 @@ public abstract class Vehicle extends Unit {
      *  @param name the vehicle's name
      *  @param location the vehicle's location
      *  @param mars the virtual Mars
-     *  @param manager the vehicle's unit manager
      */
-    Vehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
+    Vehicle(String name, Coordinates location, VirtualMars mars) {
         // use Unit constructor
-        super(name, location, mars, manager);
+        super(name, location, mars);
 
         // initialize
         setStatus("Parked");

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeopleXmlReader.java
- * @version 2.73 2001-10-23
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -24,18 +24,18 @@ class PeopleXmlReader extends MspXmlReader {
     private int elementType;
 
     private Vector people;
-    private UnitManager unitManager;
     private VirtualMars mars;
+    private UnitManager manager;
     private String currentName;
     private String currentSettlement;
     private Vector skills;
     private String currentSkillName;
     private int currentSkillLevel;
 
-    public PeopleXmlReader(UnitManager unitManager, VirtualMars mars) {
+    public PeopleXmlReader(UnitManager manager, VirtualMars mars) {
         super("conf/people.xml");
 
-        this.unitManager = unitManager;
+        this.manager = manager;
         this.mars = mars;
     }
 
@@ -105,8 +105,8 @@ class PeopleXmlReader extends MspXmlReader {
         }
         if (elementType == PERSON) {
             elementType = PERSON_LIST;
-            Settlement settlement = unitManager.getSettlement(currentSettlement);
-            Person currentPerson = new Person(currentName, settlement.getCoordinates(), mars, unitManager);
+            Settlement settlement = manager.getSettlement(currentSettlement);
+            Person currentPerson = new Person(currentName, settlement.getCoordinates(), mars);
             currentPerson.setSettlement(settlement);
             for (int x=0; x < skills.size(); x++) {
                 Skill skill = (Skill) skills.elementAt(x);

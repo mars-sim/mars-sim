@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Facility.java
- * @version 2.72 2001-06-24
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -32,6 +32,13 @@ public abstract class Facility {
      */
     public String getName() {
         return name;
+    }
+
+    /** Returns this facility's manager
+     *  @return facility manager
+     */
+    public FacilityManager getFacilityManager() {
+        return manager;
     }
 
     /** Called every clock pulse for time events in facilities.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.73 2001-11-08
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -45,20 +45,20 @@ public class UnitManager {
     /** Create the units */
     private void createEntities() {
 
-        SettlementsXmlReader settlementsReader = new SettlementsXmlReader(this, mars);
+        SettlementsXmlReader settlementsReader = new SettlementsXmlReader(mars);
         settlementsReader.parse();
         settlementsVector = settlementsReader.getSettlements();
         for (int x=0; x < settlementsVector.size(); x++) 
             unitVector.addElement(settlementsVector.elementAt(x));
 
         // createSettlements();
-        
+
         VehiclesXmlReader vehiclesReader = new VehiclesXmlReader(this, mars);
         vehiclesReader.parse();
         vehiclesVector = vehiclesReader.getVehicles();
         for (int x=0; x < vehiclesVector.size(); x++)
             unitVector.addElement(vehiclesVector.elementAt(x));
-
+ 
         // createVehicles();
 
         PeopleXmlReader peopleReader = new PeopleXmlReader(this, mars);
@@ -71,6 +71,7 @@ public class UnitManager {
     }
 
     /** Creates initial settlements with random locations */
+    /*
     private void createSettlements() {
         // Get settlement names from "settlements.conf"
         String[] settlementNames = ConfFileProcessor.getSettlementNames();
@@ -90,19 +91,23 @@ public class UnitManager {
             createSettlement(settlementNames[x], settlementCoords);
         }
     }
+    */
 
     /** Creates a settlement
      *  @param name the settlement's name
      *  @param coords the settlement's location
      */
+    /*
     private void createSettlement(String name, Coordinates coords) {
         Settlement tempSettlement = new Settlement(name, coords, mars, this);
         // Add settlement to master unit and settlements vectors
         unitVector.addElement(tempSettlement);
         settlementsVector.addElement(tempSettlement);
     }
+    */
 
     /** Creates initial vehicles at random settlements */
+    /*
     private void createVehicles() {
 
         // Get rover names from "rovers.conf"
@@ -130,12 +135,14 @@ public class UnitManager {
                     (Settlement) minRovers.elementAt(randSettlement));
         }
     }
+    */
 
     /** Creates a vehicle
      *  @param name the vehicle's name
      *  @param coords the vehicle's location
      *  @param seti the vehicle's settlement
      */
+    /*
     void createVehicle(String name, Coordinates coords, Settlement seti) {
         Rover tempVehicle = new Rover(name, coords, mars, this);
         // Add rover to master unit and vehicles vectors
@@ -143,8 +150,10 @@ public class UnitManager {
         vehiclesVector.addElement(tempVehicle);
         tempVehicle.setSettlement(seti);
     }
+    */
 
     /** Creates initial people at random settlements */
+    /*
     private void createPeople() {
         // Get people names from "people.conf"
         String[] peopleNames = ConfFileProcessor.getPersonNames();
@@ -177,12 +186,14 @@ public class UnitManager {
                     (Settlement) minPeople.elementAt(randSettlement));
         }
     }
+    */
 
     /** Creates a person
      *  @param name the person's name
      *  @param coord the person's location
      *  @param seti the person's settlement
      */
+    /*
     private void createPerson(String name, Coordinates coord, Settlement seti) {
         // Create a person with that name
         Person tempPerson = new Person(name, coord, mars, this);
@@ -191,6 +202,7 @@ public class UnitManager {
         peopleVector.addElement(tempPerson);
         tempPerson.setSettlement(seti);
     }
+    */
 
 
     /** Notify all the units that time has passed. Times they are a

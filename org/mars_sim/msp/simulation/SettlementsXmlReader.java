@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementsXmlReader.java
- * @version 2.73 2001-10-31
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -19,20 +19,20 @@ class SettlementsXmlReader extends MspXmlReader {
     private static int LOCATION = 4;
     private static int LATITUDE = 5;
     private static int LONGITUDE = 6;
+    private static int POP_CAPACITY = 7;
 
     private int elementType;
 
     private Vector settlements;
-    private UnitManager unitManager;
     private VirtualMars mars;
     private String currentName;
     private String currentLatitude;
     private String currentLongitude;
+    private String currentPopulationCapacity;
 
-    public SettlementsXmlReader(UnitManager unitManager, VirtualMars mars) {
+    public SettlementsXmlReader(VirtualMars mars) {
         super("conf/settlements.xml");
 
-        this.unitManager = unitManager;
         this.mars = mars;
     }
 
@@ -56,11 +56,13 @@ class SettlementsXmlReader extends MspXmlReader {
             currentName = "";
             currentLatitude = "";
             currentLongitude = "";
+            currentPopulationCapacity = "";
         }
         if (name.equals("NAME")) elementType = NAME;
         if (name.equals("LOCATION")) elementType = LOCATION;
         if (name.equals("LATITUDE")) elementType = LATITUDE;
         if (name.equals("LONGITUDE")) elementType = LONGITUDE;
+        if (name.equals("POPULATION_CAPACITY")) elementType = POP_CAPACITY;
     }
 
     /**
@@ -86,12 +88,17 @@ class SettlementsXmlReader extends MspXmlReader {
             elementType = LOCATION;
             return;
         }
+        if (elementType == POP_CAPACITY) {
+            elementType = SETTLEMENT;
+            return;
+        }
         if (elementType == SETTLEMENT) {
             elementType = SETTLEMENTS_LIST;
+            int popCapacity = Integer.parseInt(currentPopulationCapacity);
             double phi = parseLatitude(currentLatitude);
             double theta = parseLongitude(currentLongitude);
             Coordinates currentLocation = new Coordinates(phi, theta);
-            Settlement currentSettlement = new Settlement(currentName, currentLocation, mars, unitManager);
+            Settlement currentSettlement = new Settlement(currentName, currentLocation, popCapacity, mars);
             settlements.addElement(currentSettlement);
             return;
         }
@@ -109,6 +116,7 @@ class SettlementsXmlReader extends MspXmlReader {
         if (elementType == NAME) currentName = data;
         if (elementType == LATITUDE) currentLatitude = data;
         if (elementType == LONGITUDE) currentLongitude = data;
+        if (elementType == POP_CAPACITY) currentPopulationCapacity = data;
     }
 
     /**
@@ -119,9 +127,7 @@ class SettlementsXmlReader extends MspXmlReader {
      */
     public double parseLatitude(String latitude) {
         char direction = latitude.charAt(latitude.length() - 1);
-        System.out.println("lat direction: " + direction);
         double latValue = Double.parseDouble(latitude.substring(0, latitude.length() - 2));
-        System.out.println("latValue: " + latValue);       
  
         if (direction == 'N') latValue = 90D - latValue;
         else if (direction == 'S') latValue += 90D;
@@ -139,9 +145,7 @@ class SettlementsXmlReader extends MspXmlReader {
      */
     public double parseLongitude(String longitude) {
         char direction = longitude.charAt(longitude.length() - 1);
-        System.out.println("long direction: " + direction); 
         double longValue = Double.parseDouble(longitude.substring(0, longitude.length() - 2));
-        System.out.println("longValue: " + longValue);
 
         if (direction == 'W') longValue = 360D - longValue;
         

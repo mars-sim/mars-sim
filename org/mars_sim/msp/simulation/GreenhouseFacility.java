@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GreenhouseFacility.java
- * @version 2.72 2001-07-10
+ * @version 2.73 2001-11-11
  * @author Scott Davis
  */
 
@@ -26,7 +26,7 @@ public class GreenhouseFacility extends Facility {
     /** Constructor for random creation. 
      *  @param manager of the greenhouse facility
      */
-    public GreenhouseFacility(FacilityManager manager, LivingQuartersFacility quarters) {
+    public GreenhouseFacility(FacilityManager manager) {
 
         // Use Facility's constructor.
         super(manager, "Greenhouse");
@@ -38,7 +38,7 @@ public class GreenhouseFacility extends Facility {
         phase = "Inactive";
 
         // Determine full harvest amount.
-	fullHarvestAmount = (growthPeriod / 1000D) * quarters.getMaximumCapacity();
+	fullHarvestAmount = (growthPeriod / 1000D) * manager.getSettlement().getPopulationCapacity();
 
         // Determine work load based on full harvest amount.
         // (3200 mSols for 200 food - 4800 mSols for 300 food)
