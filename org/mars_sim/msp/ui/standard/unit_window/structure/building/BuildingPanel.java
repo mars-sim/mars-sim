@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2003-06-02
  * @author Scott Davis
  */
 
@@ -58,6 +58,11 @@ public class BuildingPanel extends JPanel {
             functionPanels.add(inhabitablePanel);
             functionListPanel.add(inhabitablePanel);
         }
+        
+        // Prepare power panel.
+        BuildingFunctionPanel powerPanel = new PowerBuildingPanel(building, desktop);
+        functionPanels.add(powerPanel);
+        functionListPanel.add(powerPanel);
         
         // Prepare malfunctionable panel.
         BuildingFunctionPanel malfunctionPanel = new MalfunctionableBuildingPanel((Malfunctionable) building, desktop);

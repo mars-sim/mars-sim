@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionableBuildingPanel.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2003-06-02
  * @author Scott Davis
  */
 
@@ -52,10 +52,14 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
         malfunctionScrollPanel.setPreferredSize(new Dimension(170, 90));
         add(malfunctionScrollPanel, BorderLayout.CENTER);
         
+        // Create malfunction list main panel.
+        JPanel malfunctionListMainPanel = new JPanel(new BorderLayout(0, 0));
+        malfunctionScrollPanel.setViewportView(malfunctionListMainPanel);
+        
         // Create malfunction list panel
         malfunctionListPanel = new JPanel();
         malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
-        malfunctionScrollPanel.setViewportView(malfunctionListPanel);
+        malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
         
         // Create malfunction panels
         malfunctionCache = malfunctionable.getMalfunctionManager().getMalfunctions();

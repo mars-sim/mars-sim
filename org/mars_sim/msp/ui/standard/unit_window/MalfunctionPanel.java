@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionPanel.java
- * @version 2.75 2003-05-29
+ * @version 2.75 2003-06-02
  * @author Scott Davis
  */
 
@@ -81,7 +81,7 @@ public class MalfunctionPanel extends JPanel {
         }
         else {
             nameLabel.setText(malfunction.getName());
-            nameLabel.setForeground(Color.green);
+            nameLabel.setForeground(Color.black);
         }
         
         // Update progress bar.
