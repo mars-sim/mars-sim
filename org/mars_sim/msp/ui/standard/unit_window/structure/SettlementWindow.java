@@ -31,6 +31,7 @@ public class SettlementWindow extends UnitWindow {
         addTabPanel(new PopulationTabPanel(proxy, desktop));
         addTabPanel(new VehicleTabPanel(proxy, desktop));
         addTabPanel(new InventoryTabPanel(proxy, desktop));
+        addTabPanel(new PowerGridTabPanel(proxy, desktop));
         addTabPanel(new BuildingsTabPanel(proxy, desktop));
     }
 }
