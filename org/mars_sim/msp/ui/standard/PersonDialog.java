@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.74 2002-02-22
+ * @version 2.74 2002-05-13
  * @author Scott Davis
  */
 
@@ -28,6 +28,8 @@ public class PersonDialog extends UnitDialog {
     // Data members
     private Person person;          // Person detail window is about
     private JButton locationButton; // Location button
+    private JPanel locationLabelPane; // Location label panel
+    private JLabel outsideLabel;    // Outside label
     private JButton deathLocationButton; // Location button in death pane
     private JButton deathCenterMapButton;
     private JButton deathPositionMapButton;
@@ -79,8 +81,7 @@ public class PersonDialog extends UnitDialog {
     /** Complete update (overridden) */
     protected void generalUpdate() {
 	updatePosition();
-	updateSettlement();
-	updateVehicle();
+	updateLocation();
 	updateSkills();
 	updateTask();
         updateCondition();
@@ -96,28 +97,65 @@ public class PersonDialog extends UnitDialog {
         }
     }
 
-    /** Update settlement */
-    private void updateSettlement() {
-        Settlement tempSettlement = person.getSettlement();
-        if (tempSettlement != null) {
-            if (!settlementName.equals(tempSettlement.getName())) {
-                settlementName = tempSettlement.getName();
-                locationButton.setText(settlementName);
-            }
+    /** Update location */
+    private void updateLocation() {
+        String location = person.getLocationSituation();
+
+	if (location.equals(Person.BURIED)) {
+	    if (!outsideLabel.getText().equals("Buried Outside")) 
+	        outsideLabel.setText("Buried Outside");
+	    addOutsideLabel();
+	}
+	else if (location.equals(Person.OUTSIDE)) {
+            if (!outsideLabel.getText().equals("Outside"))
+                outsideLabel.setText("Outside");
+	    addOutsideLabel();
+	}
+	else if (location.equals(Person.INSETTLEMENT)) {
+            String tempName = person.getSettlement().getName();
+	    if (!settlementName.equals(tempName)) locationButton.setText(tempName);
+            addLocationButton();
+	}
+	else if (location.equals(Person.INVEHICLE)) {
+            String tempName = person.getVehicle().getName();
+	    if (!vehicleName.equals(tempName)) locationButton.setText(tempName);
+            addLocationButton();
+	}
+    }
+
+    /**
+     * Adds the outside label to location label pane if it's not there.
+     */
+    private void addOutsideLabel() {
+        if (!containsComponent(locationLabelPane, outsideLabel)) {
+            locationLabelPane.add(outsideLabel);
+            locationLabelPane.remove(locationButton);
+            locationLabelPane.validate();
         }
     }
 
-    /** Update vehicle */
-    private void updateVehicle() {
-        Vehicle tempVehicle = person.getVehicle();
-        if (tempVehicle != null) {
-            if (!vehicleName.equals(tempVehicle.getName())) {
-                vehicleName = tempVehicle.getName();
-                locationButton.setText(vehicleName);
-            }
-        }
+    /**
+     * Adds the location button to location label pane if it's not there.
+     */
+    private void addLocationButton() {
+        if (!containsComponent(locationLabelPane, locationButton)) {
+            locationLabelPane.add(locationButton);
+	    locationLabelPane.remove(outsideLabel);
+	    locationLabelPane.validate();
+	}
     }
-
+   
+    /**
+     * Checks if a container contains a given component.
+     */
+    private boolean containsComponent(Container container, Component component) {
+        boolean result = false;
+	Component[] components = container.getComponents();
+	for (int x=0; x < components.length; x++) 
+	    if (components[x] == component) result = true;
+	return result;
+    }
+    
     /** Update skill list */
     private void updateSkills() {
 
@@ -390,7 +428,7 @@ public class PersonDialog extends UnitDialog {
 	    // Prepare death pane
         JPanel deathContainer = new JPanel(new BorderLayout());
         deathContainer.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-	    JPanel deathPane = new JPanel(new GridLayout(6,1,0,0));
+        JPanel deathPane = new JPanel(new GridLayout(6,1,0,0));
         deathContainer.add(deathPane, "North");
 
 	    // Prepare location sub pane
@@ -469,7 +507,7 @@ public class PersonDialog extends UnitDialog {
 	locationPane.add(locationSubPane, "North");
 
         // Prepare location label pane
-	JPanel locationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	locationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	locationSubPane.add(locationLabelPane);
 
 	// Prepare center map button
@@ -482,13 +520,33 @@ public class PersonDialog extends UnitDialog {
 	JLabel locationLabel = new JLabel("Location: ", JLabel.LEFT);
 	locationLabelPane.add(locationLabel);
 
+        // Prepare outside label
+        outsideLabel = new JLabel("", JLabel.LEFT);
+	boolean showOutsideLabel = false;
+	if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+            outsideLabel.setText("Outside");
+	    showOutsideLabel = true;
+	}
+	else if (person.getLocationSituation().equals(Person.BURIED)) {
+	    outsideLabel.setText("Buried Outside");
+	    showOutsideLabel = true;
+	}
+        if (showOutsideLabel) locationLabelPane.add(outsideLabel);
+	
 	// Prepare location button
 	locationButton = new JButton();
 	locationButton.setMargin(new Insets(1, 1, 1, 1));
-	if (person.getSettlement() != null) locationButton.setText(person.getSettlement().getName());
-	else if (person.getVehicle() != null) locationButton.setText(person.getVehicle().getName());
+	boolean showButton = false;
+	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            locationButton.setText(person.getSettlement().getName());
+	    showButton = true;
+	}
+	else if (person.getLocationSituation().equals(Person.INVEHICLE)) { 
+            locationButton.setText(person.getVehicle().getName());
+	    showButton = true;
+	}
 	locationButton.addActionListener(this);
-	locationLabelPane.add(locationButton);
+	if (showButton) locationLabelPane.add(locationButton);
 
 	// Prepare location coordinates pane
 	JPanel locationCoordsPane = new JPanel(new GridLayout(1, 2,  0, 0));

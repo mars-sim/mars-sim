@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGaragePanel.java
- * @version 2.74 2002-04-23
+ * @version 2.74 2002-05-13
  * @author Scott Davis
  */
 
@@ -113,9 +113,6 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 	    vehiclePane.add(vehicleButton, "West");
 	    vehicleButtons.addElement(vehicleButton);
 			
-	    JLabel vehicleSize = new JLabel(" Mass: " + (int) vehicle.getMass(), JLabel.LEFT);
-	    vehiclePane.add(vehicleSize, "Center");
-
 	    JProgressBar vehicleProgressBar = new JProgressBar();
 	    vehicleProgressBar.setStringPainted(true);
 	    vehicleProgressBar.setPreferredSize(new Dimension(100, 0));

@@ -312,7 +312,6 @@ public class DriveGroundVehicle extends Task implements Serializable {
             vehicle.setDriver(null);
             done = true;
             result = time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
-            // System.out.println(vehicle.getName() + " reached destination.");
         }
         else {
             // Determine new position.

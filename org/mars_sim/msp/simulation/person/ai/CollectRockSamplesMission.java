@@ -269,13 +269,14 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	
         // Calculate samples collected in phase so far.
 	collectedSamples = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES) - collectingStart;
-	
+
 	if (everyoneInRover()) {
+
 	    // If collected samples are sufficient for this site, end the collecting phase.
 	    if (collectedSamples >= SITE_SAMPLE_AMOUNT) {
 		// System.out.println("CollectRockSamplesMission: collectedSamples: " + collectedSamples);
-		MarsClock currentTime = mars.getMasterClock().getMarsClock();
-		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
+		// MarsClock currentTime = mars.getMasterClock().getMarsClock();
+		// double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
 		// System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
 		endPhase = true;
 	    }
@@ -292,20 +293,22 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	    int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
 	    if (nobodyCollect && (sunlight > 0)) {
 		// System.out.println("CollectRockSamplesMission: nobody can collect and not nighttime.");
-		MarsClock currentTime = mars.getMasterClock().getMarsClock();
-		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
+		// MarsClock currentTime = mars.getMasterClock().getMarsClock();
+		// double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
 		// System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
 		endPhase = true;
 	    }
 	}
 
 	if (!endPhase) {
-	    // If person can collect rock samples, start him/her on that task.
-	    if (CollectRockSamples.canCollectRockSamples(person, rover, mars)) {
-                CollectRockSamples collectRocks = new CollectRockSamples(person, rover, mars, 
-				SITE_SAMPLE_AMOUNT - collectedSamples, 
-				rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES));
-		assignTask(person, collectRocks);
+	    if (collectedSamples < SITE_SAMPLE_AMOUNT) {
+	        // If person can collect rock samples, start him/her on that task.
+	        if (CollectRockSamples.canCollectRockSamples(person, rover, mars)) {
+                    CollectRockSamples collectRocks = new CollectRockSamples(person, rover, mars, 
+                            SITE_SAMPLE_AMOUNT - collectedSamples, 
+                            rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES));
+		    assignTask(person, collectRocks);
+                }
             }
 	}
 	else {

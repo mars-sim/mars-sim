@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarage.java
- * @version 2.74 2002-05-11
+ * @version 2.74 2002-05-13
  * @author Scott Davis
  */
 
@@ -42,8 +42,8 @@ public class MaintenanceGarage extends Facility implements Serializable {
         // Initialize data members
         vehicles = new VehicleCollection();
 
-	// Set vehicle capacity capacity to 20 metric tons.
-        vehicleCapacity = 20000D;
+	// Set vehicle capacity capacity to 40 metric tons.
+        vehicleCapacity = 40000D;
     }
 
     /** Constructor for set values (used later when facilities can be built or upgraded.) 

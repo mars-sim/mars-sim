@@ -100,11 +100,12 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         // Check if there is reason to cut the collection phase short and return
 	// to the rover.
 	if (shouldEndEVAOperation()) {
+            // System.out.println(person.getName() + " should end EVA operation.");
 	    phase = ENTER_ROVER;
 	    return time;
 	}
 
-        double remainingPersonCapacity = person.getInventory()
+	double remainingPersonCapacity = person.getInventory()
 	        .getResourceRemainingCapacity(Inventory.ROCK_SAMPLES);
         double currentSamplesCollected = rover.getInventory()
 	        .getResourceMass(Inventory.ROCK_SAMPLES) - startingVehicleRockCargo; 
