@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.73 2001-11-23
+ * @version 2.74 2002-01-22
  * @author Scott Davis
  */
 
@@ -19,7 +19,7 @@ import javax.swing.plaf.metal.*;
  */
 public class MainWindow extends JFrame implements WindowListener {
 
-    private static final String VERSION = "2.73";
+    private static final String VERSION = "2.74";
 
     // Data members
     private VirtualMars mars;        // The virtual Mars

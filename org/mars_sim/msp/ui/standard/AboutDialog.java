@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.73 2001-12-20
+ * @version 2.74 2002-01-22
  * @author Scott Davis
  */
 
@@ -48,7 +48,7 @@ public class AboutDialog extends JDialog implements ActionListener,
 
         // Create the document contents string
         StringBuffer buf = new StringBuffer();
-        buf.append("The Mars Simulation Project v2.73\n\n");
+        buf.append("The Mars Simulation Project v2.74\n\n");
         buf.append("Web Site: http://mars-sim.sourceforge.net\n\n");
 
         buf.append("Developers:\n");
