@@ -23,7 +23,7 @@ public abstract class MspCollection {
 	listeners = new ArrayList();
     }
 
-    /** 
+    /**
      * Adds a MspCollectionEventListener to this collection's listeners.
      * @param listener the new listener
      */
@@ -44,9 +44,11 @@ public abstract class MspCollection {
      * @param event the event to be fired.
      */
     protected void fireMspCollectionEvent(MspCollectionEvent event) {
-        Iterator i = listeners.iterator();
-	while (i.hasNext()) {
-            ((MspCollectionEventListener) i.next()).collectionModified(event);
-	}
+        if (!listeners.isEmpty()) {
+            Iterator i = listeners.iterator();
+	        while (i.hasNext()) {
+                ((MspCollectionEventListener) i.next()).collectionModified(event);
+	        }
+	    }
     }
 }
