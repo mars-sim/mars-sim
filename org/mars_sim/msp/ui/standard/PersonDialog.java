@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.standard;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.person.medical.DeathInfo;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.ui.standard.monitor.*;
@@ -27,6 +28,9 @@ public class PersonDialog extends UnitDialog {
     // Data members
     private Person person;          // Person detail window is about
     private JButton locationButton; // Location button
+    private JButton deathLocationButton; // Location button in death pane
+    private JButton deathCenterMapButton;
+    private JButton deathPositionMapButton;
     private JLabel latitudeLabel;   // Latitude label
     private JLabel longitudeLabel;  // Longitude label
     private JPanel skillListPane;   // Panel containing list of person's skills and their levels.
@@ -195,49 +199,50 @@ public class PersonDialog extends UnitDialog {
     private void updateCondition() {
 
         PhysicalCondition condition = person.getPhysicalCondition();
-
-        // Update fatigue label
-        if (fatigue != roundOneDecimal(condition.getFatigue())) {
-            fatigue = roundOneDecimal(condition.getFatigue());
-            fatigueLabel.setText("" + fatigue + " millisols");
-        }
-
-        // Update hunger label
-        if (hunger != roundOneDecimal(condition.getHunger())) {
-            hunger = roundOneDecimal(condition.getHunger());
-            hungerLabel.setText("" + hunger + " millisols");
-        }
-
-        double performance = roundOneDecimal(person.getPerformanceRating() * 100D);
-        performanceLabel.setText("" + performance + " %");
-
-        // Update complaint list
-        boolean match = false;
-
-        // Remove missing conditions first
-        Collection currentProblems = condition.getProblems();
-        int i = 0;
-        while(i < problemListModel.getSize()) {
-            if (!currentProblems.contains(problemListModel.elementAt(i))) {
-                problemListModel.remove(i);
+        if (condition.getDeathDetails() == null) {
+            // Update fatigue label
+            if (fatigue != roundOneDecimal(condition.getFatigue())) {
+                fatigue = roundOneDecimal(condition.getFatigue());
+                fatigueLabel.setText("" + fatigue + " millisols");
             }
-            else {
-                i++;
-            }
-        }
 
-        // Add new one in
-	    Iterator iter = currentProblems.iterator();
-	    while (iter.hasNext()) {
-            Object problem = iter.next();
-            if (!problemListModel.contains(problem)) {
-                problemListModel.addElement(problem);
+            // Update hunger label
+            if (hunger != roundOneDecimal(condition.getHunger())) {
+                hunger = roundOneDecimal(condition.getHunger());
+                hungerLabel.setText("" + hunger + " millisols");
             }
-        }
 
-        // This prevents the list from sizing strange due to having no contents
-        if (problemListModel.getSize() == 0) problemListModel.addElement(" ");
-        illnessList.validate();
+            double performance = roundOneDecimal(person.getPerformanceRating() * 100D);
+            performanceLabel.setText("" + performance + " %");
+
+            // Update complaint list
+            boolean match = false;
+
+            // Remove missing conditions first
+            Collection currentProblems = condition.getProblems();
+            int i = 0;
+            while(i < problemListModel.getSize()) {
+                if (!currentProblems.contains(problemListModel.elementAt(i))) {
+                    problemListModel.remove(i);
+                }
+                else {
+                    i++;
+                }
+            }
+
+            // Add new one in
+	        Iterator iter = currentProblems.iterator();
+	        while (iter.hasNext()) {
+                Object problem = iter.next();
+                if (!problemListModel.contains(problem)) {
+                    problemListModel.addElement(problem);
+                }
+            }
+
+            // This prevents the list from sizing strange due to having no contents
+            if (problemListModel.getSize() == 0) problemListModel.addElement(" ");
+            illnessList.validate();
+        }
     }
 
     /** ActionListener method overriden */
@@ -245,13 +250,30 @@ public class PersonDialog extends UnitDialog {
         super.actionPerformed(event);
 
         Object button = event.getSource();
-
+        Unit display = null;
         // If location button, open window for selected unit
         if (button == locationButton) {
-        if (person.getSettlement() != null)
-            parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(person.getSettlement()));
-        else if (person.getVehicle() != null)
-            parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(person.getVehicle()));
+            if (person.getSettlement() != null)
+                display = person.getSettlement();
+            else if (person.getVehicle() != null)
+                display = person.getVehicle();
+        }
+        else if (button == deathLocationButton) {
+            display = person.getPhysicalCondition().getDeathDetails().getLocation();
+        }
+
+        // If center map button, center map and globe on unit
+        else if (button == deathCenterMapButton) {
+            DeathInfo info = person.getPhysicalCondition().getDeathDetails();
+            parentDesktop.centerMapGlobe(info.getLocation().getCoordinates());
+        }
+        // If center map button, center map and globe on unit
+        else if (button == deathPositionMapButton) {
+            DeathInfo info = person.getPhysicalCondition().getDeathDetails();
+            parentDesktop.centerMapGlobe(info.getPosition());
+        }
+        if (display != null) {
+            parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(display));
         }
     }
 
@@ -361,6 +383,78 @@ public class PersonDialog extends UnitDialog {
 	return taskPane;
     }
 
+    /**
+     * Prepare the pane about Death.
+     */
+    private JPanel setupDeathPane(DeathInfo details) {
+	    // Prepare death pane
+        JPanel deathContainer = new JPanel(new BorderLayout());
+        deathContainer.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+	    JPanel deathPane = new JPanel(new GridLayout(6,1,0,0));
+        deathContainer.add(deathPane, "North");
+
+	    // Prepare location sub pane
+        deathPane.add(new JLabel("Person is dead", JLabel.LEFT));
+
+        // Illness pane
+        deathPane.add(new JLabel("Cause of Death: " +
+                                details.getIllness().getName(), JLabel.LEFT));
+
+        // Time pane
+        deathPane.add(new JLabel("Time of Death: " +
+                            details.getTime().getTimeStamp(), JLabel.LEFT));
+
+        // Prepare location label pane
+	    JPanel locationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    deathPane.add(locationLabelPane);
+
+        // Prepare center map button
+	    deathCenterMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
+	    deathCenterMapButton.setMargin(new Insets(1, 1, 1, 1));
+	    deathCenterMapButton.addActionListener(this);
+	    locationLabelPane.add(deathCenterMapButton);
+
+	    // Prepare location label
+	    locationLabelPane.add(new JLabel("Place Of Death: ", JLabel.LEFT));
+        Unit locationUnit = details.getLocation();
+        if (locationUnit != null) {
+            // Prepare location button
+	        deathLocationButton = new JButton();
+	        deathLocationButton.setMargin(new Insets(1, 1, 1, 1));
+            deathLocationButton.setText(details.getLocation().getName());
+	        deathLocationButton.addActionListener(this);
+	        locationLabelPane.add(deathLocationButton);
+        }
+        else {
+            locationLabelPane.add(new JLabel("EVA"));
+        }
+
+        // Prepare position label pane
+	    JPanel positionLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    deathPane.add(positionLabelPane);
+
+        // Prepare center map button
+	    deathPositionMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
+	    deathPositionMapButton.setMargin(new Insets(1, 1, 1, 1));
+	    deathPositionMapButton.addActionListener(this);
+	    positionLabelPane.add(deathPositionMapButton);
+        positionLabelPane.add(new JLabel("Position of Death:"));
+
+	    // Prepare location coordinates pane
+	    JPanel positionCoordsPane = new JPanel(new GridLayout(1, 2,  0, 0));
+	    deathPane.add(positionCoordsPane);
+
+	    // Prepare latitude label
+	    Coordinates coords = details.getPosition();
+	    positionCoordsPane.add(new JLabel("  Latitude: " +
+                            coords.getFormattedLatitudeString(), JLabel.LEFT));
+	    positionCoordsPane.add(new JLabel("Longtitude: " +
+                            coords.getFormattedLongitudeString(), JLabel.LEFT));
+
+	    // Return location panel
+	    return deathContainer;
+    }
+
     /** Set up location panel
      *  @return location pane
      */
@@ -418,6 +512,10 @@ public class PersonDialog extends UnitDialog {
     protected JPanel setupConditionPane() {
 
         PhysicalCondition condition = person.getPhysicalCondition();
+        DeathInfo death = condition.getDeathDetails();
+        if (death != null) {
+            return setupDeathPane(death);
+        }
 
         // Prepare condition pane
         JPanel conditionPane = new JPanel(new BorderLayout());
