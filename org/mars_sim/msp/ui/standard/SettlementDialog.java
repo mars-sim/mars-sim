@@ -5,11 +5,12 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
- 
-import org.mars_sim.msp.simulation.*; 
+package org.mars_sim.msp.ui.standard;
+
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.person.medical.SickBay;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -27,13 +28,13 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
     private FacilityPanel[] facilityPanes; // Panes for each of the settlement's facilities.
     private InventoryPanel inventoryPane; // The inventory pane.
 
-    /** Constructs a SettlementDialog object 
+    /** Constructs a SettlementDialog object
      *  @param parentDesktop the desktop pane
      *  @param settlementUIProxy the settlement's UI proxy
      */
-    public SettlementDialog(MainDesktopPane parentDesktop, 
+    public SettlementDialog(MainDesktopPane parentDesktop,
             SettlementUIProxy settlementUIProxy) {
-        
+
         // Use UnitDialog constructor
         super(parentDesktop, settlementUIProxy);
     }
@@ -104,7 +105,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
-    /** Set window size 
+    /** Set window size
      *  @return the window's size
      */
     protected Dimension setWindowSize() {
@@ -130,44 +131,50 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 
         // Prepare and add each facility pane
         FacilityManager facilityManager = settlement.getFacilityManager();
-        
-        facilityPanes = new FacilityPanel[5];
-        
+
+        facilityPanes = new FacilityPanel[6];
+
         // Prepare greenhouse pane
         Greenhouse greenhouse = (Greenhouse) facilityManager.getFacility("Greenhouse");
         GreenhousePanel greenhousePane = new GreenhousePanel(greenhouse, parentDesktop);
         tabPane.add(greenhousePane, greenhousePane.getTabName());
         facilityPanes[0] = greenhousePane;
-        
+
         // Prepare laboratory pane
         Laboratory laboratory = (Laboratory) facilityManager.getFacility("Research Laboratories");
         LaboratoryPanel laboratoryPane = new LaboratoryPanel(laboratory, parentDesktop);
         tabPane.add(laboratoryPane, laboratoryPane.getTabName());
         facilityPanes[1] = laboratoryPane;
-        
+
         // Prepare living quarters pane
         LivingQuartersPanel livingQuartersPane = new LivingQuartersPanel(settlement, parentDesktop);
         tabPane.add(livingQuartersPane, livingQuartersPane.getTabName());
         facilityPanes[2] = livingQuartersPane;
-        
+
         // Prepare maintenance garage pane
         MaintenanceGarage garage = (MaintenanceGarage) facilityManager.getFacility("Maintenance Garage");
         MaintenanceGaragePanel garagePane = new MaintenanceGaragePanel(garage, parentDesktop);
         tabPane.add(garagePane, garagePane.getTabName());
         facilityPanes[3] = garagePane;
-        
+
         // Prepare INSITU resoruce processor pane
         InsituResourceProcessor processor = (InsituResourceProcessor) facilityManager.getFacility("INSITU Resource Processor");
         InsituResourceProcessorPanel processorPane = new InsituResourceProcessorPanel(processor, parentDesktop);
         tabPane.add(processorPane, processorPane.getTabName());
         facilityPanes[4] = processorPane;
 
+        // Prepare SickBay pane
+        SickBay sickbay = ((Infirmary)facilityManager.getFacility("Infirmary")).getSickBay();
+        SickBayPanel sickbayPane = new SickBayPanel(sickbay, parentDesktop);
+        tabPane.add(sickbayPane, sickbayPane.getTabName());
+        facilityPanes[5] = sickbayPane;
+
 	// Prepare inventory pane.
 	inventoryPane = new InventoryPanel(settlement.getInventory());
 	tabPane.add(inventoryPane, "Inventory");
     }
 
-    /** Prepare vehicles pane 
+    /** Prepare vehicles pane
      *  @return the vehicle pane
      */
     protected JPanel setupVehiclesPane() {
@@ -207,7 +214,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         return vehiclesPane;
     }
 
-    /** Prepare location pane 
+    /** Prepare location pane
      *  @return the location pane
      */
     protected JPanel setupLocationPane() {
