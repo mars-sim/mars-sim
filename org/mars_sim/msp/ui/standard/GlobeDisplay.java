@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.71 2000-10-19
+ * @version 2.72 2001-05-08
  * @author Scott Davis
  */
 
@@ -28,6 +28,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     private int width; // width of the globe display component
     private int height; // height of the globe display component
     private boolean useUSGSMap;  // True if USGS surface map is to be used
+    private VirtualMars mars; // Virtual mars object
 
     private static final double HALF_PI = (Math.PI / 2);
 
@@ -36,11 +37,12 @@ class GlobeDisplay extends JComponent implements Runnable {
      *  @width the width of the globe display
      *  @height the height of the globe display
      */
-    public GlobeDisplay(UIProxyManager proxyManager, int width, int height) {
+    public GlobeDisplay(UIProxyManager proxyManager, int width, int height, VirtualMars mars) {
 
         this.proxyManager = proxyManager;
         this.width = width;
         this.height = height;
+        this.mars = mars;
 
         // Set component size
         setPreferredSize(new Dimension(width, height));
@@ -139,8 +141,30 @@ class GlobeDisplay extends JComponent implements Runnable {
             g.drawImage(globe.getGlobeImage(), 0, 0, this);
         }
 
+        drawShadow(g);
         drawUnits(g);
         drawCrossHair(g);
+    }
+
+    protected void drawShadow(Graphics g) {
+        int centerX = width / 2;
+        int centerY = width / 2;
+
+        Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
+
+        g.setColor(new Color(0, 0, 0, 127));
+        for (int x = centerX - 48; x < centerX + 48; x++) {
+            for (int y = centerY - 48; y < centerY + 48; y++) {
+                int xDiff = x - centerX;
+                int yDiff = y - centerY;
+                if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 48) {
+                    Coordinates location = centerCoords.convertRectToSpherical(xDiff, yDiff, 47.74648293D);
+                    if (sunDirection.getAngle(location) < (Math.PI / 2D))  { 
+                        g.fillRect(x, y, 1, 1);
+                    }
+                }
+            }
+        }
     }
 
     /** draw the dots on the globe that identify units 
