@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-04
  * @author Scott Davis
  */
 
@@ -40,7 +40,8 @@ public class TaskManager implements Serializable {
                                        StudyRockSamples.class,
                                        RepairMalfunction.class,
                                        RepairEVAMalfunction.class,
-                                       EnterAirlock.class };
+                                       EnterAirlock.class,
+                                       Workout.class };
 
     /** Constructs a TaskManager object
      *  @param person the person the task manager is for
