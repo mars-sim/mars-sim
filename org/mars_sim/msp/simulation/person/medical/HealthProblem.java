@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthProblem.java
- * @version 2.75 2003-06-16
+ * @version 2.75 2003-06-19
  * @author Barry Evans
  */
 
@@ -181,7 +181,10 @@ public class HealthProblem implements Serializable {
      * Stops the treatment for now.
      */
     public void stopTreatment() {
-        state = DEGRADING;
+        if (state == TREATMENT) {
+            if (duration > timePassed) state = DEGRADING;
+            else startRecovery();
+        }
     }
 
     /**
@@ -216,7 +219,7 @@ public class HealthProblem implements Serializable {
             if (state == RECOVERING) {
                 state = CURED;
 
-                // If person is cured or treatment persion has expired, then
+                // If person is cured or treatment person has expired, then
                 // release the aid.
                 if (usedAid != null) {
                     try {

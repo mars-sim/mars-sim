@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.75 2003-06-12
+ * @version 2.75 2003-06-19
  * @author Barry Evans
  */
 
@@ -61,7 +61,7 @@ public class MedicalAssistance extends Task implements Serializable {
             
             // Start the treatment
             try {
-                medical.startTreatment(problem);
+                medical.startTreatment(problem, duration);
             }
             catch (Exception e) {
                 System.out.println("MedicalAssistance: " + e.getMessage());
@@ -174,6 +174,7 @@ public class MedicalAssistance extends Task implements Serializable {
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             person.getSkillManager().addExperience(MEDICAL, newPoints);
 
+            problem.startRecovery();
             endTask();
             return timeCompleted - duration;
         }

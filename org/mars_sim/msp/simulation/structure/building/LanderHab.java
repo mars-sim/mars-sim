@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-06-09
+ * @version 2.75 2003-06-19
  * @author Scott Davis
  */
  
@@ -332,10 +332,11 @@ public class LanderHab extends InhabitableBuilding
      * Starts the treatment of a health problem in the waiting queue.
      *
      * @param problem the health problem to start treating.
+     * @param treatmentDuration the time required to perform the treatment.
      * @throws Exception if treatment cannot be started.
      */
-    public void startTreatment(HealthProblem problem) throws Exception {
-        infirmary.startTreatment(problem);
+    public void startTreatment(HealthProblem problem, double treatmentDuration) throws Exception {
+        infirmary.startTreatment(problem, treatmentDuration);
     }
     
     /**

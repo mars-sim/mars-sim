@@ -31,7 +31,9 @@ public class HealthTabPanel extends TabPanel {
     private HealthProblemTableModel healthProblemTableModel;
     
     // Data cache
-    
+    private double fatigueCache;
+    private double hungerCache;
+    private double performanceCache;
     
     /**
      * Constructor
@@ -64,8 +66,8 @@ public class HealthTabPanel extends TabPanel {
         conditionPanel.add(fatigueNameLabel);
 
         // Prepare fatigue label
-        fatigueLabel = new JLabel(formatter.format(condition.getFatigue()) + 
-            " millisols", JLabel.RIGHT);
+        fatigueCache = condition.getFatigue();
+        fatigueLabel = new JLabel(formatter.format(fatigueCache) + " millisols", JLabel.RIGHT);
         conditionPanel.add(fatigueLabel);
 
         // Prepare hunger name label
@@ -73,8 +75,8 @@ public class HealthTabPanel extends TabPanel {
         conditionPanel.add(hungerNameLabel);
 
         // Prepare hunger label
-        hungerLabel = new JLabel(formatter.format(condition.getHunger()) + 
-            " millisols", JLabel.RIGHT);
+        hungerCache = condition.getHunger();
+        hungerLabel = new JLabel(formatter.format(hungerCache) + " millisols", JLabel.RIGHT);
         conditionPanel.add(hungerLabel);
 
         // Prepare performance rating label
@@ -82,8 +84,8 @@ public class HealthTabPanel extends TabPanel {
         conditionPanel.add(performanceNameLabel);
 
         // Performance rating label
-        performanceLabel = new JLabel(formatter.format(person.getPerformanceRating() * 100D) + 
-            " %", JLabel.RIGHT);
+        performanceCache = person.getPerformanceRating() * 100D;
+        performanceLabel = new JLabel(formatter.format(performanceCache) + " %", JLabel.RIGHT);
         conditionPanel.add(performanceLabel);
         
         // Prepare health problem panel
@@ -113,6 +115,29 @@ public class HealthTabPanel extends TabPanel {
      * Updates the info on this panel.
      */
     public void update() {
+        
+        Person person = (Person) proxy.getUnit();
+        PhysicalCondition condition = person.getPhysicalCondition();
+        
+        // Update fatigue if necessary.
+        if (fatigueCache != condition.getFatigue()) {
+            fatigueCache = condition.getFatigue();
+            fatigueLabel.setText(formatter.format(fatigueCache) + " millisols");
+        }
+        
+        // Update hunger if necessary.
+        if (hungerCache != condition.getHunger()) {
+            hungerCache = condition.getHunger();
+            hungerLabel.setText(formatter.format(hungerCache) + " millisols");
+        }
+        
+        // Update performance cache if necessary.
+        if (performanceCache != (person.getPerformanceRating() * 100D)) {
+            performanceCache = person.getPerformanceRating() * 100D;
+            performanceLabel.setText(formatter.format(hungerCache) + "%");
+        }
+        
+        // Update health problem table model.
         healthProblemTableModel.update();
     }
     

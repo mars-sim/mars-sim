@@ -50,9 +50,10 @@ public interface MedicalAid {
      * Starts the treatment of a health problem in the waiting queue.
      *
      * @param problem the health problem to start treating.
+     * @param treatmentDuration the time required to perform the treatment.
      * @throws Exception if treatment cannot be started.
      */
-    public void startTreatment(HealthProblem problem) throws Exception;
+    public void startTreatment(HealthProblem problem, double treatmentDuration) throws Exception;
     
     /**
      * Stop a previously started treatment.

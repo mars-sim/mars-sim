@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 2.75 2003-05-02
+ * @version 2.75 2003-06-19
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -160,15 +160,15 @@ public abstract class MedicalStation implements MedicalAid, Serializable {
      * Starts the treatment of a health problem in the waiting queue.
      *
      * @param problem the health problem to start treating.
+     * @param treatmentDuration the time required to perform the treatment.
      * @throws Exception if treatment cannot be started.
      */
-    public void startTreatment(HealthProblem problem) throws Exception {
+    public void startTreatment(HealthProblem problem, double treatmentDuration) throws Exception {
         
         if (problem == null) throw new IllegalArgumentException("problem is null");
         
         if (problemsAwaitingTreatment.contains(problem)) {
-            Treatment treatment = problem.getIllness().getRecoveryTreatment();
-            problem.startTreatment(treatment.getDuration());
+            problem.startTreatment(treatmentDuration);
             problemsBeingTreated.add(problem);
             problemsAwaitingTreatment.remove(problem);
         }

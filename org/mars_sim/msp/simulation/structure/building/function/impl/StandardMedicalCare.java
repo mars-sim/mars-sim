@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StandardMedicalCare.java
- * @version 2.75 2003-06-09
+ * @version 2.75 2003-06-19
  * @author Scott Davis
  */
  
@@ -59,10 +59,11 @@ public class StandardMedicalCare extends MedicalStation implements MedicalCare, 
      * Starts the treatment of a health problem in the waiting queue.
      *
      * @param problem the health problem to start treating.
+     * @param treatmentDuration the time required to perform the treatment.
      * @throws Exception if treatment cannot be started.
      */
-    public void startTreatment(HealthProblem problem) throws Exception {
-        super.startTreatment(problem);
+    public void startTreatment(HealthProblem problem, double treatmentDuration) throws Exception {
+        super.startTreatment(problem, treatmentDuration);
         
         // Add person to building if necessary.
         try {
