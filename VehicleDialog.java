@@ -1,5 +1,5 @@
 //************************** Vehicle Detail Window **************************
-// Last Modified: 5/19/00
+// Last Modified: 7/10/00
 
 // The VehicleDialog class is an abstract detail window for a vehicle.
 // It displays information about the vehicle as well as its current status.
@@ -34,6 +34,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	protected JList crewList;                   // List of passengers
 	protected JLabel damageLabel;               // Vehicle damage label	
 	protected JPanel navigationInfoPane;        // Navigation info pane
+	protected JLabel odometerLabel;             // Odometer Label
+	protected JLabel lastMaintLabel;            // Distance Since Last Maintenance Label
 
 	// Cached data members
 	
@@ -43,6 +45,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	protected int distance;                     // Cached distance to destination
 	protected float speed;                      // Cached speed of vehicle.
 	protected Vector crewInfo;                  // Cached list of crewmembers.
+	protected double distanceTraveled;          // Cached total distance traveled by vehicle.
+	protected double distanceMaint;             // Cached distance traveled by vehicle since last maintenance.
 
 	// Constructor
 
@@ -71,6 +75,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			updateDestination();
 			updateSpeed();
 			updateCrew();
+			updateOdometer();
 	}
 	
 	// Implement MouseListener Methods
@@ -123,7 +128,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		JTabbedPane tabPane = new JTabbedPane();
 		tabPane.addTab("Navigation", setupNavigationPane());
 		tabPane.addTab("Crew", setupCrewPane());
-		tabPane.addTab("Damage", setupDamagePane());
+		tabPane.addTab("Condition", setupDamagePane());
 		mainPane.add(tabPane, "Center");
 	}
 
@@ -358,17 +363,60 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
 		// Prepare damage pane
 
-		JPanel damagePane = new JPanel();
+		JPanel damagePane = new JPanel(new BorderLayout(0, 5));
 		damagePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		damagePane.setLayout(new BoxLayout(damagePane, BoxLayout.Y_AXIS));
 
-		// Prepare damage label
+		// Prepare name label
+		
+		JLabel nameLabel = new JLabel("Vehicle Condition", JLabel.CENTER);
+		nameLabel.setForeground(Color.black);
+		damagePane.add(nameLabel, "North");
 
-		JLabel damageLabel = new JLabel("Damage: None", JLabel.CENTER);
-		damageLabel.setForeground(Color.black);
-		JPanel damageLabelPane = new JPanel();
-		damageLabelPane.add(damageLabel);
-		damagePane.add(damageLabelPane);
+		// Prepare content pane
+		
+		JPanel contentPane = new JPanel(new BorderLayout());
+		contentPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+		damagePane.add(contentPane, "Center");
+
+		// Prepare odometer pane
+		
+		JPanel odometerPane = new JPanel(new BorderLayout());
+		odometerPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+		contentPane.add(odometerPane, "North");
+		
+		// Prepare title pane
+		
+		JPanel titlePane = new JPanel(new GridLayout(2, 1));
+		odometerPane.add(titlePane, "West");
+		
+		// Prepare odometer label
+		
+		JLabel odometerTitleLabel = new JLabel("Total Distance Traveled:");
+		odometerTitleLabel.setForeground(Color.black);
+		titlePane.add(odometerTitleLabel);
+		
+		// Prepare distance since last maintenance label
+
+		JLabel lastMaintTitleLabel = new JLabel("Since Last Maintenance:");
+		lastMaintTitleLabel.setForeground(Color.black);
+		titlePane.add(lastMaintTitleLabel);
+		
+		// Prepare value pane
+		
+		JPanel valuePane = new JPanel(new GridLayout(2, 1));
+		odometerPane.add(valuePane, "Center");
+		
+		// Prepare odometer value label
+
+		odometerLabel = new JLabel((int) vehicle.getTotalDistanceTraveled() + " km.", JLabel.RIGHT);
+		odometerLabel.setForeground(Color.black);
+		valuePane.add(odometerLabel);
+		
+		// Prepare distance since last maintenance label
+		
+		lastMaintLabel = new JLabel((int) vehicle.getDistanceLastMaintenance() + " km.", JLabel.RIGHT);
+		lastMaintLabel.setForeground(Color.black);
+		valuePane.add(lastMaintLabel);
 
 		// Return damage pane
 
@@ -513,6 +561,25 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 			if (vehicle.getPassengerNum() <= 1) model.addElement(" ");
 			
 			validate();
+		}
+	}
+	
+	// Update odometer info
+
+	protected void updateOdometer() {
+		
+		// Update odometer label
+		
+		if (distanceTraveled != vehicle.getTotalDistanceTraveled()) {
+			distanceTraveled = vehicle.getTotalDistanceTraveled();
+			odometerLabel.setText((int) distanceTraveled + " km.");
+		}
+		
+		// Update distance since last maintenance label
+		
+		if (distanceMaint != vehicle.getDistanceLastMaintenance()) {
+			distanceMaint = vehicle.getDistanceLastMaintenance();
+			lastMaintLabel.setText((int) distanceMaint + " km.");
 		}
 	}
 }
