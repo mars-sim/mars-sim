@@ -1,5 +1,5 @@
 //************************** TaskMechanic **************************
-// Last Modified: 8/23/00
+// Last Modified: 8/29/00
 
 // The TaskMechanic class is a task for repairing or maintaining a vehicle.  
 // It can be used for field repairing a vehicle or performing periodic maintenance
@@ -48,9 +48,7 @@ class TaskMechanic extends Task {
 			if (!garage.vehicleInGarage(vehicle)) garage.addVehicle(vehicle);
 			name = "Performing Maintenance on " + vehicle.getName();
 			description = name;
-			System.out.println(person.getName() + " performing maintenance on " + vehicle.getName());
-			// System.out.println(getDescription());
-			System.out.println("Distance: " + vehicle.getDistanceLastMaintenance());
+			vehicle.setStatus("Periodic Maintenance");
 		}
 		else isDone = true;
 	}
@@ -64,8 +62,6 @@ class TaskMechanic extends Task {
 		this.failure = failure;
 		
 		phase = "Repairing " + failure.getName();
-		
-		// System.out.println(person.getName() + " starts repairing " + failure.getName() + " on " + vehicle.getName());
 	}
 	
 	// Returns the weighted probability that a person might perform this task.
@@ -121,7 +117,6 @@ class TaskMechanic extends Task {
 			// If task is done, return vehicle to moving status.
 			
 			if (isDone) vehicle.setStatus("Moving");
-			// if (isDone) System.out.println(person.getName() + " is done repairing " + failure.getName() + " on " + vehicle.getName());
 		}
 		
 		if (name.startsWith("Performing Maintenance on ")) {
@@ -143,9 +138,8 @@ class TaskMechanic extends Task {
 			
 			if (vehicle.getDistanceLastMaintenance() == 0) {
 				garage.removeVehicle(vehicle);
+				vehicle.setStatus("Parked");
 				isDone = true;
-				System.out.println();
-				System.out.println(person.getName() + " finished performing maintenance on " + vehicle.getName());
 			}
 		}
 	}
