@@ -179,6 +179,18 @@ public class Coordinates {
         return rho * angle;
     }
 
+    /** Returns common formatted string to represent this location.
+     *  @return formatted longitude & latitude string for this Coordinates object
+     * @see getFormattedLongitudeString()
+     * @see getFormattedLatitudeString()
+     */
+    public String getFormattedString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(getFormattedLongitudeString());
+        buffer.append(getFormattedLatitudeString());
+        return buffer.toString();
+    }
+
     /** Returns common formatted string to represent longitude for
      *  this location ex. "35.6º E"
      *  @return formatted longitude string for this Coordinates object
