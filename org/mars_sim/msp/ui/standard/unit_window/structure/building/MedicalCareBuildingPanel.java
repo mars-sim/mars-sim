@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * MedicalCareBuildingPanel.java
- * @version 2.75 2003-06-09
+ * @version 2.75 2003-09-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.*;
-import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;

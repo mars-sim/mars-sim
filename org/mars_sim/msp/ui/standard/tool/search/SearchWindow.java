@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.75 2003-07-29
+ * @version 2.75 2003-09-10
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.standard.tool.search;
  
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;

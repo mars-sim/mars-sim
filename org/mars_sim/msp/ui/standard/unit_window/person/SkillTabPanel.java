@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillTabPanel.java
- * @version 2.75 2003-07-22
+ * @version 2.75 2003-09-10
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;

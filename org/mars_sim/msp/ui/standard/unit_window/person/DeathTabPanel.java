@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathTabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.75 2003-09-10
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.standard.unit_window.person;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.75 2003-09-10
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.ui.standard.*;
 import java.awt.*;
-import java.text.DecimalFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTabPanel.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-09-10
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.tool.monitor.VehicleTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 import java.awt.*;
 import java.awt.event.*;

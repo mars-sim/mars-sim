@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * ExplorerRoverDisplayInfo.java
- * @version 2.75 2003-07-16
+ * @version 2.75 2003-09-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_display_info;  
  
-import java.awt.*;
 import javax.swing.*;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 

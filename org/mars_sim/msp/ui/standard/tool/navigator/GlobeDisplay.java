@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2003-09-10
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.standard.tool.navigator;
  
 import java.awt.*;
 import java.awt.image.*;
-import java.util.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.*;  
 import org.mars_sim.msp.ui.standard.unit_display_info.*;
