@@ -46,7 +46,7 @@ public class Laboratory extends Facility implements Serializable {
 
         String[] techs = { "Medical Research", "Botany", "Physics", "Material Science" };
 
-        while (techSpecialities.size() == 0) {
+        while (techSpecialities.size() == 1) {
             for (int x = 0; x < techs.length; x ++) {
                 if (RandomUtil.lessThanRandPercent(25)) {
                     techSpecialities.add(techs[x]);
