@@ -23,11 +23,20 @@ public class AudioPlayer {
 	private void startPlay(String path, boolean loop) {
 		 
 
-		try {
-			soundFile= new File(path);
-			audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-			clip = AudioSystem.getClip();
-			clip.open(audioInputStream);
+		try
+        {
+            soundFile = new File(path);
+            audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+          // This block is used to be compatible with Java 1.4
+          // In Java 1.5+ use clip=AudioSystem.getClip();
+          //TODO: Change as soon as project migrates to 1.5
+            AudioFormat format = new AudioFormat(
+                    AudioFormat.Encoding.PCM_SIGNED, AudioSystem.NOT_SPECIFIED,
+                    16, 2, 4, AudioSystem.NOT_SPECIFIED, true);
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
+            clip= (Clip) AudioSystem.getLine(info);
+            // end of block
+            clip.open(audioInputStream);
 			
 		
 			
