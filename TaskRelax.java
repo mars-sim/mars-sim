@@ -1,5 +1,5 @@
 //************************** TaskRelax **************************
-// Last Modified: 2/27/00
+// Last Modified: 5/24/00
 
 // The TaskRelax class is a simple task that implements resting and doing nothing for a while.
 // The duration of the task is by default chosen randomly, up to one day (approx).
@@ -18,7 +18,7 @@ class TaskRelax extends Task {
 	public TaskRelax(Person person, VirtualMars mars) {
 		super("Relaxing", person, mars);
 		
-		duration = (int) Math.round(Math.random() * (25D * 60D * 60D));
+		duration = (int) Math.round(Math.random() * (8D * 60D * 60D));
 	}
 	
 	// Constructor to relax for a given number of seconds
@@ -45,15 +45,13 @@ class TaskRelax extends Task {
 }
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
