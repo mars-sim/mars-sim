@@ -107,13 +107,13 @@ public class TaskManager {
     /** Assigns a new task to a person based on general tasks available.
       * (Add support for role-based tasks later)
       */
-    private void getNewTask() {
+    public void getNewTask() {
         // Initialize variables
         Vector probableTasks = new Vector();
         Vector weights = new Vector();
         Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
         Object[] parametersForInvokingMethod = { person, mars };
-
+        
         // Find the probable weights of each possible general task.
         for (int x = 0; x < generalTasks.length; x++) {
             try {
@@ -129,7 +129,7 @@ public class TaskManager {
                 System.out.println("TaskManager.getNewTask() (1): " + e.toString());
             }
         }
-
+        
         // Total up the weights
         int totalWeight = 0;
         for (int x = 0; x < weights.size(); x++)
@@ -137,7 +137,7 @@ public class TaskManager {
 
         // Get a random number from 0 to the total weight
         int r = (int) Math.round(Math.random() * (double) totalWeight);
-
+        
         // Determine which task is selected
         int tempWeight = ((Integer) weights.elementAt(0)).intValue();
         int taskNum = 0;
@@ -145,7 +145,7 @@ public class TaskManager {
             taskNum++;
             tempWeight += ((Integer) weights.elementAt(taskNum)).intValue();
         }
-
+        
         // Create an instance of that task and set it as the current task
         try {
             Constructor construct = ((Class) probableTasks.elementAt(taskNum)).getConstructor(
@@ -154,6 +154,7 @@ public class TaskManager {
         } catch (Exception e) {
             System.out.println("TaskManager.getNewTask() (2): " + e.toString());
         }
+        
     }
 }
 

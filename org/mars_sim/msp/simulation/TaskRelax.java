@@ -17,7 +17,7 @@ class TaskRelax extends Task {
 
     private int duration; // The predetermined duration in seconds of the task
 
-    TaskRelax(Person person, VirtualMars mars) {
+    public TaskRelax(Person person, VirtualMars mars) {
         super("Relaxing", person, mars);
 
         duration = (int) Math.round(Math.random() * (8D * 60D * 60D));
@@ -33,7 +33,7 @@ class TaskRelax extends Task {
     /** Returns the weighted probability that a person might perform this task.
       * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
       */
-    static int getProbability(Person person, VirtualMars mars) {
+    public static int getProbability(Person person, VirtualMars mars) {
         return 50;
     }
 

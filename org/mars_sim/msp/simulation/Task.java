@@ -24,7 +24,7 @@ abstract class Task {
 	String subPhase;        // Sub-phase of task completion
 	int subPhaseCompleted;  // Amount of time completed in current subPhase
 
-	Task(String name, Person person, VirtualMars mars) {
+	public Task(String name, Person person, VirtualMars mars) {
 		this.name = new String(name);
 		this.person = person;
 		this.mars = mars;
@@ -74,7 +74,7 @@ abstract class Task {
 	/** Returns the weighted probability that a person might perform this task.
 	 *  It should return a 0 if there is no chance to perform this task given the person and the situation.
      */
-	static int getProbability(Person person, VirtualMars mars) { return 50; }
+	public static int getProbability(Person person, VirtualMars mars) { return 50; }
 	
 	/** Perform the task for the given number of seconds.
 	 *  Children should override and implement this.

@@ -21,7 +21,7 @@ class TaskMechanic extends Task {
     private MechanicalFailure failure; // The vehicle's mechanical failure. (repairing only)
 
     /** Constructor for periodic vehicle maintenance in a garage. */
-    TaskMechanic(Person person, VirtualMars mars) {
+    public TaskMechanic(Person person, VirtualMars mars) {
         super("Performing Maintenance on ", person, mars);
 
         settlement = person.getSettlement();
@@ -68,7 +68,7 @@ class TaskMechanic extends Task {
     }
 
     /** Returns the weighted probability that a person might perform this task. */
-    static int getProbability(Person person, VirtualMars mars) {
+    public static int getProbability(Person person, VirtualMars mars) {
         int result = 0;
 
         if (person.getLocationSituation().equals("In Settlement")) {

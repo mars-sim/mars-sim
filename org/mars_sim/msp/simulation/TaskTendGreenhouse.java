@@ -17,7 +17,7 @@ class TaskTendGreenhouse extends Task {
     private Settlement settlement; // The settlement the greenhouse is in.
     private int duration; // The duration (in seconds) the person will perform the task.
 
-    TaskTendGreenhouse(Person person, VirtualMars mars) {
+    public TaskTendGreenhouse(Person person, VirtualMars mars) {
         // Use Task constructor
         super("Tending Greenhouse", person, mars);
 
@@ -33,7 +33,7 @@ class TaskTendGreenhouse extends Task {
      *  Returns a 30 probability if person is at a settlement.
      *  Returns a 0 if not.
      */
-    static int getProbability(Person person, VirtualMars mars) {
+    public static int getProbability(Person person, VirtualMars mars) {
         if (person.getLocationSituation().equals("In Settlement")) {
             GreenhouseFacility greenhouse =
                     (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");

@@ -30,7 +30,7 @@ class TaskDrive extends Task {
     private double backingUpDistance; // Distance vehicle has backed up to avoid an obstacle.
     private Coordinates startingLocation; // Current location of vehicle.
 
-    TaskDrive(Person person, VirtualMars mars) {
+    public TaskDrive(Person person, VirtualMars mars) {
         super("Driving Ground Vehicle", person, mars);
         destinationType = new String("None");
         if (person.getLocationSituation().equals("In Settlement"))
@@ -80,7 +80,7 @@ class TaskDrive extends Task {
       *  Returns a 5 probability if person is at a settlement with an available vehicle.
       *  Returns a 0 if not.
       */
-    static int getProbability(Person person, VirtualMars mars) {
+    public static int getProbability(Person person, VirtualMars mars) {
         int result = 0;
 
         if (person.getLocationSituation().equals("In Settlement")) {
