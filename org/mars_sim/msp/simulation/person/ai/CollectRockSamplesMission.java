@@ -22,8 +22,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     // Phase constants
     final private static String EMBARK = "Embarking";
     final private static String DRIVING = "Driving";
-    final private static String COLLECTSAMPLES =
-                                        "Collecting Rock and Soil Samples";
+    final private static String COLLECTSAMPLES = "Collecting Rock Samples";
     final private static String DISEMBARK = "Disembarking";
     final private static String DRIVESITE1 = "Driving to Site 1";
     final private static String DRIVEHOME = "Driving Home";
@@ -32,17 +31,18 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     final private static double SITE_SAMPLE_AMOUNT = 100D;
     
     // Data members
-    private Settlement startingSettlement;
-    private Coordinates destination;
-    private Rover rover;
-    private MarsClock startingTime;
-    private double startingDistance;
-    private Person lastDriver;
-    private boolean roverLoaded;
-    private boolean roverUnloaded;
-    private Vector collectionSites;
-    private int siteIndex;
-    private double collectedSamples;
+    private Settlement startingSettlement; // The settlement the mission starts at.
+    private Coordinates destination; // The current destination of the mission.
+    private Rover rover; // The rover used in the mission.
+    private MarsClock startingTime; // The starting time of a driving phase.
+    private double startingDistance; // The starting distance to destination of a driving phase.
+    private Person lastDriver; // The last driver in a driving phase.
+    private boolean roverLoaded; // True if the rover is fully loaded with supplies.
+    private boolean roverUnloaded; // True if the rover is fully unloaded of supplies.
+    private Vector collectionSites; // The collection sites the mission will go to.
+    private int siteIndex; // The index of the current collection site.
+    private double collectedSamples; // The amount of samples (kg) collected in a collection phase.
+    private double collectingStart; // The starting amount of samples in a rover during a collection phase.
 
     // Tasks tracked
     ReserveRover reserveRover;
@@ -51,7 +51,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
      *  @param missionManager the mission manager
      */
     public CollectRockSamplesMission(MissionManager missionManager, Person startingPerson) {
-        super("Collect Rock/Soil Samples", missionManager, startingPerson);
+        super("Collect Rock Samples", missionManager, startingPerson);
 
         // Initialize data members
         startingSettlement = startingPerson.getSettlement();
@@ -228,6 +228,8 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             else {
                 phase = COLLECTSAMPLES + " from Site " + (siteIndex + 1);
 		System.out.println("CollectRockSamplesMission: Collecting phase started.");
+		collectedSamples = 0D;
+		collectingStart = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
             }
             return;
         }
@@ -255,6 +257,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         boolean endPhase = false;
 
+        // Calculate samples collected in phase so far.
+	collectedSamples = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES) - collectingStart;
+	
 	// Determine if everyone in mission is in the rover.
 	boolean everyoneInRover = true;
 	PersonIterator i = people.iterator();
