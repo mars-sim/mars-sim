@@ -14,9 +14,6 @@ import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.PersonalityType;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
-import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /** 
  * The RelationshipManager class keeps track of all the social 
@@ -218,7 +215,7 @@ public class RelationshipManager implements Serializable {
 		double personStress = person.getPhysicalCondition().getStress();
 		
 		// Get the person's local group of people.
-		PersonCollection localGroup = getLocalGroup(person);
+		PersonCollection localGroup = person.getLocalGroup();
 		
 		// Go through each person in local group.
 		PersonIterator i = localGroup.iterator();
@@ -292,37 +289,11 @@ public class RelationshipManager implements Serializable {
 	private void modifyStress(Person person, double time) throws Exception {
 		double stressModifier = 0D;
 		
-		PersonIterator i = getLocalGroup(person).iterator();
+		PersonIterator i = person.getLocalGroup().iterator();
 		while (i.hasNext()) stressModifier-= ((getOpinionOfPerson(person, i.next()) - 50D) / 50D);
 		
 		stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;
 		PhysicalCondition condition = person.getPhysicalCondition();
 		condition.setStress(condition.getStress() + stressModifier);
-	}
-	
-	/**
-	 * Gets the person's local group of people (in building or rover)
-	 * @param person the person 
-	 * @return collection of people in person's location.
-	 * @throws Exception if error
-	 */
-	private PersonCollection getLocalGroup(Person person) throws Exception {
-		PersonCollection localGroup = new PersonCollection();
-		
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			Building building = BuildingManager.getBuilding(person);
-			if (building.hasFunction(LifeSupport.NAME)) {
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-				localGroup = new PersonCollection(lifeSupport.getOccupants());
-			}
-		}
-		else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-			Rover rover = (Rover) person.getVehicle();
-			localGroup = new PersonCollection(rover.getCrew());
-		}
-		
-		if (localGroup.contains(person)) localGroup.remove(person);
-		
-		return localGroup;
 	}
 }

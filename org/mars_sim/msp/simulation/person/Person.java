@@ -178,11 +178,8 @@ public class Person extends Unit implements Serializable {
             
             	// Pass the time in the physical condition first as this may result in death.
             	if (health.timePassing(time, support, config)) {
-                	// Mins action is descreased according to any illness
-                	mind.takeAction(time);
-                	
-                	// Update relationships
-					Simulation.instance().getRelationshipManager().timePassing(this, time);
+            		// Mental changes with time passing.
+            		mind.timePassing(time);
             	}
             	else {
                 	// Person has died as a result of physical condition
@@ -313,4 +310,31 @@ public class Person extends Unit implements Serializable {
     public String getGender() {
     	return gender;
     }
+    
+	/**
+	 * Gets the person's local group of people (in building or rover)
+	 * @return collection of people in person's location.
+	 * @throws Exception if error
+	 */
+	public PersonCollection getLocalGroup() throws Exception {
+		PersonCollection localGroup = new PersonCollection();
+		
+		if (getLocationSituation().equals(Person.INSETTLEMENT)) {
+			Building building = BuildingManager.getBuilding(this);
+			if (building.hasFunction(org.mars_sim.msp.simulation.structure.building.function.LifeSupport.NAME)) {
+				org.mars_sim.msp.simulation.structure.building.function.LifeSupport lifeSupport = 
+					(org.mars_sim.msp.simulation.structure.building.function.LifeSupport) 
+					building.getFunction(org.mars_sim.msp.simulation.structure.building.function.LifeSupport.NAME);
+				localGroup = new PersonCollection(lifeSupport.getOccupants());
+			}
+		}
+		else if (getLocationSituation().equals(Person.INVEHICLE)) {
+			Rover rover = (Rover) getVehicle();
+			localGroup = new PersonCollection(rover.getCrew());
+		}
+		
+		if (localGroup.contains(this)) localGroup.remove(this);
+		
+		return localGroup;
+	}    
 }
