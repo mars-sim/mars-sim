@@ -112,7 +112,7 @@
 			<seriousness value="50" />
 			<degrade-time value="7.0" />
 			<recovery-time value="2.0" />
-			<probability value="10.0" />
+			<probability value="14.0" />
 			<performance-percent value="60.0" />
 			<treatment value="Dressing" />
 			<degrade-complaint value="Gangrene" />

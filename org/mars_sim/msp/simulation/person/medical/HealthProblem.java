@@ -226,6 +226,17 @@ public class HealthProblem implements Serializable {
     
     private void setCured() {
     	state = CURED;
+    
+    	// Remove from medical aid if any used.
+    	if (usedAid != null) {
+			try {
+				usedAid.stopTreatment(this);
+			}
+			catch (Exception e) {
+				// System.out.println("HealthProblem.timePassing(): " + e.getMessage());
+			}
+			usedAid = null;
+    	}
     	
     	// Create medical event for cured.
 		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, MedicalEvent.CURED);
@@ -273,6 +284,7 @@ public class HealthProblem implements Serializable {
                         catch (Exception e) {
                             // System.out.println("HealthProblem.timePassing(): " + e.getMessage());
                         }
+                        usedAid = null;
                     }
 
                     if (nextPhase == null) {

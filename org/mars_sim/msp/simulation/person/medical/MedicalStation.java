@@ -184,6 +184,7 @@ public class MedicalStation implements MedicalAid, Serializable {
      */
     public void stopTreatment(HealthProblem problem) throws Exception {
         
+        // System.out.println("Stopping treatment " + problem.toString());
         if (problemsBeingTreated.contains(problem)) {
             problem.stopTreatment();
             problemsBeingTreated.remove(problem);
