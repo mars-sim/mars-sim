@@ -153,6 +153,7 @@ public class Malfunction implements Serializable {
         if (emergencyWorkTimeCompleted >= emergencyWorkTime) {
             double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
 	    emergencyWorkTimeCompleted = emergencyWorkTime;
+	    System.out.println(name + "@" + Integer.toHexString(hashCode()) + " emergency fixed.");
 	    return remaining;
 	}
 	return 0D;
@@ -244,6 +245,9 @@ public class Malfunction implements Serializable {
     public Malfunction getClone() {
         Malfunction clone = new Malfunction(name, severity, probability, emergencyWorkTime,
 	        workTime, EVAWorkTime, scope, resourceEffects, lifeSupportEffects, medicalComplaints);
+
+	if (emergencyWorkTime > 0D) System.out.println(name + "@" + Integer.toHexString(clone.hashCode()) + " emergency starts");
+	
 	return clone;
     }
 }

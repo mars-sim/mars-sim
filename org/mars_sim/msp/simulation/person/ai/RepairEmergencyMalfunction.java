@@ -35,6 +35,8 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         setCreateEvents(true);
 
         claimMalfunction();
+
+	if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
     }
 
     /**
@@ -68,48 +70,55 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) done = true;
 
-	    // Check if there are no more emergency malfunctions.
+        // Check if there emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
                             malfunction.getCompletedEmergencyWorkTime();
-        if (workTimeLeft == 0) done = true;
+        if (workTimeLeft == 0) {
+	    System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
+            done = true;
+	}
 
-	    if (done) return timeLeft;
+        if (done) return timeLeft;
 
         // Determine effective work time based on "Mechanic" skill.
-	    double workTime = timeLeft;
+        double workTime = timeLeft;
         int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
-	    // Add work to emergency malfunction.
-	    // System.out.println(person.getName() + " working on " + malfunction.getName() + " - workTime: " + workTime);
-        malfunction.addEmergencyWorkTime(workTime);
+        // Add work to emergency malfunction.
+        System.out.println(person.getName() + " contributing " + workTime + " millisols of work time to emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
+        if (remainingWorkTime > 0D) {
+	    System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
+            done = true;
+	}
 
         // Add experience to "Mechanic" skill.
         // (1 base experience point per 20 millisols of time spent)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-	    double experience = timeLeft / 20D;
+        double experience = timeLeft / 20D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("Mechanic", experience);
 
-	    return (timeLeft - workTime);
+        return (timeLeft * (remainingWorkTime / workTime));
     }
 
     private void claimMalfunction() {
         // Get a local emergency malfunction.
-	    malfunction = null;
+        malfunction = null;
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	    while (i.hasNext() && (malfunction == null)) {
-	        Malfunctionable e = (Malfunctionable) i.next();
-	        MalfunctionManager manager = e.getMalfunctionManager();
-	        if (manager.hasEmergencyMalfunction()) {
+        while (i.hasNext() && (malfunction == null)) {
+            Malfunctionable e = (Malfunctionable) i.next();
+            MalfunctionManager manager = e.getMalfunctionManager();
+            if (manager.hasEmergencyMalfunction()) {
                 malfunction = manager.getMostSeriousEmergencyMalfunction();
-		        entity = e;
+                entity = e;
                 description = "Emergency repair " + malfunction.getName() + " on " + entity;
-	        }
+            }
         }
-	}
+    }
 
     /**
      * Gets the malfunctionable entity the person is currently repairing.
