@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -50,8 +50,8 @@ public class TendGreenhouse extends Task implements Serializable {
 			endTask();
         }
         
-        // Randomly determine duration, from 0 - 500 millisols
-        duration = RandomUtil.getRandomDouble(500D);
+        // Randomly determine duration, from 0 - 100 millisols
+        duration = RandomUtil.getRandomDouble(100D);
     }
 
 	/** 

@@ -146,6 +146,21 @@ public class Cooking extends Function implements Serializable {
 	}
 	
 	/**
+	 * Gets the quality of the best quality meal at the facility.
+	 * @return quality
+	 */
+	public int getBestMealQuality() {
+		int bestQuality = 0;
+		Iterator i = meals.iterator();
+		while (i.hasNext()) {
+			CookedMeal meal = (CookedMeal) i.next();
+			if (meal.getQuality() > bestQuality) bestQuality = meal.getQuality();
+		}
+		
+		return bestQuality;
+	}
+	
+	/**
 	 * Cleanup kitchen after mealtime.
 	 */
 	public void cleanup() {
@@ -160,12 +175,21 @@ public class Cooking extends Function implements Serializable {
 	public void addWork(double workTime) {
 		cookingWorkTime += workTime;
 		while (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) {
-			int mealQuality = getBestCookSkill();
-			MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-			getBuilding().getInventory().removeResource(Resource.FOOD, 1D);
-			meals.add(new CookedMeal(mealQuality, time));
-			cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
-			System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + " has " + meals.size() + " hot meals, quality=" + mealQuality);
+			try {
+				int mealQuality = getBestCookSkill();
+				MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			
+				SimulationConfig simConfig = Simulation.instance().getSimConfig();
+				PersonConfig config = simConfig.getPersonConfiguration();
+				getBuilding().getInventory().removeResource(Resource.FOOD, config.getFoodConsumptionRate() * (1D / 3D));
+			
+				meals.add(new CookedMeal(mealQuality, time));
+				cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
+				System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + " has " + meals.size() + " hot meals, quality=" + mealQuality);
+			}
+			catch (Exception e) {
+				System.err.println("Cooking.addWork(): " + e.getMessage());
+			}
 		}
 	}
 	
@@ -181,8 +205,16 @@ public class Cooking extends Function implements Serializable {
 			CookedMeal meal = (CookedMeal) i.next();
 			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
-				getBuilding().getInventory().addResource(Resource.FOOD, 1D);
-				i.remove();
+				try {
+					SimulationConfig simConfig = Simulation.instance().getSimConfig();
+					PersonConfig config = simConfig.getPersonConfiguration();
+					getBuilding().getInventory().addResource(Resource.FOOD, config.getFoodConsumptionRate() * (1D / 3D));
+					i.remove();
+					System.out.println("Cooked meal expiring at " + getBuilding().getBuildingManager().getSettlement().getName());
+				}
+				catch (Exception e) {
+					System.err.println("Cooking.timePassing(): " + e.getMessage());
+				}
 			}
 		}
 	}

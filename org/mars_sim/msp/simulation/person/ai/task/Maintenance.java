@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 
@@ -35,8 +35,8 @@ public class Maintenance extends Task implements Serializable {
     public Maintenance(Person person) {
         super("Performing Maintenance", person, true, false, STRESS_MODIFIER);
 
-        // Randomly determine duration, from 0 - 500 millisols
-        duration = RandomUtil.getRandomDouble(500D);
+        // Randomly determine duration, from 0 - 100 millisols
+        duration = RandomUtil.getRandomDouble(100D);
 
 		try {
         	entity = getMaintenanceMalfunctionable();

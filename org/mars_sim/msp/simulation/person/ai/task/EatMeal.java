@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 
@@ -25,6 +25,8 @@ class EatMeal extends Task implements Serializable {
     // Static members
     private static final double DURATION = 20D; // The predetermined duration of task in millisols
     private static final double STRESS_MODIFIER = -.2D; // The stress modified per millisol.
+    
+    private CookedMeal meal;
 
     /** Constructs a EatMeal object
      *  @param person the person to perform the task
@@ -44,6 +46,11 @@ class EatMeal extends Task implements Serializable {
         		System.err.println("EatMeal.constructor(): " + e.getMessage());
         		endTask();
         	}
+        	
+        	// If cooked meal in a local kitchen available, take it to eat.
+        	Cooking kitchen = getKitchenWithFood(person);
+        	if (kitchen != null) meal = kitchen.getCookedMeal();
+        	if (meal != null) description = "Eating a cooked meal";
         }
         else if (location.equals(Person.OUTSIDE)) endTask();
     }
@@ -70,6 +77,9 @@ class EatMeal extends Task implements Serializable {
 		catch (BuildingException e) {
 			System.err.println("EatMeal.getProbability(): " + e.getMessage());
 		}
+		
+		// Check if there's a cooked meal at a local kitchen.
+		if (getKitchenWithFood(person) != null) result *= 5;
 	
         return result;
     }
@@ -84,17 +94,26 @@ class EatMeal extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		PersonConfig config = simConfig.getPersonConfiguration();
+
+		// If person has a cooked meal, additional stress is reduced.
+		if (meal != null) {
+			PhysicalCondition condition = person.getPhysicalCondition();
+			double stress = condition.getStress();
+			condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
+		}
+
         person.getPhysicalCondition().setHunger(0D);
         timeCompleted += time;
         if (timeCompleted > DURATION) {
         	try {
-        		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-            	PersonConfig config = simConfig.getPersonConfiguration();
-            	person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D));
+            	person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
         	}
         	catch (Exception e) {
         		System.err.println(person.getName() + " unable to eat meal: " + e.getMessage());
         	}
+        	if (meal != null) System.out.println(person.getName() + " consumes cooked meal " + meal.getQuality() + " at " + person.getSettlement().getName());
             endTask();
            
             return timeCompleted - DURATION;
@@ -130,6 +149,34 @@ class EatMeal extends Task implements Serializable {
 		}
         
         return result;
+    }
+    
+    /**
+     * Gets a kitchen in the person's settlement that currently has cooked meals.
+     * @param person the person to check for
+     * @return the kitchen or null if none.
+     */
+    private static Cooking getKitchenWithFood(Person person) {
+    	Cooking result = null;
+    	
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			Settlement settlement = person.getSettlement();
+			BuildingManager manager = settlement.getBuildingManager();
+			List cookingBuildings = manager.getBuildings(Cooking.NAME);
+			Iterator i = cookingBuildings.iterator();
+			while (i.hasNext()) {
+				Building building = (Building) i.next();
+				try {
+					Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
+					if (kitchen.hasCookedMeal()) result = kitchen;
+				}
+				catch (BuildingException e) {
+					System.err.println("EatMeal.Cooking(): " + e.getMessage());
+				}
+			}
+		}
+    	
+    	return result;
     }
     
 	/**

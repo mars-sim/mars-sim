@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JobManager.java
- * @version 2.77 2004-09-10
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -31,6 +31,7 @@ public class JobManager implements Serializable {
 		jobs.add(new Doctor());
 		jobs.add(new Engineer());
 		jobs.add(new Driver());
+		jobs.add(new Chef());
 	}
 	
 	/**

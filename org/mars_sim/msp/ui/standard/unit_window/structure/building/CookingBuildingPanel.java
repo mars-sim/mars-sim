@@ -68,7 +68,7 @@ public class CookingBuildingPanel extends BuildingFunctionPanel {
 		labelPanel.add(numMealsLabel);
 		
 		// Prepare meal quality label
-		mealQualityCache = kitchen.getBestCookSkill();
+		mealQualityCache = kitchen.getBestMealQuality();
 		mealQualityLabel = new JLabel("Quality of Meals: " + mealQualityCache, JLabel.CENTER);
 		labelPanel.add(mealQualityLabel);
 	}	
@@ -90,8 +90,8 @@ public class CookingBuildingPanel extends BuildingFunctionPanel {
 		}
 		
 		// Update meal quality
-		if (mealQualityCache != kitchen.getBestCookSkill()) {
-			mealQualityCache = kitchen.getBestCookSkill();
+		if (mealQualityCache != kitchen.getBestMealQuality()) {
+			mealQualityCache = kitchen.getBestMealQuality();
 			mealQualityLabel.setText("Quality of Meals: " + mealQualityCache);
 		}
 	}

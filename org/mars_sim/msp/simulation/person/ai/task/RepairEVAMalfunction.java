@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 
@@ -48,8 +48,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
         // System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
         
-        // Randomly determine duration, from 0 - 500 millisols.
-        duration = RandomUtil.getRandomDouble(500D);
+        // Randomly determine duration, from 0 - 100 millisols.
+        duration = RandomUtil.getRandomDouble(100D);
     }
 
     /**

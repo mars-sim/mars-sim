@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.77 2004-09-28
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 
@@ -77,8 +77,8 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         // End task if vehicle or garage not available.
         if ((vehicle == null) || (garage == null)) endTask();    
         
-        // Randomly determine duration, from 0 - 500 millisols
-        duration = RandomUtil.getRandomDouble(500D);
+        // Randomly determine duration, from 0 - 100 millisols
+        duration = RandomUtil.getRandomDouble(100D);
         
         // System.out.println(person.getName() + " starting MaintainGroundVehicleGarage task.");
     }

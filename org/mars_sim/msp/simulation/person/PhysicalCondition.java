@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2004-11-16
  * @author Barry Evans
  */
 
@@ -200,6 +200,15 @@ public class PhysicalCondition implements Serializable {
                                      MIN_VALUE, medic.getStarvation())) {
             recalculate();
         }
+    }
+    
+    /**
+     * Person consumes a given amount of food not taken from local container.
+     * @param amount the amount of food to consume (in kg).
+     */
+    public void consumeFood(double amount) {
+		if (checkResourceConsumption(amount, amount, MIN_VALUE, medic.getStarvation())) 
+			recalculate();
     }
 
     /** Person consumes given amount of oxygen

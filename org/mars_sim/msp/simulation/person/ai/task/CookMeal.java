@@ -29,7 +29,7 @@ public class CookMeal extends Task implements Serializable {
 	private static final double DINNER_START = 700D;
 	
 	// Time (millisols) duration of meals.
-	private static final double MEALTIME_DURATION = 50D;
+	private static final double MEALTIME_DURATION = 100D;
 	
 	// Data members
 	private Cooking kitchen; // The kitchen the person is cooking at.
@@ -59,7 +59,8 @@ public class CookMeal extends Task implements Serializable {
 			endTask();
 		}		
 		
-		System.out.println(person.getName() + " cooking at " + kitchen.getBuilding().getName() + " in " + person.getSettlement());
+		String jobName = person.getMind().getJob().getName();
+		System.out.println(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + " in " + person.getSettlement());
 	}
 	
 	/** 

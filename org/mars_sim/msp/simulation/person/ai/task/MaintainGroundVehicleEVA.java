@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 
@@ -47,8 +47,8 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         airlock = getAvailableAirlock(person);
         if (airlock == null) endTask();
         
-        // Randomly determine duration, from 0 - 500 millisols
-        duration = RandomUtil.getRandomDouble(500D);
+        // Randomly determine duration, from 0 - 100 millisols
+        duration = RandomUtil.getRandomDouble(100D);
         
         // Set initial phase.
         phase = EXIT_AIRLOCK;

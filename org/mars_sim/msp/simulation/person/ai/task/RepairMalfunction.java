@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 
@@ -33,8 +33,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     public RepairMalfunction(Person person) {
         super("Repairing Malfunction", person, true, false, STRESS_MODIFIER);
 
-        // Randomly determine duration, from 0 - 500 millisols.
-        duration = RandomUtil.getRandomDouble(500D);
+        // Randomly determine duration, from 0 - 100 millisols.
+        duration = RandomUtil.getRandomDouble(100D);
         
         // System.out.println(person.getName() + " repairing malfunction.");
     }

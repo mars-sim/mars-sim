@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 2.77 2004-08-23
+ * @version 2.78 2004-11-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -39,8 +39,8 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		airlock = getAvailableAirlock(person);
 		if (airlock == null) endTask();
 		
-		// Randomly determine duration, from 0 - 500 millisols
-		duration = RandomUtil.getRandomDouble(500D);
+		// Randomly determine duration, from 0 - 100 millisols
+		duration = RandomUtil.getRandomDouble(100D);
 		
 		try {
 			entity = getMaintenanceMalfunctionable();
