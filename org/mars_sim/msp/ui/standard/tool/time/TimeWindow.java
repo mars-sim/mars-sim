@@ -1,17 +1,31 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.75 2003-07-29
+ * @version 2.75 2004-02-12
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.time;
  
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import org.mars_sim.msp.simulation.*;  
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.mars_sim.msp.simulation.EarthClock;
+import org.mars_sim.msp.simulation.MarsClock;
+import org.mars_sim.msp.simulation.MasterClock;
+import org.mars_sim.msp.simulation.SimulationProperties;
+import org.mars_sim.msp.simulation.UpTimer;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
@@ -21,7 +35,7 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  */
 public class TimeWindow extends ToolWindow {
 
-    private final static int RATIO_SCALE = 500;
+    private final static int RATIO_SCALE = 200;
 
     // Data members
     private MasterClock master;      // Master Clock
