@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.72 2001-08-05
+ * @version 2.73 2001-11-29
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.util.*;
 public class VirtualMars {
 
     // Data members
+    private SimulationProperties properties; // The user-defined simulation properties
     private OrbitInfo orbitInfo; // Orbital information
     private SurfaceFeatures surfaceFeatures; // Surface features
     private UnitManager units; // Unit controller
@@ -24,6 +25,9 @@ public class VirtualMars {
 
     /** Constructs a VirtualMars object */
     public VirtualMars() {
+
+        // Initialize simulation properties
+        properties = new SimulationProperties();
 
         // Initialize orbit info
         orbitInfo = new OrbitInfo();
@@ -48,6 +52,13 @@ public class VirtualMars {
     void clockPulse(double time) {
         orbitInfo.addTime(MarsClock.convertMillisolsToSeconds(time));
         units.timePassing(time);
+    }
+
+    /** Returns the simulation properties
+     *  @return simulation properties
+     */
+    public SimulationProperties getSimulationProperties() {
+        return properties;
     }
 
     /** Returns the orbital information

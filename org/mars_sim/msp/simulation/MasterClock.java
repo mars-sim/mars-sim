@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.72 2001-06-24
+ * @version 2.73 2001-11-29
  * @author Scott Davis
  */
 
@@ -23,13 +23,11 @@ public class MasterClock extends Thread {
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
+    private double timePulse;     // Time pulse length in millisols
 
     // Sleep duration in milliseconds 
     private final static int SLEEP_DURATION = 1000;
     
-    // Amount of time in clock pulse, in MilliSols.
-    // This value should be read from a property file later.
-    private final static double TIME_PULSE_LENGTH = 10D;
 
     /** Constructs a MasterClock object
      *  @param mars the virtual mars that uses the clock
@@ -37,6 +35,11 @@ public class MasterClock extends Thread {
     public MasterClock(VirtualMars mars) {
         // Initialize data members
         this.mars = mars;
+
+        // Get time ratio property
+        double timeRatio = mars.getSimulationProperties().getTimeRatio();
+        double timePulseSeconds = timeRatio * (SLEEP_DURATION / 1000D);
+        timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
 
         // Create a Martian clock
         marsTime = new MarsClock();
@@ -78,11 +81,11 @@ public class MasterClock extends Thread {
             } catch (InterruptedException e) {}
 
             // Send virtual Mars a clock pulse representing the time pulse length (in millisols).
-            mars.clockPulse(TIME_PULSE_LENGTH);
+            mars.clockPulse(timePulse);
 
             // Add time pulse length to Earth and Mars clocks. 
-            earthTime.addTime(MarsClock.convertMillisolsToSeconds(TIME_PULSE_LENGTH));
-            marsTime.addTime(TIME_PULSE_LENGTH);
+            earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
+            marsTime.addTime(timePulse);
         }
     }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+
+<PROPERTY_LIST>
+
+    <!-- Simulation time ratio to real time -->
+    <!-- Default value: 1000.0 -->
+    <TIME_RATIO>887.75244</TIME_RATIO>
+
+</PROPERTY_LIST>
