@@ -123,4 +123,12 @@ public abstract class Unit implements Serializable {
     public double getMass() {
         return baseMass + inventory.getTotalMass();
     }
+
+    /**
+     * String representation of this Unit.
+     * @return The units name.
+     */
+    public String toString() {
+        return name;
+    }
 }
