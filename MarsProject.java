@@ -22,7 +22,7 @@ public class MarsProject {
 
         // create a splash window
         SplashWindow splashWindow = new SplashWindow();
-
+        
         // create virtual mars
         File loadFile = null;
         if (args.length == 1) {
@@ -45,10 +45,9 @@ public class MarsProject {
 
         // create main desktop window
         MainWindow window = new MainWindow(mars);
-
+       
         // dispose splash window
         splashWindow.dispose();
-        splashWindow = null;
     }
 
     /** Set error output to a text file (for debugging) */

@@ -1,71 +1,61 @@
 /**
  * Mars Simulation Project
  * SplashWindow.java
- * @version 2.71 2000-10-23
+ * @version 2.73 2001-12-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
+import org.mars_sim.msp.simulation.RandomUtil;
 import java.awt.*;
-import javax.swing.*;
+import javax.swing.ImageIcon;
 
 /** The SplashWindow class is a splash screen shown when the project
- *  is loading. It's started as a new thread. It fails silently if the
- *  splash image file is not found.
+ *  is loading. 
  */
-public class SplashWindow extends JWindow implements Runnable {
+public class SplashWindow extends Window {
 
     // Constant data member
-    private static final String splashFile = "images/SplashImage.jpg";
+    private static String[] IMAGE_NAMES = { "SplashImage.jpg", "SplashImage2.jpg" };
+     
+    private Image splashImage;
+    private int width;
+    private int height;
 
-    /** Constructs a new SplashWindow object */
     public SplashWindow() {
-        run();
-    }
+        super(new Frame());
 
-    /** Start thread */
-    public void start() {
-        Thread kicker = new Thread(this);
-        kicker.start();
-    }
+        String imageName = IMAGE_NAMES[RandomUtil.getRandomInt(IMAGE_NAMES.length - 1)];
+        splashImage = Toolkit.getDefaultToolkit().getImage("images/" + imageName);
+  
+        MediaTracker tracker = new MediaTracker(this);
+        tracker.addImage(splashImage, 0);
+        try { tracker.waitForAll(); }
+        catch (InterruptedException e) { System.out.println(e.toString()); }
+  
+        ImageIcon splashIcon = new ImageIcon(splashImage);
+        width = splashIcon.getIconWidth();
+        height = splashIcon.getIconHeight();
 
-    /** Load and display image window */
-    public void run() {
-
-        // Don't display until window is created.
-        setVisible(false);
-
-        // Set the background to black.
-        setBackground(Color.black);
-
-        // Create ImageIcon from SplashImage.jpg.
-        ImageIcon splashIcon = new ImageIcon(splashFile);
-
-        // Put image on label and add it to the splash window.
-        JLabel splashLabel = new JLabel(splashIcon);
-        getContentPane().add(splashLabel);
-
-        // Pack the splash window to it's minimum size with the image.
-        pack();
-
-        // Sets root pane to double buffered.
-        getRootPane().setDoubleBuffered(true);
+        setSize(width, height);
 
         // Center the splash window on the screen.
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension windowSize = getSize();
+        Dimension windowSize = new Dimension(width, height);
         setLocation(((screenSize.width - windowSize.width) / 2),
                 ((screenSize.height - windowSize.height) / 2));
+
+        setBackground(Color.black);
 
         // Display the splash window.
         setVisible(true);
     }
 
-    /** for component testing 
-     *  @param argv command line arguments
-     */
-    public static void main(String argv[]) {
-        SplashWindow s = new SplashWindow();
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        // Draw splash image
+        g.drawImage(splashImage, 0, 0, this);
     }
 }
