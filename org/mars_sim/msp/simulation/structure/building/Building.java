@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2003-01-26
+ * @version 2.75 2003-02-13
  * @author Scott Davis
  */
  
@@ -63,6 +63,9 @@ public abstract class Building implements Serializable {
      * @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
+        
+        // Check for valid argument.
+        if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
     }   
     
     /**

@@ -1,22 +1,28 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-01-25
+ * @version 2.75 2003-02-13
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
+import java.util.*;
 
 /**
  * The LanderHab class represents a lander habitat building.
  */
 public class LanderHab extends InhabitableBuilding 
         implements LivingAccommodations, Research, Communication, EVA, 
-        Storage, Recreation, Dining {
+        Recreation, Dining, ResourceProcessing, Storage {
     
-    private static final int ACCOMMODATION_CAPACITY = 6;
+    private final static int ACCOMMODATION_CAPACITY = 6;
+    private final static double POWER_DOWN_LEVEL = .5D;
+    
+    private ResourceProcessManager processManager;
+    private Map resourceStorageCapacity;
     
     /**
      * Constructor
@@ -25,6 +31,41 @@ public class LanderHab extends InhabitableBuilding
     public LanderHab(BuildingManager manager) {
         // Use InhabitableBulding constructor
         super("Lander Hab", manager, ACCOMMODATION_CAPACITY);
+        
+        // Set up resource processes.
+        Inventory inv = manager.getSettlement().getInventory();
+        processManager = new ResourceProcessManager(this, inv);
+        
+        // Create water recycling process
+        ResourceProcess waterRecycling = new ResourceProcess("water recycling", inv);
+        waterRecycling.addMaxInputResourceRate(Resource.WASTE_WATER, .002D, false);
+        waterRecycling.addMaxOutputResourceRate(Resource.WATER, .0017D, false);
+        
+        // Create carbon scrubbing process
+        ResourceProcess carbonScrubbing = new ResourceProcess("carbon scrubbing", inv);
+        carbonScrubbing.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .000067D, false);
+        carbonScrubbing.addMaxOutputResourceRate(Resource.OXYGEN, .00005D, false);
+        
+        // Set up resource storage capacity map.
+        resourceStorageCapacity = new HashMap();
+        resourceStorageCapacity.put(Resource.OXYGEN, new Double(1000D));
+        resourceStorageCapacity.put(Resource.WATER, new Double(5000D));
+        resourceStorageCapacity.put(Resource.WASTE_WATER, new Double(1000D));
+        resourceStorageCapacity.put(Resource.CARBON_DIOXIDE, new Double(500D));
+        resourceStorageCapacity.put(Resource.FOOD, new Double(1000D));
+        
+        // Add resource storage capacity to settlement inventory.
+        Iterator i = resourceStorageCapacity.keySet().iterator();
+        while (i.hasNext()) {
+            String resourceName = (String) i.next();
+            double capacity = ((Double) resourceStorageCapacity.get(resourceName)).doubleValue();
+            inv.setResourceCapacity(resourceName, inv.getResourceCapacity(resourceName) + capacity);
+        }
+        
+        // Initial resources in lander hab
+        inv.addResource(Resource.WATER, 500D);
+        inv.addResource(Resource.OXYGEN, 500D);
+        inv.addResource(Resource.FOOD, 500D);
     }
     
     /**
@@ -43,4 +84,48 @@ public class LanderHab extends InhabitableBuilding
     public double getFullPowerRequired() {
         return getLifeSupportPowerRequired() + 10D;
     }
+    
+    /**
+     * Gets the building's resource process manager.
+     * @return resource process manager
+     */
+    public ResourceProcessManager getResourceProcessManager() {
+        return processManager;
+    }
+    
+    /**
+     * Gets the power down mode resource processing level.
+     * @return proportion of max processing rate (0D - 1D)
+     */
+    public double getPowerDownResourceProcessingLevel() {
+        return POWER_DOWN_LEVEL;
+    }
+    
+    /** 
+     * Gets a map of the resources this building is capable of
+     * storing and their amounts in kg.
+     * @return Map of resource keys and amount Double values.
+     */
+    public Map getResourceStorageCapacity() {
+        return resourceStorageCapacity;
+    }
+    
+    /**
+     * Time passing for building.
+     * Child building should override this method for things
+     * that happen over time for the building.
+     *
+     * @param time amount of time passing (in millisols)
+     */
+    public void timePassing(double time) {
+        super.timePassing(time);
+        
+        // Determine resource processing production level.
+        double productionLevel = 0D;
+        if (powerMode.equals(FULL_POWER)) productionLevel = 1D;
+        else if (powerMode.equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
+        
+        // Process resources
+        processManager.processResources(time, productionLevel);
+    } 
 }

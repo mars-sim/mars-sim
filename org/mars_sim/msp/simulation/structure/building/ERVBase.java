@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ERVBase.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-02-11
  * @author Scott Davis
  */
  
@@ -15,11 +15,13 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  * The ERVBase class represents the base structure of an Earth Return Vehicle (ERV).
  * It has a Sebatier reactor to generate oxygen, water and methane from Martian air.
  */
-public class ERVBase extends Building implements ResourceProcessing {
+public class ERVBase extends Building implements ResourceProcessing, Storage {
+    
+    private final static double POWER_DOWN_LEVEL = .5D;
     
     private boolean processing; // True if ERVBase is processing chemicals.
-    private double powerDownLevel;
     private ResourceProcessManager processManager;
+    private Map resourceStorageCapacity;
     
     /**
      * Constructor
@@ -30,7 +32,6 @@ public class ERVBase extends Building implements ResourceProcessing {
         super("Earth Return Vehicle (ERV) Base", manager);
         
         processing = true;
-        powerDownLevel = .5D;
         
         // Set up resource processes.
         Inventory inv = manager.getSettlement().getInventory();
@@ -46,9 +47,9 @@ public class ERVBase extends Building implements ResourceProcessing {
         sabatier.addMaxOutputResourceRate(Resource.WATER, .00045D, false);
         processManager.addResourceProcess(sabatier);
         
-        // Create electrolysis resource process.
+        // Create water electrolysis resource process.
         // 2H2O = 2H2 + O2
-        ResourceProcess electrolysis = new ResourceProcess("Electrolysis", inv);
+        ResourceProcess electrolysis = new ResourceProcess("Water Electrolysis", inv);
         electrolysis.addMaxInputResourceRate(Resource.WATER, .0001D, false);
         electrolysis.addMaxOutputResourceRate(Resource.HYDROGEN, .000011D, false);
         electrolysis.addMaxOutputResourceRate(Resource.OXYGEN, .000089D, false);
@@ -63,6 +64,21 @@ public class ERVBase extends Building implements ResourceProcessing {
         co2Reduction.addMaxOutputResourceRate(Resource.OXYGEN, .0003D, false);
         co2Reduction.addMaxOutputResourceRate(Resource.CARBON_MONOXIDE, .000525D, true);
         processManager.addResourceProcess(co2Reduction);
+        
+        // Set up resource storage capacity map.
+        resourceStorageCapacity = new HashMap();
+        resourceStorageCapacity.put(Resource.HYDROGEN, new Double(6300D));
+        resourceStorageCapacity.put(Resource.METHANE, new Double(21000D));
+        resourceStorageCapacity.put(Resource.OXYGEN, new Double(74000D));
+        resourceStorageCapacity.put(Resource.WATER, new Double(9000D));
+        
+        // Add resource storage capacity to settlement inventory.
+        Iterator i = resourceStorageCapacity.keySet().iterator();
+        while (i.hasNext()) {
+            String resourceName = (String) i.next();
+            double capacity = ((Double) resourceStorageCapacity.get(resourceName)).doubleValue();
+            inv.setResourceCapacity(resourceName, inv.getResourceCapacity(resourceName) + capacity);
+        }
         
         // ERVBase starts with 6 tonnes of hydrogen.
         inv.addResource(Resource.HYDROGEN, 6000D);
@@ -110,7 +126,7 @@ public class ERVBase extends Building implements ResourceProcessing {
      * @return proportion of max processing rate (0D - 1D)
      */
     public double getPowerDownResourceProcessingLevel() {
-        return powerDownLevel;
+        return POWER_DOWN_LEVEL;
     }
      
     /**
@@ -121,27 +137,23 @@ public class ERVBase extends Building implements ResourceProcessing {
      * @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
-        
-        // Check for valid argument.
-        if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
+        super.timePassing(time);
         
         // Determine resource processing production level.
         double productionLevel = 0D;
         if (powerMode.equals(FULL_POWER)) productionLevel = 1D;
-        else if (powerMode.equals(POWER_DOWN)) productionLevel = powerDownLevel;
-        
-        Inventory inv = manager.getSettlement().getInventory();
-        double hydrogenStart = inv.getResourceMass(Resource.HYDROGEN);
-        double waterStart = inv.getResourceMass(Resource.WATER);
-        double oxygenStart = inv.getResourceMass(Resource.OXYGEN);
-        double methaneStart = inv.getResourceMass(Resource.METHANE);
+        else if (powerMode.equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
         
         // Process resources
         processManager.processResources(time, productionLevel);
-        
-        double hydrogenEnd = inv.getResourceMass(Resource.HYDROGEN);
-        double waterEnd = inv.getResourceMass(Resource.WATER);
-        double oxygenEnd = inv.getResourceMass(Resource.OXYGEN);
-        double methaneEnd = inv.getResourceMass(Resource.METHANE);
     } 
+    
+    /** 
+     * Gets a map of the resources this building is capable of
+     * storing and their amounts in kg.
+     * @return Map of resource keys and amount Double values.
+     */
+    public Map getResourceStorageCapacity() {
+        return resourceStorageCapacity;   
+    }
 }
