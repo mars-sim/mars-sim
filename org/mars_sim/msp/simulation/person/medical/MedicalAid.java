@@ -1,7 +1,5 @@
 package org.mars_sim.msp.simulation.person.medical;
 
-import org.mars_sim.msp.simulation.person.Person;
-
 /**
  * This interface defines an entity that can provide Medical Aid to an
  * injured person. It can provide different types of treatments.
@@ -9,21 +7,21 @@ import org.mars_sim.msp.simulation.person.Person;
 public interface MedicalAid {
 
     /**
-     * A person requests to start the specified treatment using this aid. This
+     * A person requests a specified treatment using this aid. This
      * aid may elect to record that this treatment is being performed. If the
      * treatment can not be satisfied, then a false return value is provided.
+     * The Treatment will be started by the MeidcalAid once the internal
+     * condition is correct.
      *
-     * @param sufferer Person with problem.
-     * @param treatment Treatment required.
-     * @return Can the treatment be started.
+     * @param problem Treatment to solve this problem.
+     * @return Can the treatment be satifies some time in the future.
      */
-    public boolean startTreatment(Person suffer, Treatment treatment);
+    public boolean requestTreatment(HealthProblem problem);
 
     /**
      * Stop a previously started treatment.
      *
-     * @param sufferer Person with problem.
-     * @param treatment Treatment required.
+     * @param problem Problem cured.
      */
-    public void stopTreatment(Person suffer, Treatment treatment);
+    public void stopTreatment(HealthProblem problem);
 }
