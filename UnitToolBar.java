@@ -1,20 +1,20 @@
 //*********************** Unit Button Toolbar ***********************
-// Last Modified: 4/5/00
+// Last Modified: 4/10/00
 
-// The UnitToolBar class is a UI toolbar for holding unit and tool buttons.
+// The UnitToolBar class is a UI toolbar for holding unit buttons.
 // The should only be one instance and is contained in the MainWindow instance.
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.border.*;
 
 public class UnitToolBar extends JToolBar implements ActionListener {
 
 	// Data members
 
 	private Vector unitButtons;          // List of unit buttons
-	private Vector toolButtons;          // List of tool buttons
 	private MainWindow parentMainWindow; // Main window that contains this toolbar.
 	
 	// Constructor
@@ -25,42 +25,26 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	
 		super();
 	
-		// Initialize global variables
+		// Initialize data members
 	
 		unitButtons = new Vector();
-		toolButtons = new Vector();
 		this.parentMainWindow = parentMainWindow;
 	
 		// Set name
 	
-		setName("MSP Toolbar");
-	
-		// Prepare tool buttons
-	
-		prepareToolButtons();
+		setName("Unit Toolbar");
 		
-		// Add separator between tool buttons and unit buttons
+		// Fix tool bar
 		
-		add(new JToolBar.Separator());
-	}
-
-	// Prepares tool buttons
-
-	private void prepareToolButtons() {
+		setFloatable(false);
 		
-		// Add Mars navigator button
+		// Set preferred height to 53 pixels.
 		
-		ToolButton navButton = new ToolButton("Mars Navigator", "NavigatorIcon.gif");
-		navButton.addActionListener(this);
-		add(navButton);
-		toolButtons.addElement(navButton);
+		setPreferredSize(new Dimension(0, 57));
 		
-		// Add search tool button
+		// Set border around toolbar
 		
-		ToolButton searchButton = new ToolButton("Search Tool", "SearchIcon.gif");
-		searchButton.addActionListener(this);
-		add(searchButton);
-		toolButtons.addElement(searchButton);
+		setBorder(new BevelBorder(BevelBorder.RAISED));
 	}
 	
 	// Create a new unit button in toolbar
@@ -101,13 +85,10 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	// ActionListener method overriden
 	
 	public void actionPerformed(ActionEvent event) {
-		Object button = event.getSource();
 			
-		// If a tool button, show tool window on desktop
-		// If a unit button, show unit window on desktop
+		// show unit window on desktop
 			
-		if (toolButtons.contains(button)) { parentMainWindow.openToolWindow(((ToolButton) button).getToolName()); }
-		else { if (unitButtons.contains(button)) parentMainWindow.openUnitWindow(((UnitButton) button).getUnitID()); }
+		parentMainWindow.openUnitWindow(((UnitButton) event.getSource()).getUnitID());
 	}
 }	
 
