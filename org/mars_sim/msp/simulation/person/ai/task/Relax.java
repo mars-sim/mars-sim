@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-04
  * @author Scott Davis
  */
 
@@ -45,11 +45,8 @@ class Relax extends Task implements Serializable {
         		Building building = (Building) recreationBuildings.get(rand);
         		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
         		if (!lifeSupport.containsPerson(person)) {
-        			if (lifeSupport.getAvailableOccupancy() > 0) {
-        				lifeSupport.addPerson(person);
-        				setStressModifier(STRESS_MODIFIER * 2D);
-        			} 
-        			else endTask();
+        			lifeSupport.addPerson(person);
+        			setStressModifier(STRESS_MODIFIER * 2D);
         		}
         	}
         	catch (Exception e) {
