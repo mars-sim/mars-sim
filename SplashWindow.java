@@ -1,5 +1,5 @@
 //*********************** Splash Window ***********************
-// Last Modified: 3/15/00
+// Last Modified: 4/5/00
 
 // The SplashWindow class is a splash screen shown when the project is loading.
 
@@ -12,22 +12,30 @@ public class SplashWindow extends JWindow {
 
 	public SplashWindow() {
 		
+		// Don't display until window is created.
+		
+		setVisible(false);
+		
 		// Set the background to black.
 		
 		setBackground(Color.black);
 		
 		// Create ImageIcon from SplashImage.jpg.
 		
-		ImageIcon splashImage = new ImageIcon("SplashImage.jpg");
+		ImageIcon splashIcon = new ImageIcon("SplashImage.jpg");
 		
 		// Put image on label and add it to the splash window.
 		
-		JLabel splashLabel = new JLabel(splashImage);
+		JLabel splashLabel = new JLabel(splashIcon);
 		getContentPane().add(splashLabel);
 		
 		// Pack the splash window to it's minimum size with the image.
 		
 		pack();
+		
+		// Sets root pane to double buffered.
+		
+		getRootPane().setDoubleBuffered(true);
 		
 		// Center the splash window on the screen.
 		
