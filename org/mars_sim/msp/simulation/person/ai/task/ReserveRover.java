@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-09-15
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -102,15 +103,26 @@ public class ReserveRover extends Task implements Serializable {
                 	reservableRovers.add(vehicle);
             }
             
-            // Get rover with highest crew capacity.
+            // Get rovers with highest crew capacity.
             int bestCrewCapacity = 0;
             VehicleIterator i2 = reservableRovers.iterator();
             while (i2.hasNext()) {
             	Rover rover = (Rover) i2.next();
-            	if (rover.getCrewCapacity() > bestCrewCapacity) reservedRover = rover;
+            	if (rover.getCrewCapacity() > bestCrewCapacity) bestCrewCapacity = rover.getCrewCapacity();
             }
             
-            if (reservedRover != null) reservedRover.setReserved(true);
+            VehicleIterator i3 = reservableRovers.iterator();
+            while (i3.hasNext()) {
+            	Rover rover = (Rover) i3.next();
+            	if (rover.getCrewCapacity() < bestCrewCapacity) i3.remove();
+            }
+            
+            // Get random rover
+            if (reservableRovers.size() > 0) {
+            	int roverIndex = RandomUtil.getRandomInt(reservableRovers.size() - 1);
+            	reservedRover = (Rover) reservableRovers.get(roverIndex); 
+				reservedRover.setReserved(true);
+            }
 
             endTask();
             return timeCompleted - duration;
