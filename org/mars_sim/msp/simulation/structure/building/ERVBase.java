@@ -34,8 +34,9 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
     /**
      * Constructor
      * @param manager - building manager.
+     * @param startingHydrogen - true if starting with hydrogen feedstock.
      */
-    public ERVBase(BuildingManager manager) {
+    public ERVBase(BuildingManager manager, boolean startingHydrogen) {
         // Use Bulding constructor
         super("Earth Return Vehicle (ERV) Base", manager);
         
@@ -94,8 +95,16 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
             inv.setResourceCapacity(resourceName, inv.getResourceCapacity(resourceName) + capacity);
         }
         
-        // ERVBase starts with 6 tonnes of hydrogen.
-        inv.addResource(Resource.HYDROGEN, 6000D);
+        if (startingHydrogen) {
+        	// ERVBase starts with 6.3 tonnes of hydrogen feedstock.
+        	inv.addResource(Resource.HYDROGEN, 6300D);
+    	}
+    	else {
+    		// ERVBase has already processed hydrogen feedstock into methane, oxygen and water.
+    		inv.addResource(Resource.METHANE, 21000D);
+    		inv.addResource(Resource.OXYGEN, 74000D);
+    		inv.addResource(Resource.WATER, 9000D);
+    	}
         
         // Add scope string to malfunction manager.
         MalfunctionManager malfunctionManager = getMalfunctionManager();

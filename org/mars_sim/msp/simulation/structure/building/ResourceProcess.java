@@ -86,7 +86,7 @@ public class ResourceProcess implements Serializable {
     
     /**
      * Gets the current production level of the process.
-     * @return propertion of full production (0D - 1D)
+     * @return proportion of full production (0D - 1D)
      */
     public double getCurrentProductionLevel() {
         return currentProductionLevel;
