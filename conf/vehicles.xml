@@ -135,7 +135,19 @@
 		<rover-name value="Dream Chaser" />	
 		<rover-name value="Bedouin" />	
 		<rover-name value="Fremen Wanderer" />
-		<rover-name value="Beagle IV" />																					
+		<rover-name value="Beagle IV" />	
+		<rover-name value="Firefly" />
+		<rover-name value="Desert Pearl" />
+		<rover-name value="Princess of the Sands" />
+		<rover-name value="Ridge Runner" />
+		<rover-name value="Desert Rose" />
+		<rover-name value="Crater Crab" />
+		<rover-name value="Red Moon" />
+		<rover-name value="Sand Crawler" />
+		<rover-name value="Sojourner II" />
+		<rover-name value="Spirit II" />
+		<rover-name value="Opportunity II" />
+																						
 
 	</rover-name-list>
 
