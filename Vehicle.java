@@ -1,5 +1,5 @@
 //************************** Abstract Basic Vehicle Unit **************************
-// Last Modified: 8/23/00
+// Last Modified: 8/29/00
 
 // The Vehicle class represents a generic vehicle.  It keeps track of generic information about the vehicle.
 // This class needs to be subclassed to represent a specific type of vehicle.
@@ -29,6 +29,7 @@ public abstract class Vehicle extends Unit {
 	protected boolean isReserved;               // True if vehicle is currently reserved for a driver and cannot be taken by another
 	protected int vehicleSize;                  // Size of vehicle in arbitrary units.(Value of size units will be established later.)
 	protected int maintenanceWork;              // Work done for vehicle maintenance.
+	protected int totalMaintenanceWork;         // Total amount of work necessary for vehicle maintenance.
 	
 	protected HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
 	protected MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
@@ -66,6 +67,8 @@ public abstract class Vehicle extends Unit {
 		
 		potentialFailures = new HashMap();
 		mechanicalFailure = null;
+		maintenanceWork = 0;
+		totalMaintenanceWork = 12 * 60 * 60; // (12 hours)
 		
 		distanceMark = false;
 	}
@@ -114,10 +117,7 @@ public abstract class Vehicle extends Unit {
 	
 	public void addDistanceLastMaintenance(double distance) { 
 		distanceMaint += distance; 
-		if ((distanceMaint > 5000D) && !distanceMark) {
-			distanceMark = true;
-			System.out.println(name + " has passed the 5000km mark.");
-		}
+		if ((distanceMaint > 5000D) && !distanceMark) distanceMark = true;
 	}
 	
 	// Sets vehicle's distance since last maintenance to zero
@@ -182,7 +182,7 @@ public abstract class Vehicle extends Unit {
 	// Returns null if vehicle is not currently parked at a settlement.
 
 	public Settlement getSettlement() { 
-		if (status.equals("Parked") && (settlement != null)) return settlement; 
+		if ((status.equals("Parked") || status.equals("Periodic Maintenance")) && (settlement != null)) return settlement; 
 		else return null;
 	}
 	
@@ -287,10 +287,6 @@ public abstract class Vehicle extends Unit {
 	// Add work to periodic vehicle maintenance.
 	
 	public void addWorkToMaintenance(int seconds) {
-	
-		// Determine total time needed to maintain vehicle for 5,000 km. (8 hr)
-	
-		int totalMaintenanceWork = 8 * 60 * 60;
 		
 		// If vehicle has already been maintained, return.
 		
@@ -307,6 +303,14 @@ public abstract class Vehicle extends Unit {
 			distanceMaint = 0D;
 		}
 	}
+	
+	// Returns the current amount of work towards maintenance.
+	
+	public int getCurrentMaintenanceWork() { return maintenanceWork; }
+	
+	// Returns the total amount of work needed for maintenance.
+	
+	public int getTotalMaintenanceWork() { return totalMaintenanceWork; }
 }
 
 
