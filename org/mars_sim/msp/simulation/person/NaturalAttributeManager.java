@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.77 2004-08-17
+ * @version 2.77 2004-08-25
  * @author Scott Davis
  */
 
@@ -11,14 +11,27 @@ import org.mars_sim.msp.simulation.*;
 import java.io.Serializable;
 import java.util.*;
 
-/** The NaturalAttributeManager class manages a person's natural attributes.
- *  There is only natural attribute manager for each person.
+/** 
+ * The NaturalAttributeManager class manages a person's natural attributes.
+ * There is only natural attribute manager for each person.
  */
 public class NaturalAttributeManager implements Serializable {
 
+	// Natural attributes
+	public static final String STRENGTH = "Strength";
+	public static final String ENDURANCE = "Endurance";
+	public static final String AGILITY = "Agility";
+	public static final String TEACHING = "Teaching";
+	public static final String ACADEMIC_APTITUDE = "Academic Aptitude";
+	public static final String EXPERIENCE_APTITUDE = "Experience Aptitude";
+	public static final String STRESS_RESILIENCE = "Stress Resilience";
+	public static final String ATTRACTIVENESS = "Actractiveness";
+	public static final String LEADERSHIP = "Leadership";
+	public static final String CONVERSATION = "Conversation";
+
     // List of the person's natural attributes by name.
-    static private String[] attributeKeys = {"Strength", "Endurance", "Agility", "Teaching", "Academic Aptitude", 
-        "Experience Aptitude", "Stress Resilience", "Attractiveness", "Leadership", "Conversation"}; 
+    static private String[] attributeKeys = {STRENGTH, ENDURANCE, AGILITY, TEACHING, ACADEMIC_APTITUDE, 
+        EXPERIENCE_APTITUDE, STRESS_RESILIENCE, ATTRACTIVENESS, LEADERSHIP, CONVERSATION}; 
 
     // Data members
     private Hashtable attributeList; // List of the person's natural attributes keyed by unique name.
@@ -38,13 +51,13 @@ public class NaturalAttributeManager implements Serializable {
         }
 
         // Adjust certain attributes reflective of Martian settlers.
-        addSettlerBonus("Strength", 20);
-        addSettlerBonus("Endurance", 20);
-        addSettlerBonus("Agility", 10);
-        addSettlerBonus("Stress Resilience", 40);
-        addSettlerBonus("Teaching", 20);
-        addSettlerBonus("Academic Aptitude", 40);
-        addSettlerBonus("Experience Aptitude", 30);
+        addSettlerBonus(STRENGTH, 20);
+        addSettlerBonus(ENDURANCE, 20);
+        addSettlerBonus(AGILITY, 10);
+        addSettlerBonus(STRESS_RESILIENCE, 40);
+        addSettlerBonus(TEACHING, 20);
+        addSettlerBonus(ACADEMIC_APTITUDE, 40);
+        addSettlerBonus(EXPERIENCE_APTITUDE, 30);
     }
 
     /** Adds a random bonus for Martian settlers in a given attribute. 
@@ -53,10 +66,8 @@ public class NaturalAttributeManager implements Serializable {
      */
     private void addSettlerBonus(String attributeName, int bonus) {
         int newValue = getAttribute(attributeName) + RandomUtil.getRandomInt(bonus);
-        if (newValue > 100)
-            newValue = 100;
-        if (newValue < 0)
-            newValue = 0;
+        if (newValue > 100) newValue = 100;
+        if (newValue < 0) newValue = 0;
         attributeList.put(attributeName, new Integer(newValue));
     }
 
@@ -72,17 +83,15 @@ public class NaturalAttributeManager implements Serializable {
      */
     public String[] getKeys() {
         String[] result = new String[attributeKeys.length];
-
-        for (int x = 0; x < result.length; x++)
-            result[x] = attributeKeys[x];
-
+        for (int x = 0; x < result.length; x++) result[x] = attributeKeys[x];
         return result;
     }
 
-    /** Returns the integer value of a named natural attribute if it exists.
-     *  Returns 0 otherwise.
-     *  @param name the name of the attribute
-     *  @return the value of the attribute
+    /** 
+     * Gets the integer value of a named natural attribute if it exists.
+     * Returns 0 otherwise.
+     * @param name the name of the attribute
+     * @return the value of the attribute
      */
     public int getAttribute(String name) {
         int result = 0;

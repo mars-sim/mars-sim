@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.77 2004-08-12
+ * @version 2.77 2004-08-25
  * @author Barry Evans
  */
 
@@ -368,7 +368,7 @@ public class PhysicalCondition implements Serializable {
 			if (!problems.containsKey(ANXIETY_ATTACK)) {
 				
 				// Determine stress resilience modifier (0D - 2D).
-				int resilience = person.getNaturalAttributeManager().getAttribute("Stress Resilience");
+				int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRESS_RESILIENCE);
 				double resilienceModifier = (double) (100 - resilience) / 50D;
 				
 				// If random breakdown, add anxiety attack.
