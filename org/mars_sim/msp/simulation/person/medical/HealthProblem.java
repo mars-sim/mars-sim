@@ -225,7 +225,8 @@ public class HealthProblem implements Serializable {
                 }
             }
             else if (state == TREATMENT) {
-                if (usedAid != null) {
+                if ((usedAid != null) && 
+                     !illness.getRecoveryTreatment().getRetainAid()) {
                     usedAid.stopTreatment(this);
                     usedAid = null;
                 }
