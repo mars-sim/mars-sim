@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleWindow.java
- * @version 2.75 2003-06-24
+ * @version 2.75 2003-06-27
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ public class VehicleWindow extends UnitWindow {
         Vehicle vehicle = (Vehicle) proxy.getUnit();
         
         // Add tab panels
+        addTabPanel(new NavigationTabPanel(proxy, desktop));
         addTabPanel(new LocationTabPanel(proxy, desktop));
         addTabPanel(new InventoryTabPanel(proxy, desktop));
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTerrainDisplay.java
- * @version 2.71 2000-10-23
+ * @version 2.75 2003-06-27
  * @author Scott Davis
  */
 
@@ -24,8 +24,6 @@ public class VehicleTerrainDisplay extends JComponent {
 		
 		// Set component size
 		setPreferredSize(new Dimension(100, 50));
-		setMaximumSize(getPreferredSize());
-		setMinimumSize(getPreferredSize());
 
 		// Initialize terrain angle
 		terrainAngle = 0D;

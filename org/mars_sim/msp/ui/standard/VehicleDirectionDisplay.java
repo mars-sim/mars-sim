@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDirectionDisplay.java
- * @version 2.72 2001-04-05
+ * @version 2.75 2003-06-27
  * @author Scott Davis
  */
 
@@ -29,8 +29,6 @@ public class VehicleDirectionDisplay extends JComponent {
 		
 		// Set component size	
 		setPreferredSize(new Dimension(50, 50));
-		setMaximumSize(getPreferredSize());
-		setMinimumSize(getPreferredSize());
 
 		// Initialize data members
 		this.direction = direction;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.75 2003-04-24
+ * @version 2.75 2003-06-27
  * @author Scott Davis
  */
 
@@ -27,6 +27,11 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public final static String MOVING = "Moving";
     public final static String MALFUNCTION = "Malfunction";
     public final static String MAINTENANCE = "Periodic Maintenance";
+    
+    // Vehicle destination types
+    public final static String NONE = "None";
+    public final static String SETTLEMENT = "Settlement";
+    public final static String COORDINATES = "Coordinates";
 
     // Data members
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
@@ -67,7 +72,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    malfunctionManager = new MalfunctionManager(this, mars);
 	    malfunctionManager.addScopeString("Vehicle");
 	    
-        setDestinationType("None");
+        setDestinationType(NONE);
         direction = new Direction(0);
 	    trail = new ArrayList();
     }
@@ -277,7 +282,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void setDestination(Coordinates destinationCoords) {
         this.destinationCoords = destinationCoords;
-        if (destinationType == null) destinationType = "Coordinates";
+        if (destinationType == null) destinationType = COORDINATES;
     }
 
     /** Returns the destination coordinates.
@@ -295,7 +300,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         this.destinationSettlement = destinationSettlement;
         if (destinationSettlement != null) {
             setDestination(destinationSettlement.getCoordinates());
-            destinationType = "Settlement";
+            destinationType = SETTLEMENT;
         }
     }
 
