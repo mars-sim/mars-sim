@@ -18,9 +18,7 @@ import java.io.Serializable;
 class CollectRockSamples extends EVAOperation implements Serializable {
 
     // Phase names
-    private static final String EXIT_ROVER = "Exit Rover";
     private static final String COLLECT_ROCKS = "Collect Rock Samples";
-    private static final String ENTER_ROVER = "Enter Rover";
 
     // Samples (kg) collected per millisol (base rate). 
     private static final double COLLECTION_RATE = .1D;
@@ -45,7 +43,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         this.startingVehicleRockCargo = startingVehicleRockCargo;
         this.collectedSamples = 0D;
 	
-        phase = EXIT_ROVER;
+        phase = EXIT_AIRLOCK;
 	
         // System.out.println(person.getName() + " has started collecting rock samples task.");
     }
@@ -59,9 +57,9 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         if (subTask != null) return timeLeft;
 	
         while ((timeLeft > 0D) && !isDone()) {
-            if (phase.equals(EXIT_ROVER)) timeLeft = exitRover(timeLeft);
+            if (phase.equals(EXIT_AIRLOCK)) timeLeft = exitRover(timeLeft);
             else if (phase.equals(COLLECT_ROCKS)) timeLeft = collectRocks(timeLeft);
-            else if (phase.equals(ENTER_ROVER)) timeLeft = enterRover(timeLeft);
+            else if (phase.equals(ENTER_AIRLOCK)) timeLeft = enterRover(timeLeft);
         }
 
         // Add experience to "EVA Operations" skill.
@@ -105,7 +103,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         // to the rover.
         if (shouldEndEVAOperation()) {
             // System.out.println(person.getName() + " should end EVA operation.");
-            phase = ENTER_ROVER;
+            phase = ENTER_AIRLOCK;
             return time;
         }
 
@@ -140,7 +138,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         }
         else {
             if (sampleLimit >= 0D) person.getInventory().addResource(Resource.ROCK_SAMPLES, sampleLimit);
-            phase = ENTER_ROVER;
+            phase = ENTER_AIRLOCK;
             return time - (sampleLimit / COLLECTION_RATE);
         }
     }

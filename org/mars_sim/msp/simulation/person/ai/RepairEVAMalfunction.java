@@ -19,9 +19,7 @@ import java.util.*;
 public class RepairEVAMalfunction extends EVAOperation implements Repair, Serializable {
 
     // Phase names
-    private static final String EXIT_AIRLOCK = "Exit Airlock";
     private static final String REPAIR_MALFUNCTION = "Repair Malfunction";
-    private static final String ENTER_AIRLOCK = "Enter Airlock";
 	
     // Data members
     private Malfunctionable entity; // The malfunctionable entity being repaired.

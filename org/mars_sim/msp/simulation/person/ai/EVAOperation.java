@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -19,6 +19,10 @@ import org.mars_sim.msp.simulation.vehicle.*;
  */
 abstract class EVAOperation extends Task implements Serializable {
 
+    // Task phase names
+    protected static final String EXIT_AIRLOCK = "Exit Airlock";
+    protected static final String ENTER_AIRLOCK = "Enter Airlock";
+    
     // Data members
     protected boolean exitedAirlock;  // Person has exited the airlock.
     protected boolean enteredAirlock; // Person has entered the airlock.

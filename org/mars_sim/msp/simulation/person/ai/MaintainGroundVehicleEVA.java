@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.75 2003-04-18
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -24,9 +24,7 @@ import org.mars_sim.msp.simulation.vehicle.*;
 public class MaintainGroundVehicleEVA extends EVAOperation implements Serializable {
  
     // Phase names
-    private static final String EXIT_AIRLOCK = "Exit Airlock";
     private static final String MAINTAIN_VEHICLE = "Maintain Vehicle";
-    private static final String ENTER_AIRLOCK = "Enter Airlock";
  
     private GroundVehicle vehicle; // Vehicle to be maintained.
     private Airlock airlock; // Airlock to be used for EVA.
