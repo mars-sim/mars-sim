@@ -21,10 +21,10 @@ public class ExplorerRover extends Rover implements Serializable {
     private static final int CREW_CAPACITY = 4; // Max number of crewmembers.
     private static final double CARGO_CAPACITY = 5000D; // Cargo capacity of rover in kg.
     private static final double METHANE_CAPACITY = 1600D; // Methane capacity of rover in kg.
-    private static final double OXYGEN_CAPACITY = 70D; // Oxygen capacity of rover in kg.
-    private static final double WATER_CAPACITY = 280D; // Water capacity of rover in kg.
-    private static final double FOOD_CAPACITY = 105D; // Food capacity of rover in kg.
-    private static final double ROCK_SAMPLES_CAPACITY = 2500; // Rock samples capacity of rover in kg.
+    private static final double OXYGEN_CAPACITY = 140D; // Oxygen capacity of rover in kg.
+    private static final double WATER_CAPACITY = 560D; // Water capacity of rover in kg.
+    private static final double FOOD_CAPACITY = 210D; // Food capacity of rover in kg.
+    private static final double ROCK_SAMPLES_CAPACITY = 2000; // Rock samples capacity of rover in kg.
 
     // Data members
     private MobileLaboratory lab; // The rover's lab.

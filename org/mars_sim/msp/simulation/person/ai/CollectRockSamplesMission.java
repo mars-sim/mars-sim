@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.75 2003-02-27
+ * @version 2.75 2003-03-01
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     final private static String DRIVEHOME = "Driving Home";
 
     // Amount of rock samples to be gathered at a given site. (in kg.) 
-    final private static double SITE_SAMPLE_AMOUNT = 300D;
+    final private static double SITE_SAMPLE_AMOUNT = 200D;
     
     // Data members
     private Settlement startingSettlement; // The settlement the mission starts at.
