@@ -1,16 +1,12 @@
 ** Mars Simulation Project **
-Copyright (C) 1999 Scott Davis
+Copyright (C) 2000 Scott Davis
 http://mars-sim.sourceforge.net/
 
 ----------------------------------------------------------------
 
-For questions or comments on this project, contact:
-
-    Scott Davis
-    1725 W. Timber Ridge Ln. #6206
-    Oak Creek, WI  53154
-    scud1@execpc.com
-    http://www.execpc.com/~scud1/
+For questions or comments on this project, contact the Mars
+Simulation Project user mailing list:
+mars-sim-users@lists.sourceforge.net 
 
 If you'd like to join in development visit:
 https://sourceforge.net/projects/mars-sim/
@@ -47,6 +43,23 @@ JVM can be downloaded from Sun at:
 
 2) Run the Installer application
       "java Installer"
+   
+   If the Installer application fails from lack of memory or is exceedingly
+   slow, you may wish to download the uncompressed data files instead.
+   http://mars-sim.sourceforge.net/SurfaceDat.zip   (5.4Mb)
+   http://mars-sim.sourceforge.net/TopoDat.zip      (4.7Mb)
+   Just unzip these files into you application directory.
 
 3) Start the Mars Simulation Project
       "java MarsProject"
+
+------------------------------------------------------------------
+
+** Configuration **
+
+As of version 2.7, the following text files can be modified to change the 
+names and number of units:
+
+settlements.conf
+rovers.conf
+people.conf
