@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationProperties.java
- * @version 2.73 2001-11-28
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -41,5 +41,113 @@ public class SimulationProperties {
      */
     public void setTimeRatio(double newTimeRatio) {
         if (newTimeRatio > 0) timeRatio = newTimeRatio;
+    }
+
+    /** Gets the person oxygen consumption property.
+     *  Value must be >= 0.
+     *  Default value is 1.0.
+     *  @return the person oxygen consumption property
+     */
+    public double getPersonOxygenConsumption() {
+        return propertiesReader.getPersonOxygenConsumption();
+    }
+
+    /** Gets the person water consumption property.
+     *  Value must be >= 0.
+     *  Default value is 4.0.
+     *  @return the person water consumption property
+     */
+    public double getPersonWaterConsumption() {
+        return propertiesReader.getPersonWaterConsumption();
+    }
+
+    /** Gets the person food consumption property.
+     *  Value must be >= 0.
+     *  Default value is 1.5.
+     *  @return the person food consumption property
+     */
+    public double getPersonFoodConsumption() {
+        return propertiesReader.getPersonFoodConsumption();
+    }
+
+    /** Gets the rover oxygen storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 350.0.
+     *  @return the rover oxygen storage capacity property
+     */
+    public double getRoverOxygenStorageCapacity() {
+        return propertiesReader.getRoverOxygenStorageCapacity();
+    }
+
+    /** Gets the rover water storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 1400.0.
+     *  @return the rover water storage capacity property
+     */
+    public double getRoverWaterStorageCapacity() {
+        return propertiesReader.getRoverWaterStorageCapacity();
+    }
+
+    /** Gets the rover food storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 525.0.
+     *  @return the rover food storage capacity property
+     */
+    public double getRoverFoodStorageCapacity() {
+        return propertiesReader.getRoverFoodStorageCapacity();
+    }
+
+    /** Gets the rover fuel storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 2500.0.
+     *  @return the rover fuel storage capacity property
+     */
+    public double getRoverFuelStorageCapacity() {
+        return propertiesReader.getRoverFuelStorageCapacity();
+    }
+
+    /** Gets the rover fuel efficiency property.
+     *  Value must be > 0.
+     *  Default value is 2.0.
+     *  @return the rover fuel efficiency property
+     */
+    public double getRoverFuelEfficiency() {
+        return propertiesReader.getRoverFuelEfficiency();
+    }
+
+    /** Gets the settlement oxygen storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the settlement oxygen storage capacity property
+     */
+    public double getSettlementOxygenStorageCapacity() {
+        return propertiesReader.getSettlementOxygenStorageCapacity();
+    }
+
+    /** Gets the settlement water storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the settlement water storage capacity property
+     */
+    public double getSettlementWaterStorageCapacity() {
+        return propertiesReader.getSettlementWaterStorageCapacity();
+    }
+
+    /** Gets the settlement food storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the settlement food storage capacity property
+     */
+    public double getSettlementFoodStorageCapacity() {
+        return propertiesReader.getSettlementFoodStorageCapacity();
+    }
+
+    /** Gets the settlement fuel storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the settlement fuel storage capacity property
+     */
+    public double getSettlementFuelStorageCapacity() {
+        return propertiesReader.getSettlementFuelStorageCapacity();
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.73 2001-11-25
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -31,7 +31,6 @@ public class Settlement extends Structure {
      *  @param mars the virtual Mars
      */
     Settlement(String name, Coordinates location, int populationCapacity, VirtualMars mars) {
-
         // Use Unit constructor
         super(name, location, mars);
 
@@ -40,7 +39,7 @@ public class Settlement extends Structure {
         vehicles = new Vector();
         if (populationCapacity == 0) this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
         else this.populationCapacity = populationCapacity;
-        facilityManager = new FacilityManager(this);
+        facilityManager = new FacilityManager(this, mars);
     }
     
     /** Constructs a Settlement object at a random location
@@ -66,7 +65,7 @@ public class Settlement extends Structure {
         vehicles = new Vector();
         if (populationCapacity == 0) this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
         else this.populationCapacity = populationCapacity;
-        facilityManager = new FacilityManager(this);
+        facilityManager = new FacilityManager(this, mars);
     }
 
     /** Returns the facility manager for the settlement 

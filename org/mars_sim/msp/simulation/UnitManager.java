@@ -31,13 +31,13 @@ public class UnitManager implements Serializable {
 
         // Initialize all unit vectors
         units = new UnitCollection();
-        
+
         // Create settlements
         createSettlements();
 
         // Create vehicles
         createVehicles();
- 
+
         // Create people
         createPeople();
     }

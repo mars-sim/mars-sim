@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.72 2001-08-05
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -10,10 +10,10 @@ package org.mars_sim.msp.simulation.task;
 import org.mars_sim.msp.simulation.*;
 import java.io.Serializable;
 
-/** The EatMail class is a task for eating a meal.
+/** The EatMeal class is a task for eating a meal.
  *  The duration of the task is 20 millisols.
  *
- *  Note: Eating a meal reduces hunger
+ *  Note: Eating a meal reduces hunger to 0.
  */
 class EatMeal extends Task implements Serializable {
 
@@ -26,8 +26,6 @@ class EatMeal extends Task implements Serializable {
      */
     public EatMeal(Person person, VirtualMars mars) {
         super("Eating a meal", person, mars);
-        
-        // System.out.println(person.getName() + " is eating with " + person.getHunger() + " hunger.");
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -55,7 +53,8 @@ class EatMeal extends Task implements Serializable {
         person.setHunger(0D);
         timeCompleted += time;
         if (timeCompleted > duration) {
-            person.consumeFood(1D / 3D);
+            SimulationProperties properties = mars.getSimulationProperties();
+            person.consumeFood(properties.getPersonFoodConsumption() * (1D / 3D));
             done = true;
             return timeCompleted - duration;
         }

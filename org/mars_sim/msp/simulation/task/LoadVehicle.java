@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.73 2001-10-07
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -13,6 +13,9 @@ import java.io.Serializable;
 /** The LoadVehicle class is a task for loading a vehicle with fuel and supplies. 
  */
 class LoadVehicle extends Task implements Serializable {
+
+    // The amount of resources (kg) one person can load per millisol.
+    private static double LOAD_RATE = 10D;
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
@@ -42,37 +45,37 @@ class LoadVehicle extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        double unitsLoading = time;
+        double amountLoading = LOAD_RATE * time;
 
         if (hasEnoughSupplies(settlement, vehicle)) {
          
             // Load fuel
             double fuelAmount = vehicle.getFuelCapacity() - vehicle.getFuel();
-            if (fuelAmount > unitsLoading) fuelAmount = unitsLoading;
+            if (fuelAmount > amountLoading) fuelAmount = amountLoading;
             stores.removeFuel(fuelAmount);
             vehicle.addFuel(fuelAmount);
-            unitsLoading -= fuelAmount;
+            amountLoading -= fuelAmount;
 
             // Load oxygen 
             double oxygenAmount = vehicle.getOxygenCapacity() - vehicle.getOxygen();
-            if (oxygenAmount > unitsLoading) oxygenAmount = unitsLoading;
+            if (oxygenAmount > amountLoading) oxygenAmount = amountLoading;
             stores.removeOxygen(oxygenAmount);
             vehicle.addOxygen(oxygenAmount);
-            unitsLoading -= oxygenAmount;
+            amountLoading -= oxygenAmount;
 
             // Load water 
             double waterAmount = vehicle.getWaterCapacity() - vehicle.getWater();
-            if (waterAmount > unitsLoading) waterAmount = unitsLoading;
+            if (waterAmount > amountLoading) waterAmount = amountLoading;
             stores.removeWater(waterAmount);
             vehicle.addWater(waterAmount);
-            unitsLoading -= waterAmount;
+            amountLoading -= waterAmount;
 
             // Load Food 
             double foodAmount = vehicle.getFoodCapacity() - vehicle.getFood();
-            if (foodAmount > unitsLoading) foodAmount = unitsLoading;
+            if (foodAmount > amountLoading) foodAmount = amountLoading;
             stores.removeFood(foodAmount);
             vehicle.addFood(foodAmount);
-            unitsLoading -= foodAmount;
+            amountLoading -= foodAmount;
         }
         else done = true;
 

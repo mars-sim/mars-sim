@@ -146,7 +146,7 @@ class SettlementsXmlReader extends MspXmlReader {
         else {
             settlement = new Settlement(currentName, currentLocation, currentPopulationCapacity, mars);
         }
-        
+
         return settlement;
     }
     

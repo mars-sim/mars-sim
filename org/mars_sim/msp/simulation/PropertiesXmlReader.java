@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PropertiesXmlReader.java
- * @version 2.73 2001-12-04
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -219,10 +219,130 @@ class PropertiesXmlReader extends MspXmlReader {
     /** Gets the time ratio property. 
      *  Value must be > 0.
      *  Default value is 1000.
-     *  @return the ration between simulation and real time 
+     *  @return the ratio between simulation and real time 
      */
     public double getTimeRatio() {
         if (timeRatio <= 0) timeRatio = 1000D;
         return timeRatio;
+    }
+
+    /** Gets the person oxygen consumption property.
+     *  Value must be >= 0.
+     *  Default value is 1.0.
+     *  @return the person oxygen consumption property
+     */
+    public double getPersonOxygenConsumption() {
+        if (personOxygenConsumption < 0) personOxygenConsumption = 1D;
+        return personOxygenConsumption;
+    }
+
+    /** Gets the person water consumption property.
+     *  Value must be >= 0.
+     *  Default value is 4.0.
+     *  @return the person water consumption property
+     */
+    public double getPersonWaterConsumption() {
+        if (personWaterConsumption < 0) personWaterConsumption = 4D;
+        return personWaterConsumption;
+    }
+
+    /** Gets the person food consumption property.
+     *  Value must be >= 0.
+     *  Default value is 1.5.
+     *  @return the person food consumption property
+     */
+    public double getPersonFoodConsumption() {
+        if (personFoodConsumption < 0) personFoodConsumption = 1.5D;
+        return personFoodConsumption;
+    }
+
+    /** Gets the rover oxygen storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 350.0.
+     *  @return the rover oxygen storage capacity property
+     */
+    public double getRoverOxygenStorageCapacity() {
+        if (roverOxygenStorageCapacity < 0) roverOxygenStorageCapacity = 350D;
+        return roverOxygenStorageCapacity;
+    }
+
+    /** Gets the rover water storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 1400.0.
+     *  @return the rover water storage capacity property
+     */
+    public double getRoverWaterStorageCapacity() {
+        if (roverWaterStorageCapacity < 0) roverWaterStorageCapacity = 1400D;
+        return roverWaterStorageCapacity;
+    }
+
+    /** Gets the rover food storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 525.0.
+     *  @return the rover food storage capacity property
+     */
+    public double getRoverFoodStorageCapacity() {
+        if (roverFoodStorageCapacity < 0) roverFoodStorageCapacity = 525D;
+        return roverFoodStorageCapacity;
+    }
+
+    /** Gets the rover fuel storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 2500.0.
+     *  @return the rover fuel storage capacity property
+     */
+    public double getRoverFuelStorageCapacity() {
+        if (roverFuelStorageCapacity < 0) roverFuelStorageCapacity = 2500D;
+        return roverFuelStorageCapacity;
+    }
+
+    /** Gets the rover fuel efficiency property.
+     *  Value must be > 0.
+     *  Default value is 2.0.
+     *  @return the rover fuel efficiency property
+     */
+    public double getRoverFuelEfficiency() {
+        if (roverFuelEfficiency <= 0) roverFuelEfficiency = 2D;
+        return roverFuelEfficiency;
+    }
+
+    /** Gets the settlement oxygen storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the settlement oxygen storage capacity property
+     */
+    public double getSettlementOxygenStorageCapacity() {
+        if (settlementOxygenStorageCapacity < 0) settlementOxygenStorageCapacity = 10000D;
+        return settlementOxygenStorageCapacity;
+    }
+
+    /** Gets the settlement water storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the settlement water storage capacity property
+     */
+    public double getSettlementWaterStorageCapacity() {
+        if (settlementWaterStorageCapacity < 0) settlementWaterStorageCapacity = 10000D;
+        return settlementWaterStorageCapacity;
+    }
+
+    /** Gets the settlement food storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the settlement food storage capacity property
+     */
+    public double getSettlementFoodStorageCapacity() {
+        if (settlementFoodStorageCapacity < 0) settlementFoodStorageCapacity = 10000D;
+        return settlementFoodStorageCapacity;
+    }
+ 
+    /** Gets the settlement fuel storage capacity property.
+     *  Value must be >= 0.
+     *  Default value is 10000.0.
+     *  @return the settlement fuel storage capacity property
+     */
+    public double getSettlementFuelStorageCapacity() {
+        if (settlementFuelStorageCapacity < 0) settlementFuelStorageCapacity = 10000D;
+        return settlementFuelStorageCapacity;
     }
 }

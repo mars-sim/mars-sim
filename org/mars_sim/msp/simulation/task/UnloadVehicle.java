@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.72 2001-08-09
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -13,6 +13,9 @@ import org.mars_sim.msp.simulation.*;
 /** The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle. 
  */
 class UnloadVehicle extends Task implements Serializable {
+
+    // The amount of resources (kg) one person can unload per millisol.
+    private static double UNLOAD_RATE = 10D;
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
@@ -43,38 +46,38 @@ class UnloadVehicle extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        double unitsUnloading = time;
+        double amountUnloading = UNLOAD_RATE * time;
 
         // Unload fuel
         double fuelAmount = vehicle.getFuel();
-        if (fuelAmount > unitsUnloading) fuelAmount = unitsUnloading;
+        if (fuelAmount > amountUnloading) fuelAmount = amountUnloading;
         stores.addFuel(fuelAmount);
         vehicle.consumeFuel(fuelAmount);
-        unitsUnloading -= fuelAmount;
+        amountUnloading -= fuelAmount;
         // if (fuelAmount > 0D) System.out.println(person.getName() + " unloading " + fuelAmount + " fuel from " + vehicle.getName());        
 
         // Unload oxygen 
         double oxygenAmount = vehicle.getOxygen();
-        if (oxygenAmount > unitsUnloading) oxygenAmount = unitsUnloading;
+        if (oxygenAmount > amountUnloading) oxygenAmount = amountUnloading;
         stores.addOxygen(oxygenAmount);
         vehicle.removeOxygen(oxygenAmount);
-        unitsUnloading -= oxygenAmount;
+        amountUnloading -= oxygenAmount;
         // if (oxygenAmount > 0D) System.out.println(person.getName() + " unloading " + oxygenAmount + " oxygen from " + vehicle.getName());       
  
         // Unload water 
         double waterAmount = vehicle.getWater();
-        if (waterAmount > unitsUnloading) waterAmount = unitsUnloading;
+        if (waterAmount > amountUnloading) waterAmount = amountUnloading;
         stores.addWater(waterAmount);
         vehicle.removeWater(waterAmount);
-        unitsUnloading -= waterAmount;
+        amountUnloading -= waterAmount;
         // if (waterAmount > 0D) System.out.println(person.getName() + " unloading " + waterAmount + " water from " + vehicle.getName());       
 
         // Unload Food 
         double foodAmount = vehicle.getFood();
-        if (foodAmount > unitsUnloading) foodAmount = unitsUnloading;
+        if (foodAmount > amountUnloading) foodAmount = amountUnloading;
         stores.addFood(foodAmount);
         vehicle.removeFood(foodAmount);
-        unitsUnloading -= foodAmount;
+        amountUnloading -= foodAmount;
         // if (foodAmount > 0D) System.out.println(person.getName() + " unloading " + foodAmount + " food from " + vehicle.getName());       
 
         if (isFullyUnloaded()) done = true;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.73 2001-11-15
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -50,20 +50,23 @@ public class Rover extends GroundVehicle implements Serializable {
         // Set default maximum passengers for a rover.
         setMaxPassengers(8);
 
+        // Get simulation properties.
+        SimulationProperties properties = mars.getSimulationProperties();
+
         // Set default fuel capacity for a rover.
-        setFuelCapacity(100D);
+        setFuelCapacity(properties.getRoverFuelStorageCapacity());
         
         // Set default oxygen capacity for a rover.
-        setOxygenCapacity(100D);
+        setOxygenCapacity(properties.getRoverOxygenStorageCapacity());
         
         // Set default water capacity for a rover.
-        setWaterCapacity(100D);
+        setWaterCapacity(properties.getRoverWaterStorageCapacity());
         
         // Set default food capacity for a rover.
-        setFoodCapacity(100D);
+        setFoodCapacity(properties.getRoverFoodStorageCapacity());
 
         // Set range of rover.
-        range = 100D * getFuelCapacity() * .8D;
+        range = properties.getRoverFuelEfficiency() * getFuelCapacity() * .8D;
  
         // Set base speed to 30kph.
         setBaseSpeed(30D);

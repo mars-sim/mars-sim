@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.73 2001-11-22
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -24,22 +24,22 @@ public abstract class Vehicle extends Unit implements Serializable {
     private Settlement settlement; // The settlement which the vehicle is parked at
     private Vector passengers; // List of people who are passengers in vehicle
     private Person driver; // Driver of the vehicle
-    private double distanceTraveled = 0; // Total distance traveled by vehicle
-    private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance
+    private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
+    private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
     private int maxPassengers = 0; // Maximum number of passengers the vehicle can carry.
-    private double fuel = 0; // Current amount of fuel in the vehicle.
-    private double fuelCapacity = 0; // Maximum amount of fuel the vehicle can carry.
-    private double oxygen = 0; // Curent amount of oxygen in the vehicle.
-    private double oxygenCapacity = 0; // Maximum amount of oxygen the vehicle can carry.
-    private double water = 0; // Curent amount of water in the vehicle.
-    private double waterCapacity = 0; // Maximum amount of water the vehicle can carry.
-    private double food = 0; // Curent amount of food in the vehicle.
-    private double foodCapacity = 0; // Maximum amount of food the vehicle can carry.
-    protected double range; // Maximum range of vehicle.
+    private double fuel = 0; // Current amount of fuel in the vehicle. (kg)
+    private double fuelCapacity = 0; // Maximum amount of fuel the vehicle can carry. (kg)
+    private double oxygen = 0; // Curent amount of oxygen in the vehicle. (kg)
+    private double oxygenCapacity = 0; // Maximum amount of oxygen the vehicle can carry. (kg)
+    private double water = 0; // Curent amount of water in the vehicle. (kg)
+    private double waterCapacity = 0; // Maximum amount of water the vehicle can carry. (kg)
+    private double food = 0; // Curent amount of food in the vehicle. (kg)
+    private double foodCapacity = 0; // Maximum amount of food the vehicle can carry. (kg)
+    protected double range; // Maximum range of vehicle. (km)
     private Coordinates destinationCoords; // Coordinates of the destination
     private Settlement destinationSettlement; // Destination settlement (it applicable)
     private String destinationType; // Type of destination ("None", "Settlement" or "Coordinates")
-    private double distanceToDestination = 0; // Distance in meters to the destination
+    private double distanceToDestination = 0; // Distance to the destination (km)
     private boolean isReserved = false; // True if vehicle is currently reserved for a driver and cannot be taken by another
     private int vehicleSize = 1; // Size of vehicle in arbitrary units.(Value of size units will be established later.)
     private double maintenanceWork = 0; // Work done for vehicle maintenance.
@@ -166,14 +166,14 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Returns the current amount of fuel in the vehicle. 
-     *  @return the vehicle's fuel stores (in units)
+     *  @return the vehicle's fuel stores (kg)
      */
     public double getFuel() {
         return fuel;
     }
 
     /** Adds fuel to the vehicle. 
-     *  @param addedFuel the amount of fuel to be added (in units)
+     *  @param addedFuel the amount of fuel to be added (kg)
      */
     public void addFuel(double addedFuel) {
         fuel += addedFuel;
@@ -183,7 +183,7 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Consumes a portion of the vehicle's fuel. 
-     *  @param consumedFuel the amount of fuel consumed (in units)
+     *  @param consumedFuel the amount of fuel consumed (kg)
      */
     public void consumeFuel(double consumedFuel) {
         boolean noFuel = (fuel == 0D);
@@ -192,28 +192,28 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Returns the fuel capacity of the vehicle. 
-     *  @return the vehicle's fuel capacity
+     *  @return the vehicle's fuel capacity (kg)
      */
     public double getFuelCapacity() {
         return fuelCapacity;
     }
 
     /** Sets the fuel capacity of the vehicle. 
-     *  @param capacity the vehicle's fuel capacity
+     *  @param capacity the vehicle's fuel capacity (kg)
      */
     void setFuelCapacity(double capacity) {
         fuelCapacity = capacity;
     }
 
     /** Returns the current amount of oxygen in the vehicle. 
-     *  @return the vehicle's oxygen stores (in units)
+     *  @return the vehicle's oxygen stores (kg)
      */
     public double getOxygen() {
         return oxygen;
     }
 
     /** Adds oxygen to the vehicle. 
-     *  @param addedOxygen the amount of oxygen to be added (in units)
+     *  @param addedOxygen the amount of oxygen to be added (kg)
      */
     public void addOxygen(double addedOxygen) {
         oxygen += addedOxygen;
@@ -223,8 +223,8 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Removes a portion of the vehicle's oxygen. 
-     *  @param amount the amount of oxygen removed (in units)
-     *  @return Amount of oxygen actually removed (in units)
+     *  @param amount the amount of oxygen removed (kg)
+     *  @return Amount of oxygen actually removed (kg)
      */
     public double removeOxygen(double amount) {
        double result = amount;
@@ -238,28 +238,28 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Returns the oxygen capacity of the vehicle. 
-     *  @return the vehicle's oxygen capacity
+     *  @return the vehicle's oxygen capacity (kg)
      */
     public double getOxygenCapacity() {
         return oxygenCapacity;
     }    
     
     /** Sets the oxygen capacity of the vehicle. 
-     *  @param capacity the vehicle's oxygen capacity
+     *  @param capacity the vehicle's oxygen capacity (kg)
      */
     void setOxygenCapacity(double capacity) {
         oxygenCapacity = capacity;
     }
     
     /** Returns the current amount of water in the vehicle. 
-     *  @return the vehicle's water stores (in units)
+     *  @return the vehicle's water stores (kg)
      */
     public double getWater() {
         return water;
     }
 
     /** Adds water to the vehicle. 
-     *  @param addedWater the amount of water to be added (in units)
+     *  @param addedWater the amount of water to be added (kg)
      */
     public void addWater(double addedWater) {
         water += addedWater;
@@ -269,8 +269,8 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Removes water from storage. 
-     *  @param amount the amount of water requested (in units)
-     *  @return the amount of water actually received (in units)
+     *  @param amount the amount of water requested (kg)
+     *  @return the amount of water actually received (kg)
      */
     public double removeWater(double amount) {
         double result = amount;
@@ -284,28 +284,28 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Returns the water capacity of the vehicle. 
-     *  @return the vehicle's water capacity
+     *  @return the vehicle's water capacity (kg)
      */
     public double getWaterCapacity() {
         return waterCapacity;
     }
     
     /** Sets the water capacity of the vehicle. 
-     *  @param capacity the vehicle's water capacity
+     *  @param capacity the vehicle's water capacity (kg)
      */
     void setWaterCapacity(double capacity) {
         waterCapacity = capacity;
     }
     
     /** Returns the current amount of food in the vehicle. 
-     *  @return the vehicle's food stores (in units)
+     *  @return the vehicle's food stores (kg)
      */
     public double getFood() {
         return food;
     }
 
     /** Adds food to the vehicle. 
-     *  @param addedFood the amount of food to be added (in units)
+     *  @param addedFood the amount of food to be added (kg)
      */
     public void addFood(double addedFood) {
         food += addedFood;
@@ -315,8 +315,8 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Removes food from storage. 
-     *  @param amount the amount of food requested from storage (in units)
-     *  @return the amount of food actually received from storage (in units)
+     *  @param amount the amount of food requested from storage (kg)
+     *  @return the amount of food actually received from storage (kg)
      */
     public double removeFood(double amount) {
         double result = amount;
@@ -330,14 +330,14 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
     
     /** Returns the food capacity of the vehicle. 
-     *  @return the vehicle's food capacity
+     *  @return the vehicle's food capacity (kg)
      */
     public double getFoodCapacity() {
         return foodCapacity;
     }
     
     /** Sets the food capacity of the vehicle. 
-     *  @param capacity the vehicle's food capacity
+     *  @param capacity the vehicle's food capacity (kg)
      */
     void setFoodCapacity(double capacity) {
         foodCapacity = capacity;

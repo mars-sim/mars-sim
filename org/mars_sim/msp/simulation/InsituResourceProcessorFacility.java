@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.73 2001-11-11
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -16,8 +16,7 @@ import java.io.Serializable;
 public class InsituResourceProcessorFacility extends Facility 
                 implements Serializable {
 
-    LivingQuartersFacility quarters;  // The settlement's living quarters
-    StoreroomFacility stores;  // The settlement's storerooms
+    private StoreroomFacility stores;  // The settlement's storerooms
 
     /** Constructs a InsituResourceProcessorFacility object.
      *  @param manager the manager of the processor facility.
@@ -31,31 +30,33 @@ public class InsituResourceProcessorFacility extends Facility
     }
     
     /** Returns number of oxygen units that processor is generatng in a millisol.
-     *  @return amount of oxygen (in units)
+     *  @return amount of oxygen (kg)
      */
     public double getOxygenRate() {
         int currentPop = manager.getSettlement().getCurrentPopulation();
-        double result = currentPop + 2D;
+        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        double result = (currentPop * properties.getPersonOxygenConsumption()) + 2D;
         result /= 1000D;
         return result;
     }
     
     /** Returns number of water units that processor is generating in a millisol.
-     *  @return amount of water (in units)
+     *  @return amount of water (kg)
      */
     public double getWaterRate() {
         int currentPop = manager.getSettlement().getCurrentPopulation();
-        double result = currentPop + 2D;
+        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        double result = (currentPop * properties.getPersonWaterConsumption()) + 2D;
         result /= 1000D;
         return result;
     }
     
     /** Returns number of fuel units that processor is generating in a millisol.
-     *  @return amount of fuel (in units) 
+     *  @return amount of fuel (kg) 
      */
     public double getFuelRate() {
         int currentPop = manager.getSettlement().getCurrentPopulation();
-        double result = currentPop + 2D;
+        double result = (currentPop * 10D) + 2D;
         result /= 1000D;
         return result;
     }

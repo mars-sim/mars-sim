@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.73 2001-11-22
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
@@ -176,8 +176,11 @@ public class Person extends Unit implements Serializable {
      *  @param time amount of time passing (in millisols)
      */
     void timePassing(double time) {
-        consumeOxygen(time / 1000D);
-        consumeWater(time / 1000D);
+
+        // Consume necessary oxygen and water.
+        SimulationProperties properties = mars.getSimulationProperties();
+        consumeOxygen(properties.getPersonOxygenConsumption() * (time / 1000D));
+        consumeWater(properties.getPersonWaterConsumption() * (time / 1000D));
         
         // Build up fatigue for given time passing.
         addFatigue(time);
@@ -210,7 +213,7 @@ public class Person extends Unit implements Serializable {
     }
    
     /** Person consumes given amount of oxygen
-     *  @param amount amount of oxygen to consume (in units)
+     *  @param amount amount of oxygen to consume (in kg)
      */
     void consumeOxygen(double amount) {
         double amountRecieved = 0D;
@@ -226,7 +229,7 @@ public class Person extends Unit implements Serializable {
     }
     
     /** Person consumes given amount of water
-     *  @param amount amount of water to consume (in units)
+     *  @param amount amount of water to consume (in kg)
      */
     void consumeWater(double amount) {
         double amountRecieved = 0D;
@@ -242,7 +245,7 @@ public class Person extends Unit implements Serializable {
     }
     
     /** Person consumes given amount of food
-     *  @param amount amount of food to consume (in units)
+     *  @param amount amount of food to consume (in kg)
      */
     public void consumeFood(double amount) {
         double amountRecieved = 0D;
