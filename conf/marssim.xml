@@ -1,0 +1,85 @@
+<marssim>
+
+<units>
+
+  <Settlement>
+    <name>Port Zubrin</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Lowell Station</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Sagan Station</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Goddard Settlement</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Port Braun</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Burroughstown</name>
+  </Settlement>
+
+  <Settlement>
+    <name>McKay Base</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Asimov Base</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Clarketown</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Sojourner Station</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Viking Base</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Mariner Settlement</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Camp Bradbury</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Heinlein Station</name>
+  </Settlement>
+
+  <Settlement>
+    <name>Schiaparelli Settlement</name>
+  </Settlement>
+
+  <Rover>
+    <location>Port Zubrin</location>
+  </Rover>  
+
+  <Rover>
+    <location>Sagan Station</location>
+  </Rover>  
+
+  <Landmark>
+    <name>Viking Lander</name>
+    <location></location>
+  </Landmark>  
+
+  <Landmark>
+    <name>Mars Pathfinder</name>
+    <location></location>
+  </Landmark>  
+
+<units>
+
+</marssim>
