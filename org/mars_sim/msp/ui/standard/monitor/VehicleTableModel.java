@@ -30,12 +30,13 @@ public class VehicleTableModel extends UnitTableModel {
     private final static int  SPEED = 6;
     private final static int  DRIVER = 7;
     private final static int  STATUS = 8;
-    private final static int  OXYGEN = 9;
-    private final static int  FUEL = 10;
-    private final static int  WATER = 11;
-    private final static int  FOOD = 12;
-    private final static int  ROCK_SAMPLES = 13;
-    private final static int  COLUMNCOUNT = 14; // The number of Columns
+    private final static int  MALFUNCTION = 9;
+    private final static int  OXYGEN = 10;
+    private final static int  FUEL = 11;
+    private final static int  WATER = 12;
+    private final static int  FOOD = 13;
+    private final static int  ROCK_SAMPLES = 14;
+    private final static int  COLUMNCOUNT = 15; // The number of Columns
     private static String columnNames[]; // Names of Columns
     private static Class columnTypes[]; // Names of Columns
 
@@ -57,6 +58,8 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes[LOCATION] = String.class;
         columnNames[SPEED] = "Speed";
         columnTypes[SPEED] = Integer.class;
+        columnNames[MALFUNCTION] = "Malfunction";
+        columnTypes[MALFUNCTION] = String.class;
         columnNames[CREW] = "Crew";
         columnTypes[CREW] = Integer.class;
         columnNames[DESTINATION] = "Destination";
@@ -156,14 +159,14 @@ public class VehicleTableModel extends UnitTableModel {
 
             // Status is a combination of Mechical failure and maintenance
             case STATUS : {
-                StringBuffer status = new StringBuffer();
-                status.append(vehicle.getStatus());
+                result = vehicle.getStatus();
+            } break;
+
+            case MALFUNCTION: {
                 Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
                 if ((failure != null) && !failure.isFixed()) {
-                    status.append(" ");
-                    status.append(failure.getName());
+                    result = failure.getName();
                 }
-                result = status.toString();
             } break;
 
             case LOCATION : {

@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.standard.monitor;
 import org.mars_sim.msp.ui.standard.UIProxyManager;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.malfunction.Malfunction;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects.
@@ -25,12 +26,13 @@ public class SettlementTableModel extends UnitTableModel {
     private final static int GREENHOUSE = 4;
     private final static int GREEN_GROW = 5;
     private final static int GREEN_WORK = 6;
-    private final static int OXYGEN = 7;
-    private final static int WATER = 8;
-    private final static int FOOD = 9;
-    private final static int FUEL = 10;
-    private final static int ROCK_SAMPLES = 11;
-    private final static int COLUMNCOUNT = 12;    // The number of Columns
+    private final static int MALFUNCTION = 7;
+    private final static int OXYGEN = 8;
+    private final static int WATER = 9;
+    private final static int FOOD = 10;
+    private final static int FUEL = 11;
+    private final static int ROCK_SAMPLES = 12;
+    private final static int COLUMNCOUNT = 13;    // The number of Columns
     private static String columnNames[];          // Names of Columns
     private static Class columnTypes[];           // Types of columns
 
@@ -51,6 +53,8 @@ public class SettlementTableModel extends UnitTableModel {
         columnTypes[GREEN_GROW] = Integer.class;
         columnNames[GREEN_WORK] = "Work %";
         columnTypes[GREEN_WORK] = Integer.class;
+        columnNames[MALFUNCTION] = "Malfunction";
+        columnTypes[MALFUNCTION] = String.class;
         columnNames[FOOD] = "Food";
         columnTypes[FOOD] = Integer.class;
         columnNames[OXYGEN] = "Oxygen";
@@ -117,9 +121,16 @@ public class SettlementTableModel extends UnitTableModel {
 
             case ROCK_SAMPLES : {
                 double rockSamples = settle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
-		result = new Integer((int) rockSamples);
-	    } break;
-			
+		        result = new Integer((int) rockSamples);
+	        } break;
+
+            case MALFUNCTION: {
+                Malfunction failure = settle.getMalfunctionManager().getMostSeriousMalfunction();
+                if ((failure != null) && !failure.isFixed()) {
+                    result = failure.getName();
+                }
+            } break;
+
             case POPULATION : {
                 result = new Integer(settle.getCurrentPopulationNum());
             } break;
