@@ -8,8 +8,8 @@
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.sound.AudioPlayer;
-import org.mars_sim.msp.sound.SoundConstants;
+import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
+import org.mars_sim.msp.ui.standard.sound.SoundConstants;
 
 public class UnitInspector implements Runnable {
 
