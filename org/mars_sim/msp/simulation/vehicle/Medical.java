@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Medical.java
- * @version 2.75 2003-11-27
+ * @version 2.76 2004-05-12
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ public interface Medical {
     /**
      * Gets the vehicle's sick bay.
      * 
-     * @return SickBay
+     * @return Sickbay
      */
     public SickBay getSickBay();
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-12
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 /** The Rover class represents the rover type of ground vehicle.  It
  *  contains information about the rover.
  */
-public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable {
+public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable, Medical {
 
     // Static data members
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
@@ -267,7 +267,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 	 * Checks if the rover has a sickbay.
 	 * @return true if sickbay
 	 */
-	public boolean hasSickbay() {
+	public boolean hasSickBay() {
 		if (sickbay != null) return true;
 		else return false;
 	}
@@ -276,7 +276,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 	 * Gets the rover's sickbay.
 	 * @return sickbay
 	 */
-	public SickBay getSickbay() {
+	public SickBay getSickBay() {
 		return sickbay;
 	}
 }
