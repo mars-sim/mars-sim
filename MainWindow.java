@@ -1,5 +1,5 @@
 //*********************** Main UI Window ***********************
-// Last Modified: 3/20/00
+// Last Modified: 4/9/00
 
 // The MainWindow class is the primary UI frame for the project.
 // It contains the tool bars and main desktop pane.
@@ -33,6 +33,10 @@ public class MainWindow extends JFrame implements WindowListener {
 
 		setVisible(false);
 		addWindowListener(this);
+		
+		// Prepare menu
+		
+		setJMenuBar(new MainWindowMenu(this));
 		
 		// Prepare content frame
 		
@@ -69,9 +73,17 @@ public class MainWindow extends JFrame implements WindowListener {
 	
 	public void createUnitButton(int unitID, String unitName, ImageIcon unitIcon) { toolbar.createUnitButton(unitID, unitName, unitIcon); }
 	
+	// Return true if tool window is open
+	
+	public boolean isToolWindowOpen(String toolName) { return desktop.isToolWindowOpen(toolName); }
+	
 	// Opens a tool window if necessary
 	
 	public void openToolWindow(String toolName) { desktop.openToolWindow(toolName); }
+	
+	// Closes a tool window if it is open
+	
+	public void closeToolWindow(String toolName) { desktop.closeToolWindow(toolName); }
 	
 	// Opens a window for a unit if it isn't already open
 	// Also makes a new unit button in toolbar if necessary
