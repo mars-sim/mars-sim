@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.71 2000-10-22
+ * @version 2.71 2001-1-7
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.plaf.metal.*;
 
 /** The MainWindow class is the primary UI frame for the project. It
  *  contains the tool bars and main desktop pane.
@@ -32,6 +33,15 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // use JFrame constructor
         super("Mars Simulation Project (version " + VERSION + ")");
+
+	// Prepare custom Mars UI theme
+	MetalLookAndFeel.setCurrentTheme(new MarsTheme());
+	try {
+		UIManager.setLookAndFeel(new MetalLookAndFeel());
+	} 
+	catch(UnsupportedLookAndFeelException e) {
+		System.out.println("MainWindow: " + e.toString());
+	}
 
         // Create unit UI proxy manager.
         Unit[] units = mars.getUnitManager().getUnits();

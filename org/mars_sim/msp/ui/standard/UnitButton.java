@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 2.71 2000-10-23
+ * @version 2.71 2001-1-7
  * @author Scott Davis
  */
 
@@ -31,7 +31,7 @@ public class UnitButton extends JButton {
 		this.unitUIProxy = unitUIProxy;
 		
 		// Prepare default unit button values
-		setFont(new Font("Helvetica", Font.BOLD, 9));
+		setFont(new Font("SansSerif", Font.PLAIN, 9));
 		setVerticalTextPosition(SwingConstants.BOTTOM);
 		setHorizontalTextPosition(SwingConstants.CENTER);
 		setAlignmentX(.5F);

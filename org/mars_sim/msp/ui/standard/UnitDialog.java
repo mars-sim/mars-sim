@@ -119,7 +119,7 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
         setVisible(false);
 
         // Set default font
-        setFont(new Font("Helvetica", Font.BOLD, 12));
+        //setFont(new Font("SansSerif", Font.BOLD, 10));
 
         // Prepare content pane
         mainPane = new JPanel();
@@ -146,9 +146,11 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
                 unitUIProxy.getButtonIcon(), JLabel.CENTER);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
-        nameLabel.setFont(new Font("Helvetica", Font.BOLD, 14));
+        // nameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         nameLabel.setForeground(Color.black);
         namePanel.add(nameLabel);
+	// System.out.println("nameLabel font: " + nameLabel.getFont().getName());
+	// System.out.println("nameLabel size: " + nameLabel.getFont().getSize());
     }
 
     // --- Abstract methods ---

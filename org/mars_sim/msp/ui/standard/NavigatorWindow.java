@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.71 2000-11-13
+ * @version 2.71 2001-1-7
  * @author Scott Davis
  */
 
@@ -104,7 +104,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
         // Prepare show topographical map checkbox
         topoCheck = new JCheckBox("Topographical Mode");
-        topoCheck.setFont(new Font("Helvetica", Font.BOLD, 12));
         topoCheck.addItemListener(this);
         checkBoxPane.add(topoCheck);
 
@@ -128,7 +127,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
         // Prepare latitude entry components
         JLabel latLabel = new JLabel("Latitude: ");
-        latLabel.setFont(new Font("Helvetica", Font.BOLD, 12));
         latLabel.setForeground(Color.black);
         latLabel.setAlignmentY(.5F);
         positionPane.add(latLabel);
@@ -147,7 +145,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
         // Prepare longitude entry components
         JLabel longLabel = new JLabel("Longitude: ");
-        longLabel.setFont(new Font("Helvetica", Font.BOLD, 12));
         longLabel.setForeground(Color.black);
         longLabel.setAlignmentY(.5F);
         positionPane.add(longLabel);

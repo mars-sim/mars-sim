@@ -209,7 +209,7 @@ public class PersonDialog extends UnitDialog {
      *  @return the task pane
      */
 	protected JPanel setupTaskPane() {
-	
+		
 		// Prepare Task pane
 		JPanel taskPane = new JPanel(new BorderLayout());
 		taskPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
@@ -220,7 +220,6 @@ public class PersonDialog extends UnitDialog {
 		
 		// Prepare task label
 		JLabel taskLabel = new JLabel("Current Task", JLabel.CENTER);
-		taskLabel.setFont(new Font("Helvetica", Font.BOLD, 13));
 		taskLabel.setForeground(Color.black);
 		taskLabelPane.add(taskLabel);
 		
@@ -336,7 +335,6 @@ public class PersonDialog extends UnitDialog {
 		
 		// Prepare attribute label
 		JLabel attributeLabel = new JLabel("Natural Attributes", JLabel.CENTER);
-		attributeLabel.setFont(new Font("Helvetica", Font.BOLD, 13));
 		attributeLabel.setForeground(Color.black);
 		attributeLabelPane.add(attributeLabel);
 		
@@ -382,7 +380,6 @@ public class PersonDialog extends UnitDialog {
 		
 		// Prepare skill label
 		JLabel skillLabel = new JLabel("Skills", JLabel.CENTER);
-		skillLabel.setFont(new Font("Helvetica", Font.BOLD, 13));
 		skillLabel.setForeground(Color.black);
 		skillLabelPane.add(skillLabel);
 		

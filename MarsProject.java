@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.71 2000-10-24
+ * @version 2.71 2001-1-7
  * @author Scott Davis
  */
 
@@ -19,9 +19,6 @@ public class MarsProject {
 
     /** Constructs a MarsProject object */
     public MarsProject() {
-
-        // prepare custom UI color theme
-        MetalLookAndFeel.setCurrentTheme(new MarsTheme());
 
         // create a splash window
         SplashWindow splashWindow = new SplashWindow();

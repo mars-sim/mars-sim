@@ -67,9 +67,6 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         settlementProxies = proxyManager.getOrderedSettlementProxies();
         vehicleProxies = proxyManager.getOrderedVehicleProxies();
 
-        // Set default font
-        setFont(new Font("Helvetica", Font.BOLD, 12));
-
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
         mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -108,7 +105,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         unitList.setSelectedIndex(0);
         unitList.addMouseListener(this);
         selectUnitPane.add(new JScrollPane(unitList), "Center");
-
+	
         // Create bottom panel
         JPanel bottomPane = new JPanel(new BorderLayout());
         mainPane.add(bottomPane, "South");
