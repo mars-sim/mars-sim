@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
- * SimulationProperties.java
- * @version 2.75 2004-03-16
+ * SimulationConfig.java
+ * @version 2.75 2004-03-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
 
 import java.io.*;
 import javax.xml.parsers.*;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
 import org.w3c.dom.*;
@@ -44,6 +45,7 @@ public class SimulationConfig {
 	private PersonConfig personConfig;
 	private MedicalConfig medicalConfig;
 	private LandmarkConfig landmarkConfig;
+	private MalfunctionConfig malfunctionConfig;
 
 	/**
 	 * Constructor
@@ -57,6 +59,7 @@ public class SimulationConfig {
 		personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
 		medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
 		landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARKS_FILE));
+		malfunctionConfig = new MalfunctionConfig(parseXMLFile(MALFUNCTION_FILE));
 	}
 	
 	/**
@@ -158,10 +161,18 @@ public class SimulationConfig {
 	}
 	
 	/**
-	 * Gest the landmark config subset.
+	 * Gets the landmark config subset.
 	 * @return landmark config
 	 */
 	public LandmarkConfig getLandmarkConfiguration() {
 		return landmarkConfig;
+	}
+	
+	/**
+	 * Gets the malfunction config subset.
+	 * @return malfunction config
+	 */
+	public MalfunctionConfig getMalfunctionConfiguration() {
+		return malfunctionConfig;
 	}
 }

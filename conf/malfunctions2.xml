@@ -46,8 +46,8 @@
 		
 		<!-- List of medical injuries that can be immediately caused by this malfunction. (optional) -->
 		<!-- See medical complaint list in medical.xml. -->
-		<medical-list>
-		</medical-list>
+		<medical-complaint-list>
+		</medical-complaint-list>
 		
 	</malfunction>
 	
@@ -195,7 +195,7 @@
 	</malfunction>
 	
 	<!-- Failure of life support heating unit.  -->
-	<malfunction name="Heating Unit">
+	<malfunction name="Heating Unit Failure">
 		<severity value="70" />
 		<probability value="10.0" />
 		<emergency-repair-time value="20.0" />

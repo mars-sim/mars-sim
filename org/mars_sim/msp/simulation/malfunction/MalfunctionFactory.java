@@ -7,10 +7,16 @@
 
 package org.mars_sim.msp.simulation.malfunction;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.structure.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitCollection;
+import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /**
  * This class is a factory for Malfunction objects.
@@ -18,25 +24,27 @@ import java.util.*;
 public class MalfunctionFactory {
 
     // Data members
-    private Collection malfunctions; // The possible malfunctions in the simulation.
+    private MalfunctionConfig config; // Malfunction configuration.
+    private Collection malfunctions;  // The possible malfunctions in the simulation.
 
     /**
      * Constructs a MalfunctionFactory object.
+     * @param config the malfunction configuration subset.
+     * @throws Exception when malfunction list could not be found.
      */
-    public MalfunctionFactory() {
-        malfunctions = new ArrayList();
-
-        MalfunctionXmlReader malfunctionReader = new MalfunctionXmlReader(this);
-        malfunctionReader.parse();
+    public MalfunctionFactory(MalfunctionConfig config) throws Exception {
+		malfunctions = config.getMalfunctionList(); 
     }
 
     /**
      * Adds a malfunction to the factory.
      * @param malfunction the new malfunction to add
      */
+    /*
     public void addMalfunction(Malfunction malfunction) {
         malfunctions.add(malfunction);
     }
+    */
 
     /**
      * Gets a randomly-picked malfunction for a given unit scope.

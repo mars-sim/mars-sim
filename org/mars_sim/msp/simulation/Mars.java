@@ -96,7 +96,7 @@ public class Mars implements Serializable {
         surfaceFeatures = new SurfaceFeatures(this);
 
         // Initialize malfunction factory
-	    malfunctionFactory = new MalfunctionFactory();
+	    malfunctionFactory = new MalfunctionFactory(configuration.getMalfunctionConfiguration());
 
 	    // Set state file
 	    setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
