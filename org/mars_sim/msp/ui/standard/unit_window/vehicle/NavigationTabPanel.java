@@ -352,5 +352,11 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	if (destinationLocationCache != null) 
         		desktop.centerMapGlobe(destinationLocationCache);
         }
+        
+        // If destination settlement button is pressed, open window for settlement.
+        if (source == destinationButton) desktop.openUnitWindow(destinationSettlementCache);
+        
+        // If driver button is pressed, open window for driver.
+        if (source == driverButton) desktop.openUnitWindow(driverCache);
     }
 }
