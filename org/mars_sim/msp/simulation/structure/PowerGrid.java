@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGrid.java
- * @version 2.75 2003-02-20
+ * @version 2.75 2004-02-12
  * @author Scott Davis
  */
  
@@ -17,7 +17,12 @@ import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
  */
 public class PowerGrid implements Serializable {
         
+    // Statc data members
+    public static final String POWER_UP_MODE = "Power up";
+    public static final String POWER_DOWN_MODE = "Power down";
+        
     // Data members
+    private String powerMode;
     private double powerGenerated;
     private double powerRequired;
     private boolean sufficientPower;
@@ -28,9 +33,27 @@ public class PowerGrid implements Serializable {
      */
     public PowerGrid(Settlement settlement) {
         this.settlement = settlement;
+        powerMode = POWER_UP_MODE;
         powerGenerated = 0D;;
         powerRequired = 0D;
         sufficientPower = true;
+    }
+    
+    /**
+     * Gets the power grid mode.
+     * @return power grid mode string.
+     */
+    public String getPowerMode() {
+    	return powerMode;
+    }
+    
+    /**
+     * Sets the power grid mode.
+     * @param newPowerMode the new power grid mode.
+     */
+    public void setPowerMode(String newPowerMode) {
+    	if (POWER_UP_MODE.equals(newPowerMode)) powerMode = POWER_UP_MODE;
+    	else if (POWER_DOWN_MODE.equals(newPowerMode)) powerMode = POWER_DOWN_MODE;
     }
     
     /**
@@ -81,15 +104,29 @@ public class PowerGrid implements Serializable {
         // System.out.println("Total power generated: " + powerGenerated);
         Collection buildings = manager.getBuildings();
         
-        // Determine total power used by buildings when set to full power mode.
-        Iterator iUsed = buildings.iterator();
-        while (iUsed.hasNext()) {
-            Building building = (Building) iUsed.next();
-            building.setPowerMode(Building.FULL_POWER);
-            powerRequired += building.getFullPowerRequired();
-            // System.out.println(building.getName() + " full power used: " + building.getFullPowerRequired());
+        if (powerMode.equals(POWER_UP_MODE)) {
+        	// Determine total power used by buildings when set to full power mode.
+        	Iterator iUsed = buildings.iterator();
+        	while (iUsed.hasNext()) {
+            	Building building = (Building) iUsed.next();
+            	building.setPowerMode(Building.FULL_POWER);
+            	powerRequired += building.getFullPowerRequired();
+            	// System.out.println(building.getName() + " full power used: " + building.getFullPowerRequired());
+        	}
+        	// System.out.println("Total full power required: " + powerRequired);
         }
-        // System.out.println("Total full power required: " + powerRequired);
+        else if (powerMode.equals(POWER_DOWN_MODE)) {
+			// Determine total power used by buildings when set to power down mode.
+			Iterator iUsed = buildings.iterator();
+			while (iUsed.hasNext()) {
+				Building building = (Building) iUsed.next();
+			    building.setPowerMode(Building.POWER_DOWN);
+				powerRequired += building.getPoweredDownPowerRequired();
+				// System.out.println(building.getName() + " power down power used: " + building.getPoweredDownPowerRequired());
+			}
+			// System.out.println("Total power down power required: " + powerRequired);
+        }
+        
         // Check if there is enough power generated to fully supply each building.
         if (powerRequired <= powerGenerated) {
             sufficientPower = true;
@@ -100,14 +137,16 @@ public class PowerGrid implements Serializable {
             
             // Reduce each building's power mode to low power until 
             // required power reduction is met.
-            Iterator iLowPower = buildings.iterator();
-            while (iLowPower.hasNext() && (neededPower > 0D)) {
-                Building building = (Building) iLowPower.next();
-                if (!powerSurplus(building, Building.FULL_POWER)) {
+            if (powerMode.equals(POWER_DOWN_MODE)) {
+            	Iterator iLowPower = buildings.iterator();
+            	while (iLowPower.hasNext() && (neededPower > 0D)) {
+                	Building building = (Building) iLowPower.next();
+                	if (!powerSurplus(building, Building.FULL_POWER)) {
                     building.setPowerMode(Building.POWER_DOWN);
                     neededPower -= building.getFullPowerRequired() - 
                         building.getPoweredDownPowerRequired();
-                }
+                	}
+            	}
             }
             
             // If power needs are still not met, turn off the power to each 

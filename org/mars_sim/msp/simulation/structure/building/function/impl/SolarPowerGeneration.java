@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SolarPowerGeneration.java
- * @version 2.75 2003-04-16
+ * @version 2.75 2004-02-12
  * @author Scott Davis
  */
  
@@ -42,7 +42,7 @@ public class SolarPowerGeneration implements PowerGeneration, Serializable {
         BuildingManager manager = building.getBuildingManager();
         Coordinates location = manager.getSettlement().getCoordinates();
         Mars mars = manager.getSettlement().getMars();
-        double sunlight = (double) mars.getSurfaceFeatures().getSurfaceSunlight(location) / 127D;
+        double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
         return sunlight * powerGeneratable;
     }
 }

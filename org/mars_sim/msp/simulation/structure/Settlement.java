@@ -1,38 +1,18 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-11-25
+ * @version 2.75 2004-02-12
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.mars_sim.msp.simulation.Airlock;
-import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.LifeSupport;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
-import org.mars_sim.msp.simulation.person.ai.task.Repair;
-import org.mars_sim.msp.simulation.person.ai.task.Task;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
-import org.mars_sim.msp.simulation.structure.building.function.EVA;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.LivingAccommodations;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
 /** The Settlement class represents a settlement unit on virtual Mars.
@@ -234,6 +214,14 @@ public class Settlement extends Structure implements LifeSupport {
      * @param time the amount of time passing (in millisols)
      */
     public void timePassing(double time) {
+        
+        // If no current population at settlement, power down buildings.
+        if (getCurrentPopulationNum() == 0) {
+        	getPowerGrid().setPowerMode(PowerGrid.POWER_DOWN_MODE);
+        }
+        else {
+        	getPowerGrid().setPowerMode(PowerGrid.POWER_UP_MODE);
+        }
         
         powerGrid.timePassing(time);
         buildingManager.timePassing(time);
