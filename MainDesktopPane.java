@@ -1,5 +1,5 @@
 //*********************** Main Desktop Pane ***********************
-// Last Modified: 4/5/00
+// Last Modified: 4/9/00
 
 // The MainDesktopPane class is the desktop part of the project's UI.
 // It contains all tool and unit windows, and is itself contained, along
@@ -79,6 +79,14 @@ public class MainDesktopPane extends JDesktopPane {
 	
 	public void centerMapGlobe(Coordinates targetLocation) { ((NavigatorWindow) getToolWindow("Mars Navigator")).updateCoords(targetLocation); }
 	
+	// Return true if tool window is open
+	
+	public boolean isToolWindowOpen(String toolName) {
+		ToolWindow tempWindow = getToolWindow(toolName);
+		if (tempWindow != null) return !tempWindow.isClosed();
+		else return false;
+	}
+	
 	// Opens a tool window if necessary
 	
 	public void openToolWindow(String toolName) {
@@ -92,6 +100,16 @@ public class MainDesktopPane extends JDesktopPane {
 				add(tempWindow, 0);
 			}
 			tempWindow.show();
+		}
+	}
+	
+	// Closes a tool window if it is open
+	
+	public void closeToolWindow(String toolName) {
+		ToolWindow tempWindow = getToolWindow(toolName);
+		if ((tempWindow != null) && !tempWindow.isClosed()) {
+			try { tempWindow.setClosed(true); }
+			catch (java.beans.PropertyVetoException e) {}
 		}
 	}
 	
