@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2002-06-13
+ * @version 2.75 2003-01-21
  * @author Scott Davis
  */
 
@@ -76,7 +76,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         centerCoords = new Coordinates(HALF_PI, 0D);
         shadingArray = new int[width * height];
         showDayNightShading = false;
-	showVehicleTrails = false;
+        showVehicleTrails = true;
 
         // Set component size
         setPreferredSize(new Dimension(width, height));
@@ -103,8 +103,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  @param useUSGSMap true if using USGS map.
      */
     public void setUSGSMap(boolean useUSGSMap) {
-    	if (!topo && (this.useUSGSMap != useUSGSMap))
-    		recreate = true;
+    	if (!topo && (this.useUSGSMap != useUSGSMap)) recreate = true;
     	this.useUSGSMap = useUSGSMap;
     }
 
@@ -194,8 +193,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
         if (wait) {
             // If in waiting mode, display wait string
-            if (mapImage != null)
-                g.drawImage(mapImage, 0, 0, this);
+            if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
 
             if (topo) g.setColor(Color.black);
             else g.setColor(Color.green);
@@ -211,7 +209,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             g.setFont(messageFont);
             g.drawString(message, x, y);
             wait = false;
-        } else {
+        } 
+        else {
             // Paint black background
             g.setColor(Color.black);
             g.fillRect(0, 0, width, height);
@@ -230,8 +229,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             }
 
             if (!topo && showDayNightShading) drawShading(g);
-
-	    if (showVehicleTrails) drawVehicleTrails(g);
+            if (showVehicleTrails) drawVehicleTrails(g);
             drawUnits(g);
         }
     }
@@ -338,28 +336,34 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      * @param g graphics context
      */
     private void drawVehicleTrails(Graphics g) {
+        
+        // Set trail color
+        if (topo) g.setColor(Color.black);
+        else g.setColor(new Color(0, 96, 0));
+        
+        // Get map angle
+        double angle = 0D;
+        if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
+        else angle = HALF_MAP_ANGLE_STANDARD;
+        
+        // Draw trail
         Iterator i = proxyManager.getUIProxies();
-	while (i.hasNext()) {
-	    Object proxy = i.next();
-	    if (proxy instanceof VehicleUIProxy) {
+        while (i.hasNext()) {
+            Object proxy = i.next();
+            if (proxy instanceof VehicleUIProxy) {
                 VehicleUIProxy vehicleProxy = (VehicleUIProxy) proxy;
-		Vehicle vehicle = (Vehicle) vehicleProxy.getUnit();
-		Iterator j = (new ArrayList(vehicle.getTrail())).iterator();
-		while (j.hasNext()) {
-		    Coordinates trailSpot = (Coordinates) j.next();
-		    double angle = 0D;
-		    if (useUSGSMap && !topo) angle = HALF_MAP_ANGLE_USGS;
-		    else angle = HALF_MAP_ANGLE_STANDARD;
-
-		    IntPoint oldSpot = null;
-		    if (centerCoords.getAngle(trailSpot) < angle) {
+                Vehicle vehicle = (Vehicle) vehicleProxy.getUnit();
+                IntPoint oldSpot = null;
+                Iterator j = (new ArrayList(vehicle.getTrail())).iterator();
+                while (j.hasNext()) {
+                    Coordinates trailSpot = (Coordinates) j.next();
+                    if (centerCoords.getAngle(trailSpot) < angle) {
                         IntPoint spotLocation = getUnitRectPosition(trailSpot);
-			if ((oldSpot == null) || !oldSpot.equals(spotLocation)) {
-			    if (topo) g.setColor(Color.black);
-			    else g.setColor(new Color(0, 96, 0));
-			    g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
-			}
-			oldSpot = spotLocation;
+                        if ((oldSpot == null))                            
+                            g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
+                        else if (!spotLocation.equals(oldSpot))
+                            g.drawLine(oldSpot.getiX(), oldSpot.getiY(), spotLocation.getiX(), spotLocation.getiY());
+                        oldSpot = spotLocation;
                     }
                 }
             }
@@ -370,9 +374,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  on mouse click. */
     public void mouseClicked(MouseEvent event) {
 
-	double rho;
-	if (useUSGSMap && !topo) rho = 11458D / Math.PI;
-	else rho = 1440D / Math.PI;
+        double rho;
+        if (useUSGSMap && !topo) rho = 11458D / Math.PI;
+        else rho = 1440D / Math.PI;
 
         Coordinates clickedPosition = centerCoords.convertRectToSpherical(
                 (double)(event.getX() - HALF_MAP - 1),
@@ -410,22 +414,21 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      */
     private IntPoint getUnitRectPosition(Coordinates unitCoords) {
 
-	double rho;
-	int half_map;
+        double rho;
+        int half_map;
 
-	if (useUSGSMap && !topo) {
-	    rho = 11458D / Math.PI;
-	    half_map = 11458 / 2;
-	}
-	else {
-	    rho = 1440D / Math.PI;
+        if (useUSGSMap && !topo) {
+            rho = 11458D / Math.PI;
+            half_map = 11458 / 2;
+        }
+        else {
+            rho = 1440D / Math.PI;
             half_map = 1440 / 2;
        	}
 
         int low_edge = half_map - 150;
 
-        return Coordinates.findRectPosition(unitCoords, centerCoords, rho,
-                half_map, low_edge);
+        return Coordinates.findRectPosition(unitCoords, centerCoords, rho, half_map, low_edge);
     }
 
     /** Returns unit image draw position on map panel
@@ -450,10 +453,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         return new IntPoint(unitPosition.getiX() +
                 (unitImage.getWidth(this) / 2) + labelHorizOffset,
                 unitPosition.getiY() + (unitImage.getHeight(this) / 2));
-        /*
-        return new IntPoint(unitPosition.getiX() + labelHorizOffset,
-        unitPosition.getiY() + (unitImage.getHeight(this) / 2));
-        */
     }
 
     /** Sets day/night tracking to on or off.

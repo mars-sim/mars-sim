@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.75 2002-06-13
+ * @version 2.75 2003-01-21
  * @author Scott Davis
  */
 
@@ -137,10 +137,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         checkBoxPane.add(usgsCheckbox);
 
         // Prepare vehicle trails checkbox
-	trailCheckbox = new JCheckBox("Show Vehicle Trails");
-	trailCheckbox.setSelected(false);
-	trailCheckbox.addItemListener(this);
-	checkBoxPane.add(trailCheckbox);
+        trailCheckbox = new JCheckBox("Show Vehicle Trails");
+        trailCheckbox.setSelected(true);
+        trailCheckbox.addItemListener(this);
+        checkBoxPane.add(trailCheckbox);
 	
         // Prepare legend icon
         legend = new LegendDisplay();
@@ -293,9 +293,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         else if (object == usgsCheckbox) {
             setUSGSMap(usgsCheckbox.isSelected());
         }
-	else if (object == trailCheckbox) {
-	    map.setVehicleTrails(trailCheckbox.isSelected());
-	}
+        else if (object == trailCheckbox) {
+            map.setVehicleTrails(trailCheckbox.isSelected());
+        }
     }
 
     /** Opens a unit window on the desktop 
@@ -307,6 +307,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
     /** accessor for the MapDisplay */
     public MapDisplay getMapDisplay() {
-	return map;
+        return map;
     }
 }

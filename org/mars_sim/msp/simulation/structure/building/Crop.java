@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.75 2003-01-15
+ * @version 2.75 2003-01-21
  * @author Scott Davis
  */
  
@@ -58,8 +58,6 @@ public class Crop implements Serializable {
         
         phase = PLANTING;
         actualHarvest = 0D;
-        System.out.println("new crop " + cropType.getName() + " at " + ((Building) farm).getBuildingManager().getSettlement().getName());
-        System.out.println(cropType.getName() + " phase: planting");
     }
     
     /**
@@ -120,7 +118,6 @@ public class Crop implements Serializable {
                 currentSol = ((Building) farm).getBuildingManager().getSettlement()
                     .getMars().getMasterClock().getMarsClock().getSolOfMonth();
                 phase = GROWING;
-                System.out.println(cropType.getName() + " phase: growing");
             }
             else {
                 remainingWorkTime = 0D;
@@ -142,7 +139,6 @@ public class Crop implements Serializable {
                 farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired);
                 remainingWorkTime = overWorkTime;
                 phase = FINISHED;
-                System.out.println(cropType.getName() + " phase: finished");
             }
             else {
                 farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired);
@@ -163,7 +159,6 @@ public class Crop implements Serializable {
             growingTimeCompleted += time;
             if (growingTimeCompleted > cropType.getGrowingTime()) {
                 phase = HARVESTING;
-                System.out.println(cropType.getName() + " phase: harvesting");
                 currentPhaseWorkCompleted = 0D;
             }
             else {
