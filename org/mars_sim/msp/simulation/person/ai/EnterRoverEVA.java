@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterRoverEVA.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-07
  * @author Scott Davis
  */
 
@@ -21,8 +21,6 @@ class EnterRoverEVA extends Task implements Serializable {
 
     // Data members
     private Rover rover; // The rover to be entered.
-    private boolean inAirlock = false; // True if person is in the rover's airlock.
-    private MarsClock airlockStartTime; // The start time for using an airlock.
 
     /** 
      * Constructs a EnterRoverEVA object
@@ -49,33 +47,24 @@ class EnterRoverEVA extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-	// If person is not in the rover's airlock, go in if it's available
-	// or wait if it's not.
-	if (!inAirlock) {
-            if (!rover.isAirlockOccupied()) {
-		// System.out.println(person.getName() + " entering " + rover.getName() + " airlock.");
-                inAirlock = true;
-                rover.setAirlockOccupied(true);
-		airlockStartTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
-            }
-	    // else System.out.println(person.getName() + " waiting for " + rover.getName() + " airlock to become available.");
-        }
-
-	// If person is in the rover's airlock, wait required period of time
-	// and enter the rover.
-	if (inAirlock) {
-	    MarsClock currentTime = mars.getMasterClock().getMarsClock();
-	    double currentAirlockTime = MarsClock.getTimeDiff(currentTime, airlockStartTime) + timeLeft;
-	    if (currentAirlockTime >= Rover.AIRLOCK_TIME) {
-		// System.out.println(person.getName() + " exiting " + rover.getName() + " airlock.");
-		// System.out.println(person.getName() + " is inside " + rover.getName());
-	        rover.setAirlockOccupied(false);
-		rover.getInventory().addUnit(person);
-		putAwayEVASuit();
-		done = true;
-	       	return currentAirlockTime - Rover.AIRLOCK_TIME;
+        Airlock airlock = rover.getAirlock();
+	
+        // If person is in airlock, wait around.
+	if (airlock.inAirlock(person)) {
+	    // Make sure airlock is activated.
+	    airlock.activateAirlock();
+	}
+	else {
+	    // If person is outside, try to enter airlock.
+	    if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+	        if (airlock.isOuterDoorOpen()) airlock.enterAirlock(person, false);
+		else airlock.requestOpenDoor();
 	    }
-	    // else System.out.println(person.getName() + " waiting inside " + rover.getName() + " airlock.");
+	    else {
+	        // If person is inside, put stuff away and end task.
+	        putAwayEVASuit();
+		done = true;
+	    }
 	}
 
 	return 0D;

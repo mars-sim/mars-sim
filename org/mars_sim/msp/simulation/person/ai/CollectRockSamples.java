@@ -204,7 +204,13 @@ class CollectRockSamples extends Task implements Serializable {
 	    result = true;
 	}
 
-        EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);	
+        EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
+	if (suit == null) {
+	    System.out.println("**************************************************************");
+	    System.out.println(person.getName() + " doesn't have an EVA suit!");
+	    System.out.println("**************************************************************");
+	    return true;
+	}
         Inventory suitInv = suit.getInventory();
 	
 	// Check if EVA suit is at 10% of its oxygen capacity.

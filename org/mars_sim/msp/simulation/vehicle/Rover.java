@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.74 2002-03-03
+ * @version 2.74 2002-03-07
  * @author Scott Davis
  */
 
@@ -17,10 +17,6 @@ import org.mars_sim.msp.simulation.equipment.*;
  */
 public abstract class Rover extends GroundVehicle implements Crewable, LifeSupport {
 
-    // The amount of time required for the rover's airlock to 
-    // pressurize/depressurize. (in millisols)
-    public static final double AIRLOCK_TIME = 20D;
-
     // Static data members
     private static final double BASE_SPEED = 30D; // Base speed of rover in kph.
     private static final double BASE_MASS = 10000D; // Base mass of rover in kg.
@@ -32,7 +28,7 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
 	
     // Data members
     protected int crewCapacity = 0; // The rover's capacity for crewmembers.
-    private boolean airlockOccupied = false; // True if airlock is currently occupied.
+    protected Airlock airlock; // The rover's airlock.
 	
     /** Constructs a Rover object at a given settlement
      *  @param name the name of the rover
@@ -78,6 +74,9 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
 	inventory.setResourceCapacity(Inventory.OXYGEN, OXYGEN_CAPACITY);
 	inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
 	inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
+
+	// Create the rover's airlock.
+	airlock = new Airlock(this, mars, 2);
     }
 
     /** 
@@ -185,17 +184,19 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
         return 25D;
     }
 
-    /** Checks if rover's airlock is currently occupied.
-     *  @return true if airlock is occupied.
+    /** 
+     * Gets the rover's airlock.
+     * @return rover's airlock
      */
-    public boolean isAirlockOccupied() {
-        return airlockOccupied;
+    public Airlock getAirlock() {
+        return airlock;
     }
 
-    /** Sets the rover's airlock to occupied or not occupied.
-     *  @param occupied true if airlock is occupied.
+    /** 
+     * Perform time-related processes
+     * @param time the amount of time passing (in millisols)
      */
-    public void setAirlockOccupied(boolean occupied) {
-        airlockOccupied = occupied;
+    public void timePassing(double time) {
+        airlock.timePassing(time);
     }
 }

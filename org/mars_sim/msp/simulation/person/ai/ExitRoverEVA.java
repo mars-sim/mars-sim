@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitRoverEVA.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-07
  * @author Scott Davis
  */
 
@@ -20,9 +20,7 @@ class ExitRoverEVA extends Task implements Serializable {
 
     // Data members
     private Rover rover; // The rover to be exited.
-    private boolean inAirlock = false; // True if person is in the rover's airlock.
     private boolean hasSuit = false; // True if person has an EVA suit.
-    private MarsClock airlockStartTime; // The start time for using an airlock.
 
     /** 
      * Constructs an ExitRoverEVA object
@@ -71,35 +69,26 @@ class ExitRoverEVA extends Task implements Serializable {
 	    done = true;
 	    return timeLeft;
 	}
+
+        Airlock airlock = rover.getAirlock();
+
+	// If person is in airlock, wait around.
+	if (airlock.inAirlock(person)) {
+	    // Make sure airlock is activated.
+	    airlock.activateAirlock();
+	}
+	else {
+	    // If person is in rover, try to enter airlock.
+	    if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+	        if (airlock.isInnerDoorOpen()) airlock.enterAirlock(person, true);
+	        else airlock.requestOpenDoor();
+	    }
+	    else {
+	        // If person is outside, end task.
+	        done = true;
+	    }
+	}
 	
-	// If person is not in the rover's airlock, go in if it's available
-	// or wait if it's not.
-        if (!inAirlock) {
-	    if (!rover.isAirlockOccupied()) {
-		// System.out.println(person.getName() + " entering " + rover.getName() + " airlock.");
-		inAirlock = true;
-	        rover.setAirlockOccupied(true);
-		airlockStartTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
-	    }
-	    // else System.out.println(person.getName() + " waiting for " + rover.getName() + " airlock to become available.");
-	}
-
-	// If person is in the rover's airlock, wait required period of time
-	// and exit the rover.
-	if (inAirlock) {
-	    MarsClock currentTime = mars.getMasterClock().getMarsClock();
-	    double currentAirlockTime = MarsClock.getTimeDiff(currentTime, airlockStartTime) + timeLeft;
-	    if (currentAirlockTime >= Rover.AIRLOCK_TIME) {
-		// System.out.println(person.getName() + " exiting " + rover.getName() + " airlock.");
-		// System.out.println(person.getName() + " going outside.");
-		rover.setAirlockOccupied(false);
-	        rover.getInventory().dropUnitOutside(person);
-		done = true;
-		return currentAirlockTime - Rover.AIRLOCK_TIME;
-	    }
-	    // else System.out.println(person.getName() + " waiting inside " + rover.getName() + " airlock");
-	}
-
 	return 0D;
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-02-21
+ * @version 2.74 2002-03-07
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ public class Settlement extends Structure implements LifeSupport {
     // Data members
     int populationCapacity; // The population capacity of the settlement
     FacilityManager facilityManager; // The facility manager for the settlement
+    protected Airlock airlock; // the settlement's airlock.
 
     /** Constructs a Settlement object at a given location
      *  @param name the settlement's name
@@ -97,6 +98,9 @@ public class Settlement extends Structure implements LifeSupport {
 	// Set random initial rock samples from 0 to 500 kg.
 	double rockSamples = RandomUtil.getRandomDouble(500D);
 	inventory.addResource(Inventory.ROCK_SAMPLES, rockSamples);
+
+	// Create airlock for settlement.
+	airlock = new Airlock(this, mars, 4);
     }
 	
     /** Returns the facility manager for the settlement
@@ -217,11 +221,20 @@ public class Settlement extends Structure implements LifeSupport {
         // Return 25 degrees celsius for now
 	return 25D;
     }
+
+    /**
+     * Gets the settlement's airlock.
+     * @return settlement's airlock
+     */
+    public Airlock getAirlock() {
+        return airlock;
+    }
     
     /** Perform time-related processes
      *  @param time the amount of time passing (in millisols)
      */
     public void timePassing(double time) {
         facilityManager.timePassing(time);
+	airlock.timePassing(time);
     }
 }
