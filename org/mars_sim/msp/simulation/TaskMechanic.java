@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskMechanic.java
- * @version 2.71 2000-10-18
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -101,18 +101,18 @@ class TaskMechanic extends Task {
     /** Performs the mechanic task for a given number of seconds. 
      *  @param seconds the number of seconds to perform the task
      */
-    void doTask(int seconds) {
+    void doTask(double seconds) {
         super.doTask(seconds);
         if (subTask != null)
             return;
 
         // Determine seconds of effective work based on "Vehicle Mechanic" skill.
-        int workSeconds = seconds;
+        double workSeconds = seconds;
         int mechanicSkill = person.getSkillManager().getSkillLevel("Vehicle Mechanic");
         if (mechanicSkill == 0)
             workSeconds /= 2;
         if (mechanicSkill > 1)
-            workSeconds += (int) Math.round((double) workSeconds * (.2D * (double) mechanicSkill));
+            workSeconds += Math.round((double) workSeconds * (.2D * (double) mechanicSkill));
 
         if (name.startsWith("Repairing ")) {
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.71 2000-10-19
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -25,8 +25,8 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
 	
 	// Update data cache
 	private String phase;                   // The phase of the growing cycle that the greenhouse is in.
-	private float growthPeriodCompleted;    // Number of days completed of current growth period.
-	private float growingWork;              // Number of work-hours tending greenhouse completed for current growth period.
+	private double growthPeriodCompleted;   // Number of days completed of current growth period.
+	private double growingWork;             // Number of work-hours tending greenhouse completed for current growth period.
 	
     /** Constructs a GreenhouseFacilityPanel object 
      *  @param greenhouse the greenhouse

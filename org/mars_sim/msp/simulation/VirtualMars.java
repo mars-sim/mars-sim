@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.72 2001-04-02
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -15,13 +15,17 @@ import java.util.*;
 public class VirtualMars {
 
     // Data members
+    private OrbitInfo orbitInfo; // Orbital information
     private SurfaceFeatures surfaceFeatures; // Surface features
     private UnitManager units; // Unit controller
     private MasterClock masterClock; // Master clock for virtual world
 
     /** Constructs a VirtualMars object */
     public VirtualMars() {
-        
+       
+        // Initialize orbit info
+        orbitInfo = new OrbitInfo();
+ 
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures();
 
@@ -36,8 +40,16 @@ public class VirtualMars {
     /** Clock pulse from master clock 
      *  @param seconds amount of time passing (in seconds)
      */
-    void clockPulse(int seconds) {
+    void clockPulse(double seconds) {
+        orbitInfo.addTime(seconds);
         units.takeAction(seconds);
+    }
+
+    /** Returns the orbital information
+     *  @return orbital information
+     */
+    public OrbitInfo getOrbitInfo() {
+        return orbitInfo;
     }
 
     /** Returns surface features

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Facility.java
- * @version 2.71 2000-10-10
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -38,5 +38,5 @@ public abstract class Facility {
       *  Override in children to use this. 
       *  @param seconds number of seconds of time passing
       */
-    void timePasses(int seconds) {}
+    void timePasses(double seconds) {}
 }

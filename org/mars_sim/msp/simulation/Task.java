@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.71 2000-10-18
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -18,12 +18,12 @@ abstract class Task {
 	Person person;          // The person performing the task.
 	VirtualMars mars;       // The virtual Mars
 	boolean isDone;         // True if task is finished
-	int timeCompleted;      // The current amount of time spent on the task
+	double timeCompleted;   // The current amount of time spent on the task
 	String description;     // Description of the task
 	Task subTask;           // Sub-task of the current task
 	String phase;           // Phase of task completion
 	String subPhase;        // Sub-phase of task completion
-	int subPhaseCompleted;  // Amount of time completed in current subPhase
+	double subPhaseCompleted;  // Amount of time completed in current subPhase
 
     /** Constructs a Task object
      *  @param name the name of the task
@@ -36,7 +36,7 @@ abstract class Task {
 		this.mars = mars;
 		
 		isDone = false;
-		timeCompleted = 0;
+		timeCompleted = 0D;
 		description = name;
 		subTask = null;
 		phase = new String("");
@@ -98,7 +98,7 @@ abstract class Task {
 	 *  Children should override and implement this.
      *  @param seconds the number of seconds to perform the task
      */
-	void doTask(int seconds) {	
+	void doTask(double seconds) {	
 		if ((subTask != null) && subTask.isDone()) subTask = null;
 		if (subTask != null) subTask.doTask(seconds);
 	}
@@ -113,7 +113,7 @@ abstract class Task {
      *  @param timeRequired the time required to do the sub-phase
      *  @return true if sub-phase can be completed in given time
      */
-	boolean doSubPhase(int seconds, int timeRequired) {
+	boolean doSubPhase(double seconds, double timeRequired) {
 		if ((subPhaseCompleted + seconds) < timeRequired) {
 			subPhaseCompleted += seconds;
 			return false;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MechanicalFailure.java
- * @version 2.71 2000-10-17
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -14,8 +14,8 @@ public class MechanicalFailure {
 
     // Data members
     private String name; // The name of the failure.
-    private float totalWorkHours; // The total number of work hours required to fix the failure. (1 - 50).
-    private float remainingWorkHours; // The remaining work hours required to fix the failure. (1 - 50).
+    private double totalWorkHours; // The total number of work hours required to fix the failure. (1 - 50).
+    private double remainingWorkHours; // The remaining work hours required to fix the failure. (1 - 50).
     private boolean fixed; // True when mechanical failure is fixed.
 
     /** Constructs a MechanicalFailure object
@@ -28,7 +28,7 @@ public class MechanicalFailure {
         fixed = false;
 
         // workHours random from 1 to 50 hours.
-        totalWorkHours = ((float) Math.random() * (50F - 1F)) + 1F;
+        totalWorkHours = (Math.random() * (50D - 1D)) + 1D;
         remainingWorkHours = totalWorkHours;
     }
 
@@ -49,24 +49,24 @@ public class MechanicalFailure {
     /** Returns the total work hours required to fix the failure. 
      *  @return the total work hours required to fix the failure
      */
-    public float getTotalWorkHours() {
+    public double getTotalWorkHours() {
         return totalWorkHours;
     }
 
     /** Returns the remaining work hours required to fix the failure. 
      *  @return the remaining work hours required to fix the failure 
      */
-    public float getRemainingWorkHours() {
+    public double getRemainingWorkHours() {
         return remainingWorkHours;
     }
 
     /** Adds some work time (in seconds) to the failure. 
      *  @param seconds work time (in seconds)
      */
-    void addWorkTime(int seconds) {
+    void addWorkTime(double seconds) {
 
         // Convert seconds to work hours.
-        float hours = ((float) seconds / 60) / 60;
+        double hours = (seconds / 60) / 60;
         remainingWorkHours -= hours;
         if (remainingWorkHours <= 0F)
             fixed = true;

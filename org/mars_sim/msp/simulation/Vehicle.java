@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.71 2001-01-30
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -580,7 +580,7 @@ public abstract class Vehicle extends Unit {
     /** Add work to periodic vehicle maintenance. 
      *  @param seconds amount of work time added to vehicle maintenance (in seconds)
      */
-    void addWorkToMaintenance(int seconds) {
+    void addWorkToMaintenance(double seconds) {
         // If vehicle has already been maintained, return.
         if (distanceMaint == 0D) {
             return;
@@ -597,7 +597,7 @@ public abstract class Vehicle extends Unit {
     }
 
     /** Returns the current amount of work towards maintenance. 
-     *  @return the current amount fo work towards maintenance
+     *  @return the current amount of work towards maintenance
      */
     public int getCurrentMaintenanceWork() {
         return maintenanceWork;

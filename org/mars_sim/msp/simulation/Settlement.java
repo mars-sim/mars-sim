@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.71 2000-11-13
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -116,7 +116,7 @@ public class Settlement extends Structure {
     /** Perform time-related processes 
      *  @param seconds the seconds passing
      */
-    void timePasses(int seconds) {
+    void timePasses(double seconds) {
         facilityManager.timePasses(seconds);
     }
 }

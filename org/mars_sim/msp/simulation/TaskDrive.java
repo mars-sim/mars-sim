@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskDrive.java
- * @version 2.71 2001-1-9
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -134,7 +134,7 @@ class TaskDrive extends Task {
      *  @param seconds the amount of time the task is performed (in seconds)
      */
 
-    void doTask(int seconds) {
+    void doTask(double seconds) {
         super.doTask(seconds);
         if (subTask != null)
             return;
@@ -163,7 +163,7 @@ class TaskDrive extends Task {
      *  Returns any remaining seconds in action turn
      *  @return any remaining seconds in action turn
      */
-    private int embark(int seconds) {
+    private double embark(double seconds) {
         // If task is finished, return
         if (isDone)
             return 0;
@@ -209,7 +209,7 @@ class TaskDrive extends Task {
      *  @param seconds the seconds to perform this sub-phase
      *  @return the seconds remaining for task 
      */
-    private int reserveVehicle(int seconds) {
+    private double reserveVehicle(double seconds) {
         if (vehicle != null) {
             subPhase = new String("Prepare Vehicle");
             return seconds;
@@ -247,7 +247,7 @@ class TaskDrive extends Task {
      *  @param seconds the seconds to perform this sub-phase
      *  @return the seconds remaining for task
      */
-    private int prepareVehicle(int seconds) {
+    private double prepareVehicle(double seconds) {
         if (doSubPhase(seconds, 100)) {
 
             // Fill vehicle with fuel and supplies if at a settlement.
@@ -309,7 +309,7 @@ class TaskDrive extends Task {
      *  @param seconds the seconds to perform this sub-phase
      *  @return the seconds remaining for task
      */
-    private int determineDestination(int seconds) {
+    private double determineDestination(double seconds) {
         if (destinationType.equals("None")) {
             destinationType = new String("Settlement");
 
@@ -381,7 +381,7 @@ class TaskDrive extends Task {
      *  @param seconds the seconds to perform this sub-phase
      *  @return the seconds remaining for task
      */
-    private int invitePassengers(int seconds) {
+    private double invitePassengers(double seconds) {
         if (embarkingSettlement != null) {
             for (int x = 0; x < embarkingSettlement.getPeopleNum(); x++) {
                 Person tempPerson = embarkingSettlement.getPerson(x);
@@ -413,7 +413,7 @@ class TaskDrive extends Task {
      *  @param seconds the seconds to perform this sub-phase
      *  @return the seconds remaining for task
      */
-    private int getInVehicle(int seconds) {
+    private double getInVehicle(double seconds) {
         if (doSubPhase(seconds, 100)) {
             if (!vehicle.isPassenger(person))
                 vehicle.addPassenger(person);
@@ -447,7 +447,7 @@ class TaskDrive extends Task {
      *  @param seconds the seconds to perform this phase
      *  @return the seconds remaining for task
      */
-    private int drive(int seconds) {
+    private double drive(double seconds) {
         // Initialize if first time driving
         if (subPhase.equals("")) {
             vehicle.setStatus("Moving");
@@ -711,7 +711,7 @@ class TaskDrive extends Task {
      *  @param seconds the seconds to perform this sub-phase
      *  @return the seconds remaining for task
      */
-    private int disembark(int seconds) {
+    private double disembark(double seconds) {
         subPhase = "";
         if (doSubPhase(seconds, 100)) {
             while (vehicle.getPassengerNum() > 0) {

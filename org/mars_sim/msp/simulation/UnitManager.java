@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.71 2000-12-04
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -147,7 +147,7 @@ public class UnitManager {
      *  changing.
      *  @param seconds the time passing (in seconds)  
      */
-    void takeAction(int seconds) {
+    void takeAction(double seconds) {
         for (int x = 0; x < unitVector.size(); x++) {
             ((Unit) unitVector.elementAt(x)).timePasses(seconds);
         }

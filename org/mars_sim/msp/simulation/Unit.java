@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.71 2000-10-18
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -65,6 +65,6 @@ public abstract class Unit {
     /** the opportunity for a unit to handle time passing 
      *  @param seconds for action
      */
-    void timePasses(int seconds) {
+    void timePasses(double seconds) {
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskRelax.java
- * @version 2.71 2000-10-18
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -16,7 +16,7 @@ package org.mars_sim.msp.simulation;
 class TaskRelax extends Task {
 
     // Data members
-    private int duration; // The predetermined duration in seconds of the task
+    private double duration; // The predetermined duration in seconds of the task
 
     /** Constructs a TaskRelax object
      *  @param person the person to perform the task
@@ -25,7 +25,7 @@ class TaskRelax extends Task {
     public TaskRelax(Person person, VirtualMars mars) {
         super("Relaxing", person, mars);
 
-        duration = (int) Math.round(Math.random() * (8D * 60D * 60D));
+        duration = Math.round(Math.random() * (8D * 60D * 60D));
     }
 
     /** Constructor to relax for a given number of seconds. 
@@ -33,7 +33,7 @@ class TaskRelax extends Task {
      *  @param mars the virtual Mars
      *  @param seconds the amount of time to relax (in seconds)
      */
-    TaskRelax(Person person, VirtualMars mars, int seconds) {
+    TaskRelax(Person person, VirtualMars mars, double seconds) {
         this(person, mars);
 
         duration = seconds;
@@ -52,7 +52,7 @@ class TaskRelax extends Task {
     /** This task simply waits until the set duration of the task is complete, then ends the task. 
      *  @param seconds the number of seconds to perform the task
      */
-    void doTask(int seconds) {
+    void doTask(double seconds) {
         super.doTask(seconds);
         if (subTask != null)
             return;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskTendGreenhouse.java
- * @version 2.71 2000-09-26
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ class TaskTendGreenhouse extends Task {
 
     private GreenhouseFacility greenhouse; // The greenhouse the person is tending.
     private Settlement settlement; // The settlement the greenhouse is in.
-    private int duration; // The duration (in seconds) the person will perform the task.
+    private double duration; // The duration (in seconds) the person will perform the task.
 
     public TaskTendGreenhouse(Person person, VirtualMars mars) {
         // Use Task constructor
@@ -26,7 +26,7 @@ class TaskTendGreenhouse extends Task {
         this.greenhouse = (GreenhouseFacility) settlement.getFacilityManager().getFacility("Greenhouse");
 
         // Randomly determine duration (in seconds) (up to 8 hours)
-        duration = (int) Math.round(Math.random() * (8D * 60D * 60D));
+        duration = Math.round(Math.random() * (8D * 60D * 60D));
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -47,7 +47,7 @@ class TaskTendGreenhouse extends Task {
     }
 
     /** Performs the tending greenhouse task for a given number of seconds. */
-    void doTask(int seconds) {
+    void doTask(double seconds) {
         super.doTask(seconds);
         if (subTask != null)
             return;
@@ -56,12 +56,12 @@ class TaskTendGreenhouse extends Task {
         phase = greenhouse.getPhase();
 
         // Determine seconds of effective work based on "Greenhouse Farming" skill.
-        int workSeconds = seconds;
+        double workSeconds = seconds;
         int greenhouseSkill = person.getSkillManager().getSkillLevel("Greenhouse Farming");
         if (greenhouseSkill == 0)
             workSeconds /= 2;
         if (greenhouseSkill > 1)
-            workSeconds += (int) Math.round((double) workSeconds * (.2D * (double) greenhouseSkill));
+            workSeconds += Math.round((double) workSeconds * (.2D * (double) greenhouseSkill));
 
         // Add this work to the greenhouse.
         greenhouse.addWorkToGrowthCycle(workSeconds);

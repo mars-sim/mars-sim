@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-12-06
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -47,10 +47,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected JLabel failureDetailLabel; // Mechanical failure name label
     protected JProgressBar repairProgressBar; // Failure repair progress bar
     protected JProgressBar maintenanceProgressBar; // Maintenance progress bar
-   	protected JLabel foodValueLabel; // A label displaying the stores of food.
-	protected JLabel oxygenValueLabel; // A label displaying the stores of oxygen.
-	protected JLabel waterValueLabel; // A label displaying the stores of water.
-	protected JLabel fuelValueLabel; // A label displaying the stores of fuel.
+    protected JLabel foodValueLabel; // A label displaying the stores of food.
+    protected JLabel oxygenValueLabel; // A label displaying the stores of oxygen.
+    protected JLabel waterValueLabel; // A label displaying the stores of water.
+    protected JLabel fuelValueLabel; // A label displaying the stores of fuel.
 
     // Cached data members
     protected String status; // Cached status of vehicle
@@ -499,8 +499,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         failurePane.add(repairProgressBar);
         repairProgress = 0;
         if ((failure != null) && !failure.isFixed()) {
-            float totalHours = failure.getTotalWorkHours();
-            float remainingHours = failure.getRemainingWorkHours();
+            double totalHours = failure.getTotalWorkHours();
+            double remainingHours = failure.getRemainingWorkHours();
             repairProgress = (int)(100F * (totalHours - remainingHours) / totalHours);
         }
         repairProgressBar.setValue(repairProgress);
@@ -768,8 +768,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         // Update repair progress bar
         int repairProgressTemp = 0;
         if ((failure != null) && !failure.isFixed()) {
-            float totalHours = failure.getTotalWorkHours();
-            float remainingHours = failure.getRemainingWorkHours();
+            double totalHours = failure.getTotalWorkHours();
+            double remainingHours = failure.getRemainingWorkHours();
             repairProgressTemp =
                     (int)(100F * (totalHours - remainingHours) / totalHours);
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.71 2000-10-18
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -111,7 +111,7 @@ public class TaskManager {
      *  If person has no task or the current task is done, assign a new task to him/her.
      *  @param seconds the amount of time to perform a task (in seconds)
      */
-    void takeAction(int seconds) {
+    void takeAction(double seconds) {
         if ((currentTask == null) || currentTask.isDone()) {
             getNewTask();
         }

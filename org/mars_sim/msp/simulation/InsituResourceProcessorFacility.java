@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.71 2001-1-29
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -62,11 +62,11 @@ public class InsituResourceProcessorFacility extends Facility {
     /** Override Facility's timePasses method to allow for resource processing.
      *  @param number of seconds of time passing
      */
-    void timePasses(int seconds) {
+    void timePasses(double seconds) {
         StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
-        stores.addOxygen(getOxygenRate() / 24D / 60D / 60D * (double) seconds);
-        stores.addWater(getWaterRate() / 24D / 60D / 60D * (double) seconds);
-        stores.addFuel(getFuelRate() / 24D / 60D / 60D * (double) seconds);
+        stores.addOxygen(getOxygenRate() / 24D / 60D / 60D * seconds);
+        stores.addWater(getWaterRate() / 24D / 60D / 60D * seconds);
+        stores.addFuel(getFuelRate() / 24D / 60D / 60D * seconds);
     }
 }
 

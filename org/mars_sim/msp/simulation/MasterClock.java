@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.72 2001-04-02
+ * @version 2.72 2001-04-25
  * @author Scott Davis
  */
 
@@ -78,11 +78,11 @@ public class MasterClock extends Thread {
             } catch (InterruptedException e) {}
 
             // Send virtual Mars a clock pulse representing 10 minutes (600 seconds)
-            mars.clockPulse(600);
+            mars.clockPulse(600.0D);
 
             // Add ten minutes to Earth clock
-            earthTime.addTime(600);
-            marsTime.addTime(MarsClock.convertSecondsToMillisols(600));
+            earthTime.addTime(600.0D);
+            marsTime.addTime(MarsClock.convertSecondsToMillisols(600.0D));
             
             // System.out.println(" ");
             // System.out.println("Martian Time: " + marsTime.getTimeStamp());
