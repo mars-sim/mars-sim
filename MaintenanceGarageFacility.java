@@ -25,7 +25,7 @@ public class MaintenanceGarageFacility extends Facility {
 	
 		// Use Facility's constructor.
 		
-		super(manager, "Maintenance Garages");
+		super(manager, "Maintenance Garage");
 		
 		// Initialize data members
 		
@@ -35,7 +35,7 @@ public class MaintenanceGarageFacility extends Facility {
 		
 		maxVehicleSize = 2 + RandomUtil.getRandomInteger(3);
 		
-		// Initialize random maxSizeCapacity from maxVehicleSize to 5 X maxVehicleSize.
+		// Initialize random maxSizeCapacity from maxVehicleSize to 5x maxVehicleSize.
 		
 		maxSizeCapacity = maxVehicleSize + (RandomUtil.getRandomInteger(4 * maxVehicleSize));
 	}
