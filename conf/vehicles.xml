@@ -5,4 +5,10 @@
         <NAME>Dune Drifter</NAME>
         <SETTLEMENT>Port Zubrin</SETTLEMENT>
     </ROVER>
+    <ROVER>
+        <NAME>Test Rover</NAME>
+    </ROVER>
+    <ROVER>
+        <NAME>Test Rover 2</NAME>
+    </ROVER>
 </VEHICLES_LIST>

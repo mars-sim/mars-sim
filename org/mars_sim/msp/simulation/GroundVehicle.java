@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.73 2001-11-11
+ * @version 2.73 2001-11-15
  * @author Scott Davis
  */
 
@@ -18,22 +18,41 @@ public abstract class GroundVehicle extends Vehicle {
     private double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability.
     private double terrainGrade; // Average angle of terrain over next 7.4km distance in direction vehicle is traveling.
 
-    /** Constructs a GroundVehicle object
+    /** Constructs a GroundVehicle object at a given settlement
      *  @param name name of the ground vehicle
-     *  @param location coordinate location of the ground vehicle
+     *  @param settlement settlement the ground vehicle is parked at
      *  @param mars simulated Mars
      */
-    GroundVehicle(String name, Coordinates location, VirtualMars mars) {
-
+    GroundVehicle(String name, Settlement settlement, VirtualMars mars) {
         // use Vehicle constructor
-        super(name, location, mars);
+        super(name, settlement, mars);
 
-        // initialize variables
+        initGroundVehicleData();
+    }
+    
+    /** Constructs a GroundVehicle object
+     *  @param name name of the ground vehicle
+     *  @param mars the virtual Mars
+     *  @param manager the unit manager
+     *  @throws Exception when there are no available settlements
+     */
+    GroundVehicle(String name, VirtualMars mars, UnitManager manager) throws Exception {
+        // use Vehicle constructor
+        super(name, mars, manager);
+
+        initGroundVehicleData();
+    }
+    
+    /** Initialize ground vehicle data */
+    private void initGroundVehicleData() {
         setTerrainHandlingCapability(0D); // Default terrain capability
         setTerrainGrade(0D);
         elevation = mars.getSurfaceFeatures().getSurfaceTerrain().getElevation(location);
+        initFailures();
+    }
 
-        // initialize potential vehicle failures
+    /** Initialize potential vehicle failures */
+    private void initFailures() {
         addPotentialFailure("Fuel Leak");
         addPotentialFailure("Air Leak");
         addPotentialFailure("Life Support Failure");
@@ -45,7 +64,7 @@ public abstract class GroundVehicle extends Vehicle {
         addPotentialFailure("Navigation System Failure");
         addPotentialFailure("Communications Failure");
     }
-
+    
     /** Returns the elevation of the vehicle in km. 
      *  @return elevation of the ground vehicle (in km)
      */

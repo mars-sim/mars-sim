@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementsXmlReader.java
- * @version 2.73 2001-11-11
+ * @version 2.73 2001-11-14
  * @author Scott Davis
  */
 
@@ -11,8 +11,12 @@ import java.io.*;
 import java.util.*;
 import com.microstar.xml.*;
 
+/** The SettlementsXmlReader class parses the settlements.xml XML file and 
+ *  creates settlement unit objects.
+ */
 class SettlementsXmlReader extends MspXmlReader {
 
+    // XML element types
     private static int SETTLEMENTS_LIST = 0;
     private static int SETTLEMENT = 1;
     private static int NAME = 2;
@@ -21,28 +25,34 @@ class SettlementsXmlReader extends MspXmlReader {
     private static int LONGITUDE = 6;
     private static int POP_CAPACITY = 7;
 
-    private int elementType;
+    // Data members
+    private int elementType; // The current element type being parsed
+    private Vector settlements; // The vector of created settlements
+    private VirtualMars mars; // The virtual Mars instance
+    private String currentName; // The current settlement named parsed
+    private String currentLatitude; // The current latitude string parsed
+    private String currentLongitude; // The current longitude string parsed
+    private Coordinates currentLocation; // The current settlement location created
+    private int currentPopulationCapacity; // The current settlement population capacity
 
-    private Vector settlements;
-    private VirtualMars mars;
-    private String currentName;
-    private String currentLatitude;
-    private String currentLongitude;
-    private String currentPopulationCapacity;
-
-    public SettlementsXmlReader(VirtualMars mars) {
+    /** Constructor
+     *  @param mars the virtual Mars instance
+     */
+    SettlementsXmlReader(VirtualMars mars) {
         super("conf/settlements.xml");
 
         this.mars = mars;
     }
 
+    /** Returns the vector of settlements created from the XML file.
+     *  @return the vector of settlements
+     */
     public Vector getSettlements() {
         return settlements; 
     }
 
-    /**
-     * Handle the start of an element by printing an event.
-     * @see com.microstar.xml.XmlHandler#startElement
+    /** Handle the start of an element by printing an event.
+     *  @see com.microstar.xml.XmlHandler#startElement
      */
     public void startElement(String name) {
         super.startElement(name);
@@ -56,7 +66,8 @@ class SettlementsXmlReader extends MspXmlReader {
             currentName = "";
             currentLatitude = "";
             currentLongitude = "";
-            currentPopulationCapacity = "";
+            currentLocation = null;
+            currentPopulationCapacity = 0;
         }
         if (name.equals("NAME")) elementType = NAME;
         if (name.equals("LOCATION")) elementType = LOCATION;
@@ -65,9 +76,8 @@ class SettlementsXmlReader extends MspXmlReader {
         if (name.equals("POPULATION_CAPACITY")) elementType = POP_CAPACITY;
     }
 
-    /**
-     * Handle the end of an element by printing an event.
-     * @see com.microstar.xml.XmlHandler#endElement
+    /** Handle the end of an element by printing an event.
+     *  @see com.microstar.xml.XmlHandler#endElement
      */
     public void endElement(String name) {
         super.endElement(name);
@@ -77,6 +87,7 @@ class SettlementsXmlReader extends MspXmlReader {
             return;
         }
         if (elementType == LOCATION) {
+            currentLocation = createLocation();
             elementType = SETTLEMENT;
             return;
         }
@@ -93,20 +104,14 @@ class SettlementsXmlReader extends MspXmlReader {
             return;
         }
         if (elementType == SETTLEMENT) {
+            settlements.addElement(createSettlement());    
             elementType = SETTLEMENTS_LIST;
-            int popCapacity = Integer.parseInt(currentPopulationCapacity);
-            double phi = parseLatitude(currentLatitude);
-            double theta = parseLongitude(currentLongitude);
-            Coordinates currentLocation = new Coordinates(phi, theta);
-            Settlement currentSettlement = new Settlement(currentName, currentLocation, popCapacity, mars);
-            settlements.addElement(currentSettlement);
             return;
         }
     }
 
-    /**
-     * Handle character data by printing an event.
-     * @see com.microstar.xml.XmlHandler#charData
+    /** Handle character data by printing an event.
+     *  @see com.microstar.xml.XmlHandler#charData
      */
     public void charData(char ch[], int start, int length) {
         super.charData(ch, start, length);
@@ -116,42 +121,98 @@ class SettlementsXmlReader extends MspXmlReader {
         if (elementType == NAME) currentName = data;
         if (elementType == LATITUDE) currentLatitude = data;
         if (elementType == LONGITUDE) currentLongitude = data;
-        if (elementType == POP_CAPACITY) currentPopulationCapacity = data;
+        if (elementType == POP_CAPACITY) {
+            try {
+                currentPopulationCapacity = Integer.parseInt(data);
+            }
+            catch(NumberFormatException e) {}
+            if (currentPopulationCapacity < 0) currentPopulationCapacity = 0;
+        }
     }
 
-    /**
-     * Parse a latitude string into a phi value
-     * ex. "25.344 N"
-     * @param latitude as string
-     * @return phi based on latitude string
+    /** Creates a settlement based on parsed information. 
+     *  @return constructed settlment based on parsed information
      */
-    public double parseLatitude(String latitude) {
+    private Settlement createSettlement() {
+        Settlement settlement = null;
+        
+        if (currentLocation == null) {
+            settlement = new Settlement(currentName, currentPopulationCapacity, mars);
+        }
+        else {
+            settlement = new Settlement(currentName, currentLocation, currentPopulationCapacity, mars);
+        }
+        
+        return settlement;
+    }
+    
+    /** Create a coordinates location if parameters are valid. 
+     *  @return coordinates object based on parsed longitude and latitude
+     */
+    private Coordinates createLocation() {
+        double phi = 0D;
+        double theta = 0D;
+        
+        try {
+            phi = parseLatitude(currentLatitude);
+            theta = parseLongitude(currentLongitude);
+            return new Coordinates(phi, theta);
+        }
+        catch(IllegalArgumentException e) {}
+        
+        return new Coordinates(phi, theta);
+    }
+    
+    /** Parse a latitude string into a phi value
+     *  ex. "25.344 N"
+     *  @param latitude as string
+     *  @return phi based on latitude string
+     *  @throws java.lang.IllegalArgumentException if bad latitude string
+     */
+    private double parseLatitude(String latitude) throws IllegalArgumentException {
+        boolean badLatitude = false;
+        double latValue = 0D;
+        
+        if (latitude.trim().equals("")) badLatitude = true;
+        try {
+            latValue = Double.parseDouble(latitude.substring(0, latitude.length() - 2));
+            if ((latValue > 90D) || (latValue < 0)) badLatitude = true;
+        }
+        catch(NumberFormatException e) { badLatitude = true; }
         char direction = latitude.charAt(latitude.length() - 1);
-        double latValue = Double.parseDouble(latitude.substring(0, latitude.length() - 2));
- 
         if (direction == 'N') latValue = 90D - latValue;
         else if (direction == 'S') latValue += 90D;
-         
+        else badLatitude = true;
+        
+        if (badLatitude) throw new IllegalArgumentException();
+        
         double phi = Math.PI * (latValue / 180D);
-     
         return phi;
     }
 
-    /**
-     * Parse a longitude string into a theta value
-     * ex. "63.5532 W"
-     * @param longitude as string
-     * @return theta based on longitude string
+    /** Parse a longitude string into a theta value
+     *  ex. "63.5532 W"
+     *  @param longitude as string
+     *  @return theta based on longitude string
+     *  @throws java.lang.IllegalArgumentException if bad longitude string
      */
-    public double parseLongitude(String longitude) {
+    private double parseLongitude(String longitude) throws IllegalArgumentException {
+        boolean badLongitude = false;
+        double longValue = 0D;
+        
+        if (longitude.trim().equals("")) badLongitude = true;
+        try {
+            longValue = Double.parseDouble(longitude.substring(0, longitude.length() - 2));
+            if ((longValue > 180D) || (longValue < 0)) badLongitude = true;
+        }
+        catch(NumberFormatException e) { badLongitude = true; }
         char direction = longitude.charAt(longitude.length() - 1);
-        double longValue = Double.parseDouble(longitude.substring(0, longitude.length() - 2));
-
         if (direction == 'W') longValue = 360D - longValue;
+        else if (direction != 'E') badLongitude = true;
+        
+        if (badLongitude) throw new IllegalArgumentException();
         
         double theta = (2 * Math.PI) * (longValue / 360D);
-
         return theta;
     }
 }
-

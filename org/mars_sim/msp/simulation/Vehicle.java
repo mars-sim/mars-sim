@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.73 2001-11-11
+ * @version 2.73 2001-11-15
  * @author Scott Davis
  */
 
@@ -48,16 +48,48 @@ public abstract class Vehicle extends Unit {
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
 
-    /** Constructs a Vehicle object
+    /** Constructs a Vehicle object with a given settlement
      *  @param name the vehicle's name
-     *  @param location the vehicle's location
+     *  @param settlement the settlement the vehicle is parked at
      *  @param mars the virtual Mars
      */
-    Vehicle(String name, Coordinates location, VirtualMars mars) {
+    Vehicle(String name, Settlement settlement, VirtualMars mars) {
         // use Unit constructor
-        super(name, location, mars);
+        super(name, settlement.getCoordinates(), mars);
 
-        // initialize
+        setSettlement(settlement);
+        initVehicleData();
+    }
+    
+    /** Constructs a Vehicle object
+     *  @param name the vehicle's name
+     *  @param mars the virtual Mars
+     *  @param manager the unit manager
+     *  @throws Exception when there are no available settlements
+     */
+    Vehicle(String name, VirtualMars mars, UnitManager manager) throws Exception {
+        // use Unit constructor
+        super(name, new Coordinates(0D, 0D), mars);
+
+        if (manager.getSettlementNum() == 0) throw new Exception("No available settlements");
+        
+        Iterator i = manager.getSettlements().iterator();
+        Settlement leastVehicles = null;
+        int least = Integer.MAX_VALUE;
+        while (i.hasNext()) {
+            Settlement settlement = (Settlement) i.next();
+            if (settlement.getVehicleNum() < least) {
+                least = settlement.getVehicleNum();
+                leastVehicles = settlement;
+            }
+        }
+        setSettlement(leastVehicles);
+        
+        initVehicleData();
+    }
+    
+    /** Initializes vehicle data */
+    private void initVehicleData() {
         setStatus("Parked");
         setDestinationType("None");
         passengers = new Vector();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.73 2001-11-11
+ * @version 2.73 2001-11-18
  * @author Scott Davis
  */
 
@@ -45,165 +45,44 @@ public class UnitManager {
     /** Create the units */
     private void createEntities() {
 
+        // Create settlements
+        createSettlements();
+
+        // Create vehicles
+        createVehicles();
+ 
+        // Create people
+        createPeople();
+    }
+
+    /** Creates initial settlements from XML config file */
+    private void createSettlements() {
         SettlementsXmlReader settlementsReader = new SettlementsXmlReader(mars);
         settlementsReader.parse();
         settlementsVector = settlementsReader.getSettlements();
         for (int x=0; x < settlementsVector.size(); x++) 
             unitVector.addElement(settlementsVector.elementAt(x));
+    }
 
-        // createSettlements();
+    /** Creats initial vehicles from XML config file */
+    private void createVehicles() {
 
         VehiclesXmlReader vehiclesReader = new VehiclesXmlReader(this, mars);
         vehiclesReader.parse();
         vehiclesVector = vehiclesReader.getVehicles();
         for (int x=0; x < vehiclesVector.size(); x++)
             unitVector.addElement(vehiclesVector.elementAt(x));
- 
-        // createVehicles();
+    }
+
+    /** Creates initial people from XML config file */
+    private void createPeople() {
 
         PeopleXmlReader peopleReader = new PeopleXmlReader(this, mars);
         peopleReader.parse();
         peopleVector = peopleReader.getPeople();
         for (int x=0; x < peopleVector.size(); x++) 
             unitVector.addElement(peopleVector.elementAt(x));
-
-        // createPeople();
     }
-
-    /** Creates initial settlements with random locations */
-    /*
-    private void createSettlements() {
-        // Get settlement names from "settlements.conf"
-        String[] settlementNames = ConfFileProcessor.getSettlementNames();
-
-        // Set base random value
-        Random baseRand = new Random();
-
-        // Create a settlement for each initial settlement name
-        for (int x = 0; x < settlementNames.length; x++) {
-
-            // Determine random location of settlement, adjust so it will be less likely to be near the poles
-            double settlementPhi = (baseRand.nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
-            if (settlementPhi > Math.PI) settlementPhi = Math.PI;
-            if (settlementPhi < 0D) settlementPhi = 0D;
-            double settlementTheta = (double)(Math.random() * (2D * Math.PI));
-            Coordinates settlementCoords = new Coordinates(settlementPhi, settlementTheta);
-            createSettlement(settlementNames[x], settlementCoords);
-        }
-    }
-    */
-
-    /** Creates a settlement
-     *  @param name the settlement's name
-     *  @param coords the settlement's location
-     */
-    /*
-    private void createSettlement(String name, Coordinates coords) {
-        Settlement tempSettlement = new Settlement(name, coords, mars, this);
-        // Add settlement to master unit and settlements vectors
-        unitVector.addElement(tempSettlement);
-        settlementsVector.addElement(tempSettlement);
-    }
-    */
-
-    /** Creates initial vehicles at random settlements */
-    /*
-    private void createVehicles() {
-
-        // Get rover names from "rovers.conf"
-        String[] roverNames = ConfFileProcessor.getRoverNames();
-
-        for (int x = 0; x < roverNames.length; x++) {
-
-            // Choose a settlement for rover.
-            Vector minRovers = new Vector();
-            int min = Integer.MAX_VALUE;
-            for (int y=0; y < settlementsVector.size(); y++) {
-                Settlement settlement = (Settlement) settlementsVector.elementAt(y);
-                int roverNum = settlement.getVehicleNum();
-                if (roverNum == min) minRovers.addElement(settlement);
-                else if (roverNum < min) {
-                    minRovers.removeAllElements();
-                    minRovers.addElement(settlement);
-                    min = roverNum;
-                }
-            }
-
-            // Create the rover
-            int randSettlement = RandomUtil.getRandomInt(minRovers.size() - 1);
-            createVehicle(roverNames[x], new Coordinates(0D, 0D),
-                    (Settlement) minRovers.elementAt(randSettlement));
-        }
-    }
-    */
-
-    /** Creates a vehicle
-     *  @param name the vehicle's name
-     *  @param coords the vehicle's location
-     *  @param seti the vehicle's settlement
-     */
-    /*
-    void createVehicle(String name, Coordinates coords, Settlement seti) {
-        Rover tempVehicle = new Rover(name, coords, mars, this);
-        // Add rover to master unit and vehicles vectors
-        unitVector.addElement(tempVehicle);
-        vehiclesVector.addElement(tempVehicle);
-        tempVehicle.setSettlement(seti);
-    }
-    */
-
-    /** Creates initial people at random settlements */
-    /*
-    private void createPeople() {
-        // Get people names from "people.conf"
-        String[] peopleNames = ConfFileProcessor.getPersonNames();
-
-        // Create a Person object for each name
-        // Choose a random settlement to put the person.
-        for (int x = 0; x < peopleNames.length; x++) {
-
-            Vector minPeople = new Vector();
-            int min = Integer.MAX_VALUE;
-            for (int y=0; y < settlementsVector.size(); y++) {
-                Settlement settlement = (Settlement) settlementsVector.elementAt(y);
-                int inhabitantNum = settlement.getPeopleNum();
-                FacilityManager facilityManager = settlement.getFacilityManager();
-                LivingQuartersFacility livingQuarters = (LivingQuartersFacility) facilityManager.getFacility("Living Quarters");
-                int maxCapacity = livingQuarters.getMaximumCapacity();
-                if (inhabitantNum < maxCapacity) {
-                    if (inhabitantNum == min) minPeople.addElement(settlement);
-                    else if (inhabitantNum < min) {
-                        minPeople.removeAllElements();
-                        minPeople.addElement(settlement);
-                        min = inhabitantNum;
-                    }
-                }
-            }
-
-            // Create the person 
-            int randSettlement = RandomUtil.getRandomInt(minPeople.size() - 1);
-            createPerson(peopleNames[x], new Coordinates(0D, 0D),
-                    (Settlement) minPeople.elementAt(randSettlement));
-        }
-    }
-    */
-
-    /** Creates a person
-     *  @param name the person's name
-     *  @param coord the person's location
-     *  @param seti the person's settlement
-     */
-    /*
-    private void createPerson(String name, Coordinates coord, Settlement seti) {
-        // Create a person with that name
-        Person tempPerson = new Person(name, coord, mars, this);
-        // Add person to master unit and people vectors
-        unitVector.addElement(tempPerson);
-        peopleVector.addElement(tempPerson);
-        tempPerson.setSettlement(seti);
-    }
-    */
-
 
     /** Notify all the units that time has passed. Times they are a
      *  changing.

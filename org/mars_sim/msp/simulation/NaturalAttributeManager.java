@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.72 2001-06-24
+ * @version 2.73 2001-11-17
  * @author Scott Davis
  */
 
@@ -14,18 +14,17 @@ import java.util.*;
  */
 public class NaturalAttributeManager {
 
+    // List of the person's natural attributes by name.
+    static private String[] attributeKeys = {"Strength", "Endurance", "Agility", "Academic Aptitude", 
+        "Experience Aptitude", "Attractiveness", "Presence", "Leadership", "Conversation"}; 
+
     // Data members
     private Hashtable attributeList; // List of the person's natural attributes keyed by unique name.
-    private String[] attributeKeys; // List of the person's natural attributes by name.
 
     /** Constructs a NaturalAttributeManager object **/
     NaturalAttributeManager() {
 
         attributeList = new Hashtable();
-
-        String[] attributeKeysTemp = {"Strength", "Endurance", "Agility", "Academic Aptitude", "Experience Aptitude",
-        "Attractiveness", "Presence", "Leadership", "Conversation"};
-        attributeKeys = attributeKeysTemp;
 
         // Create natural attributes using random values,
         // Note: this may change later.
@@ -78,14 +77,28 @@ public class NaturalAttributeManager {
 
     /** Returns the integer value of a named natural attribute if it exists.
      *  Returns 0 otherwise.
-     *  @param attributeName the name of the attribute
+     *  @param name the name of the attribute
      *  @return the value of the attribute
      */
-    public int getAttribute(String attributeName) {
+    public int getAttribute(String name) {
         int result = 0;
-        if (attributeList.containsKey(attributeName))
-            result = ((Integer) attributeList.get(attributeName)).intValue();
+        if (attributeList.containsKey(name))
+            result = ((Integer) attributeList.get(name)).intValue();
 
         return result;
+    }
+
+    /** Sets an attribute's level.
+     *  @param name the name of the attribute
+     *  @param level the level the attribute is to be set
+     */
+    public void setAttribute(String name, int level) {
+
+        if (level > 100) level = 100;
+        if (level < 0) level = 0;
+
+        for (int x=0; x < attributeKeys.length; x++) {
+            if (name.equals(attributeKeys[x])) attributeList.put(name, new Integer(level));
+        }
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.73 2001-11-08
+ * @version 2.73 2001-11-14
  * @author Scott Davis
  */
 
@@ -278,10 +278,11 @@ class TravelToSettlement extends Mission {
         Vector sortedSettlements = new Vector();
         iterator = settlements.iterator();
         while (iterator.hasNext()) {
+            iterator.next();
             double closestDistance = Double.MAX_VALUE;
             Settlement closestSettlement = null;
             Iterator inner = settlements.iterator();
-            while (iterator.hasNext()) {
+            while (inner.hasNext()) {
                 Settlement tempSettlement = (Settlement) inner.next();
                 double distance = currentLocation.getDistance(tempSettlement.getCoordinates());
                 if ((distance < closestDistance) && !sortedSettlements.contains(tempSettlement)) {

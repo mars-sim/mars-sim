@@ -8,9 +8,18 @@
             <NAME>Driving</NAME>
             <LEVEL>3</LEVEL>
         </SKILL>
+        <ATTRIBUTE>
+            <NAME>Strength</NAME>
+            <LEVEL>100</LEVEL>
+        </ATTRIBUTE>
     </PERSON>
     <PERSON>
         <NAME>Test Person</NAME>
-        <SETTLEMENT>Port Zubrin</SETTLEMENT>
+    </PERSON>
+    <PERSON>
+        <NAME>Test Person 2</NAME>
+    </PERSON>
+    <PERSON>
+        <NAME>Test Person 3</NAME>
     </PERSON>
 </PEOPLE_LIST>

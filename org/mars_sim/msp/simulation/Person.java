@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.73 2001-11-11
+ * @version 2.73 2001-11-15
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
 import org.mars_sim.msp.simulation.task.*;
+import java.util.*;
 
 /** The Person class represents a person on the virtual Mars. It keeps
  *  track of everything related to that person and provides
@@ -25,18 +26,52 @@ public class Person extends Unit {
     private double fatigue; // Person's fatigue level
     private double hunger; // Person's hunger level
 
-    /** Constructs a Person object
+    /** Constructs a Person object at a given settlement
      *  @param name the person's name
-     *  @param location the person's location
+     *  @param settlement the settlement the person is at
      *  @param mars the virtual Mars
      */
-    Person(String name, Coordinates location, VirtualMars mars) {
-
+    Person(String name, Settlement settlement, VirtualMars mars) {
         // Use Unit constructor
-        super(name, location, mars);
+        super(name, settlement.getCoordinates(), mars);
 
+        setSettlement(settlement);
+        initPersonData();
+    }
+    
+    /** Constructs a Person object
+     *  @param name the person's name
+     *  @param mars the virtual Mars
+     *  @param manager the unit manager
+     *  @throws Exception if no suitable settlement is found
+     */
+    Person(String name, VirtualMars mars, UnitManager manager) throws Exception {
+        // Use Unit constructor
+        super(name, new Coordinates(0D, 0D), mars);
+
+        Vector settlements = manager.getSettlements();
+        Settlement leastPeople = null;
+        int least = Integer.MAX_VALUE;
+        Iterator i = settlements.iterator();
+        while (i.hasNext()) {
+            Settlement settlement = (Settlement) i.next();
+            if (settlement.getAvailablePopulationCapacity() > 0) {
+                if (settlement.getPeopleNum() < least) {
+                    least = settlement.getPeopleNum();
+                    leastPeople = settlement;
+                }
+            }
+        }
+        
+        if (leastPeople != null) setSettlement(leastPeople);
+        else throw new Exception("No suitable settlements available");
+        
+        initPersonData();
+    }
+    
+    /** Initialize person data */
+    private void initPersonData() {
         // Initialize data members
-        settlement = null;
         vehicle = null;
         attributes = new NaturalAttributeManager();
         skills = new SkillManager(this);

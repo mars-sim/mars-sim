@@ -1,28 +1,32 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.73 2001-11-11
+ * @version 2.73 2001-11-15
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
-import java.util.Vector;
+import java.util.*;
 
 /** The Settlement class represents a settlement unit on virtual Mars.
  *  It contains information related to the state of the settlement.
  */
 public class Settlement extends Structure {
 
+    // Default population capacity for a settlement
+    private static int DEFAULT_POPULATION_CAPACITY = 20;
+    
     // Data members
     Vector people; // List of inhabitants
     Vector vehicles; // List of parked vehicles
     int populationCapacity; // The population capacity of the settlement
-    FacilityManager facilityManager; // The facility manager for the settlement.
+    FacilityManager facilityManager; // The facility manager for the settlement
 
-    /** Constructs a Settlement object
+    /** Constructs a Settlement object at a given location
      *  @param name the settlement's name
      *  @param location the settlement's location
+     *  @param populationCapacity the settlement's population capacity
      *  @param mars the virtual Mars
      */
     Settlement(String name, Coordinates location, int populationCapacity, VirtualMars mars) {
@@ -33,7 +37,33 @@ public class Settlement extends Structure {
         // Initialize data members
         people = new Vector();
         vehicles = new Vector();
-        this.populationCapacity = populationCapacity;
+        if (populationCapacity == 0) this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
+        else this.populationCapacity = populationCapacity;
+        facilityManager = new FacilityManager(this);
+    }
+    
+    /** Constructs a Settlement object at a random location
+     *  @param name the settlement's name
+     *  @param populationCapacity the settlement's population capacity
+     *  @param mars the virtual Mars
+     */
+    Settlement(String name, int populationCapacity, VirtualMars mars) {
+        
+        // Use Unit constructor
+        super(name, new Coordinates(0D, 0D), mars);
+        
+        // Determine random location of settlement, adjust so it will be less likely to be near the poles
+        double settlementPhi = (new Random().nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
+        if (settlementPhi > Math.PI) settlementPhi = Math.PI;
+        if (settlementPhi < 0D) settlementPhi = 0D;
+        double settlementTheta = (double)(Math.random() * (2D * Math.PI));
+        setCoordinates(new Coordinates(settlementPhi, settlementTheta));
+      
+        // Initialize data members
+        people = new Vector();
+        vehicles = new Vector();
+        if (populationCapacity == 0) this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
+        else this.populationCapacity = populationCapacity;
         facilityManager = new FacilityManager(this);
     }
 
@@ -56,6 +86,14 @@ public class Settlement extends Structure {
      */
     public int getCurrentPopulation() {
         return people.size();
+    }
+    
+    /** Gets the current available population capacity 
+     *  of the settlement
+     *  @return the available population capacity
+     */
+    public int getAvailablePopulationCapacity() {
+        return populationCapacity - people.size();
     }
 
     /** Gets an array of current inhabitants of the settlement
