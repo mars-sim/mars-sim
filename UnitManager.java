@@ -1,5 +1,5 @@
 //************************ Unit Manager ************************
-// Last Modified: 3/2/00
+// Last Modified: 5/8/00
 
 import java.util.*;
 
@@ -186,10 +186,12 @@ public class UnitManager {
 	}
 	
 	// Make each person take action
-	// (Note: Later automated processes may be added to vehicles and settlements)
+	// Notify each settlement that time passes for time-related processes
+	// (Note: Later automated processes may be added to vehicles)
 	
 	public void takeAction(int seconds) {
 		for (int x=0; x < peopleVector.size(); x++) ((Person) peopleVector.elementAt(x)).takeAction(seconds); 
+		for (int x=0; x < settlementsVector.size(); x++) ((Settlement) settlementsVector.elementAt(x)).timePasses(seconds);
 	}
 
 	// Get population number of a particular type of unit
