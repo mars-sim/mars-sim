@@ -1,0 +1,164 @@
+<?xml version="1.0" ?>
+
+<building-list>
+
+	<building name="Lander Hab">
+		
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		
+		<functions>
+			<life-support capacity="4" power-required="8.0" />
+		
+			<living-accommodations />
+		
+			<research tech-level="1" capacity="4">
+				<research-speciality name="Areology" />
+			</research>
+		
+			<communication />
+		
+			<EVA airlock-capacity="4" />
+			
+			<recreation />
+			
+			<dining />
+			
+			<resource-processing power-down-level=".5">
+				
+				<process name="Water Recycling">
+					<input resource="Waste Water" rate=".0002" ambient="false" />
+					<output resource="Water" rate=".00017" ambient="false" />
+				</process>
+				
+				<process name="Carbon Scrubbing">
+					<input resource="Carbon Dioxide" rate=".000067" ambient="false" />
+					<output resource="Oxygen" rate=".00005" ambient="false" />
+				</process>
+				
+				<process name="Ice Melting/Filtration">
+					<input resource="Ice" rate=".01" ambient="false" />
+					<output resource="Water" rate=".005" ambient="false" />
+				</process>
+				
+			</resource-processing>
+			
+			<storage>
+				<resource-storage resource="Oxygen" capacity="1000.0" />
+				<resource-storage resource="Water" capacity="5000.0" />
+				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="Food" capacity="1000.0" />
+				<resource-storage resource="Rock Samples" capacity="2000.0" />
+				<resource-storage resource="Ice" capacity="2000.0" />
+				
+				<resource-initial resource="Water" amount="500.0" />
+				<resource-initial resource="Oxygen" amount="500.0" />
+				<resource-initial resource="Food" amount="500.0" />
+			</storage>
+			
+			<power-generation>
+				<power-source type="Solar Cells" power="5.0" />
+			</power-generation>
+			
+			<medical-care tech-level="4" beds="2" />
+		</functions>
+		
+	</building>
+	
+	<building name="Inflatable Greenhouse" >
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacit="3" power-required="6.0" />
+			<farming crops="15" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="75.0" />
+			<storage>
+				<resource-storage resource="Water" capacity="500.0" />
+				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+			</storage>
+			<resource-processing power-down-level=".5">
+				<process name="Carbon Dioxide Pump">
+					<input resource="Carbon Dioxide" rate=".001" ambient="true" />
+					<output resource="Carbon Dioxide" rate=".001" ambient="false" />
+				</process>
+			</resource-processing>
+		</functions>
+	</building>
+	
+	<building name="Nuclear Reactor" >
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Standard Power Generator" power="80.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<building name="Starting ERV Base" >
+		<power-required base-power="10.0" base-power-down-power="5.0" />
+		<functions>
+			<resource-processing power-down-level="5.0">
+				<process name="Sebatier">
+					<input resource="Carbon Dioxide" rate=".0011" ambient="true" />
+					<input resource="Hydrogen" rate=".0002" ambient="false" />
+					<output resource="Methane" rate=".0004" ambient="false" />
+					<output resource="Water" rate=".0009" ambient="false" />
+				</process>
+				<process name="Water Electrolysis">
+					<input resource="Water" rate=".0001" ambient="false" />
+					<output resource="Hydrogen" rate=".000011" ambient="false" />
+					<output resource="Oxygen" rate=".000089" ambient="false" />
+				</process>
+				<process name="CO2 Reduction">
+					<input resource="Carbon Dioxide" rate=".000825" ambient="true" />
+					<output resource="Oxygen" rate=".0003" ambient="false" />
+					<output resource="Carbon Monoxide" rate=".000525" ambient="true" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Hydrogen" capacity="6300.0" />
+				<resource-storage resource="Methane" capacity="21000.0" />
+				<resource-storage resource="Oxygen" capacity="74000.0" />
+				<resource-storage resource="Water" capacity="9000.0" />
+				<resource-initial resource="Hydrogen" amount="6300.0" />
+			</storage>
+			<power-generation>
+				<power-source type="Solar Cells" power="5.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<building name="ERV Base" >
+		<power-required base-power="10.0" base-power-down-power="5.0" />
+		<functions>
+			<resource-processing power-down-level="5.0">
+				<process name="Sebatier">
+					<input resource="Carbon Dioxide" rate=".0011" ambient="true" />
+					<input resource="Hydrogen" rate=".0002" ambient="false" />
+					<output resource="Methane" rate=".0004" ambient="false" />
+					<output resource="Water" rate=".0009" ambient="false" />
+				</process>
+				<process name="Water Electrolysis">
+					<input resource="Water" rate=".0001" ambient="false" />
+					<output resource="Hydrogen" rate=".000011" ambient="false" />
+					<output resource="Oxygen" rate=".000089" ambient="false" />
+				</process>
+				<process name="CO2 Reduction">
+					<input resource="Carbon Dioxide" rate=".000825" ambient="true" />
+					<output resource="Oxygen" rate=".0003" ambient="false" />
+					<output resource="Carbon Monoxide" rate=".000525" ambient="true" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Hydrogen" capacity="6300.0" />
+				<resource-storage resource="Methane" capacity="21000.0" />
+				<resource-storage resource="Oxygen" capacity="74000.0" />
+				<resource-storage resource="Water" capacity="9000.0" />
+			</storage>
+			<power-generation>
+				<power-source type="Solar Cells" power="5.0" />
+			</power-generation>
+		</functions>
+	</building>
+
+</building-list>

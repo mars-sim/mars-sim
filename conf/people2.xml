@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+
+<people-configuration>
+
+	<!-- The average amount of oxygen (kg) breathed by a person each Martian Sol -->
+	<!-- Default: 1.0 -->
+	<oxygen-consumption-rate value="1.0" />
+
+	<!-- The average amount of water (kg) drank by a person each Martian Sol -->
+	<!-- Default: 4.0 -->
+	<water-consumption-rate value="4.0" />
+
+	<!-- The average amount of food (kg) eaten by a person each Martian Sol -->
+	<!-- Default: 1.5 -->
+	<food-consumption-rate value="1.5" />
+
+	<!-- Number of Earth minutes a person can survive without oxygen -->
+	<!-- Default: 5.0 -->
+	<oxygen-deprivation-time value="5.0" />
+
+	<!-- Number of Earth minutes a person can survive without water -->
+	<!-- Default: 8640, 6 days -->
+	<water-deprivation-time value="8640.0" />
+
+	<!-- Number of Earth minutes a person can survive without food -->
+	<!-- Default: 30240.0, 21 days -->
+	<food-deprivation-time value="30240.0" />
+
+	<!-- Minimum air pressure (atm) a person can withstand without harm -->
+	<!-- Default: .25 atm -->
+	<min-air-pressure value=".25" />
+
+	<!-- Number of Earth seconds a person can survive in decompression -->
+	<!-- Default: 90.0 seconds -->
+	<decompression-time value="90.0" />
+
+	<!-- Minimum temperature (degrees celsius) a person can withstand without harm -->
+	<!-- Default: 0 degrees celsius -->
+	<min-temperature value="0.0" />
+
+	<!-- Maximum temperature (degrees celsius) a person can withstand without harm -->
+	<!-- Default: 48 degrees celsius -->
+	<max-temperature value="48.0" />
+	
+	<!-- Number of Earth minutes a person can survive below minimum temperature -->
+	<!-- Default: 240 minutes (4 hours) -->
+	<freezing-time value="240.0" />
+
+	<!-- List of person names -->
+	<person-name-list>		
+
+		<person-name value="Scott Davis" />
+		<person-name value="Mike Jones" />
+		<person-name value="Steve Marley" />
+		<person-name value="Oscar Carrol" />
+		<person-name value="Connie Carrol" />
+		<person-name value="Isabella Carrol" />
+		<person-name value="Michael Zummo" />
+		<person-name value="Tom Zanoni" />
+		<person-name value="Joseph Wagner" />
+		<person-name value="Troy Lane" />
+		<person-name value="Anson Nichols" />
+		<person-name value="Libby Parker" />
+		<person-name value="Charles Kwiatkowski" />
+		<person-name value="Kerrie Vaughan" />
+		<person-name value="Shawn Malmarowski" />
+		<person-name value="Peter Kokh" />
+		<person-name value="Matthew Giovanelli" />
+		<person-name value="Karen Neder" />
+		<person-name value="Doug Armstrong" />
+		<person-name value="Bill Hensley" />
+		<person-name value="Heidi Hensley" />
+		<person-name value="Greg Whelan" />
+		<person-name value="Jennifer Hare" />
+		<person-name value="David Kern" />
+		<person-name value="Gregory Brown" />
+		<person-name value="Ray Kerchoff" />
+		<person-name value="Victor Plantico" />
+		<person-name value="Mark Chiappetta" />
+		<person-name value="Michael Sobecke" />
+		<person-name value="Dan Folker" />
+		<person-name value="Donna Hanson" />
+		<person-name value="Jeri Axberg" />
+		<person-name value="Jill Babbitz" />
+		<person-name value="Enrique Deorbeta" />
+		<person-name value="Tracy Hauck" />
+		<person-name value="Bill Krushas" />
+		<person-name value="Alexandria Luciano" />
+		<person-name value="Douglas McMartin" />
+		<person-name value="Marina Plavnick" />
+		<person-name value="Salvatorie Schifano" />
+		<person-name value="Kerrie Stolpman" />
+		<person-name value="Scott Walsh" />
+		<person-name value="Rory Wright" />
+		<person-name value="Jay Bondowzewski" />
+		<person-name value="Frank Alioto" />
+		<person-name value="Mary Carlson" />
+		<person-name value="Adrian Chan" />
+		<person-name value="Miathong Chang" />
+		<person-name value="Carla Deprey" />
+		<person-name value="John Derkson" />
+		<person-name value="Ramiro Ferrucci" />
+		<person-name value="Daniel Frankowiak" />
+		<person-name value="Anna Harmon" />
+		<person-name value="Tim Kaplan" />
+		<person-name value="David Ksiciski" />
+		<person-name value="Shizhe Li" />
+		<person-name value="Kent Primrose" />
+		<person-name value="Steven Hirth" />
+		<person-name value="Charlie Elston" />
+		<person-name value="David Blundon" />
+		<person-name value="Denise Gregory" />
+		<person-name value="Edgar Crisostomo" />
+		<person-name value="Evelyn Garcia" />
+		<person-name value="Nathan Ellis" />
+		<person-name value="Brian Cody" />
+		<person-name value="Mary Hirn" />
+		<person-name value="Al Haldemann" />
+		<person-name value="Loretta Thomas" />
+		<person-name value="Beth Miller" />
+		<person-name value="Edward Bliese" />
+		<person-name value="Bruce Franke" />
+		<person-name value="Robert Laloggia" />
+		<person-name value="Chris Sundberg" />
+		<person-name value="Frank Di Pierro" />
+		<person-name value="Ron Johnson" />
+		<person-name value="Dushan Novakovich" />
+		<person-name value="Clair Steele" />
+		<person-name value="Joe Cifaldi" />
+		<person-name value="Jennifer Lorbeck" />
+		<person-name value="Eddie Hintz" />
+		<person-name value="Reginia Thomas" />
+		<person-name value="Elmer Brow" />
+		<person-name value="Sandra Blunt" />
+		<person-name value="Amy Lentz" />
+		<person-name value="Anthony Holmgren" />
+		<person-name value="Frank Krawczyk" />
+		<person-name value="James Silkworth" />
+		<person-name value="Joseph Alioto" />
+		<person-name value="Alessandra Kucharski" />
+		<person-name value="Aaron Wolfe" />
+		<person-name value="Evelyn Clinton" />
+		<person-name value="William Hickson" />
+		<person-name value="Jeanne Marak" />
+		<person-name value="Sally Krueger" />
+		<person-name value="Ernest Coletti" />
+		<person-name value="Fred Luehrs" />
+		<person-name value="Kelly Youngs" />
+		<person-name value="Sheldon Burchman" />
+		<person-name value="Randy Jorden" />
+		<person-name value="Dale Morrell" />
+		<person-name value="Dean Gluege" />
+		<person-name value="Ralph Radske" />
+		<person-name value="Michael Lucus" />
+		<person-name value="Charles Emery" />
+		<person-name value="Kelly Huckaby" />
+		<person-name value="Craig Jeffords" />
+		<person-name value="Tony Hudy" />
+		<person-name value="Dorothy Piatek" />
+		<person-name value="Allison Nowakowski" />
+		<person-name value="Rachel Heron" />
+		<person-name value="Jean Backes" />
+		<person-name value="Colleen Lane" />
+		<person-name value="Paul Bockay" />
+		<person-name value="Mike Halder" />
+		<person-name value="Scott Kaszuba" />
+		<person-name value="Martin Coello" />
+		<person-name value="Heidi Miller" />
+		<person-name value="Jill Anglin" />
+		<person-name value="Gerardo Marinez" />
+		<person-name value="Allan Schwister" />
+		<person-name value="Roy Sweeny" />
+		<person-name value="Jeff Teplin" />
+		<person-name value="Tracy Kilmar" />
+		<person-name value="Don Allen" />
+		<person-name value="Larry Ponda" />
+		<person-name value="James Hoppe" />
+		<person-name value="Jennifer Proctor" />
+		<person-name value="David Coen" />
+		<person-name value="Harry Martin" />
+		<person-name value="Elizabeth Marshell" />
+		<person-name value="John Durst" />
+		<person-name value="Alex Krol" />
+		<person-name value="Daniel Thomas" />
+		<person-name value="James Barnard" />
+		<person-name value="Barry Evans" />
+		<person-name value="Brian Donovan" />
+		<person-name value="Dalen Kruse" />
+		<person-name value="Hartmut Prochaska" />
+		<person-name value="Jarred McCaffrey" />
+		<person-name value="Jason Slack" />
+		<person-name value="Keyur Thadeshwar" />
+		<person-name value="Jani Patokallio" />
+		<person-name value="Mihaly Gyulai" />
+																																																																		
+	</person-name-list>
+
+</people-configuration>

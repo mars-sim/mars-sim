@@ -44,6 +44,7 @@ public class Mars implements Serializable {
     private transient MalfunctionFactory malfunctionFactory; // The malfunction factory
     private transient HistoricalEventManager eventManager; // All historical info.
     private transient Thread clockThread;
+    private transient SimulationConfig configuration; // The simulation configuration.
 
     // Persistent Data members
     private String stateFile; // Name of file to load/store this simulation.
@@ -57,8 +58,8 @@ public class Mars implements Serializable {
     /** Constructs a Mars object */
     public Mars(SimulationProperties initProps) {
 
-	// Initialize transient properties
-	initializeTransients(initProps);
+		// Initialize transient properties
+		initializeTransients(initProps);
 
         // Initialize the Medical conditions
         medicalManager = new MedicalManager(properties);
@@ -91,6 +92,13 @@ public class Mars implements Serializable {
         // Initialize simulation properties
 	    if (initProps != null) properties = initProps;
 	    else properties = new SimulationProperties();
+
+		try {
+			configuration = new SimulationConfig();
+		}
+		catch (Exception e) {
+			System.out.println("Configuration error: " + e.getMessage());
+		}
 
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
