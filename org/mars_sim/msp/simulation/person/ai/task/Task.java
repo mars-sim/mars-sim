@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.77 2004-08-25
+ * @version 2.77 2004-09-08
  * @author Scott Davis
  */
 
@@ -226,7 +226,7 @@ public abstract class Task implements Serializable, Comparable {
     		if (effectiveStressModifier < 0D) effectiveStressModifier = 0D;
     	}
     	
-    	condition.setStress(condition.getStress() + effectiveStressModifier);
+    	condition.setStress(condition.getStress() + (effectiveStressModifier * time));
     }
     
     /**
