@@ -35,7 +35,7 @@ class ExitAirlock extends Task implements Serializable {
 	description = "Exiting " + entity.getName() + " for EVA";
         this.entity = entity;
 
-	// System.out.println(person.getName() + " is starting to exit airlock of " + entity.getName());
+	System.out.println(person.getName() + " is starting to exit airlock of " + entity.getName());
     }
 
     /** 
@@ -55,8 +55,12 @@ class ExitAirlock extends Task implements Serializable {
 	        UnitIterator i = evaSuits.iterator();
 	        while (i.hasNext() && !hasSuit) {
 	            EVASuit suit = (EVASuit) i.next();
-		    if (suit.isFullyLoaded() && suit.lifeSupportCheck()) {
-		        // System.out.println(person.getName() + " taking EVA suit from " + entity.getName());
+		    boolean goodSuit = true;
+	            if (!suit.isFullyLoaded()) goodSuit = false;
+	            if (!suit.lifeSupportCheck()) goodSuit = false;
+	            if (suit.getMalfunctionManager().hasMalfunction()) goodSuit = false;
+		    if (goodSuit) {
+		        System.out.println(person.getName() + " taking EVA suit from " + entity.getName());
 		        if (inv.takeUnit(suit, person)) hasSuit = true;
 		    }
 	        }
@@ -65,7 +69,7 @@ class ExitAirlock extends Task implements Serializable {
 
 	// If person still doesn't have an EVA suit, end task.
 	if (!hasSuit) {
-            // System.out.println(person.getName() + " does not have an EVA suit, ExitAirlock ended");
+            System.out.println(person.getName() + " does not have an EVA suit, ExitAirlock ended");
 	    done = true;
 	    return timeLeft;
 	}
@@ -121,11 +125,12 @@ class ExitAirlock extends Task implements Serializable {
 	int goodSuits = 0;
 	UnitIterator i = evaSuits.iterator();
         while (i.hasNext()) {
-	    // System.out.println("Checking EVA suit");
 	    EVASuit suit = (EVASuit) i.next();
-	    // System.out.println("EVA suit.isFullyLoaded(): " + suit.isFullyLoaded());
-	    // System.out.println("EVA suit.lifeSupportCheck(): " + suit.lifeSupportCheck());
-	    if (suit.isFullyLoaded() && suit.lifeSupportCheck()) goodSuits++;
+	    boolean goodSuit = true;
+	    if (!suit.isFullyLoaded()) goodSuit = false;
+	    if (!suit.lifeSupportCheck()) goodSuit = false;
+	    if (suit.getMalfunctionManager().hasMalfunction()) goodSuit = false;
+	    if (goodSuit) goodSuits++;
 	}
 
         // System.out.println(entity.getName() + " has " + goodSuits + " good EVA suits.");

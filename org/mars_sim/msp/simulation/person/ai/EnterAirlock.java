@@ -35,7 +35,7 @@ class EnterAirlock extends Task implements Serializable {
 	description = "Entering " + entity.getName() + " from EVA";
         this.entity = entity;
 
-	// System.out.println(person.getName() + " is starting to enter " + entity.getName());
+	System.out.println(person.getName() + " is starting to enter " + entity.getName());
     }
 
     /** 
@@ -94,7 +94,7 @@ class EnterAirlock extends Task implements Serializable {
 	suitInv.addResource(Inventory.WATER, takenWater);
 
 	// Return suit to entity's inventory.
-	// System.out.println(person.getName() + " putting away EVA suit into " + entity.getName());
+	System.out.println(person.getName() + " putting away EVA suit into " + entity.getName());
 	personInv.takeUnit(suit, (Unit) entity);
     }
 

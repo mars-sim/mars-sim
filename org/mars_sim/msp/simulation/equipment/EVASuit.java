@@ -164,6 +164,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         Unit container = getContainerUnit();
 	if (container instanceof Person) malfunctionManager.activeTimePassing(time);
 	malfunctionManager.timePassing(time);
+	if (malfunctionManager.hasMalfunction()) {
+	    System.out.println("EVA Suit has malfunction: " + malfunctionManager.getMostSeriousMalfunction().getName());
+	}
     }
 
     /**

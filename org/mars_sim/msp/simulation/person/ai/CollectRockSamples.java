@@ -150,7 +150,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
 
         time = enterAirlock(time, rover);
 
-	if (!enteredAirlock) {
+	if (enteredAirlock) {
 	    double rockSamples = person.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
 
 	    // Load rock samples into rover.
@@ -180,7 +180,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         boolean result = true;
 
 	// Check if person can exit the rover.
-	if (!ExitRoverEVA.canExitRover(person, rover)) result = false;
+	if (!ExitAirlock.canExitAirlock(person, rover)) result = false;
 
 	// Check if it is night time outside.
 	if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) == 0) result = false;

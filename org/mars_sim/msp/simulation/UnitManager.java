@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-05-08
  * @author Scott Davis
  */
 
@@ -44,6 +44,9 @@ public class UnitManager implements Serializable {
 
         // Create people
         createPeople();
+
+	// Add equipment in inventories.
+	addEquipment();
     }
 
     /** Creates initial settlements from XML config file */
@@ -66,6 +69,18 @@ public class UnitManager implements Serializable {
         PeopleXmlReader peopleReader = new PeopleXmlReader(this, mars);
         peopleReader.parse();
         units.mergePeople(peopleReader.getPeople());
+    }
+
+    /** Adds all equipment in inventories. */
+    private void addEquipment() {
+	UnitIterator i = units.iterator();
+	EquipmentCollection allEquipment = new EquipmentCollection();
+	while (i.hasNext()) {
+	    UnitCollection equipment = i.next().getInventory().getUnitsOfClass(Equipment.class);
+	    UnitIterator e = equipment.iterator();
+	    while (e.hasNext()) allEquipment.add((Equipment) e.next());
+	}
+	units.mergeEquipment(allEquipment);
     }
 
     /** Notify all the units that time has passed. 

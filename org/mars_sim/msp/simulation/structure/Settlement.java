@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-04-29
+ * @version 2.74 2002-05-08
  * @author Scott Davis
  */
 
@@ -113,7 +113,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
 
 	// Adds enough EVA suits for inhabitant capacity.
 	for (int x=0; x < getPopulationCapacity(); x++) 
-	    inventory.addUnit(new EVASuit(location, mars));
+            inventory.addUnit(new EVASuit(location, mars));
     }
 	
     /** Returns the facility manager for the settlement

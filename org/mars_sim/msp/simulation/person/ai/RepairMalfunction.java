@@ -65,8 +65,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         // Total probabilities for all malfunctionable entities in person's local.
         Iterator i = MalfunctionFactory.getMalfunctionables(person);
         while (i.hasNext()) {
-            MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-            if (manager.hasNormalMalfunction()) result = 50D;
+            // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
+	    Malfunctionable entity = (Malfunctionable) i.next();
+	    MalfunctionManager manager = entity.getMalfunctionManager();
+            if (manager.hasNormalMalfunction()) {
+		if (entity instanceof EVASuit) System.out.println(person.getName() + " sees EVA Suit normal malfunction: " + manager.getMostSeriousNormalMalfunction().getName());   
+		result = 50D;
+	    }
         }
 
         // Effort-driven task modifier.

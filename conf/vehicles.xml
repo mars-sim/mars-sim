@@ -13,90 +13,90 @@
 
     </EXPLORER_ROVER>
 
-    <EXPLORER_ROVER>
-        <NAME>Osprey</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Dune Runner</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Wind Runner</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Sand Dancer</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Nomad</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Spice Trader</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Solitude</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Sandstorm</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Martian Escape</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Odyssey</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Red Mariner</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Dust Devil</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Windstorm</NAME>
-    </EXPLORER_ROVER>
-    <EXPLORER_ROVER>
-        <NAME>Desertfarer</NAME>
-    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Fantasia</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Osprey</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Oasis</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Dune Runner</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Sun Dancer</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Wind Runner</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Desert Fox</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Sand Dancer</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Serenity</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Nomad</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Gypsea</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Spice Trader</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Martian Cloud</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Solitude</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Sand Spirit</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Sandstorm</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Dust Sprite</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Martian Escape</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Phobos Drifter</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Odyssey</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Deimos Tide</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Red Mariner</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Shooting Star</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Dust Devil</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Desert Star</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Windstorm</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Drift Wood</NAME>
     </TRANSPORT_ROVER>
+    <EXPLORER_ROVER>
+        <NAME>Desertfarer</NAME>
+    </EXPLORER_ROVER>
     <TRANSPORT_ROVER>
         <NAME>Dream Chaser</NAME>
     </TRANSPORT_ROVER>
