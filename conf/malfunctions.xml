@@ -259,7 +259,7 @@
 	<!-- EVA suit tear. -->
 	<malfunction name="Suit Tear">
 		<severity value="70" />
-		<probability value="100.0" />
+		<probability value="50.0" />
 		<emergency-repair-time value="1.0" />
 		<repair-time value="20.0" />
 		<entity-list>
