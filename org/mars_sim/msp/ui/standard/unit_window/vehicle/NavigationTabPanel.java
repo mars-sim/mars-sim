@@ -1,22 +1,36 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.75 2004-02-12
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.vehicle;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import javax.swing.*;
-import javax.swing.border.*;
-import org.mars_sim.msp.simulation.*;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.ui.standard.ImageLoader;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
 /** 
@@ -102,7 +116,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         // Prepare speed label
         speedCache = vehicle.getSpeed();
-        speedLabel = new JLabel("Speed: " + speedCache + " kph.", JLabel.LEFT);
+        speedLabel = new JLabel("Speed: " + formatter.format(speedCache) + " kph.", JLabel.LEFT);
         infoLabelPanel.add(speedLabel);
         
         // Prepare elevation label if ground vehicle
