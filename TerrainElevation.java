@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * SurfaceTerrain.java
+ * TerrainElevation.java
  * @version 2.70 2000-03-15
  * @author Scott Davis
  */
@@ -8,37 +8,58 @@
 import java.awt.*;
 import java.io.*;
 
-/** The SurfaceTerrain class represents the surface terrain of the
+/** The TerrainElevation class represents the surface terrain of the
  *  virtual Mars. It can provide information about elevation and
  *  terrain ruggedness at any location on the surface of virtual Mars.
  */
-public class SurfaceTerrain {
+public class TerrainElevation {
 	
     private RandomAccessFile map;    // File containing elevation data for virtual Mars.
     private int[] index;             // An cached array for row count indexing of the elevation data.
     private long[] sum;              // An cached array to help find rows of the elevation data.
-    
-    public SurfaceTerrain(String topoData, String topoIndex, String topoSum) {
+
+    // constants
+    protected final static int mapHeight = 1440;          // Height of source map in pixels.
+
+    public TerrainElevation(String topoData, String topoIndex, String topoSum) {
+
 	try {
 	    map = new RandomAccessFile(topoData, "r");
-			
-	    BufferedInputStream indexBuff = new BufferedInputStream(new FileInputStream(topoIndex));
+	}
+	catch(IOException e) {
+	    System.out.println("Could not open " + topoData);
+	    System.exit(0);
+	}
+	loadArrays(topoIndex, topoSum);
+    }
+
+    // note that this functionality is duplicated in TopoMarsMap.java
+    private void loadArrays(String indexFile, String sumFile) {
+	try {
+	    // Load index array
+	    BufferedInputStream indexBuff =
+		new BufferedInputStream(new FileInputStream(indexFile));
 	    DataInputStream indexReader = new DataInputStream(indexBuff);
-	    index = new int[1440];
-	    for (int x=0; x < 1440; x++) index[x] = indexReader.readInt();
+	    index = new int[mapHeight];
+	    for (int x=0; x < mapHeight; x++) index[x] = indexReader.readInt();
 	    indexReader.close();
 	    indexBuff.close();
-	    
-	    BufferedInputStream sumBuff = new BufferedInputStream(new FileInputStream(topoSum));
+			
+	    // Load sum array
+	    BufferedInputStream sumBuff =
+		new BufferedInputStream(new FileInputStream(sumFile));
 	    DataInputStream sumReader = new DataInputStream(sumBuff);
-	    sum = new long[1440];
-	    for (int x=0; x < 1440; x++) sum[x] = sumReader.readLong();
+	    sum = new long[mapHeight];
+	    for (int x=0; x < mapHeight; x++) sum[x] = sumReader.readLong();
 	    sumReader.close();
 	    sumBuff.close();
 	}
-	catch(IOException e) { System.out.println(e.toString()); }
+	catch(IOException e) {
+	    System.out.println(e);
+	    System.exit(0);
+	}
     }
-	
+
     protected void finalize() throws Throwable {
 	// close large file
 	map.close();

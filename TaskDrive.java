@@ -359,7 +359,7 @@ class TaskDrive extends Task {
 
 		// Determine current elevation and update vehicle
 		
-		double elevation = mars.getSurfaceTerrain().getElevation(startingLocation);
+		double elevation = mars.getElevationMap().getElevation(startingLocation);
 		vehicle.setElevation(elevation);
 		
 		// Determine vehicle's speed in given direction
@@ -504,7 +504,7 @@ class TaskDrive extends Task {
 	
 		// Determine the terrain grade in the vehicle's current direction
 		
-		double terrainGrade = mars.getSurfaceTerrain().determineTerrainDifficulty(startingLocation, direction);
+		double terrainGrade = mars.getElevationMap().determineTerrainDifficulty(startingLocation, direction);
 		vehicle.setTerrainGrade(terrainGrade);
 
 		// Get the driver's driving skill

@@ -23,7 +23,7 @@ public abstract class GroundVehicle extends Vehicle {
 	// initialize variables
 	setTerrainHandlingCapability(0D);  // Default terrain capability
 	setTerrainGrade(0D);
-	elevation = mars.getSurfaceTerrain().getElevation(location);
+	elevation = mars.getElevationMap().getElevation(location);
 		
 	// initialize potential vehicle failures
 	addPotentialFailure("Fuel Leak");

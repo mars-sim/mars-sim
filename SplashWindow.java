@@ -9,12 +9,15 @@ import java.awt.*;
 import javax.swing.*;
 
 /** The SplashWindow class is a splash screen shown when the project
- *  is loading. It's started as a new thread.
+ *  is loading. It's started as a new thread. It fails silently if the
+ *  splash image file is not found.
  */
 public class SplashWindow extends JWindow implements Runnable {
 
+    private static final String splashFile = "SplashImage.jpg";
+
     public SplashWindow() {
-	//this.start();
+	//start();
 	run();
     }
 
@@ -32,7 +35,7 @@ public class SplashWindow extends JWindow implements Runnable {
 	setBackground(Color.black);
 		
 	// Create ImageIcon from SplashImage.jpg.
-	ImageIcon splashIcon = new ImageIcon("SplashImage.jpg");
+	ImageIcon splashIcon = new ImageIcon(splashFile);
 		
 	// Put image on label and add it to the splash window.
 	JLabel splashLabel = new JLabel(splashIcon);
@@ -51,5 +54,10 @@ public class SplashWindow extends JWindow implements Runnable {
 		
 	// Display the splash window.
 	setVisible(true);
+    }
+    
+    /** for component testing */
+    public static void main(String argv[]) {
+	SplashWindow s = new SplashWindow();
     }
 }

@@ -22,8 +22,8 @@ import javax.swing.*;
 public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
     private NavigatorWindow navWindow;        // Navigator Tool Window
-    private SurfaceMap marsSurface;           // Surface image object
-    private SurfaceMap topoSurface;           // Topographical image object
+    private Map surfMap;                      // Surface image object
+    private Map topoMap;                      // Topographical image object
     private boolean wait;                     // True if map is in pause mode
     private Coordinates centerCoords;         // Spherical coordinates for center point of map
     private Thread showThread;                // Refresh thread
@@ -43,6 +43,12 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
 	this.width = width;
 	this.height = height;
+	this.navWindow = navWindow;
+	wait = false;
+	recreate = true;
+	topo = false;
+	labels = true;
+	centerCoords = new Coordinates(Math.PI / 2D, 0D);
 		
 	// Set component size
 	setPreferredSize(new Dimension(width, height));
@@ -53,26 +59,18 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	addMouseListener(this);
 
 	// Create surface objects for both real and topographical modes
-	//marsSurface = new CannedMarsMap("surface", this);
-	marsSurface = new USGSMarsMap(this);
-	topoSurface = new CannedMarsMap("topo", this);
+	//surfMap = new SurfMarsMap(this);
+	surfMap = new USGSMarsMap(this);
+	topoMap = new TopoMarsMap(this);
 
-	// Initialize global variables
-	centerCoords = new Coordinates(Math.PI / 2D, 0D);
-	wait = false;
-	recreate = true;
-	topo = false;
-	labels = true;
-	this.navWindow = navWindow;
-		
 	// Load vehicle and settlement images
-	vehicleSymbol = (Toolkit.getDefaultToolkit()).getImage("VehicleSymbol.gif"); 
-	topoVehicleSymbol = (Toolkit.getDefaultToolkit()).getImage("VehicleSymbolBlack.gif");
-	settlementSymbol = (Toolkit.getDefaultToolkit()).getImage("SettlementSymbol.gif");
-	topoSettlementSymbol = (Toolkit.getDefaultToolkit()).getImage("SettlementSymbolBlack.gif");
+	vehicleSymbol = Toolkit.getDefaultToolkit().getImage("VehicleSymbol.gif"); 
+	topoVehicleSymbol = Toolkit.getDefaultToolkit().getImage("VehicleSymbolBlack.gif");
+	settlementSymbol = Toolkit.getDefaultToolkit().getImage("SettlementSymbol.gif");
+	topoSettlementSymbol = Toolkit.getDefaultToolkit().getImage("SettlementSymbolBlack.gif");
 	
-	// initially show real surface map
-	showReal();
+	// initially show real surface map (versus topo map)
+	showSurf();
     }
 	
     /** Change label display flag */
@@ -80,8 +78,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	this.labels = labels;
     }
 
-    /** Displays real surface */
-    public void showReal() {
+    /** Displays real surface map */
+    public void showSurf() {
 	if (topo) {
 	    wait = true;
 	    recreate = true;
@@ -90,7 +88,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	showMap(centerCoords);
     }
 
-    /** Displays topographical surface */
+    /** Displays topographical map */
     public void showTopo() {
 	if (!topo) {
 	    wait = true;
@@ -112,7 +110,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     }
 
     /** updates the current display */
-    public void updateDisplay() {
+    private void updateDisplay() {
 	if ((showThread == null) || (!showThread.isAlive())) {
 	    // we need to create the display thread
 	    showThread = new Thread(this, "Map");
@@ -139,9 +137,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	    if (recreate) {
 		// Regenerate surface if recreate is true, then display
 		if (topo) {
-		    topoSurface.drawMap(centerCoords);
+		    topoMap.drawMap(centerCoords);
 		} else {
-		    marsSurface.drawMap(centerCoords);
+		    surfMap.drawMap(centerCoords);
 		}
 		recreate = false;
 		repaint();
@@ -179,7 +177,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	    g.fillRect(0, 0, width, height);
 	    
 	    // Paint topo or real surface image
-	    SurfaceMap map = topo ? topoSurface : marsSurface;
+	    Map map = topo ? topoMap : surfMap;
 			
 	    if (map.isImageDone()) {
 		mapImage = map.getMapImage();

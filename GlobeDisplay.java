@@ -47,11 +47,11 @@ class GlobeDisplay extends JComponent implements Runnable {
 	this.navWindow = navWindow;
 		
 	// Initially show real surface globe
-	showReal();
+	showSurf();
     }
 
     /** Displays real surface globe, regenerating if necessary */
-    public void showReal() {
+    public void showSurf() {
 	if (topo) { recreate = true; }
 	topo = false;
 	showGlobe(centerCoords);
@@ -74,7 +74,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     }
 
     /** Starts display update thread (or creates a new one if necessary) */
-    public void updateDisplay() {
+    private void updateDisplay() {
 	if ((showThread == null) || (!showThread.isAlive())) {
 	    showThread = new Thread(this, "Globe");
 	    showThread.start();

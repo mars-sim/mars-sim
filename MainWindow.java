@@ -128,8 +128,10 @@ public class MainWindow extends JFrame implements WindowListener {
 	return mars.getPeopleInfo();
     }
     
-    /** WindowListener methods overridden */
-    public void windowClosing(WindowEvent event) { System.exit(0); }
+    // WindowListener methods overridden
+    public void windowClosing(WindowEvent event) {
+	System.exit(0);
+    }
     public void windowClosed(WindowEvent event) {}
     public void windowDeiconified(WindowEvent event) {}
     public void windowIconified(WindowEvent event) {}

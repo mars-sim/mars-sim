@@ -184,8 +184,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, ItemL
 	    map.showTopo();
 	} else {
 	    legend.showMap();
-	    globeNav.showReal();
-	    map.showReal();
+	    globeNav.showSurf();
+	    map.showSurf();
 	}
     }
 

@@ -18,7 +18,7 @@ import javax.swing.*;
  *  @see http://www-pdsimage.wr.usgs.gov/PDS/public/mapmaker/faq.htm
  *  Be sure to see the FAQ on the "face".
  */
-public class USGSMarsMap implements SurfaceMap {
+public class USGSMarsMap implements Map {
 
     private static final String psdUrl = "http://www-pdsimage.wr.usgs.gov";
     private static final String psdCgi = "/cgi-bin/panpic.cgi";
@@ -34,6 +34,23 @@ public class USGSMarsMap implements SurfaceMap {
 
     public USGSMarsMap(Component comp) {
 	component = comp;
+    }
+
+    public void drawMap(Coordinates newCenter) {
+	retrieveImage(3, // pixels per degree
+		      90 - Math.toDegrees(newCenter.getPhi()),
+		      360 - Math.toDegrees(newCenter.getTheta()));
+	waitForMapLoaded();
+    }
+
+    /** determines if a requested map is complete */
+    public boolean isImageDone() {
+	return imageDone;
+    }
+
+    /** Returns map image */
+    public Image getMapImage() {
+	return img;
     }
 
     /** requests an image from the PDS web server.
@@ -81,22 +98,6 @@ public class USGSMarsMap implements SurfaceMap {
 	} catch (IOException e) {
 	    System.out.println("Weirdness" + e);
 	}
-    }
-
-    public void drawMap(Coordinates newCenter) {
-	retrieveImage(3, // pixels per degree
-		      90 - Math.toDegrees(newCenter.getPhi()),
-		      360 - Math.toDegrees(newCenter.getTheta()));
-	waitForMapLoaded();
-    }
-
-    public boolean isImageDone() {
-	return imageDone;
-    }
-
-    /** Returns map image */
-    public Image getMapImage() {
-	return img;
     }
 
     private void waitForMapLoaded() {

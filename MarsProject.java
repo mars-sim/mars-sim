@@ -25,10 +25,10 @@ public class MarsProject {
 		
 	// create virtual mars
 	VirtualMars mars = new VirtualMars();
-		
+	
 	// create main desktop window
 	MainWindow window = new MainWindow(mars);
-		
+
 	// dispose splash window
 	splashWindow.dispose();
 	splashWindow = null;

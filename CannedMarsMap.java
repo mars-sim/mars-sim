@@ -11,83 +11,56 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
-/** The CannedMarsMap class generates the map of the surface of Mars for
- *  the MapDisplay object (that's the main display of the surface). It
- *  can center the map at any set of coordinates.
+/** The CannedMarsMap class reads in data from files on the local
+ *  filesystem in order to generate a map of the surface of Mars for
+ *  the MapDisplay object (that's the main display of the surface).
  */
-public class CannedMarsMap implements SurfaceMap {
+public abstract class CannedMarsMap implements Map {
 
-    private String mapType;                   // Either "surface" or "topo"
     private Image mapImage;                   // Finished image of sphere
     private Coordinates centerCoords;         // Center coordinates
     private boolean imageDone;                // True if image is complete
     private JComponent displayArea;           // Parent display area
-    private int[] index;                      // Map index information
-    private long[] sum;                       // Map sum information
-
-    RandomAccessFile realMap;
-    RandomAccessFile topoMap;
+    // <fragile>
+    protected static int[] index;             // Map index information
+    protected static long[] sum;              // Map sum information
+    // </fragile>
 
     private int viewHeight = 300;
     private int viewWidth = 300;
 
     // constants
-    private final static int mapHeight = 1440;          // Height of source map in pixels.
-    private final static int mapWidth = mapHeight * 2;  // Width of source map in pixels.
+    protected final static int mapHeight = 1440;          // Height of source map in pixels.
+    protected final static int mapWidth = mapHeight * 2;  // Width of source map in pixels.
 
-    public CannedMarsMap(String mapType, JComponent displayArea) {
-
-	// Initialize data members
-	this.mapType = mapType;
+    public CannedMarsMap(JComponent displayArea) {
 	this.displayArea = displayArea;
 	imageDone = false;
 	centerCoords = new Coordinates(0D, 0D);
-	// <ungeneral>
-	loadArrays("TopoMarsMap.index", "TopoMarsMap.sum");
-	// open map files
-	try {
-	    topoMap = new RandomAccessFile("TopoMarsMap.dat", "r");
-	    realMap = new RandomAccessFile("SurfaceMarsMap.dat", "r");
-	} catch (FileNotFoundException ex) {
-	    System.out.println("Could not find TopoMarsMap.dat and SurfaceMarsMap.dat");
-	    System.exit(0);
-	}
-	// </ungeneral>
     }
 
-    /** loads the index array and sum array */
-    private void loadArrays(String indexFile, String sumFile) {
-		
-	try {
-	    // Load index array
-	    BufferedInputStream indexBuff =
-		new BufferedInputStream(new FileInputStream(indexFile));
-	    DataInputStream indexReader = new DataInputStream(indexBuff);
-	    index = new int[mapHeight];
-	    for (int x=0; x < mapHeight; x++) index[x] = indexReader.readInt();
-	    indexReader.close();
-	    indexBuff.close();
-			
-	    // Load sum array
-	    BufferedInputStream sumBuff =
-		new BufferedInputStream(new FileInputStream(sumFile));
-	    DataInputStream sumReader = new DataInputStream(sumBuff);
-	    sum = new long[mapHeight];
-	    for (int x=0; x < mapHeight; x++) sum[x] = sumReader.readLong();
-	    sumReader.close();
-	    sumBuff.close();
-	}
-	catch(IOException e) {
-	    System.out.println(e.toString());
-	}
-    }
-
-    /** Creates a 2D map at a given center point */
+    /** creates a 2D map at a given center point */
     public void drawMap(Coordinates newCenter) {
 	createMapImage(newCenter);
 	waitForMapLoaded();
     }
 
+    /** determines if a requested map is complete */
+    public boolean isImageDone() {
+	return imageDone;
+    }
+
+    /** returns constructed map image */
+    public Image getMapImage() {
+	return mapImage;
+    }
+
+    abstract public RandomAccessFile getMapFile();
+
+    /** constructs a rendering of the map centered about the given
+     *  coordinates. The map is written to the private variable
+     *  mapImage and can be obtained using the getMapImage() method.
+     */
     private void createMapImage(Coordinates newCenter) {
 	// Adjust coordinates
 	Coordinates adjNewCenter = new Coordinates(newCenter.getPhi(), newCenter.getTheta() + Math.PI);
@@ -122,16 +95,7 @@ public class CannedMarsMap implements SurfaceMap {
 	long summer;
 
 	try {
-	    String mapName;
-	    RandomAccessFile map;
-
-	    if (mapType.equals("surface")) { 
-		mapName = new String("SurfaceMarsMap");
-		map = realMap;
-	    } else {
-		mapName = new String("TopoMarsMap");
-		map = topoMap;
-	    }
+	    RandomAccessFile mapFile = getMapFile();
 
 	    // Initialize row variables
 	    double start_row = centerCoords.getPhi() - PI_piece;
@@ -154,15 +118,15 @@ public class CannedMarsMap implements SurfaceMap {
 		    array_y_old = array_y;
 		    circum = index[array_y];
 		    summer = sum[array_y];
-		    map.seek((long)(summer * 3));
-		    map.read(line_data, 0, (circum * 3));
+		    mapFile.seek((long)(summer * 3));
+		    mapFile.read(line_data, 0, (circum * 3));
 		    row_iterate_flag = true;
 		}
 
 		// If new row, read row info from files
 		if (array_y != array_y_old) {
 		    circum = index[array_y];
-		    map.read(line_data, 0, (circum * 3));
+		    mapFile.read(line_data, 0, (circum * 3));
 		    row_iterate_flag = true;
 		} else { 
 		    if (row_flag == false) {
@@ -249,17 +213,9 @@ public class CannedMarsMap implements SurfaceMap {
 	    mt.waitForID(0);
 	}
 	catch (InterruptedException e) {
-	    System.out.println("Media Tracker Error " + e);
+	    System.out.println("MediaTracker interrupted " + e);
 	}
 	imageDone = true;
     }
 	
-    public boolean isImageDone() {
-	return imageDone;
-    }
-
-    /** Returns map image */
-    public Image getMapImage() {
-	return mapImage;
-    }
 }

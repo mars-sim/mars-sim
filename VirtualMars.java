@@ -13,14 +13,15 @@ import java.util.*;
  */
 public class VirtualMars {
 
-    private SurfaceTerrain surface;     // Surface Terrain of Mars
-    private UnitManager units;          // Unit controller
-    private MasterClock masterClock;    // Master clock for virtual world
+    private TerrainElevation elevationMap; // Terrain elevation of Mars
+    private UnitManager units;             // Unit controller
+    private MasterClock masterClock;       // Master clock for virtual world
     
     public VirtualMars() {
 
-	// initialize surface terrain
-	surface = new SurfaceTerrain("TopoMarsMap.dat", "TopoMarsMap.index", "TopoMarsMap.sum");
+	// initialize terrain
+	elevationMap =
+	    new TerrainElevation("TopoMarsMap.dat", "TopoMarsMap.index", "TopoMarsMap.sum");
 		
 	// initialize all units
 	units = new UnitManager(this);
@@ -35,9 +36,9 @@ public class VirtualMars {
 	units.takeAction(seconds);
     }
 	
-    /** Returns surface terrain object */
-    public SurfaceTerrain getSurfaceTerrain() {
-	return surface;
+    /** Returns terrain elevation object */
+    public TerrainElevation getElevationMap() {
+	return elevationMap;
     }
 	
     //**************************** UI Accessor Methods ****************************
