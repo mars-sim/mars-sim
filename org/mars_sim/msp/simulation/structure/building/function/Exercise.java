@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exercise.java
- * @version 2.75 2004-04-01
+ * @version 2.76 2004-05-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -14,15 +14,70 @@ import org.mars_sim.msp.simulation.structure.building.*;
  */
 public class Exercise extends Function implements Serializable {
         
-	private static final String NAME = "Exercise";
+	public static final String NAME = "Exercise";
+    
+    // Data members
+    private int exercisers;
+    private int exerciserCapacity;
     
 	/**
 	 * Constructor
 	 * @param building the building this function is for.
+	 * @throws BuildingException if error in constructing function.
 	 */
-	public Exercise(Building building) {
+	public Exercise(Building building) throws BuildingException {
 		// Use Function constructor.
 		super(NAME, building);
+		
+		BuildingConfig config = building.getBuildingManager().getSettlement()
+			.getMars().getSimulationConfiguration().getBuildingConfiguration();
+		
+		try {
+			this.exerciserCapacity = config.getExerciseCapacity(building.getName());
+		}
+		catch (Exception e) {
+			throw new BuildingException("Exercise.constructor: " + e.getMessage());
+		}
+	}
+	
+	/**
+	 * Gets the number of people who can use the exercise facility at once.
+	 * @return number of people.
+	 */
+	public int getExerciserCapacity() {
+		return exerciserCapacity;
+	}
+	
+	/**
+	 * Gets the current number of people using the exercise facility.
+	 * @return number of people.
+	 */
+	public int getNumExercisers() {
+		return exercisers;
+	}
+	
+	/**
+	 * Adds a person to the exercise facility.
+	 * @throws BuildingException if person would exceed exercise facility capacity.
+	 */
+	public void addExerciser() throws BuildingException {
+		exercisers++;
+		if (exercisers > exerciserCapacity) {
+			exercisers = exerciserCapacity;
+			throw new BuildingException("Exercise facility in use.");
+		}
+	}
+	
+	/**
+	 * Removes a person from the exercise facility.
+	 * @throws BuildingException if nobody is using the exercise facility.
+	 */
+	public void removeExerciser() throws BuildingException {
+		exercisers--;
+		if (exercisers < 0) {
+			exercisers = 0;
+			throw new BuildingException("Exercise facility empty.");
+		}
 	}
 	
 	/**
