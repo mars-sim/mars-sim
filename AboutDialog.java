@@ -1,5 +1,5 @@
 //******************* About Mars Simulation Project Window ****************
-// Last Modified: 5/23/00
+// Last Modified: 5/25/00
 
 // The AboutDialog is an information window that is called from the "About The Mars Simulation Project"
 // item in the MainWindowMenu.  It provides information about the project, credit to contributors and the GPL license.
@@ -55,6 +55,8 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 			document.insertString(document.getLength(), "  Dan Sepanski\n", null);
 			document.insertString(document.getLength(), "  Joe Wagner\n", null);
 			document.insertString(document.getLength(), "  Tom Zanoni\n\n", null);
+			
+			document.insertString(document.getLength(), "Map images and data courtesy of NASA JPL (www.jpl.nasa.gov) and Malin Space Science Systems (www.msss.com).\n\n", null);
 			
 			document.insertString(document.getLength(), "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License ", null);
 			document.insertString(document.getLength(), "as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n", null);
