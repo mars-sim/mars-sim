@@ -144,6 +144,17 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			}
 		}
 
+		// Add rover to a garage if possible.
+		VehicleMaintenance garage = null;
+		try {
+			if (BuildingManager.getBuilding(rover) == null)
+				BuildingManager.addToRandomBuilding(rover, startingSettlement);
+			Building garageBuilding = BuildingManager.getBuilding(rover);
+			garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+			BuildingManager.addPersonToBuilding(person, garageBuilding);
+		}
+		catch (Exception e) {}		
+
 		// Load the rover with fuel and supplies.
 		// If there isn't enough supplies available, end mission.
 		if (LoadVehicle.isFullyLoaded(rover)) roverLoaded = true;
@@ -164,6 +175,14 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			Person tempPerson = i.next();
 			if (!tempPerson.getLocationSituation().equals(Person.INVEHICLE)) return;
 		}
+
+		// Remove from garage if necessary.
+		try {
+			Building garageBuilding = BuildingManager.getBuilding(rover);
+			garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+			garage.removeVehicle(rover);
+		}
+		catch (Exception e) {}
 
 		// Make final preperations on rover.
 		startingSettlement.getInventory().dropUnit(rover);
@@ -336,9 +355,11 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 
 		// Add rover to a garage if possible.
 		VehicleMaintenance garage = null;
+		Building garageBuilding = null;
 		try {
-			BuildingManager.addToRandomBuilding(rover, startingSettlement);
-			Building garageBuilding = BuildingManager.getBuilding(rover);
+			if (BuildingManager.getBuilding(rover) == null)
+				BuildingManager.addToRandomBuilding(rover, startingSettlement);
+			garageBuilding = BuildingManager.getBuilding(rover);
 			garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
 		}
 		catch (Exception e) {}
@@ -347,8 +368,8 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		if (person.getLocationSituation().equals(Person.INVEHICLE)) {
 			rover.getInventory().takeUnit(person, startingSettlement);
 			try {
-				if ((garage != null) && garage.getBuilding().hasFunction(LifeSupport.NAME)) {
-					LifeSupport lifeSupport = (LifeSupport) garage.getBuilding().getFunction(LifeSupport.NAME);
+				if ((garage != null) && garageBuilding.hasFunction(LifeSupport.NAME)) {
+					LifeSupport lifeSupport = (LifeSupport) garageBuilding.getFunction(LifeSupport.NAME);
 					lifeSupport.addPerson(person);
 				}
 				else BuildingManager.addToRandomBuilding(person, startingSettlement);
@@ -384,7 +405,18 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
 		}
 
-		if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) endMission();
+		if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) {
+			
+			// If rover is in garage, put rover outside.
+			if (garage != null) {
+				try {
+					garage.removeVehicle(rover);
+				}
+				catch (BuildingException e) {}
+			} 
+			
+			endMission();
+		} 
 	}
 	
 	/**

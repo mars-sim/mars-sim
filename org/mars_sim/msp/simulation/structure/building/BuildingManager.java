@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.76 2004-08-06
+ * @version 2.77 2004-09-27
  * @author Scott Davis
  */
  
@@ -164,9 +164,9 @@ public class BuildingManager implements Serializable {
         List openGarages = new ArrayList();
         Iterator i = garages.iterator();
         while (i.hasNext()) {
-            VehicleMaintenance garage = (VehicleMaintenance) i.next();
-            double availableSpace = garage.getVehicleCapacity() - garage.getCurrentVehicleMass();
-            if (availableSpace >= vehicle.getMass()) openGarages.add(garage);
+        	Building garageBuilding = (Building) i.next();
+            VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+            if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) openGarages.add(garage);
         }
         
         if (openGarages.size() > 0) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.76 2004-06-01
+ * @version 2.77 2004-09-29
  * @author Scott Davis
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.simulation.vehicle;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import java.io.Serializable;
 
 /** The GroundVehicle class represents a ground-type vehicle.  It is
@@ -37,12 +36,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
         super(name, settlement);
 
         initGroundVehicleData();
-        
-        // Add to garage at settlement if available.
-        try {
-            BuildingManager.addToRandomBuilding(this, settlement);
-        }
-        catch (Exception e) {}
     }
     
     /** Initialize ground vehicle data */

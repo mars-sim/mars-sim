@@ -384,7 +384,7 @@
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
-			<ground-vehicle-maintenance capacity="50000.0" />
+			<ground-vehicle-maintenance vehicle-capacity="2" />
 			<storage>
 				<resource-storage resource="Methane" capacity="1000.0" />
 			</storage>

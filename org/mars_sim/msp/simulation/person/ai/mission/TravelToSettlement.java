@@ -262,6 +262,17 @@ public class TravelToSettlement extends Mission implements Serializable {
                 else return;
             }
         }
+           
+		// Add rover to a garage if possible.
+		VehicleMaintenance garage = null;
+		try {
+			if (BuildingManager.getBuilding(rover) == null)
+				BuildingManager.addToRandomBuilding(rover, startingSettlement);
+			Building garageBuilding = BuildingManager.getBuilding(rover);
+			garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+			BuildingManager.addPersonToBuilding(person, garageBuilding);
+		}
+		catch (Exception e) {}
                     
         // Load the rover with fuel and supplies.
         // If there isn't enough supplies available, end mission.
@@ -284,6 +295,14 @@ public class TravelToSettlement extends Mission implements Serializable {
             Person tempPerson = i.next();
             if (!tempPerson.getLocationSituation().equals(Person.INVEHICLE)) return;
         }
+        
+		// Remove from garage if necessary.
+		try {
+			Building garageBuilding = BuildingManager.getBuilding(rover);
+			garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+			garage.removeVehicle(rover);
+		}
+		catch (Exception e) {}
 
         // Make final preperations on rover.
         startingSettlement.getInventory().dropUnitOutside(rover);
@@ -367,10 +386,10 @@ public class TravelToSettlement extends Mission implements Serializable {
         VehicleMaintenance garage = null;
         Building garageBuilding = null;
         try {
-            BuildingManager.addToRandomBuilding(rover, destinationSettlement);
+			if (BuildingManager.getBuilding(rover) == null)
+				BuildingManager.addToRandomBuilding(rover, destinationSettlement);
             garageBuilding = BuildingManager.getBuilding(rover);
-            if (garageBuilding != null) 
-            	garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+            garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
         }
         catch (Exception e) {}
         
@@ -414,7 +433,19 @@ public class TravelToSettlement extends Mission implements Serializable {
             Person tempPerson = i.next();
             if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
         }
-        if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) endMission(); 
+        
+        if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) {
+        	
+			// If rover is in garage, put rover outside.
+			if (garage != null) {
+				try {
+					garage.removeVehicle(rover);
+				}
+				catch (BuildingException e) {}
+			} 
+        	
+        	endMission();
+        } 
     }
 
     /** 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.77 2004-08-25
+ * @version 2.77 2004-09-28
  * @author Scott Davis
  */
 
@@ -54,6 +54,25 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         		System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
         	}
         }
+        else {
+        	// If not in a garage, try to add it to a garage with empty space.
+			Settlement settlement = person.getSettlement();
+			Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+			while (j.hasNext()) {
+				try {
+					Building garageBuilding = (Building) j.next();
+					VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+					if (garageTemp.getCurrentVehicleNumber() < garageTemp.getVehicleCapacity()) {
+						garage = garageTemp;
+						garage.addVehicle(vehicle);
+						BuildingManager.addPersonToBuilding(person, garageBuilding);
+					} 
+				}
+				catch (Exception e) {
+					System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
+				}
+			}
+        }
         
         // End task if vehicle or garage not available.
         if ((vehicle == null) || (garage == null)) endTask();    
@@ -73,13 +92,38 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        VehicleIterator i = getAllVehicleCandidates(person).iterator();
-        while (i.hasNext()) {
-            MalfunctionManager manager = i.next().getMalfunctionManager();
-            double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
-            if (entityProb > 50D) entityProb = 50D;
-            result += entityProb;
-        }
+		// Get all vehicles requiring maintenance.
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        	VehicleIterator i = getAllVehicleCandidates(person).iterator();
+        	while (i.hasNext()) {
+            	MalfunctionManager manager = i.next().getMalfunctionManager();
+            	double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
+            	if (entityProb > 50D) entityProb = 50D;
+            	result += entityProb;
+        	}
+		}
+        
+		// Determine if settlement has available space in garages or 
+		// garage has vehicle currently being worked on.
+		boolean garageSpace = false;
+		boolean vehicleMaint = false;
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {	
+			Settlement settlement = person.getSettlement();
+			Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+			while (j.hasNext()) {
+				try {
+					Building building = (Building) j.next();
+					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) garageSpace = true;
+					VehicleIterator h = garage.getVehicles().iterator();
+					while (h.hasNext()) {
+						if (h.next().isReservedForMaintenance()) vehicleMaint = true;
+					}
+				}
+				catch (Exception e) {}
+			}
+		}
+		if (!garageSpace && !vehicleMaint) result = 0D;
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -135,6 +179,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
             // System.out.println(person.getName() + " finished " + description);
             vehicle.setReservedForMaintenance(false);
+            garage.removeVehicle(vehicle);
             endTask();
         }
 
@@ -183,31 +228,15 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @return collection of ground vehicles available for maintenance.
      */
     private static VehicleCollection getAllVehicleCandidates(Person person) {
-        VehicleCollection result = new VehicleCollection();
+		VehicleCollection result = new VehicleCollection();
         
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Settlement settlement = person.getSettlement();
-            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
-            while (i.hasNext()) {
-            	try {
-            		Building building = (Building) i.next();
-                	VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
-                	boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-                	if (!malfunction) {
-                    	VehicleIterator vehicleI = garage.getVehicles().iterator();
-                    	while (vehicleI.hasNext()) {
-                        	Vehicle vehicle = vehicleI.next();
-                        	if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
-                    	}
-                    }
-                }
-                catch (Exception e) {
-                	System.err.println("MaintainGroundVehicleGarage.getAllVehicleCandidates(): " + e.getMessage());
-                }
-            }
-        }
+		VehicleIterator vI = person.getSettlement().getParkedVehicles().iterator();
+		while (vI.hasNext()) {
+			Vehicle vehicle = vI.next();
+			if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
+		}
         
-        return result;
+		return result;
     }
     
     /**
@@ -238,7 +267,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         // Determine which vehicle was picked.
         VehicleIterator i2 = availableVehicles.iterator();
         while (i2.hasNext() && (result == null)) {
-            Vehicle vehicle = i.next();
+            Vehicle vehicle = i2.next();
             MalfunctionManager manager = vehicle.getMalfunctionManager();
             double probWeight = manager.getEffectiveTimeSinceLastMaintenance();
             if (rand < probWeight) result = (GroundVehicle) vehicle;

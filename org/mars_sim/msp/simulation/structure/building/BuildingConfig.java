@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.76 2004-05-03
+ * @version 2.77 2004-09-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -60,6 +60,7 @@ public class BuildingConfig {
 	private static final String GROWING_AREA = "growing-area";
 	private static final String EXERCISE = "exercise";
 	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
+	private static final String VEHICLE_CAPACITY = "vehicle-capacity";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -659,13 +660,13 @@ public class BuildingConfig {
 	/**
 	 * Gets the vehicle capacity of the building.
 	 * @param buildingName the name of the building.
-	 * @return vehicle capacity (kg)
+	 * @return vehicle capacity
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
-	public double getVehicleCapacity(String buildingName) throws Exception {
+	public int getVehicleCapacity(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element maintenanceElement = (Element) buildingElement.getElementsByTagName(GROUND_VEHICLE_MAINTENANCE).item(0);
-		return Double.parseDouble(maintenanceElement.getAttribute(CAPACITY));
+		return Integer.parseInt(maintenanceElement.getAttribute(VEHICLE_CAPACITY));
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.77 2004-09-15
+ * @version 2.77 2004-09-28
  * @author Scott Davis
  */
 
@@ -84,7 +84,7 @@ public class ReserveRover extends Task implements Serializable {
                 
                 boolean isRover = (vehicle instanceof Rover);
                 
-                boolean reservable = !vehicle.isReserved();
+                boolean reservable = !vehicle.isReserved() && !vehicle.isReservedForMaintenance();
                 
                 boolean resourceCapable = true;
                 if (resourceType != null) 
@@ -152,7 +152,8 @@ public class ReserveRover extends Task implements Serializable {
             boolean parked = vehicle.getStatus().equals(Vehicle.PARKED);
             boolean supplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle);
             boolean reserved = vehicle.isReserved();
-            if (parked && resourceCapable && supplies && !reserved) result = true;
+      		boolean maintenance = vehicle.isReservedForMaintenance();
+            if (parked && resourceCapable && supplies && !reserved && !maintenance) result = true;
         }
         
         return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 2.75 2004-04-01
+ * @version 2.77 2004-09-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -17,7 +17,7 @@ import org.mars_sim.msp.simulation.vehicle.*;
  */
 public abstract class VehicleMaintenance extends Function implements Serializable {
         
-    protected double vehicleCapacity;
+    protected int vehicleCapacity;
 	private VehicleCollection vehicles;
         
     /**
@@ -33,22 +33,19 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
     }
         
     /** 
-     * Gets the total mass of vehicles the building can accommodate.
-     * @return vehicle capacity (kg)
+     * Gets the number of vehicles the building can accommodate.
+     * @return vehicle capacity
      */
-    public double getVehicleCapacity() {
+    public int getVehicleCapacity() {
     	return vehicleCapacity;
     }
     
     /** 
-     * Gets the current mass of vehicles in the building.
-     * @return vehicle mass (kg)
+     * Gets the current number of vehicles in the building.
+     * @return number of vehicles
      */
-    public double getCurrentVehicleMass() {
-		double result = 0D;
-		VehicleIterator i = vehicles.iterator();
-		while (i.hasNext()) result += i.next().getMass();
-		return result;
+    public int getCurrentVehicleNumber() {
+		return vehicles.size();
     }
     
     /** 
@@ -63,8 +60,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		// Check if vehicle cannot be added to building.
 		if (vehicles.contains(vehicle)) 
 			throw new BuildingException("Building already contains vehicle.");
-		if (vehicle.getMass() > (getVehicleCapacity() - getCurrentVehicleMass())) 
-			throw new BuildingException("Vehicle exceeds total capacity of building");
+		if (vehicles.size() >= vehicleCapacity) 
+			throw new BuildingException("Building is full of vehicles.");
      
 		// Remove vehicle from any other garage that it might be in.
 		Iterator i = getBuilding().getBuildingManager().getBuildings(getName()).iterator();
@@ -81,6 +78,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
         
 		// Add vehicle to building.
 		vehicles.add(vehicle);
+		System.out.println("Adding " + vehicle.getName());
     }
     
     /** 
@@ -90,7 +88,10 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
      */
     public void removeVehicle(Vehicle vehicle) throws BuildingException {
 		if (!containsVehicle(vehicle)) throw new BuildingException("Vehicle not in building.");
-		else vehicles.remove(vehicle);
+		else {
+			vehicles.remove(vehicle);
+			System.out.println("Removing " + vehicle.getName());
+		} 
     }
     
     /**

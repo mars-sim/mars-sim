@@ -65,15 +65,32 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            VehicleIterator i = getAllVehicleCandidates(person).iterator();
-            while (i.hasNext()) {
-                MalfunctionManager manager = i.next().getMalfunctionManager();
-                double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
-                if (entityProb > 50D) entityProb = 50D;
-                result += entityProb;
-            }
+		// Get all vehicles needing maintenance.
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			VehicleIterator i = getAllVehicleCandidates(person).iterator();
+			while (i.hasNext()) {
+				MalfunctionManager manager = i.next().getMalfunctionManager();
+				double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
+				if (entityProb > 50D) entityProb = 50D;
+				result += entityProb;
+			}
+		}
+
+		// Determine if settlement has available space in garages.
+		boolean garageSpace = false;
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {	
+			Settlement settlement = person.getSettlement();
+			Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+			while (j.hasNext()) {
+				try {
+					Building building = (Building) j.next();
+					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) garageSpace = true;
+				}
+				catch (Exception e) {}
+			}
         }
+		if (garageSpace) result = 0D;
 
         // Check if an airlock is available
         if (getAvailableAirlock(person) == null) result = 0D;
@@ -210,14 +227,6 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     }	
     
     /**
-     * Ends the task and performs any final actions.
-     */
-    public void endTask() {
-        super.endTask();
-        if (vehicle != null) vehicle.setReserved(false);
-    }
-    
-    /**
      * Check for accident with entity during maintenance phase.
      * @param time the amount of time (in millisols)
      */
@@ -257,31 +266,10 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     private static VehicleCollection getAllVehicleCandidates(Person person) {
         VehicleCollection result = new VehicleCollection();
         
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Settlement settlement = person.getSettlement();
-            VehicleCollection parkedVehicles = settlement.getParkedVehicles();
-            
-            // Remove all ground vehicles in garages.
-            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
-            while (i.hasNext()) {
-                Building garageBuilding = (Building) i.next();
-                try {
-                	VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
-                	VehicleIterator vI = parkedVehicles.iterator();
-                	while (vI.hasNext()) {
-                    	if (garage.containsVehicle((Vehicle) vI.next())) vI.remove();
-                	}
-                }
-                catch (Exception e) {
-                	System.err.println("MaintainGroundVehicle.getAllVehicleCandidates(): " + e.getMessage());
-                }
-            }
-            
-            VehicleIterator vI = parkedVehicles.iterator();
-            while (vI.hasNext()) {
-                Vehicle vehicle = vI.next();
-                if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
-            }
+        VehicleIterator vI = person.getSettlement().getParkedVehicles().iterator();
+        while (vI.hasNext()) {
+            Vehicle vehicle = vI.next();
+            if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
         }
         
         return result;

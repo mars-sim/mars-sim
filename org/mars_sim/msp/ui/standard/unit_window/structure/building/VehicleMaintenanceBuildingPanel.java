@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenanceBuildingPanel.java
- * @version 2.77 2004-09-27
+ * @version 2.77 2004-09-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.text.DecimalFormat;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -21,9 +20,8 @@ import org.mars_sim.msp.ui.standard.MainDesktopPane;
 public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel implements MouseListener {
 
 	private VehicleMaintenance garage;
-	private DecimalFormat formatter = new DecimalFormat("0.0");  // Decimal formatter.
-	private JLabel vehicleMassLabel;
-	private double vehicleMassCache = 0D;
+	private JLabel vehicleNumberLabel;
+	private int vehicleNumberCache = 0;
 	private JList vehicleList;
 	private DefaultListModel vehicleListModel;
 	private VehicleCollection vehicleCache;
@@ -49,18 +47,18 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
 		add(labelPanel, BorderLayout.NORTH);
         
 		// Create vehicle maintenance label
-		JLabel vehicleMaintenanceLabel = new JLabel("Vehicle Maintenance", JLabel.CENTER);
+		JLabel vehicleMaintenanceLabel = new JLabel("Vehicle Loading/Maintenance", JLabel.CENTER);
 		labelPanel.add(vehicleMaintenanceLabel);
         
-		// Create vehicle mass label
-		vehicleMassCache = garage.getCurrentVehicleMass();
-		vehicleMassLabel = new JLabel("Vehicle Mass: " + formatter.format(vehicleMassCache) + " kg.", JLabel.CENTER);
-		labelPanel.add(vehicleMassLabel);
+		// Create vehicle number label
+		vehicleNumberCache = garage.getCurrentVehicleNumber();
+		vehicleNumberLabel = new JLabel("Vehicle Number: " + vehicleNumberCache, JLabel.CENTER);
+		labelPanel.add(vehicleNumberLabel);
         
-		// Create mass capacity label
-		double massCapacity = garage.getVehicleCapacity();
-		JLabel massCapacityLabel = new JLabel("Vehicle Mass Capacity: " + formatter.format(massCapacity) + " kg.", JLabel.CENTER);
-		labelPanel.add(massCapacityLabel);	
+		// Create vehicle capacity label
+		int vehicleCapacity = garage.getVehicleCapacity();
+		JLabel vehicleCapacityLabel = new JLabel("Vehicle Capacity: " + vehicleCapacity, JLabel.CENTER);
+		labelPanel.add(vehicleCapacityLabel);	
 		
 		// Create vehicle list panel
 		JPanel vehicleListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -73,7 +71,7 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
         
 		// Create vehicle list model
 		vehicleListModel = new DefaultListModel();
-		vehicleCache = garage.getVehicles();
+		vehicleCache = new VehicleCollection(garage.getVehicles());
 		VehicleIterator i = vehicleCache.iterator();
 		while (i.hasNext()) vehicleListModel.addElement(i.next());
         
@@ -94,8 +92,8 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
 			VehicleIterator i = vehicleCache.iterator();
 			while (i.hasNext()) vehicleListModel.addElement(i.next());
             
-            vehicleMassCache = garage.getCurrentVehicleMass();
-			vehicleMassLabel.setText("Vehicle Mass: " + formatter.format(vehicleMassCache) + " kg.");
+            vehicleNumberCache = garage.getCurrentVehicleNumber();
+			vehicleNumberLabel.setText("Vehicle Number: " + vehicleNumberCache);
 		}
 	}
 	
