@@ -1,5 +1,5 @@
 //************************** Settlement Detail Window **************************
-// Last Modified: 4/9/00
+// Last Modified: 5/22/00
 
 // The SettlementDialog class is a detail window for a settlement.
 // It displays information about the settlement and its status.
@@ -13,9 +13,9 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 
 	// Data members
 
-	protected Settlement settlement; // Settlement which the dialog window is about.
-	protected JList peopleList;      // List of inhabitants
-	protected JList vehicleList;     // List of parked vehicles
+	private Settlement settlement;          // Settlement which the dialog window is about.
+	private JList vehicleList;              // List of parked vehicles
+	private FacilityPanel[] facilityPanes;  // Panes for each of the settlement's facilities.
 	
 	// Constructor
 
@@ -29,35 +29,10 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 	// Complete update (overridden)
 
 	protected void generalUpdate() {
-		updatePeople();
+		
 		updateVehicles();
-	}
-
-	// Update people list
-
-	protected void updatePeople() {
 		
-		DefaultListModel model = (DefaultListModel) peopleList.getModel();
-		boolean match = false;
-		
-		// Check if people list matches settlement's population
-		
-		if (model.getSize() == settlement.getPeopleNum()) {
-			match = true;
-			for (int x=0; x < settlement.getPeopleNum(); x++) 
-				if (!((String) model.getElementAt(x)).equals(settlement.getPerson(x).getName())) match = false;
-		}
-		
-		// If no match, update people list
-		
-		if (!match) {
-			model.removeAllElements();
-			for (int x=0; x < settlement.getPeopleNum(); x++) {
-				Person tempPerson = settlement.getPerson(x);
-				if (tempPerson != null) model.addElement(tempPerson.getName());
-			}
-			validate();
-		}
+		for (int x=0; x < facilityPanes.length;	x++) facilityPanes[x].updateInfo();
 	}
 
 	// Update vehicle list
@@ -95,24 +70,12 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 	// Implement MouseListener Methods
 	
 	public void mouseClicked(MouseEvent event) {
-		Object object = event.getSource();
-
-		if (object == peopleList) {
-			if (event.getClickCount() >= 2) {
-  	     			int index = peopleList.locationToIndex(event.getPoint());
-  	     			if (index > -1) {
-  	     				try { parentDesktop.openUnitWindow(settlement.getPerson(index).getID()); }
-  	     				catch(NullPointerException e) {}
-  	     			}
-	 		}
-		}
-		else if (object == vehicleList) {
-			if (event.getClickCount() >= 2) {
-				int index = vehicleList.locationToIndex(event.getPoint());
-				if (index > -1) {
-					try { parentDesktop.openUnitWindow(settlement.getVehicle(index).getID()); }
-					catch(NullPointerException e) {}
-				}
+		
+		if (event.getClickCount() >= 2) {
+			int index = vehicleList.locationToIndex(event.getPoint());
+			if (index > -1) {
+				try { parentDesktop.openUnitWindow(settlement.getVehicle(index).getID()); }
+				catch(NullPointerException e) {}
 			}
 		}
 	}
@@ -123,7 +86,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 	
 	// Set window size
 	
-	protected Dimension setWindowSize() { return new Dimension(300, 330); }
+	protected Dimension setWindowSize() { return new Dimension(300, 410); }
 	
 	// Prepare new components
 	
@@ -131,15 +94,87 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 	
 		super.setupComponents();
 
-		// initialize settlement
+		// Initialize settlement
 
 		settlement = (Settlement) parentUnit;
+		
+		// Prepare tab pane
+		
+		JTabbedPane tabPane = new JTabbedPane();
+		mainPane.add(tabPane, "Center");
+		
+		// Prepare and add location pane
+		
+		tabPane.add(setupLocationPane(), "Location");
+		
+		// Prepare and add primary pane
+		
+		tabPane.add(setupVehiclesPane(), "Vehicles");
+		
+		// Prepare and add each facility pane
+		
+		facilityPanes = settlement.getFacilityManager().getFacilityPanels(parentDesktop);
+		for (int x=0; x < facilityPanes.length; x++) tabPane.add(facilityPanes[x], facilityPanes[x].getTabName());
+	}
+	
+	// Prepare vehicles pane
+	
+	protected JPanel setupVehiclesPane() {
+
+		// Preapre primary pane
+		
+		JPanel vehiclesPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		vehiclesPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+
+		// Prepare inner vehicles pane
+		
+		JPanel innerVehiclesPane = new JPanel(new BorderLayout());
+		vehiclesPane.add(innerVehiclesPane);
+
+		// Prepare vehicle label
+		
+		JLabel vehicleLabel = new JLabel("Parked Vehicles:", JLabel.CENTER);
+		vehicleLabel.setForeground(Color.black);
+		innerVehiclesPane.add(vehicleLabel, "North");
+		
+		// Prepare vehicle list pane
+		
+		JPanel vehicleListPane = new JPanel();
+		innerVehiclesPane.add(vehicleListPane, "Center");
+		
+		// Prepare inner vehicle list pane
+		
+		JPanel innerVehicleListPane = new JPanel(new BorderLayout());
+		innerVehicleListPane.setPreferredSize(new Dimension(150, 100));
+		vehicleListPane.add(innerVehicleListPane);
+
+		// Prepare vehicle list
+		
+		DefaultListModel vehicleListModel = new DefaultListModel();
+		for (int x=0; x < settlement.getVehicleNum(); x++) vehicleListModel.addElement(settlement.getVehicle(x).getName());
+		vehicleList = new JList(vehicleListModel);
+		vehicleList.setVisibleRowCount(6);
+		vehicleList.addMouseListener(this);
+		innerVehicleListPane.add(new JScrollPane(vehicleList), "Center");
+		
+		// Return primary pane
+		
+		return vehiclesPane;
+	}
+	
+	// Prepare location pane
+	
+	protected JPanel setupLocationPane() {
+		
+		// Prepare main location pane
+		
+		JPanel mainLocationPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		mainLocationPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		
 		// Prepare location pane
 		
 		JPanel locationPane = new JPanel(new BorderLayout());
-		locationPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		mainPane.add(locationPane);
+		mainLocationPane.add(locationPane);
 
 		// Preparing location label pane
 
@@ -175,56 +210,10 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 		JLabel longitudeLabel = new JLabel("Longitude: " + settlement.getCoordinates().getFormattedLongitudeString(), JLabel.LEFT);
 		longitudeLabel.setForeground(Color.black);
 		locationCoordsPane.add(longitudeLabel);
-
-		// Prepare vertical strut
-
-		mainPane.add(Box.createVerticalStrut(10));
-
-		// Prepare contents pane
 		
-		JPanel contentsPane = new JPanel(new GridLayout(1, 2, 0, 0));
-		contentsPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		mainPane.add(contentsPane);
+		// Return location pane
 		
-		// Prepare inhabitants pane
-		
-		JPanel peoplePane = new JPanel(new BorderLayout());
-		contentsPane.add(peoplePane);
-
-		// Prepare people label
-		
-		JLabel peopleLabel = new JLabel("Inhabitants", JLabel.CENTER);
-		peopleLabel.setForeground(Color.black);
-		peoplePane.add(peopleLabel, "North");
-
-		// Prepare people list
-		
-		DefaultListModel peopleListModel = new DefaultListModel();
-		for (int x=0; x < settlement.getPeopleNum(); x++) peopleListModel.addElement(settlement.getPerson(x).getName());
-		peopleList = new JList(peopleListModel);
-		peopleList.setVisibleRowCount(7);
-		peopleList.addMouseListener(this);
-		peoplePane.add(new JScrollPane(peopleList), "Center");
-
-		// Prepare vehicle pane
-		
-		JPanel vehiclePane = new JPanel(new BorderLayout());
-		contentsPane.add(vehiclePane);
-
-		// Prepare vehicle label
-		
-		JLabel vehicleLabel = new JLabel("Parked Vehicles", JLabel.CENTER);
-		vehicleLabel.setForeground(Color.black);
-		vehiclePane.add(vehicleLabel, "North");
-
-		// Prepare vehicle list
-		
-		DefaultListModel vehicleListModel = new DefaultListModel();
-		for (int x=0; x < settlement.getVehicleNum(); x++) vehicleListModel.addElement(settlement.getVehicle(x).getName());
-		vehicleList = new JList(vehicleListModel);
-		vehicleList.setVisibleRowCount(7);
-		vehicleList.addMouseListener(this);
-		vehiclePane.add(new JScrollPane(vehicleList), "Center");
+		return mainLocationPane;
 	}
 }
 
