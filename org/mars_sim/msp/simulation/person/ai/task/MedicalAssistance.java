@@ -64,6 +64,7 @@ public class MedicalAssistance extends Task implements Serializable {
             Treatment treatment = problem.getIllness().getRecoveryTreatment();
 	        description = "Apply " + treatment.getName();
             duration = treatment.getAdjustedDuration(skill);
+            setStressModifier(STRESS_MODIFIER * treatment.getSkill());
             
             // Start the treatment
             try {
@@ -190,9 +191,15 @@ public class MedicalAssistance extends Task implements Serializable {
         if (timeCompleted > duration) {
             // Add experience points for 'Medical' skill.
             // Add one point for every 100 millisols.
-            double newPoints = duration / 100D;
+            double newPoints = (duration / 100D);
+            
+            // Modify experience by skill level required by treatment.
+			newPoints *= problem.getIllness().getRecoveryTreatment().getSkill();
+            
+            // Modify experience by experience aptitude.
             int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            
             person.getSkillManager().addExperience(MEDICAL, newPoints);
 
             problem.startRecovery();

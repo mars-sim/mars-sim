@@ -45,7 +45,10 @@ class Relax extends Task implements Serializable {
         		Building building = (Building) recreationBuildings.get(rand);
         		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
         		if (!lifeSupport.containsPerson(person)) {
-        			if (lifeSupport.getAvailableOccupancy() > 0) lifeSupport.addPerson(person);
+        			if (lifeSupport.getAvailableOccupancy() > 0) {
+        				lifeSupport.addPerson(person);
+        				setStressModifier(STRESS_MODIFIER * 2D);
+        			} 
         			else endTask();
         		}
         	}

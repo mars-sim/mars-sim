@@ -40,7 +40,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
     // Distance buffer for arriving at destination.
     private final static double DESTINATION_BUFFER = 4D;
     
-	private static final double STRESS_MODIFIER = .2D; // The stress modified per millisol.
+	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 
     // Data members
     private GroundVehicle vehicle; // Vehicle person is driving.

@@ -22,7 +22,7 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
 class Sleep extends Task implements Serializable {
 
 	// Static members
-	private static final double STRESS_MODIFIER = -.2D; // The stress modified per millisol.
+	private static final double STRESS_MODIFIER = -.3D; // The stress modified per millisol.
 
     // Data members
     private double duration; // The duration of task in millisols

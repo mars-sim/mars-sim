@@ -205,4 +205,13 @@ public abstract class Task implements Serializable, Comparable {
     	PhysicalCondition condition = person.getPhysicalCondition();
     	condition.setStress(condition.getStress() + stressModifier);
     }
+    
+    /**
+     * Set the task's stress modifier.
+     * Stress modifier can be positive (increase in stress) or negative (decrease in stress).
+     * @param newStressModifier stress modification per millisol.
+     */
+    protected void setStressModifier(double newStressModifier) {
+    	this.stressModifier = newStressModifier;
+    }
 }

@@ -28,7 +28,7 @@ public class StudyRockSamples extends Task implements Serializable {
 
     // Rate of rock sample research (kg / millisol)
     private static final double RESEARCH_RATE = .01D;
-	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
+	private static final double STRESS_MODIFIER = 0D; // The stress modified per millisol.
 	
     // Data members
     private Inventory inv;   // The inventory containing the rock samples.
