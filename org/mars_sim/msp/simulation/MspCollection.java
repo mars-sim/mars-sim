@@ -9,10 +9,10 @@ package org.mars_sim.msp.simulation;
 
 import java.util.*;
 
-public abstract class MspCollection {
+public abstract class MspCollection implements java.io.Serializable {
 
     // Data members
-    private Collection listeners; // Collection of MspCollectionEventListeners.
+    private transient Collection listeners = null; // Collection of MspCollectionEventListeners.
 
     // We can replace this with another type of collection if we need to.
     private List elements;  // Used internally to hold elements.
@@ -21,9 +21,6 @@ public abstract class MspCollection {
      * Constructs a MspCollection object.
      */
     public MspCollection() {
-
-        // Initialize listeners.
-	    listeners = new ArrayList();
 
         // Linked list are suited to List that have dynamic contents
         elements = new LinkedList();
@@ -34,6 +31,9 @@ public abstract class MspCollection {
      * @param listener the new listener
      */
     public void addMspCollectionEventListener(MspCollectionEventListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList();
+        }
         if (!listeners.contains(listener)) listeners.add(listener);
     }
 
@@ -98,6 +98,9 @@ public abstract class MspCollection {
      */
     public void removeMspCollectionEventListener(MspCollectionEventListener listener) {
         if (listeners.contains(listener)) listeners.remove(listener);
+        if (listeners.size() == 0) {
+            listeners = null;
+        }
     }
 
     /**
@@ -106,7 +109,7 @@ public abstract class MspCollection {
      * @param target Object triggering the event, this may be null.
      */
     protected void fireMspCollectionEvent(String eventType, Unit target) {
-        if (!listeners.isEmpty()) {
+        if (listeners != null) {
             MspCollectionEvent event = new MspCollectionEvent(this, eventType,
                                                               target);
             Iterator i = listeners.iterator();

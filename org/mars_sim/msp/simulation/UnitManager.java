@@ -75,27 +75,27 @@ public class UnitManager implements Serializable {
     private void addInventoryUnits() {
 	UnitCollection contained = new UnitCollection();
 	UnitIterator i = units.iterator();
-	while (i.hasNext()) 
-	    contained.mergeUnits(i.next().getInventory().getAllContainedUnits()); 
+	while (i.hasNext())
+	    contained.mergeUnits(i.next().getInventory().getAllContainedUnits());
 	units.mergeUnits(contained);
     }
 
-    /** Notify all the units that time has passed. 
+    /** Notify all the units that time has passed.
      *  Times they are a changing.
-     *  @param time the amount time passing (in millisols)  
+     *  @param time the amount time passing (in millisols)
      */
     void timePassing(double time) {
         UnitIterator i = units.iterator();
         while (i.hasNext()) i.next().timePassing(time);
     }
 
-    /** Get number of settlements 
+    /** Get number of settlements
      *  @return the number of settlements
      */
     public int getSettlementNum() {
         return units.getSettlements().size();
     }
-    
+
     /** Get settlements in vitual Mars
      *  @return SettlementCollection of settlements
      */
@@ -103,13 +103,13 @@ public class UnitManager implements Serializable {
         return units.getSettlements();
     }
 
-    /** Get number of vehicles 
+    /** Get number of vehicles
      *  @return the number of vehicles
      */
     public int getVehicleNum() {
         return units.getVehicles().size();
     }
-    
+
     /** Get vehicles in virtual Mars
      *  @return VehicleCollection of vehicles
      */
@@ -123,7 +123,7 @@ public class UnitManager implements Serializable {
     public int getPeopleNum() {
         return units.getPeople().size();
     }
-    
+
     /** Get people in virtual Mars
      *  @return PersonCollection of people
      */
@@ -131,17 +131,18 @@ public class UnitManager implements Serializable {
         return units.getPeople();
     }
 
-    /** The total number of units 
+    /** The total number of units
      *  @return the total number of units
      */
     public int getUnitNum() {
         return units.size();
     }
-    
+
     /** Get all units in virtual Mars
      *  @return UnitColleciton of units
      */
     public UnitCollection getUnits() {
-        return new UnitCollection(units);
+        //return new UnitCollection(units);
+        return units;
     }
 }
