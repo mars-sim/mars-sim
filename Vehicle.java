@@ -39,7 +39,6 @@ public abstract class Vehicle extends Unit {
 	
     private HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
     private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
-	
     private boolean distanceMark = false;
 
     
@@ -48,10 +47,10 @@ public abstract class Vehicle extends Unit {
 	// use Unit constructor
 	super(name, location, mars, manager);
 		
-	// Initialize globals
+	// initialize
 	setStatus("Parked");
-	passengers = new Vector();
 	setDestinationType("None");
+	passengers = new Vector();
 	potentialFailures = new HashMap();
 	totalMaintenanceWork = 12 * 60 * 60; // (12 hours)
     }
@@ -104,13 +103,17 @@ public abstract class Vehicle extends Unit {
     /** Adds fuel to the vehicle. */
     public void addFuel(double addedFuel) {
 	fuel += addedFuel;
-	if (fuel > fuelCapacity) fuel = fuelCapacity;
+	if (fuel > fuelCapacity) {
+	    fuel = fuelCapacity;
+	}
     }
 	
     /** Consumes a portion of the vehicle's fuel. */
     public void consumeFuel(double consumedFuel) {
 	fuel -= consumedFuel;
-	if (fuel < 0D) fuel = 0D;
+	if (fuel < 0D) {
+	    fuel = 0D;
+	}
     }
 	
     /** Returns the fuel capacity of the vehicle. */
@@ -141,7 +144,9 @@ public abstract class Vehicle extends Unit {
     /** Adds a distance (in km.) to the vehicle's distance since last maintenance */
     public void addDistanceLastMaintenance(double distance) { 
 	distanceMaint += distance; 
-	if ((distanceMaint > 5000D) && !distanceMark) distanceMark = true;
+	if ((distanceMaint > 5000D) && !distanceMark) {
+	    distanceMark = true;
+	}
     }
 	
     /** Sets vehicle's distance since last maintenance to zero */
@@ -185,24 +190,29 @@ public abstract class Vehicle extends Unit {
 	
     /** Returns true if a given person is currently in the vehicle */
     public boolean isPassenger(Person person) {
-	boolean found = false;
 	
-	for (int x=0; x < passengers.size(); x++)
-	    if (person == (Person) passengers.elementAt(x)) found = true;
-	
-	return found;
+	for (int x=0; x < passengers.size(); x++) {
+	    if (person == (Person) passengers.elementAt(x)) {
+		return true;
+	    }
+	}
+	return false;
     } 
 
     /** Add a new passenger to the vehicle if enough capacity and person is not alreay aboard. */
     public void addPassenger(Person passenger) { 
-	if (!isPassenger(passenger) && (passengers.size() <= maxPassengers)) passengers.addElement(passenger);
+	if ( (passengers.size() < maxPassengers) && !isPassenger(passenger) ) {
+	    passengers.addElement(passenger);
+	}
     }
 	
     /** Removes a passenger from a vehicle */
     public void removePassenger(Person passenger) {
 	if (isPassenger(passenger)) {
 	    passengers.removeElement(passenger);
-	    if (passenger == driver) driver = null;
+	    if (passenger == driver) {
+		driver = null;
+	    }
 	}
     }
 
