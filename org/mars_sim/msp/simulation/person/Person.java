@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-13
  * @author Scott Davis
  */
 
@@ -284,15 +284,34 @@ public class Person extends Unit implements Serializable {
      */
     private LifeSupport getLifeSupport() {
 
-        Unit topUnit = getContainerUnit();
-	while (topUnit != null) {
-	    if (topUnit instanceof LifeSupport) return (LifeSupport) topUnit;
+        UnitCollection lifeSupportUnits = new UnitCollection();
+
+	// Get all container units.
+	Unit container = getContainerUnit();
+	while (container != null) {
+            if (container instanceof LifeSupport) lifeSupportUnits.add(container);
+	    container = container.getContainerUnit();
 	}
 
-	if (inventory.containsUnit(LifeSupport.class)) {
-            return (LifeSupport) inventory.findUnit(LifeSupport.class);
+	// Get all contained units.
+        UnitIterator i = inventory.getContainedUnits().iterator();
+	while (i.hasNext()) {
+	    Unit contained = i.next();
+	    if (contained instanceof LifeSupport) lifeSupportUnits.add(contained);
 	}
 
+	// Get first life support unit that checks out.
+	i = lifeSupportUnits.iterator();
+	while (i.hasNext()) {
+	    LifeSupport goodUnit = (LifeSupport) i.next();
+	    if (goodUnit.lifeSupportCheck()) return goodUnit;
+	}
+
+	// If no good units, just get first life support unit.
+	i = lifeSupportUnits.iterator();
+	if (i.hasNext()) return (LifeSupport) i.next();
+
+	// If no life support units at all, return null.
 	return null;
     }
 

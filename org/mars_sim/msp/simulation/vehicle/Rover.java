@@ -140,8 +140,8 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
         if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
         if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
 
-        // need to also check for temp and air pressure
-        if (!result) System.out.println(getName() + " failed its life support test!");
+        // need to also check for temp and air pressure.
+	
         return result;
     }
 
