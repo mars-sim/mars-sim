@@ -20,7 +20,7 @@ class MasterClock extends Thread {
 
     // Data members
     private VirtualMars mars;     // Virtual Mars
-    private MarsClock marsTime;  // Martian Clock
+    private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
 
@@ -60,8 +60,8 @@ class MasterClock extends Thread {
             mars.clockPulse(600);
 
             // Add ten minutes to Earth clock
-            earthTime.addTenMinutes();
-            marsTime.addTimeSeconds(600);
+            earthTime.addTime(600);
+            marsTime.addTime(MarsClock.convertSecondsToMillisols(600));
             
             System.out.println(" ");
             System.out.println("Martian Time: " + marsTime.getTimeStamp());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.72 2001-02-18
+ * @version 2.72 2001-02-25
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ public class EarthClock extends GregorianCalendar {
 
         // Set starting date/time to midnight, January 1st, 2050
         clear(); 
-        set(2050, 0, 1);
+        set(2050, Calendar.JANUARY, 1);
         complete();
     }
 
@@ -37,10 +37,11 @@ public class EarthClock extends GregorianCalendar {
      *  @return date/time formatted in a string. ex "5/6/2055 3:37 PM"
      */
     public String getDateTimeString() {
-        int month = get(Calendar.MONTH);
+        int month = get(Calendar.MONTH) + 1;
         int date = get(Calendar.DATE);
         int year = get(Calendar.YEAR);
         int hour = get(Calendar.HOUR);
+        if (hour == 0) hour = 12;
         int minute = get(Calendar.MINUTE);
         int am_pm = get(Calendar.AM_PM);
        
@@ -54,8 +55,10 @@ public class EarthClock extends GregorianCalendar {
         return new String("" + month + "/" + date + "/" + year + " " + hour + ":" + minuteString + " " + am_pmString);
     }
     
-    /** Adds ten minutes to the calendar */
-    public void addTenMinutes() {
-        add(Calendar.MINUTE, 10);
+    /** Adds time to the calendar 
+     *  @param seconds seconds added to the calendar
+     */
+    public void addTime(double seconds) {
+        add(Calendar.MILLISECOND, (int) (seconds * 1000D));
     }
 }
