@@ -14,7 +14,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * The RepairEVAMalfunction class is a task to repair a malfunction.
+ * The RepairEVAMalfunction class is a task to repair a malfunction requiring an EVA.
  */
 public class RepairEVAMalfunction extends EVAOperation implements Repair, Serializable {
 

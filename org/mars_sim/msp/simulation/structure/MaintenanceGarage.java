@@ -165,16 +165,6 @@ public class MaintenanceGarage extends Facility implements Serializable {
     public PersonCollection getAffectedPeople() {
         PersonCollection people = super.getAffectedPeople();
 
-        // Check for people in settlement using laboratory.
-        PersonIterator i2 = getFacilityManager().getSettlement().getInhabitants().iterator();
-        while (i2.hasNext()) {
-            Person person = i2.next();
-            Task task = person.getMind().getTaskManager().getTask();
-            if (task instanceof MaintainVehicle) {
-                if (!people.contains(person)) people.add(person);
-            }
-        }
-
         return people;
     }
 }
