@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TableWindow.java
- * @version 2.72 2001-10-24
+ * @version 2.72 2001-12-15
  * @author Barry Evans
  */
 
@@ -76,6 +76,18 @@ implements Runnable {
             Iterator it = units.iterator();
             while(it.hasNext()) {
                 desktop.openUnitWindow((UnitUIProxy)it.next());
+            }
+        }
+
+        /**
+         * Center the map on the first selected row
+         */
+        public void centerMap() {
+            ArrayList units = model.getUnits(table.getSelectedRows());
+            Iterator it = units.iterator();
+            if (it.hasNext()) {
+                UnitUIProxy unit = (UnitUIProxy) it.next();
+                desktop.centerMapGlobe(unit.getUnit().getCoordinates());
             }
         }
 
@@ -177,6 +189,19 @@ implements Runnable {
                         }
                     });
         toolbar.add(loadButton);
+
+        JButton mapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
+        mapButton.setMargin(new Insets(1, 1, 1, 1));
+        mapButton.setToolTipText("Center map on selected unit");
+        mapButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    TableTab selected = getSelected();
+                        if (selected != null) {
+                            selected.centerMap();
+                        } 
+                    }
+                });
+        toolbar.add(mapButton);
 
         JButton detailsButton = new JButton(new ImageIcon("images/ShowDetails.gif"));
         detailsButton.setToolTipText("Show details dialog");
