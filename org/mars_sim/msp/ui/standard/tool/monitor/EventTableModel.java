@@ -1,14 +1,18 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 2.75 2003-08-03
+ * @version 2.75 2004-01-16
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import org.mars_sim.msp.simulation.events.*;
+import java.util.*;
 import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.simulation.events.HistoricalEvent;
+import org.mars_sim.msp.simulation.events.HistoricalEventListener;
+import org.mars_sim.msp.simulation.events.HistoricalEventManager;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -19,11 +23,13 @@ import javax.swing.table.AbstractTableModel;
 public class EventTableModel extends AbstractTableModel
             implements MonitorModel, HistoricalEventListener {
 
+	// Column names
     private static final int TIMESTAMP = 0;
-    private static final int TYPE = 1;
-    private static final int ACTOR = 2;
-    private static final int DESC = 3;
-    private static final int COLUMNCOUNT = 4;
+    private static final int CATEGORY = 1;
+    private static final int TYPE = 2;
+    private static final int ACTOR = 3;
+    private static final int DESC = 4;
+    private static final int COLUMNCOUNT = 5;
 
     static private String columnNames[];   // Names of the displayed columns
     static private Class  columnTypes[];   // Types of the individual columns
@@ -33,6 +39,8 @@ public class EventTableModel extends AbstractTableModel
         columnTypes = new Class[COLUMNCOUNT];
         columnNames[TIMESTAMP] = "Time";
         columnTypes[TIMESTAMP] = String.class;
+        columnNames[CATEGORY] = "Category";
+        columnTypes[CATEGORY] = String.class;
         columnNames[TYPE] = "Event Type";
         columnTypes[TYPE] = String.class;
         columnNames[ACTOR] = "Actor";
@@ -42,6 +50,13 @@ public class EventTableModel extends AbstractTableModel
     }
 
     private HistoricalEventManager manager;
+    private List cachedEvents = new ArrayList();
+    
+    // Event categories to be displayed.
+    private boolean displayMalfunction = true;
+    private boolean displayMedical = true;
+    private boolean displayMission = false;
+    private boolean displayTask = false;
 
     /**
      * Create a new Event model based on the specified event manager.
@@ -50,10 +65,41 @@ public class EventTableModel extends AbstractTableModel
     public EventTableModel(HistoricalEventManager manager) {
         this.manager = manager;
 
+		// Update the cached events.
+		updateCachedEvents();
+
+		// Add this model as an event listener.
         manager.addListener(this);
     }
 
-       /**
+	private void updateCachedEvents() {
+		
+		// Clean out cached events.
+		cachedEvents = new ArrayList();
+		
+		// Filter events based on category.
+		for (int x = 0; x < manager.size(); x++) {
+			HistoricalEvent event = manager.getEvent(x);
+			String category = event.getCategory();
+			
+			if (category.equals(HistoricalEventManager.MALFUNCTION) && displayMalfunction)
+				cachedEvents.add(event);
+				
+			if (category.equals(HistoricalEventManager.MEDICAL) && displayMedical)
+				cachedEvents.add(event);
+				
+			if (category.equals(HistoricalEventManager.MISSION) && displayMission)
+				cachedEvents.add(event);
+				
+			if (category.equals(HistoricalEventManager.TASK) && displayTask)
+				cachedEvents.add(event);
+		}
+		
+		// Update all table listeners.
+		fireTableDataChanged();
+	}
+
+    /**
      * Return the number of columns
      * @return column count.
      */
@@ -85,7 +131,6 @@ public class EventTableModel extends AbstractTableModel
         return "Unknown";
     }
 
-
     /**
      * Get the name of the model.
      * @return model name.
@@ -99,7 +144,7 @@ public class EventTableModel extends AbstractTableModel
      * @return the number of Events.
      */
     public int getRowCount() {
-        return manager.size();
+        return cachedEvents.size();
     }
 
     /**
@@ -108,7 +153,10 @@ public class EventTableModel extends AbstractTableModel
      * @return Unit associated with the Event as the specified position.
      */
     public Object getObject(int row) {
-        return manager.getEvent(row).getSource();
+    	HistoricalEvent event = (HistoricalEvent) cachedEvents.get(row);
+    	Object result = null;
+    	if (event != null) result = event.getSource();
+    	return result;
     }
 
     /**
@@ -126,7 +174,7 @@ public class EventTableModel extends AbstractTableModel
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
-        HistoricalEvent event = (HistoricalEvent)manager.getEvent(rowIndex);
+        HistoricalEvent event = (HistoricalEvent) cachedEvents.get(rowIndex);
 
         // Invoke the appropriate method, switch is the best solution
         // althought disliked by some
@@ -135,6 +183,10 @@ public class EventTableModel extends AbstractTableModel
                 result = event.getTimestamp().getTimeStamp();
             } break;
 
+			case CATEGORY: {
+				result = event.getCategory();
+			} break;
+			
             case ACTOR: {
                 result = event.getSource();
             } break;
@@ -156,7 +208,7 @@ public class EventTableModel extends AbstractTableModel
      * @return A status string.
      */
     public String update() {
-        return manager.size() + " events";
+        return cachedEvents.size() + " events";
     }
 
     /**
@@ -166,7 +218,8 @@ public class EventTableModel extends AbstractTableModel
      * @param event The new event added.
      */
     public void eventAdded(int index, HistoricalEvent event) {
-        fireTableRowsInserted(index, index);
+    	updateCachedEvents();
+        // fireTableRowsInserted(index, index);
     }
 
     /**
@@ -176,6 +229,75 @@ public class EventTableModel extends AbstractTableModel
      * @param endIndex Last exclusive index of the event to be removed..
      */
     public void eventsRemoved(int startIndex, int endIndex) {
-        fireTableRowsDeleted(startIndex, endIndex);
+    	updateCachedEvents();
+        // fireTableRowsDeleted(startIndex, endIndex);
+    }
+    
+    /**
+     * Checks if malfunction events are to be displayed.
+     * @return true if displayed
+     */
+    public boolean getDisplayMalfunction() {
+    	return displayMalfunction;
+    }
+    
+    /**
+     * Sets if malfunction events are to be displayed.
+     * @param display true if displayed
+     */
+    public void setDisplayMalfunction(boolean display) {
+    	displayMalfunction = display;
+		updateCachedEvents();
+    }
+    
+    /**
+     * Checks if medical events are to be displayed.
+     * @return true if displayed
+     */
+    public boolean getDisplayMedical() {
+    	return displayMedical;
+    }
+    
+    /**
+     * Sets if medical events are to be displayed.
+     * @param display true if displayed
+     */
+    public void setDisplayMedical(boolean display) {
+    	displayMedical = display;
+		updateCachedEvents();
+    }
+    
+    /**
+     * Checks if mission events are to be displayed.
+     * @return true if displayed
+     */
+    public boolean getDisplayMission() {
+    	return displayMission;
+    }
+    
+    /**
+     * Sets if mission events are to be displayed.
+     * @param display true if displayed
+     */
+    public void setDisplayMission(boolean display) {
+    	displayMission = display;
+		updateCachedEvents();
+    }
+    
+    /**
+     * Checks if task events are to be displayed.
+     * @return true if displayed
+     */
+    public boolean getDisplayTask() {
+    	return displayTask;
+    }
+    
+    /**
+     * Sets if task events are to be displayed.
+     * @param display true if displayed
+     */
+    public void setDisplayTask(boolean display) {
+    	displayTask = display;
+    	updateCachedEvents();
     }
 }

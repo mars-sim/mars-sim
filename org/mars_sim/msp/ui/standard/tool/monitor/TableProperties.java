@@ -7,14 +7,23 @@
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
+
+import javax.swing.JCheckBox;
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+
+import org.mars_sim.msp.ui.standard.*;
 
 /**
  * The MonitorPropsDialog class display the columns of a specific table.
@@ -48,8 +57,7 @@ class TableProperties extends JInternalFrame {
 
         // Create column pane
         JPanel columnPane = new JPanel(new GridLayout(0, 1));
-        columnPane.setBorder(new CompoundBorder(new EtchedBorder(),
-                                                new EmptyBorder(5, 5, 5, 5)));
+        columnPane.setBorder(new MarsPanelBorder());
 
         // Create a checkbox for each column in the model
         TableModel dataModel = table.getModel();

@@ -7,17 +7,35 @@
 
 package org.mars_sim.msp.ui.standard;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import org.mars_sim.msp.simulation.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+
+import javax.swing.ImageIcon;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
-import org.mars_sim.msp.ui.standard.tool.monitor.*;
+import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.standard.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
-import org.mars_sim.msp.ui.standard.unit_window.*;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindowFactory;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindowListener;
 
 /** 
  * The MainDesktopPane class is the desktop part of the project's UI.
