@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.person;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import java.io.Serializable;
@@ -25,6 +26,8 @@ public class PhysicalCondition implements Serializable {
     // Static values
     private static int MIN_VALUE = 0;
     private static int MAX_VALUE = 1;
+    private static final String START_MEDICAL = "Has Illness";
+    private static final String STOP_MEDICAL = "Cured";
 
     // Data members
     private DeathInfo deathDetails;     // Details of persons death
@@ -93,6 +96,13 @@ public class PhysicalCondition implements Serializable {
                 // If the current is completed or a new problem exists then
                 // remove this one.
                 Complaint next = problem.timePassing(time, this);
+                if (problem.getCured()) {
+                    HistoricalEvent newEvent = new HistoricalEvent(STOP_MEDICAL,
+                                                       person,
+                                                       problem.getIllness().getName());
+                    person.getMars().getEventManager().registerNewEvent(newEvent);
+                }
+
                 if (problem.getCured() || (next != null)) {
                     iter.remove();
                     recalculate = true;
@@ -160,10 +170,15 @@ public class PhysicalCondition implements Serializable {
     public void addMedicalComplaint(Complaint complaint) {
 
         if ((complaint != null) && !problems.containsKey(complaint)) {
-	    HealthProblem problem = new HealthProblem(complaint, person, person.getAccessibleAid());
-	    problems.put(complaint, problem);
-	    recalculate();
-	}
+	        HealthProblem problem = new HealthProblem(complaint, person, person.getAccessibleAid());
+	        problems.put(complaint, problem);
+	        recalculate();
+
+            HistoricalEvent newEvent = new HistoricalEvent(START_MEDICAL,
+                                                       person,
+                                                       complaint.getName());
+            person.getMars().getEventManager().registerNewEvent(newEvent);
+	    }
     }
 
     /** Person consumes given amount of food
