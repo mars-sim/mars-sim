@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation;
 
 import java.awt.*;
+import java.net.URL;
 import java.io.*;
 
 /** The TerrainElevation class represents the surface terrain of the
@@ -30,9 +31,14 @@ public class TerrainElevation {
      *  @param topoSum the file URL for the topographical map sum
      */
     TerrainElevation(String topoData, String topoIndex, String topoSum) {
+        URL found = getClass().getClassLoader().getResource(topoData);
         try {
-            map = new RandomAccessFile(topoData, "r");
-        } catch (IOException e) {
+            map = new RandomAccessFile(found.getFile(), "r");
+        }
+        catch (IOException e) {
+        }
+
+        if (map == null) {
             System.out.println("Could not open " + topoData);
             System.out.println("  You can find it at: http://mars-sim.sourceforge.net/TopoDat.zip");
             System.out.println("  Download and then unzip in the directory mars-sim/map_data");
@@ -41,29 +47,43 @@ public class TerrainElevation {
         loadArrays(topoIndex, topoSum);
     }
 
-    /** note that this functionality is duplicated in TopoMarsMap.java 
+    /** note that this functionality is duplicated in TopoMarsMap.java
      *  @param indexFile the file URL for the topographical map index
      *  @param sumFile the file URL for the topographical map sum
      */
     private void loadArrays(String indexFile, String sumFile) {
+        ClassLoader loader = getClass().getClassLoader();
         try {
             // Load index array
-            BufferedInputStream indexBuff = new BufferedInputStream(new FileInputStream(indexFile));
-            DataInputStream indexReader = new DataInputStream(indexBuff);
-            index = new int[MAP_HEIGHT];
-            for (int x = 0; x < MAP_HEIGHT; x++)
-                index[x] = indexReader.readInt();
-            indexReader.close();
-            indexBuff.close();
+            InputStream indexStream = loader.getResourceAsStream(indexFile);
+            if (indexStream == null) {
+                System.err.println("Can not load " + indexFile);
+            }
+            else
+            {
+                BufferedInputStream indexBuff = new BufferedInputStream(indexStream);
+                DataInputStream indexReader = new DataInputStream(indexBuff);
+                index = new int[MAP_HEIGHT];
+                for (int x = 0; x < MAP_HEIGHT; x++)
+                    index[x] = indexReader.readInt();
+                indexReader.close();
+                indexBuff.close();
+            }
 
             // Load sum array
-            BufferedInputStream sumBuff = new BufferedInputStream(new FileInputStream(sumFile));
-            DataInputStream sumReader = new DataInputStream(sumBuff);
-            sum = new long[MAP_HEIGHT];
-            for (int x = 0; x < MAP_HEIGHT; x++)
-                sum[x] = sumReader.readLong();
-            sumReader.close();
-            sumBuff.close();
+            InputStream sumStream = loader.getResourceAsStream(sumFile);
+            if (sumStream == null) {
+                System.err.println("Can not load " + sumFile);
+            }
+            else {
+                BufferedInputStream sumBuff = new BufferedInputStream(sumStream);
+                DataInputStream sumReader = new DataInputStream(sumBuff);
+                sum = new long[MAP_HEIGHT];
+                for (int x = 0; x < MAP_HEIGHT; x++)
+                    sum[x] = sumReader.readLong();
+                sumReader.close();
+                sumBuff.close();
+            }
         } catch (IOException e) {
             System.out.println(e);
             System.exit(0);
@@ -91,7 +111,7 @@ public class TerrainElevation {
         return result;
     }
 
-    /** Returns elevation in km at the given location 
+    /** Returns elevation in km at the given location
      *  @param location the location in question
      *  @return the elevation at the location (in km)
      */

@@ -26,8 +26,8 @@ public abstract class CannedMarsMap implements Map {
     private boolean imageDone; // True if image is complete
     private JComponent displayArea; // Parent display area
     // <fragile>
-    protected static int[] index; // Map index information
-    protected static long[] sum; // Map sum information
+    private static int[] index; // Map index information
+    private static long[] sum; // Map sum information
     // </fragile>
     // why is this fragile? <Scott>
     private int viewHeight = 300;
@@ -37,7 +37,7 @@ public abstract class CannedMarsMap implements Map {
     protected final static int mapHeight = 1440; // Height of source map in pixels.
     protected final static int mapWidth = mapHeight * 2; // Width of source map in pixels.
 
-    /** Constructs a CannedMarsMap object 
+    /** Constructs a CannedMarsMap object
      *  @param displayArea component containing the map
      */
     public CannedMarsMap(JComponent displayArea) {
@@ -46,7 +46,7 @@ public abstract class CannedMarsMap implements Map {
         centerCoords = new Coordinates(0D, 0D);
     }
 
-    /** creates a 2D map at a given center point 
+    /** creates a 2D map at a given center point
      *  @param newCenter new map center location
      */
     public void drawMap(Coordinates newCenter) {
@@ -54,14 +54,14 @@ public abstract class CannedMarsMap implements Map {
         waitForMapLoaded();
     }
 
-    /** determines if a requested map is complete 
+    /** determines if a requested map is complete
      *  @return true if requested map is complete
      */
     public boolean isImageDone() {
         return imageDone;
     }
 
-    /** returns constructed map image 
+    /** returns constructed map image
      *  @return constructed map image
      */
     public Image getMapImage() {
@@ -230,6 +230,11 @@ public abstract class CannedMarsMap implements Map {
         // Create image from buffer array
         mapImage = displayArea.createImage(
                 new MemoryImageSource(viewWidth, viewHeight, buffer_array, 0, 300));
+    }
+
+    protected void setArrays(int[] newIndex, long[] newSum) {
+        index = newIndex;
+        sum = newSum;
     }
 
     private void waitForMapLoaded() {

@@ -9,6 +9,7 @@
 package org.mars_sim.msp.ui.standard;
 
 import java.io.*;
+import java.net.URL;
 import javax.swing.JComponent;
 
 /**
@@ -20,7 +21,7 @@ public class SurfMarsMap extends CannedMarsMap {
     // Data members
     private RandomAccessFile map;
 
-    /** Constructs a SurfMarsMap object 
+    /** Constructs a SurfMarsMap object
      *  @param displayArea the component display area
      */
     public SurfMarsMap(JComponent displayArea) {
@@ -28,7 +29,10 @@ public class SurfMarsMap extends CannedMarsMap {
         // User CannedMarsMap constructor
         super(displayArea);
 
-        try { map = new RandomAccessFile("map_data/SurfaceMarsMap.dat", "r"); }
+        try {
+            URL found = getClass().getClassLoader().getResource("map_data/SurfaceMarsMap.dat");
+            map = new RandomAccessFile(found.getFile(), "r");
+        }
         catch (FileNotFoundException ex) {
             System.out.println("Could not find SurfaceMarsMap.dat");
             System.out.println("  You can find it at: http://mars-sim.sourceforge.net/SurfaceDat.zip");
@@ -37,7 +41,7 @@ public class SurfMarsMap extends CannedMarsMap {
         }
     }
 
-    /** Gets the surface map 
+    /** Gets the surface map
      *  @return the map file
      */
     public RandomAccessFile getMapFile() {
