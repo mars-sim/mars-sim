@@ -5,11 +5,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.swingui.TestRunner;
 
-import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.SimulationProperties;
-import org.mars_sim.msp.simulation.structure.Settlement;
-
 /**
  * JUnit test suite
  */
@@ -58,19 +53,5 @@ public class JUnitTests extends TestCase {
 	 * Any others begining with "test..." will be automatically included as well.
 	 */
 	public void testNothing() {
-	}
-
-	public void testCreatePerson1() throws Exception {
-
-		Mars mars = new Mars(new SimulationProperties());
-		String personName = "Person Name";
-		String settlementName = "Settlement Name";
-		Coordinates coords = new Coordinates(0, 0);
-		Settlement settlement = new Settlement(settlementName, coords, mars);
-
-		Person person = new Person(personName, settlement, mars);
-		
-		assertEquals("Name: ", personName, person.getName());
-		assertEquals("Coords: ", coords, person.getCoordinates());
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.75 2004-04-06
+ * @version 2.75 2004-04-08
  * @author Scott Davis
  */
  
@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
@@ -26,11 +26,21 @@ public class BuildingManager implements Serializable {
     /**
      * Constructor
      * @param settlement - the manager's settlement.
+     * @throws Exception if buildings cannot be constructed.
      */
-    public BuildingManager(Settlement settlement) {
+    public BuildingManager(Settlement settlement) throws Exception {
         
         this.settlement = settlement;
+        
+        // Construct all buildings at settlement based on template.
         buildings = new ArrayList();
+        SettlementConfig config = settlement.getMars().
+        	getSimulationConfiguration().getSettlementConfiguration();
+        Iterator i = config.getTemplateBuildingTypes(settlement.getTemplate()).iterator();
+        while (i.hasNext()) {
+        	String buildingType = (String) i.next();
+        	buildings.add(new Building(buildingType, this));
+        }
     }
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2004-04-03
+ * @version 2.75 2004-04-08
  * @author Scott Davis
  */
 
@@ -59,6 +59,8 @@ public class UnitManager implements Serializable {
         
         // Create initial settlements
         createInitialSettlements();
+        createInitialVehicles();
+        createInitialPeople();
     }
 
     /**
@@ -89,11 +91,15 @@ public class UnitManager implements Serializable {
     
     /**
      * Initializes the list of possible settlement names.
+     * @throws Exception if unable to load settlement names.
      */
-    private void initializeSettlementNames() {
-        SettlementNamesXmlReader settlementNamesReader = new SettlementNamesXmlReader();
-        settlementNamesReader.parse();
-        settlementNames = settlementNamesReader.getSettlementNames();
+    private void initializeSettlementNames() throws Exception {
+		try {
+			settlementNames = mars.getSimulationConfiguration().getSettlementConfiguration().getSettlementNameList();
+		}
+		catch (Exception e) {
+			throw new Exception("settlement names could not be loaded: " + e.getMessage());
+		}
     }
     
     /**
@@ -156,10 +162,86 @@ public class UnitManager implements Serializable {
         return result;
     }       
     
-    /** Creates initial settlements */
-    private void createInitialSettlements() {
-        SettlementsXmlReader settlementsReader = new SettlementsXmlReader(mars);
-        settlementsReader.parse();
+    /** 
+     * Creates initial settlements 
+     */
+    private void createInitialSettlements() throws Exception {
+    	
+    	SettlementConfig config = mars.getSimulationConfiguration().getSettlementConfiguration();
+    	
+		try {
+			for (int x=0; x < config.getNumberOfInitialSettlements(); x++) {
+				// Get settlement name
+				String name = config.getInitialSettlementName(x);
+				if (name.equals(SettlementConfig.RANDOM)) name = getNewName(SETTLEMENT);
+				
+				// Get settlement template
+				String template = config.getInitialSettlementTemplate(x);
+				
+				// Get settlement longitude
+				double longitude = 0D;
+				String longitudeStr = config.getInitialSettlementLongitude(x);
+				if (longitudeStr.equals(SettlementConfig.RANDOM)) longitude = Coordinates.getRandomLongitude();
+				else longitude = Coordinates.parseLongitude(longitudeStr);
+				
+				// Get settlement latitude
+				double latitude = 0D;
+				String latitudeStr = config.getInitialSettlementLatitude(x);
+				if (latitudeStr.equals(SettlementConfig.RANDOM)) latitude = Coordinates.getRandomLatitude();
+				else latitude = Coordinates.parseLatitude(latitudeStr);
+				
+				Coordinates location = new Coordinates(latitude, longitude);
+				
+				addUnit(new Settlement(name, template, location, mars));
+			}
+		}
+		catch (Exception e) {
+			throw new Exception("Settlements could not be created: " + e.getMessage());
+		}
+    }
+    
+    /**
+     * Creates initial vehicles based on settlement templates.
+     * @throws Exception if vehicles could not be constructed.
+     */
+    private void createInitialVehicles() throws Exception {
+    	
+		SettlementConfig config = mars.getSimulationConfiguration().getSettlementConfiguration();
+    	
+    	try {
+    		SettlementIterator i = getSettlements().iterator();
+    		while (i.hasNext()) {
+    			Settlement settlement = i.next();
+    			List vehicleTypes = config.getTemplateVehicleTypes(settlement.getTemplate());
+    			Iterator j = vehicleTypes.iterator();
+    			while (j.hasNext()) {
+    				String vehicleType = (String) j.next();
+    				addUnit(new Rover(getNewName(VEHICLE), vehicleType, settlement, mars));
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		throw new Exception("Vehicles could not be created: " + e.getMessage());
+    	}
+    }
+    
+    /**
+     * Creates initial people based on available capacity at settlements.
+     * @throws Exception if people can not be constructed.
+     */
+    private void createInitialPeople() throws Exception {
+    	
+    	try {
+    		SettlementIterator i = getSettlements().iterator();
+    		while (i.hasNext()) {
+    			Settlement settlement = i.next();
+    			while (settlement.getAvailablePopulationCapacity() > 0) 
+    				addUnit(new Person(getNewName(PERSON), settlement, mars));
+    		}
+    	}
+    	catch (Exception e) {
+    		throw new Exception("People could not be created: " + e.getMessage());
+    	}
     }
 
     /** 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2004-04-06
+ * @version 2.75 2004-04-08
  * @author Scott Davis
  */
 
@@ -26,15 +26,24 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     // Data members
     private BuildingManager buildingManager; // The settlement's building manager.
     private PowerGrid powerGrid; // The settlement's building power grid.
+    private String template; // The settlement template name.
 
-    /** Constructs a Settlement object at a given location
-     *  @param name the settlement's name
-     *  @param location the settlement's location
-     *  @param mars the virtual Mars
+    /** 
+     * Constructs a Settlement object at a given location
+     * @param name the settlement's name
+     * @param template for the settlement
+     * @param location the settlement's location
+     * @param mars the virtual Mars
+     * @throws Exception if settlement cannot be constructed.
      */
-    public Settlement(String name, Coordinates location, Mars mars) {
+    public Settlement(String name, String template, Coordinates location, Mars mars) throws Exception { 
         // Use Unit constructor
         super(name, location, mars);
+        
+        this.template = template;
+        
+		// Set inventory total mass capacity.
+		inventory.setTotalCapacity(Double.MAX_VALUE);
         
         // Initialize data members
         buildingManager = new BuildingManager(this);
@@ -44,9 +53,6 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
        
         // Add scope string to malfunction manager.
         malfunctionManager.addScopeString("Settlement");
-        
-        // Set inventory total mass capacity.
-        inventory.setTotalCapacity(Double.MAX_VALUE);
     }
     
     /** 
@@ -312,10 +318,17 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     
     /**
      * Gets the settlement's power grid.
-     * 
      * @return the power grid.
      */
     public PowerGrid getPowerGrid() {   
         return powerGrid;
+    }
+    
+    /**
+     * Gets the settlement template.
+     * @return template as string.
+     */
+    public String getTemplate() {
+    	return template;
     }
 }

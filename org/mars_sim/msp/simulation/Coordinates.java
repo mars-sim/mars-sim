@@ -513,4 +513,23 @@ public class Coordinates implements Serializable {
 		double theta = (2 * Math.PI) * (longValue / 360D);
 		return theta;
 	}	
+	
+	/**
+	 * Gets a random latitude.
+	 * @return latitude
+	 */
+	public static double getRandomLatitude() {
+		// Random latitude should be less likely to be near the poles.
+		double phi = RandomUtil.getRandomDouble(Math.PI / 2D) + RandomUtil.getRandomDouble(Math.PI / 2D);
+		return phi;
+	}
+    
+	/**
+	 * Gets a random longitude.
+	 * @return longitude
+	 */
+	public static double getRandomLongitude() {
+		double theta = (double)(Math.random() * (2D * Math.PI)); 
+		return theta;
+	}
 }

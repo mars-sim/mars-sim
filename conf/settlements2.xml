@@ -3,7 +3,7 @@
 <settlement-configuration>
 
 	<!-- List of templates for settlements -->
-	<settlement-template>
+	<settlement-template-list>
 	
 		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->
 		<!-- See http://www.nw.net/mars/ for more info. -->
@@ -32,7 +32,7 @@
 			<vehicle type="Explorer Rover" number="1" />
 		</template>
 	
-	</settlement-template>
+	</settlement-template-list>
 	
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>

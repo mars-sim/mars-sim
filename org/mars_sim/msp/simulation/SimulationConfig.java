@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.75 2004-03-25
+ * @version 2.75 2004-04-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -11,6 +11,7 @@ import javax.xml.parsers.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
+import org.mars_sim.msp.simulation.structure.SettlementConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
@@ -52,6 +53,7 @@ public class SimulationConfig {
 	private CropConfig cropConfig;
 	private VehicleConfig vehicleConfig;
 	private BuildingConfig buildingConfig;
+	private SettlementConfig settlementConfig;
 
 	/**
 	 * Constructor
@@ -69,6 +71,7 @@ public class SimulationConfig {
 		cropConfig = new CropConfig(parseXMLFile(CROP_FILE));
 		vehicleConfig = new VehicleConfig(parseXMLFile(VEHICLE_FILE));
 		buildingConfig = new BuildingConfig(parseXMLFile(BUILDING_FILE));
+		settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE));
 	}
 	
 	/**
@@ -207,5 +210,13 @@ public class SimulationConfig {
 	 */
 	public BuildingConfig getBuildingConfiguration() {
 		return buildingConfig;
+	}
+	
+	/**
+	 * Gets the settlement config subset.
+	 * @return settlement config
+	 */
+	public SettlementConfig getSettlementConfiguration() {
+		return settlementConfig;
 	}
 }
