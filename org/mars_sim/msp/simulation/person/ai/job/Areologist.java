@@ -1,15 +1,21 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
+import java.util.*;
+import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.Research;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
  * The Areologist class represents a job for an areologist, one who studies the rocks and landforms of Mars.
@@ -52,5 +58,41 @@ public class Areologist extends Job implements Serializable {
 		result+= result * ((averageAptitude - 50D) / 100D);
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the base settlement need for this job.
+	 * @param settlement the settlement in need.
+	 * @return the base need >= 0
+	 */
+	public double getSettlementNeed(Settlement settlement) {
+		double result = 0D;
+		
+		// Add (labspace * tech level) for all labs with areology specialities.
+		List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
+		Iterator i = laboratoryBuildings.iterator();
+		while (i.hasNext()) {
+			Building building = (Building) i.next();
+			try {
+				Research lab = (Research) building.getFunction(Research.NAME);
+				if (lab.hasSpeciality(Skill.AREOLOGY)) 
+					result += (lab.getLaboratorySize() * lab.getTechnologyLevel());
+			}
+			catch (BuildingException e) {
+				System.err.println("Areologist.getSettlementNeed(): " + e.getMessage());
+			}
+		}
+		
+		// Add number of exploration-capable rovers.
+		VehicleCollection vehicles = settlement.getParkedVehicles();
+		VehicleIterator j = vehicles.iterator();
+		while (j.hasNext()) {
+			Vehicle vehicle = j.next();
+			if (vehicle instanceof Rover) {
+				if (vehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) > 0D) result++;
+			}
+		}
+		
+		return result;	
 	}
 }

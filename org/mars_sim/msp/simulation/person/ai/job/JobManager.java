@@ -1,15 +1,15 @@
 /**
  * Mars Simulation Project
  * JobManager.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
  * The JobManager class keeps track of the settler jobs in a simulation.
@@ -34,12 +34,68 @@ public class JobManager implements Serializable {
 	}
 	
 	/**
-	 * Determines a new job for a person.
-	 * (Note: more work here needed)
-	 * @param person the person needing a job.
-	 * @return new job
+	 * Gets a list of available jobs in the simulation.
+	 * @return list of jobs
+	 */
+	public List getJobs() {
+		return new ArrayList(jobs);
+	}
+	
+	/**
+	 * Gets the need for a job at a settlement minus the capability of the inhabitants
+	 * performing that job there.
+	 * @param settlement the settlement to check.
+	 * @param job the job to check.
+	 * @return settlement need minus total job capability of inhabitants with job.
+	 */
+	public double getRemainingSettlementNeed(Settlement settlement, Job job) {
+		double result = job.getSettlementNeed(settlement);
+		
+		PersonIterator i = settlement.getInhabitants().iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			if (person.getMind().getJob() == job) result-= job.getCapability(person);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets a new job for the person.
+	 * Might be the person's current job.
+	 * @param person the person to check.
+	 * @param job the new job.
 	 */
 	public Job getNewJob(Person person) {
-		return (Job) jobs.get(RandomUtil.getRandomInt(jobs.size() - 1));
+		
+		Job originalJob = person.getMind().getJob();
+		Job newJob = null;
+		double newJobValue = Integer.MIN_VALUE;
+		
+		// Only change jobs when a person is at a settlement.
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			Settlement settlement = person.getSettlement();
+			
+			Iterator i = jobs.iterator();
+			while (i.hasNext()) {
+				Job job = (Job) i.next();
+				double jobCapability = job.getCapability(person);
+				double remainingNeed = getRemainingSettlementNeed(settlement, job);
+				if (job == originalJob) remainingNeed+= jobCapability;
+				double jobValue = (jobCapability + 1D) * remainingNeed;
+				
+				if (jobValue >= newJobValue) {
+					newJob = job;
+					newJobValue = jobValue;
+				}
+			}
+			
+			if ((newJob != null) && (newJob != originalJob)) {
+				System.out.println(person.getName() + " changed jobs to " + newJob.getName());
+			}
+		}
+		else newJob = originalJob;
+		
+		return newJob;
 	}
 }

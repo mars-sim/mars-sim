@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 
@@ -128,16 +128,6 @@ public class Mind implements Serializable {
         mission = newMission;
         newMission.addPerson(person);
     }
-    
-    /**
-     * Checks to see if the person should change his/her job.
-     * (Note: more work here needed)
-     * @return true if change job.
-     */
-    private boolean shouldChangeJob() {
-    	boolean result = false;
-    	return result;
-    }
 
     /** 
      * Determines a new action for the person based on
@@ -153,10 +143,7 @@ public class Mind implements Serializable {
 		JobManager jobManager = Simulation.instance().getJobManager();
 		
 		// Check if this person needs to get a new job or change jobs.
-		if ((job == null) || shouldChangeJob()) {
-			job = jobManager.getNewJob(person);
-			// System.out.println(person.getName() + " job is " + job.getName());
-		} 
+		job = jobManager.getNewJob(person);
 
         // If this Person is too weak then they can not do Missions
         if (person.getPerformanceRating() < 0.5D) {

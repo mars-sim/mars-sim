@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Job.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.job;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
  * The Job class represents a person's job.
@@ -88,4 +89,11 @@ public abstract class Job implements Serializable {
 		if (!jobMissionJoins.contains(missionClass)) result = NON_JOB_MISSION_JOIN_PENALTY;
 		return result;
 	}
+	
+	/**
+	 * Gets the base settlement need for this job.
+	 * @param settlement the settlement in need.
+	 * @return the base need >= 0
+	 */
+	public abstract double getSettlementNeed(Settlement settlement);
 }

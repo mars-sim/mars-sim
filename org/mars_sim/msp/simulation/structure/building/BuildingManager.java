@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
  
@@ -94,7 +94,7 @@ public class BuildingManager implements Serializable {
      *
      * @return number of buildings
      */
-    public int getBuidingNum() {
+    public int getBuildingNum() {
         return buildings.size();
     }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -242,5 +242,13 @@ public class Farming extends Function implements Serializable {
 		}
         
 		return powerRequired;
+	}
+	
+	/**
+	 * Gets the total growing area for all crops.
+	 * @return growing area in square meters
+	 */
+	public double getGrowingArea() {
+		return growingArea;
 	}
 }

@@ -1,14 +1,18 @@
 /**
  * Mars Simulation Project
  * Botanist.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /** 
  * The Botanist class represents a job for a botanist.
@@ -49,4 +53,44 @@ public class Botanist extends Job implements Serializable {
 		
 		return result;
 	}
+	
+	/**
+	 * Gets the base settlement need for this job.
+	 * @param settlement the settlement in need.
+	 * @return the base need >= 0
+	 */
+	public double getSettlementNeed(Settlement settlement) {
+		double result = 0D;
+		
+		// Add (labspace * tech level) for all labs with botany specialities.
+		List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
+		Iterator i = laboratoryBuildings.iterator();
+		while (i.hasNext()) {
+			Building building = (Building) i.next();
+			try {
+				Research lab = (Research) building.getFunction(Research.NAME);
+				if (lab.hasSpeciality(Skill.BOTANY)) 
+					result += (lab.getResearcherNum() * lab.getTechnologyLevel());
+			}
+			catch (BuildingException e) {
+				System.err.println("Botanist.getSettlementNeed(): " + e.getMessage());
+			}
+		}
+		
+		// Add (growing area in greenhouses) / 15
+		List greenhouseBuildings = settlement.getBuildingManager().getBuildings(Farming.NAME);
+		Iterator j = greenhouseBuildings.iterator();
+		while (j.hasNext()) {
+			Building building = (Building) j.next();
+			try {
+				Farming farm = (Farming) building.getFunction(Farming.NAME);
+				result += (farm.getGrowingArea() / 15D);
+			}
+			catch (BuildingException e) {
+				System.err.println("Botanist.getSetltementNeed(): " + e.getMessage());
+			}
+		}
+		
+		return result;	
+	}	
 }

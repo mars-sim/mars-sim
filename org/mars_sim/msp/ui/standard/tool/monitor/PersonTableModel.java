@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.76 2004-06-09
+ * @version 2.76 2004-06-10
  * @author Barry Evans
  */
 
@@ -192,7 +192,10 @@ public class PersonTableModel extends UnitTableModel {
             	// If person is dead, get job from deathinfo.
             	if (person.getPhysicalCondition().isDead()) 
             		result = person.getPhysicalCondition().getDeathDetails().getJob();
-     			else result = person.getMind().getJob().getName();
+     			else {
+     				if (person.getMind().getJob() != null) result = person.getMind().getJob().getName();
+     				else result = null;
+            	} 
             } break;
 
             case TASK : {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -195,5 +195,13 @@ public class MedicalStation implements MedicalAid, Serializable {
             if (!cured && !dead && !recovering) problemsAwaitingTreatment.add(problem);
         }
         else throw new Exception("Health problem not currently being treated.");
+    }
+    
+    /**
+     * Gets the treatment level of the medical station.
+     * @return treatment level
+     */
+    public int getTreatmentLevel() {
+    	return level;
     }
 }

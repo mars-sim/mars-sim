@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.job;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
  * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and vehicles.
@@ -49,5 +50,23 @@ public class Engineer extends Job implements Serializable {
 		result+= result * ((experienceAptitude - 50D) / 100D);
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the base settlement need for this job.
+	 * @param settlement the settlement in need.
+	 * @return the base need >= 0
+	 */
+	public double getSettlementNeed(Settlement settlement) {
+		
+		double result = 0D;
+		
+		// Add number of buildings in settlement.
+		result+= settlement.getBuildingManager().getBuildingNum();
+		
+		// Add number of vehicles parked at settlement.
+		result+= settlement.getParkedVehicleNum();
+		
+		return result;	
 	}
 }

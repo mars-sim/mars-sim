@@ -1,14 +1,18 @@
 /**
  * Mars Simulation Project
  * Doctor.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
+import java.util.*;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /** 
  * The Doctor class represents a job for an medical treatment expert.
@@ -46,5 +50,50 @@ public class Doctor extends Job implements Serializable {
 		result+= result * ((academicAptitude - 50D) / 100D);
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the base settlement need for this job.
+	 * @param settlement the settlement in need.
+	 * @return the base need >= 0
+	 */
+	public double getSettlementNeed(Settlement settlement) {
+		
+		double result = 0D;
+		
+		// Add total population / 2
+		int population = settlement.getCurrentPopulationNum();
+		result+= population / 2D;
+		
+		// Add (labspace * tech level) for all labs with areology specialities.
+		List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
+		Iterator i = laboratoryBuildings.iterator();
+		while (i.hasNext()) {
+			Building building = (Building) i.next();
+			try {
+				Research lab = (Research) building.getFunction(Research.NAME);
+				if (lab.hasSpeciality(Skill.MEDICAL)) 
+					result += (lab.getResearcherNum() * lab.getTechnologyLevel());
+			}
+			catch (BuildingException e) {
+				System.err.println("Doctor.getSettlementNeed(): " + e.getMessage());
+			}
+		}		
+		
+		// Add tech level for all medical infirmaries.
+		List medicalBuildings = settlement.getBuildingManager().getBuildings(MedicalCare.NAME);
+		Iterator j = medicalBuildings.iterator();
+		while (j.hasNext()) {
+			Building building = (Building) j.next();
+			try {
+				MedicalCare infirmary = (MedicalCare) building.getFunction(MedicalCare.NAME);
+				result+= infirmary.getTechLevel();
+			}
+			catch (BuildingException e) {
+				System.err.println("Doctor.getSettlementNeed(): " + e.getMessage());
+			}
+		}			
+		
+		return result;	
 	}
 }
