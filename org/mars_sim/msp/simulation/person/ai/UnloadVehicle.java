@@ -90,19 +90,21 @@ class UnloadVehicle extends Task implements Serializable {
         amountUnloading -= foodAmount;
         // if (foodAmount > 0D) System.out.println(person.getName() + " unloading " + foodAmount + " food from " + vehicle.getName());
 
-        if (isFullyUnloaded()) done = true;
+        if (isFullyUnloaded(vehicle)) done = true;
 
         return 0;
     }
 
     /** Returns true if the vehicle is fully unloaded.
+     *
+     * @param vehicle Vehicle to check.
      *  @return is vehicle fully unloaded?
      */
-    public boolean isFullyUnloaded() {
+    static public boolean isFullyUnloaded(Vehicle vehicle) {
         boolean result = true;
 
         if (vehicle.getFuel() != 0D) result = false;
-        if (vehicle.getOxygen() >= MINIMUMOXYGEN) result = false;
+        if (vehicle.getOxygen() > MINIMUMOXYGEN) result = false;
         if (vehicle.getWater() != 0D) result = false;
         if (vehicle.getFood() != 0D) result = false;
 

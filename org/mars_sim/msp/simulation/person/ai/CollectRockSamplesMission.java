@@ -19,6 +19,15 @@ import org.mars_sim.msp.simulation.vehicle.*;
  */
 class CollectRockSamplesMission extends Mission implements Serializable {
 
+    // Phase constants
+    final private static String EMBARK = "Embarking";
+    final private static String DRIVING = "Driving";
+    final private static String COLLECTSAMPLES =
+                                        "Collecting Rock and Soil Samples";
+    final private static String DISEMBARK = "Disembarking";
+    final private static String DRIVESITE1 = "Driving to Site 1";
+    final private static String DRIVEHOME = "Driving Home";
+
     // Data members
     private Settlement startingSettlement;
     private Coordinates destination;
@@ -58,7 +67,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         reserveVehicle = null;
 
         // Set initial phase
-        phase = "Embarking";
+        phase = EMBARK;
     }
 
     /** Gets the weighted probability that a given person would start this mission.
@@ -88,7 +97,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         double result = 0D;
 
-        if (phase.equals("Embarking") && !hasPerson(person)) { 
+        if (phase.equals(EMBARK) && !hasPerson(person)) { 
             if (person.getSettlement() == startingSettlement) {
                 if (people.size() < missionCapacity) result = 50D;
             }
@@ -112,10 +121,10 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         // If the mission is not yet completed, perform the mission phase.
         if (!done) {
-            if (phase.equals("Embarking")) embarkingPhase(person);
-            if (phase.startsWith("Driving")) drivingPhase(person);
-            if (phase.startsWith("Collecting Rock and Soil Samples")) collectingPhase(person);
-            if (phase.equals("Disembarking")) disembarkingPhase(person); 
+            if (phase.equals(EMBARK)) embarkingPhase(person);
+            if (phase.startsWith(DRIVING)) drivingPhase(person);
+            if (phase.startsWith(COLLECTSAMPLES)) collectingPhase(person);
+            if (phase.equals(DISEMBARK)) disembarkingPhase(person); 
         }
     }
 
@@ -169,7 +178,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         
         // Have person get in the vehicle
         // When every person in mission is in vehicle, go to Driving phase.
-        if (!person.getLocationSituation().equals("In Vehicle")) {
+        if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
             person.getMind().getTaskManager().addTask(new EnterVehicle(person, mars, vehicle));
             return;
         }
@@ -177,7 +186,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If any people in mission haven't entered the vehicle, return.
         for (int x=0; x < people.size(); x++) {
             Person tempPerson = (Person) people.elementAt(x);
-            if (!tempPerson.getLocationSituation().equals("In Vehicle")) return;
+            if (!tempPerson.getLocationSituation().equals(Person.INVEHICLE)) return;
         }
 
         // Make final preperations on vehicle.
@@ -188,7 +197,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         vehicle.setDestinationType("Coordinates");
 
         // Transition phase to Driving.
-        phase = "Driving to Site 1";
+        phase = DRIVESITE1;
     }
 
     /** Performs the driving phase of the mission.
@@ -205,10 +214,10 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If vehicle has reached destination, transition to Collecting Rock Samples or Disembarking phase.
         if (person.getCoordinates().equals(destination)) {
             if (siteIndex == collectionSites.size()) { 
-                phase = "Disembarking";
+                phase = DISEMBARK;
             }
             else {
-                phase = "Collecting Rock and Soil Samples from Site " + (siteIndex + 1);
+                phase = COLLECTSAMPLES + " from Site " + (siteIndex + 1);
             }
             return;
         }
@@ -242,13 +251,13 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         else {
             siteIndex++;
             if (siteIndex == collectionSites.size()) {
-                phase = "Driving Home";
+                phase = DRIVEHOME;
                 destination = startingSettlement.getCoordinates();
                 vehicle.setDestinationSettlement(startingSettlement);
                 vehicle.setDestinationType("Settlement");
             }
             else {
-                phase = "Driving to Site " + (siteIndex + 1);
+                phase = DRIVING + " to site " + (siteIndex + 1);
                 destination = (Coordinates) collectionSites.elementAt(siteIndex);
             }
             collectedSamples = 0D;
@@ -270,13 +279,13 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         vehicle.setETA(null);
 
         // Have person exit vehicle if necessary. 
-        if (person.getLocationSituation().equals("In Vehicle")) {
+        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
             person.getMind().getTaskManager().addTask(new ExitVehicle(person, mars, vehicle, startingSettlement));
             return;
         }
 
         // Unload vehicle if necessary.
-        if (isVehicleUnloaded()) vehicleUnloaded = true;
+        if (UnloadVehicle.isFullyUnloaded(vehicle)) vehicleUnloaded = true;
         if (!vehicleUnloaded) {
             person.getMind().getTaskManager().addTask(new UnloadVehicle(person, mars, vehicle));
             return;
@@ -286,9 +295,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         boolean allDisembarked = true;
         for (int x=0; x < people.size(); x++) {
             Person tempPerson = (Person) people.elementAt(x);
-            if (tempPerson.getLocationSituation().equals("In Vehicle")) allDisembarked = false;
+            if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
         }
-        if (allDisembarked && isVehicleUnloaded()) endMission(); 
+        if (allDisembarked && UnloadVehicle.isFullyUnloaded(vehicle)) endMission(); 
     }
 
     /** Determine the locations of the sample collection sites.
@@ -356,20 +365,6 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         if (vehicle.getOxygen() < vehicle.getOxygenCapacity()) result = false;
         if (vehicle.getWater() < vehicle.getWaterCapacity()) result = false;
         if (vehicle.getFood() < vehicle.getFoodCapacity()) result = false;
-
-        return result;
-    }
-
-    /** Determine if a vehicle is fully unloaded.
-     *  @return true if vehicle is fully unloaded.
-     */
-    private boolean isVehicleUnloaded() {
-        boolean result = true;
-
-        if (vehicle.getFuel() != 0D) result = false;
-        if (vehicle.getOxygen() != 0D) result = false;
-        if (vehicle.getWater() != 0D) result = false;
-        if (vehicle.getFood() != 0D) result = false;
 
         return result;
     }
