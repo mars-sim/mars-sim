@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonWindow.java
- * @version 2.77 2004-08-20
+ * @version 2.77 2004-09-06
  * @author Scott Davis
  */
 
@@ -36,6 +36,7 @@ public class PersonWindow extends UnitWindow {
         addTabPanel(new ActivityTabPanel(person, desktop));
         addTabPanel(new HealthTabPanel(person, desktop));
         addTabPanel(new GeneralTabPanel(person, desktop));
+        addTabPanel(new SocialTabPanel(person, desktop));
         
         // Add death tab panel if person is dead.
         if (person.getPhysicalCondition().isDead()) {
