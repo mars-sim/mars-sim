@@ -34,7 +34,7 @@ public class InsituResourceProcessorFacility extends Facility {
      */
     public double getOxygenRate() {
         int currentPop = quarters.getCurrentPopulation();
-        double result = currentPop + 1D;
+        double result = currentPop + 2D;
         result /= 1000D;
         return result;
     }
@@ -44,7 +44,7 @@ public class InsituResourceProcessorFacility extends Facility {
      */
     public double getWaterRate() {
         int currentPop = quarters.getCurrentPopulation();
-        double result = currentPop + 1D;
+        double result = currentPop + 2D;
         result /= 1000D;
         return result;
     }
@@ -54,7 +54,7 @@ public class InsituResourceProcessorFacility extends Facility {
      */
     public double getFuelRate() {
         int currentPop = quarters.getCurrentPopulation();
-        double result = currentPop + 1D;
+        double result = currentPop + 2D;
         result /= 1000D;
         return result;
     }
