@@ -27,8 +27,8 @@ public abstract class MspCollection implements java.io.Serializable {
      */
     public MspCollection() {
 
-        // Linked list are suited to List that have dynamic contents
-        elements = new LinkedList();
+        // Array lists are suited to List that have dynamic contents
+        elements = new ArrayList();
     }
 
     /**
@@ -36,9 +36,7 @@ public abstract class MspCollection implements java.io.Serializable {
      * @param listener the new listener
      */
     public void addMspCollectionEventListener(MspCollectionEventListener listener) {
-        if (listeners == null) {
-            listeners = new ArrayList();
-        }
+        if (listeners == null) listeners = new ArrayList();
         if (!listeners.contains(listener)) listeners.add(listener);
     }
 
@@ -132,5 +130,45 @@ public abstract class MspCollection implements java.io.Serializable {
                 ((MspCollectionEventListener) i.next()).collectionModified(event);
 	        }
 	    }
+    }
+    
+ 	/**
+ 	 * Checks if an object is a MSP collection with identical contents.
+ 	 * @return true if contents are the same.
+ 	 */
+    public boolean equals(Object object) {
+    	boolean result = false;
+    	
+    	if (object instanceof MspCollection) {
+    		MspCollection collection = (MspCollection) object;
+    		if (collection.size() == elements.size()) {
+    			result = true;
+    			Iterator i = elements.iterator();
+    			while (i.hasNext()) {
+    				Unit unit = (Unit) i.next();
+    				if (!collection.contains(unit)) result = false;
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Refreshes the contents of this collection with the contents of another MSP collection.
+     * @param collection the refresher collection
+     */
+    public void refreshContents(MspCollection collection) {
+    	Iterator i = collection.getUnits().iterator();
+    	while (i.hasNext()) {
+    		Unit unit = (Unit) i.next();
+    		if (!contains(unit)) add(unit);
+    	}
+    	
+    	Iterator j = elements.iterator();
+    	while (j.hasNext()) {
+    		Unit unit = (Unit) j.next();
+    		if (!collection.contains(unit)) remove(unit);
+    	}
     }
 }

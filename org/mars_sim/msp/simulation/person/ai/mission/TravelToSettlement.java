@@ -392,7 +392,7 @@ public class TravelToSettlement extends Mission implements Serializable {
         UnitManager unitManager = startingSettlement.getUnitManager();
         Settlement result = null;
 
-        SettlementCollection settlements = unitManager.getSettlements();
+        SettlementCollection settlements = new SettlementCollection(unitManager.getSettlements());
 
 		// Create collection of destination settlements that have better job prospects.
 		JobManager jobManager = Simulation.instance().getJobManager();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.76 2004-06-12
+ * @version 2.77 2004-08-10
  * @author Scott Davis
  */
 
@@ -15,7 +15,6 @@ import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.Mars;
-import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
@@ -454,9 +453,6 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
         
 		// Get the current location.
 		Coordinates startingLocation = startingSettlement.getCoordinates();
-        
-		// Get Mars surface features.
-		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
         
 		// Determine the first collection site.
 		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));

@@ -171,6 +171,7 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @param contents The contents of this model.
      */
     protected void checkContents(List contents) {
+    	
     }
 
     /**

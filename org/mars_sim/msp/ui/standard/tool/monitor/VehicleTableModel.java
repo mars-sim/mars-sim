@@ -13,8 +13,7 @@ import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.
@@ -89,10 +88,7 @@ public class VehicleTableModel extends UnitTableModel {
     public VehicleTableModel(UnitManager unitManager) {
         super("All Vehicles", " vehicles", columnNames, columnTypes);
 
-        VehicleIterator iter = unitManager.getVehicles().sortByName().iterator();
-        while(iter.hasNext()) {
-            add(iter.next());
-        }
+		setSource(unitManager.getVehicles());
     }
 
     /**
@@ -200,4 +196,16 @@ public class VehicleTableModel extends UnitTableModel {
 
         return result;
     }
+    
+	/**
+	 * Defines the source data from this table
+	 */
+	private void setSource(VehicleCollection source) {
+		VehicleIterator iter = source.iterator();
+		while(iter.hasNext()) {
+			add(iter.next());
+		}
+
+		source.addMspCollectionEventListener(this);
+	}
 }
