@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-02-26
  * @author Scott Davis
  */
 
@@ -20,17 +20,13 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     // Static data members
     private static final double BASE_SPEED = 30D; // Base speed of rover in kph.
     private static final double BASE_MASS = 10000D; // Base mass of rover in kg.
-    private static final double CARGO_CAPACITY = 10000D; // Cargo capacity of rover in kg.
-    private static final double METHANE_CAPACITY = 2500D; // Methane capacity of rover in kg.
-    private static final double OXYGEN_CAPACITY = 350D; // Oxygen capacity of rover in kg.
-    private static final double WATER_CAPACITY = 1400D; // Water capacity of rover in kg.
-    private static final double FOOD_CAPACITY = 525D; // Food capacity of rover in kg.
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private double NORMAL_TEMP = 25D; // Normal temperature (celsius)
     
     // Data members
     protected int crewCapacity = 0; // The rover's capacity for crewmembers.
     protected Airlock airlock; // The rover's airlock.
+    protected double range; // Operating range of rover in km.
 	
     /** Constructs a Rover object at a given settlement
      *  @param name the name of the rover
@@ -61,15 +57,6 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
         // Set the empty mass of the rover.
         baseMass = BASE_MASS;
 
-        // Set inventory total mass capacity.
-        inventory.setTotalCapacity(CARGO_CAPACITY);
-	
-        // Set inventory resource capacities.
-        inventory.setResourceCapacity(Resource.METHANE, METHANE_CAPACITY);
-        inventory.setResourceCapacity(Resource.OXYGEN, OXYGEN_CAPACITY);
-        inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
-        inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);
-
         // Create the rover's airlock.
         airlock = new Airlock(this, mars, 2);
     }
@@ -86,8 +73,7 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      *  @return the range of the rover (km)
      */
     public double getRange() {
-        SimulationProperties properties = mars.getSimulationProperties();
-        return properties.getRoverRange();
+        return range;
     }
 
     /**

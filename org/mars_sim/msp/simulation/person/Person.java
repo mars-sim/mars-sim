@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2003-01-19
+ * @version 2.75 2003-01-26
  * @author Scott Davis
  */
 
@@ -106,6 +106,8 @@ public class Person extends Unit implements Serializable {
 
 	    // Set inventory total mass capacity.
 	    inventory.setTotalCapacity(100D);
+        inventory.setResourceCapacity(Resource.ROCK_SAMPLES, 100D);
+        inventory.setResourceCapacity(Resource.FOOD, 100D);
     }
 
     /** Returns a string for the person's relative location "In

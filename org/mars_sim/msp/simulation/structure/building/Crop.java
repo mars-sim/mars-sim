@@ -149,7 +149,6 @@ public class Crop implements Serializable {
                 double overWorkTime = currentPhaseWorkCompleted - harvestingWorkRequired;
                 farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired);
                 remainingWorkTime = overWorkTime;
-                // System.out.println(cropType.getName() + " finished harvesting for " + actualHarvest + "kg. at " + settlement.getName());
                 phase = FINISHED;
             }
             else {

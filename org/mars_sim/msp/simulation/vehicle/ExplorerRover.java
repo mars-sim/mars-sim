@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRover.java
- * @version 2.75 2003-01-08
+ * @version 2.75 2003-02-26
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -17,7 +17,14 @@ import java.io.Serializable;
 public class ExplorerRover extends Rover implements Serializable {
 	
     // Static data members
-    private static final int CREW_CAPACITY = 6; // Max number of crewmembers.
+    private static final double RANGE = 3000D; // Operating range of rover in km.
+    private static final int CREW_CAPACITY = 4; // Max number of crewmembers.
+    private static final double CARGO_CAPACITY = 10000D; // Cargo capacity of rover in kg.
+    private static final double METHANE_CAPACITY = 2500D; // Methane capacity of rover in kg.
+    private static final double OXYGEN_CAPACITY = 350D; // Oxygen capacity of rover in kg.
+    private static final double WATER_CAPACITY = 1400D; // Water capacity of rover in kg.
+    private static final double FOOD_CAPACITY = 525D; // Food capacity of rover in kg.
+    private static final double ROCK_SAMPLES_CAPACITY = 5000; // Rock samples capacity of rover in kg.
 
     // Data members
     private MobileLaboratory lab; // The rover's lab.
@@ -47,9 +54,22 @@ public class ExplorerRover extends Rover implements Serializable {
 	    malfunctionManager.addScopeString("ExplorerRover");
 	    malfunctionManager.addScopeString("Laboratory");
 	    
+        // Set the operating range of rover.
+        range = RANGE;
+        
         // Set crew capacity
 	    crewCapacity = CREW_CAPACITY;
 
+        // Set inventory total mass capacity.
+        inventory.setTotalCapacity(CARGO_CAPACITY);
+	
+        // Set inventory resource capacities.
+        inventory.setResourceCapacity(Resource.METHANE, METHANE_CAPACITY);
+        inventory.setResourceCapacity(Resource.OXYGEN, OXYGEN_CAPACITY);
+        inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
+        inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);
+        inventory.setResourceCapacity(Resource.ROCK_SAMPLES, ROCK_SAMPLES_CAPACITY);
+        
 	    // Construct mobile lab.
 	    String[] techSpeciality = { "Aerology" };
 	    lab = new MobileLaboratory(1, 1, techSpeciality);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-02-26
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -19,7 +19,8 @@ import java.io.Serializable;
 public class TransportRover extends Rover implements Serializable {
 
     // Static data members
-    private static final int CREW_CAPACITY = 12; // Max number of crewmembers.
+    private static final double RANGE = 4000D; // Operating range of rover in km.
+    private static final int CREW_CAPACITY = 8; // Max number of crewmembers.
     private static final double CARGO_CAPACITY = 12000D; // Cargo capacity of rover in kg.
     private static final double METHANE_CAPACITY = 3750D; // Methane capacity of rover in kg.
     private static final double OXYGEN_CAPACITY = 1000D; // Oxygen capacity of rover in kg.
@@ -52,6 +53,9 @@ public class TransportRover extends Rover implements Serializable {
         // Add scope to malfunction manager.
 	    malfunctionManager.addScopeString("TransportRover");
 	    
+        // Set operating range of rover.
+        range = RANGE;
+        
         // Set crew capacity
 	    crewCapacity = CREW_CAPACITY;
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-02-20
+ * @version 2.75 2003-02-26
  * @author Scott Davis
  */
 
@@ -52,31 +52,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         
         // Set inventory total mass capacity.
         inventory.setTotalCapacity(Double.MAX_VALUE);
-    
-        // Set inventory resource capacities.
-        SimulationProperties properties = mars.getSimulationProperties();
-        double oxygenCap = properties.getSettlementOxygenStorageCapacity();
-        inventory.setResourceCapacity(Resource.OXYGEN, oxygenCap);
-        double waterCap = properties.getSettlementWaterStorageCapacity();
-        inventory.setResourceCapacity(Resource.WATER, waterCap);
-        double foodCap = properties.getSettlementFoodStorageCapacity();
-        inventory.setResourceCapacity(Resource.FOOD, foodCap);
         
-        inventory.setResourceCapacity(Resource.HYDROGEN, 10000D);
-        inventory.setResourceCapacity(Resource.METHANE, 10000D);
-
-        // Set random initial resources from 1/4 to total capacity.
-        double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(3D * oxygenCap / 4D);
-        inventory.addResource(Resource.OXYGEN, oxygen); 
-        double water = (waterCap / 4D) + RandomUtil.getRandomDouble(3D * waterCap / 4D);
-        inventory.addResource(Resource.WATER, water); 
-        double food = (foodCap / 4D) + RandomUtil.getRandomDouble(3D * foodCap / 4D);
-        inventory.addResource(Resource.FOOD, food);
-
-        // Set random initial rock samples from 0 to 500 kg.
-        double rockSamples = RandomUtil.getRandomDouble(500D);
-        inventory.addResource(Resource.ROCK_SAMPLES, rockSamples);
-
         // Create airlock for settlement.
         airlock = new Airlock(this, mars, 4);
     }

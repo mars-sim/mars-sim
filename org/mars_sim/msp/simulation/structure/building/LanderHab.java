@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-02-22
+ * @version 2.75 2003-02-26
  * @author Scott Davis
  */
  
@@ -22,7 +22,7 @@ public class LanderHab extends InhabitableBuilding
         Recreation, Dining, ResourceProcessing, Storage, PowerGeneration {
     
     // Number of people the hab can accommodate at once.
-    private final static int ACCOMMODATION_CAPACITY = 6;
+    private final static int ACCOMMODATION_CAPACITY = 4;
     
     // Power down level for processes.
     private final static double POWER_DOWN_LEVEL = .5D;
@@ -64,6 +64,7 @@ public class LanderHab extends InhabitableBuilding
         resourceStorageCapacity.put(Resource.WASTE_WATER, new Double(500D));
         resourceStorageCapacity.put(Resource.CARBON_DIOXIDE, new Double(500D));
         resourceStorageCapacity.put(Resource.FOOD, new Double(1000D));
+        resourceStorageCapacity.put(Resource.ROCK_SAMPLES, new Double(1000D));
         
         // Add resource storage capacity to settlement inventory.
         Iterator i = resourceStorageCapacity.keySet().iterator();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resource.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-02-26
  * @author Scott Davis 
  */
 
@@ -32,18 +32,6 @@ public class Inventory implements Serializable {
 	
 	    // Set owning unit.
         this.owner = owner;
-
-	    // Initialize contained resources to zero.
-        /*
-        containedResources.put(Resource.CARBON_DIOXIDE, new Double(0D));
-        containedResources.put(Resource.WASTE_WATER, new Double(0D));
-        containedResources.put(Resource.WATER, new Double(0D));
-	    containedResources.put(Resource.OXYGEN, new Double(0D));
-	    containedResources.put(Resource.FOOD, new Double(0D));
-	    containedResources.put(Resource.ROCK_SAMPLES, new Double(0D));
-        containedResources.put(Resource.HYDROGEN, new Double(0D));
-        containedResources.put(Resource.METHANE, new Double(0D));
-        */
     }
 
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 2.75 2002-10-06
+ * @version 2.75 2002-10-26
  * @author Scott Davis
  */
  
@@ -11,7 +11,7 @@ import java.util.Collection;
  
 public interface Farming extends Function {
         
-    public static final double HARVEST_MULTIPLIER = 2D;
+    public static final double HARVEST_MULTIPLIER = 10D;
     public static final double BASE_CROP_GROWING_TIME = 90000D;
     
     /**
