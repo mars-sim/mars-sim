@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.75 2004-04-06
+ * @version 2.75 2004-04-13
  * @author Scott Davis
  */
 
@@ -58,7 +58,7 @@ class Sleep extends Task implements Serializable {
     }
 
     /** Returns the weighted probability that a person might perform this task.
-     *  Returns 10 if person's fatigue is over 750.
+     *  Returns 25 if person's fatigue is over 750, more if fatigue is much higher.
      *  Returns an additional 50 if it is night time.
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
@@ -67,11 +67,16 @@ class Sleep extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
-        if (person.getPhysicalCondition().getFatigue() > 750D) {
+		double fatigue = person.getPhysicalCondition().getFatigue();
+
+        if (fatigue > 750D) {
             result = 25D;
             if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0)
                 result += 50D;
         }
+        
+        // If fatigue is higher than 1000, add 1 to result for every 5 points over 1000.
+        if (fatigue > 1000D) result += (fatigue - 1000D) / 5D;
 
         return result;
     }
