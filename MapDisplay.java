@@ -186,15 +186,15 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 		g.drawImage(mapImage, 0, 0, this);
 	    }
 
-	    // Set unit label color
-	    g.setColor(topo ? Color.black : Color.green);
-
 	    drawVehicles(g);
 	    drawSettlements(g);
 	}
     }
 
     private void drawVehicles(Graphics g) {
+	// topo=black, surf=white
+	g.setColor(topo ? Color.black : Color.white);
+
 	// Draw a vehicle symbol for each moving vehicle within the viewing map
 	g.setFont(new Font("Helvetica", Font.PLAIN, 9));
 	
@@ -220,6 +220,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     }
 			
     private void drawSettlements(Graphics g) {
+	// topo=black, surf=green
+	g.setColor(topo ? Color.black : Color.green);
+
 	// Draw a settlement symbol for each settlement within the viewing map
 	g.setFont(new Font("Helvetica", Font.PLAIN, 12));
 
