@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.74 2002-05-14
+ * @version 2.76 2002-06-08
  * @author Scott Davis
  */
 
@@ -79,11 +79,14 @@ public class MalfunctionManager implements Serializable {
      */
     public boolean hasEmergencyMalfunction() {
         boolean result = false;
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if ((malfunction.getEmergencyWorkTime() - 
-                    malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
+
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if ((malfunction.getEmergencyWorkTime() - 
+                        malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
+	    }
 	}
 
 	return result;
@@ -95,11 +98,14 @@ public class MalfunctionManager implements Serializable {
      */
     public boolean hasNormalMalfunction() {
         boolean result = false;
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if ((malfunction.getWorkTime() - 
-                    malfunction.getCompletedWorkTime()) > 0D) result = true;
+
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if ((malfunction.getWorkTime() - 
+                        malfunction.getCompletedWorkTime()) > 0D) result = true;
+	    }
 	}
 
 	return result;
@@ -111,22 +117,25 @@ public class MalfunctionManager implements Serializable {
      */
     public boolean hasEVAMalfunction() {
         boolean result = false;
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if ((malfunction.getEVAWorkTime() - 
-                    malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
+
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if ((malfunction.getEVAWorkTime() - 
+                        malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
+	    }
 	}
 
 	return result;
     }
     
     /**
-     * Gets an iterator for the unit's current malfunctions.
-     * @return malfunction iterator
+     * Gets a collection of the unit's current malfunctions.
+     * @return malfunction collection 
      */
-    public Iterator getMalfunctions() {
-        return malfunctions.iterator();
+    public Collection getMalfunctions() {
+        return malfunctions;
     }
 
     /**
@@ -137,12 +146,15 @@ public class MalfunctionManager implements Serializable {
 	    
         Malfunction result = null;
 	double highestSeverity = 0;
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-            if ((malfunction.getSeverity() > highestSeverity) && !malfunction.isFixed()) {
-	        highestSeverity = malfunction.getSeverity();
-	        result = malfunction;
+
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+                if ((malfunction.getSeverity() > highestSeverity) && !malfunction.isFixed()) {
+	            highestSeverity = malfunction.getSeverity();
+	            result = malfunction;
+	        }
 	    }
 	}
 
@@ -157,14 +169,17 @@ public class MalfunctionManager implements Serializable {
 
         Malfunction result = null;
 	double highestSeverity = 0;
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D) {
-	        if (malfunction.getSeverity() > highestSeverity) {
-	            highestSeverity = malfunction.getSeverity();
-	            result = malfunction;
-		}
+
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D) {
+	            if (malfunction.getSeverity() > highestSeverity) {
+	                highestSeverity = malfunction.getSeverity();
+	                result = malfunction;
+		    }
+	        }
 	    }
 	}
 
@@ -179,14 +194,17 @@ public class MalfunctionManager implements Serializable {
 
         Malfunction result = null;
 	double highestSeverity = 0;
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) {
-	        if (malfunction.getSeverity() > highestSeverity) {
-	            highestSeverity = malfunction.getSeverity();
-	            result = malfunction;
-		}
+
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) {
+	            if (malfunction.getSeverity() > highestSeverity) {
+	                highestSeverity = malfunction.getSeverity();
+	                result = malfunction;
+		    }
+	        }
 	    }
 	}
 
@@ -201,14 +219,17 @@ public class MalfunctionManager implements Serializable {
 
         Malfunction result = null;
 	double highestSeverity = 0;
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
-	        if (malfunction.getSeverity() > highestSeverity) {
-	            highestSeverity = malfunction.getSeverity();
-	            result = malfunction;
-		}
+
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
+	            if (malfunction.getSeverity() > highestSeverity) {
+	                highestSeverity = malfunction.getSeverity();
+	                result = malfunction;
+		    }
+	        }
 	    }
 	}
 
@@ -254,17 +275,21 @@ public class MalfunctionManager implements Serializable {
         Collection fixedMalfunctions = new ArrayList();
 	    
         // Check if any malfunctions are fixed.
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if (malfunction.isFixed()) {
-		// System.out.println(malfunction.getName() + " at " + entity.getName() + " is fully fixed.");    
-		fixedMalfunctions.add(malfunction);
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if (malfunction.isFixed()) {
+		    // System.out.println(malfunction.getName() + " at " + entity.getName() + " is fully fixed.");    
+		    fixedMalfunctions.add(malfunction);
+	        }
 	    }
 	}
 
-	i = fixedMalfunctions.iterator();
-	while (i.hasNext()) malfunctions.remove(i.next());
+	if (fixedMalfunctions.size() > 0) {
+	    Iterator i = fixedMalfunctions.iterator();
+	    while (i.hasNext()) malfunctions.remove(i.next());
+	}
 	    
         // Determine life support modifiers.
 	setLifeSupportModifiers(time);
@@ -285,19 +310,21 @@ public class MalfunctionManager implements Serializable {
 	double tempTemperatureModifier = 0D;
 	    
         // Make any life support modifications.
-	Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
-	        Map effects = malfunction.getLifeSupportEffects();
-		if (effects.get("Oxygen") != null)
-	            tempOxygenFlowModifier += ((Double) effects.get("Oxygen")).doubleValue();
-		if (effects.get("Water") != null)
-	            tempWaterFlowModifier += ((Double) effects.get("Water")).doubleValue();
-		if (effects.get("Air Pressure") != null)
-	            tempAirPressureModifier += ((Double) effects.get("Air Pressure")).doubleValue();
-		if (effects.get("Temperature") != null)
-	            tempTemperatureModifier += ((Double) effects.get("Temperature")).doubleValue();
+	if (hasMalfunction()) {
+	    Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+	            Map effects = malfunction.getLifeSupportEffects();
+		    if (effects.get("Oxygen") != null)
+	                tempOxygenFlowModifier += ((Double) effects.get("Oxygen")).doubleValue();
+		    if (effects.get("Water") != null)
+	                tempWaterFlowModifier += ((Double) effects.get("Water")).doubleValue();
+		    if (effects.get("Air Pressure") != null)
+	                tempAirPressureModifier += ((Double) effects.get("Air Pressure")).doubleValue();
+		    if (effects.get("Temperature") != null)
+	                tempTemperatureModifier += ((Double) effects.get("Temperature")).doubleValue();
+	        }
 	    }
 	}
 
@@ -320,16 +347,18 @@ public class MalfunctionManager implements Serializable {
      */
     public void depleteResources(double time) {
 
-        Iterator i = malfunctions.iterator();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
-	        Map effects = malfunction.getResourceEffects();
-	        Iterator i2 = effects.keySet().iterator();
-	        while (i2.hasNext()) {
-	            String key = (String) i2.next();
-		    double amount = ((Double) effects.get(key)).doubleValue();
-		    entity.getInventory().removeResource(key, amount * time);
+	if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+	    while (i.hasNext()) {
+	        Malfunction malfunction = (Malfunction) i.next();
+	        if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+	            Map effects = malfunction.getResourceEffects();
+	            Iterator i2 = effects.keySet().iterator();
+	            while (i2.hasNext()) {
+	                String key = (String) i2.next();
+		        double amount = ((Double) effects.get(key)).doubleValue();
+		        entity.getInventory().removeResource(key, amount * time);
+                    }
 	        }
 	    }
 	}
@@ -407,7 +436,6 @@ public class MalfunctionManager implements Serializable {
        
 	// Get people who can be affected by this malfunction.
         PersonCollection people = entity.getAffectedPeople();
-
 
 	// Determine medical complaints for each malfunction.
 	Iterator i1 = malfunction.getMedicalComplaints().keySet().iterator();

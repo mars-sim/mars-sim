@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-05-14
+ * @version 2.75 2002-06-08
  * @author Scott Davis
  */
 
@@ -388,11 +388,13 @@ public abstract class VehicleDialog extends UnitDialog {
 	// Prepare malfunction inner pane
         malfunctionInnerPane = new JPanel(new GridLayout(0, 1));
         malfunctions = new ArrayList();
-	Iterator i = vehicle.getMalfunctionManager().getMalfunctions();
-	while (i.hasNext()) {
-            MalfunctionPanel m = new MalfunctionPanel("", (Malfunction) i.next());
-	    malfunctions.add(m);
-            malfunctionInnerPane.add(m);
+	if (vehicle.getMalfunctionManager().hasMalfunction()) {
+	    Iterator i = vehicle.getMalfunctionManager().getMalfunctions().iterator();
+	    while (i.hasNext()) {
+                MalfunctionPanel m = new MalfunctionPanel("", (Malfunction) i.next());
+	        malfunctions.add(m);
+                malfunctionInnerPane.add(m);
+	    }
 	}
         malfunctionOuterPane.add(malfunctionInnerPane, "North");	
 	    
@@ -516,25 +518,27 @@ public abstract class VehicleDialog extends UnitDialog {
     /** Update malfunction info */
     protected void updateMalfunctions() {
 
-        // Add any new malfunctions. 
-        Iterator i = vehicle.getMalfunctionManager().getMalfunctions();
-	while (i.hasNext()) {
-            Malfunction malfunction = (Malfunction) i.next();
-	    boolean match = false;
-            Iterator j = malfunctions.iterator();
-	    while (j.hasNext()) {
-                if (((MalfunctionPanel) j.next()).getMalfunction() == malfunction) match = true;
-	    }
+        // Add any new malfunctions.
+	if (vehicle.getMalfunctionManager().hasMalfunction()) {
+            Iterator i = vehicle.getMalfunctionManager().getMalfunctions().iterator();
+	    while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+	        boolean match = false;
+                Iterator j = malfunctions.iterator();
+	        while (j.hasNext()) {
+                    if (((MalfunctionPanel) j.next()).getMalfunction() == malfunction) match = true;
+	        }
 
-	    if (!match) {
-                MalfunctionPanel mPane = new MalfunctionPanel("", malfunction);
-                malfunctions.add(mPane);
-		malfunctionInnerPane.add(mPane);
+	        if (!match) {
+                    MalfunctionPanel mPane = new MalfunctionPanel("", malfunction);
+                    malfunctions.add(mPane);
+		    malfunctionInnerPane.add(mPane);
+	        }
 	    }
 	}
 
 	// Remove any fixed malfunctions.
-	i = malfunctions.iterator();
+	Iterator i = malfunctions.iterator();
 	while (i.hasNext()) {
 	    MalfunctionPanel mPane = (MalfunctionPanel) i.next();
 	    if (!vehicle.getMalfunctionManager().hasMalfunction(mPane.getMalfunction())) {

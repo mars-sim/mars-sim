@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementDialog.java
- * @version 2.74 2002-03-17
+ * @version 2.75 2002-06-08
  * @author Scott Davis
  */
 
@@ -128,45 +128,49 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
     protected void updateMalfunction() {
 
         // Add any new malfunctions from settlement.
-	Iterator i = settlement.getMalfunctionManager().getMalfunctions();
-	while (i.hasNext()) {
-	    Malfunction malfunction = (Malfunction) i.next();
-	    boolean match = false;
-	    Iterator j = malfunctions.iterator();
-	    while (j.hasNext()) {
-	        if (((MalfunctionPanel) j.next()).getMalfunction() == malfunction) match = true;
-	    }
-
-	    if (!match) {
-                MalfunctionPanel mPane = new MalfunctionPanel("Settlement: ", malfunction);
-                malfunctions.add(mPane);
-                malfunctionListPane.add(mPane);
-            }
-        }
-
-	// Add any new malfunctions from facilities.
-	Iterator k = settlement.getFacilityManager().getFacilities();
-	while (k.hasNext()) {
-            Facility facility = (Facility) k.next();
-	    i = facility.getMalfunctionManager().getMalfunctions();
+	if (settlement.getMalfunctionManager().hasMalfunction()) {
+	    Iterator i = settlement.getMalfunctionManager().getMalfunctions().iterator();
 	    while (i.hasNext()) {
 	        Malfunction malfunction = (Malfunction) i.next();
 	        boolean match = false;
 	        Iterator j = malfunctions.iterator();
 	        while (j.hasNext()) {
 	            if (((MalfunctionPanel) j.next()).getMalfunction() == malfunction) match = true;
-	        }
+	        } 
 
 	        if (!match) {
-                    MalfunctionPanel mPane = new MalfunctionPanel(facility.getName() + ": ", malfunction);
+                    MalfunctionPanel mPane = new MalfunctionPanel("Settlement: ", malfunction);
                     malfunctions.add(mPane);
                     malfunctionListPane.add(mPane);
                 }
             }
 	}
 
+	// Add any new malfunctions from facilities.
+	Iterator k = settlement.getFacilityManager().getFacilities();
+	while (k.hasNext()) {
+            Facility facility = (Facility) k.next();
+	    if (facility.getMalfunctionManager().hasMalfunction()) {
+	        Iterator i = facility.getMalfunctionManager().getMalfunctions().iterator();
+	        while (i.hasNext()) {
+	            Malfunction malfunction = (Malfunction) i.next();
+	            boolean match = false;
+	            Iterator j = malfunctions.iterator();
+	            while (j.hasNext()) {
+	                if (((MalfunctionPanel) j.next()).getMalfunction() == malfunction) match = true;
+	            }
+
+	            if (!match) {
+                        MalfunctionPanel mPane = new MalfunctionPanel(facility.getName() + ": ", malfunction);
+                        malfunctions.add(mPane);
+                        malfunctionListPane.add(mPane);
+                    }
+                }
+            }
+	}
+
 	// Remove any fixed malfunctions.
-	i = malfunctions.iterator();
+	Iterator i = malfunctions.iterator();
 	while (i.hasNext()) {
 	    MalfunctionPanel mPane = (MalfunctionPanel) i.next();
 	    Malfunction malfunction = mPane.getMalfunction();
@@ -498,21 +502,25 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 
         // Prepare malfunctions
 	malfunctions = new ArrayList();
-        Iterator i = settlement.getMalfunctionManager().getMalfunctions();
-	while (i.hasNext()) {
-	    MalfunctionPanel m = new MalfunctionPanel("Settlement: ", (Malfunction) i.next());
-	    malfunctions.add(m);
-	    malfunctionListPane.add(m);
+	if (settlement.getMalfunctionManager().hasMalfunction()) {
+            Iterator i = settlement.getMalfunctionManager().getMalfunctions().iterator();
+	    while (i.hasNext()) {
+	        MalfunctionPanel m = new MalfunctionPanel("Settlement: ", (Malfunction) i.next());
+	        malfunctions.add(m);
+	        malfunctionListPane.add(m);
+	    }
 	}
 
 	Iterator j = settlement.getFacilityManager().getFacilities();
 	while (j.hasNext()) {
 	    Facility facility = (Facility) j.next();
-	    Iterator k = facility.getMalfunctionManager().getMalfunctions();
-	    while (k.hasNext()) {
-                MalfunctionPanel m = new MalfunctionPanel(facility.getName() + ": ", (Malfunction) k.next());
-		malfunctions.add(m);
-		malfunctionListPane.add(m);
+	    if (facility.getMalfunctionManager().hasMalfunction()) {
+	        Iterator k = facility.getMalfunctionManager().getMalfunctions().iterator();
+	        while (k.hasNext()) {
+                    MalfunctionPanel m = new MalfunctionPanel(facility.getName() + ": ", (Malfunction) k.next());
+		    malfunctions.add(m);
+		    malfunctionListPane.add(m);
+		}
 	    }
 	}
 
