@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.72 2001-05-10
+ * @version 2.72 2001-05-16
  * @author Scott Davis
  */
 
@@ -34,6 +34,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     private JComboBox longDir; // Longitude direction choice
     private JButton goThere; // Location entry submit button
     private JCheckBox unitLabelCheckbox; // Show unit labels checkbox
+    private JCheckBox dayNightCheckbox; // Day/night tracking checkbox
 
     /** Constructs a NavigatorWindow object 
      *  @param desktop the desktop pane
@@ -84,15 +85,23 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         // Put strut spacer in
         topMainPane.add(Box.createHorizontalStrut(5));
 
+        JPanel rightTopPane = new JPanel();
+        rightTopPane.setLayout(new BoxLayout(rightTopPane, BoxLayout.Y_AXIS));
+        topMainPane.add(rightTopPane);
+
         // Prepare surface map display
         map = new MapDisplay(this, desktop.getProxyManager(), 300, 300, mars);
-        JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        JPanel mapPane = new JPanel(new BorderLayout(0, 0));
         mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
-        mapPane.setBackground(Color.black);
-        //mapPane.setMaximumSize(new Dimension(306, 306));
-        mapPane.add(map);
-        topMainPane.add(mapPane);
+        rightTopPane.add(mapPane);
+        JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
+        mapPaneInner.setBackground(Color.black);
+        mapPaneInner.add(map, "Center");
+        mapPane.add(mapPaneInner, "Center");
+
+        // Put some glue in to fill in extra space
+        rightTopPane.add(Box.createVerticalStrut(5));
 
         // Prepare topographical panel
         JPanel topoPane = new JPanel(new BorderLayout());
@@ -100,7 +109,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         mainPane.add(topoPane);
 
         // Prepare checkbox panel
-        JPanel checkBoxPane = new JPanel(new GridLayout(2, 1));
+        JPanel checkBoxPane = new JPanel(new GridLayout(3, 1));
         topoPane.add(checkBoxPane, "West");
 
         // Prepare show topographical map checkbox
@@ -114,11 +123,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         unitLabelCheckbox.addItemListener(this);
         checkBoxPane.add(unitLabelCheckbox);
 
+        // Prepare day/night checkbox
+        dayNightCheckbox = new JCheckBox("Day/Night Tracking");
+        dayNightCheckbox.setSelected(false);
+        dayNightCheckbox.addItemListener(this);
+        checkBoxPane.add(dayNightCheckbox);
+
         // Prepare legend icon
         legend = new LegendDisplay();
         legend.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
-        topoPane.add(legend, "East");
+        JPanel legendPanel = new JPanel(new BorderLayout(0, 0));
+        legendPanel.add(legend, "North");
+        topoPane.add(legendPanel, "East");
 
         // Prepare position entry panel
         JPanel positionPane = new JPanel();
@@ -199,10 +216,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
             legend.showColor();
             globeNav.showTopo();
             map.showTopo();
+            dayNightCheckbox.setEnabled(false);
         } else {
             legend.showMap();
             globeNav.showSurf();
             map.showSurf();
+            dayNightCheckbox.setEnabled(true);
         }
     }
     
@@ -214,7 +233,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     	map.setUSGSMap(useUSGSMap);
     	legend.setUSGSMode(useUSGSMap);
     	if (!topoCheck.isSelected()) legend.showMap();
-   	}
+    }
 
     /** ActionListener method overridden */
     public void actionPerformed(ActionEvent event) {
@@ -250,8 +269,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
         if (object == topoCheck) {
             updateTopo(event.getStateChange() == ItemEvent.SELECTED);
-        } else if (object == unitLabelCheckbox) {
+        } 
+        else if (object == unitLabelCheckbox) {
             map.setLabels(unitLabelCheckbox.isSelected()); // Change map's label settings
+        }
+        else if (object == dayNightCheckbox) {
+            globeNav.setDayNightTracking(dayNightCheckbox.isSelected());
+            map.setDayNightTracking(dayNightCheckbox.isSelected());
         }
     }
 

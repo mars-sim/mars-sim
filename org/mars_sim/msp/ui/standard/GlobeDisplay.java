@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.72 2001-05-15
+ * @version 2.72 2001-05-16
  * @author Scott Davis
  */
 
@@ -31,6 +31,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     private boolean useUSGSMap;  // True if USGS surface map is to be used
     private VirtualMars mars; // Virtual mars object
     private int[] shadingArray; // Array used to generate day/night shading image
+    private boolean showDayNightShading; // True if day/night shading is to be used
 
     private static final double HALF_PI = (Math.PI / 2);
 
@@ -61,6 +62,7 @@ class GlobeDisplay extends JComponent implements Runnable {
         recreate = true;
         useUSGSMap = false;
         shadingArray = new int[width * height];
+        showDayNightShading = false;
 
         // Initially show real surface globe
         showSurf();
@@ -144,7 +146,7 @@ class GlobeDisplay extends JComponent implements Runnable {
             g.drawImage(globe.getGlobeImage(), 0, 0, this);
         }
 
-        if (!topo) drawShading(g);
+        if (!topo && showDayNightShading) drawShading(g);
 
         drawUnits(g);
         drawCrossHair(g);
@@ -274,5 +276,13 @@ class GlobeDisplay extends JComponent implements Runnable {
      */
     public void setUSGSMap(boolean useUSGSMap) {
     	this.useUSGSMap = useUSGSMap;
-   	}
+    }
+    
+    /** Sets day/night tracking to on or off.
+     *  @param showDayNightShading true if globe is to use day/night tracking.
+     */
+    public void setDayNightTracking(boolean showDayNightShading) {
+        this.showDayNightShading = showDayNightShading;
+    }
 }
+

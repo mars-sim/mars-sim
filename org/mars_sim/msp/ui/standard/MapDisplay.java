@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.72 2001-05-15
+ * @version 2.72 2001-05-16
  * @author Scott Davis
  */
 
@@ -40,6 +40,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private Image mapImage; // Main image
     private boolean useUSGSMap;  // True if USGS surface map is to be used
     private int[] shadingArray;  // Array used to generate day/night shading image
+    private boolean showDayNightShading; // True if day/night shading is to be used
 
     private int width;
     private int height;
@@ -72,6 +73,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         labels = true;
         centerCoords = new Coordinates(HALF_PI, 0D);
         shadingArray = new int[width * height];
+        showDayNightShading = false;
 
         // Set component size
         setPreferredSize(new Dimension(width, height));
@@ -223,7 +225,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 g.drawImage(mapImage, 0, 0, this);
             }
 
-            if (!topo) drawShading(g);
+            if (!topo && showDayNightShading) drawShading(g);
 
             drawUnits(g);
         }
@@ -414,5 +416,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         unitPosition.getiY() + (unitImage.getHeight(this) / 2));
         */
     }
-}
 
+    /** Sets day/night tracking to on or off.
+     *  @param showDayNightShading true if map is to use day/night tracking.
+     */
+    public void setDayNightTracking(boolean showDayNightShading) {
+        this.showDayNightShading = showDayNightShading;
+    }
+}
