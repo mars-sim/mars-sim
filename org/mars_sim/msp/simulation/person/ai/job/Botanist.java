@@ -65,7 +65,7 @@ public class Botanist extends Job implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
 		
-		// Add (labspace * tech level) for all labs with botany specialities.
+		// Add (labspace * tech level) / 2 for all labs with botany specialities.
 		List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
 		Iterator i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
@@ -73,21 +73,21 @@ public class Botanist extends Job implements Serializable {
 			try {
 				Research lab = (Research) building.getFunction(Research.NAME);
 				if (lab.hasSpeciality(Skill.BOTANY)) 
-					result += (lab.getResearcherNum() * lab.getTechnologyLevel());
+					result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
 			}
 			catch (BuildingException e) {
 				System.err.println("Botanist.getSettlementNeed(): " + e.getMessage());
 			}
 		}
 		
-		// Add (growing area in greenhouses) / 10
+		// Add (growing area in greenhouses) / 15
 		List greenhouseBuildings = settlement.getBuildingManager().getBuildings(Farming.NAME);
 		Iterator j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = (Building) j.next();
 			try {
 				Farming farm = (Farming) building.getFunction(Farming.NAME);
-				result += (farm.getGrowingArea() / 10D);
+				result += (farm.getGrowingArea() / 15D);
 			}
 			catch (BuildingException e) {
 				System.err.println("Botanist.getSetltementNeed(): " + e.getMessage());
