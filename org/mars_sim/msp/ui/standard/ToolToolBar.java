@@ -68,6 +68,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		timeButton.addActionListener(this);
 		add(timeButton);
 		toolButtons.addElement(timeButton);
+                
+		// Add monitor tool button
+		ToolButton monitorButton = new ToolButton("Monitor Tool", "images/MonitorIcon.gif");
+		monitorButton.addActionListener(this);
+		add(monitorButton);
+		toolButtons.addElement(monitorButton);
 	}
 	
 	/** ActionListener method overriden */

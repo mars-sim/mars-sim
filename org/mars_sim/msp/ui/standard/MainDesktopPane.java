@@ -148,6 +148,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         try { timeWindow.setClosed(true); } 
         catch (java.beans.PropertyVetoException e) { }
         toolWindows.addElement(timeWindow);
+
+        // Prepare monitor tool window
+        MonitorWindow monitorWindow = new MonitorWindow(this);
+        try { monitorWindow.setClosed(true); } 
+        catch (java.beans.PropertyVetoException e) { }
+        toolWindows.addElement(monitorWindow);
     }
 
     /** Returns a tool window for a given tool name 
