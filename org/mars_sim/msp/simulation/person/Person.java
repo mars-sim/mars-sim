@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2003-01-26
+ * @version 2.75 2003-04-24
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.person.medical.*;
@@ -49,47 +50,21 @@ public class Person extends Unit implements Serializable {
     private PhysicalCondition health; // Person's physical
     private boolean isBuried; // True if person is dead and buried.
 
-    /** Constructs a Person object at a given settlement
-     *  @param name the person's name
-     *  @param settlement the settlement the person is at
-     *  @param mars the virtual Mars
+    /** 
+     * Constructs a Person object at a given settlement
+     *
+     * @param name the person's name
+     * @param settlement the settlement the person is at
+     * @param mars the virtual Mars
+     * @throws Exception if no inhabitable building available at settlement.
      */
-    public Person(String name, Settlement settlement, Mars mars) {
+    public Person(String name, Settlement settlement, Mars mars) throws Exception {
         // Use Unit constructor
         super(name, settlement.getCoordinates(), mars);
 
         initPersonData(mars);
 	    settlement.getInventory().addUnit(this);
-    }
-
-    /** Constructs a Person object
-     *  @param name the person's name
-     *  @param mars the virtual Mars
-     *  @param manager the unit manager
-     *  @throws Exception if no suitable settlement is found
-     */
-    Person(String name, Mars mars, UnitManager manager) throws Exception {
-        // Use Unit constructor
-        super(name, new Coordinates(0D, 0D), mars);
-
-        initPersonData(mars);
-
-        Settlement leastPeople = null;
-        int least = Integer.MAX_VALUE;
-        SettlementIterator i = manager.getSettlements().iterator();
-        while (i.hasNext()) {
-            Settlement settlement = i.next();
-            if (settlement.getAvailablePopulationCapacity() > 0) {
-                if (settlement.getCurrentPopulationNum() < least) {
-                    least = settlement.getCurrentPopulationNum();
-                    leastPeople = settlement;
-                }
-            }
-        }
-
-        if (leastPeople != null) leastPeople.getInventory().addUnit(this);
-        else throw new Exception("No suitable settlements available");
-
+        BuildingManager.addToRandomBuilding(this, settlement);
     }
 
     /** Initialize person data */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTemplate.java
- * @version 2.75 2003-01-19
+ * @version 2.75 2003-04-24
  * @author Scott Davis
  */
 
@@ -92,8 +92,14 @@ public class SettlementTemplate {
         
         // Add people to settlement.
         int popNum = settlement.getPopulationCapacity();
-        for (int x=0; x < popNum; x++) 
-            unitManager.addUnit(new Person(unitManager.getNewName(UnitManager.PERSON), settlement, mars));
+        for (int x=0; x < popNum; x++) {
+            try {
+                unitManager.addUnit(new Person(unitManager.getNewName(UnitManager.PERSON), settlement, mars));
+            }
+            catch (Exception e) {
+                System.out.println("Error while constructing person: " + e.getMessage());
+            }
+        }
         
         // Add vehicles to settlement.
         Iterator vehicleIter = vehicles.iterator();

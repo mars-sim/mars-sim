@@ -78,21 +78,4 @@ public class JUnitTests extends TestCase {
 		assertEquals("Name: ", personName, person.getName());
 		assertEquals("Coords: ", coords, person.getCoordinates());
 	}
-
-	public void testCreatePerson2() throws Exception {
-
-		Mars mars = new Mars(new SimulationProperties());
-		String personName = "Person Name";
-		String settlementName = "Settlement Name";
-		Coordinates coords = new Coordinates(0, 0);
-		Settlement settlement = new Settlement(settlementName, coords, mars);
-		settlement.getBuildingManager().addBuilding(
-			new LanderHab(settlement.getBuildingManager()));
-		mars.getUnitManager().addUnit(settlement);
-
-		Person person = new Person(personName, mars, mars.getUnitManager());
-		
-		assertEquals("Name: ", personName, person.getName());
-		assertEquals("Coords: ", coords, person.getCoordinates());
-	}
 }

@@ -9,10 +9,11 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.util.*;
 import java.io.Serializable;
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.function.*;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
  * The BuildingManager manages the settlement's buildings.
@@ -95,6 +96,59 @@ public class BuildingManager implements Serializable {
         while (i.hasNext()) ((Building) i.next()).timePassing(time);
     }   
 
+    /**
+     * Adds a person to a random inhabitable building within a settlement.
+     *
+     * @param person the person to add.
+     * @param settlement the settlement to find a building.
+     * @throw Exception if person cannot be added to any building.
+     */
+    public static void addToRandomBuilding(Person person, Settlement settlement) throws Exception {
+        
+        Collection habs = settlement.getBuildingManager().getBuildings(InhabitableBuilding.class);
+        
+        int rand = RandomUtil.getRandomInt(habs.size() - 1);
+        
+        InhabitableBuilding building = null;
+        int count = 0;
+        Iterator i = habs.iterator();
+        while (i.hasNext()) {
+            InhabitableBuilding hab = (InhabitableBuilding) i.next();
+            if (count == rand) building = hab;
+            count++;
+        }
+        
+        if (building != null) building.addPerson(person);
+        else throw new Exception("No inhabitable buildings available for " + person.getName());
+    }
+    
+    /**
+     * Adds a ground vehicle to a random ground vehicle maintenance building within a settlement.
+     *
+     * @param vehicle the ground vehicle to add.
+     * @param settlement the settlement to find a building.
+     * @throw Exception if vehicle cannot be added to any building.
+     */
+    public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) throws Exception {
+        
+        Collection garages = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.class);
+        List openGarages = new ArrayList();
+        Iterator i = garages.iterator();
+        while (i.hasNext()) {
+            VehicleMaintenance garage = (VehicleMaintenance) i.next();
+            double availableSpace = garage.getVehicleCapacity() - garage.getCurrentVehicleMass();
+            if (availableSpace >= vehicle.getMass()) openGarages.add(garage);
+        }
+        
+        if (openGarages.size() > 0) {
+            int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
+            ((VehicleMaintenance) openGarages.get(rand)).addVehicle(vehicle);
+        }
+        else {
+            throw new Exception("No available garage space for " + vehicle.getName());
+        }
+    }
+        
     /**
      * Gets the building a given person is in.
      *
