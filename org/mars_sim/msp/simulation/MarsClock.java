@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.72 2001-07-22
+ * @version 2.75 2004-03-08
  * @author Scott Davis
  */
 
@@ -47,14 +47,32 @@ public class MarsClock implements Serializable {
     private int sol;
     private double millisol; 
 
-    /** Constructs a MarsClock object */
-    public MarsClock() {
+    /**
+     * Constructor with date string parameter.
+     * @param dateString format: "orbit-month-sol:millisol"
+     * @throws Exception if dateString is invalid.
+     */
+    public MarsClock(String dateString) throws Exception {
     
-        // Set initial date to 15-Adir-01:000.000  
-        orbit = 15;
-        month = 1;
-        sol = 1;
-        millisol = 0D;
+        // Set initial date to 15-Adir-01:000.000
+        String orbitStr = dateString.substring(0, dateString.indexOf("-"));
+        orbit = Integer.parseInt(orbitStr);
+        if (orbit < 0) throw new Exception("Invalid orbit number: " + orbit);
+        	
+        String monthStr = dateString.substring(dateString.indexOf("-") + 1, dateString.lastIndexOf("-"));
+        month = 0;
+        for (int x=0; x < MONTH_NAMES.length; x++) {
+        	if (monthStr.equals(MONTH_NAMES[x])) month = x + 1;
+        }
+        if ((month < 1) || (month > MONTH_NAMES.length)) throw new Exception("Invalid month: " + monthStr);
+        	
+        String solStr = dateString.substring(dateString.lastIndexOf("-") + 1, dateString.indexOf(":"));
+        sol = Integer.parseInt(solStr);
+        if (sol < 1) throw new Exception("Invalid sol number: " + sol);
+        	
+        String millisolStr = dateString.substring(dateString.indexOf(":") + 1);
+        millisol = Double.parseDouble(millisolStr);
+        if (millisol < 0D) throw new Exception("Invalid millisol number: " + millisol);
     }
     
     /** Constructs a MarsClock object with a given time

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.75 2004-02-12
+ * @version 2.75 2004-03-08
  * @author Scott Davis
  */
 
@@ -164,8 +164,8 @@ public class TimeWindow extends ToolWindow {
         pulsePane.add(pulseHeaderLabel, "North");
 
         // Create pulse slider
-        int existingRatio = (int) properties.getTimeRatio();
-        int currentPosition = existingRatio / RATIO_SCALE;
+        double existingRatio = master.getTimeRatio();
+        int currentPosition = (int) (existingRatio) / RATIO_SCALE;
         if (currentPosition > 10) currentPosition = 10;
         pulseSlider = new JSlider(0, 10, currentPosition);
         pulseSlider.setMajorTickSpacing(1);
@@ -173,8 +173,13 @@ public class TimeWindow extends ToolWindow {
         pulseSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     double ratio = (double)(pulseSlider.getValue() * RATIO_SCALE);
-                    if (ratio == 0D) ratio = 1;
-                    properties.setTimeRatio(ratio);
+                    if (ratio <= 0D) ratio = 1;
+                    try {
+                    	master.setTimeRatio(ratio);
+                    }
+                    catch (Exception e2) {
+                    	System.out.println(e2.getMessage());
+                    }
                 }
         });
         pulsePane.add(pulseSlider, "South");

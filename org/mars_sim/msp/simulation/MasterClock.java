@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.73 2001-03-11
+ * @version 2.73 2004-03-08
  * @author Scott Davis
  */
 
@@ -23,24 +23,29 @@ public class MasterClock implements Runnable, Serializable {
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
     private boolean keepRunning;  // Runnable flag
+    private double timeRatio;     // Simulation/real-time ratio
 
     // Sleep duration in milliseconds 
     private final static int SLEEP_DURATION = 1000;
     
     static final long serialVersionUID = -1688463735489226494L;
 
-    /** Constructs a MasterClock object
-     *  @param mars the virtual mars that uses the clock
+    /** 
+     * Constructor
+     * @param mars the virtual mars that uses the clock.
+     * @throws Exception if clock could not be constructed.
      */
-    public MasterClock(Mars mars) {
+    public MasterClock(Mars mars) throws Exception {
         // Initialize data members
         this.mars = mars;
 
+		SimulationConfig config = mars.getSimulationConfiguration();
+
         // Create a Martian clock
-        marsTime = new MarsClock();
+        marsTime = new MarsClock(config.getMarsStartDateTime());
 	
         // Create an Earth clock
-        earthTime = new EarthClock();
+        earthTime = new EarthClock(config.getEarthStartDateTime());
 
         // Create an Uptime Timer
         uptimer = new UpTimer();
@@ -67,13 +72,15 @@ public class MasterClock implements Runnable, Serializable {
         return uptimer;
     }
 
-    /** Gets the time pulse length
-     *  @return time pulse length in millisols
+    /** 
+     * Gets the time pulse length
+     * @return time pulse length in millisols
+     * @throws Exception if time pulse length could not be determined.
      */
-    public double getTimePulse() {
+    public double getTimePulse() throws Exception {
 
-        // Get time ratio from simulation properties.
-        double timeRatio = mars.getSimulationProperties().getTimeRatio();
+		// Get time ratio from simulation configuration.
+		if (timeRatio == 0) setTimeRatio(mars.getSimulationConfiguration().getSimulationTimeRatio());
 
         double timePulse;
         if (timeRatio > 0D) {
@@ -84,6 +91,25 @@ public class MasterClock implements Runnable, Serializable {
     
         return timePulse;
     }
+    
+    /** 
+     * Sets the simulation/real-time ratio.
+     * Value cannot be 0 or less.
+     * @param ratio the simulation/real-time ratio.
+     * @throws Exception if parameter is invalid.
+     */
+    public void setTimeRatio(double ratio) throws Exception {
+    	if (ratio > 0D) timeRatio = ratio;
+    	else throw new Exception("Time ratio cannot be zero or less.");
+    }
+    
+    /**
+     * Gets the simulation/real-time ratio.
+     * @return ratio
+     */
+    public double getTimeRatio() {
+    	return timeRatio;
+    }
 
     /** Run clock */
     public void run() {
@@ -93,20 +119,27 @@ public class MasterClock implements Runnable, Serializable {
         while (keepRunning) {
             try {
                 Thread.sleep(SLEEP_DURATION);
-            } catch (InterruptedException e) {}
+            } 
+            catch (InterruptedException e) {}
 
-            //Increment the uptimer
-            uptimer.addTime(SLEEP_DURATION);
+			try {
+            	//Increment the uptimer
+            	uptimer.addTime(SLEEP_DURATION);
 
-            // Get the time pulse length in millisols.
-            double timePulse = getTimePulse();
+            	// Get the time pulse length in millisols.
+            	double timePulse = getTimePulse();
 
-            // Send virtual Mars a clock pulse representing the time pulse length (in millisols).
-            mars.clockPulse(timePulse);
+            	// Send virtual Mars a clock pulse representing the time pulse length (in millisols).
+            	mars.clockPulse(timePulse);
 
-            // Add time pulse length to Earth and Mars clocks. 
-            earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
-            marsTime.addTime(timePulse);
+            	// Add time pulse length to Earth and Mars clocks. 
+            	earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
+            	marsTime.addTime(timePulse);
+			}
+			catch (Exception e) {
+				System.out.println(e.getMessage());
+				stop();
+			}
         }
     }
 

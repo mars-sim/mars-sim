@@ -169,12 +169,18 @@ public class MainWindow extends JFrame implements WindowListener {
 					0, 100);
 		    pm.setMillisToPopup(0);
 		    pm.setMillisToDecideToPopup(0);
-		    Mars newmars = new Mars(p);
-		    pm.setProgress(50);
-		    setMars(newmars);
-		    newmars.start();
-		    pm.close();
-            desktop.resetDesktop();
+		    try {
+		    	Mars newmars = new Mars(p);
+		    	pm.setProgress(50);
+		    	setMars(newmars);
+		    	newmars.start();
+		    	pm.close();
+            	desktop.resetDesktop();
+		    }
+		    catch (Exception e) {
+		    	System.err.println("Problem creating new simulation " + e);
+		    	pm.setNote("Problem creating new simulation");
+		    }
         }
     }
 

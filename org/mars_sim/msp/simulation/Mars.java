@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.75 2003-01-09
+ * @version 2.75 2004-03-08
  * @author Scott Davis
  */
 
@@ -55,8 +55,11 @@ public class Mars implements Serializable {
     private OrbitInfo orbitInfo; // Orbital information
     private Weather weather; // Martian weather
 
-    /** Constructs a Mars object */
-    public Mars(SimulationProperties initProps) {
+    /** 
+     * Constructor
+     * @throws Exception if Mars could not be constructed.
+     */
+    public Mars(SimulationProperties initProps) throws Exception {
 
 		// Initialize transient properties
 		initializeTransients(initProps);
@@ -80,7 +83,7 @@ public class Mars implements Serializable {
         // Initialize and start master clock
         masterClock = new MasterClock(this);
 
-        System.out.println("Create new simulation");
+        // System.out.println("Create new simulation");
     }
 
     /**
@@ -206,6 +209,14 @@ public class Mars implements Serializable {
      */
     public SimulationProperties getSimulationProperties() {
         return properties;
+    }
+    
+    /** 
+     * Gets the simulation configuration.
+     * @return configuration
+     */
+    public SimulationConfig getSimulationConfiguration() {
+    	return configuration;
     }
 
     /** Returns the orbital information

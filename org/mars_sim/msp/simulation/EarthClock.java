@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.75 2004-02-10
+ * @version 2.75 2004-03-08
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -23,8 +22,12 @@ public class EarthClock extends GregorianCalendar implements Serializable {
     // Data members
     SimpleDateFormat formatter;
 
-    /** Constructs a EarthClock object */
-    public EarthClock() {
+    /** 
+     * Constructor
+     * @param dateString the UT date string in format: "MM/dd/yyyy hh:mm:ss".
+     * @throws Exception if date string is invalid. 
+     */
+    public EarthClock(String dateString) throws Exception {
         
         // Use GregorianCalendar constructor
         super();
@@ -37,22 +40,12 @@ public class EarthClock extends GregorianCalendar implements Serializable {
         formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
         formatter.setTimeZone(zone);
 
-        // Set Earth clock to Martian Zero-orbit date-time
-        // "06/18/2015 07:22:10 GMT" 
-        // This date may need to be adjusted if it is inaccurate
+        // Set Earth clock to Martian Zero-orbit date-time. 
+        // This date may need to be adjusted if it is inaccurate.
         clear();
-        try {
-            DateFormat tempFormatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
-            tempFormatter.setTimeZone(zone);
-       	    setTime(tempFormatter.parse("06/18/2015 07:22:10"));
-        }
-        catch(ParseException e) { System.out.println(e.toString()); }
- 
-        // Add 15 Martian orbits to date
-        double solsInOrbit = 668.5921;
-        double secondsInSol = 88775.244;
-        int secondsInOrbit = (int) (solsInOrbit * secondsInSol);
-        add(Calendar.SECOND, 15 * secondsInOrbit);
+        DateFormat tempFormatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+        tempFormatter.setTimeZone(zone);
+       	setTime(tempFormatter.parse(dateString));
     }
 
     /** Returns the date/time formatted in a string 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.75 2003-12-22
+ * @version 2.75 2004-03-08
  * @author Scott Davis
  */
 
@@ -33,11 +33,15 @@ public class MarsProject {
         Mars mars = null;
         if (args.length == 1) {
             if (args[0].equals("-new")) {
-                mars = new Mars(null);
-            }
-            else {
-                usage = true;
-            }
+            	try {
+            		mars = new Mars(null);
+            	}
+            	catch (Exception e) {
+            		System.err.println("Problem creating new simulation " + e);
+            		System.exit(0);
+            	}
+            } 
+            else usage = true;
         }
 
         else if (args.length == 2) {
@@ -76,7 +80,13 @@ public class MarsProject {
 
             // If no default, then create a new one
             if (mars == null) {
-                mars = new Mars(null);
+				try {
+					mars = new Mars(null);
+				}
+				catch (Exception e) {
+					System.err.println("Problem creating new simulation " + e);
+					System.exit(0);
+				}
             }
         }
         else {
@@ -102,7 +112,8 @@ public class MarsProject {
         try {
             FileOutputStream errFileStream = new FileOutputStream("err.txt");
             System.setErr(new PrintStream(errFileStream));
-        } catch (FileNotFoundException e) {
+        } 
+        catch (FileNotFoundException e) {
             System.out.println("err.txt could not be opened");
         }
     }
