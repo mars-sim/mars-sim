@@ -5,9 +5,9 @@
  * @author Greg Whelan
  */
 
-package org.mars_sim.msp.ui.standard;  
- 
-import org.mars_sim.msp.simulation.Coordinates;  
+package org.mars_sim.msp.ui.standard;
+
+import org.mars_sim.msp.simulation.Coordinates;
 import java.io.*;
 import java.net.*;
 import java.awt.*;
@@ -28,134 +28,135 @@ public class USGSMarsMap implements Map {
     private static final String projection = "SIMP";
     private static final String resolution = "3";
     private static final String dataSet = "merged.des";
-    
+
     private boolean imageDone = false;
     private Component component;
 
     private Image img;
     private Coordinates currentView; // for future use
-    
+
     private Image prefetchedImage;
 
 
     public USGSMarsMap() {}
 
     public USGSMarsMap(Component comp) {
-	component = comp;
+        component = comp;
     }
 
     public void drawMap(Coordinates newCenter) {
-	if (imageInCache(newCenter)) {
-	    // simply translate the image
-	} else {
-	    img = retrieveImage(3, // pixels per degree
-				90 - Math.toDegrees(newCenter.getPhi()),
-				360 - Math.toDegrees(newCenter.getTheta()));
-	    prefetchImage(10, // pixels per degree
-			  90 - Math.toDegrees(newCenter.getPhi()),
-			  360 - Math.toDegrees(newCenter.getTheta()));
-	    currentView = newCenter;
-	    waitForMapLoaded();
-	}
+        if (imageInCache(newCenter)) {
+            // simply translate the image
+        } else {
+            img = retrieveImage(3, // pixels per degree
+                                90 - Math.toDegrees(newCenter.getPhi()),
+                                        360 - Math.toDegrees(newCenter.getTheta()));
+            prefetchImage(10, // pixels per degree
+                          90 - Math.toDegrees(newCenter.getPhi()),
+                                  360 - Math.toDegrees(newCenter.getTheta()));
+            currentView = newCenter;
+            waitForMapLoaded();
+        }
     }
 
     /** determines if a requested map is complete */
     public boolean isImageDone() {
-	return imageDone;
+        return imageDone;
     }
 
     /** Returns map image */
     public Image getMapImage() {
-	return img;
+        return img;
     }
 
     private boolean imageInCache(Coordinates location) {
-	return false;
+        return false;
     }
 
     /** requests an image from the PDS web server.
-     *  @param size is pixels per degree
-     */
+      *  @param size is pixels per degree
+      */
     private Image retrieveImage(int size, double lat, double lon) {
-	imageDone = false;
-	try {
-	    URL url = new URL(psdUrl + psdCgi +
-			    "?DATA_SET_NAME=" + dataSet +
-			    "&PROJECTION=" + projection +
-			    "&RESOLUTION=" + resolution +
-			    "&SIZE=" + size + 
-			    "&LAT=" + lat + "&LON=" + lon);
+        imageDone = false;
+        try {
+            URL url =
+                    new URL(psdUrl + psdCgi + "?DATA_SET_NAME=" + dataSet + "&PROJECTION=" +
+                    projection + "&RESOLUTION=" + resolution + "&SIZE=" + size +
+                    "&LAT=" + lat + "&LON=" + lon);
 
-	    System.out.println(url);
+            System.out.println(url);
 
-	    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-	    String result = null;
-	    String line;
-	    String imageSrc;
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(url.openStream()));
+            String result = null;
+            String line;
+            String imageSrc;
 
-	    // <fragile>
-	    int count = 0;
+            // <fragile>
+            int count = 0;
 
-	    while ((line = in.readLine()) != null) {
-		count++;
-		if (count == 6) {
-		    result = line;
-		    in.close();
-		    break;
-		}
-	    }
-	    int startIndex = result.indexOf("IMG SRC=\"") + 9;
-	    int endIndex = result.indexOf("\"", startIndex);
-	    imageSrc = result.substring(startIndex, endIndex);
-	    // </fragile>
-	    
-	    URL imageUrl = new URL(psdUrl + imageSrc);
-	    System.out.println(imageUrl);
+            while ((line = in.readLine()) != null) {
+                count++;
+                if (count == 6) {
+                    result = line;
+                    in.close();
+                    break;
+                }
+            }
+            int startIndex = result.indexOf("IMG SRC=\"") + 9;
+            int endIndex = result.indexOf("\"", startIndex);
+            imageSrc = result.substring(startIndex, endIndex);
+            // </fragile>
 
-	    //imageUrl = new URL("file:tmp.968014862.jpg");
-	    return (Toolkit.getDefaultToolkit().getImage(imageUrl));
+            URL imageUrl = new URL(psdUrl + imageSrc);
+            System.out.println(imageUrl);
 
-	} catch (MalformedURLException e) {
-	    System.out.println("Weirdness" + e);
-	} catch (IOException e) {
-	    // should deal with the case where a user has no internet connection
-	    System.out.println("Weirdness" + e);
-	}
+            //imageUrl = new URL("file:tmp.968014862.jpg");
+            return (Toolkit.getDefaultToolkit().getImage(imageUrl));
 
-	return null;
+        } catch (MalformedURLException e) {
+            System.out.println("Weirdness" + e);
+        }
+        catch (IOException e) {
+            // should deal with the case where a user has no internet connection
+            System.out.println("Weirdness" + e);
+        }
+
+        return null;
     }
 
     private void prefetchImage(int size, double lat, double lon) {
-	prefetchedImage = retrieveImage(size, lat, lon);
+        prefetchedImage = retrieveImage(size, lat, lon);
     }
 
     private void waitForMapLoaded() {
-	MediaTracker tracker = new MediaTracker(component);
-	tracker.addImage(img, 0);
-	try {
-	    tracker.waitForID(0);
-	} catch (InterruptedException e) {
-	    System.out.println(e);
-	}
-	imageDone = true;
-	System.out.println("Done loading USGS image");
+        MediaTracker tracker = new MediaTracker(component);
+        tracker.addImage(img, 0);
+        try {
+            tracker.waitForID(0);
+        } catch (InterruptedException e) {
+            System.out.println(e);
+        }
+        imageDone = true;
+        System.out.println("Done loading USGS image");
     }
 
     /** for component testing. Creates a frame and fills it with a map */
     private void test() {
-	JFrame j = new JFrame("USGSMarsMap test");
-	component = j;
-	j.setSize(300, 300);
-	j.setVisible(true);
-	Graphics g = j.getGraphics();
-	waitForMapLoaded();
-	g.drawImage(img, 0, 0, null);
+        JFrame j = new JFrame("USGSMarsMap test");
+        component = j;
+        j.setSize(300, 300);
+        j.setVisible(true);
+        Graphics g = j.getGraphics();
+        waitForMapLoaded();
+        g.drawImage(img, 0, 0, null);
     }
 
     /** for component testing */
     public static void main(String argv[]) {
-	USGSMarsMap map = new USGSMarsMap();
-	map.retrieveImage(3, 0, 0);
-	map.test();
+        USGSMarsMap map = new USGSMarsMap();
+        map.retrieveImage(3, 0, 0);
+        map.test();
     }
 }
+
