@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGridTabPanel.java
- * @version 2.75 2003-11-13
+ * @version 2.75 2004-04-05
  * @author Scott Davis
  */
 
@@ -10,10 +10,10 @@ package org.mars_sim.msp.ui.standard.unit_window.structure;
 import java.awt.*;
 import java.text.DecimalFormat;
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
@@ -186,8 +186,13 @@ public class PowerGridTabPanel extends TabPanel {
             else if (column == 1) return buildings.get(row);
             else if (column == 2) {
                 double generated = 0D;
-                if (building instanceof PowerGeneration) 
-                    generated = ((PowerGeneration) building).getGeneratedPower();
+                if (building.hasFunction(PowerGeneration.NAME)) {
+                	try {
+                		PowerGeneration generator = (PowerGeneration) building.getFunction(PowerGeneration.NAME);
+                    	generated = generator.getGeneratedPower();
+                	}
+                	catch (Exception e) {}
+                }
                 return new Double(generated);
             }
             else if (column == 3) {

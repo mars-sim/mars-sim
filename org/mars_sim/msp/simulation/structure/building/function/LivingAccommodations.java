@@ -1,27 +1,91 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 2.75 2003-02-15
+ * @version 2.75 2004-03-29
  * @author Scott Davis
  */
- 
 package org.mars_sim.msp.simulation.structure.building.function;
- 
-public interface LivingAccommodations extends Function {
+
+import java.io.Serializable;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.*;
+
+/**
+ * The LivingAccommodations class is a building function for a living accommodations.
+ */
+public class LivingAccommodations extends Function implements Serializable {
         
     // Mass of water used per person per Sol for bathing, etc.
     public final static double WASH_WATER_USAGE_PERSON_SOL = 26D;
-        
-    /**
-     * Gets the accommodation capacity of this building.
-     *
-     * @return number of accomodations.
-     */
-    public int getAccommodationCapacity();
+    
+	public static final String NAME = "Living Accommodations";
+    
+ 	private int beds;
+ 
+ 	/**
+ 	 * Constructor
+     * @param building the building this function is for.
+     * @throws BuildingException if error in constructing function.
+	 */
+	public LivingAccommodations(Building building) throws BuildingException {
+		// Call Function constructor.
+		super(NAME, building);
+		
+		BuildingConfig config = building.getBuildingManager().getSettlement()
+			.getMars().getSimulationConfiguration().getBuildingConfiguration();
+		try {
+			beds = config.getLivingAccommodationBeds(building.getName());
+		}
+		catch (Exception e) {
+			throw new BuildingException("LivingAccommodations.constructor: " + e.getMessage());
+		}
+	}
+ 
+ 	/**
+ 	 * Gets the number of beds in the living accommodations.
+ 	 * @return number of beds.
+ 	 */
+ 	public int getBeds() {
+ 		return beds;
+ 	}
  
     /** 
      * Utilizes water for bathing, washing, etc. based on population.
      * @param time amount of time passing (millisols)
      */
-    public void waterUsage(double time);
+    public void waterUsage(double time) {
+		Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+		double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D) * time;
+		double waterUsageSettlement = waterUsagePerPerson * settlement.getCurrentPopulationNum();
+		double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
+		double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
+        
+		Inventory inv = getBuilding().getInventory();
+		double waterUsed = inv.removeResource(Resource.WATER, waterUsageBuilding);
+		inv.addResource(Resource.WASTE_WATER, waterUsed);
+    }
+    
+	/**
+	 * Time passing for the building.
+	 * @param time amount of time passing (in millisols)
+	 * @throws BuildingException if error occurs.
+	 */
+	public void timePassing(double time) throws BuildingException {}
+	
+	/**
+	 * Gets the amount of power required when function is at full power.
+	 * @return power (kW)
+	 */
+	public double getFullPowerRequired() {
+		return 0D;
+	}
+	
+	/**
+	 * Gets the amount of power required when function is at power down level.
+	 * @return power (kW)
+	 */
+	public double getPowerDownPowerRequired() {
+		return 0D;
+	}
 }

@@ -1,30 +1,25 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.*;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
-import org.mars_sim.msp.simulation.structure.building.BuildingException;
-import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
-import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 
-/** The TendGreenhouse class is a task for tending the greenhouse in a settlement.
- *  It has the phases, "Planting", "Tending" and "Harvesting".
- *  This is an effort driven task.
+/** 
+ * The TendGreenhouse class is a task for tending the greenhouse in a settlement.
+ * It has the phases, "Planting", "Tending" and "Harvesting".
+ * This is an effort driven task.
  */
 public class TendGreenhouse extends Task implements Serializable {
 
@@ -44,15 +39,13 @@ public class TendGreenhouse extends Task implements Serializable {
         greenhouse = getAvailableGreenhouse(person);
         
         if (greenhouse != null) {
-            InhabitableBuilding building = (InhabitableBuilding) greenhouse;
-            if (!building.containsPerson(person)) {
-                try {
-                    building.addPerson(person);
-                }
-                catch (BuildingException e) {
-                    System.out.println("TendGreenhouse: " + e.getMessage());
-                    endTask();
-                }
+        	try {
+            	LifeSupport lifeSupport = (LifeSupport) greenhouse.getBuilding().getFunction(LifeSupport.NAME);
+            	if (!lifeSupport.containsPerson(person)) lifeSupport.addPerson(person);
+            }
+            catch (BuildingException e) {
+                System.err.println("TendGreenhouse: " + e.getMessage());
+                endTask();
             }
         }
         else endTask();
@@ -93,7 +86,7 @@ public class TendGreenhouse extends Task implements Serializable {
         }
         
         // Check if greenhouse has malfunction.
-        if (((Building) greenhouse).getMalfunctionManager().hasMalfunction()) {
+        if (greenhouse.getBuilding().getMalfunctionManager().hasMalfunction()) {
             endTask();
             return timeLeft;
         }
@@ -168,12 +161,16 @@ public class TendGreenhouse extends Task implements Serializable {
         if (location.equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
             List farmlist = new ArrayList();
-            Iterator i = settlement.getBuildingManager().getBuildings(Farming.class).iterator();
+            Iterator i = settlement.getBuildingManager().getBuildings(Farming.NAME).iterator();
             while (i.hasNext()) {
-                Farming farm = (Farming) i.next();
-                boolean requiresWork = farm.requiresWork();
-                boolean malfunction = ((Building) farm).getMalfunctionManager().hasMalfunction();   
-                if (requiresWork && !malfunction) farmlist.add(farm);
+            	Building building = (Building) i.next();
+            	try {
+                	Farming farm = (Farming) building.getFunction(Farming.NAME);
+                	boolean requiresWork = farm.requiresWork();
+                	boolean malfunction = farm.getBuilding().getMalfunctionManager().hasMalfunction();   
+                	if (requiresWork && !malfunction) farmlist.add(farm);
+            	}
+            	catch (BuildingException e) {}
             }
             
             if (farmlist.size() > 0) {

@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 2.75 2003-06-09
+ * @version 2.75 2004-04-05
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.*;
@@ -52,36 +51,48 @@ public class BuildingPanel extends JPanel {
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
         functionScrollPanel.setViewportView(functionListPanel);
         
-        // Prepare inhabitable panel if building is inhabitable.
-        if (building instanceof InhabitableBuilding) {
-            BuildingFunctionPanel inhabitablePanel = 
-                new InhabitableBuildingPanel((InhabitableBuilding) building, desktop);
-            functionPanels.add(inhabitablePanel);
-            functionListPanel.add(inhabitablePanel);
+        // Prepare inhabitable panel if building has lifesupport.
+        if (building.hasFunction(LifeSupport.NAME)) {
+        	try {
+        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+            	BuildingFunctionPanel inhabitablePanel = new InhabitableBuildingPanel(lifeSupport, desktop);
+            	functionPanels.add(inhabitablePanel);
+            	functionListPanel.add(inhabitablePanel);
+        	}
+        	catch (BuildingException e) {}
         }
         
         // Prepare farming panel if building has farming.
-        if (building instanceof Farming) {
-            BuildingFunctionPanel farmingPanel = 
-                new FarmingBuildingPanel((Farming) building, desktop);
-            functionPanels.add(farmingPanel);
-            functionListPanel.add(farmingPanel);
+        if (building.hasFunction(Farming.NAME)) {
+        	try {
+        		Farming farm = (Farming) building.getFunction(Farming.NAME);
+            	BuildingFunctionPanel farmingPanel = new FarmingBuildingPanel(farm, desktop);
+            	functionPanels.add(farmingPanel);
+            	functionListPanel.add(farmingPanel);
+        	}
+        	catch (BuildingException e) {}
         }
         
         // Prepare medical care panel if building has medical care.
-        if (building instanceof MedicalCare) {
-            BuildingFunctionPanel medicalCarePanel =
-                new MedicalCareBuildingPanel((MedicalCare) building, desktop);
-            functionPanels.add(medicalCarePanel);
-            functionListPanel.add(medicalCarePanel);
+        if (building.hasFunction(MedicalCare.NAME)) {
+        	try {
+        		MedicalCare med = (MedicalCare) building.getFunction(MedicalCare.NAME);
+            	BuildingFunctionPanel medicalCarePanel = new MedicalCareBuildingPanel(med, desktop);
+            	functionPanels.add(medicalCarePanel);
+            	functionListPanel.add(medicalCarePanel);
+        	}
+        	catch (BuildingException e) {}
         }
         
         // Prepare research panel if building has research.
-        if (building instanceof Research) {
-            BuildingFunctionPanel researchPanel = 
-                new ResearchBuildingPanel((Research) building, desktop);
-            functionPanels.add(researchPanel);
-            functionListPanel.add(researchPanel);
+        if (building.hasFunction(Research.NAME)) {
+        	try {
+        		Research lab = (Research) building.getFunction(Research.NAME);
+            	BuildingFunctionPanel researchPanel = new ResearchBuildingPanel(lab, desktop);
+            	functionPanels.add(researchPanel);
+            	functionListPanel.add(researchPanel);
+        	}
+        	catch (BuildingException e) {}
         }
         
         // Prepare power panel.
@@ -90,11 +101,14 @@ public class BuildingPanel extends JPanel {
         functionListPanel.add(powerPanel);
         
         // Prepare resource processing panel if building has resource processes.
-        if (building instanceof ResourceProcessing) {
-            BuildingFunctionPanel resourceProcessingPanel = 
-                new ResourceProcessingBuildingPanel((ResourceProcessing) building, desktop);
-            functionPanels.add(resourceProcessingPanel);
-            functionListPanel.add(resourceProcessingPanel);
+        if (building.hasFunction(ResourceProcessing.NAME)) {
+        	try {
+        		ResourceProcessing processor = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
+            	BuildingFunctionPanel resourceProcessingPanel = new ResourceProcessingBuildingPanel(processor, desktop);
+            	functionPanels.add(resourceProcessingPanel);
+            	functionListPanel.add(resourceProcessingPanel);
+        	}
+        	catch (BuildingException e) {}
         }
         
         // Prepare malfunctionable panel.

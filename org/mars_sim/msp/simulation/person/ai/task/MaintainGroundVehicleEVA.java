@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.75 2004-02-11
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
@@ -244,13 +245,18 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
             VehicleCollection parkedVehicles = settlement.getParkedVehicles();
             
             // Remove all ground vehicles in garages.
-            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.class).iterator();
+            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
             while (i.hasNext()) {
-                GroundVehicleMaintenance garage = (GroundVehicleMaintenance) i.next();
-                VehicleIterator vI = parkedVehicles.iterator();
-                while (vI.hasNext()) {
-                    Vehicle vehicle = vI.next();
-                    if (garage.containsVehicle(vehicle)) vI.remove();
+                Building garageBuilding = (Building) i.next();
+                try {
+                	VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+                	VehicleIterator vI = parkedVehicles.iterator();
+                	while (vI.hasNext()) {
+                    	if (garage.containsVehicle((Vehicle) vI.next())) vI.remove();
+                	}
+                }
+                catch (Exception e) {
+                	System.err.println("MaintainGroundVehicle.getAllVehicleCandidates(): " + e.getMessage());
                 }
             }
             

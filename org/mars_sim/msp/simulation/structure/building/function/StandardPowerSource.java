@@ -6,12 +6,13 @@
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.structure.building.Building;
 
 /**
  * A power source that gives a constant supply of power.
  */
-public class StandardPowerSource extends PowerSource {
+public class StandardPowerSource extends PowerSource implements Serializable {
 
 	private final static String TYPE = "Standard Power Source";
 

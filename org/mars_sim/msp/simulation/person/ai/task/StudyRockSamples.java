@@ -1,20 +1,23 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.75 2004-03-24
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Lab;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.Research;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
@@ -47,19 +50,21 @@ public class StudyRockSamples extends Task implements Serializable {
         if (lab != null) {
             String location = person.getLocationSituation();
             if (location.equals(Person.INSETTLEMENT)) {
-                InhabitableBuilding building = (InhabitableBuilding) lab;
+                Research researchLab = (Research) lab;
+                Building building = researchLab.getBuilding();
                 malfunctions = building.getMalfunctionManager();
                 try {     
-                    if (!building.containsPerson(person)) building.addPerson(person);
+                	LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                    if (!lifeSupport.containsPerson(person)) lifeSupport.addPerson(person);
                     lab.addResearcher();
-                    inv = person.getSettlement().getInventory();
+                    inv = building.getInventory();
                 }
                 catch (BuildingException e) {
-                    System.out.println("StudyRockSamples: person is already in building.");
+                    System.err.println("StudyRockSamples.constructor: " + e.getMessage());
                     endTask();
                 }
                 catch (Exception e) { 
-                    System.out.println("StudyRockSamples: lab building is already full.");
+                    System.err.println("StudyRockSamples.constructor: " + e.getMessage());
                     endTask();
                 }
             }
@@ -71,7 +76,7 @@ public class StudyRockSamples extends Task implements Serializable {
                     inv = vehicle.getInventory();
                 }
                 catch (Exception e) {
-                    System.out.println("StudyRockSamples: rover lab is already full.");
+                    System.err.println("StudyRockSamples: rover lab is already full.");
                     endTask();
                 }
             }
@@ -220,10 +225,10 @@ public class StudyRockSamples extends Task implements Serializable {
         if (inv.getResourceMass(Resource.ROCK_SAMPLES) <= 0D) return null;
         
         List lablist = new ArrayList();
-        Iterator i = settlement.getBuildingManager().getBuildings(Research.class).iterator();
+        Iterator i = settlement.getBuildingManager().getBuildings(Research.NAME).iterator();
         while (i.hasNext()) {
             Research lab = (Research) i.next();
-            boolean malfunction = ((Building) lab).getMalfunctionManager().hasMalfunction();
+            boolean malfunction = lab.getBuilding().getMalfunctionManager().hasMalfunction();
             boolean labSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
             if (!malfunction && labSpace) lablist.add(lab);
         }

@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * ResourceProcessingBuildingPanel.java
- * @version 2.75 2003-06-08
+ * @version 2.75 2004-04-05
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.*;
@@ -29,7 +28,7 @@ public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
     public ResourceProcessingBuildingPanel(ResourceProcessing processor, MainDesktopPane desktop) {
         
         // Use BuildingFunctionPanel constructor
-        super((Building) processor, desktop);
+        super(processor.getBuilding(), desktop);
         
         // Set layout
         setLayout(new BorderLayout());
@@ -39,7 +38,7 @@ public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
         add(resourceProcessesLabel, BorderLayout.NORTH);
         
         // Get all processes at building.
-        Collection processes = processor.getResourceProcessManager().getProcesses();
+        Collection processes = processor.getProcesses();
         
         // Prepare resource processes list panel.
         JPanel resourceProcessesListPanel = new JPanel(new GridLayout(processes.size(), 1, 0, 0));

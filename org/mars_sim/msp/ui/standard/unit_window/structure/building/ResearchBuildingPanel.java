@@ -1,15 +1,13 @@
 /**
  * Mars Simulation Project
  * ResearchBuildingPanel.java
- * @version 2.75 2003-09-10
+ * @version 2.75 2004-04-05
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.*;
 import javax.swing.*;
-import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
 import org.mars_sim.msp.ui.standard.*;
 
@@ -35,7 +33,7 @@ public class ResearchBuildingPanel extends BuildingFunctionPanel {
     public ResearchBuildingPanel(Research lab, MainDesktopPane desktop) {
         
         // Use BuildingFunctionPanel constructor
-        super((Building) lab, desktop);
+        super(lab.getBuilding(), desktop);
         
         // Initialize data members
         this.lab = lab;

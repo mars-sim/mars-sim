@@ -1,14 +1,150 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 2.75 2002-10-06
+ * @version 2.75 2004-03-30
  * @author Scott Davis
  */
- 
 package org.mars_sim.msp.simulation.structure.building.function;
- 
+
+import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.Lab;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.task.StudyRockSamples;
+import org.mars_sim.msp.simulation.structure.building.*;
  
-public interface Research extends Function, Lab {
-        
+/**
+ * The Resource class is a building function for research.
+ */
+public class Research extends Function implements Lab, Serializable {
+
+	public static final String NAME = "Research";
+
+	private int techLevel;
+	private int researcherCapacity;
+	private List researchSpecialities;
+	
+	/**
+	 * Constructor
+	 * @param building the building this function is for.
+	 * @throws BuildingException if function could not be constructed.
+	 */
+	public Research(Building building) throws BuildingException {
+		// Use Function constructor
+		super(NAME, building);
+		
+		BuildingConfig config = building.getBuildingManager().getSettlement()
+			.getMars().getSimulationConfiguration().getBuildingConfiguration();
+			
+		try {
+			techLevel = config.getResearchTechLevel(building.getName());
+			researcherCapacity = config.getResearchCapacity(building.getName());
+			researchSpecialities = config.getResearchSpecialities(building.getName());
+		}
+		catch (Exception e) {
+			throw new BuildingException("Research.constructor: " + e.getMessage());
+		}
+	}
+	
+	/**
+	 * Gets the research tech level of this building.
+	 * @return tech level
+	 */
+	public int getTechnologyLevel() {
+		return techLevel;
+	}
+	
+	/**
+	 * Gets the number of researchers who can use the laboratory at once.
+	 * @return capacity
+	 */
+	public int getLaboratorySize() {
+		return researcherCapacity;
+	}
+	
+	/**
+	 * Gets an array of the building's research tech specialities.
+	 * @return array of specialities as strings.
+	 */
+	public String[] getTechSpecialities() {
+		String[] result = new String[researchSpecialities.size()];
+		for (int x=0; x < researchSpecialities.size(); x++)
+			result[x] = (String) researchSpecialities.get(x);
+		return result;
+	}
+	
+	/**
+	 * Checks to see if the laboratory has a given tech speciality.
+	 * @return true if lab has tech speciality
+	 */
+	public boolean hasSpeciality(String speciality) {
+		boolean result = false;
+		Iterator i = researchSpecialities.iterator();
+		while (i.hasNext()) {
+			if (((String) i.next()).equals(speciality)) result = true;
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets the number of people currently researching in the laboratory.
+	 * @return number of researchers
+	 */
+	public int getResearcherNum() {
+		int researcherNum = 0;
+		if (getBuilding().hasFunction(LifeSupport.NAME)) {
+			try {
+				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
+				PersonIterator i = lifeSupport.getOccupants().iterator();
+				while (i.hasNext()) {
+					// Todo: Check for more general research task.
+					if (i.next().getMind().getTaskManager().getTask() 
+						instanceof StudyRockSamples) researcherNum++;
+				}
+			}
+			catch (BuildingException e) {}
+		}
+		return researcherNum;
+	}
+
+	/**
+	 * Adds a researcher to the laboratory.
+	 * @throws Exception if person cannot be added.
+	 */
+	public void addResearcher() throws Exception {
+		if (getResearcherNum() == getLaboratorySize()) 
+			throw new Exception("Lab already full of researchers.");
+	}
+
+	/**
+	 * Removes a researcher from the laboratory.
+	 * @throws Exception if person cannot be removed.
+	 */
+	public void removeResearcher() throws Exception {
+		if (getResearcherNum() == 0) 
+			throw new Exception("Lab is already empty of researchers.");
+	}
+	
+	/**
+	 * Time passing for the building.
+	 * @param time amount of time passing (in millisols)
+	 * @throws BuildingException if error occurs.
+	 */
+	public void timePassing(double time) throws BuildingException {}
+	
+	/**
+	 * Gets the amount of power required when function is at full power.
+	 * @return power (kW)
+	 */
+	public double getFullPowerRequired() {
+		return 0D;
+	}
+	
+	/**
+	 * Gets the amount of power required when function is at power down level.
+	 * @return power (kW)
+	 */
+	public double getPowerDownPowerRequired() {
+		return 0D;
+	}
 }

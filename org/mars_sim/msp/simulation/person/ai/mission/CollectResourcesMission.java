@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.75 2004-03-24
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
@@ -9,7 +9,12 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Direction;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.MarsClock;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
@@ -319,16 +324,21 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		VehicleMaintenance garage = null;
 		try {
 			BuildingManager.addToRandomBuilding(rover, startingSettlement);
-			garage = BuildingManager.getBuilding(rover);
+			Building garageBuilding = BuildingManager.getBuilding(rover);
+			garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
         
 		// Have person exit rover if necessary.
 		if (person.getLocationSituation().equals(Person.INVEHICLE)) {
 			rover.getInventory().takeUnit(person, startingSettlement);
 			try {
-				if ((garage != null) && (garage instanceof InhabitableBuilding))
-					((InhabitableBuilding) garage).addPerson(person);
+				if ((garage != null) && garage.getBuilding().hasFunction(LifeSupport.NAME)) {
+					LifeSupport lifeSupport = (LifeSupport) garage.getBuilding().getFunction(LifeSupport.NAME);
+					lifeSupport.addPerson(person);
+				}
 				else BuildingManager.addToRandomBuilding(rover, startingSettlement);
 			}
 			catch (BuildingException e) {}

@@ -1,29 +1,24 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2004-03-31
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
-
+import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
-import org.mars_sim.msp.simulation.person.ai.task.Repair;
-import org.mars_sim.msp.simulation.person.ai.task.Task;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /**
- * The Building class is an abstract class representing a 
- * settlement's building.
+ * The Building class is a settlement's building.
  */
-public abstract class Building implements Malfunctionable, Serializable {
+public class Building implements Malfunctionable, Serializable {
     
     // Power Modes
     public static final String FULL_POWER = "Full Power";
@@ -35,21 +30,135 @@ public abstract class Building implements Malfunctionable, Serializable {
     private String name;
     private String powerMode;
     private MalfunctionManager malfunctionManager;
+    private List functions;
+    private double basePowerRequirement;
+    private double basePowerDownPowerRequirement;
     
     /**
      * Constructs a Building object.
      * @param name the building's name.
      * @param manager the building's building manager.
+     * @throws BuildingException if building can not be created.
      */
-    public Building(String name, BuildingManager manager) {
+    public Building(String name, BuildingManager manager) throws BuildingException {
         
         this.name = name;
         this.manager = manager;
         this.powerMode = FULL_POWER;
         
-        // Set up malfunction manager.
-        malfunctionManager = new MalfunctionManager(this, manager.getSettlement().getMars());
-        malfunctionManager.addScopeString("Building");
+        try {
+        	// Get the building's functions
+        	functions = determineFunctions();
+        	
+        	// Get base power requirements.
+			BuildingConfig config = manager.getSettlement().getMars()
+				.getSimulationConfiguration().getBuildingConfiguration();
+				
+			basePowerRequirement = config.getBasePowerRequirement(name);
+			basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
+        }
+        catch (Exception e) {
+        	throw new BuildingException("Building " + name + " cannot be constructed: " + e.getMessage());
+        }
+        
+		// Set up malfunction manager.
+		malfunctionManager = new MalfunctionManager(this, manager.getSettlement().getMars());
+		malfunctionManager.addScopeString("Building");
+		
+		// Add each function to the malfunction scope.
+		Iterator i = functions.iterator();
+		while (i.hasNext()) {
+			Function function = (Function) i.next();
+			malfunctionManager.addScopeString(function.getName());
+		}
+    }
+    
+    /**
+     * Determines the building functions.
+     * @return list of building functions.
+     * @throws Exception if error in functions.
+     */
+    private List determineFunctions() throws Exception {
+    	List buildingFunctions = new ArrayList();
+    	
+    	BuildingConfig config = manager.getSettlement().getMars()
+    		.getSimulationConfiguration().getBuildingConfiguration();
+    	
+    	// Set power generation function.
+    	if (config.hasPowerGeneration(name)) buildingFunctions.add(new PowerGeneration(this));
+    	
+    	// Set life support function.
+    	if (config.hasLifeSupport(name)) buildingFunctions.add(new LifeSupport(this));
+    	
+    	// Set living accommodations function.
+    	if (config.hasLivingAccommodations(name)) buildingFunctions.add(new LivingAccommodations(this));
+    	
+    	// Set research function.
+    	if (config.hasResearchLab(name)) buildingFunctions.add(new Research(this));
+    	
+    	// Set communication function.
+    	if (config.hasCommunication(name)) buildingFunctions.add(new Communication(this));
+    	
+    	// Set EVA function.
+    	if (config.hasEVA(name)) buildingFunctions.add(new EVA(this));
+    	
+    	// Set recreation function.
+    	if (config.hasRecreation(name)) buildingFunctions.add(new Recreation(this));
+    	
+    	// Set dining function.
+    	if (config.hasDining(name)) buildingFunctions.add(new Dining(this));
+    	
+    	// Set resource processing function.
+    	if (config.hasResourceProcessing(name)) buildingFunctions.add(new ResourceProcessing(this));
+    	
+    	// Set storage function.
+    	if (config.hasStorage(name)) buildingFunctions.add(new Storage(this));
+    	
+    	// Set medical care function.
+    	if (config.hasMedicalCare(name)) buildingFunctions.add(new MedicalCare(this));
+    	
+    	// Set farming function.
+    	if (config.hasFarming(name)) buildingFunctions.add(new Farming(this));
+    	
+    	// Set exercise function.
+    	if (config.hasExercise(name)) buildingFunctions.add(new Exercise(this));
+    	
+    	// Set ground vehicle maintenance function.
+    	if (config.hasGroundVehicleMaintenance(name)) buildingFunctions.add(new GroundVehicleMaintenance(this));
+    	
+    	return buildingFunctions;
+    }
+    
+    /**
+     * Checks if a building has a particular function.
+     * @param functionName the name of the function.
+     * @return true if function.
+     */
+    public boolean hasFunction(String functionName) {
+    	boolean result = false;
+    	Iterator i = functions.iterator();
+    	while (i.hasNext()) {
+    		Function function = (Function) i.next();
+    		if (function.getName().equals(functionName)) result = true;
+    	}
+    	return result;
+    }
+    
+    /**
+     * Gets a function if the building has it.
+     * @param functionName the name of the function.
+     * @return function.
+     * @throws BuildingException if building doesn't have the function.
+     */
+    public Function getFunction(String functionName) throws BuildingException {
+    	Function result = null;
+    	Iterator i = functions.iterator();
+    	while (i.hasNext()) {
+    		Function function = (Function) i.next();
+    		if (function.getName().equals(functionName)) result = function;
+    	}
+    	if (result != null) return result;
+    	else throw new BuildingException(name + " does not have " + functionName);
     }
     
     /**
@@ -72,15 +181,17 @@ public abstract class Building implements Malfunctionable, Serializable {
     
     /**
      * Time passing for building.
-     * Child building should override this method for things
-     * that happen over time for the building.
-     *
      * @param time amount of time passing (in millisols)
+     * @throws BuildingException if error occurs.
      */
-    public void timePassing(double time) {
+    public void timePassing(double time) throws BuildingException {
         
         // Check for valid argument.
         if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
+        
+        // Send time to each building function.
+        Iterator i = functions.iterator();
+        while (i.hasNext()) ((Function) i.next()).timePassing(time);
         
         // Update malfunction manager.
         malfunctionManager.timePassing(time);
@@ -93,13 +204,29 @@ public abstract class Building implements Malfunctionable, Serializable {
      * Gets the power this building currently requires for full-power mode.
      * @return power in kW.
      */
-    public abstract double getFullPowerRequired();
+    public double getFullPowerRequired()  {
+		double result = basePowerRequirement;
+    	
+    	// Determine power required for each function.
+    	Iterator i = functions.iterator();
+    	while (i.hasNext()) result += ((Function) i.next()).getFullPowerRequired();
+    	
+    	return result;
+    }
     
     /**
      * Gets the power the building requires for power-down mode.
      * @return power in kW.
      */
-    public abstract double getPoweredDownPowerRequired();
+    public double getPoweredDownPowerRequired() {
+		double result = basePowerDownPowerRequirement;
+		
+		// Determine power required for each function.
+		Iterator i = functions.iterator();
+		while (i.hasNext()) result += ((Function) i.next()).getPowerDownPowerRequired();
+		
+		return result;
+    }
      
     /**
      * Gets the building's power mode.
@@ -130,6 +257,19 @@ public abstract class Building implements Malfunctionable, Serializable {
      */
     public PersonCollection getAffectedPeople() {
         PersonCollection people = new PersonCollection();
+
+		// If building has life support, add all occupants of the building.
+		if (hasFunction(LifeSupport.NAME)) {
+			try {
+				LifeSupport lifeSupport = (LifeSupport) getFunction(LifeSupport.NAME);
+				PersonIterator i = lifeSupport.getOccupants().iterator();
+				while (i.hasNext()) {
+					Person occupant = i.next();
+					if (!people.contains(occupant)) people.add(occupant);
+				}
+			}
+			catch (BuildingException e) {}
+		}
 
         // Check all people in settlement.
         PersonIterator i = manager.getSettlement().getInhabitants().iterator();

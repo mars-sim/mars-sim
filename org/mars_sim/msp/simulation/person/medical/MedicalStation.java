@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 2.75 2003-06-19
+ * @version 2.75 2004-03-30
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -9,18 +9,19 @@
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.person.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
 
 /**
- * This class represents the abstract notiation of a medical station.
+ * This class represents a medical station.
  * It provides a number of Treatments to Persons, these are defined in the
  * Medical.xml file.
- *
- * @see org.mars_sim.msp.simulation.structure.building.function.MedicalCare
- * @see org.mars_sim.msp.simulation.equipment.MobileSickBay
  */
-public abstract class MedicalStation implements MedicalAid, Serializable {
+public class MedicalStation implements MedicalAid, Serializable {
 
     private int level;                              // Treatment level of the facility
     private int sickBeds;                           // Number of sick beds

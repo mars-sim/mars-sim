@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.75 2003-05-01
+ * @version 2.75 2004-04-01
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -61,20 +61,18 @@ public class BuildingManager implements Serializable {
     }
     
     /**
-     * Gets the buildings in a settlement that implement the given function.
-     *
-     * @return collection of buildings.
+     * Gets the buildings in a settlement that has a given function.
+     * @param functionName the name of the building.
+     * @return list of buildings.
      */
-    public List getBuildings(Class function) {   
-        List functionBuildings = new ArrayList();
-        
-        Iterator i = buildings.iterator();
-        while (i.hasNext()) {
-            Building building = (Building) i.next();
-            if (function.isInstance(building)) functionBuildings.add(building);
-        }
-         
-        return functionBuildings;
+    public List getBuildings(String functionName) {
+    	List functionBuildings = new ArrayList();
+    	Iterator i = buildings.iterator();
+    	while (i.hasNext()) {
+    		Building building = (Building) i.next();
+    		if (building.hasFunction(functionName)) functionBuildings.add(building);
+    	}
+    	return functionBuildings;
     }
     
     /**
@@ -90,8 +88,9 @@ public class BuildingManager implements Serializable {
      * Time passing for all buildings.
      *
      * @param time amount of time passing (in millisols)
+     * @throws Exception if error.
      */
-    public void timePassing(double time) {
+    public void timePassing(double time) throws Exception {
         Iterator i = buildings.iterator();
         while (i.hasNext()) ((Building) i.next()).timePassing(time);
     }   
@@ -105,33 +104,40 @@ public class BuildingManager implements Serializable {
      */
     public static void addToRandomBuilding(Person person, Settlement settlement) throws BuildingException {
         
-        Collection habs = settlement.getBuildingManager().getBuildings(InhabitableBuilding.class);
+        List habs = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
         
         int rand = RandomUtil.getRandomInt(habs.size() - 1);
         
-        InhabitableBuilding building = null;
+        Building building = null;
         int count = 0;
         Iterator i = habs.iterator();
         while (i.hasNext()) {
-            InhabitableBuilding hab = (InhabitableBuilding) i.next();
+            Building hab = (Building) i.next();
             if (count == rand) building = hab;
             count++;
         }
         
-        if (building != null) building.addPerson(person);
+        if (building != null) {
+        	try {
+        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+        		lifeSupport.addPerson(person); 
+        	}
+        	catch (Exception e) {
+        		throw new BuildingException("Could not add person to building: " + e.getMessage());
+        	}
+        }
         else throw new BuildingException("No inhabitable buildings available for " + person.getName());
     }
     
     /**
      * Adds a ground vehicle to a random ground vehicle maintenance building within a settlement.
-     *
      * @param vehicle the ground vehicle to add.
      * @param settlement the settlement to find a building.
      * @throw BuildingException if vehicle cannot be added to any building.
      */
     public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) throws BuildingException {
         
-        Collection garages = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.class);
+        Collection garages = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME);
         List openGarages = new ArrayList();
         Iterator i = garages.iterator();
         while (i.hasNext()) {
@@ -154,16 +160,22 @@ public class BuildingManager implements Serializable {
      *
      * @return building or null if none.
      */
-    public static InhabitableBuilding getBuilding(Person person) {
+    public static Building getBuilding(Person person) {
         
-        InhabitableBuilding result = null;
+        Building result = null;
         
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            Iterator i = settlement.getBuildingManager().getBuildings(InhabitableBuilding.class).iterator();
+            Iterator i = settlement.getBuildingManager().getBuildings(LifeSupport.NAME).iterator();
             while (i.hasNext()) {
-                InhabitableBuilding building = (InhabitableBuilding) i.next();
-                if (building.containsPerson(person)) result = building;
+            	Building building = (Building) i.next();
+            	try {
+                	LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                	if (lifeSupport.containsPerson(person)) result = building;
+            	}
+            	catch (Exception e) {
+            		System.err.println("BuildingManager.getBuilding(): " + e.getMessage());
+            	}
             }
         }
         
@@ -175,16 +187,22 @@ public class BuildingManager implements Serializable {
      *
      * @return building or null if none.
      */
-    public static VehicleMaintenance getBuilding(Vehicle vehicle) {
+    public static Building getBuilding(Vehicle vehicle) {
         
-        VehicleMaintenance result = null;
+        Building result = null;
         
         Settlement settlement = vehicle.getSettlement();
         if (settlement != null) {
-            Iterator i = settlement.getBuildingManager().getBuildings(VehicleMaintenance.class).iterator();
+            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
             while (i.hasNext()) {
-                VehicleMaintenance garage = (VehicleMaintenance) i.next();
-                if (garage.containsVehicle(vehicle)) result = garage;
+                Building garageBuilding = (Building) i.next();
+                try {
+                	VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+                	if (garage.containsVehicle(vehicle)) result = garageBuilding;
+                }
+                catch (Exception e) {
+                	System.err.println("BuildingManager.getBuilding(): " + e.getMessage());
+                }
             }
         }
         

@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 2.75 2003-01-05
+ * @version 2.75 2004-04-05
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.simulation.structure.template;
 
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -14,12 +13,6 @@ import org.mars_sim.msp.simulation.structure.building.*;
  * which buildings can be constructed from.
  */
 public class BuildingTemplate {
-	
-	private static String LANDER_HAB = "Lander Hab";
-	private static String ERV_BASE = "ERV Base";
-	private static String STARTING_ERV_BASE = "Starting ERV Base";
-	private static String INFLATABLE_GREENHOUSE = "Inflatable Greenhouse";
-	private static String NUCLEAR_REACTOR = "Nuclear Reactor";
     
     private String name;
     
@@ -46,13 +39,9 @@ public class BuildingTemplate {
      *
      * @param manager the building manager
      * @return building
+     * @throws BuildingException if building can not be constructed.
      */
-    public Building constructBuilding(BuildingManager manager) throws Exception {
-        if (name.equals(LANDER_HAB)) return new LanderHab(manager);
-    	else if (name.equals(STARTING_ERV_BASE)) return new ERVBase(manager, true);
-        else if (name.equals(ERV_BASE)) return new ERVBase(manager, false);
-        else if (name.equals(INFLATABLE_GREENHOUSE)) return new InflatableGreenhouse(manager);
-        else if (name.equals(NUCLEAR_REACTOR)) return new NuclearReactor(manager);
-        else throw new Exception("Building " + name + " cannot be constructed");
+    public Building constructBuilding(BuildingManager manager) throws BuildingException {
+		return new Building(name, manager);
     }
 }

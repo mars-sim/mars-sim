@@ -9,7 +9,7 @@
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
 		
-			<living-accommodations />
+			<living-accommodations beds="4" />
 		
 			<research tech-level="1" capacity="4">
 				<research-speciality name="Areology" />
@@ -68,7 +68,7 @@
 	<building name="Inflatable Greenhouse" >
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
-			<life-support capacit="3" power-required="6.0" />
+			<life-support capacity="3" power-required="6.0" />
 			<farming crops="15" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="75.0" />
 			<storage>
 				<resource-storage resource="Water" capacity="500.0" />
@@ -154,6 +154,9 @@
 				<resource-storage resource="Methane" capacity="21000.0" />
 				<resource-storage resource="Oxygen" capacity="74000.0" />
 				<resource-storage resource="Water" capacity="9000.0" />
+				<resource-initial resource="Methane" amount="21000.0" />
+				<resource-initial resource="Oxygen" amount="74000.0" />
+				<resource-initial resource="Water" amount="9000.0" />
 			</storage>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />

@@ -1,18 +1,17 @@
 /**
  * Mars Simulation Project
  * FarmingBuildingPanel.java
- * @version 2.75 2003-09-10
+ * @version 2.75 2004-04-05
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**
  * The FarmingBuildingPanel class is a building function panel representing 
@@ -39,7 +38,7 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
     public FarmingBuildingPanel(Farming farm, MainDesktopPane desktop) {
         
         // Use BuildingFunctionPanel constructor
-        super((Building) farm, desktop);
+        super(farm.getBuilding(), desktop);
         
         // Initialize data members
         this.farm = farm;

@@ -1,19 +1,24 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.75 2004-03-24
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.MarsClock;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** The TravelToSettlement class is a mission to travel from one settlement 
@@ -266,18 +271,25 @@ class TravelToSettlement extends Mission implements Serializable {
 
         // Add rover to a garage if possible.
         VehicleMaintenance garage = null;
+        Building garageBuilding = null;
         try {
             BuildingManager.addToRandomBuilding(rover, destinationSettlement);
-            garage = BuildingManager.getBuilding(rover);
+            garageBuilding = BuildingManager.getBuilding(rover);
+            if (garageBuilding != null) 
+            	garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+        	System.err.println("TravelToSettlement.disembarkingPhase(): " + e.getMessage());
+        }
         
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
             rover.getInventory().takeUnit(person, destinationSettlement);
             try {
-                if ((garage != null) && (garage instanceof InhabitableBuilding))
-                    ((InhabitableBuilding) garage).addPerson(person);
+                if ((garage != null) && garageBuilding.hasFunction(LifeSupport.NAME)) {
+                	LifeSupport lifeSupport = (LifeSupport) garageBuilding.getFunction(LifeSupport.NAME);
+                	lifeSupport.addPerson(person);
+                }
                 else BuildingManager.addToRandomBuilding(rover, destinationSettlement);
             }
             catch (BuildingException e) { 

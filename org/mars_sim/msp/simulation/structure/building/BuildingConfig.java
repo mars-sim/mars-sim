@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.75 2004-03-25
+ * @version 2.75 2004-04-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -50,8 +50,15 @@ public class BuildingConfig {
 	private static final String POWER_SOURCE = "power-source";
 	private static final String TYPE = "type";
 	private static final String POWER = "power";
-	private static final String MEDICAL_CARE = "medica-care";
+	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "beds";
+	private static final String FARMING = "farming";
+	private static final String CROPS = "crops";
+	private static final String POWER_GROWING_CROP = "power-growing-crop";
+	private static final String POWER_SUSTAINING_CROP = "power-sustaining-crop";
+	private static final String GROWING_AREA = "growing-area";
+	private static final String EXERCISE = "exercise";
+	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -168,6 +175,19 @@ public class BuildingConfig {
 		NodeList livingAccommodationsNodes = functionsElement.getElementsByTagName(LIVING_ACCOMMODATIONS);
 		if (livingAccommodationsNodes.getLength() > 0) result = true;
 		return result;
+	}
+	
+	/**
+	 * Gets the number of beds in the building's living accommodations.
+	 * @param buildingName the name of the building.
+	 * @return number of beds.
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getLivingAccommodationBeds(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element livingAccommodationsElement = (Element) functionsElement.getElementsByTagName(LIVING_ACCOMMODATIONS).item(0);
+		return Integer.parseInt(livingAccommodationsElement.getAttribute(BEDS));
 	}
 	
 	/**
@@ -327,7 +347,7 @@ public class BuildingConfig {
 	public double getResourceProcessingPowerDown(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element resourceProcessingElement = (Element) functionsElement.getElementsByTagName(RESOURCE_PROCESSING);
+		Element resourceProcessingElement = (Element) functionsElement.getElementsByTagName(RESOURCE_PROCESSING).item(0);
 		return Double.parseDouble(resourceProcessingElement.getAttribute(POWER_DOWN_LEVEL));
 	}
 	
@@ -342,7 +362,7 @@ public class BuildingConfig {
 		List resourceProcesses = new ArrayList();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element resourceProcessingElement = (Element) functionsElement.getElementsByTagName(RESOURCE_PROCESSING);
+		Element resourceProcessingElement = (Element) functionsElement.getElementsByTagName(RESOURCE_PROCESSING).item(0);
 		NodeList resourceProcessNodes = resourceProcessingElement.getElementsByTagName(PROCESS);
 		for (int x=0; x < resourceProcessNodes.getLength(); x++) {
 			Element processElement = (Element) resourceProcessNodes.item(x);
@@ -403,7 +423,7 @@ public class BuildingConfig {
 		NodeList resourceStorageNodes = storageElement.getElementsByTagName(RESOURCE_STORAGE);
 		for (int x=0; x < resourceStorageNodes.getLength(); x++) {
 			Element resourceStorageElement = (Element) resourceStorageNodes.item(x);
-			String resource = resourceStorageElement.getAttribute(RESOURCE);
+			String resource = resourceStorageElement.getAttribute(RESOURCE).toLowerCase();
 			Double capacity = new Double(resourceStorageElement.getAttribute(CAPACITY));
 			capacities.put(resource, capacity);
 		}
@@ -424,7 +444,7 @@ public class BuildingConfig {
 		NodeList resourceInitialNodes = storageElement.getElementsByTagName(RESOURCE_INITIAL);
 		for (int x=0; x < resourceInitialNodes.getLength(); x++) {
 			Element resourceInitialElement = (Element) resourceInitialNodes.item(x);
-			String resource = resourceInitialElement.getAttribute(RESOURCE);
+			String resource = resourceInitialElement.getAttribute(RESOURCE).toLowerCase();
 			Double amount = new Double(resourceInitialElement.getAttribute(AMOUNT));
 			resourceMap.put(resource, amount);
 		}
@@ -495,7 +515,7 @@ public class BuildingConfig {
 	public int getMedicalCareTechLevel(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element medicalCareElement = (Element) functionsElement.getElementsByTagName(MEDICAL_CARE);
+		Element medicalCareElement = (Element) functionsElement.getElementsByTagName(MEDICAL_CARE).item(0);
 		return Integer.parseInt(medicalCareElement.getAttribute(TECH_LEVEL));
 	}
 	
@@ -508,7 +528,117 @@ public class BuildingConfig {
 	public int getMedicalCareBeds(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element medicalCareElement = (Element) functionsElement.getElementsByTagName(MEDICAL_CARE);
+		Element medicalCareElement = (Element) functionsElement.getElementsByTagName(MEDICAL_CARE).item(0);
 		return Integer.parseInt(medicalCareElement.getAttribute(BEDS));
+	}
+	
+	/**
+	 * Checks if building has the farming function.
+	 * @param buildingName the name of the building.
+	 * @return true if farming
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public boolean hasFarming(String buildingName) throws Exception {
+		boolean result = false;
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		NodeList farmingNodes = functionsElement.getElementsByTagName(FARMING);
+		if (farmingNodes.getLength() > 0) result = true;
+		return result;
+	}
+	
+	/**
+	 * Gets the number of crops in the building.
+	 * @param buildingName the name of the building.
+	 * @return number of crops
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getCropNum(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element farmElement = (Element) buildingElement.getElementsByTagName(FARMING).item(0);
+		return Integer.parseInt(farmElement.getAttribute(CROPS));
+	}
+	
+	/**
+	 * Gets the power required to grow a crop.
+	 * @param buildingName the name of the building.
+	 * @return power (kW)
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public double getPowerForGrowingCrop(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element farmElement = (Element) buildingElement.getElementsByTagName(FARMING).item(0);
+		return Double.parseDouble(farmElement.getAttribute(POWER_GROWING_CROP));
+	}
+	
+	/**
+	 * Gets the power required to sustain a crop.
+	 * @param buildingName the name of the building.
+	 * @return power (kW)
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public double getPowerForSustainingCrop(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element farmElement = (Element) buildingElement.getElementsByTagName(FARMING).item(0);
+		return Double.parseDouble(farmElement.getAttribute(POWER_SUSTAINING_CROP));
+	}
+	
+	/**
+	 * Gets the crop growing area in the building.
+	 * @param buildingName the name of the building.
+	 * @return crop growing area (square meters)
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public double getCropGrowingArea(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element farmElement = (Element) buildingElement.getElementsByTagName(FARMING).item(0);
+		return Double.parseDouble(farmElement.getAttribute(GROWING_AREA));
+	}
+	
+	/**
+	 * Checks if the building has the exercise function.
+	 * @param buildingName the name of the building.
+	 * @return true if exercise
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public boolean hasExercise(String buildingName) throws Exception {
+		boolean result = false;
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		NodeList exerciseNodes = functionsElement.getElementsByTagName(EXERCISE);
+		if (exerciseNodes.getLength() > 0) result = true;
+		return result;
+	}
+	
+	/**
+	 * Checks if the building has the ground vehicle maintenance function.
+	 * @param buildingName the name of the building.
+	 * @return true if ground vehicle maintenance
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public boolean hasGroundVehicleMaintenance(String buildingName) throws Exception {
+		boolean result = false;
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		NodeList maintenanceNodes = functionsElement.getElementsByTagName(GROUND_VEHICLE_MAINTENANCE);
+		if (maintenanceNodes.getLength() > 0) result = true;
+		return result;		
+	}
+	
+	/**
+	 * Gets the vehicle capacity of the building.
+	 * @param buildingName the name of the building.
+	 * @return vehicle capacity (kg)
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public double getVehicleCapacity(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element maintenanceElement = (Element) buildingElement.getElementsByTagName(GROUND_VEHICLE_MAINTENANCE).item(0);
+		return Double.parseDouble(maintenanceElement.getAttribute(CAPACITY));
 	}
 }

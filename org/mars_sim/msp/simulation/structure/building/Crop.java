@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.75 2004-03-19
+ * @version 2.75 2004-04-01
  * @author Scott Davis
  */
  
@@ -9,10 +9,7 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
 import java.util.List;
-
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
@@ -145,7 +142,7 @@ public class Crop implements Serializable {
             if (currentPhaseWorkCompleted >= plantingWorkRequired) {
                 remainingWorkTime = currentPhaseWorkCompleted - plantingWorkRequired;
                 currentPhaseWorkCompleted = 0D;
-                currentSol = ((Building) farm).getBuildingManager().getSettlement()
+                currentSol = farm.getBuilding().getBuildingManager().getSettlement()
                     .getMars().getMasterClock().getMarsClock().getSolOfMonth();
                 phase = GROWING;
             }

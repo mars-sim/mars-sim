@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2004-03-23
+ * @version 2.75 2004-04-03
  * @author Scott Davis
  */
 
@@ -162,11 +162,13 @@ public class UnitManager implements Serializable {
         settlementsReader.parse();
     }
 
-    /** Notify all the units that time has passed.
-     *  Times they are a changing.
-     *  @param time the amount time passing (in millisols)
+    /** 
+     * Notify all the units that time has passed.
+     * Times they are a changing.
+     * @param time the amount time passing (in millisols)
+     * @throws Exception if error during time passing.
      */
-    void timePassing(double time) {
+    void timePassing(double time) throws Exception {
         UnitIterator i = units.iterator();
         while (i.hasNext()) i.next().timePassing(time);
     }

@@ -1,22 +1,23 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 2.75 2003-04-25
+ * @version 2.75 2004-03-30
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure.building;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 
 /** 
  * The BuildingAirlock class represents an airlock for a building.
  */
 public class BuildingAirlock extends Airlock {
     
-    private InhabitableBuilding building; // The building this airlock is for.
+    private Building building; // The building this airlock is for.
     
     /**
      * Constructor
@@ -26,12 +27,13 @@ public class BuildingAirlock extends Airlock {
      * @throws IllegalArgumentException if building is not valid or if 
      * capacity is less than one.
      */
-    public BuildingAirlock(InhabitableBuilding building, int capacity) {
+    public BuildingAirlock(Building building, int capacity) {
         // User Airlock constructor
         super(capacity);
         
+        this.building = building;
+        
         if (building == null) throw new IllegalArgumentException("building is null.");
-        else this.building = building;
     }
     
     /**
@@ -46,7 +48,10 @@ public class BuildingAirlock extends Airlock {
         boolean result = super.enterAirlock(person, inside);
     
         if (result && inside) {
-            try { building.addPerson(person); }
+            try { 
+            	LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+            	lifeSupport.addPerson(person);
+            }
             catch (BuildingException e) {}
         }
         
@@ -63,12 +68,14 @@ public class BuildingAirlock extends Airlock {
         Inventory inv = building.getInventory();
         
         if (inAirlock(person)) {
+			LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+        	
             if (pressurized) {
-                building.addPerson(person);
+                lifeSupport.addPerson(person);
                 inv.addUnit(person);
             }
             else {
-                building.removePerson(person);
+                lifeSupport.removePerson(person);
                 inv.dropUnitOutside(person);
             }
         }
@@ -91,7 +98,6 @@ public class BuildingAirlock extends Airlock {
      * @return inventory
      */
     public Inventory getEntityInventory() {
-        Settlement settlement = building.getBuildingManager().getSettlement();
-        return settlement.getInventory();
+        return building.getInventory();
     }
 }

@@ -1,26 +1,22 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.Iterator;
-
+import java.util.*;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.structure.building.BuildingException;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
-import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
-import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /** The Sleep class is a task for sleeping.
  *  The duration of the task is by default chosen randomly, between 250 - 350 millisols.
- *
  *  Note: Sleeping reduces fatigue.
  */
 class Sleep extends Task implements Serializable {
@@ -35,28 +31,26 @@ class Sleep extends Task implements Serializable {
     public Sleep(Person person, Mars mars) {
         super("Sleeping", person, false, false, mars);
 
-        // If person is in a settlement, try to find a living accomodations building.
+        // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-            InhabitableBuilding sleepingBuilding = null;
+            Building sleepingBuilding = null;
         
             // Try to find an available living accommodations building.
-            Iterator i = buildingManager.getBuildings(InhabitableBuilding.class).iterator();
-            while (i.hasNext()) {
-                InhabitableBuilding building = (InhabitableBuilding) i.next();
-                if (building instanceof LivingAccommodations) {
-                    if (building.getAvailableOccupancy() > 0) sleepingBuilding = building;
-                }
-            }
-            
-            if (sleepingBuilding != null) {
-                try {
-                    if (!sleepingBuilding.containsPerson(person)) sleepingBuilding.addPerson(person);
-                }
-                catch (BuildingException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
+            List accommodations = buildingManager.getBuildings(LivingAccommodations.NAME);
+			int rand = RandomUtil.getRandomInt(accommodations.size() - 1);
+			
+			try {
+				Building building = (Building) accommodations.get(rand);
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				if (!lifeSupport.containsPerson(person) && (lifeSupport.getAvailableOccupancy() > 0)) 
+					lifeSupport.addPerson(person);
+				else endTask();
+			}
+			catch (Exception e) {
+				System.err.println("Relax.constructor(): " + e.getMessage());
+				endTask();
+			}
         }
         
         duration = 250D + RandomUtil.getRandomInt(100);
@@ -89,7 +83,9 @@ class Sleep extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        person.setFatigue(0D);
+		double newFatigue = person.getPhysicalCondition().getFatigue() - (time * 10D);
+		if (newFatigue < 0D) newFatigue = 0D;
+        person.getPhysicalCondition().setFatigue(newFatigue);
         timeCompleted += time;
         if (timeCompleted > duration) {
             endTask();
@@ -98,4 +94,3 @@ class Sleep extends Task implements Serializable {
         else return 0;
     }
 }
-

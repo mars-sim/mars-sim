@@ -1,18 +1,17 @@
 /**
  * Mars Simulation Project
  * InhabitableBuildingPanel.java
- * @version 2.75 2003-09-10
+ * @version 2.75 2003-04-05
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**
  * The InhabitableBuildingPanel class is a building function panel representing 
@@ -20,7 +19,7 @@ import org.mars_sim.msp.ui.standard.*;
  */
 public class InhabitableBuildingPanel extends BuildingFunctionPanel implements MouseListener {
     
-    private InhabitableBuilding inhabitable; // The inhabitable building.
+    private LifeSupport inhabitable; // The inhabitable building.
     private DefaultListModel inhabitantListModel;
     private JList inhabitantList;
     private PersonCollection inhabitantCache;
@@ -31,10 +30,10 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
      * @param inhabitable The inhabitable building this panel is for.
      * @param desktop The main desktop.
      */
-    public InhabitableBuildingPanel(InhabitableBuilding inhabitable, MainDesktopPane desktop) {
+    public InhabitableBuildingPanel(LifeSupport inhabitable, MainDesktopPane desktop) {
         
         // Use BuildingFunctionPanel constructor
-        super((Building) inhabitable, desktop);
+        super(inhabitable.getBuilding() , desktop);
         
         // Initialize data members.
         this.inhabitable = inhabitable;

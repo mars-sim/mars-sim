@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.75 2004-02-11
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
@@ -9,22 +9,13 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
-import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
@@ -33,7 +24,7 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
     // Data members
-    private GroundVehicleMaintenance garage; // The maintenance garage.
+    private VehicleMaintenance garage; // The maintenance garage.
     private GroundVehicle vehicle; // Vehicle to be maintained.
     private double duration; // Duration (in millisols) the person will perform this task.
 
@@ -51,8 +42,15 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         if (vehicle != null) vehicle.setReservedForMaintenance(true);
         
         // Determine the garage it's in.
-        VehicleMaintenance building = BuildingManager.getBuilding(vehicle);
-        if (building instanceof GroundVehicleMaintenance) garage = (GroundVehicleMaintenance) building;
+        Building building = BuildingManager.getBuilding(vehicle);
+        if (building != null) {
+        	try {
+        		garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+        	}
+        	catch (Exception e) {
+        		System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
+        	}
+        }
         
         // End task if vehicle or garage not available.
         if ((vehicle == null) || (garage == null)) endTask();    
@@ -182,16 +180,22 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.class).iterator();
+            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
             while (i.hasNext()) {
-                GroundVehicleMaintenance garage = (GroundVehicleMaintenance) i.next();
-                boolean malfunction = ((Building) garage).getMalfunctionManager().hasMalfunction();
-                if (!malfunction) {
-                    VehicleIterator vehicleI = garage.getVehicles().iterator();
-                    while (vehicleI.hasNext()) {
-                        Vehicle vehicle = vehicleI.next();
-                        if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
+            	try {
+            		Building building = (Building) i.next();
+                	VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+                	boolean malfunction = building.getMalfunctionManager().hasMalfunction();
+                	if (!malfunction) {
+                    	VehicleIterator vehicleI = garage.getVehicles().iterator();
+                    	while (vehicleI.hasNext()) {
+                        	Vehicle vehicle = vehicleI.next();
+                        	if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
+                    	}
                     }
+                }
+                catch (Exception e) {
+                	System.err.println("MaintainGroundVehicleGarage.getAllVehicleCandidates(): " + e.getMessage());
                 }
             }
         }

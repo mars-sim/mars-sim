@@ -1,19 +1,17 @@
 /**
  * Mars Simulation Project
  * MedicalCareBuildingPanel.java
- * @version 2.75 2003-09-10
+ * @version 2.75 2004-04-05
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
-import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**
  * The MedicalCareBuildingPanel class is a building function panel representing 
@@ -38,7 +36,7 @@ public class MedicalCareBuildingPanel extends BuildingFunctionPanel {
     public MedicalCareBuildingPanel(MedicalCare medical, MainDesktopPane desktop) {
         
         // Use BuildingFunctionPanel constructor
-        super((Building) medical, desktop);
+        super(medical.getBuilding(), desktop);
         
         // Initialize data members
         this.medical = medical;

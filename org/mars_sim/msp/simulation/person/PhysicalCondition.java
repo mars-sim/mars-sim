@@ -312,7 +312,7 @@ public class PhysicalCondition implements Serializable {
      * Define the fatigue setting for this person
      * @param fatigue New fatigue.
      */
-    void setFatigue(double fatigue) {
+    public void setFatigue(double fatigue) {
         this.fatigue = fatigue;
     }
 
@@ -327,7 +327,7 @@ public class PhysicalCondition implements Serializable {
      * Define the hunger setting for this person
      * @param hunger New hunger.
      */
-    void setHunger(double hunger) {
+    public void setHunger(double hunger) {
         this.hunger = hunger;
     }
 

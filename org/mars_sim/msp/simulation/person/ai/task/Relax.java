@@ -1,22 +1,19 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.Iterator;
-
+import java.util.*;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.structure.building.BuildingException;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
-import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
-import org.mars_sim.msp.simulation.structure.building.function.Recreation;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /** The Relax class is a simple task that implements resting and doing nothing for a while.
  *  The duration of the task is by default chosen randomly, up to 100 millisols.
@@ -38,25 +35,20 @@ class Relax extends Task implements Serializable {
         // If person is in a settlement, try to find a place to relax.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-            InhabitableBuilding relaxBuilding = null;
-        
-            // Try to find an available recreation building.
-            Iterator i = buildingManager.getBuildings(InhabitableBuilding.class).iterator();
-            while (i.hasNext()) {
-                InhabitableBuilding building = (InhabitableBuilding) i.next();
-                if (building instanceof Recreation) {
-                    if (building.getAvailableOccupancy() > 0) relaxBuilding = building;
-                }
-            }
-            
-            if (relaxBuilding != null) {
-                try {
-                    if (!relaxBuilding.containsPerson(person)) relaxBuilding.addPerson(person);
-                }
-                catch (BuildingException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
+        	List recreationBuildings = buildingManager.getBuildings(Recreation.NAME);
+			int rand = RandomUtil.getRandomInt(recreationBuildings.size() - 1);
+			
+        	try {
+        		Building building = (Building) recreationBuildings.get(rand);
+        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+        		if (!lifeSupport.containsPerson(person) && (lifeSupport.getAvailableOccupancy() > 0)) 
+        			lifeSupport.addPerson(person);
+        		else endTask();
+        	}
+        	catch (Exception e) {
+        		System.err.println("Relax.constructor(): " + e.getMessage());
+        		endTask();
+        	}
         }
         
         duration = RandomUtil.getRandomInt(100);
@@ -88,4 +80,3 @@ class Relax extends Task implements Serializable {
         else return 0;
     }
 }
-

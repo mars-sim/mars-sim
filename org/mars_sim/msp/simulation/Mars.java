@@ -189,8 +189,13 @@ public class Mars implements Serializable {
      *  @param time amount of time passing (in millisols)
      */
     void clockPulse(double time) {
-        orbitInfo.addTime(MarsClock.convertMillisolsToSeconds(time));
-        units.timePassing(time);
+    	try {
+        	orbitInfo.addTime(MarsClock.convertMillisolsToSeconds(time));
+        	units.timePassing(time);
+    	}
+    	catch (Exception e) {
+    		System.err.println("Mars.clockPulse(): " + e.getMessage());
+    	}
     }
 
     /** Returns the simulation properties

@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 
@@ -13,7 +14,7 @@ import org.mars_sim.msp.simulation.structure.building.*;
  * A power source that gives a supply of power proportional 
  * to the level of sunlight it receives.
  */
-public class SolarPowerSource extends PowerSource {
+public class SolarPowerSource extends PowerSource implements Serializable {
 
 	private final static String TYPE = "Solar Power Source";
 

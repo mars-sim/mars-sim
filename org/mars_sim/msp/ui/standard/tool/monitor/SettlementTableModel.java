@@ -1,22 +1,16 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.75 2004-01-12
+ * @version 2.75 2004-04-05
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.UnitManager;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
-import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
-import org.mars_sim.msp.simulation.structure.building.Building;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /**
@@ -169,17 +163,21 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case GREENHOUSES : {
-                int greenhouses = bMgr.getBuildings(Farming.class).size();
+                int greenhouses = bMgr.getBuildings(Farming.NAME).size();
                 result = new Integer(greenhouses);
             } break;
 
             case CROPS : {
                 int crops = 0;
-                List greenhouses = bMgr.getBuildings(Farming.class);
+                List greenhouses = bMgr.getBuildings(Farming.NAME);
                 Iterator i = greenhouses.iterator();
                 while (i.hasNext()) {
-                    Farming farm = (Farming) i.next();
-                    crops += farm.getCrops().size();
+                	try {
+                		Building greenhouse = (Building) i.next();
+                    	Farming farm = (Farming) greenhouse.getFunction(Farming.NAME);
+                    	crops += farm.getCrops().size();
+                	}
+                	catch (Exception e) {}
                 }
                 
                 result = new Integer(crops);

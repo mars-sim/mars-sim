@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.75 2004-02-11
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
@@ -9,10 +9,12 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** The Maintenance class is a task for performing
@@ -56,15 +58,26 @@ public class Maintenance extends Task implements Serializable {
         // Get the malfunctionable entity chosen.
         i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
-            Malfunctionable e = (Malfunctionable) i.next();
-            MalfunctionManager manager = e.getMalfunctionManager();
+            Malfunctionable malfunctionable = (Malfunctionable) i.next();
+            MalfunctionManager manager = malfunctionable.getMalfunctionManager();
             double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
-            if ((chance < entityWeight) && !(e instanceof Vehicle)) {
-                entity = e;
+            if ((chance < entityWeight) && !(malfunctionable instanceof Vehicle)) {
+                entity = malfunctionable;
                 description = "Performing maintenance on " + entity.getName();
-                if (e instanceof InhabitableBuilding) {
-                    try { ((InhabitableBuilding) e).addPerson(person); }
-                    catch (BuildingException be) {}
+                if (entity instanceof Building) {
+                	Building building = (Building) entity;
+                	if (building.hasFunction(LifeSupport.NAME)) {
+                    	try { 
+                    		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                    		if (!lifeSupport.containsPerson(person)) {
+                    			if (lifeSupport.getAvailableOccupancy() > 0) lifeSupport.addPerson(person);
+                    			else endTask();
+                    		}
+                    	}
+                    	catch (Exception e) {
+                    		System.err.println("Maintenance.constructor: " + e.getMessage());
+                    	}
+                	}
                 }
                 // System.out.println(person.getName() + " " + description + " - " + lastMaint);
                 break;

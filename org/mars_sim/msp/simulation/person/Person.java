@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2004-03-10
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
@@ -9,12 +9,11 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.vehicle.*;
 
@@ -142,20 +141,6 @@ public class Person extends Unit implements Serializable {
             health.requestAllTreatments(aid);
     }
 
-    /** Sets the person's fatigue level
-     *  @param fatigue new fatigue level
-     */
-    public void setFatigue(double fatigue) {
-        health.setFatigue(fatigue);
-    }
-
-    /** Sets the person's hunger level
-     *  @param hunger new hunger level
-     */
-    public void setHunger(double hunger) {
-        health.setHunger(hunger);
-    }
-
     /**
      * Bury the Person at the current location. The person is removed from
      * any containing Settlements or Vehicles. The body is fixed at the last
@@ -237,10 +222,14 @@ public class Person extends Unit implements Serializable {
         String location = getLocationSituation();
         if (location.equals(INSETTLEMENT)) {
             Settlement settlement = getSettlement();
-            List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.class);
+            List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.NAME);
             if (infirmaries.size() > 0) {
                 int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
-                found = (MedicalAid) infirmaries.get(rand);
+                Building foundBuilding = (Building) infirmaries.get(rand);
+                try {
+                	found = (MedicalAid) foundBuilding.getFunction(MedicalCare.NAME);
+                }
+                catch (BuildingException e) {}
             }
         }
         if (location.equals(Person.INVEHICLE)) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-04-02
  * @author Scott Davis
  */
 
@@ -14,8 +14,7 @@ import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
-import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -59,7 +58,7 @@ public class LoadVehicle extends Task implements Serializable {
         double amountLoading = LOAD_RATE * time;
         
         // If vehicle is not in a garage, load rate is reduced.
-        VehicleMaintenance garage = BuildingManager.getBuilding(vehicle);
+        Building garage = BuildingManager.getBuilding(vehicle);
         if (garage == null) amountLoading /= 4D;
            
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2004-02-12
+ * @version 2.75 2004-04-03
  * @author Scott Davis
  */
 
@@ -11,14 +11,14 @@ import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
 /** The Settlement class represents a settlement unit on virtual Mars.
  *  It contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements LifeSupport {
+public class Settlement extends Structure implements org.mars_sim.msp.simulation.LifeSupport {
 
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
@@ -49,14 +49,21 @@ public class Settlement extends Structure implements LifeSupport {
         inventory.setTotalCapacity(Double.MAX_VALUE);
     }
     
-    /** Gets the population capacity of the settlement
-     *  @return the population capacity
+    /** 
+     * Gets the population capacity of the settlement
+     * @return the population capacity
      */
     public int getPopulationCapacity() {
         int result = 0;
-        Iterator i = buildingManager.getBuildings(LivingAccommodations.class).iterator();
+        Iterator i = buildingManager.getBuildings(LivingAccommodations.NAME).iterator();
         while (i.hasNext()) {
-            result += ((LivingAccommodations) i.next()).getAccommodationCapacity();
+        	try {
+        		Building building = (Building) i.next();
+        		LivingAccommodations livingAccommodations = 
+        			(LivingAccommodations) building.getFunction(LivingAccommodations.NAME);
+        		result += livingAccommodations.getBeds();
+        	} 
+        	catch (BuildingException e) {}
         }
         
         return result;
@@ -212,8 +219,9 @@ public class Settlement extends Structure implements LifeSupport {
     /** 
      * Perform time-related processes
      * @param time the amount of time passing (in millisols)
+     * @throws Exception if error during time passing.
      */
-    public void timePassing(double time) {
+    public void timePassing(double time) throws Exception {
         
         // If no current population at settlement, power down buildings.
         if (getCurrentPopulationNum() == 0) {
@@ -278,9 +286,14 @@ public class Settlement extends Structure implements LifeSupport {
         Airlock result = null;
         List airlocks = new ArrayList();
         
-        Iterator i = buildingManager.getBuildings(EVA.class).iterator();
+        Iterator i = buildingManager.getBuildings(EVA.NAME).iterator();
         while (i.hasNext()) {
-            airlocks.add(((EVA) i.next()).getAirlock());
+        	try {
+        		Building building = (Building) i.next();
+        		EVA eva = (EVA) building.getFunction(EVA.NAME);
+        		airlocks.add(eva.getAirlock());
+        	}
+        	catch (BuildingException e) {}
         }
         
         if (airlocks.size() > 0) {

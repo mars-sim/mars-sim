@@ -1,17 +1,14 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-04-02
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.*;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
@@ -115,11 +112,17 @@ public class MedicalAssistance extends Task implements Serializable {
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.class);
+            List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.NAME);
             Iterator i = infirmaries.iterator();
             while (i.hasNext()) {
-                MedicalAid aid = (MedicalAid) i.next();
-                if (isNeedyMedicalAid(aid)) result.add(aid);
+            	Building medicalBuilding = (Building) i.next();
+            	try {
+            		MedicalAid aid = (MedicalAid) medicalBuilding.getFunction(MedicalCare.NAME);
+                	if (isNeedyMedicalAid(aid)) result.add(aid);
+            	}
+            	catch (Exception e) {
+            		System.err.println("MedicalAssistance.getNeedyMedicalAids(): " + e.getMessage());
+            	}
             }
         }
         if (location.equals(Person.INVEHICLE)) {
@@ -155,7 +158,7 @@ public class MedicalAssistance extends Task implements Serializable {
         Malfunctionable result = null;
         
         if (aid instanceof SickBay) result = ((SickBay) aid).getVehicle();
-        else if (aid instanceof Building) result = (Building) aid;
+        else if (aid instanceof MedicalCare) result = ((MedicalCare) aid).getBuilding();
         else result = (Malfunctionable) aid;
         
         return result;

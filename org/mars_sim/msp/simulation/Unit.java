@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.74 2002-04-13
+ * @version 2.75 2004-04-03
  * @author Scott Davis
  */
 
@@ -92,11 +92,13 @@ public abstract class Unit implements Serializable {
         getInventory().setCoordinates(newLocation);	
     }
 
-    /** Time passing for unit.
-     *  Unit should take action or be modified by time as appropriate.
-     *  @param time the amount of time passing (in millisols)
+    /** 
+     * Time passing for unit.
+     * Unit should take action or be modified by time as appropriate.
+     * @param time the amount of time passing (in millisols)
+     * @throws Exception if error during time passing.
      */
-    public void timePassing(double time) {
+    public void timePassing(double time) throws Exception {
     }
 
     /** Gets the unit's inventory

@@ -6,12 +6,13 @@
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.structure.building.Building;
 
 /**
  * The PowerSource class represents a power generator for a building.
  */
-public abstract class PowerSource {
+public abstract class PowerSource implements Serializable {
 
 	// Data members
 	private String type;
