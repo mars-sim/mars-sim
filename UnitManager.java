@@ -230,12 +230,16 @@ public class UnitManager {
 
     /** Returns an array of unit info sorted by unit name from a vector of units. */
     private UnitInfo[] sortUnitInfo(Vector unsortedUnits) {
-
+	
+	/*
         Vector tempVector = new Vector();
 
         for (int x = 0; x < unsortedUnits.size(); x++) {
             tempVector.addElement(unsortedUnits.elementAt(x));
         }
+	*/
+
+        Vector tempVector = (Vector)unsortedUnits.clone();
 
         Unit sorterUnit = null;
         UnitInfo[] sortedInfo = new UnitInfo[tempVector.size()];
