@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.75 2004-02-11
+ * @version 2.76 2004-05-19
  * @author Scott Davis
  */
 
@@ -395,6 +395,14 @@ public class MalfunctionManager implements Serializable {
             }
             else done = true;
         }
+        
+		// Add stress to people affected by the accident.
+		PersonCollection people = entity.getAffectedPeople();
+		PersonIterator i = people.iterator();
+		while (i.hasNext()) {
+			PhysicalCondition condition = i.next().getPhysicalCondition();
+			condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
+		}
     }
 
     /**
