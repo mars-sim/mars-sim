@@ -27,7 +27,8 @@ public class PersonTableModel extends UnitTableModel {
     private final static int  FATIGUE = 4;        // Fatigue column
     private final static int  TASK = 5;           // Task column
     private final static int  MISSION = 6;        // Mission column
-    private final static int  COLUMNCOUNT = 7;    // The number of Columns
+    private final static int  HEALTH = 7;         // Health column
+    private final static int  COLUMNCOUNT = 8;    // The number of Columns
 
     // Data members
     private String columnNames[]; // Names of Columns
@@ -46,6 +47,7 @@ public class PersonTableModel extends UnitTableModel {
         columnNames[LOCATION] = "Location";
         columnNames[MISSION] = "Mission";
         columnNames[TASK] = "Task";
+        columnNames[HEALTH] = "Health";
 
         this.proxyManager = proxyManager;
     }
@@ -95,15 +97,21 @@ public class PersonTableModel extends UnitTableModel {
             } break;
 
             case HUNGER : {
-                result = new Integer(new Float(person.getHunger()).intValue());
+                double hunger = person.getPhysicalCondition().getHunger();
+                result = new Integer(new Float(hunger).intValue());
             } break;
 
             case FATIGUE : {
-                result = new Integer(new Float(person.getFatigue()).intValue());;
+                double fatigue = person.getPhysicalCondition().getFatigue();
+                result = new Integer(new Float(fatigue).intValue());;
             } break;
 
             case COORDS : {
                 result = person.getCoordinates().getFormattedString();
+            } break;
+
+            case HEALTH : {
+                result = person.getPhysicalCondition().getHealthSituation();
             } break;
 
             // Create a composite sdtring containing Vehicle & Settlement
@@ -121,8 +129,9 @@ public class PersonTableModel extends UnitTableModel {
             } break;
 
             case TASK : {
-                result =
-                        person.getMind().getTaskManager().getTaskDescription();
+                // If the Person is dead, there is no Task Manager
+                TaskManager mgr = person.getMind().getTaskManager();
+                result = ((mgr != null)? mgr.getTaskDescription() : null);
             } break;
 
             case MISSION : {
