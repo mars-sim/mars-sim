@@ -8,7 +8,6 @@
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 
@@ -46,7 +45,7 @@ public class HealthProblem implements Serializable {
         illness = complaint;
         sufferer = person;
         timePassed = 0;
-        state = DEGRADING;
+        setState(DEGRADING);
         duration = illness.getDegradePeriod();
         usedAid = null;
         Treatment treatment = illness.getRecoveryTreatment();
@@ -61,7 +60,7 @@ public class HealthProblem implements Serializable {
         }
         else {
             // Start treatment if the medical aid can help.
-            if ((state == DEGRADING) && (aid != null) && aid.canTreatProblem(this)) {
+            if ((getState() == DEGRADING) && (aid != null) && aid.canTreatProblem(this)) {
                 usedAid = aid;
                 try {
                     usedAid.requestTreatment(this);
@@ -74,12 +73,37 @@ public class HealthProblem implements Serializable {
         
         // System.out.println(person.getName() + " has new health problem: " + complaint.getName());
     }
+    
+    /**
+     * Sets the health problem state.
+     * @param newState the new state of the health problem.
+     */
+    private void setState(int newState) {
+    	state = newState;
+		// System.out.println(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
+    }
+    
+    /**
+     * Gets the state of the health problem.
+     * @return state
+     */
+    private int getState() {
+    	return state;
+    }
+    
+    /**
+     * Is the problem in a degrading state.
+     * @return true if degrading
+     */
+    public boolean getDegrading() {
+    	return (getState() == DEGRADING);
+    }
 
     /**
      * Has the problem been cured.
      */
     public boolean getCured() {
-        return (state == CURED);
+        return (getState() == CURED);
     }
 
     /**
@@ -121,14 +145,14 @@ public class HealthProblem implements Serializable {
      * Has the problem been cured.
      */
     public boolean getRecovering() {
-        return (state == RECOVERING);
+        return (getState() == RECOVERING);
     }
 
     /**
      * Awaiting treatment
      */
     public boolean getAwaitingTreatment() {
-        return ((state == DEGRADING) && (usedAid != null));
+        return ((getState() == DEGRADING) && (usedAid != null));
     }
 
     /**
@@ -137,10 +161,10 @@ public class HealthProblem implements Serializable {
      * @return Name of the complaint prefixed by the status.
      */
     public String getSituation() {
-        if (state == RECOVERING) {
+        if (getState() == RECOVERING) {
             return "Recovering " + illness.getName();
         }
-        else if (state == TREATMENT) {
+        else if (getState() == TREATMENT) {
             return "Treatment " + illness.getName();
         }
         else {
@@ -154,7 +178,7 @@ public class HealthProblem implements Serializable {
      * @return illness state as string
      */
     public String getStateString() {
-        switch(state) {
+        switch(getState()) {
             case DEGRADING: 
                 return "degrading";
             case TREATMENT:
@@ -179,7 +203,9 @@ public class HealthProblem implements Serializable {
     public void startTreatment(double treatmentLength) {
         duration = treatmentLength;
         timePassed = 0;
-        state = TREATMENT;
+        setState(TREATMENT);
+        
+        // System.out.println("Starting treatment: " + getSufferer().getName() + " - " + toString());
         
         // Create medical event for treatment.
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, MedicalEvent.TREATED);
@@ -190,14 +216,14 @@ public class HealthProblem implements Serializable {
      * Stops the treatment for now.
      */
     public void stopTreatment() {
-        if (state == TREATMENT) {
+        if (getState() == TREATMENT) {
             if (duration > timePassed) startDegrading();
             else startRecovery();
         }
     }
     
     private void startDegrading() {
-    	state = DEGRADING;
+    	setState(DEGRADING);
     	
     	// Create medical event for degrading.
 		MedicalEvent degradingEvent = new MedicalEvent(sufferer, this, MedicalEvent.DEGRADES);
@@ -209,12 +235,22 @@ public class HealthProblem implements Serializable {
      */
     public void startRecovery() {
         
-        if ((state == DEGRADING) || (state == TREATMENT)) {
+        if ((getState() == DEGRADING) || (getState() == TREATMENT)) {
             // If no recovery period, then it's done.
             duration = illness.getRecoveryPeriod();
             timePassed = 0;
             if (duration != 0D) {
-            	state = RECOVERING;
+            	setState(RECOVERING);
+            	
+				if ((usedAid != null) && !illness.getRecoveryTreatment().getRetainAid()) {
+					try {
+						usedAid.stopTreatment(this);
+					}
+					catch (Exception e) {
+						System.err.println("HealthProblem.timePassing(): " + e.getMessage());
+					}
+					usedAid = null;
+				}
             	
             	// Create medical event for recovering.
 				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, MedicalEvent.RECOVERY);
@@ -225,18 +261,7 @@ public class HealthProblem implements Serializable {
     }
     
     private void setCured() {
-    	state = CURED;
-    
-    	// Remove from medical aid if any used.
-    	if (usedAid != null) {
-			try {
-				usedAid.stopTreatment(this);
-			}
-			catch (Exception e) {
-				// System.out.println("HealthProblem.timePassing(): " + e.getMessage());
-			}
-			usedAid = null;
-    	}
+    	setState(CURED);
     	
     	// Create medical event for cured.
 		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, MedicalEvent.CURED);
@@ -258,7 +283,7 @@ public class HealthProblem implements Serializable {
         if (timePassed > duration) {
 
             // Recovering so has the recovery period expired
-            if (state == RECOVERING) {
+            if (getState() == RECOVERING) {
                 setCured();
 
                 // If person is cured or treatment person has expired, then
@@ -268,12 +293,12 @@ public class HealthProblem implements Serializable {
                         usedAid.stopTreatment(this);
                     }
                     catch (Exception e) {
-                        // System.out.println("HealthProblem.timePassing(): " + e.getMessage());
+                    	System.err.println("HealthProblem.timePassing(): " + e.getMessage());
                     }
                     usedAid = null;
                 }
             }
-            else if (state == DEGRADING) {
+            else if (getState() == DEGRADING) {
                 if (duration != 0D) {
                     // Illness has moved to next phase, if null then dead
                     Complaint nextPhase = illness.getNextPhase();
@@ -282,28 +307,19 @@ public class HealthProblem implements Serializable {
                             usedAid.stopTreatment(this);
                         }
                         catch (Exception e) {
-                            // System.out.println("HealthProblem.timePassing(): " + e.getMessage());
+                            System.err.println("HealthProblem.timePassing(): " + e.getMessage());
                         }
                         usedAid = null;
                     }
 
                     if (nextPhase == null) {
-                        state = DEAD;
+                        setState(DEAD);
                         condition.setDead(this);
                     }
                     else result = nextPhase;
                 }
             }
-            else if (state == TREATMENT) {
-                if ((usedAid != null) && !illness.getRecoveryTreatment().getRetainAid()) {
-                    try {
-                        usedAid.stopTreatment(this);
-                    }
-                    catch (Exception e) {
-                        // System.out.println("HealthProblem.timePassing(): " + e.getMessage());
-                    }
-                    usedAid = null;
-                }
+            else if (getState() == TREATMENT) {
                 startRecovery();
             }
         }
@@ -318,11 +334,11 @@ public class HealthProblem implements Serializable {
      */
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-        if (state == RECOVERING) {
+        if (getState() == RECOVERING) {
             buffer.append("Recovering ");
             buffer.append(illness.getName());
         }
-        else if (state == TREATMENT) {
+        else if (getState() == TREATMENT) {
             buffer.append("Treatment (");
             buffer.append(illness.getRecoveryTreatment().getName());
             buffer.append(") ");

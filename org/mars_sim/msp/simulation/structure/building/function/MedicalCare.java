@@ -186,7 +186,19 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {}
+	public void timePassing(double time) throws BuildingException {
+	
+	    /*
+		String name = getBuilding().getBuildingManager().getSettlement().getName();
+		if (getProblemsBeingTreated().size() > 0) {
+			Iterator i = getProblemsBeingTreated().iterator();
+			while (i.hasNext()) {
+				HealthProblem problem = (HealthProblem) i.next();
+				System.out.println(name + ": " + problem.toString() + " - cured: " + problem.getCured());
+			}
+		}
+		*/
+	}
 	
 	/**
 	 * Gets the amount of power required when function is at full power.

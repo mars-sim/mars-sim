@@ -113,6 +113,8 @@ public class MedicalStation implements MedicalAid, Serializable {
     public boolean canTreatProblem(HealthProblem problem) {
         if (problem == null) return false;
         else {
+        	boolean degrading = problem.getDegrading();
+        	
             // Check if treatment is supported in this medical station.
             Treatment requiredTreatment = problem.getIllness().getRecoveryTreatment();
             boolean supported = supportedTreatments.contains(requiredTreatment);
@@ -123,7 +125,7 @@ public class MedicalStation implements MedicalAid, Serializable {
             // Check if problem is waiting to be treated.
             boolean waiting = problemsAwaitingTreatment.contains(problem);
             
-            if (supported && !treating && !waiting) return true;
+            if (supported && degrading && !treating && !waiting) return true;
             else return false;
         }
     }
@@ -184,13 +186,13 @@ public class MedicalStation implements MedicalAid, Serializable {
      */
     public void stopTreatment(HealthProblem problem) throws Exception {
         
-        // System.out.println("Stopping treatment " + problem.toString());
         if (problemsBeingTreated.contains(problem)) {
             problem.stopTreatment();
             problemsBeingTreated.remove(problem);
             boolean cured = problem.getCured();
             boolean dead = problem.getSufferer().getPhysicalCondition().isDead();
-            if (!cured && !dead) problemsAwaitingTreatment.add(problem);
+            boolean recovering = problem.getRecovering();
+            if (!cured && !dead && !recovering) problemsAwaitingTreatment.add(problem);
         }
         else throw new Exception("Health problem not currently being treated.");
     }
