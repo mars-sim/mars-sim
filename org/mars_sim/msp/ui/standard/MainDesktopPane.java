@@ -5,9 +5,10 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;  
- 
-import org.mars_sim.msp.simulation.Coordinates;  
+package org.mars_sim.msp.ui.standard;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.ui.standard.monitor.MonitorWindow;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -29,7 +30,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private JLabel logoLabel; // Label that has the centered logo for the project.
     private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
 
-    /** Constructs a MainDesktopPane object 
+    /** Constructs a MainDesktopPane object
      *  @param mainWindow the main outer window
      */
     public MainDesktopPane(MainWindow mainWindow) {
@@ -130,30 +131,30 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Prepare navigator window
         NavigatorWindow navWindow = new NavigatorWindow(this);
-        try { navWindow.setClosed(true); } 
+        try { navWindow.setClosed(true); }
         catch (java.beans.PropertyVetoException e) { }
         toolWindows.addElement(navWindow);
 
         // Prepare search tool window
         SearchWindow searchWindow = new SearchWindow(this);
-        try { searchWindow.setClosed(true); } 
+        try { searchWindow.setClosed(true); }
         catch (java.beans.PropertyVetoException e) { }
         toolWindows.addElement(searchWindow);
 
         // Prepare time tool window
         TimeWindow timeWindow = new TimeWindow(this);
-        try { timeWindow.setClosed(true); } 
+        try { timeWindow.setClosed(true); }
         catch (java.beans.PropertyVetoException e) { }
         toolWindows.addElement(timeWindow);
 
         // Prepare monitor tool window
         MonitorWindow monitorWindow = new MonitorWindow(this);
-        try { monitorWindow.setClosed(true); } 
+        try { monitorWindow.setClosed(true); }
         catch (java.beans.PropertyVetoException e) { }
         toolWindows.addElement(monitorWindow);
     }
 
-    /** Returns a tool window for a given tool name 
+    /** Returns a tool window for a given tool name
      *  @param toolName the name of the tool window
      *  @return the tool window
      */
@@ -168,7 +169,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         return resultWindow;
     }
 
-    /** Centers the map and the globe on given coordinates 
+    /** Centers the map and the globe on given coordinates
      *  @param targetLocation the new center location
      */
     public void centerMapGlobe(Coordinates targetLocation) {
@@ -176,7 +177,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 updateCoords(targetLocation);
     }
 
-    /** Return true if tool window is open 
+    /** Return true if tool window is open
      *  @param toolName the name of the tool window
      *  @return true true if tool window is open
      */
@@ -186,7 +187,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         else return false;
     }
 
-    /** Opens a tool window if necessary 
+    /** Opens a tool window if necessary
      *  @param toolName the name of the tool window
      */
     public void openToolWindow(String toolName) {
@@ -198,25 +199,25 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                     tempWindow.setOpened();
                 }
                 add(tempWindow, 0);
-                try { tempWindow.setClosed(false); } 
+                try { tempWindow.setClosed(false); }
                 catch (Exception e) { System.out.println(e.toString()); }
             }
             tempWindow.show();
         }
     }
 
-    /** Closes a tool window if it is open 
+    /** Closes a tool window if it is open
      *  @param toolName the name of the tool window
      */
     public void closeToolWindow(String toolName) {
         ToolWindow tempWindow = getToolWindow(toolName);
         if ((tempWindow != null) && !tempWindow.isClosed()) {
-            try { tempWindow.setClosed(true); } 
+            try { tempWindow.setClosed(true); }
             catch (java.beans.PropertyVetoException e) {}
         }
     }
 
-    /** Creates and opens a window for a unit if it isn't already in existance and open 
+    /** Creates and opens a window for a unit if it isn't already in existance and open
      *  @param unitUIProxy the unit UI proxy
      */
     public void openUnitWindow(UnitUIProxy unitUIProxy) {
@@ -224,7 +225,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         UnitDialog tempWindow = null;
 
         for (int x = 0; x < unitWindows.size(); x++) {
-            if (((UnitDialog) unitWindows.elementAt(x)).getUnit() == 
+            if (((UnitDialog) unitWindows.elementAt(x)).getUnit() ==
                     unitUIProxy.getUnit()) {
                 tempWindow = (UnitDialog) unitWindows.elementAt(x);
             }
@@ -232,11 +233,11 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         if (tempWindow != null) {
             if (tempWindow.isClosed()) add(tempWindow, 0);
-        } 
+        }
         else {
             tempWindow = unitUIProxy.getUnitDialog(this);
             add(tempWindow, 0);
-            try { tempWindow.setSelected(true); } 
+            try { tempWindow.setSelected(true); }
             catch (java.beans.PropertyVetoException e) {}
 
             // Set internal frame listener
@@ -255,7 +256,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         tempWindow.show();
     }
 
-    /** Disposes a unit window and button 
+    /** Disposes a unit window and button
      *  @param unitUIProxy the unit UI proxy
      */
     public void disposeUnitWindow(UnitUIProxy unitUIProxy) {
@@ -273,12 +274,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         mainWindow.disposeUnitButton(unitUIProxy);
     }
 
-    /** Returns the unit UI proxy manager. 
+    /** Returns the unit UI proxy manager.
      *  @return the unit UI proxy manager
      */
     public UIProxyManager getProxyManager() { return proxyManager; }
 
-    /** set the unit UI proxy manager. 
+    /** set the unit UI proxy manager.
      *  @param manager The unit UI proxy manager
      */
     public void setProxyManager(UIProxyManager manager) {
@@ -301,8 +302,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         // Prepare tool windows
         prepareToolWindows();
     }
-    
-    /** Returns a random location on the desktop for a given JInternalFrame 
+
+    /** Returns a random location on the desktop for a given JInternalFrame
      *  @param tempWindow an internal window
      *  @return random point on the desktop
      */
