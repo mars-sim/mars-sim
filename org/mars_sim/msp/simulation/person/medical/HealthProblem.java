@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * HealthProblem.java
- * @version 2.75 2003-06-19
+ * @version 2.75 2004-01-06
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
+
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 
@@ -62,7 +63,7 @@ public class HealthProblem implements Serializable {
                     usedAid.requestTreatment(this);
                 }
                 catch (Exception e) {
-                    System.out.println("HeathProblem: " + e.getMessage());
+                    // System.out.println("HeathProblem: " + e.getMessage());
                 }
             }
         }
@@ -226,7 +227,7 @@ public class HealthProblem implements Serializable {
                         usedAid.stopTreatment(this);
                     }
                     catch (Exception e) {
-                        System.out.println("HealthProblem.timePassing(): " + e.getMessage());
+                        // System.out.println("HealthProblem.timePassing(): " + e.getMessage());
                     }
                     usedAid = null;
                 }
@@ -240,7 +241,7 @@ public class HealthProblem implements Serializable {
                             usedAid.stopTreatment(this);
                         }
                         catch (Exception e) {
-                            System.out.println("HealthProblem.timePassing(): " + e.getMessage());
+                            // System.out.println("HealthProblem.timePassing(): " + e.getMessage());
                         }
                     }
 
@@ -257,7 +258,7 @@ public class HealthProblem implements Serializable {
                         usedAid.stopTreatment(this);
                     }
                     catch (Exception e) {
-                        System.out.println("HealthProblem.timePassing(): " + e.getMessage());
+                        // System.out.println("HealthProblem.timePassing(): " + e.getMessage());
                     }
                     usedAid = null;
                 }

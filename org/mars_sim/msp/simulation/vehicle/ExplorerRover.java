@@ -6,9 +6,11 @@
 
 package org.mars_sim.msp.simulation.vehicle;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
 import java.io.Serializable;
+
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /**
  * The ExplorerRover class is a rover designed for exploration and collecting
@@ -19,7 +21,7 @@ public class ExplorerRover extends Rover implements Medical, Serializable {
     // Static data members
     private static final double RANGE = 3000D; // Operating range of rover in km.
     private static final int CREW_CAPACITY = 4; // Max number of crewmembers.
-    private static final double CARGO_CAPACITY = 5000D; // Cargo capacity of rover in kg.
+    private static final double CARGO_CAPACITY = 5500D; // Cargo capacity of rover in kg.
     private static final double METHANE_CAPACITY = 1600D; // Methane capacity of rover in kg.
     private static final double OXYGEN_CAPACITY = 140D; // Oxygen capacity of rover in kg.
     private static final double WATER_CAPACITY = 560D; // Water capacity of rover in kg.
