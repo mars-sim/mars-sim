@@ -26,7 +26,8 @@ public class SkillManager implements Serializable {
         skills = new Hashtable();
 
         // Add starting skills randomly for person.
-        String[] startingSkills = {"Driving", "Greenhouse Farming", "Vehicle Mechanic", "Areology"};
+        String[] startingSkills = {"Driving", "Greenhouse Farming",
+                                   "Vehicle Mechanic", "Areology", "Medical"};
 
         for (int x = 0; x < startingSkills.length; x++) {
             int skillLevel = getInitialSkillLevel(0, 50);
