@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: org.mars_sim.msp.MarsProject
-Class-Path: . jars/msp-standard-ui.jar jars/msp-simulation.jar jars/map_data.jar jars/jcommon.jar jars/jfreechart.jar jars/junit.jar jars/aelfred.jar
+Class-Path: jars/msp-standard-ui.jar jars/msp-simulation.jar jars/map_data.jar jars/jcommon.jar jars/jfreechart.jar jars/junit.jar ./

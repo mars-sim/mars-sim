@@ -40,23 +40,25 @@ REM Create msp-simulation.jar file.
 
 echo off
 
-set CLASSES=..\org\mars_sim\msp\simulation\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\equipment\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\events\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\malfunction\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\person\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\person\ai\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\person\ai\mission\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\person\ai\task\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\person\medical\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\structure\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\structure\building\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\structure\building\function\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\vehicle\*.class
+cd ..
+
+set CLASSES=org\mars_sim\msp\simulation\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\equipment\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\events\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\malfunction\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\person\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\person\ai\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\person\ai\mission\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\person\ai\task\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\person\medical\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\structure\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\structure\building\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\structure\building\function\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\simulation\vehicle\*.class
 
 echo on
 
-jar -cvf ../jars/msp-simulation.jar %CLASSES%
+jar -cvf jars/msp-simulation.jar %CLASSES%
 
 pause
 
@@ -64,28 +66,30 @@ REM Create msp-standard-ui.jar file.
 
 echo off
 
-set CLASSES=..\org\mars_sim\msp\ui\standard\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\tool\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\tool\navigator\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\tool\monitor\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\tool\search\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\tool\time\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\unit_window\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\unit_window\equipment\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\unit_window\person\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\unit_window\vehicle\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\unit_window\structure\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\unit_window\structure\building\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\ui\standard\unit_display_info\*.class
+set CLASSES=org\mars_sim\msp\ui\standard\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\tool\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\tool\navigator\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\tool\monitor\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\tool\search\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\tool\time\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\unit_window\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\unit_window\equipment\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\unit_window\person\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\unit_window\vehicle\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\unit_window\structure\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\unit_window\structure\building\*.class
+set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\unit_display_info\*.class
 
 echo on
 
-jar -cvf ../jars/msp-standard-ui.jar %CLASSES% ..\images\*.*
+jar -cvf jars/msp-standard-ui.jar %CLASSES% images\*.*
 
 pause
 
 REM Create MarsProject.jar file.
 
-jar -cvmf main-manifest.txt ../MarsProject.jar ..\org\mars_sim\msp\MarsProject.class
+jar -cvmf scripts\main-manifest.txt MarsProject.jar org\mars_sim\msp\MarsProject.class
+
+cd scripts
 
 pause
