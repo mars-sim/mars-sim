@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-06-07
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Mind;
@@ -175,11 +174,6 @@ public class TaskManager implements Serializable {
 
         // Get a random number from 0 to the total weight
         double totalProbability = getTotalTaskProbability(); 
-        Map firstMap = getProbabilityMap();
-        double totalProbability2 = getTotalTaskProbability();
-        Map firstMap2 = getProbabilityMap();
-        double totalProbability3 = getTotalTaskProbability();
-        Map firstMap3 = getProbabilityMap();
         double r = RandomUtil.getRandomDouble(totalProbability);
 
         // Determine which task is selected.
@@ -212,12 +206,6 @@ public class TaskManager implements Serializable {
             return (Task) construct.newInstance(parametersForInvokingMethod);
         }
         catch (Exception e) {
-			double checkProbability1 = getTotalTaskProbability();
-			Map secondMap1 = getProbabilityMap();
-			double checkProbability2 = getTotalTaskProbability();
-			Map secondMap2 = getProbabilityMap();
-			double checkProbability3 = getTotalTaskProbability();
-			Map secondMap3 = getProbabilityMap();
         	throw new Exception("TaskManager.getNewTask(): " + e.getMessage());
         }
     }
@@ -243,25 +231,5 @@ public class TaskManager implements Serializable {
         }
 
         return result;
-    }
-    
-    private Map getProbabilityMap() {
-    	Map result = new HashMap();
-    	
-		// Initialize parameters
-		Class[] parametersForFindingMethod = { Person.class };
-		Object[] parametersForInvokingMethod = { mind.getPerson() };
-
-		// Sum the probable weights of each available task.
-		for (int x = 0; x < availableTasks.length; x++) {
-			try {
-				Method probability = availableTasks[x].getMethod("getProbability", parametersForFindingMethod);
-				result.put(mind.getPerson().getName() + availableTasks[x], probability.invoke(null, parametersForInvokingMethod));
-			} catch (Exception e) {
-				System.err.println("TaskManager.getTotalTaskProbability(): " + e.toString());
-			}
-		}    	
-    	
-    	return result;
     }
 }

@@ -9,7 +9,7 @@ package org.mars_sim.msp.simulation.events;
 
 import java.util.*;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.MarsClock;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /**
  * This class provides a manager that maintains a model of the events that

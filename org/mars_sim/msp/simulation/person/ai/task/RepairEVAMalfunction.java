@@ -12,8 +12,8 @@ import java.util.Iterator;
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.SurfaceFeatures;
 import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.*;
 
 /**

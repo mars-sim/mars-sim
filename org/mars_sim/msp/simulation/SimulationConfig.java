@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation;
 import java.io.*;
 import javax.xml.parsers.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
+import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;

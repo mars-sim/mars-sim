@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-06-07
  * @author Scott Davis
  */
 
@@ -224,7 +224,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         		createOptionsMenu();
         		optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
         	}
-        	else optionsMenu.setVisible(true);
+        	else optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
         }
         else if (source == topoItem) {
         	if (topoItem.isSelected()) {

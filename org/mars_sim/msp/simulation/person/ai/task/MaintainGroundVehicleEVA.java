@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;

@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.simulation.time;
 
 import java.io.Serializable;
 

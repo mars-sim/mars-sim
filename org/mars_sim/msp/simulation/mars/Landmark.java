@@ -5,7 +5,9 @@
  * @author Dalen Kruse
  */
 
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.simulation.mars;
+
+import org.mars_sim.msp.simulation.Coordinates;
 
 
 /** The Landmark class represents a surface landmark on virtual Mars.

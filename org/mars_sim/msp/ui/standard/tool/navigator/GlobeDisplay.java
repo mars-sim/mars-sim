@@ -20,10 +20,10 @@ import javax.swing.JComponent;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.IntPoint;
-import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
 

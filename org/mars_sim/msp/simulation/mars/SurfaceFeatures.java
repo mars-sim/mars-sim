@@ -5,9 +5,13 @@
  * @author Scott Davis
  */
  
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.simulation.mars;
 
 import java.util.*;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
 
 /** 
  * SurfaceFeatures represents the surface terrain and landmarks of the virtual Mars. 

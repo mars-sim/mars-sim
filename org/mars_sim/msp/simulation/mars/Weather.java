@@ -5,9 +5,12 @@
  * @author Scott Davis
  */
  
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.simulation.mars;
 
 import java.io.Serializable;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Simulation;
 
 /** Weather represents the weather on Mars */
 public class Weather implements Serializable {

@@ -5,9 +5,12 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.simulation.time;
 
 import java.io.Serializable;
+
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
 
 /** The MasterClock represents the simulated time clock on virtual
  *  Mars. Virtual Mars has only one master clock. The master clock

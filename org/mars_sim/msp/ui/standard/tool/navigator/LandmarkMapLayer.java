@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.mars.*;
 
 /**
  * The LandmarkMapLayer is a graphics layer to display landmarks.

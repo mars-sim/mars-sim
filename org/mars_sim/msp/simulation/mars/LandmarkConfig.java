@@ -4,9 +4,11 @@
  * @version 2.75 2004-03-16
  * @author Scott Davis
  */
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.simulation.mars;
 
 import java.util.*;
+
+import org.mars_sim.msp.simulation.Coordinates;
 import org.w3c.dom.*;
 
 /**

@@ -9,8 +9,10 @@ package org.mars_sim.msp.simulation;
 import java.io.*;
 import org.mars_sim.msp.simulation.events.HistoricalEventManager;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.medical.MedicalManager;
+import org.mars_sim.msp.simulation.time.*;
 
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.

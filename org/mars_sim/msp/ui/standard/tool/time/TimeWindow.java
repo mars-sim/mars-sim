@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.time.*;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 

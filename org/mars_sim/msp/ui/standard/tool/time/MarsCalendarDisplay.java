@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.75 2003-07-29
+ * @version 2.76 2004-06-07
  * @author Scott Davis
  */
 
@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.standard.tool.time;
 
 import java.awt.*;
 import javax.swing.*;
-import org.mars_sim.msp.simulation.*;  
+import org.mars_sim.msp.simulation.time.*;
 
 /** 
  * The Mars Calendar Display class shows the current month 

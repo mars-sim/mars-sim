@@ -4,7 +4,7 @@
  * @version 2.76 2004-06-07
  * @author Scott Davis
  */
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.simulation.mars;
 
 import java.io.Serializable;
 
