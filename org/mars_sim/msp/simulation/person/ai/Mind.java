@@ -42,11 +42,28 @@ public class Mind implements Serializable {
         jobLock = false;
         
         // Set the MBTI personality type.
-        personality = new PersonalityType();
+        personality = new PersonalityType(person);
 
         // Construct a task manager
         taskManager = new TaskManager(this);
     }
+    
+	/**
+	 * Time passing 
+	 * @param time the time passing (millisols)
+	 * @throws Exception if error.
+	 */
+	public void timePassing(double time) throws Exception {
+		
+		// Take action as necessary.
+		takeAction(time);
+		
+		// Update stress based on personality.
+		personality.updateStress(time);
+		
+		// Update relationships.
+		Simulation.instance().getRelationshipManager().timePassing(person, time);
+	}
 
     /** 
      * Take appropriate action for a given amount of time.
@@ -136,7 +153,7 @@ public class Mind implements Serializable {
      * be also aborted.
      */
     public void setInactive() {
-	taskManager.clearTask();
+		taskManager.clearTask();
         if (hasActiveMission()) {
             mission.removePerson(person);
             mission = null;
