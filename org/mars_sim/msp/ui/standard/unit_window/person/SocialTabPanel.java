@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SocialTabPanel.java
- * @version 2.77 2004-09-06
+ * @version 2.77 2004-09-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.person;
@@ -110,6 +110,7 @@ public class SocialTabPanel extends TabPanel {
 				knownPeople = newKnownPeople;
 				fireTableDataChanged();
 			}
+			else fireTableDataChanged();
 		}
 		
 		private String getRelationshipString(double opinion) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.76 2004-06-14
+ * @version 2.77 2004-09-08
  * @author Scott Davis
  */
 
@@ -63,6 +63,9 @@ public class Mind implements Serializable {
             	if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission, !activeMission);
             	takeAction(time);
         	}
+        	
+        	// Update relationships for this person.
+        	Simulation.instance().getRelationshipManager().timePassing(person, time);
         }
         catch (Exception e) {
         	throw new Exception("Mind.takeAction(): " + e.getMessage());

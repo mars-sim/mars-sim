@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 2.77 2004-09-06
+ * @version 2.77 2004-09-08
  * @author Scott Davis
  */
 
@@ -10,8 +10,12 @@ package org.mars_sim.msp.simulation.person.ai.social;
 import com.phoenixst.plexus.*;
 import java.io.Serializable;
 import java.util.*;
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
+import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /** 
  * The RelationshipManager class keeps track of all the social 
@@ -21,7 +25,17 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  */
 public class RelationshipManager implements Serializable {
 	
+	// The base % chance of a relationship change per millisol.
+	private static final double BASE_RELATIONSHIP_CHANGE_PROBABILITY = .1D;
+	
+	// The base change amount per millisol. 
+	private static final double BASE_RELATIONSHIP_CHANGE_AMOUNT = .1D;
+	
+	// The base stress modifier per millisol for relationships.
+	private static final double BASE_STRESS_MODIFIER = .1D;
+	
 	private Graph relationshipGraph; // The relationship graph
+	int count = 0;
 
 	/**
 	 * Constructor
@@ -67,7 +81,10 @@ public class RelationshipManager implements Serializable {
 			PersonIterator i = initialGroup.iterator();
 			while (i.hasNext()) {
 				Person person2 = i.next();
-				if (person2 != person) addRelationship(person, person2, Relationship.EXISTING_RELATIONSHIP);
+				if (person2 != person) {
+					addRelationship(person, person2, Relationship.EXISTING_RELATIONSHIP);
+					System.out.println(person.getName() + " and " + person2.getName() + " have existing relationship.  " + count);
+				} 
 			}
 		}
 	}
@@ -79,8 +96,9 @@ public class RelationshipManager implements Serializable {
 	 * @param relationshipType the type of relationship (see Relationship static members)
 	 */
 	private void addRelationship(Person person1, Person person2, String relationshipType) {
-		Relationship relationship = new Relationship(person1, person2, Relationship.EXISTING_RELATIONSHIP);
+		Relationship relationship = new Relationship(person1, person2, relationshipType);
 		relationshipGraph.addEdge(relationship, person1, person2, false);
+		count++;
 	}
 	
 	/**
@@ -116,10 +134,9 @@ public class RelationshipManager implements Serializable {
 	 */
 	public List getAllRelationships(Person person) {
 		List result = new ArrayList();
-		// TraverserPredicate traverserPredicate = TraverserPredicateFactory.createEqualsNode(person, GraphUtils.UNDIRECTED_MASK);
 		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
-			Person knownPerson = (Person) traverser.next();
+			traverser.next();
 			Relationship relationship = (Relationship) traverser.getEdge().getUserObject();
 			result.add(relationship);
 		}
@@ -133,7 +150,6 @@ public class RelationshipManager implements Serializable {
 	 */
 	public PersonCollection getAllKnownPeople(Person person) {
 		PersonCollection result = new PersonCollection();
-		// TraverserPredicate traverserPredicate = TraverserPredicateFactory.createEqualsNode(person, GraphUtils.UNDIRECTED_MASK);
 		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
 			Person knownPerson = (Person) traverser.next();
@@ -158,5 +174,131 @@ public class RelationshipManager implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Time passing for a person's relationships.
+	 * @param person the person 
+	 * @param time the time passing (millisols)
+	 * @throws Exception if error.
+	 */
+	public void timePassing(Person person, double time) throws Exception {
+		
+		// Update the person's relationships.
+		updateRelationships(person, time);
+		
+		// Modify the person's stress based on relationships with local people.
+		modifyStress(person, time);
+	}
+	
+	/**
+	 * Updates the person's relationships
+	 * @param person the person to update
+	 * @param time the time passing (millisols)
+	 * @throws Exception if error
+	 */
+	private void updateRelationships(Person person, double time) throws Exception {
+		
+		double personStress = person.getPhysicalCondition().getStress();
+		
+		// Get the person's local group of people.
+		PersonCollection localGroup = getLocalGroup(person);
+		
+		// Go through each person in local group.
+		PersonIterator i = localGroup.iterator();
+		while (i.hasNext()) {
+			Person localPerson = i.next();
+			double localPersonStress = localPerson.getPhysicalCondition().getStress(); 
+			
+			// Check if new relationship.
+			if (!hasRelationship(person, localPerson)) {
+				addRelationship(person, localPerson, Relationship.FIRST_IMPRESSION);
+				// System.out.println(person.getName() + " and " + localPerson.getName() + " meet for the first time.  " + count);
+			}
+			
+			// Determine probability of relationship change per millisol.
+			double changeProbability = BASE_RELATIONSHIP_CHANGE_PROBABILITY * time;
+			double stressProbModifier = 1D + ((personStress + localPersonStress) / 100D);
+			if (RandomUtil.lessThanRandPercent(changeProbability * stressProbModifier)) {
+				
+				// Randomly determine change amount (negative or positive)
+				double changeAmount = RandomUtil.getRandomDouble(BASE_RELATIONSHIP_CHANGE_AMOUNT) * time;
+				if (RandomUtil.lessThanRandPercent(50)) changeAmount = 0 - changeAmount;
+				
+				// Modify magnitude based on the collective stress of the two people.
+				double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);
+				changeAmount*= stressChangeModifier;
+				
+				// Modify based on difference in other person's opinion.
+				double otherOpinionModifier = (getOpinionOfPerson(localPerson, person) - getOpinionOfPerson(person, localPerson)) / 1000D * time;
+				changeAmount+= otherOpinionModifier;
+				
+				// Modify based on the conversation attribute of other person.
+				double conversation = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.CONVERSATION);
+				double conversationModifier = (conversation - 50D) / 1000D * time;
+				changeAmount+= conversationModifier;
+				
+				// Modify based on attractiveness attribute if people are of opposite genders.
+				// Note: We may add sexual orientation later that will add further complexity to this.
+				double attractiveness = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ATTRACTIVENESS);
+				double attractivenessModifier = (attractiveness - 50D) / 2000D * time;
+				boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));
+				if (oppositeGenders) changeAmount+= attractivenessModifier;
+				
+				// Modify based on same-gender bonding.
+				double genderBondingModifier = 10D / 1000D * time;
+				if (!oppositeGenders) changeAmount+= genderBondingModifier;
+				
+				// TODO: add additional modifiers here to deal with personality when we add that.
+				
+				// Change the person's opinion of the other person.
+				Relationship relationship = getRelationship(person, localPerson);
+				relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
+				// System.out.println(person.getName() + " has changed opinion of " + localPerson.getName() + " by " + changeAmount);
+			}
+		}	
+	}
+	
+	/**
+	 * Modifies the person's stress based on relationships with local people.
+	 * @param person the person
+	 * @param time the time passing (millisols)
+	 * @throws Exception if error
+	 */
+	private void modifyStress(Person person, double time) throws Exception {
+		double stressModifier = 0D;
+		
+		PersonIterator i = getLocalGroup(person).iterator();
+		while (i.hasNext()) stressModifier-= ((getOpinionOfPerson(person, i.next()) - 50D) / 50D);
+		
+		stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;
+		PhysicalCondition condition = person.getPhysicalCondition();
+		condition.setStress(condition.getStress() + stressModifier);
+	}
+	
+	/**
+	 * Gets the person's local group of people (in building or rover)
+	 * @param person the person 
+	 * @return collection of people in person's location.
+	 * @throws Exception if error
+	 */
+	private PersonCollection getLocalGroup(Person person) throws Exception {
+		PersonCollection localGroup = new PersonCollection();
+		
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			Building building = BuildingManager.getBuilding(person);
+			if (building.hasFunction(LifeSupport.NAME)) {
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				localGroup = new PersonCollection(lifeSupport.getOccupants());
+			}
+		}
+		else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+			Rover rover = (Rover) person.getVehicle();
+			localGroup = new PersonCollection(rover.getCrew());
+		}
+		
+		if (localGroup.contains(person)) localGroup.remove(person);
+		
+		return localGroup;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relationship.java
- * @version 2.77 2004-09-01
+ * @version 2.77 2004-09-08
  * @author Scott Davis
  */
 
@@ -93,15 +93,27 @@ public class Relationship implements Serializable {
 	}
 	
 	/**
-	 * Get's one of the two people's opinion of the other.
+	 * Gets one of the two people's opinion of the other.
 	 * @param person the person to get an opinion from.
 	 * @return the person's opinion of the other person as a value from 0 to 100.
-	 * @throws IllegalArgumentException if person is not one the two people in the relationship.
+	 * @throws IllegalArgumentException if person is not one of the two people in the relationship.
 	 */
 	public double getPersonOpinion(Person person) throws IllegalArgumentException {
 		if (person == person1) return person1Opinion;
-		if (person == person2) return person2Opinion;
+		else if (person == person2) return person2Opinion;
 		else throw new IllegalArgumentException("Invalid person: " + person);
+	}
+	
+	/**
+	 * Sets one of the two people's opinion of the other.
+	 * @param person the person to set the opinion for.
+	 * @param opinion the person's opinion of the other person as a value from 0 to 100.
+	 * @throws IllegalArgumentException if person is not one of the two people in the relationship.
+	 */
+	public void setPersonOpinion(Person person, double opinion) throws IllegalArgumentException {
+		if (person == person1) setPerson1Opinion(opinion);
+		else if (person == person2) setPerson2Opinion(opinion);
+		else throw new IllegalArgumentException("Invalid person: " + person); 
 	}
 	
 	/**
