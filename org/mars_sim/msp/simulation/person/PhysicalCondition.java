@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.74 2002-04-29
+ * @version 2.74 2002-05-18
  * @author Barry Evans
  */
 
@@ -323,10 +323,7 @@ public class PhysicalCondition implements Serializable {
         fatigue = 0;
         hunger = 0;
 
-        MarsClock time = person.getMars().getMasterClock().getMarsClock();
-        deathDetails = new DeathInfo(illness, (MarsClock)time.clone(),
-                                     person.getContainerUnit(),
-                                     person.getCoordinates());
+        deathDetails = new DeathInfo(person);
     }
 
     /**
@@ -344,6 +341,14 @@ public class PhysicalCondition implements Serializable {
             }
         }
         return situation;
+    }
+
+    /**
+     * Gets the most serious illness.
+     * @return most serious illness
+     */
+    public Complaint getMostSerious() {
+        return serious.getIllness();
     }
 
     /**

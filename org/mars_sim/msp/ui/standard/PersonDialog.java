@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.74 2002-05-13
+ * @version 2.74 2002-05-18
  * @author Scott Davis
  */
 
@@ -30,9 +30,11 @@ public class PersonDialog extends UnitDialog {
     private JButton locationButton; // Location button
     private JPanel locationLabelPane; // Location label panel
     private JLabel outsideLabel;    // Outside label
+    private JPanel conditionMainPane;   // Condition pane
     private JButton deathLocationButton; // Location button in death pane
     private JButton deathCenterMapButton;
     private JButton deathPositionMapButton;
+    private boolean deathInfoShown; // True if death info is displayed.
     private JLabel latitudeLabel;   // Latitude label
     private JLabel longitudeLabel;  // Longitude label
     private JPanel skillListPane;   // Panel containing list of person's skills and their levels.
@@ -237,7 +239,15 @@ public class PersonDialog extends UnitDialog {
     private void updateCondition() {
 
         PhysicalCondition condition = person.getPhysicalCondition();
-        if (condition.getDeathDetails() == null) {
+	if (condition.getDeathDetails() != null) {
+            if (!deathInfoShown) {
+                conditionMainPane.removeAll();
+                conditionMainPane.add(setupDeathPane(condition.getDeathDetails()), "Center");
+		conditionMainPane.validate();
+	        deathInfoShown = true;
+            }
+        }
+	else {
             // Update fatigue label
             if (fatigue != roundOneDecimal(condition.getFatigue())) {
                 fatigue = roundOneDecimal(condition.getFatigue());
@@ -297,18 +307,20 @@ public class PersonDialog extends UnitDialog {
                 display = person.getVehicle();
         }
         else if (button == deathLocationButton) {
-            display = person.getPhysicalCondition().getDeathDetails().getLocation();
+            display = person.getPhysicalCondition().getDeathDetails().getContainerUnit();
         }
 
         // If center map button, center map and globe on unit
         else if (button == deathCenterMapButton) {
             DeathInfo info = person.getPhysicalCondition().getDeathDetails();
-            parentDesktop.centerMapGlobe(info.getLocation().getCoordinates());
+	    if (info.getContainerUnit() != null)
+                parentDesktop.centerMapGlobe(info.getContainerUnit().getCoordinates());
+	    else parentDesktop.centerMapGlobe(info.getLocationOfDeath());
         }
         // If center map button, center map and globe on unit
         else if (button == deathPositionMapButton) {
             DeathInfo info = person.getPhysicalCondition().getDeathDetails();
-            parentDesktop.centerMapGlobe(info.getPosition());
+            parentDesktop.centerMapGlobe(info.getLocationOfDeath());
         }
         if (display != null) {
             parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(display));
@@ -425,72 +437,97 @@ public class PersonDialog extends UnitDialog {
      * Prepare the pane about Death.
      */
     private JPanel setupDeathPane(DeathInfo details) {
-	    // Prepare death pane
+
+        // Prepare death pane
         JPanel deathContainer = new JPanel(new BorderLayout());
         deathContainer.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        JPanel deathPane = new JPanel(new GridLayout(6,1,0,0));
-        deathContainer.add(deathPane, "North");
 
-	    // Prepare location sub pane
-        deathPane.add(new JLabel("Person is dead", JLabel.LEFT));
+        // Prepare condition label
+	JLabel conditionLabel = new JLabel("Condition", JLabel.CENTER);
+	deathContainer.add(conditionLabel, "North");
+	
+        // Prepare condition content pane
+        JPanel conditionContentPane = new JPanel(new BorderLayout());
+        conditionContentPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        deathContainer.add(conditionContentPane, "Center");
 
-        // Illness pane
-        deathPane.add(new JLabel("Cause of Death: " +
-                                details.getIllness().getName(), JLabel.LEFT));
+	// Prepare death pane
+        JPanel deathPane = new JPanel(new BorderLayout(0, 0));
+	conditionContentPane.add(deathPane, "North");
+	
+        // Prepare death top pane
+	JPanel deathTopPane = new JPanel(new GridLayout(0, 1, 0, 5));
+	deathPane.add(deathTopPane, "North");
+	
+        // Prepare death label 
+        deathTopPane.add(new JLabel(person.getName() + " is dead", JLabel.LEFT));
 
-        // Time pane
-        deathPane.add(new JLabel("Time of Death: " +
-                            details.getTime().getTimeStamp(), JLabel.LEFT));
+        // Illness label 
+        deathTopPane.add(new JLabel("Cause of Death: " + details.getIllness(), JLabel.LEFT));
 
+        // Time label 
+        deathTopPane.add(new JLabel("Time of Death: " + details.getTimeOfDeath(), JLabel.LEFT));
+
+        // Prepare death middle pane
+	JPanel deathMiddlePane = new JPanel(new GridLayout(0, 1));
+        deathPane.add(deathMiddlePane, "Center");	
+	
         // Prepare location label pane
-	    JPanel locationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	    deathPane.add(locationLabelPane);
+        JPanel locationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        deathMiddlePane.add(locationLabelPane);
 
         // Prepare center map button
-	    deathCenterMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
-	    deathCenterMapButton.setMargin(new Insets(1, 1, 1, 1));
-	    deathCenterMapButton.addActionListener(this);
-	    locationLabelPane.add(deathCenterMapButton);
+        deathCenterMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
+        deathCenterMapButton.setMargin(new Insets(1, 1, 1, 1));
+        deathCenterMapButton.addActionListener(this);
+        locationLabelPane.add(deathCenterMapButton);
 
-	    // Prepare location label
-	    locationLabelPane.add(new JLabel("Place Of Death: ", JLabel.LEFT));
-        Unit locationUnit = details.getLocation();
-        if (locationUnit != null) {
+        // Prepare location label
+        locationLabelPane.add(new JLabel("Place Of Death: ", JLabel.LEFT));
+        if (details.getContainerUnit() != null) {
             // Prepare location button
-	        deathLocationButton = new JButton();
-	        deathLocationButton.setMargin(new Insets(1, 1, 1, 1));
-            deathLocationButton.setText(details.getLocation().getName());
-	        deathLocationButton.addActionListener(this);
-	        locationLabelPane.add(deathLocationButton);
+            deathLocationButton = new JButton(details.getPlaceOfDeath());
+            deathLocationButton.setMargin(new Insets(1, 1, 1, 1));
+            deathLocationButton.addActionListener(this);
+            locationLabelPane.add(deathLocationButton);
         }
-        else {
-            locationLabelPane.add(new JLabel("EVA"));
-        }
+        else locationLabelPane.add(new JLabel(details.getPlaceOfDeath()));
 
         // Prepare position label pane
-	    JPanel positionLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	    deathPane.add(positionLabelPane);
+        JPanel positionLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        deathMiddlePane.add(positionLabelPane);
 
         // Prepare center map button
-	    deathPositionMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
-	    deathPositionMapButton.setMargin(new Insets(1, 1, 1, 1));
-	    deathPositionMapButton.addActionListener(this);
-	    positionLabelPane.add(deathPositionMapButton);
-        positionLabelPane.add(new JLabel("Position of Death:"));
+        deathPositionMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
+        deathPositionMapButton.setMargin(new Insets(1, 1, 1, 1));
+        deathPositionMapButton.addActionListener(this);
+        positionLabelPane.add(deathPositionMapButton);
+        positionLabelPane.add(new JLabel("Location: "));
 
-	    // Prepare location coordinates pane
-	    JPanel positionCoordsPane = new JPanel(new GridLayout(1, 2,  0, 0));
-	    deathPane.add(positionCoordsPane);
+        // Prepare location coordinates label
+	positionLabelPane.add(new JLabel(details.getLocationOfDeath().toString(), JLabel.LEFT));
 
-	    // Prepare latitude label
-	    Coordinates coords = details.getPosition();
-	    positionCoordsPane.add(new JLabel("  Latitude: " +
-                            coords.getFormattedLatitudeString(), JLabel.LEFT));
-	    positionCoordsPane.add(new JLabel("Longtitude: " +
-                            coords.getFormattedLongitudeString(), JLabel.LEFT));
+        // Prepare death bottom pane
+	JPanel deathBottomPane = new JPanel(new GridLayout(0, 1, 0, 5));
+	deathPane.add(deathBottomPane, "South");
+	
+        // Preapre mission label
+        deathBottomPane.add(new JLabel("Mission: " + details.getMission(), JLabel.LEFT));
 
-	    // Return location panel
-	    return deathContainer;
+        // Prepare mission phase label
+	deathBottomPane.add(new JLabel("Mission Phase: " + details.getMissionPhase(), JLabel.LEFT));
+
+        // Prepare task label
+	deathBottomPane.add(new JLabel("Task: " + details.getTask(), JLabel.LEFT));
+
+        // Prepare task phase label
+	deathBottomPane.add(new JLabel("Task Phase: " + details.getTaskPhase(), JLabel.LEFT));
+
+        // Prepare malfunction label
+	deathBottomPane.add(new JLabel("Most Serious Malfunction: " + details.getMalfunction(), JLabel.LEFT));
+	
+        // Return death info panel
+        return deathContainer;
     }
 
     /** Set up location panel
@@ -569,15 +606,20 @@ public class PersonDialog extends UnitDialog {
      */
     protected JPanel setupConditionPane() {
 
+	// Set up condition main pane
+        conditionMainPane = new JPanel(new BorderLayout(0, 0));
+	    
         PhysicalCondition condition = person.getPhysicalCondition();
         DeathInfo death = condition.getDeathDetails();
         if (death != null) {
-            return setupDeathPane(death);
+            conditionMainPane.add(setupDeathPane(death), "Center");
+	    return conditionMainPane;
         }
 
         // Prepare condition pane
         JPanel conditionPane = new JPanel(new BorderLayout());
         conditionPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+	conditionMainPane.add(conditionPane, "Center");
 
         // Prepare condition label pane
         JPanel conditionLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -646,7 +688,7 @@ public class PersonDialog extends UnitDialog {
 	conditionPane.add(illnessPane, "South");
 
         // Return condition panel
-        return conditionPane;
+        return conditionMainPane;
     }
 
     /** Set up attribute panel

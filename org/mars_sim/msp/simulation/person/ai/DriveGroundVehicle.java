@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.74 2002-05-16
+ * @version 2.74 2002-05-18
  * @author Scott Davis
  */
 
@@ -213,9 +213,10 @@ public class DriveGroundVehicle extends Task implements Serializable {
             backingUp = false;
         }
 
+        startingLocation = vehicle.getCoordinates();
+	
         // Update vehicle direction.
         if (backingUp) {
-            startingLocation = vehicle.getCoordinates();
             double reverseDirection = startingLocation.getDirectionToPoint(destination).getDirection() + Math.PI;
             vehicle.setDirection(new Direction(reverseDirection));
         }
