@@ -7,8 +7,11 @@
 package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import org.mars_sim.msp.simulation.SimulationProperties;
+import org.mars_sim.msp.simulation.RandomUtil;
 
 /**
  * This class provides a Factory for the MedicalComplaint class. It is
@@ -18,6 +21,8 @@ import org.mars_sim.msp.simulation.SimulationProperties;
  * individual complaints are loaded from the XML.
  */
 public class MedicalManager implements Serializable {
+
+    private final static int MINSPERDAY = (24 * 60);
 
     private HashMap complaints = new HashMap(); // Possible MedicalComplaints
     private MedicalComplaint starvation;        // Starvation problem
@@ -52,28 +57,96 @@ public class MedicalManager implements Serializable {
 
         // Quite serious, 70, and has a 80% performance factor.
         // Zero recovery as death will result if unchecked.
-        starvation = new MedicalComplaint(STARVATION, 70,
-                                          props.getPersonLackOfFoodPeriod(),
-                                          0D, 80, null);
-        complaints.put(STARVATION, starvation);
+        starvation = createComplaint(STARVATION, 70,
+                                     props.getPersonLackOfFoodPeriod(),
+                                     0D, 0, 80, null);
 
         // Most serious complaint, 100, and has a '0' performance factor, i.e.
         // Person can be nothing. Zero recovery as results in death.
-        lackOfOxygen = new MedicalComplaint(LACKOFOXYGEN, 100,
-                                            props.getPersonLackOfOxygenPeriod(),
-                                            0D, 0, null);
-        complaints.put(LACKOFOXYGEN, lackOfOxygen);
+        lackOfOxygen = createComplaint(LACKOFOXYGEN, 100,
+                                       props.getPersonLackOfOxygenPeriod(),
+                                       0D, 0, 0, null);
 
         // Very serious complaint, 70, and a 70% performance effect. Zero
         // recovery as death will result
-        dehydration = new MedicalComplaint(DEHYDRATION, 80,
-                                           props.getPersonLackOfWaterPeriod(),
-                                           0D, 70, null);
+        dehydration = createComplaint(DEHYDRATION, 60,
+                                      props.getPersonLackOfWaterPeriod(),
+                                      0D, 0, 70, null);
         complaints.put(DEHYDRATION, dehydration);
+
+        // The following should be loaded from an XML file, later work
+        // These are illness/injuries that happen at random
+        createComplaint("Cut", 5, 0, (2 * MINSPERDAY), 30, 90, null);
+        createComplaint("Cold", 10, 0, (7 * MINSPERDAY), 30, 70, null);
+        createComplaint("Pulled Tendon/Muscle", 30, 0, (14 * MINSPERDAY),
+                        20, 60, null);
+        createComplaint("Broken bone", 60, (4 * MINSPERDAY), (14 * MINSPERDAY),
+                        10, 0, null);
+        createComplaint("Meningitis", 70, (4 * MINSPERDAY), (14 * MINSPERDAY),
+                        5, 0, null);
     }
 
     /**
-     * This is a factory method that returns a Meidcal Complaint matching
+     * Private factory method.
+     */
+    private MedicalComplaint createComplaint(String name, int seriousness,
+                             double degrade, double recovery,
+                             int probability,
+                             int performance, MedicalComplaint next) {
+        MedicalComplaint complaint = new MedicalComplaint(name, seriousness,
+                                                        degrade, recovery,
+                                                        probability, performance,
+                                                        next);
+        // Add an entry keyed on name.
+        complaints.put(name, complaint);
+
+        return complaint;
+    }
+
+    /**
+     * Select a probable complaint to strike the Person down. This uses
+     * a random factor to select the complaint based on the probability
+     * rating.
+     *
+     * @return Possible MedicalComplaint, this maybe null.
+     */
+    MedicalComplaint getProbableComplaint() {
+        MedicalComplaint complaint = null;
+
+        // Get a random number from 0 to the total probability weight.
+        int r = RandomUtil.getRandomInt(MedicalComplaint.MAXPROBABILITY);
+
+        // Get the list of possible Complaints, find all Medical complaints
+        // that have a probability higher that the calculated, i.e.
+        // possible complaints.
+        // THis need improving.
+        ArrayList possibles = null;
+        Iterator items = complaints.values().iterator();
+        while(items.hasNext()) {
+            MedicalComplaint next = (MedicalComplaint)items.next();
+
+            // Found a match
+            if (next.getProbability() > r) {
+                if (possibles == null) {
+                    possibles = new ArrayList();
+                }
+                possibles.add(next);
+            }
+        }
+
+        // Found any possibles complaint that have a lower probability
+        // than the random value
+        if (possibles != null) {
+            // Just take one of the possibles at random
+            System.out.println("Calc. prob = " + r + ", found = " + possibles);
+            int index = RandomUtil.getRandomInt(possibles.size() - 1);
+            complaint = (MedicalComplaint)possibles.get(index);
+        }
+        return complaint;
+    }
+
+    /**
+     * This is a finder method that returns a Meidcal Complaint matching
      * the specified name.
      *
      * @param name Name of the complaint to retrieve.
