@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * ResearchImpl.java
- * @version 2.75 2003-04-14
+ * StandardResearch.java
+ * @version 2.75 2003-04-16
  * @author Scott Davis
  */
  
@@ -14,9 +14,9 @@ import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
  
 /**
- * General implementation of the Research building function.
+ * Standard implementation of the Research building function.
  */
-public class ResearchImpl implements Research, Serializable {
+public class StandardResearch implements Research, Serializable {
     
     private InhabitableBuilding building;
     private int techLevel;
@@ -26,9 +26,12 @@ public class ResearchImpl implements Research, Serializable {
     /**
      * Constructor
      *
-     * param building the building this is implemented for.
+     * @param building the building this is implemented for.
+     * @param techLevel the tech level of the lab.
+     * @param specialities the scientific specialities of the lab.
+     * @param the number of researchers the lab can hold.
      */
-    public ResearchImpl(InhabitableBuilding building, int techLevel, String[] specialities, int labSize) {
+    public StandardResearch(InhabitableBuilding building, int techLevel, String[] specialities, int labSize) {
         this.building = building;
         this.techLevel = techLevel;
         this.specialities = specialities;

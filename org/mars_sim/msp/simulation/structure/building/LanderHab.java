@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-04-14
+ * @version 2.75 2003-04-16
  * @author Scott Davis
  */
  
@@ -38,9 +38,11 @@ public class LanderHab extends InhabitableBuilding
     private static final String[] LAB_SPECIALITIES = {"Areology"};
     private static final int RESEARCHER_NUM = 4;
     
-    private ResourceProcessManager processManager;
     private Map resourceStorageCapacity;
     private Research lab;
+    private LivingAccommodations quarters;
+    private PowerGeneration solarCells;
+    private ResourceProcessing processor;
     
     /**
      * Constructor
@@ -51,11 +53,19 @@ public class LanderHab extends InhabitableBuilding
         super("Lander Hab", manager, ACCOMMODATION_CAPACITY);
         
         // Create lab
-        lab = new ResearchImpl(this, LAB_TECH_LEVEL, LAB_SPECIALITIES, RESEARCHER_NUM);
+        lab = new StandardResearch(this, LAB_TECH_LEVEL, LAB_SPECIALITIES, RESEARCHER_NUM);
         
-        // Set up resource processes.
-        Inventory inv = manager.getSettlement().getInventory();
-        processManager = new ResourceProcessManager(this, inv);
+        // Create quarters
+        quarters = new StandardLivingAccommodations(this, ACCOMMODATION_CAPACITY);
+        
+        // Create solar cells
+        solarCells = new SolarPowerGeneration(this, BASE_POWER_GENERATION);
+        
+        // Create processor
+        processor = new StandardResourceProcessing(this, POWER_DOWN_LEVEL);
+        ResourceProcessManager processManager = processor.getResourceProcessManager();
+        
+        Inventory inv = getInventory();
         
         // Create water recycling process
         ResourceProcess waterRecycling = new ResourceProcess("water recycling", inv);
@@ -111,7 +121,15 @@ public class LanderHab extends InhabitableBuilding
      * @return number of accomodations.
      */
     public int getAccommodationCapacity() {
-        return ACCOMMODATION_CAPACITY;
+        return quarters.getAccommodationCapacity();
+    }
+    
+    /** 
+     * Utilizes water for bathing, washing, etc. based on population.
+     * @param time amount of time passing (millisols)
+     */
+    public void waterUsage(double time) {
+        quarters.waterUsage(time);   
     }
     
     /**
@@ -127,7 +145,7 @@ public class LanderHab extends InhabitableBuilding
      * @return resource process manager
      */
     public ResourceProcessManager getResourceProcessManager() {
-        return processManager;
+        return processor.getResourceProcessManager();
     }
     
     /**
@@ -135,7 +153,7 @@ public class LanderHab extends InhabitableBuilding
      * @return proportion of max processing rate (0D - 1D)
      */
     public double getPowerDownResourceProcessingLevel() {
-        return POWER_DOWN_LEVEL;
+        return processor.getPowerDownResourceProcessingLevel();
     }
     
     /** 
@@ -166,36 +184,15 @@ public class LanderHab extends InhabitableBuilding
         else if (powerMode.equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
         
         // Process resources
-        processManager.processResources(time, productionLevel);
+        processor.getResourceProcessManager().processResources(time, productionLevel);
     } 
-    
-    /** 
-     * Utilizes water for bathing, washing, etc. based on population.
-     * @param time amount of time passing (millisols)
-     */
-    public void waterUsage(double time) {
-        
-        Settlement settlement = manager.getSettlement();
-        double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D) * time;
-        double waterUsageSettlement = waterUsagePerPerson * settlement.getCurrentPopulationNum();
-        double buildingProportionCap = (double) ACCOMMODATION_CAPACITY / 
-            (double) settlement.getPopulationCapacity();
-        double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
-        
-        Inventory inv = settlement.getInventory();
-        double waterUsed = inv.removeResource(Resource.WATER, waterUsageBuilding);
-        inv.addResource(Resource.WASTE_WATER, waterUsed);
-    }
     
     /**
      * Gets the amount of electrical power generated.
      * @return power generated in kW
      */
     public double getGeneratedPower() {
-        Coordinates location = manager.getSettlement().getCoordinates();
-        Mars mars = manager.getSettlement().getMars();
-        double sunlight = (double) mars.getSurfaceFeatures().getSurfaceSunlight(location) / 127D;
-        return sunlight * BASE_POWER_GENERATION;
+        return solarCells.getGeneratedPower();
     }
     
     /** 

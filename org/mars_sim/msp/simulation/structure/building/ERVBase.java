@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ERVBase.java
- * @version 2.75 2003-03-04
+ * @version 2.75 2003-04-16
  * @author Scott Davis
  */
  
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.structure.building;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.function.impl.*;
 
 /**
  * The ERVBase class represents the base structure of an Earth Return Vehicle (ERV) 
@@ -25,8 +26,9 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
     private static final double BASE_POWER_GENERATION = 5D;
     
     private boolean processing; // True if ERVBase is processing chemicals.
-    private ResourceProcessManager processManager;
+    private ResourceProcessing processor;
     private Map resourceStorageCapacity;
+    private PowerGeneration solarCells;
     
     /**
      * Constructor
@@ -38,9 +40,15 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
         
         processing = true;
         
-        // Set up resource processes.
-        Inventory inv = manager.getSettlement().getInventory();
-        processManager = new ResourceProcessManager(this, inv);
+        // Create solar cells
+        solarCells = new SolarPowerGeneration(this, BASE_POWER_GENERATION);
+        
+        
+        // Create processor
+        processor = new StandardResourceProcessing(this, POWER_DOWN_LEVEL);
+        ResourceProcessManager processManager = processor.getResourceProcessManager();
+        
+        Inventory inv = getInventory();
         
         // Create sabatier resource process.
         // CO2 + 4H2 = CH4 + 2H2O
@@ -129,7 +137,7 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
      * @return resource process manager
      */
     public ResourceProcessManager getResourceProcessManager() {
-        return processManager;
+        return processor.getResourceProcessManager();
     }
     
     /**
@@ -137,7 +145,7 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
      * @return proportion of max processing rate (0D - 1D)
      */
     public double getPowerDownResourceProcessingLevel() {
-        return POWER_DOWN_LEVEL;
+        return processor.getPowerDownResourceProcessingLevel();
     }
      
     /**
@@ -156,7 +164,7 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
         else if (powerMode.equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
         
         // Process resources
-        processManager.processResources(time, productionLevel);
+        processor.getResourceProcessManager().processResources(time, productionLevel);
     } 
     
     /** 
@@ -173,9 +181,6 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
      * @return power generated in kW
      */
     public double getGeneratedPower() {
-        Coordinates location = manager.getSettlement().getCoordinates();
-        Mars mars = manager.getSettlement().getMars();
-        double sunlight = (double) mars.getSurfaceFeatures().getSurfaceSunlight(location) / 127D;
-        return sunlight * BASE_POWER_GENERATION;
+        return solarCells.getGeneratedPower();
     }
 }

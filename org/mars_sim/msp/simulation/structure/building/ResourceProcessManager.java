@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessManager.java
- * @version 2.75 2003-02-06
+ * @version 2.75 2003-04-16
  * @author Scott Davis
  */
  
@@ -22,7 +22,7 @@ public class ResourceProcessManager implements Serializable {
     private Collection processes; // The building's resource processes.
     
     // Constructor
-    ResourceProcessManager(Building building, Inventory inventory) {
+    public ResourceProcessManager(Building building, Inventory inventory) {
         this.building = building;
         this.inventory = inventory;
         processes = new ArrayList();
