@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * USGSMarsMap.java
- * @version 1.0 2000-09-03
+ * @version 2.71 2000-10-08
  * @author Greg Whelan
  */
 
@@ -23,6 +23,7 @@ import javax.swing.*;
  */
 public class USGSMarsMap implements Map {
 
+    // Data members
     private static final String psdUrl = "http://www-pdsimage.wr.usgs.gov";
     private static final String psdCgi = "/cgi-bin/panpic.cgi";
     private static final String projection = "SIMP";
@@ -37,13 +38,15 @@ public class USGSMarsMap implements Map {
 
     private Image prefetchedImage;
 
-
+    /** Constructs a USGSMarsMap object */
     public USGSMarsMap() {}
 
+    /** Constructs a USGSMarsMap object */
     public USGSMarsMap(Component comp) {
         component = comp;
     }
 
+    /** creates a 2D map at a given center point */
     public void drawMap(Coordinates newCenter) {
         if (imageInCache(newCenter)) {
             // simply translate the image
@@ -69,6 +72,7 @@ public class USGSMarsMap implements Map {
         return img;
     }
 
+    /** Returns true if map image is cached */
     private boolean imageInCache(Coordinates location) {
         return false;
     }
@@ -159,4 +163,3 @@ public class USGSMarsMap implements Map {
         map.test();
     }
 }
-

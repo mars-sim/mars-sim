@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.71 2000-09-18
+ * @version 2.71 2000-10-07
  * @author Scott Davis
  */
 
@@ -17,6 +17,7 @@ import javax.swing.*;
  */
 class GlobeDisplay extends JComponent implements Runnable {
 
+    // Data members
     private UIProxyManager proxyManager; // Unit UI proxy manager
     private MarsGlobe marsSphere; // Real surface sphere object
     private MarsGlobe topoSphere; // Topographical sphere object
@@ -29,6 +30,7 @@ class GlobeDisplay extends JComponent implements Runnable {
 
     private static final double HALF_PI = (Math.PI / 2);
 
+    /** Constructs a GlobeDisplay object */
     public GlobeDisplay(UIProxyManager proxyManager, int width, int height) {
 
         this.proxyManager = proxyManager;
@@ -55,18 +57,14 @@ class GlobeDisplay extends JComponent implements Runnable {
 
     /** Displays real surface globe, regenerating if necessary */
     public void showSurf() {
-        if (topo) {
-            recreate = true;
-        }
+        if (topo) recreate = true; 
         topo = false;
         showGlobe(centerCoords);
     }
 
     /** Displays topographical globe, regenerating if necessary */
     public void showTopo() {
-        if (!topo) {
-            recreate = true;
-        }
+        if (!topo) recreate = true;
         topo = true;
         showGlobe(centerCoords);
     }
@@ -91,9 +89,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     }
 
     /** the run method for the runnable interface */
-    public void run() {
-        refreshLoop();
-    }
+    public void run() { refreshLoop(); }
 
     /** loop, refreshing the globe display when necessary */
     public void refreshLoop() {
@@ -198,4 +194,3 @@ class GlobeDisplay extends JComponent implements Runnable {
                 half_map, low_edge);
     }
 }
-

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-10/07
  * @author Scott Davis
  */
 
@@ -19,16 +19,17 @@ import javax.swing.*;
  */
 public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
+    // Data members
     private Vector unitWindows; // List of open or buttoned unit windows.
     private Vector toolWindows; // List of tool windows.
     private MainWindow mainWindow; // The main window frame.
     private UIProxyManager proxyManager;  // The unit UI proxy manager.
-
     private ImageIcon backgroundImageIcon; // ImageIcon that contains the tiled background.
     private JLabel backgroundLabel; // Label that contains the tiled background.
     private JLabel logoLabel; // Label that has the centered logo for the project.
     private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
 
+    /** Constructs a MainDesktopPane object */
     public MainDesktopPane(MainWindow mainWindow, UIProxyManager proxyManager) {
 
         // Initialize data members

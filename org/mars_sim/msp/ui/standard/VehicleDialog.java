@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-10-08
  * @author Scott Davis
  */
 
@@ -20,11 +20,9 @@ import javax.swing.border.*;
  * It is abstract and an appropriate detail window needs to be derived for
  * a particular type of vehicle.
  */
-
 public abstract class VehicleDialog extends UnitDialog implements MouseListener {
 
     // Data members
-
     protected Vehicle vehicle; // Vehicle detail window is about
     protected JTabbedPane tabPane; // Main tabbed pane
     protected JLabel statusLabel; // Status label
@@ -51,7 +49,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected JProgressBar maintenanceProgressBar; // Maintenance progress bar
 
     // Cached data members
-
     protected String status; // Cached status of vehicle
     protected Coordinates location; // Cached location of vehicle
     protected Coordinates destination; // Cached destination of vehicle
@@ -65,17 +62,14 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected int repairProgress; // Cached repair progress percentage.
     protected int maintenanceProgress; // Cached maintenance progress percentage;
 
-    // Constructor
-
+    /** Constructs a VehicleDialog object */
     public VehicleDialog(MainDesktopPane parentDesktop, VehicleUIProxy vehicleUIProxy) {
 
         // Use UnitDialog constructor
-
         super(parentDesktop, vehicleUIProxy);
     }
 
-    // Initialize cached data members
-
+    /** Initialize cached data members */
     protected void initCachedData() {
         status = "Parked";
         location = new Coordinates(0D, 0D);
@@ -84,8 +78,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         crewInfo = new Vector();
     }
 
-    // Complete update (overridden)
-
+    /** Complete update (overridden) */
     protected void generalUpdate() {
         updateStatus();
         updateLocation();
@@ -98,8 +91,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         updateMaintenance();
     }
 
-    // Implement MouseListener Methods
-
+    /** Implement MouseListener Methods */
     public void mouseClicked(MouseEvent event) {
         Object object = event.getSource();
         if (object == crewList) {
@@ -121,15 +113,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
-    // ActionListener method overriden
-
+    /** ActionListener method overriden */
     public void actionPerformed(ActionEvent event) {
-        super.actionPerformed(event);
-
         Object button = event.getSource();
 
         // If location button, open window for selected unit
-
         if ((button == locationButton) && (vehicle.getStatus().equals("Parked") ||
                 vehicle.getStatus().equals("Periodic Maintenance")))
             parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(vehicle.getSettlement()));
@@ -141,18 +129,15 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(vehicle.getDriver()));
     }
 
-    // Prepare and add components to window
-
+    /** Prepare and add components to window */
     protected void setupComponents() {
 
         super.setupComponents();
 
         // Initialize vehicle
-
         vehicle = (Vehicle) parentUnit;
 
         // Prepare tab pane
-
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.addTab("Navigation", setupNavigationPane());
         tabPane.addTab("Crew", setupCrewPane());
@@ -160,19 +145,16 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         mainPane.add(tabPane, "Center");
     }
 
-    // Set up navigation panel
-
+    /** Set up navigation panel */
     protected JPanel setupNavigationPane() {
 
         // Prepare navigation pane
-
         JPanel navigationPane = new JPanel();
         navigationPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         navigationPane.setLayout(new BoxLayout(navigationPane, BoxLayout.Y_AXIS));
 
         // Prepare status label
-
         statusLabel = new JLabel("Status: " + vehicle.getStatus(), JLabel.CENTER);
         statusLabel.setForeground(Color.black);
         JPanel statusLabelPanel = new JPanel();
@@ -180,32 +162,27 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         navigationPane.add(statusLabelPanel);
 
         // Prepare location pane
-
         JPanel locationPane = new JPanel(new BorderLayout());
         locationPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         navigationPane.add(locationPane);
 
         // Preparing location label pane
-
         locationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
         locationPane.add(locationLabelPane, "North");
 
         // Prepare center map button
-
         centerMapButton = new JButton(new ImageIcon("CenterMap.gif"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         locationLabelPane.add(centerMapButton);
 
         // Prepare location label
-
         JLabel locationLabel = new JLabel("Location: ", JLabel.CENTER);
         locationLabel.setForeground(Color.black);
         locationLabelPane.add(locationLabel);
 
         // Prepare location button
-
         locationButton = new JButton();
         locationButton.setMargin(new Insets(1, 1, 1, 1));
         locationButton.addActionListener(this);
@@ -217,24 +194,20 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // Prepare location coordinates pane
-
         JPanel locationCoordsPane = new JPanel(new GridLayout(1, 2, 0, 0));
         locationPane.add(locationCoordsPane, "Center");
 
         // Prepare latitude label
-
         latitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
         latitudeLabel.setForeground(Color.black);
         locationCoordsPane.add(latitudeLabel);
 
         // Prepare longitude label
-
         longitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
         longitudeLabel.setForeground(Color.black);
         locationCoordsPane.add(longitudeLabel);
 
         // Prepare destination pane
-
         JPanel destinationPane = new JPanel(new BorderLayout());
         destinationPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
@@ -244,13 +217,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         destinationPane.add(destinationLabelPane, "North");
 
         // Prepare destination label
-
         JLabel destinationLabel = new JLabel("Destination: ", JLabel.LEFT);
         destinationLabel.setForeground(Color.black);
         destinationLabelPane.add(destinationLabel);
 
         // Prepare destination button
-
         destinationButton = new JButton();
         destinationButton.setMargin(new Insets(1, 1, 1, 1));
         destinationButton.addActionListener(this);
@@ -263,12 +234,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // Prepare destination coordinates pane
-
         JPanel destinationCoordsPane = new JPanel(new GridLayout(1, 2, 0, 0));
         destinationPane.add(destinationCoordsPane, "Center");
 
         // Prepare destination latitude label
-
         destinationLatitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
         if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")))
             destinationLatitudeLabel.setText("Latitude: ");
@@ -276,7 +245,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         destinationCoordsPane.add(destinationLatitudeLabel);
 
         // Prepare destination longitude label
-
         destinationLongitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
         if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")))
             destinationLongitudeLabel.setText("Longitude: ");
@@ -284,7 +252,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         destinationCoordsPane.add(destinationLongitudeLabel);
 
         // Prepare distance to destination label
-
         distanceDestinationLabel = new JLabel("Distance: ", JLabel.LEFT);
         if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
             int tempDistance = (int) Math.round(vehicle.getDistanceToDestination());
@@ -294,7 +261,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         destinationPane.add(distanceDestinationLabel, "South");
 
         // Prepare navigation info pane
-
         navigationInfoPane = new JPanel();
         navigationInfoPane.setLayout(
                 new BoxLayout(navigationInfoPane, BoxLayout.Y_AXIS));
@@ -303,74 +269,62 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         navigationPane.add(navigationInfoPane);
 
         // Prepare speed/fuel pane
-
         JPanel speedFuelPane = new JPanel(new GridLayout(1, 2, 0, 0));
         navigationInfoPane.add(speedFuelPane);
 
         // Prepare speed label
-
         int tempSpeed = (int) Math.round(vehicle.getSpeed());
         speedLabel = new JLabel("Speed: " + tempSpeed + " kph.", JLabel.LEFT);
         speedLabel.setForeground(Color.black);
         speedFuelPane.add(speedLabel);
 
         // Prepare fuel label
-
         fuel = (double)(Math.round(vehicle.getFuel() * 100D) / 100D);
         fuelLabel = new JLabel("Fuel: " + fuel, JLabel.LEFT);
         fuelLabel.setForeground(Color.black);
         speedFuelPane.add(fuelLabel);
 
         // Return navigation pane
-
         return navigationPane;
     }
 
-    // Set up crew pane
-
+    /** Set up crew pane */
     protected JPanel setupCrewPane() {
 
         // Prepare crew pane
-
         JPanel crewPane = new JPanel();
         crewPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         crewPane.setLayout(new BoxLayout(crewPane, BoxLayout.Y_AXIS));
 
         // Prepare maximum crew capacity pane
-
         JPanel maxCrewPane = new JPanel(new BorderLayout());
         maxCrewPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         crewPane.add(maxCrewPane);
 
         // Prepare maximum crew capacity label
-
         JLabel maxCrewLabel = new JLabel("Maximum Crew Capacity: " +
                 vehicle.getMaxPassengers(), JLabel.CENTER);
         maxCrewLabel.setForeground(Color.black);
         maxCrewPane.add(maxCrewLabel, "Center");
 
         // Prepare driver pane
-
         JPanel driverPane = new JPanel(new BorderLayout());
         driverPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         crewPane.add(driverPane);
 
         // Prepare driver label
-
         JLabel driverLabel = new JLabel("Driver", JLabel.CENTER);
         driverLabel.setForeground(Color.black);
         driverPane.add(driverLabel, "North");
 
         // Prepare driver button pane
-
         driverButtonPane = new JPanel();
         driverPane.add(driverButtonPane, "Center");
 
         // Prepare driver button
-
         driverButton = new JButton();
         driverButton.setMargin(new Insets(1, 1, 1, 1));
         driverButton.addActionListener(this);
@@ -380,20 +334,17 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // Prepare crew list pane
-
         JPanel crewListPane = new JPanel(new BorderLayout());
         crewListPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         crewPane.add(crewListPane);
 
         // Prepare crew label
-
         JLabel peopleLabel = new JLabel("Crew", JLabel.CENTER);
         peopleLabel.setForeground(Color.black);
         crewListPane.add(peopleLabel, "North");
 
         // Prepare crew list
-
         DefaultListModel crewListModel = new DefaultListModel();
 
         for (int x = 0; x < vehicle.getPassengerNum(); x++) {
@@ -406,7 +357,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // This prevents the list from sizing strange due to having no contents
-
         if (vehicle.getPassengerNum() <= 1) crewListModel.addElement(" ");
 
         crewList = new JList(crewListModel);
@@ -420,28 +370,23 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         crewListPane.add(crewScrollPane, "Center");
 
         // Return crew pane
-
         return crewPane;
     }
 
-    // Set up damage pane
-
+    /** Set up damage pane */
     protected JPanel setupDamagePane() {
 
         // Prepare damage pane
-
         JPanel damagePane = new JPanel(new BorderLayout(0, 5));
         damagePane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 
         // Prepare name label
-
         JLabel nameLabel = new JLabel("Vehicle Condition", JLabel.CENTER);
         nameLabel.setForeground(Color.black);
         damagePane.add(nameLabel, "North");
 
         // Prepare content pane
-
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         contentPane.setBorder(
@@ -449,43 +394,36 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         damagePane.add(contentPane, "Center");
 
         // Prepare odometer pane
-
         JPanel odometerPane = new JPanel(new BorderLayout());
         odometerPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         contentPane.add(odometerPane);
 
         // Prepare title pane
-
         JPanel titlePane = new JPanel(new GridLayout(2, 1));
         odometerPane.add(titlePane, "West");
 
         // Prepare odometer label
-
         JLabel odometerTitleLabel = new JLabel("Total Distance Traveled:");
         odometerTitleLabel.setForeground(Color.black);
         titlePane.add(odometerTitleLabel);
 
         // Prepare distance since last maintenance label
-
         JLabel lastMaintTitleLabel = new JLabel("Since Last Maintenance:");
         lastMaintTitleLabel.setForeground(Color.black);
         titlePane.add(lastMaintTitleLabel);
 
         // Prepare value pane
-
         JPanel valuePane = new JPanel(new GridLayout(2, 1));
         odometerPane.add(valuePane, "Center");
 
         // Prepare odometer value label
-
         odometerLabel = new JLabel((int) vehicle.getTotalDistanceTraveled() + " km.",
                 JLabel.RIGHT);
         odometerLabel.setForeground(Color.black);
         valuePane.add(odometerLabel);
 
         // Prepare distance since last maintenance label
-
         lastMaintLabel =
                 new JLabel((int) vehicle.getDistanceLastMaintenance() + " km.",
                 JLabel.RIGHT);
@@ -493,20 +431,17 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         valuePane.add(lastMaintLabel);
 
         // Prepare maintenance pane
-
         JPanel maintenancePane = new JPanel(new BorderLayout());
         maintenancePane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         contentPane.add(maintenancePane);
 
         // Prepare maintenance label
-
         JLabel maintenanceLabel = new JLabel("Periodic Maintenance:", JLabel.CENTER);
         maintenanceLabel.setForeground(Color.black);
         maintenancePane.add(maintenanceLabel, "North");
 
         // Prepare maintenance progress bar
-
         maintenanceProgressBar = new JProgressBar();
         maintenanceProgressBar.setStringPainted(true);
         maintenancePane.add(maintenanceProgressBar, "South");
@@ -518,20 +453,17 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         maintenanceProgressBar.setValue(maintenanceProgress);
 
         // Prepare failure pane
-
         JPanel failurePane = new JPanel(new GridLayout(4, 1));
         failurePane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         contentPane.add(failurePane);
 
         // Prepare failure label
-
         JLabel failureLabel = new JLabel("Mechanical Failure:", JLabel.CENTER);
         failureLabel.setForeground(Color.black);
         failurePane.add(failureLabel);
 
         // Prepare failure detail label
-
         failureDetailLabel = new JLabel("None", JLabel.CENTER);
         failureDetailLabel.setForeground(Color.black);
         failurePane.add(failureDetailLabel);
@@ -543,13 +475,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             failureName = "None";
 
         // Prepare repair label
-
         JLabel repairLabel = new JLabel("Repair Progress:", JLabel.CENTER);
         repairLabel.setForeground(Color.black);
         failurePane.add(repairLabel);
 
         // Prepare repair progress bar
-
         repairProgressBar = new JProgressBar();
         repairProgressBar.setStringPainted(true);
         failurePane.add(repairProgressBar);
@@ -562,28 +492,23 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         repairProgressBar.setValue(repairProgress);
 
         // Create vertical glue
-
         contentPane.add(Box.createVerticalStrut(25));
 
         // Return damage pane
-
         return damagePane;
     }
 
-    // Update status info
-
+    /** Update status info */
     protected void updateStatus() {
 
         // Update status label
-
         if (!status.equals(vehicle.getStatus())) {
             status = vehicle.getStatus();
             statusLabel.setText("Status: " + status);
         }
     }
 
-    // Update location info
-
+    /** Update location info */
     protected void updateLocation() {
 
         if (!location.equals(vehicle.getCoordinates())) {
@@ -600,7 +525,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 locationLabelPane.remove(locationButton);
 
             // Update latitude and longitude labels
-
             latitudeLabel.setText("Latitude: " +
                     vehicle.getCoordinates().getFormattedLatitudeString());
             longitudeLabel.setText("Longitude: " +
@@ -608,14 +532,12 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
     }
 
-    // Update destination info
-
+    /** Update destination info */
     protected void updateDestination() {
 
         String destinationType = vehicle.getDestinationType();
 
         // Update destination button
-
         if (destinationType.equals("Settlement")) {
             if (!destinationButton.getText().equals(
                     vehicle.getDestinationSettlement().getName()))
@@ -629,7 +551,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // Update destination longitude and latitude labels
-
         if (destinationType.equals("None")) {
             if (!destinationLatitudeLabel.getText().equals("Latitude:")) {
                 destinationLatitudeLabel.setText("Latitude:");
@@ -646,7 +567,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // Update distance to destination label
-
         if (destinationType.equals("None")) {
             distanceDestinationLabel.setText("Distance:");
         } else {
@@ -657,36 +577,30 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
     }
 
-    // Update speed info
-
+    /** Update speed info */
     protected void updateSpeed() {
 
         // Update speed label
-
         if (speed != (float)((int) Math.round(vehicle.getSpeed() * 100D) / 100D)) {
             speed = (float)((int) Math.round(vehicle.getSpeed() * 100D) / 100D);
             speedLabel.setText("Speed: " + speed + " kph.");
         }
     }
 
-    // Update fuel info
-
+    /** Update fuel info */
     protected void updateFuel() {
 
         // Update fuel label
-
         if (fuel != (double)(Math.round(vehicle.getFuel() * 100D) / 100D)) {
             fuel = (double)(Math.round(vehicle.getFuel() * 100D) / 100D);
             fuelLabel.setText("Fuel: " + fuel);
         }
     }
 
-    // Update crew info
-
+    /** Update crew info */
     protected void updateCrew() {
 
         // Update driver button
-
         if ((vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
             if (driverButtonPane.getComponentCount() > 0)
                 driverButtonPane.remove(driverButton);
@@ -698,12 +612,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // Update crew list
-
         DefaultListModel model = (DefaultListModel) crewList.getModel();
         boolean match = false;
 
         // Check if crew list matches vehicle's crew
-
         if ((model.getSize() + 1) == vehicle.getPassengerNum()) {
             match = true;
             int passengerCount = 0;
@@ -718,7 +630,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
 
         // If no match, update crew list
-
         if (!match) {
             model.removeAllElements();
             crewInfo.removeAllElements();
@@ -732,7 +643,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             }
 
             // This prevents the list from sizing strange due to having no contents
-
             if (vehicle.getPassengerNum() <= 1)
                 model.addElement(" ");
 
@@ -740,31 +650,26 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
     }
 
-    // Update odometer info
-
+    /** Update odometer info */
     protected void updateOdometer() {
 
         // Update odometer label
-
         if (distanceTraveled != vehicle.getTotalDistanceTraveled()) {
             distanceTraveled = vehicle.getTotalDistanceTraveled();
             odometerLabel.setText((int) distanceTraveled + " km.");
         }
 
         // Update distance since last maintenance label
-
         if (distanceMaint != vehicle.getDistanceLastMaintenance()) {
             distanceMaint = vehicle.getDistanceLastMaintenance();
             lastMaintLabel.setText((int) distanceMaint + " km.");
         }
     }
 
-    // Update mechanical failure
-
+    /** Update mechanical failure */
     protected void updateMechanicalFailure() {
 
         // Update failure detail label
-
         MechanicalFailure failure = vehicle.getMechanicalFailure();
         boolean change = false;
 
@@ -784,7 +689,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             failureDetailLabel.setText(failureName);
 
         // Update repair progress bar
-
         int repairProgressTemp = 0;
         if ((failure != null) && !failure.isFixed()) {
             float totalHours = failure.getTotalWorkHours();
@@ -798,12 +702,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         }
     }
 
-    // Update maintenance progress
-
+    /** Update maintenance progress */
     protected void updateMaintenance() {
 
         // Update maintenance progress bar
-
         int maintenanceProgressTemp = 0;
         if (vehicle.getStatus().equals("Periodic Maintenance"))
             maintenanceProgressTemp = (int)(100F *

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindowListener.java
- * @version 2.71 2000-09-18
+ * @version 2.71 2000-10-08
  * @author Scott Davis
  */
 
@@ -16,13 +16,15 @@ import javax.swing.event.*;
  */
 public class UnitWindowListener extends InternalFrameAdapter {
 
+    // Data members
     MainDesktopPane desktop; // Main desktop pane that holds unit windows.
 
+    /** Constructs a UnitWindowListener object */
     public UnitWindowListener(MainDesktopPane desktop) {
         this.desktop = desktop;
     }
 
-    // Overridden parent method
+    /** Overridden parent method */
     public void internalFrameOpened(InternalFrameEvent e) {
         JInternalFrame frame = (JInternalFrame) e.getSource();
         try { frame.setClosed(false); } 

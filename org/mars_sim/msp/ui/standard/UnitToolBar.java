@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 2.71 2000-09-18
+ * @version 2.71 2000-10-08
  * @author Scott Davis
  */
 
@@ -19,9 +19,11 @@ import javax.swing.border.*;
  */
 public class UnitToolBar extends JToolBar implements ActionListener {
 
+    // Data members
     private Vector unitButtons; // List of unit buttons
     private MainWindow parentMainWindow; // Main window that contains this toolbar.
 
+    /** Constructs a UnitToolBar object */
     public UnitToolBar(MainWindow parentMainWindow) {
 
         // Use JToolBar constructor
@@ -86,4 +88,3 @@ public class UnitToolBar extends JToolBar implements ActionListener {
         parentMainWindow.openUnitWindow(proxy);
     }
 }
-

@@ -1,13 +1,13 @@
 /**
  * Mars Simulation Project
  * FacilityPanel.java
- * @version 2.70 2000-09-05
+ * @version 2.71 2000-10-07
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
- 
-import org.mars_sim.msp.simulation.*;  
+
+import org.mars_sim.msp.simulation.*;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -17,27 +17,28 @@ import javax.swing.border.*;
  *  for the displays of each facility.
  */
 public abstract class FacilityPanel extends JPanel {
-	
-    protected String tabName;           // The name for the panel's tab
-    protected MainDesktopPane desktop;  // The main desktop
 
+    // Data members
+    protected String tabName; // The name for the panel's tab
+    protected MainDesktopPane desktop; // The main desktop
+
+    /** Constructs a FacilityPanel object */
     public FacilityPanel(MainDesktopPane desktop) {
-	
-	// Initialize data members
-	this.desktop = desktop;
 
-	// Set the default font
-	setFont(new Font("Helvetica", Font.BOLD, 12));
-		
-	// Set a border around the panel
-	setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        // Initialize data members
+        this.desktop = desktop;
+
+        // Set the default font
+        setFont(new Font("Helvetica", Font.BOLD, 12));
+
+        // Set a border around the panel
+        setBorder(new CompoundBorder(new EtchedBorder(), 
+                new EmptyBorder(5, 5, 5, 5)));
     }
-	
+
     /** Returns the tab name for the facility */
-    public String getTabName() {
-	return tabName;
-    }
-	
+    public String getTabName() { return tabName; }
+
     /** Updates the facility panel's information */
     public abstract void updateInfo();
-}	
+}

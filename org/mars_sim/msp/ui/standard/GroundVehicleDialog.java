@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-10-07
  * @author Scott Davis
  */
 
@@ -19,31 +19,25 @@ import javax.swing.border.*;
  */
 
 public class GroundVehicleDialog extends VehicleDialog {
-
-	// Data members
-
+    
+    // Data members
 	protected GroundVehicle groundVehicle;               // Ground vehicle related to this detail window
 	protected VehicleTerrainDisplay terrainDisplay;      // Terrain average grade display
 	protected VehicleDirectionDisplay directionDisplay;  // Direction display
 	protected JLabel elevationLabel;                     // Elevation label
 	
-	// Cached ground vehicle data
-	
+	// Update data cache
 	protected double elevation;                          // Cached elevation data
 	protected double terrainGrade;                       // Cached terrain grade data
 	protected double direction;                          // Cached direction data
 	
-	// Constructor
-
+    /** Constructs a GroundVehicleDialog object */
 	public GroundVehicleDialog(MainDesktopPane parentDesktop, GroundVehicleUIProxy groundVehicleUIProxy) {
-		
-		// Use VehicleDialog constructor
-		
+		// Use VehicleDialog constructor	
 		super(parentDesktop, groundVehicleUIProxy);
 	}
 
-	// Initialize cached data members
-	
+	/** Initialize cached data members */
 	protected void initCachedData() {
 		super.initCachedData();
 		
@@ -53,27 +47,22 @@ public class GroundVehicleDialog extends VehicleDialog {
 		
 	}
 
-	// Override parent's method
-
+	/** Override setupComponents */
 	protected void setupComponents() {
 		
 		// Initialize ground vehicle
-		
 		groundVehicle = (GroundVehicle) parentUnit;
 		
 		super.setupComponents();
 	}
 
-	// Override setupNavigationPane
-
+	/** Override setupNavigationPane */
 	protected JPanel setupNavigationPane() {
 		
 		// Prepare navigation pane
-		
 		JPanel navigationPane = super.setupNavigationPane();
 		
 		// Prepare elevation label
-		
 		double tempElevation = Math.round(groundVehicle.getElevation() * 100D) / 100D;
 		elevationLabel = new JLabel("Elevation: " + tempElevation + " km.");
 		elevationLabel.setForeground(Color.black);
@@ -82,14 +71,12 @@ public class GroundVehicleDialog extends VehicleDialog {
 		navigationInfoPane.add(elevationLabelPane);
 		
 		// Prepare ground display pane
-		
 		JPanel groundDisplayPane = new JPanel();
 		groundDisplayPane.setLayout(new BoxLayout(groundDisplayPane, BoxLayout.X_AXIS));
 		groundDisplayPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		navigationPane.add(groundDisplayPane);
 		
 		// Prepare terrain display
-		
 		terrainDisplay = new VehicleTerrainDisplay();
 		JPanel terrainDisplayPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		terrainDisplayPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.green)));
@@ -98,11 +85,9 @@ public class GroundVehicleDialog extends VehicleDialog {
 		groundDisplayPane.add(terrainDisplayPane);
 		
 		// Add glue spacer
-		
 		groundDisplayPane.add(Box.createHorizontalGlue());
 		
 		// Prepare direction display
-		
 		directionDisplay = new VehicleDirectionDisplay(groundVehicle.getDirection(), (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")));
 		JPanel directionDisplayPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		directionDisplayPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.green)));
@@ -111,12 +96,10 @@ public class GroundVehicleDialog extends VehicleDialog {
 		groundDisplayPane.add(directionDisplayPane);
 		
 		// Return navigation pane
-		
 		return navigationPane;
 	}
 	
-	// Complete update (overridden)
-	
+	/** Override generalUpdate */
 	protected void generalUpdate() {
 		super.generalUpdate();
 		updateAveGrade();
@@ -124,8 +107,7 @@ public class GroundVehicleDialog extends VehicleDialog {
 		updateElevation();
 	}
 
-	// Update terrain display
-
+	/** Update terrain display */
 	protected void updateAveGrade() {
 		if (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")) {
 			if (terrainGrade != 0D) {
@@ -142,8 +124,7 @@ public class GroundVehicleDialog extends VehicleDialog {
 		}
 	}
 
-	// Update direction display
-
+	/** Update direction display */
 	protected void updateDirection() {
 		double tempDirection = groundVehicle.getDirection();
 		if (direction != tempDirection) {
@@ -152,8 +133,7 @@ public class GroundVehicleDialog extends VehicleDialog {
 		}
 	}
 
-	// Update elevation label
-
+	/** Update elevation label */
 	protected void updateElevation() {
 		double tempElevation = Math.round(groundVehicle.getElevation() * 100D) / 100D;
 		if (elevation != tempElevation) {
@@ -162,12 +142,9 @@ public class GroundVehicleDialog extends VehicleDialog {
 		}
 	}
     
-    // Load image icon (overridden)
-	
+    /** Override getIcon */
 	public ImageIcon getIcon() { return new ImageIcon("RoverIcon.gif"); }
     
-    // Set window size
-	
+    /** Set window size */
 	protected Dimension setWindowSize() { return new Dimension(300, 430); }
 }
-

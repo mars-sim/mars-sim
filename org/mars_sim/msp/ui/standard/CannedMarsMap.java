@@ -6,11 +6,11 @@
  */
 
 package org.mars_sim.msp.ui.standard;
- 
-import org.mars_sim.msp.simulation.Coordinates;  
+
+import org.mars_sim.msp.simulation.Coordinates;
 import java.awt.*;
 import java.awt.image.*;
-import java.io.*; 
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -20,42 +20,44 @@ import javax.swing.*;
  */
 public abstract class CannedMarsMap implements Map {
 
-    private Image mapImage;                   // Finished image of sphere
-    private Coordinates centerCoords;         // Center coordinates
-    private boolean imageDone;                // True if image is complete
-    private JComponent displayArea;           // Parent display area
+    // Data members
+    private Image mapImage; // Finished image of sphere
+    private Coordinates centerCoords; // Center coordinates
+    private boolean imageDone; // True if image is complete
+    private JComponent displayArea; // Parent display area
     // <fragile>
-    protected static int[] index;             // Map index information
-    protected static long[] sum;              // Map sum information
+    protected static int[] index; // Map index information
+    protected static long[] sum; // Map sum information
     // </fragile>
-
+    // why is this fragile? <Scott>
     private int viewHeight = 300;
     private int viewWidth = 300;
 
     // constants
-    protected final static int mapHeight = 1440;          // Height of source map in pixels.
-    protected final static int mapWidth = mapHeight * 2;  // Width of source map in pixels.
+    protected final static int mapHeight = 1440; // Height of source map in pixels.
+    protected final static int mapWidth = mapHeight * 2; // Width of source map in pixels.
 
+    /** Constructs a CannedMarsMap object */
     public CannedMarsMap(JComponent displayArea) {
-	this.displayArea = displayArea;
-	imageDone = false;
-	centerCoords = new Coordinates(0D, 0D);
+        this.displayArea = displayArea;
+        imageDone = false;
+        centerCoords = new Coordinates(0D, 0D);
     }
 
     /** creates a 2D map at a given center point */
     public void drawMap(Coordinates newCenter) {
-	createMapImage(newCenter);
-	waitForMapLoaded();
+        createMapImage(newCenter);
+        waitForMapLoaded();
     }
 
     /** determines if a requested map is complete */
     public boolean isImageDone() {
-	return imageDone;
+        return imageDone;
     }
 
     /** returns constructed map image */
     public Image getMapImage() {
-	return mapImage;
+        return mapImage;
     }
 
     abstract public RandomAccessFile getMapFile();
@@ -65,160 +67,170 @@ public abstract class CannedMarsMap implements Map {
      *  mapImage and can be obtained using the getMapImage() method.
      */
     private void createMapImage(Coordinates newCenter) {
-	// Adjust coordinates
-	Coordinates adjNewCenter = new Coordinates(newCenter.getPhi(), newCenter.getTheta() + Math.PI);
+        // Adjust coordinates
+        Coordinates adjNewCenter =
+                new Coordinates(newCenter.getPhi(), newCenter.getTheta() + Math.PI);
 
-	// If current center point equals new center point, don't recreate sphere
-	if (centerCoords.equals(adjNewCenter)) return;
+        // If current center point equals new center point, don't recreate sphere
+        if (centerCoords.equals(adjNewCenter))
+            return;
 
-	// Initialize Variables
-	imageDone = false;
+        // Initialize Variables
+        imageDone = false;
 
-	centerCoords.setCoords(adjNewCenter);
+        centerCoords.setCoords(adjNewCenter);
 
-	double PI_half = Math.PI / 2D;
-	double PI_double = Math.PI * 2D;
-	double PI_piece = Math.PI * (.153D - (.04D * Math.sin(centerCoords.getPhi())));
+        double PI_half = Math.PI / 2D;
+        double PI_double = Math.PI * 2D;
+        double PI_piece =
+                Math.PI * (.153D - (.04D * Math.sin(centerCoords.getPhi())));
 
-	double col_correction = (Math.PI / -2D) - centerCoords.getTheta();
-	double rho = mapHeight / Math.PI;
-	double sin_offset = Math.sin(centerCoords.getPhi() + Math.PI);
-	double cos_offset = Math.cos(centerCoords.getPhi() + Math.PI); 
-	double col_array_modifier = 1D / PI_double;
-	
-	int circum = 0;
-	int half_map = mapHeight / 2;
-	int low_edge = half_map - 150;
-	int high_edge = half_map + 150;
+        double col_correction = (Math.PI / -2D) - centerCoords.getTheta();
+        double rho = mapHeight / Math.PI;
+        double sin_offset = Math.sin(centerCoords.getPhi() + Math.PI);
+        double cos_offset = Math.cos(centerCoords.getPhi() + Math.PI);
+        double col_array_modifier = 1D / PI_double;
 
-	int[] buffer_array = new int[viewWidth * viewHeight];
-	byte[] line_data = new byte[mapWidth * 3];
-	int array_x_old = 0;
-	int array_y_old = 0;
-	long summer;
+        int circum = 0;
+        int half_map = mapHeight / 2;
+        int low_edge = half_map - 150;
+        int high_edge = half_map + 150;
 
-	try {
-	    RandomAccessFile mapFile = getMapFile();
+        int[] buffer_array = new int[viewWidth * viewHeight];
+        byte[] line_data = new byte[mapWidth * 3];
+        int array_x_old = 0;
+        int array_y_old = 0;
+        long summer;
 
-	    // Initialize row variables
-	    double start_row = centerCoords.getPhi() - PI_piece;
-	    double end_row = centerCoords.getPhi() + PI_piece;
-	    double row_iterate = (double) (Math.PI / mapHeight);
+        try {
+            RandomAccessFile mapFile = getMapFile();
 
-	    boolean row_flag = false;
-	    boolean row_iterate_flag = true;
+            // Initialize row variables
+            double start_row = centerCoords.getPhi() - PI_piece;
+            double end_row = centerCoords.getPhi() + PI_piece;
+            double row_iterate = (double)(Math.PI / mapHeight);
 
-	    // Go through each row
-	    for (double row = start_row; row <= end_row; row += row_iterate) {
-		if (row < 0) {continue;}
-		if (row >= Math.PI) {continue;}
-		int array_y = (int) Math.round((double)(mapHeight * row) / Math.PI);
-		if (array_y < 0) {continue;}
-		if (array_y >= mapHeight) {continue;}
-		
-	        // If starting row, read row info from files
-		if (row_flag == false) {
-		    array_y_old = array_y;
-		    circum = index[array_y];
-		    summer = sum[array_y];
-		    mapFile.seek((long)(summer * 3));
-		    mapFile.read(line_data, 0, (circum * 3));
-		    row_iterate_flag = true;
-		}
+            boolean row_flag = false;
+            boolean row_iterate_flag = true;
 
-		// If new row, read row info from files
-		if (array_y != array_y_old) {
-		    circum = index[array_y];
-		    mapFile.read(line_data, 0, (circum * 3));
-		    row_iterate_flag = true;
-		} else { 
-		    if (row_flag == false) {
-			row_flag = true;
-		    } else {
-			row_iterate_flag = false; 
-		    }
-		}
-		array_y_old = array_y;
+            // Go through each row
+            for (double row = start_row; row <= end_row; row += row_iterate) {
+                if (row < 0) continue;
+                if (row >= Math.PI) continue;
+                int array_y = (int) Math.round((double)(mapHeight * row) / Math.PI);
+                if (array_y < 0) continue;
+                if (array_y >= mapHeight) continue;
 
-		// Initialize row variables
-		double temp_buff_x = rho * Math.sin(row);
-		double temp_buff_y1 = temp_buff_x * cos_offset;
-		double temp_buff_y2 = rho * Math.cos(row) * sin_offset;
-		double col_array_modifier2 = (col_array_modifier * circum);
+                // If starting row, read row info from files
+                if (row_flag == false) {
+                    array_y_old = array_y;
+                    circum = index[array_y];
+                    summer = sum[array_y];
+                    mapFile.seek((long)(summer * 3));
+                    mapFile.read(line_data, 0, (circum * 3));
+                    row_iterate_flag = true;
+                }
 
-	        // Determine displayable boundries for row
-		double col_boundry = Math.PI * (1.42D - (1.29D * Math.sin(row)));
-		if (col_boundry > Math.PI) col_boundry = Math.PI;
-		
-		if ((centerCoords.getPhi() > Math.PI / 5D) && (centerCoords.getPhi() < Math.PI - (Math.PI / 5D))) 
-		    col_boundry -= Math.PI - (Math.PI * Math.sin(row));
-		else if ((centerCoords.getPhi() > Math.PI / 8D) && (centerCoords.getPhi() < Math.PI - (Math.PI / 8D)))
-		    col_boundry -= (.75D * Math.PI) - (.75D * Math.PI * Math.sin(row));
+                // If new row, read row info from files
+                if (array_y != array_y_old) {
+                    circum = index[array_y];
+                    mapFile.read(line_data, 0, (circum * 3));
+                    row_iterate_flag = true;
+                } else {
+                    if (row_flag == false) {
+                        row_flag = true;
+                    } else {
+                        row_iterate_flag = false;
+                    }
+                }
+                array_y_old = array_y;
 
-		// Determine row starting and stopping points
-		double start_col = centerCoords.getTheta() - col_boundry;
-		double end_col = centerCoords.getTheta() + col_boundry;
-		double col_iterate = Math.PI / (double) circum;
+                // Initialize row variables
+                double temp_buff_x = rho * Math.sin(row);
+                double temp_buff_y1 = temp_buff_x * cos_offset;
+                double temp_buff_y2 = rho * Math.cos(row) * sin_offset;
+                double col_array_modifier2 = (col_array_modifier * circum);
 
-		boolean col_flag = false;
+                // Determine displayable boundries for row
+                double col_boundry = Math.PI * (1.42D - (1.29D * Math.sin(row)));
+                if (col_boundry > Math.PI)
+                    col_boundry = Math.PI;
 
-		// Go through each column
-		for (double col = start_col; col <= end_col; col += col_iterate) {
-		    int array_x = (int) Math.round(col_array_modifier2 * col);
-		    while (array_x < 0) {
-			array_x += circum;
-		    }
-		    while (array_x >= circum) {
-			array_x -= circum;
-		    }
-		    
-		    double temp_col = col + col_correction;
+                if ((centerCoords.getPhi() > Math.PI / 5D) &&
+                        (centerCoords.getPhi() < Math.PI - (Math.PI / 5D)))
+                    col_boundry -= Math.PI - (Math.PI * Math.sin(row));
+                else if ((centerCoords.getPhi() > Math.PI / 8D) &&
+                        (centerCoords.getPhi() < Math.PI - (Math.PI / 8D)))
+                    col_boundry -=
+                            (.75D * Math.PI) - (.75D * Math.PI * Math.sin(row));
 
-		    // Determine position of point, and put in buffer if in display area
-		    int buff_x = (int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map;
-		    if ((buff_x > low_edge) && (buff_x < high_edge)) {
-			int buff_y = (int) Math.round((temp_buff_y1 * Math.sin(temp_col)) + temp_buff_y2) + half_map;
-			if ((buff_y > low_edge) && (buff_y < high_edge)) {
-			    buff_x -= low_edge;
-			    buff_y -= low_edge;
+                // Determine row starting and stopping points
+                double start_col = centerCoords.getTheta() - col_boundry;
+                double end_col = centerCoords.getTheta() + col_boundry;
+                double col_iterate = Math.PI / (double) circum;
 
-			    int position = array_x * 3;
+                boolean col_flag = false;
 
-			    // Get color from line_data
-			    int bit1 = (int) line_data[position];
-			    bit1 <<= 16;
-			    bit1 &= 0x00FF0000;
-			    int bit2 = (int) line_data[position + 1];
-			    bit2 <<= 8;
-			    bit2 &= 0x0000FF00;
-			    int bit3 = (int) line_data[position + 2];
-			    bit3 &= 0x000000FF;
+                // Go through each column
+                for (double col = start_col; col <= end_col; col += col_iterate) {
+                    int array_x = (int) Math.round(col_array_modifier2 * col);
+                    while (array_x < 0) {
+                        array_x += circum;
+                    }
+                    while (array_x >= circum) {
+                        array_x -= circum;
+                    }
 
-			    // Put color at point in buffer
-			    buffer_array[buff_x + (viewHeight * buff_y)] = 0xFF000000 | bit1 | bit2 | bit3;
-			}
-		    }
-		}
-	    }
-	}
-	catch(IOException e) {
-	    System.out.println("File read error: " + e);
-	}
+                    double temp_col = col + col_correction;
 
-	// Create image from buffer array
-	mapImage = displayArea.createImage(new MemoryImageSource(viewWidth, viewHeight, buffer_array, 0, 300));
+                    // Determine position of point, and put in buffer if in display area
+                    int buff_x = (int) Math.round(temp_buff_x * Math.cos(temp_col)) +
+                            half_map;
+                    if ((buff_x > low_edge) && (buff_x < high_edge)) {
+                        int buff_y = (int) Math.round(
+                                (temp_buff_y1 * Math.sin(temp_col)) +
+                                temp_buff_y2) + half_map;
+                        if ((buff_y > low_edge) && (buff_y < high_edge)) {
+                            buff_x -= low_edge;
+                            buff_y -= low_edge;
+
+                            int position = array_x * 3;
+
+                            // Get color from line_data
+                            int bit1 = (int) line_data[position];
+                            bit1 <<= 16;
+                            bit1 &= 0x00FF0000;
+                            int bit2 = (int) line_data[position + 1];
+                            bit2 <<= 8;
+                            bit2 &= 0x0000FF00;
+                            int bit3 = (int) line_data[position + 2];
+                            bit3 &= 0x000000FF;
+
+                            // Put color at point in buffer
+                            buffer_array[buff_x + (viewHeight * buff_y)] =
+                                    0xFF000000 | bit1 | bit2 | bit3;
+                        }
+                    }
+                }
+            }
+        }
+        catch (IOException e) {
+            System.out.println("File read error: " + e);
+        }
+
+        // Create image from buffer array
+        mapImage = displayArea.createImage(
+                new MemoryImageSource(viewWidth, viewHeight, buffer_array, 0, 300));
     }
-			
+
     private void waitForMapLoaded() {
-	MediaTracker mt = new MediaTracker(displayArea);
-	mt.addImage(mapImage, 0);
-	try {
-	    mt.waitForID(0);
-	}
-	catch (InterruptedException e) {
-	    System.out.println("MediaTracker interrupted " + e);
-	}
-	imageDone = true;
+        MediaTracker mt = new MediaTracker(displayArea);
+        mt.addImage(mapImage, 0);
+        try {
+            mt.waitForID(0);
+        } catch (InterruptedException e) {
+            System.out.println("MediaTracker interrupted " + e);
+        }
+        imageDone = true;
     }
-	
 }

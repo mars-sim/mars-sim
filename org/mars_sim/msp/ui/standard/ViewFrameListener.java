@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ViewFrameListener.java
- * @version 2.71 2000-09-21
+ * @version 2.71 2000-10-08
  * @author Scott Davis
  */
 
@@ -14,12 +14,11 @@ import javax.swing.event.*;
  */
 public class ViewFrameListener extends InternalFrameAdapter {
 
-    // open internal frame (overridden)
+    /** open internal frame (overridden) */
     public void internalFrameOpened(InternalFrameEvent e) {
         JInternalFrame frame = (JInternalFrame) e.getSource();
-        try {
-            frame.setClosed(false);
-        } catch (java.beans.PropertyVetoException v) {
+        try { frame.setClosed(false); } 
+        catch (java.beans.PropertyVetoException v) {
             System.out.println(frame.getTitle() + " setClosed() is Vetoed!");
         }
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.71 2000-09-017
+ * @version 2.71 2000-10-07
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ import javax.swing.event.*;
 public class SearchWindow extends ToolWindow implements ActionListener,
         ItemListener, MouseListener, DocumentListener {
 
+    // Data members
     private MainDesktopPane desktop; // Desktop pane
     private UnitUIProxy[] peopleProxies; // List of person UI proxies
     private UnitUIProxy[] settlementProxies; // List of settlement UI proxies
@@ -36,6 +37,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
     private boolean lockSearchText; // True if selectTextField events should be ignored.
     private String[] unitCategoryNames; // Array of category names.
 
+    /** Constructs a SearchWindow object */
     public SearchWindow(MainDesktopPane desktop) {
 
         // Use ToolWindow constructor

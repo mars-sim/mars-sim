@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.71 2000-09-18
+ * @version 2.71 2000-10-07
  * @author Scott Davis
  */
 
@@ -23,6 +23,7 @@ import javax.swing.*;
  */
 public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
+    // Data members
     private UIProxyManager proxyManager; // Unit UI proxy manager
     private NavigatorWindow navWindow; // Navigator Tool Window
     private Map surfMap; // Surface image object
@@ -38,13 +39,16 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private int width;
     private int height;
     
+    // Constant data members
     private static final double HALF_PI = (Math.PI / 2D);
     private static final int HALF_MAP = 150;
     private static final double HALF_MAP_ANGLE = .48587D;
 
+    /** Constructs a MapDisplay object */
     public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager, 
             int width, int height) {
 
+        // Initialize data members
         this.navWindow = navWindow;
         this.proxyManager = proxyManager;
         this.width = width;
@@ -189,6 +193,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         }
     }
 
+    /** Draws units on map */
     private void drawUnits(Graphics g) {
         UnitUIProxy[] proxies = proxyManager.getUIProxies();
         for (int x = 0; x < proxies.length; x++) {

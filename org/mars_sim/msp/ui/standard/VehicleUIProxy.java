@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleUIProxy.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-10-08
  * @author Scott Davis
  */
 
@@ -12,9 +12,9 @@ import org.mars_sim.msp.simulation.*;
 /**
  * Abstract user interface proxy for a vehicle. 
  */
- 
 public abstract class VehicleUIProxy extends UnitUIProxy {
 
+    /** Constructs a VehicleUIProxy object */
     public VehicleUIProxy(Vehicle vehicle, UIProxyManager proxyManager) {
         super(vehicle, proxyManager);
     }

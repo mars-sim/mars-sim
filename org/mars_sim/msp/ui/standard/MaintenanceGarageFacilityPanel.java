@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarageFacilityPanel.java
- * @version 2.71 2000-09-18
+ * @version 2.71 2000-10-07
  * @author Scott Davis
  */
 
@@ -18,11 +18,9 @@ import javax.swing.border.*;
  * The MaintenanceGarageFacilityPanel class displays information about a 
  * settlement's maintenance garage facility in the user interface.
  */
-
 public class MaintenanceGarageFacilityPanel extends FacilityPanel implements ActionListener {
 
-	// Data members
-	
+	// Data members	
 	private MaintenanceGarageFacility maintenanceGarage;  // The maintenance garage facility this panel displays.
 	private Vector parkedVehicles;       // A vector of vehicles currently in the garage.
 	private Vector vehicleButtons;       // A vector of vehicle buttons.
@@ -31,97 +29,79 @@ public class MaintenanceGarageFacilityPanel extends FacilityPanel implements Act
 	private JLabel sizeTotalLabel;       // A label showing the current total of the vehicles sizes in the garage.
 	
 	// Cached garage data
-	
 	private int currentTotalSize;        // The current total size of vehicles in the garage.
 	
-	// Constructor
-	
+	/** Constructs a MaintenanceGarageFacilityPanel */
 	public MaintenanceGarageFacilityPanel(MaintenanceGarageFacility maintenanceGarage, MainDesktopPane desktop) {
 	
 		// Use FacilityPanel's constructor
-		
 		super(desktop);
 		
 		// Initialize data members
-		
 		this.maintenanceGarage = maintenanceGarage;
 		tabName = "Garage";
 		
 		// Set up components
-		
 		setLayout(new BorderLayout());
 		
 		// Prepare content pane
-		
 		JPanel contentPane = new JPanel(new BorderLayout(0, 5));
 		add(contentPane, "Center");
 		
 		// Prepare name label
-		
 		JLabel nameLabel = new JLabel("Maintenance Garage", JLabel.CENTER);
 		nameLabel.setForeground(Color.black);
 		contentPane.add(nameLabel, "North");
 		
 		// Prepare info pane
-		
 		JPanel infoPane = new JPanel(new BorderLayout(0, 5));
 		contentPane.add(infoPane, "Center");
 		
 		// Prepare label pane
-		
 		JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 5));
 		labelPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		infoPane.add(labelPane, "North");
 		
 		// Prepare max size label
-		
 		JLabel maxSizeLabel = new JLabel("Maximum Vehicle Size Allowed: " + maintenanceGarage.getMaxVehicleSize(), JLabel.CENTER);
 		maxSizeLabel.setForeground(Color.black);
 		labelPane.add(maxSizeLabel);
 		
 		// Prepare size capacity label
-		
 		JLabel sizeCapacityLabel = new JLabel("Total Vehicle Size Capacity: " + maintenanceGarage.getMaxSizeCapacity(), JLabel.CENTER);
 		sizeCapacityLabel.setForeground(Color.black);
 		labelPane.add(sizeCapacityLabel);
 		
 		// Prepare size total label
-		
 		currentTotalSize = maintenanceGarage.getTotalSize();
 		sizeTotalLabel = new JLabel("Current Total Vehicle Size: " + currentTotalSize, JLabel.CENTER);
 		sizeTotalLabel.setForeground(Color.black);
 		labelPane.add(sizeTotalLabel);
 		
 		// Prepare parked vehicles pane
-		
 		JPanel parkedVehiclesPane = new JPanel(new BorderLayout());
 		parkedVehiclesPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 		infoPane.add(parkedVehiclesPane, "Center");
 		
 		// Prepare parked name label
-		
 		JLabel parkedVehiclesLabel = new JLabel("Vehicles Undergoing Maintenance:", JLabel.CENTER);
 		parkedVehiclesLabel.setForeground(Color.black);
 		parkedVehiclesPane.add(parkedVehiclesLabel, "North");
 		
 		// Prepare vehicle list pane
-		
 		JPanel vehicleListPane = new JPanel(new BorderLayout());
 		parkedVehiclesPane.add(new JScrollPane(vehicleListPane), "Center");
 	
 		// Create parked vehicles vector and vehicle buttons vector.
-		
 		parkedVehicles = new Vector();
 		Vehicle[] parkedVehicleArray = maintenanceGarage.getVehicles();
 		for (int x=0; x < parkedVehicleArray.length; x++) parkedVehicles.addElement(parkedVehicleArray[x]);
 		
 		// Prepare vehicle grid pane.
-		
 		vehicleGridPane = new JPanel(new GridLayout(parkedVehicles.size(), 1, 0, 5));
 		vehicleListPane.add(vehicleGridPane, "North");
 	
 		// Add vehicles.
-		
 		vehicleButtons = new Vector();
 		vehicleProgressBars = new Vector();
 		for (int x=0; x < parkedVehicles.size(); x++) {
@@ -151,14 +131,12 @@ public class MaintenanceGarageFacilityPanel extends FacilityPanel implements Act
 		}
 	}
 	
-	// ActionListener method overriden
-	
+	/** ActionListener method overriden */
 	public void actionPerformed(ActionEvent event) {
 		
 		Object button = event.getSource();
 			
 		// Check to see if button is a vehicle button.
-		
 		for (int x=0; x < parkedVehicles.size(); x++) {
 			if (button == vehicleButtons.elementAt(x)) {
                 
@@ -170,23 +148,19 @@ public class MaintenanceGarageFacilityPanel extends FacilityPanel implements Act
 		}
 	}
 	
-	// Updates the facility panel's information
-	
+	/** Updates the facility panel's information */
 	public void updateInfo() { 
 		
 		// Change vehicle size total currently if necessary.
-		
 		if (currentTotalSize != maintenanceGarage.getTotalSize()) {
 			currentTotalSize = maintenanceGarage.getTotalSize();
 			sizeTotalLabel.setText("Current Total Vehicle Size: " + currentTotalSize);
 		}
 		
 		// Get vehicles in garage array.
-		
 		Vehicle[] parkedVehicleArray = maintenanceGarage.getVehicles();
 		
 		// Check if array matches parkedVehicles vector.
-		
 		boolean match = false;
 		if (parkedVehicleArray.length == parkedVehicles.size()) {
 			match = true;
@@ -195,7 +169,6 @@ public class MaintenanceGarageFacilityPanel extends FacilityPanel implements Act
 		}
 		
 		// If a match, update vehicle progress bars.
-		
 		if (match) {
 			for (int x=0; x < parkedVehicles.size(); x++) {
 				

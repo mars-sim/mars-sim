@@ -18,10 +18,12 @@ import javax.swing.border.*;
  */
 public class SettlementDialog extends UnitDialog implements MouseListener {
 
+    // Data members
     private Settlement settlement; // Settlement which the dialog window is about.
     private JList vehicleList; // List of parked vehicles
     private FacilityPanel[] facilityPanes; // Panes for each of the settlement's facilities.
 
+    /** Constructs a SettlementDialog object */
     public SettlementDialog(MainDesktopPane parentDesktop, 
             SettlementUIProxy settlementUIProxy) {
         
@@ -143,14 +145,6 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         StoreroomFacilityPanel storeroomPane = new StoreroomFacilityPanel(storeroom, parentDesktop);
         tabPane.add(storeroomPane, storeroomPane.getTabName());
         facilityPanes[4] = storeroomPane;
-        
-        /*
-        facilityPanes = 
-                settlement.getFacilityManager().getFacilityPanels(parentDesktop);
-        for (int x = 0; x < facilityPanes.length; x++) {
-            tabPane.add(facilityPanes[x], facilityPanes[x].getTabName());
-        }
-        */
     }
 
     /** Prepare vehicles pane */
@@ -243,4 +237,3 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         return mainLocationPane;
     }
 }
-

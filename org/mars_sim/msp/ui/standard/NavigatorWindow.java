@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.71 2000-09-18
+ * @version 2.71 2000-10-07
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ import javax.swing.border.*;
 public class NavigatorWindow extends ToolWindow implements ActionListener,
         ItemListener {
 
+    // Data members
     private MainDesktopPane desktop; // Desktop pane
     private MapDisplay map; // map navigation
     private GlobeDisplay globeNav; // Globe navigation
@@ -34,6 +35,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     private JButton goThere; // Location entry submit button
     private JCheckBox unitLabelCheckbox; // Show unit labels checkbox
 
+    /** Constructs a NavigatorWindow object */
     public NavigatorWindow(MainDesktopPane desktop) {
 
         // use ToolWindow constructor
@@ -170,7 +172,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     }
 
     /** Update coordinates in map, buttons, and globe
-      *  Redraw map and globe if necessary */
+      *  Redraw map and globe if necessary 
+      */
     public void updateCoords(Coordinates newCoords) {
         navButtons.updateCoords(newCoords);
         map.showMap(newCoords);
@@ -242,4 +245,3 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         desktop.openUnitWindow(unitProxy);
     }
 }
-

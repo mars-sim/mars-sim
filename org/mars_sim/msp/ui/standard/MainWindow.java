@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-10-07
  * @author Scott Davis
  */
 
@@ -18,10 +18,12 @@ import javax.swing.*;
  */
 public class MainWindow extends JFrame implements WindowListener {
 
+    // Data members
     private UnitToolBar unitToolbar; // The unit tool bar
     private MainDesktopPane desktop; // The main desktop
     private UIProxyManager proxyManager; // The unit UI proxy manager
 
+    /** Constructs a MainWindow object */
     public MainWindow(VirtualMars mars) {
 
         // use JFrame constructor

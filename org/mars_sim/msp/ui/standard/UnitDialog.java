@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitDialog.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-10-08
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ import javax.swing.border.*;
 public abstract class UnitDialog extends JInternalFrame implements Runnable,
         ActionListener {
 
+    // Data members
     protected MainDesktopPane parentDesktop; // Parent Main Window
     protected UnitUIProxy unitUIProxy; // Parent unit's UI proxy
     protected UIProxyManager proxyManager;  // Unit UI proxy manager
@@ -31,8 +32,9 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
     protected Thread updateThread; // Dialog update thread
     protected JButton centerMapButton; // Center map button
 
-
+    /** Constructs a UnitDialog class */
     public UnitDialog(MainDesktopPane parentDesktop, UnitUIProxy unitUIProxy) {
+        
         // Use JInternalFrame constructor
         super(unitUIProxy.getUnit().getName(), false, true, false, true);
 
@@ -57,7 +59,7 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
         start();
     }
 
-    // Starts display update thread, and creates a new one if necessary
+    /** Starts display update thread, and creates a new one if necessary */
     public void start() {
         if ((updateThread == null) || (!updateThread.isAlive())) {
             updateThread = new Thread(this, "unit dialog");
@@ -65,7 +67,7 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
         }
     }
 
-    // Update thread runner
+    /** Update thread runner */
     public void run() {
 
         // Endless refresh loop
@@ -150,4 +152,3 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
     /** Complete update */
     protected abstract void generalUpdate();
 }
-
