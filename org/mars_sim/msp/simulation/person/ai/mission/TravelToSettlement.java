@@ -103,7 +103,7 @@ public class TravelToSettlement extends Mission implements Serializable {
 					remainingInhabitant = true;
 			}
             
-            if (availableRovers && remainingInhabitant) result = 1D;
+            if (availableRovers && remainingInhabitant) result = 5D;
             
             // Crowding modifier.
             int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
@@ -168,11 +168,19 @@ public class TravelToSettlement extends Mission implements Serializable {
 				
 					if (withinMissionCapacity && remainingInhabitant && (betterJobProspect || isDriver)) result = 50D;
 				
-					// Relationship modifier for inhabitants of destination settlement.
+					// Relationship modifier for inhabitants of destination settlement vs. current settlement.
 					RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-					PersonIterator j = destinationSettlement.getAllAssociatedPeople().iterator();
-					double totalOpinion = 0D;
-					while (j.hasNext()) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, j.next()) - 50D) / 50D);
+					double currentOpinion = 0D;
+					PersonIterator j = startingSettlement.getAllAssociatedPeople().iterator();
+					while (j.hasNext()) currentOpinion+= ((relationshipManager.getOpinionOfPerson(person, j.next()) - 50D) / 50D);
+					currentOpinion/= (double) startingSettlement.getAllAssociatedPeople().size();
+					
+					PersonIterator k = destinationSettlement.getAllAssociatedPeople().iterator();
+					double destinationOpinion = 0D;
+					while (k.hasNext()) destinationOpinion+= ((relationshipManager.getOpinionOfPerson(person, k.next()) - 50D) / 50D);
+					destinationOpinion/= (double) destinationSettlement.getAllAssociatedPeople().size();
+					
+					double totalOpinion = destinationOpinion - currentOpinion;
 					if (totalOpinion >= 0D) result*= (1D + totalOpinion);
 					else result/= (1D - totalOpinion);
 				

@@ -63,7 +63,7 @@ public class CollectIce extends CollectResourcesMission {
 			}
 	    
 			if (reservableRover && remainingInhabitant) {
-				if (enoughWater) result = .5D;
+				if (enoughWater) result = 1D;
 				else result = 100D;
 			} 
 			
