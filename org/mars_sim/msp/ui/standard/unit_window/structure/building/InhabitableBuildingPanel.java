@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InhabitableBuildingPanel.java
- * @version 2.75 2003-04-05
+ * @version 2.77 2004-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -23,6 +23,7 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
     private DefaultListModel inhabitantListModel;
     private JList inhabitantList;
     private PersonCollection inhabitantCache;
+    private JLabel numberLabel;
     
     /**
      * Constructor
@@ -33,7 +34,7 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
     public InhabitableBuildingPanel(LifeSupport inhabitable, MainDesktopPane desktop) {
         
         // Use BuildingFunctionPanel constructor
-        super(inhabitable.getBuilding() , desktop);
+        super(inhabitable.getBuilding(), desktop);
         
         // Initialize data members.
         this.inhabitable = inhabitable;
@@ -42,12 +43,16 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
         setLayout(new BorderLayout());
         
         // Create label panel
-        JPanel labelPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        JPanel labelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
         add(labelPanel, BorderLayout.NORTH);
         
         // Create inhabitant label
-        JLabel inhabitantLabel = new JLabel("Inhabitants", JLabel.CENTER);
+        JLabel inhabitantLabel = new JLabel("Occupants", JLabel.CENTER);
         labelPanel.add(inhabitantLabel);
+        
+        // Create number label
+        numberLabel = new JLabel("Number: " + inhabitable.getOccupantNumber(), JLabel.CENTER);
+        labelPanel.add(numberLabel);
         
         // Create capacity label
         JLabel capacityLabel = new JLabel("Capacity: " + 
@@ -80,12 +85,14 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
      */
     public void update() {
         
-        // Update population list
+        // Update population list and number label
         if (!inhabitantCache.equals(inhabitable.getOccupants())) {
             inhabitantCache = new PersonCollection(inhabitable.getOccupants());
             inhabitantListModel.clear();
             PersonIterator i = inhabitantCache.iterator();
             while (i.hasNext()) inhabitantListModel.addElement(i.next());
+            
+            numberLabel.setText("Number: " + inhabitantCache.size());
         }
     }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 2.75 2004-04-05
+ * @version 2.77 2004-09-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -83,6 +83,17 @@ public class BuildingPanel extends JPanel {
         	}
         	catch (BuildingException e) {}
         }
+        
+		// Prepare vehicle maintenance panel if building has vehicle maintenance.
+		if (building.hasFunction(GroundVehicleMaintenance.NAME)) {
+			try {
+				VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+				BuildingFunctionPanel vehicleMaintenancePanel = new VehicleMaintenanceBuildingPanel(garage, desktop);
+				functionPanels.add(vehicleMaintenancePanel);
+				functionListPanel.add(vehicleMaintenancePanel);
+			}
+			catch (BuildingException e) {}
+		}
         
         // Prepare research panel if building has research.
         if (building.hasFunction(Research.NAME)) {
