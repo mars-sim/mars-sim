@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PropertiesXmlReader.java
- * @version 2.74 2002-04-30
+ * @version 2.74 2002-05-13
  * @author Scott Davis
  */
 
@@ -261,22 +261,31 @@ class PropertiesXmlReader extends MspXmlReader {
                 break;
 	    case MIN_AIR_PRESSURE:
 		personMinAirPressure = Double.parseDouble(data);
+		break;
 	    case DECOMPRESSION:
 		personDecompression = Double.parseDouble(data);
+		break;
 	    case MIN_TEMPERATURE:
 		personMinTemperature = Double.parseDouble(data);
+		break;
 	    case MAX_TEMPERATURE:
 	        personMaxTemperature = Double.parseDouble(data);
+		break;
 	    case FREEZING_TIME:
 		personFreezingTime = Double.parseDouble(data);
+		break;
             case OXYGEN_STORAGE_CAPACITY:
                 settlementOxygenStorageCapacity = Double.parseDouble(data);
+		break;
             case WATER_STORAGE_CAPACITY:
                 settlementWaterStorageCapacity = Double.parseDouble(data);
+		break;
             case FOOD_STORAGE_CAPACITY:
                 settlementFoodStorageCapacity = Double.parseDouble(data);
+		break;
             case FUEL_STORAGE_CAPACITY:
                 settlementFuelStorageCapacity = Double.parseDouble(data);
+		break;
             case FUEL_EFFICIENCY:
                 roverFuelEfficiency = Double.parseDouble(data);
                 break;
