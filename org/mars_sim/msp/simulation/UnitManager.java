@@ -37,7 +37,7 @@ public class UnitManager implements Serializable {
         units = new UnitCollection();
 
         // Create settlements
-        createSettlements(p);
+        createSettlements();
 
         // Create vehicles
         createVehicles();
@@ -47,9 +47,9 @@ public class UnitManager implements Serializable {
     }
 
     /** Creates initial settlements from XML config file */
-    private void createSettlements(SimulationProperties p) {
+    private void createSettlements() {
         SettlementsXmlReader settlementsReader =
-	    new SettlementsXmlReader(p, mars);
+	    new SettlementsXmlReader(mars);
         settlementsReader.parse();
         units.mergeSettlements(settlementsReader.getSettlements());
     }

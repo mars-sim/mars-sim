@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * $Id: NewDialog.java,v 1.1 2002-03-13 21:08:20 jpatokal Exp $
+ * $Id: NewDialog.java,v 1.2 2002-03-14 11:08:48 jpatokal Exp $
  * @version 2.74
  * @author Jani Patokallio
  */
@@ -26,7 +26,7 @@ public class NewDialog extends JDialog implements ActionListener {
 
     // Data members
     private JButton okButton, cancelButton;
-    private JSlider settlementSlider;
+    private JSlider peopleSlider, vehicleSlider, settlementSlider;
     private SimulationProperties p;
     private int result = JOptionPane.CANCEL_OPTION;
 
@@ -46,24 +46,20 @@ public class NewDialog extends JDialog implements ActionListener {
         setContentPane(mainPane);
 
 	JLabel instructionLabel =
-	    new JLabel("Configure the parameters of the new simulation.",
+	    new JLabel("Configure the parameters of the new simulation:",
 		       JLabel.CENTER);
 	instructionLabel.setForeground(Color.black);
         instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 	mainPane.add(instructionLabel);
 	mainPane.add(Box.createRigidArea(new Dimension(0,15)));
 
+	peopleSlider =
+	    addSlider(mainPane, "People", 5, 50, p.getInitPeople(), 5);
 	settlementSlider =
-	    new JSlider(JSlider.HORIZONTAL, 1, 20, p.getInitSettlements());
-	settlementSlider.setMajorTickSpacing(1);
-	settlementSlider.setSnapToTicks(true);
-	settlementSlider.setPaintTicks(true);
-	settlementSlider.setPaintLabels(true);
-	settlementSlider.setBorder
-	    (BorderFactory.createTitledBorder("Settlements"));
-
-	//add the slider to the content pane
-	mainPane.add(settlementSlider);
+	    addSlider(mainPane, "Settlements", 1, 20, p.getInitSettlements(),
+		      1);
+	vehicleSlider =
+	    addSlider(mainPane, "Vehicles", 1, 10, p.getInitVehicles(), 1);
 
         // Create button panel
         JPanel buttonPane = new JPanel(new GridLayout(0,2));
@@ -72,7 +68,7 @@ public class NewDialog extends JDialog implements ActionListener {
         mainPane.add(buttonPane);
 
         // Create close button
-        okButton = new JButton("OK");
+        okButton = new JButton("Start!");
         okButton.addActionListener(this);
         buttonPane.add(okButton);
 
@@ -97,9 +93,26 @@ public class NewDialog extends JDialog implements ActionListener {
         setVisible(true);
     }
 
+    private JSlider addSlider(JPanel mainPane, String name,
+		      int min, int max, int start, int tickSpacing) {
+	JSlider slider = new JSlider(JSlider.HORIZONTAL, min, max, start);
+	slider.setMajorTickSpacing(tickSpacing);
+	slider.setMinorTickSpacing(1);
+	slider.setSnapToTicks(true);
+	slider.setPaintTicks(true);
+	slider.setPaintLabels(true);
+	slider.setName(name);
+	slider.setBorder
+	    (BorderFactory.createTitledBorder(name));
+	mainPane.add(slider);
+	return slider;
+    }
+
     // Implementing ActionListener method
     public void actionPerformed(ActionEvent event) {
 	if(event.getSource() == okButton) {
+	    p.setInitPeople((int) peopleSlider.getValue());
+	    p.setInitVehicles((int) vehicleSlider.getValue());
 	    p.setInitSettlements((int) settlementSlider.getValue());
 	    result = JOptionPane.OK_OPTION;
 	}

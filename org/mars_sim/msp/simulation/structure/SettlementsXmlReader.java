@@ -40,9 +40,9 @@ public class SettlementsXmlReader extends MspXmlReader {
     /** Constructor
      *  @param mars the virtual Mars instance
      */
-    public SettlementsXmlReader(SimulationProperties p, Mars mars) {
+    public SettlementsXmlReader(Mars mars) {
         super("conf/settlements.xml");
-	settlementMax = p.getInitSettlements();
+	settlementMax = mars.getSimulationProperties().getInitSettlements();
         this.mars = mars;
     }
 

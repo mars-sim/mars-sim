@@ -119,9 +119,18 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		mainWindow.getMars().getSimulationProperties();
 	    NewDialog newDialog = new NewDialog(p, mainWindow);
 	    if(newDialog.getResult() == JOptionPane.OK_OPTION) {
+		// ##TODO## this should be shifted into a separate thread
+		ProgressMonitor pm =
+		    new ProgressMonitor(mainWindow,
+					"Starting New Simulation...", "",
+					0, 100);
+		pm.setMillisToPopup(0);
+		pm.setMillisToDecideToPopup(0);
 		Mars mars = new Mars(p);
+		pm.setProgress(50);
 		mainWindow.setMars(mars);
 		mars.start();
+		pm.close();
 	    }
 	}
 		
@@ -195,6 +204,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         }
 
         if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
+    }
+
+    private synchronized void sleep(int millis) {
+	try {
+	    this.wait(millis);
+	} catch(InterruptedException ie) {}
     }
 	
     // MenuListener method overriding

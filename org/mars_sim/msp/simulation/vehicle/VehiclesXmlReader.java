@@ -26,6 +26,7 @@ public class VehiclesXmlReader extends MspXmlReader {
     private static final int SETTLEMENT = 4;
 
     // Data members
+    private int vehiclesMax; // Maximum number of vehicles to initialize
     private int elementType; // The current element type being parsed
     private int vehicleType; // The current vehicle type being parsed
     private VehicleCollection vehicles; // The collection of created settlements
@@ -40,7 +41,7 @@ public class VehiclesXmlReader extends MspXmlReader {
      */
     public VehiclesXmlReader(UnitManager manager, Mars mars) {
         super("conf/vehicles.xml");
-
+	vehiclesMax = mars.getSimulationProperties().getInitVehicles();
 	this.manager = manager;
         this.mars = mars;
     }
@@ -94,15 +95,13 @@ public class VehiclesXmlReader extends MspXmlReader {
                 elementType = vehicleType;
                 break;
             case EXPLORER_ROVER:
-                Rover explorerRover = createRover(EXPLORER_ROVER);
-                if (explorerRover != null) vehicles.add(explorerRover);
-                elementType = VEHICLES_LIST;
-                break;
 	    case TRANSPORT_ROVER:
-	        Rover transportRover = createRover(TRANSPORT_ROVER);
-		if (transportRover != null) vehicles.add(transportRover);
+		if(vehiclesMax == 0 || vehicles.size() < vehiclesMax) {
+		    Rover rover = createRover(elementType);
+		    if (rover != null) vehicles.add(rover);
+		}
 		elementType = VEHICLES_LIST;
-		break;
+                break;
         }
     }
 

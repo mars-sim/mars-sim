@@ -31,6 +31,7 @@ public class PeopleXmlReader extends MspXmlReader {
     private static final int ATTRIBUTE_LEVEL = 9;
 
     // Data members
+    private int peopleMax; // Maximum number of people to initialize
     private int elementType; // The current element type being parsed
     private PersonCollection people; // The collection of created people
     private Mars mars; // The virtual Mars instance
@@ -50,7 +51,7 @@ public class PeopleXmlReader extends MspXmlReader {
      */
     public PeopleXmlReader(UnitManager manager, Mars mars) {
         super("conf/people.xml");
-
+	peopleMax = mars.getSimulationProperties().getInitPeople();
         this.manager = manager;
         this.mars = mars;
     }
@@ -135,8 +136,10 @@ public class PeopleXmlReader extends MspXmlReader {
                 elementType = ATTRIBUTE;
                 break;
             case PERSON:
-                Person person = createPerson();
-                if (person != null) people.add(person);
+		if(peopleMax == 0 || people.size() < peopleMax) {
+		    Person person = createPerson();
+		    if (person != null) people.add(person);
+		}
                 elementType = PEOPLE_LIST;
                 break;
         }

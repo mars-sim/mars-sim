@@ -17,6 +17,8 @@ public class SimulationProperties {
 
     // Property values
     private double timeRatio = 0D; // Simulation time / real time
+    private int initPeople = 0;
+    private int initVehicles = 0;
     private int initSettlements = 0;
 
     /** Constructor */
@@ -25,6 +27,36 @@ public class SimulationProperties {
         // Create a PropertiesXmlReader.
         propertiesReader = new PropertiesXmlReader();
         propertiesReader.parse();
+    }
+
+    /** Number of people when starting
+     */
+    public int getInitPeople() {
+	if(initPeople == 0) {
+	    initPeople = propertiesReader.getInitSettlements();
+	}
+	return initPeople;
+    }
+
+    /** Number of settlements when starting
+     */
+    public void setInitPeople(int newValue) {
+	initPeople = newValue;
+    }
+
+    /** Number of settlements when starting
+     */
+    public int getInitVehicles() {
+	if(initVehicles == 0) {
+	    initVehicles = propertiesReader.getInitSettlements();
+	}
+	return initVehicles;
+    }
+
+    /** Number of settlements when starting
+     */
+    public void setInitVehicles(int newValue) {
+	initVehicles = newValue;
     }
 
     /** Number of settlements when starting
