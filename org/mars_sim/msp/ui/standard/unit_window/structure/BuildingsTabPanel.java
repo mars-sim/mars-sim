@@ -85,7 +85,37 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
      */
     public void update() {
         
-        // Update add buildings if necessary.
+        Settlement settlement = (Settlement) proxy.getUnit();
+        java.util.List buildings = settlement.getBuildingManager().getBuildings();
+        
+        // Update buildings if necessary.
+        if (!buildingsCache.equals(buildings)) {
+            // Add building panels for new buildings.
+            Iterator iter1 = buildings.iterator();
+            while (iter1.hasNext()) {
+                Building building = (Building) iter1.next();
+                if (!buildingsCache.contains(building)) {
+                    BuildingPanel panel = new BuildingPanel(String.valueOf(count), building);
+                    buildingPanels.add(panel);
+                    buildingDisplayPanel.add(panel, panel.getPanelName());
+                    count++;
+                }
+            }
+            
+            // Remove building panels for destroyed buildings.
+            Iterator iter2 = buildingsCache.iterator();
+            while (iter2.hasNext()) {
+                Building building = (Building) iter2.next();
+                if (!buildings.contains(building)) {
+                    BuildingPanel panel = getBuildingPanel(building);
+                    buildingPanels.remove(panel);
+                    buildingDisplayPanel.remove(panel);
+                }
+            }
+            
+            // Update buildings cache.
+            buildingsCache = buildings;
+        }
     
         // Have each building panel update.
         Iterator i = buildingPanels.iterator();
