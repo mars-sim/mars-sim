@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceBuildingPanel.java
- * @version 2.75 2004-02-10
+ * @version 2.75 2005-03-18
  * @author Scott Davis
  */
 
@@ -56,7 +56,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         // Create lastCompletedLabel.
         lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
         lastCompletedLabel = new JLabel("Last Completed: " + lastCompletedTime + 
-            " millisols", JLabel.CENTER);
+            " sols", JLabel.CENTER);
         add(lastCompletedLabel);
         
         // Create maintenance progress bar panel.
@@ -87,7 +87,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
         if (lastComplete != lastCompletedTime) {
             lastCompletedTime = lastComplete;
-            lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " millisols");
+            lastCompletedLabel.setText("Last Completed: " + lastCompletedTime + " sols");
         }
         
         // Update progress bar.
