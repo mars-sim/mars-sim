@@ -114,7 +114,7 @@
             <SERIOUS>70</SERIOUS>
             <DEGRADE>7</DEGRADE>
             <RECOVERY>14</RECOVERY>
-            <PERFORMANCE>0</PERFORMANCE>
+            <PERFORMANCE>10</PERFORMANCE>
             <CURE>Major Operation</CURE>
         </COMPLAINT>
 
@@ -124,7 +124,7 @@
             <DEGRADE>7</DEGRADE>
             <RECOVERY>14</RECOVERY>
             <PROBABILITY>1</PROBABILITY>
-            <PERFORMANCE>0</PERFORMANCE>
+            <PERFORMANCE>10</PERFORMANCE>
             <CURE>Minor Operation</CURE>
             <NEXT>Ruptured Appendix</NEXT>
         </COMPLAINT>
@@ -150,7 +150,7 @@
             <SERIOUS>80</SERIOUS>
             <DEGRADE>7</DEGRADE>
             <RECOVERY>14</RECOVERY>
-            <PERFORMANCE>0</PERFORMANCE>
+            <PERFORMANCE>10</PERFORMANCE>
             <CURE>Antibiotics</CURE>
         </COMPLAINT>
 
@@ -160,7 +160,7 @@
             <DEGRADE>7</DEGRADE>
             <RECOVERY>14</RECOVERY>
             <PROBABILITY>8</PROBABILITY>
-            <PERFORMANCE>0</PERFORMANCE>
+            <PERFORMANCE>10</PERFORMANCE>
             <CURE>Plaster Cast</CURE>
             <NEXT>Gangrene</NEXT>
         </COMPLAINT>
@@ -197,7 +197,7 @@
 	    <SERIOUS>80</SERIOUS>
 	    <DEGRADE>10</DEGRADE>
 	    <RECOVERY>40</RECOVERY>
-	    <PERFORMANCE>0</PERFORMANCE>
+	    <PERFORMANCE>10</PERFORMANCE>
 	    <CURE>Skin Graft</CURE>
         </COMPLAINT>
 
