@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.72 2001-08-09
+ * @version 2.73 2001-09-12
  * @author Scott Davis
  */
 
@@ -186,13 +186,13 @@ public class PersonDialog extends UnitDialog {
         // Update fatigue label
         if (fatigue != roundOneDecimal(person.getFatigue())) {
             fatigue = roundOneDecimal(person.getFatigue());
-            fatigueLabel.setText("" + fatigue);
+            fatigueLabel.setText("" + fatigue + " millisols");
         }
         
         // Update hunger label
         if (hunger != roundOneDecimal(person.getHunger())) {
             hunger = roundOneDecimal(person.getHunger());
-            hungerLabel.setText("" + hunger);
+            hungerLabel.setText("" + hunger + " millisols");
         }
     }
 	
@@ -386,7 +386,7 @@ public class PersonDialog extends UnitDialog {
         conditionListPane.add(fatigueNameLabel);
         
         // Prepare fatigue label
-        fatigueLabel = new JLabel("" + roundOneDecimal(person.getFatigue()), JLabel.RIGHT);
+        fatigueLabel = new JLabel("" + roundOneDecimal(person.getFatigue()) + " millisols", JLabel.RIGHT);
         fatigueLabel.setForeground(Color.black);
         conditionListPane.add(fatigueLabel);
         
@@ -396,7 +396,7 @@ public class PersonDialog extends UnitDialog {
         conditionListPane.add(hungerNameLabel);
         
         // Prepare hunger label
-        hungerLabel = new JLabel("" + roundOneDecimal(person.getHunger()), JLabel.RIGHT);
+        hungerLabel = new JLabel("" + roundOneDecimal(person.getHunger()) + " millisols", JLabel.RIGHT);
         hungerLabel.setForeground(Color.black);
         conditionListPane.add(hungerLabel);
             

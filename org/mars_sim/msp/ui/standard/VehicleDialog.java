@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.72 2001-08-13
+ * @version 2.73 2001-09-12
  * @author Scott Davis
  */
 
@@ -31,6 +31,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected JLabel latitudeLabel; // Latitude label
     protected JLabel longitudeLabel; // Longitude label
     protected JPanel destinationLabelPane; // Destination label pane
+    protected JLabel destinationLabel; // Destination label
     protected JButton destinationButton; // Destination settlement button
     protected JLabel destinationLatitudeLabel; // Destination latitude label
     protected JLabel destinationLongitudeLabel; // Destination longitude label
@@ -233,7 +234,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         destinationPane.add(destinationLabelPane, "North");
 
         // Prepare destination label
-        JLabel destinationLabel = new JLabel("Destination: ", JLabel.LEFT);
+        destinationLabel = new JLabel("Destination: ", JLabel.LEFT);
+        if (vehicle.getDestinationType().equals("Coordinates")) destinationLabel.setText("Destination: Coordinates");
         destinationLabel.setForeground(Color.black);
         destinationLabelPane.add(destinationLabel);
 
@@ -640,9 +642,16 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         if (destinationType.equals("Settlement")) {
             if (!destinationButton.getText().equals(vehicle.getDestinationSettlement().getName()))
                 destinationButton.setText(vehicle.getDestinationSettlement().getName());
-            if (destinationLabelPane.getComponentCount() == 1) destinationLabelPane.add(destinationButton);
+            if (destinationLabelPane.getComponentCount() == 1) {
+                destinationLabel.setText("Destination: ");
+                destinationLabelPane.add(destinationButton);
+            }
         } else {
-            if (destinationLabelPane.getComponentCount() > 1) destinationLabelPane.remove(destinationButton);
+            if (destinationLabelPane.getComponentCount() > 1) {
+                if (destinationType.equals("Coordinates")) 
+                    destinationLabel.setText("Destination: Coordinates");
+                destinationLabelPane.remove(destinationButton);
+            }
         }
 
         // Update destination longitude and latitude labels
