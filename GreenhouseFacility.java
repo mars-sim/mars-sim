@@ -28,7 +28,6 @@ public class GreenhouseFacility extends Facility {
 	
 		// Initialize data members
 		
-		workLoad = 125F;
 		workCompleted = 0F;
 		growthPeriod = 20F;
 		growthPeriodCompleted = 0F;
@@ -37,6 +36,11 @@ public class GreenhouseFacility extends Facility {
 		// Randomly determine full harvest amount.
 		
 		fullHarvestAmount = 10 + RandomUtil.getRandomInteger(20);
+		
+		// Determine work load based on full harvest amount.
+		// (80hrs for 10 food - 160hrs for 30 food)
+		
+		workLoad = 40F + (4F * fullHarvestAmount);
 	}
 	
 	// Constructor for set values (used later when facilities can be built or upgraded.)
@@ -112,7 +116,6 @@ public class GreenhouseFacility extends Facility {
 				phase = "Planting";
 				growingWork = 0F;
 				growthPeriodCompleted = 0F;
-				System.out.println(manager.getSettlement().getName() + " has harvested " + foodProduced + " food units.");
 			}
 		}
 		
@@ -129,7 +132,10 @@ public class GreenhouseFacility extends Facility {
 		
 		if (phase.equals("Growing")) {
 			growthPeriodCompleted += (seconds / (60F * 60F * 25F));
-			if (growthPeriodCompleted >= growthPeriod) phase = "Harvesting";
+			if (growthPeriodCompleted >= growthPeriod) {
+				phase = "Harvesting";
+				workCompleted = 0F;
+			}
 		}
 	}
 }	
