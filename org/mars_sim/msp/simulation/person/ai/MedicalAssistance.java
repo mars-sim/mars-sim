@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.75 2003-05-01
+ * @version 2.75 2003-06-09
  * @author Barry Evans
  */
 
@@ -51,11 +51,14 @@ public class MedicalAssistance extends Task implements Serializable {
             // Get a curable medical problem waiting for treatment at the medical aid.
             problem = (HealthProblem) medical.getProblemsAwaitingTreatment().get(0);
 
+            // Get the person's medical skill.
+            int skill = person.getSkillManager().getEffectiveSkillLevel(MEDICAL);
+            
             // Treat medical problem.
             Treatment treatment = problem.getIllness().getRecoveryTreatment();
 	        description = "Apply " + treatment.getName();
-            duration = treatment.getAdjustedDuration(10);
-
+            duration = treatment.getAdjustedDuration(skill);
+            
             // Start the treatment
             try {
                 medical.startTreatment(problem);
@@ -204,14 +207,21 @@ public class MedicalAssistance extends Task implements Serializable {
     public void endTask() {
         super.endTask();
         
-        // Stop treatment if treatment isn't finished.
-        if (timeCompleted < duration) {
-            try {
-                medical.stopTreatment(problem);
-            }
-            catch (Exception e) {
-                System.out.println("MedicalAssistance.endTask(): " + e.getMessage());
-            }
+        // Stop treatment.
+        try {
+            medical.stopTreatment(problem);
         }
+        catch (Exception e) {
+            System.out.println("MedicalAssistance.endTask(): " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Gets the medical aid the person is using for this task.
+     *
+     * @return medical aid or null.
+     */
+    public MedicalAid getMedicalAid() {
+        return medical;
     }
 }

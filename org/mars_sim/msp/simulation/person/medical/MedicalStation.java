@@ -182,7 +182,7 @@ public abstract class MedicalStation implements MedicalAid, Serializable {
      * @throws Exception if health problem is not being treated.
      */
     public void stopTreatment(HealthProblem problem) throws Exception {
-        
+        System.out.println("Stopping treatment of " + problem);
         if (problemsBeingTreated.contains(problem)) {
             problem.stopTreatment();
             problemsBeingTreated.remove(problem);

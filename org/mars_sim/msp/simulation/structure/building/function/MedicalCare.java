@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 2.75 2003-05-07
+ * @version 2.75 2003-06-09
  * @author Scott Davis
  */
  
@@ -34,4 +34,11 @@ public interface MedicalCare extends Function, MedicalAid {
      * @return Collection of People.
      */
     public PersonCollection getPatients();
+    
+    /**
+     * Gets the number of people using this medical aid to treat sick people.
+     *
+     * @return number of people
+     */
+    public int getPhysicianNum();
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2003-06-09
  * @author Scott Davis
  */
  
@@ -372,5 +372,14 @@ public class LanderHab extends InhabitableBuilding
      */
     public PersonCollection getPatients() {
         return infirmary.getPatients();
+    }
+    
+    /**
+     * Gets the number of people using this medical aid to treat sick people.
+     *
+     * @return number of people
+     */
+    public int getPhysicianNum() {
+        return infirmary.getPhysicianNum();
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StandardMedicalCare.java
- * @version 2.75 2003-05-01
+ * @version 2.75 2003-06-09
  * @author Scott Davis
  */
  
@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.structure.building.function.impl;
  
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
@@ -67,5 +69,25 @@ public class StandardMedicalCare extends MedicalStation implements MedicalCare, 
             building.addPerson(problem.getSufferer());
         }
         catch (BuildingException e) {}
+    }
+    
+    /**
+     * Gets the number of people using this medical aid to treat sick people.
+     *
+     * @return number of people
+     */
+    public int getPhysicianNum() {
+        int result = 0;
+        
+        PersonIterator i = ((InhabitableBuilding) building).getOccupants().iterator();
+        while (i.hasNext()) {
+            Task task = i.next().getMind().getTaskManager().getTask();
+            if (task instanceof MedicalAssistance) {
+                MedicalAid aid = ((MedicalAssistance) task).getMedicalAid();
+                if ((aid != null) && (aid == building)) result++;
+            }
+        }
+        
+        return result;
     }
 }
