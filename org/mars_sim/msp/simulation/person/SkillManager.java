@@ -38,7 +38,7 @@ public class SkillManager implements Serializable {
         }
     }
 
-    /** Returns an initial skill level. 
+    /** Returns an initial skill level.
      *  @param level lowest possible skill level
      *  @param chance the chance that the skill will be greater
      *  @return the initial skill level
@@ -50,14 +50,14 @@ public class SkillManager implements Serializable {
             return level;
     }
 
-    /** Returns the number of skills. 
+    /** Returns the number of skills.
      *  @return the number of skills
      */
     public int getSkillNum() {
         return skills.size();
     }
 
-    /** Returns an array of the skill names as strings. 
+    /** Returns an array of the skill names as strings.
      *  @return an array of the skill names
      */
     public String[] getKeys() {
@@ -69,7 +69,7 @@ public class SkillManager implements Serializable {
         return keyArray;
     }
 
-    /** Returns true if the SkillManager has the named skill, false otherwise. 
+    /** Returns true if the SkillManager has the named skill, false otherwise.
      *  @param skillName the skill's name
      *  @return true if the manager has the named skill
      */
@@ -93,7 +93,7 @@ public class SkillManager implements Serializable {
         return result;
     }
 
-    /** Returns the effective integer skill level from a named skill 
+    /** Returns the effective integer skill level from a named skill
      *  based on additional modifiers such as fatigue.
      *  @param skillName the skill's name
      *  @return the skill's effective level
@@ -103,14 +103,15 @@ public class SkillManager implements Serializable {
 
         // Modify for fatigue
         // - 1 skill level for every 1000 points of fatigue.
-        if (person.getFatigue() > 1000D) {
-            result -= (int) Math.round(person.getFatigue() / 1000D);
+        double fatigue = person.getPhysicalCondition().getFatigue();
+        if (fatigue > 1000D) {
+            result -= (int) Math.round(fatigue / 1000D);
         }
 
         return result;
     }
 
-    /** Adds a new skill to the SkillManager and indexes it under its name. 
+    /** Adds a new skill to the SkillManager and indexes it under its name.
      *  @param newSkill the skill to be added
      */
     public void addNewSkill(Skill newSkill) {

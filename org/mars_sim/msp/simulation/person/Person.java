@@ -1,24 +1,44 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.74 2002-01-13
+ * @version 2.73 2001-12-06
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.ai.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.vehicle.*;
 import java.util.*;
 import java.io.Serializable;
+
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.SettlementIterator;
+import org.mars_sim.msp.simulation.structure.FacilityManager;
+import org.mars_sim.msp.simulation.structure.StoreroomFacility;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.person.ai.*;
 
 /** The Person class represents a person on the virtual Mars. It keeps
  *  track of everything related to that person and provides
  *  information about him/her.
  */
 public class Person extends Unit implements Serializable {
+
+    /**
+     * Status string used when Person resides in settlement
+     */
+    public final static String INSETTLEMENT = "In Settlement";
+
+    /**
+     * Status string used when Person resides in settlement
+     */
+    public final static String INVEHICLE = "In Vehicle";
+
+    /**
+     * Status string used when Person has been buried
+     */
+    public final static String BURIED = "Buried";
+
 
     // Data members
     private Settlement settlement; // Person's current settlement
@@ -27,8 +47,7 @@ public class Person extends Unit implements Serializable {
     private SkillManager skills; // Manager for Person's skills
     private Mind mind; // Person's mind
     private String locationSituation; // Where person is ("In Settlement", "In Vehicle", "Outside")
-    private double fatigue; // Person's fatigue level
-    private double hunger; // Person's hunger level
+    private PhysicalCondition health; // Person's physical
 
     /** Constructs a Person object at a given settlement
      *  @param name the person's name
@@ -40,9 +59,9 @@ public class Person extends Unit implements Serializable {
         super(name, settlement.getCoordinates(), mars);
 
         setSettlement(settlement);
-        initPersonData();
+        initPersonData(mars);
     }
-    
+
     /** Constructs a Person object
      *  @param name the person's name
      *  @param mars the virtual Mars
@@ -65,28 +84,27 @@ public class Person extends Unit implements Serializable {
                 }
             }
         }
-        
+
         if (leastPeople != null) setSettlement(leastPeople);
         else throw new Exception("No suitable settlements available");
-        
-        initPersonData();
+
+        initPersonData(mars);
     }
-    
+
     /** Initialize person data */
-    private void initPersonData() {
+    private void initPersonData(VirtualMars mars) {
         // Initialize data members
         vehicle = null;
         attributes = new NaturalAttributeManager();
         skills = new SkillManager(this);
         mind = new Mind(this, mars);
-        locationSituation = new String("In Settlement");
-        fatigue = RandomUtil.getRandomDouble(1000D);
-        hunger = RandomUtil.getRandomDouble(1000D);
+        locationSituation = INSETTLEMENT;
+        health = new PhysicalCondition(mars);
     }
 
     /** Returns a string for the person's relative location "In
      *  Settlement", "In Vehicle" or "Outside"
-     *  @return the person's location  
+     *  @return the person's location
      */
     public String getLocationSituation() {
         return locationSituation;
@@ -102,20 +120,20 @@ public class Person extends Unit implements Serializable {
 
     /** Get settlement person is at, null if person is not at
      *  a settlement
-     *  @return the person's settlement  
+     *  @return the person's settlement
      */
     public Settlement getSettlement() {
         return settlement;
     }
 
-    /** Get vehicle person is in, null if person is not in vehicle 
+    /** Get vehicle person is in, null if person is not in vehicle
      *  @return the person's vehicle
      */
     public Vehicle getVehicle() {
         return vehicle;
     }
 
-    /** Makes the person an inhabitant of a given settlement 
+    /** Makes the person an inhabitant of a given settlement
      *  @param settlement the person's settlement
      */
     public void setSettlement(Settlement settlement) {
@@ -125,7 +143,7 @@ public class Person extends Unit implements Serializable {
         vehicle = null;
     }
 
-    /** Makes the person a passenger in a vehicle 
+    /** Makes the person a passenger in a vehicle
      *  @param vehicle the person's vehicle
      */
     public void setVehicle(Vehicle vehicle) {
@@ -133,133 +151,128 @@ public class Person extends Unit implements Serializable {
         settlement = null;
     }
 
-    /** Gets the person's fatigue level
-     *  @return person's fatigue
-     */
-    public double getFatigue() {
-        return fatigue;
-    }
-
     /** Sets the person's fatigue level
      *  @param fatigue new fatigue level
      */
     public void setFatigue(double fatigue) {
-        this.fatigue = fatigue;
-    }
-
-    /** Adds to the person's fatigue level
-     *  @param addFatigue additional fatigue
-     */
-    public void addFatigue(double addFatigue) {
-        fatigue += addFatigue;
-    }
-    
-    /** Gets the person's hunger level
-     *  @return person's hunger
-     */
-    public double getHunger() {
-        return hunger;
+        health.setFatigue(fatigue);
     }
 
     /** Sets the person's hunger level
      *  @param hunger new hunger level
      */
     public void setHunger(double hunger) {
-        this.hunger = hunger;
+        health.setHunger(hunger);
     }
 
-    /** Adds to the person's hunger level
-     *  @param addHunger additional hunger
+    /**
+     * Bury the Person at the current location. The person is removed from
+     * any containing Settlements or Vehicles. The body is fixed at the last
+     * of the containing unit.
      */
-    public void addHunger(double addHunger) {
-        hunger += addHunger;
+    public void buryBody() {
+        if (vehicle != null) {
+            vehicle.removePassenger(this);
+            setCoordinates(vehicle.getCoordinates());
+            vehicle = null;
+        }
+        else if (settlement != null) {
+            settlement.personLeave(this);
+            setCoordinates(settlement.getCoordinates());
+            settlement = null;
+        }
+        locationSituation = BURIED;
     }
 
-    /** Person can take action with time passing 
+    /**
+     * Person has died. Update the status to reflect the change and remove
+     * this Person from any Task and remove the associated Mind.
+     */
+    void setDead() {
+
+        mind.setInactive();
+        System.out.println(name + " is dead");
+    }
+
+    /** Person can take action with time passing
      *  @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
 
-        // Consume necessary oxygen and water.
-        SimulationProperties properties = mars.getSimulationProperties();
-        consumeOxygen(properties.getPersonOxygenConsumption() * (time / 1000D));
-        consumeWater(properties.getPersonWaterConsumption() * (time / 1000D));
-        
-        // Build up fatigue for given time passing.
-        addFatigue(time);
-        
-        // Build up hunger for given time passing.
-        addHunger(time);
+        // If Person is dead, then skip
+        if (health.getAlive()) {
+            SimulationProperties props = mars.getSimulationProperties();
+            LifeSupport support = getLifeSupport();
 
-        mind.takeAction(time);
+            // Pass the time in the physical condition first as this may kill
+            // Person
+            if (health.timePassing(time, support, props)) {
+                // Mins action is descreased according to any illness
+                MedicalComplaint illness = health.getIllness();
+                if (illness != null) {
+                    System.out.print(name + " mind time " + time );
+                    time = (time * illness.getPerformanceFactor())/ 100D;
+                    System.out.println(" changed to " + time);
+                }
+                mind.takeAction(time);
+            }
+            else {
+                // Person has died as a result of physical condition
+                setDead();
+            }
+        }
     }
 
-    /** Returns a reference to the Person's natural attribute manager 
+    /** Returns a reference to the Person's natural attribute manager
      *  @return the person's natural attribute manager
      */
     public NaturalAttributeManager getNaturalAttributeManager() {
         return attributes;
     }
 
-    /** Returns a reference to the Person's skill manager 
+    /** Returns a reference to the Person's physical condition
+     *  @return the person's physical condition
+     */
+    public PhysicalCondition getPhysicalCondition() {
+        return health;
+    }
+
+    /** Returns a reference to the Person's skill manager
      *  @return the person's skill manager
      */
     public SkillManager getSkillManager() {
         return skills;
     }
 
-    /** Returns the person's mind 
-     *  @return the person's mind 
+    /** Returns the person's mind
+     *  @return the person's mind
      */
     public Mind getMind() {
         return mind;
     }
-   
-    /** Person consumes given amount of oxygen
-     *  @param amount amount of oxygen to consume (in kg)
+
+
+    /**
+     * Get the LifeSupport system supporting this Person. This may be from
+     * the Settlement, Vehicle or Equipment.
+     *
+     * @return Life support system.
      */
-    void consumeOxygen(double amount) {
-        double amountRecieved = 0D;
-        
-        if (locationSituation.equals("In Settlement")) {
-            FacilityManager manager = settlement.getFacilityManager();
-            StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
-            amountRecieved = stores.removeOxygen(amount);
+    private LifeSupport getLifeSupport() {
+        LifeSupport support = null;
+        if (locationSituation.equals(INSETTLEMENT)) {
+            support = settlement.getLifeSupport();
         }
-        else amountRecieved = vehicle.removeOxygen(amount);
-        
-        // if (amountRecieved != amount) System.out.println(getName() + " needs oxygen.");
+        else support = vehicle;
+
+        return support;
     }
-    
-    /** Person consumes given amount of water
-     *  @param amount amount of water to consume (in kg)
-     */
-    void consumeWater(double amount) {
-        double amountRecieved = 0D;
-        
-        if (locationSituation.equals("In Settlement")) {
-            FacilityManager manager = settlement.getFacilityManager();
-            StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
-            amountRecieved = stores.removeWater(amount);
-        }
-        else amountRecieved = vehicle.removeWater(amount);
-        
-        // if (amountRecieved != amount) System.out.println(getName() + " needs water.");
-    }
-    
+
     /** Person consumes given amount of food
      *  @param amount amount of food to consume (in kg)
      */
     public void consumeFood(double amount) {
-        double amountRecieved = 0D;
-        
-        if (locationSituation.equals("In Settlement")) {
-            FacilityManager manager = settlement.getFacilityManager();
-            StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
-            amountRecieved = stores.removeFood(amount);
-        }
-        else amountRecieved = vehicle.removeFood(amount);
-        
-        // if (amountRecieved != amount) System.out.println(getName() + " needs food.");
+        health.consumeFood(amount, getLifeSupport(),
+                           mars.getSimulationProperties());
     }
 }
