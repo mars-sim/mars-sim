@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.72 2001-08-13
+ * @version 2.73 2001-12-07
  * @author Scott Davis
  */
 
@@ -256,7 +256,8 @@ class DriveGroundVehicle extends Task implements Serializable {
         double distanceTraveled = secondsTime * ((vehicle.getSpeed() / 60D) / 60D);
 
         // Consume fuel for distance traveled.
-        vehicle.consumeFuel(distanceTraveled / 100D);
+        SimulationProperties properties = mars.getSimulationProperties();
+        vehicle.consumeFuel(distanceTraveled / properties.getRoverFuelEfficiency());
 
         // Add distance traveled to vehicle's odometer.
         vehicle.addTotalDistanceTraveled(distanceTraveled);

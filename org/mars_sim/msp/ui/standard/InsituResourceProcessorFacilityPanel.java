@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacilityPanel.java
- * @version 2.72 2001-07-11
+ * @version 2.73 2001-12-07
  * @author Scott Davis
  */
 
@@ -80,7 +80,7 @@ public class InsituResourceProcessorFacilityPanel extends FacilityPanel {
 
         // Prepare fuel value label
         fuel = processor.getFuelRate();
-	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel * 1000D) + " units/sol", JLabel.RIGHT);
+	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel * 1000D) + " kg/sol", JLabel.RIGHT);
         fuelValueLabel.setForeground(Color.black);
         labelPane.add(fuelValueLabel);
 
@@ -91,7 +91,7 @@ public class InsituResourceProcessorFacilityPanel extends FacilityPanel {
 
         // Prepare oxygen value label
         oxygen = processor.getOxygenRate();
-	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen * 1000D) + " units/sol", JLabel.RIGHT);
+	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen * 1000D) + " kg/sol", JLabel.RIGHT);
         oxygenValueLabel.setForeground(Color.black);
         labelPane.add(oxygenValueLabel);
 
@@ -102,7 +102,7 @@ public class InsituResourceProcessorFacilityPanel extends FacilityPanel {
 
         // Prepare water value label
         water = processor.getWaterRate();
-	waterValueLabel = new JLabel("" + roundOneDecimal(water * 1000D) + " units/sol", JLabel.RIGHT);
+	waterValueLabel = new JLabel("" + roundOneDecimal(water * 1000D) + " kg/sol", JLabel.RIGHT);
         waterValueLabel.setForeground(Color.black);
         labelPane.add(waterValueLabel);
     }
@@ -112,17 +112,17 @@ public class InsituResourceProcessorFacilityPanel extends FacilityPanel {
 
         if (fuel != processor.getFuelRate()) {
             fuel = processor.getFuelRate();
-            fuelValueLabel.setText("" + roundOneDecimal(fuel * 1000D) + " units/sol");
+            fuelValueLabel.setText("" + roundOneDecimal(fuel * 1000D) + " kg/sol");
         }
 
         if (oxygen != processor.getOxygenRate()) {
             oxygen = processor.getOxygenRate();
-            oxygenValueLabel.setText("" + roundOneDecimal(oxygen * 1000D) + " units/sol");
+            oxygenValueLabel.setText("" + roundOneDecimal(oxygen * 1000D) + " kg/sol");
         }
 
         if (water != processor.getWaterRate()) {
             water = processor.getWaterRate();
-            waterValueLabel.setText("" + roundOneDecimal(water * 1000D) + " units/sol");
+            waterValueLabel.setText("" + roundOneDecimal(water * 1000D) + " kg/sol");
         }
     } 
 

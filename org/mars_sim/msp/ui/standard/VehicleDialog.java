@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.73 2001-09-12
+ * @version 2.73 2001-12-07
  * @author Scott Davis
  */
 
@@ -558,7 +558,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		
 	// Prepare fuel value label
 	fuel = vehicle.getFuel();
-	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel), JLabel.RIGHT);
+	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel) + " kg", JLabel.RIGHT);
 	fuelValueLabel.setForeground(Color.black);
 	labelPane.add(fuelValueLabel);
         
@@ -569,7 +569,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		
 	// Prepare oxygen value label
 	oxygen = vehicle.getOxygen();
-	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen), JLabel.RIGHT);
+	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen) + " kg", JLabel.RIGHT);
 	oxygenValueLabel.setForeground(Color.black);
 	labelPane.add(oxygenValueLabel);
         
@@ -580,7 +580,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		
 	// Prepare water value label
 	water = vehicle.getWater();
-	waterValueLabel = new JLabel("" + roundOneDecimal(water), JLabel.RIGHT);
+	waterValueLabel = new JLabel("" + roundOneDecimal(water) + " kg", JLabel.RIGHT);
 	waterValueLabel.setForeground(Color.black);
 	labelPane.add(waterValueLabel);
         
@@ -591,7 +591,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 		
 	// Prepare food value label
 	food = vehicle.getFood();
-	foodValueLabel = new JLabel("" + roundOneDecimal(food), JLabel.RIGHT);
+	foodValueLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
 	foodValueLabel.setForeground(Color.black);
 	labelPane.add(foodValueLabel);
         
@@ -819,26 +819,26 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         
         // Update fuel
         if (fuel != vehicle.getFuel()) {
-			fuel = vehicle.getFuel();
-			fuelValueLabel.setText("" + roundOneDecimal(fuel));
-		}
+	    fuel = vehicle.getFuel();
+	    fuelValueLabel.setText("" + roundOneDecimal(fuel) + " kg");
+	}
         
         // Update oxygen
-		if (oxygen != vehicle.getOxygen()) {
-			oxygen = vehicle.getOxygen();
-			oxygenValueLabel.setText("" + roundOneDecimal(oxygen));
-		}
+	if (oxygen != vehicle.getOxygen()) {
+	    oxygen = vehicle.getOxygen();
+	    oxygenValueLabel.setText("" + roundOneDecimal(oxygen) + " kg");
+	}
         
         // Update water
-		if (water != vehicle.getWater()) {
-			water = vehicle.getWater();
-			waterValueLabel.setText("" + roundOneDecimal(water));
-		}
+	if (water != vehicle.getWater()) {
+	    water = vehicle.getWater();
+	    waterValueLabel.setText("" + roundOneDecimal(water) + " kg");
+	}
         
         // Update food
         if (food != vehicle.getFood()) {
-			food = vehicle.getFood();
-			foodValueLabel.setText("" + roundOneDecimal(food));
-		}
+	    food = vehicle.getFood();
+	    foodValueLabel.setText("" + roundOneDecimal(food) + " kg");
 	}
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StoreroomFacility.java
- * @version 2.72 2001-07-11
+ * @version 2.73 2001-12-07
  * @author Scott Davis
  */
 
@@ -11,8 +11,7 @@ import java.io.Serializable;
 
 /**
  * The StoreroomFacility class represents the collective storerooms in a settlement.
- * It defines the settlement's storage of food, oxygen, water, fuel, parts and other
- * various materials.
+ * It defines the settlement's storage of food, oxygen, water and fuel.
  */
 public class StoreroomFacility extends Facility implements Serializable {
 
@@ -21,11 +20,6 @@ public class StoreroomFacility extends Facility implements Serializable {
     private double oxygenStores; // The settlement's stores of oxygen.
     private double waterStores; // The settlement's stores of water.
     private double fuelStores; // The settlement's stores of fuel (methane and other fuel).
-    private double partsStores; // The settlement's stores of mechanical and electrical parts.
-
-    // Constant data members
-    private double MAX_UNITS_STORAGE = 1000D; /* The maximum number of units storeroom can hold
-                                                 for any given resource type. */
     
     /** Constructor for random creation. 
      *  @param manager the storeroom's facility manager
@@ -35,52 +29,52 @@ public class StoreroomFacility extends Facility implements Serializable {
         // Use Facility's constructor.
         super(manager, "Storerooms");
 
-        // Initialize random amount for each good from 200 to 500.
-        foodStores = 200 + RandomUtil.getRandomInt(300);
-        oxygenStores = 200 + RandomUtil.getRandomInt(300);
-        waterStores = 200 + RandomUtil.getRandomInt(300);
-        fuelStores = 200 + RandomUtil.getRandomInt(300);
-        partsStores = 200 + RandomUtil.getRandomInt(300);
+        // Initialize random amount for each resource from a quarter to half storage capacity.
+        double foodCapacity = getFoodStorageCapacity();
+        foodStores = (foodCapacity / 4D) + RandomUtil.getRandomDouble(foodCapacity / 4D);
+        double oxygenCapacity = getOxygenStorageCapacity();
+        oxygenStores = (oxygenCapacity / 4D) + RandomUtil.getRandomDouble(oxygenCapacity / 4D);
+        double waterCapacity = getWaterStorageCapacity();
+        waterStores = (waterCapacity / 4D) + RandomUtil.getRandomDouble(waterCapacity / 4D);
+        double fuelCapacity = getFuelStorageCapacity();
+        fuelStores = (fuelCapacity / 4D) + RandomUtil.getRandomDouble(fuelCapacity / 4D);
     }
 
     /** Constructor for set storage values (used later when facilities can be built or upgraded.) 
      *  @param manager the storeroom's facility manager
-     *  @param food the initial food stores (in units)
-     *  @param oxygen the initial oxygen stores (in units)
-     *  @param water the initial water stores (in units)
-     *  @param fuel the initial fuel stores (in units)
-     *  @param parts the initial parts stores (in units)
+     *  @param food the initial food stores (kg)
+     *  @param oxygen the initial oxygen stores (kg)
+     *  @param water the initial water stores (kg)
+     *  @param fuel the initial fuel stores (kg)
      */
-    StoreroomFacility(FacilityManager manager, double food, double oxygen, double water, double fuel,
-            double parts) {
+    StoreroomFacility(FacilityManager manager, double food, double oxygen, double water, double fuel) {
 
         // Use Facility's constructor.
         super(manager, "Storerooms");
 
-        // Initialize data members.
-        foodStores = food;
-        oxygenStores = oxygen;
-        waterStores = water;
-        fuelStores = fuel;
-        partsStores = parts;
+        // Set resources 
+        addFood(food);
+        addOxygen(oxygen);
+        addWater(water);
+        addFuel(fuel);
     }
 
     /** Returns the amount of food stored at the settlement. 
-     *  @return the amount of food in storage (in units)
+     *  @return the amount of food in storage (kg)
      */
     public double getFoodStores() {
         return foodStores;
     }
 
     /** Removes food from storage. 
-     *  @param amount the amount of food requested from storage (in units)
-     *  @return the amount of food actually received from storage (in units)
+     *  @param amount the amount of food requested from storage (kg)
+     *  @return the amount of food actually received from storage (kg)
      */
     public double removeFood(double amount) {
         double result = amount;
         if (amount > foodStores) {
             result = foodStores;
-            foodStores = 0;
+            foodStores = 0D;
         }
         else foodStores -= amount;
 
@@ -88,11 +82,21 @@ public class StoreroomFacility extends Facility implements Serializable {
     }
 
     /** Adds food to storage. 
-     * @param amount the amount of food to be added (in units)
+     *  @param amount the amount of food to be added (kg)
      */
     public void addFood(double amount) {
-        foodStores += Math.abs(amount);
-        if (foodStores > MAX_UNITS_STORAGE) foodStores = MAX_UNITS_STORAGE;
+        if (amount > 0) {
+            foodStores += amount;
+            if (foodStores > getFoodStorageCapacity()) foodStores = getFoodStorageCapacity();
+        }
+    }
+
+    /** Gets the food storage capacity of the settlement.
+     *  @return the food storage capacity (kg)
+     */
+    public double getFoodStorageCapacity() {
+        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        return properties.getSettlementFoodStorageCapacity();
     }
 
     /** Returns the amount of oxygen stored at the settlement. 
@@ -118,11 +122,21 @@ public class StoreroomFacility extends Facility implements Serializable {
     }
 
     /** Adds oxygen to storage. 
-     *  @param amount the amount of oxygen to be added (in units)
+     *  @param amount the amount of oxygen to be added (kg)
      */
     public void addOxygen(double amount) {
-        oxygenStores += Math.abs(amount);
-        if (oxygenStores > MAX_UNITS_STORAGE) oxygenStores = MAX_UNITS_STORAGE;
+        if (amount > 0) {
+            oxygenStores += amount;
+            if (oxygenStores > getOxygenStorageCapacity()) oxygenStores = getOxygenStorageCapacity();
+        }
+    }
+
+    /** Gets the oxygen storage capacity of the settlement.
+     *  @return the oxygen storage capacity (kg)
+     */
+    public double getOxygenStorageCapacity() {
+        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        return properties.getSettlementOxygenStorageCapacity();
     }
 
     /** Returns the amount of water stored at the settlement. 
@@ -148,11 +162,21 @@ public class StoreroomFacility extends Facility implements Serializable {
     }
 
     /** Adds water to storage. 
-     *  @param amount the amount of water to be added (in units)
+     *  @param amount the amount of water to be added (kg)
      */
     public void addWater(double amount) {
-        waterStores += Math.abs(amount);
-        if (waterStores > MAX_UNITS_STORAGE) waterStores = MAX_UNITS_STORAGE;
+        if (amount > 0) {
+            waterStores += amount;
+            if (waterStores > getWaterStorageCapacity()) waterStores = getWaterStorageCapacity();
+        }
+    }
+
+    /** Gets the water storage capacity of the settlement.
+     *  @return the water storage capacity (kg)
+     */
+    public double getWaterStorageCapacity() {
+        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        return properties.getSettlementWaterStorageCapacity();
     }
 
     /** Returns the amount of fuel stored at the settlement. 
@@ -178,40 +202,20 @@ public class StoreroomFacility extends Facility implements Serializable {
     }
 
     /** Adds fuel to storage. 
-     *  @param amount the amount of fuel to be added (in units)
+     *  @param amount the amount of fuel to be added (kg)
      */
     public void addFuel(double amount) {
-        fuelStores += Math.abs(amount);
-        if (fuelStores > MAX_UNITS_STORAGE) fuelStores = MAX_UNITS_STORAGE;
-    }
-
-    /** Returns the amount of parts stored at the settlement. 
-     *  @return the amount of parts in storage (in units)
-     */
-    public double getPartsStores() {
-        return partsStores;
-    }
-
-    /** Removes parts from storage. 
-     *  @param amount the amount of parts requested from storage (in units)
-     *  @return the amount of parts actually received from storage (in units)
-     */
-    public double removeParts(double amount) {
-        double result = amount;
-        if (amount > partsStores) {
-            result = partsStores;
-            partsStores = 0;
+        if (amount > 0) {
+            fuelStores += amount;
+            if (fuelStores > getFuelStorageCapacity()) fuelStores = getFuelStorageCapacity();
         }
-        else partsStores -= amount;
-
-        return result;
     }
 
-    /** Adds parts to storage. 
-     *  @param amount the amount of parts to be added (in units)
+    /** Gets the fuel storage capacity of the settlement.
+     *  @return the fuel storage capacity (kg)
      */
-    public void addParts(double amount) {
-        partsStores += Math.abs(amount);
-        if (partsStores > MAX_UNITS_STORAGE) partsStores = MAX_UNITS_STORAGE;
+    public double getFuelStorageCapacity() {
+        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        return properties.getSettlementFuelStorageCapacity();
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.73 2001-11-11
+ * @version 2.73 2001-12-07
  * @author Barry Evans
  */
 
@@ -26,10 +26,9 @@ public class SettlementTableModel extends UnitTableModel {
     private final static int  OXYGEN = 6;
     private final static int  WATER = 7;
     private final static int  FOOD = 8;
-    private final static int  PARTS = 9;
-    private final static int  FUEL = 10;
+    private final static int  FUEL = 9;
 
-    private final static int  COLUMNCOUNT = 11;    // The number of Columns
+    private final static int  COLUMNCOUNT = 10;    // The number of Columns
 
     // Data members
     private String columnNames[]; // Names of Columns
@@ -51,7 +50,6 @@ public class SettlementTableModel extends UnitTableModel {
         columnNames[OXYGEN] = "Oxygen";
         columnNames[WATER] = "Water";
         columnNames[FUEL] = "Fuel";
-        columnNames[PARTS] = "Part";
 
         this.proxyManager = proxyManager;
     }
@@ -117,10 +115,6 @@ public class SettlementTableModel extends UnitTableModel {
 
             case FUEL : {
                 result = new Integer(new Float(store.getFuelStores()).intValue());
-            } break;
-
-            case PARTS : {
-                result = new Integer(new Float(store.getPartsStores()).intValue());
             } break;
 
             case POPULATION : {
