@@ -1,15 +1,14 @@
 /**
  * Mars Simulation Project
  * UnitWindowListener.java
- * @version 2.75 2003-07-10
+ * @version 2.75 2003-07-13
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;
+package org.mars_sim.msp.ui.standard.unit_window;
 
 import javax.swing.event.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.standard.*;
 
 /** The UnitWindowListener class is a custom window listener for unit
  *  detail windows that handles their behavior.
