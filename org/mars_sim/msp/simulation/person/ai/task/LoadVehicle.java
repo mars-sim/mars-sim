@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.Resource;
@@ -21,6 +20,8 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  * The LoadVehicle class is a task for loading a vehicle with fuel and supplies.
  */
 public class LoadVehicle extends Task implements Serializable {
+
+	private static final double STRESS_MODIFIER = .2D; // The stress modified per millisol.
 
     // The amount of resources (kg) one person can load per millisol.
     private static double LOAD_RATE = 10D;
@@ -36,7 +37,7 @@ public class LoadVehicle extends Task implements Serializable {
      *  @param vehicle the vehicle to be loaded
      */
     public LoadVehicle(Person person, Mars mars, Vehicle vehicle) {
-        super("Loading vehicle", person, true, false, mars);
+        super("Loading vehicle", person, true, false, STRESS_MODIFIER, mars);
 
         description = "Loading " + vehicle.getName();
         this.vehicle = vehicle;

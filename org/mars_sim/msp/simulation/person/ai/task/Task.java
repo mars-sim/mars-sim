@@ -1,16 +1,15 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.75 2004-01-15
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 
 /** The Task class is an abstract parent class for tasks that allow people to do various things.
  *  A person's TaskManager keeps track of one current task for the person, but a task may use other
@@ -31,6 +30,7 @@ public abstract class Task implements Serializable, Comparable {
     protected double phaseTimeCompleted; // Amount of time completed on the current phase. (in microsols)
     protected boolean effortDriven;     // Is this task effort driven
     private boolean createEvents;       // Task should create Historical events
+    protected double stressModifier;  // Stress modified by person performing task per millisol.
 
     /** 
      * Constructs a Task object.
@@ -38,13 +38,16 @@ public abstract class Task implements Serializable, Comparable {
      * @param person the person performing the task
      * @param effort Does this task require physical effort
      * @param createEvents Does this task create events?
+     * @param stressModifier stress modified by person performing task per millisol.
      * @param mars the virtual Mars
      */
-    public Task(String name, Person person, boolean effort, boolean createEvents, Mars mars) {
+    public Task(String name, Person person, boolean effort, boolean createEvents, 
+    		double stressModifier, Mars mars) {
         this.name = name;
         this.person = person;
         this.mars = mars;
 		this.createEvents = createEvents;
+		this.stressModifier = stressModifier;
 
         done = false;
         
@@ -156,6 +159,9 @@ public abstract class Task implements Serializable, Comparable {
             else timeLeft = subTask.performTask(timeLeft);
         }
         
+        // Modify stress performing task.
+        modifyStress(timeLeft);
+        
         return timeLeft;
     }
 
@@ -180,7 +186,7 @@ public abstract class Task implements Serializable, Comparable {
     }
 
     /**
-     * Comapre this object to another for an ordering. THe ordering is based
+     * Compare this object to another for an ordering. THe ordering is based
      * on the alphabetic ordering of the Name attribute.
      *
      * @param other Object to compare against.
@@ -189,5 +195,14 @@ public abstract class Task implements Serializable, Comparable {
      */
     public int compareTo(Object other) {
         return name.compareTo(((Task)other).name);
+    }
+    
+    /**
+     * Modify stress from performing task for given time.
+     * @param time the time performing the task.
+     */
+    private void modifyStress(double time) {
+    	PhysicalCondition condition = person.getPhysicalCondition();
+    	condition.setStress(condition.getStress() + stressModifier);
     }
 }

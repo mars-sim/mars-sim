@@ -22,6 +22,9 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  */
 public class TendGreenhouse extends Task implements Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
+
     // Data members
     private Farming greenhouse; // The greenhouse the person is tending.
     private Settlement settlement; // The settlement the greenhouse is in.
@@ -29,7 +32,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
     public TendGreenhouse(Person person, Mars mars) {
         // Use Task constructor
-        super("Tending Greenhouse", person, true, false, mars);
+        super("Tending Greenhouse", person, true, false, STRESS_MODIFIER, mars);
         
         // Initialize data members
         description = "Tending Greenhouse at " + person.getSettlement().getName();

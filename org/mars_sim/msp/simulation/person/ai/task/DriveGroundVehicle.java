@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.75 2004-04-09
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -40,6 +39,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
     
     // Distance buffer for arriving at destination.
     private final static double DESTINATION_BUFFER = 4D;
+    
+	private static final double STRESS_MODIFIER = .2D; // The stress modified per millisol.
 
     // Data members
     private GroundVehicle vehicle; // Vehicle person is driving.
@@ -65,7 +66,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
      */
     public DriveGroundVehicle(Person person, Mars mars, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
-        super("Driving vehicle", person, true, false, mars);
+        super("Driving vehicle", person, true, false, STRESS_MODIFIER, mars);
 
         // Set initial parameters
         description = DRIVING + " " + vehicle.getName();

@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.person.Person;
@@ -27,6 +26,9 @@ public class ReserveRover extends Task implements Serializable {
 	public static final String EXPLORER_ROVER = "Explorer Rover";
 	public static final String TRANSPORT_ROVER = "Transport Rover";
 	
+	// Static members
+	private static final double STRESS_MODIFIER = 0D; // The stress modified per millisol.
+	
     // Data members
     private double duration = 50D;   // The predetermined duration of task in millisols
     private Rover reservedRover;     // The reserved rover 
@@ -40,7 +42,7 @@ public class ReserveRover extends Task implements Serializable {
      *  @param destination the destination of the trip
      */
     public ReserveRover(String roverType, Person person, Mars mars, Coordinates destination) {
-        super("Reserving a rover", person, false, false, mars);
+        super("Reserving a rover", person, false, false, STRESS_MODIFIER, mars);
 
         this.roverType = roverType;
         this.destination = destination;
@@ -53,7 +55,7 @@ public class ReserveRover extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public ReserveRover(String roverType, Person person, Mars mars) {
-        super("Reserving a rover", person, false, false, mars);
+        super("Reserving a rover", person, false, false, STRESS_MODIFIER, mars);
 
         this.roverType = roverType;
         destination = null;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.75 2004-04-09
+ * @version 2.76 2004-05-01
  * @author Barry Evans
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.*;
-
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 
@@ -19,9 +18,10 @@ import org.mars_sim.msp.simulation.person.medical.*;
  */
 public class PhysicalCondition implements Serializable {
 
-    // Static values
+    // Life support minimum and maximum values.
     private static int MIN_VALUE = 0;
     private static int MAX_VALUE = 1;
+    
     private static final String START_MEDICAL = "Has Illness";
     private static final String STOP_MEDICAL = "Cured";
 
@@ -31,6 +31,7 @@ public class PhysicalCondition implements Serializable {
     private HealthProblem serious;      // Mosr serious problem
     private double fatigue;             // Person's fatigue level
     private double hunger;              // Person's hunger level
+    private double stress;              // Person's stress level (0.0 - 100.0)
     private double performance;         // Performance factor
     private MedicalManager medic;       // Simulation Medical manager
     private Person person;              // Person's of this physical
@@ -50,8 +51,11 @@ public class PhysicalCondition implements Serializable {
         performance = 1.0D;
 
         medic = mars.getMedicalManager();
-        fatigue = RandomUtil.getRandomDouble(1000D);
-        hunger = RandomUtil.getRandomDouble(1000D);
+        // fatigue = RandomUtil.getRandomDouble(1000D);
+        fatigue = 0D;
+        // hunger = RandomUtil.getRandomDouble(1000D);
+        hunger = 0D;
+        stress = 0D;
         alive = true;
     }
 
@@ -298,10 +302,13 @@ public class PhysicalCondition implements Serializable {
      * @return The value is between 0 -> 1.
      */
     public double getPerformanceFactor() {
-        //return performance * ((1000 - fatigue)/1000);
         return performance;
     }
 
+	/**
+	 * Gets the person with this physical condition
+	 * @return
+	 */
     Person getPerson() {
         return person;
     }
@@ -327,6 +334,24 @@ public class PhysicalCondition implements Serializable {
      */
     public void setHunger(double hunger) {
         this.hunger = hunger;
+    }
+    
+    /**
+     * Gets the person's stress level
+     * @return stress (0.0 to 100.0)
+     */
+    public double getStress() {
+    	return stress;
+    }
+    
+    /** 
+     * Sets the person's stress level.
+     * @param newStress the new stress level (0.0 to 100.0)
+     */
+    public void setStress(double newStress) {
+    	stress = newStress;
+    	if (stress > 100D) stress = 100D;
+    	else if (stress < 0D) stress = 0D;
     }
 
     /**
@@ -387,7 +412,7 @@ public class PhysicalCondition implements Serializable {
     }
 
     /**
-     * Calculate the most serious problem and the most performanc effecting
+     * Calculate the most serious problem and the person's performance.
      */
     private void recalculate() {
 
@@ -415,6 +440,9 @@ public class PhysicalCondition implements Serializable {
         
         // High hunger reduces performance.
         if (hunger > 1000D) performance -= (hunger - 1000D) * .0003D;
+        
+        // High stress reduces performance.
+        if (stress >= 80D) performance -= (stress - 80D) * .02D;
         
         if (performance < 0D) performance = 0D;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
@@ -22,6 +22,9 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class Maintenance extends Task implements Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
+
     // Data members
     private Malfunctionable entity; // Entity to be maintained.
     private double duration; // Duration (in millisols) the person with perform this task.
@@ -31,7 +34,7 @@ public class Maintenance extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public Maintenance(Person person, Mars mars) {
-        super("Performing Maintenance", person, true, false, mars);
+        super("Performing Maintenance", person, true, false, STRESS_MODIFIER, mars);
 
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);

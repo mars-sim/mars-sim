@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
@@ -24,6 +23,9 @@ import org.mars_sim.msp.simulation.person.Person;
  */
 public class RepairMalfunction extends Task implements Repair, Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = .3D; // The stress modified per millisol.
+
     // Data members
     private Malfunctionable entity; // Entity being repaired.
     private double duration; // Duration of task in millisols.
@@ -34,7 +36,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @param mars the virtual Mars
      */
     public RepairMalfunction(Person person, Mars mars) {
-        super("Repairing Malfunction", person, true, false, mars);
+        super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, mars);
 
         // Randomly determine duration, from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);

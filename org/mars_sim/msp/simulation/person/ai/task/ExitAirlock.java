@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Mars;
@@ -21,6 +20,9 @@ import org.mars_sim.msp.simulation.person.Person;
  */
 class ExitAirlock extends Task implements Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
+	
     // Data members
     private Airlock airlock; // The airlock to be used.
     private boolean hasSuit = false; // True if person has an EVA suit.
@@ -32,7 +34,7 @@ class ExitAirlock extends Task implements Serializable {
      * @param airlock the airlock to use.
      */
     public ExitAirlock(Person person, Mars mars, Airlock airlock) {
-        super("Exiting airlock for EVA", person, true, false, mars);
+        super("Exiting airlock for EVA", person, true, false, STRESS_MODIFIER, mars);
 
         // Initialize data members
         description = "Exiting " + airlock.getEntityName() + " for EVA";

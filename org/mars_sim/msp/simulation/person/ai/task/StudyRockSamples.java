@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -28,6 +28,7 @@ public class StudyRockSamples extends Task implements Serializable {
 
     // Rate of rock sample research (kg / millisol)
     private static final double RESEARCH_RATE = .01D;
+	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 	
     // Data members
     private Inventory inv;   // The inventory containing the rock samples.
@@ -42,7 +43,7 @@ public class StudyRockSamples extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public StudyRockSamples(Person person, Mars mars) {
-        super("Studying Rock Samples", person, true, false, mars);
+        super("Studying Rock Samples", person, true, false, STRESS_MODIFIER, mars);
         
         // Find available lab for person.
         lab = getAvailableLab(person);

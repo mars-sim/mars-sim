@@ -1,19 +1,14 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.75 2003-11-13
+ * @version 2.76 2004-05-01
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import java.util.List;
-
-import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.UnitManager;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -31,11 +26,12 @@ public class PersonTableModel extends UnitTableModel {
     private final static int  LOCATION = 1;       // Location column
     private final static int  HUNGER = 2;         // Hunger column
     private final static int  FATIGUE = 3;        // Fatigue column
-    private final static int  PERFORMANCE = 4;    // Performance conlumn
-    private final static int  TASK = 5;           // Task column
-    private final static int  MISSION = 6;        // Mission column
-    private final static int  HEALTH = 7;         // Health column
-    private final static int  COLUMNCOUNT = 8;    // The number of Columns
+	private final static int  STRESS = 4;         // Stress column
+    private final static int  PERFORMANCE = 5;    // Performance conlumn
+    private final static int  TASK = 6;           // Task column
+    private final static int  MISSION = 7;        // Mission column
+    private final static int  HEALTH = 8;         // Health column
+    private final static int  COLUMNCOUNT = 9;    // The number of Columns
     private static String columnNames[];           // Names of Columns
     private static Class columnTypes[];            // Types of Columns
     /**
@@ -50,6 +46,8 @@ public class PersonTableModel extends UnitTableModel {
         columnTypes[HUNGER] = Integer.class;
         columnNames[FATIGUE] = "Fatigue";
         columnTypes[FATIGUE] = Integer.class;
+        columnNames[STRESS] = "Stress %";
+        columnTypes[STRESS] = Integer.class;
         columnNames[PERFORMANCE] = "Performance %";
         columnTypes[PERFORMANCE] = Integer.class;
         columnNames[LOCATION] = "Location";
@@ -136,60 +134,6 @@ public class PersonTableModel extends UnitTableModel {
     }
 
     /**
-     * Compare the current contents to the expected. This would be alot easier
-     * if pure Collection were used as the comparision methods have to be
-     * implemented by hand.
-     *
-     * @param contents The contents of this model.
-     */
-    protected void checkContents(List contents) {
-        /**
-        PersonCollection people = null;
-
-        // Find an appropriate source collection,
-        if (vehicle != null) {
-            people = vehicle.getCrew();
-        }
-        else if (settlement != null) {
-            people = settlement.getInhabitants();
-        }
-	else if (mission != null) {
-	    people = mission.getPeople();
-	}
-
-        // Compare current to actual
-        if (people != null) {
-
-            // Rows been deleted ?
-            if (contents.size() > people.size()) {
-                for( int i = 0; i < contents.size(); i++) {
-                    Person person = (Person)contents.get(i);
-                    if (people.contains(person)) {
-                        i++;
-                    }
-                    else {
-                        contents.remove(i);
-                        fireTableRowsDeleted(i,i);
-                    }
-                }
-            }
-
-            // Rows added
-            else if (contents.size() < people.size()) {
-                PersonIterator iter = people.iterator();
-                while(iter.hasNext()) {
-                    Person person = iter.next();
-                    if (!contents.contains(person)) {
-                        contents.add(person);
-                        fireTableRowsInserted(contents.size(), contents.size());
-                    }
-                }
-            }
-        }
-        **/
-    }
-
-    /**
      * Return the value of a Cell
      * @param rowIndex Row index of the cell.
      * @param columnIndex Column index of the cell.
@@ -213,6 +157,11 @@ public class PersonTableModel extends UnitTableModel {
             case FATIGUE : {
                 double fatigue = person.getPhysicalCondition().getFatigue();
                 result = new Integer(new Float(fatigue).intValue());
+            } break;
+            
+            case STRESS : {
+            	double stress = person.getPhysicalCondition().getStress();
+            	result = new Integer(new Double(stress).intValue()); 
             } break;
 
             case PERFORMANCE : {

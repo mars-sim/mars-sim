@@ -29,6 +29,9 @@ abstract class EVAOperation extends Task implements Serializable {
     protected static final String EXIT_AIRLOCK = "Exit Airlock";
     protected static final String ENTER_AIRLOCK = "Enter Airlock";
     
+	// Static members
+	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
+    
     // Data members
     protected boolean exitedAirlock;  // Person has exited the airlock.
     protected boolean enteredAirlock; // Person has entered the airlock.
@@ -40,7 +43,7 @@ abstract class EVAOperation extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public EVAOperation(String name, Person person, Mars mars) { 
-        super(name, person, true, false, mars);
+        super(name, person, true, false, STRESS_MODIFIER, mars);
     }
 
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Barry Evans
  */
 
@@ -29,6 +29,7 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class MedicalAssistance extends Task implements Serializable {
 
+	private static final double STRESS_MODIFIER = 1D; // The stress modified per millisol.
     private final static String MEDICAL = "Medical";
 
     private MedicalAid medical;    // The medical station the person is at.
@@ -42,7 +43,7 @@ public class MedicalAssistance extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public MedicalAssistance(Person person, Mars mars) {
-        super("Medical Assistance", person, true, true, mars);
+        super("Medical Assistance", person, true, true, STRESS_MODIFIER, mars);
         
         // Sets this task to create historical events.
         setCreateEvents(true);
@@ -230,10 +231,10 @@ public class MedicalAssistance extends Task implements Serializable {
         
         // Stop treatment.
         try {
-            if (!problem.getRecovering()) medical.stopTreatment(problem);
+            medical.stopTreatment(problem);
         }
         catch (Exception e) {
-            System.out.println("MedicalAssistance.endTask(): " + e.getMessage());
+            // System.out.println("MedicalAssistance.endTask(): " + e.getMessage());
         }
     }
     

@@ -21,6 +21,7 @@ public class UnloadVehicle extends Task implements Serializable {
 
     // The amount of resources (kg) one person can unload per millisol.
     private static double UNLOAD_RATE = 10D;
+	private static final double STRESS_MODIFIER = .2D; // The stress modified per millisol.
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be unloaded.
@@ -33,7 +34,7 @@ public class UnloadVehicle extends Task implements Serializable {
      *  @param vehicle the vehicle to be unloaded
      */
     public UnloadVehicle(Person person, Mars mars, Vehicle vehicle) {
-        super("Unloading vehicle", person, true, false, mars);
+        super("Unloading vehicle", person, true, false, STRESS_MODIFIER, mars);
 
 	    description = "Unloading " + vehicle.getName();
         this.vehicle = vehicle;

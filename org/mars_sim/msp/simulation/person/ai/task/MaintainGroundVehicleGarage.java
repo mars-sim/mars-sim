@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
@@ -23,6 +23,9 @@ import org.mars_sim.msp.simulation.vehicle.*;
  */
 public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
+
     // Data members
     private VehicleMaintenance garage; // The maintenance garage.
     private GroundVehicle vehicle; // Vehicle to be maintained.
@@ -35,7 +38,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public MaintainGroundVehicleGarage(Person person, Mars mars) {
-        super("Performing Vehicle Maintenance", person, true, false, mars);
+        super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER, mars);
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);

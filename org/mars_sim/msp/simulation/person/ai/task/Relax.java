@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
@@ -22,6 +22,9 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  */
 class Relax extends Task implements Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = -.5D; // The stress modified per millisol.
+
     // Data members
     private double duration; // The predetermined duration of task in millisols
 
@@ -30,7 +33,7 @@ class Relax extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public Relax(Person person, Mars mars) {
-        super("Relaxing", person, false, false, mars);
+        super("Relaxing", person, false, false, STRESS_MODIFIER, mars);
 
         // If person is in a settlement, try to find a place to relax.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
@@ -62,7 +65,7 @@ class Relax extends Task implements Serializable {
      *  @return the weighted probability that a person might perform this task
      */
     public static double getProbability(Person person, Mars mars) {
-        return 50D;
+        return 10D + person.getPhysicalCondition().getStress();
     }
 
     /** 

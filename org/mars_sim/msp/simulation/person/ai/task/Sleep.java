@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.75 2004-04-13
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
@@ -21,15 +21,18 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  */
 class Sleep extends Task implements Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = -.2D; // The stress modified per millisol.
+
     // Data members
-    private double duration; // The predetermined duration of task in millisols
+    private double duration; // The duration of task in millisols
 
     /** Constructs a Sleep object
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
     public Sleep(Person person, Mars mars) {
-        super("Sleeping", person, false, false, mars);
+        super("Sleeping", person, false, false, STRESS_MODIFIER, mars);
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.75 2004-01-15
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
@@ -23,6 +22,9 @@ import org.mars_sim.msp.simulation.person.Person;
  */
 public class RepairEmergencyMalfunction extends Task implements Repair, Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = 2D; // The stress modified per millisol.
+
     // Data members
     private Malfunctionable entity; // The entity being repaired.
     private Malfunction malfunction; // Problem being fixed
@@ -33,7 +35,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
      * @param mars the virtual Mars
      */
     public RepairEmergencyMalfunction(Person person, Mars mars) {
-        super("Repairing Emergency Malfunction", person, true, true, mars);
+        super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER, mars);
 
         claimMalfunction();
 

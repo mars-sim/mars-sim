@@ -1,33 +1,22 @@
 /**
  * Mars Simulation Project
  * HealthTabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.76 2004-05-01
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Iterator;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PhysicalCondition;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
-import org.mars_sim.msp.ui.standard.MainDesktopPane;
-import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
-
 
 /** 
  * The HealthTabPanel is a tab panel for a person's health.
@@ -37,12 +26,14 @@ public class HealthTabPanel extends TabPanel {
     private DecimalFormat formatter = new DecimalFormat("0.0");
     private JLabel fatigueLabel;
     private JLabel hungerLabel;
+    private JLabel stressLabel;
     private JLabel performanceLabel;
     private HealthProblemTableModel healthProblemTableModel;
     
     // Data cache
     private double fatigueCache;
     private double hungerCache;
+    private double stressCache;
     private double performanceCache;
     
     /**
@@ -67,7 +58,7 @@ public class HealthTabPanel extends TabPanel {
         healthLabelPanel.add(healthLabel);
         
         // Prepare condition panel
-        JPanel conditionPanel = new JPanel(new GridLayout(3, 2, 0, 0));
+        JPanel conditionPanel = new JPanel(new GridLayout(4, 2, 0, 0));
         conditionPanel.setBorder(new MarsPanelBorder());
         centerContentPanel.add(conditionPanel, BorderLayout.NORTH);
 
@@ -88,6 +79,15 @@ public class HealthTabPanel extends TabPanel {
         hungerCache = condition.getHunger();
         hungerLabel = new JLabel(formatter.format(hungerCache) + " millisols", JLabel.RIGHT);
         conditionPanel.add(hungerLabel);
+
+		// Prepare streses name label
+		JLabel stressNameLabel = new JLabel("Stress", JLabel.LEFT);
+		conditionPanel.add(stressNameLabel);
+		
+		// Prepare stress label
+		stressCache = condition.getStress();
+		stressLabel = new JLabel(formatter.format(stressCache) + " %", JLabel.RIGHT);
+		conditionPanel.add(stressLabel);
 
         // Prepare performance rating label
         JLabel performanceNameLabel = new JLabel("Performance", JLabel.LEFT);
@@ -139,6 +139,12 @@ public class HealthTabPanel extends TabPanel {
         if (hungerCache != condition.getHunger()) {
             hungerCache = condition.getHunger();
             hungerLabel.setText(formatter.format(hungerCache) + " millisols");
+        }
+        
+        // Update stress if necessary.
+        if (stressCache != condition.getStress()) {
+        	stressCache = condition.getStress();
+        	stressLabel.setText(formatter.format(stressCache) + " %");
         }
         
         // Update performance cache if necessary.

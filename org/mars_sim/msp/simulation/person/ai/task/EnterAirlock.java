@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Mars;
@@ -28,6 +27,9 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  */
 class EnterAirlock extends Task implements Serializable {
 
+	// Static members
+	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
+
     // Data members
     private Airlock airlock; // The airlock to be used.
 
@@ -39,7 +41,7 @@ class EnterAirlock extends Task implements Serializable {
      * @param airlock to be used.
      */
     public EnterAirlock(Person person, Mars mars, Airlock airlock) {
-        super("Entering airlock from EVA", person, false, false, mars);
+        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, mars);
 
         // Initialize data members
         description = "Entering " + airlock.getEntityName() + " from EVA";
@@ -55,7 +57,7 @@ class EnterAirlock extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public EnterAirlock(Person person, Mars mars) {
-        super("Entering airlock from EVA", person, false, false, mars);
+        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, mars);
 
         // System.out.println("Enter Airlock due to strange situation.");
         // System.out.println("Illness: " + person.getPhysicalCondition().getHealthSituation());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-02
  * @author Scott Davis
  */
 
@@ -23,15 +23,16 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  */
 class EatMeal extends Task implements Serializable {
 
-    // Data members
-    private double duration = 20D; // The predetermined duration of task in millisols
+    // Static members
+    private static final double DURATION = 20D; // The predetermined duration of task in millisols
+    private static final double STRESS_MODIFIER = -.2D; // The stress modified per millisol.
 
     /** Constructs a EatMeal object
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
     public EatMeal(Person person, Mars mars) {
-        super("Eating a meal", person, false, false, mars);
+        super("Eating a meal", person, false, false, STRESS_MODIFIER, mars);
         
         String location = person.getLocationSituation();
         
@@ -86,7 +87,7 @@ class EatMeal extends Task implements Serializable {
 
         person.getPhysicalCondition().setHunger(0D);
         timeCompleted += time;
-        if (timeCompleted > duration) {
+        if (timeCompleted > DURATION) {
         	try {
             	PersonConfig config = mars.getSimulationConfiguration().getPersonConfiguration();
             	person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D));
@@ -95,9 +96,10 @@ class EatMeal extends Task implements Serializable {
         		System.err.println(person.getName() + " unable to eat meal: " + e.getMessage());
         	}
             endTask();
-            return timeCompleted - duration;
+           
+            return timeCompleted - DURATION;
         }
-        else return 0D;
+        else return 0D; 
     }
     
     /**
