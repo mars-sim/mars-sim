@@ -11,6 +11,8 @@ import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
@@ -52,8 +54,13 @@ class UnloadVehicle extends Task implements Serializable {
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();
 	
+        // Determine unload rate.
         double amountUnloading = UNLOAD_RATE * time;
 
+        // If vehicle is not in a garage, unload rate is reduced.
+        VehicleMaintenance garage = BuildingManager.getBuilding(vehicle);
+        if (garage == null) amountUnloading /= 4D;
+        
         // Unload methane
 	    double methaneAmount = vehicle.getInventory().getResourceMass(Resource.METHANE);
         if (methaneAmount > amountUnloading) methaneAmount = amountUnloading;

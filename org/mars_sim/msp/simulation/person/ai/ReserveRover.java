@@ -109,7 +109,8 @@ class ReserveRover extends Task implements Serializable {
             boolean parked = vehicle.getStatus().equals(Vehicle.PARKED);
             boolean correctType = roverType.isInstance(vehicle);
             boolean supplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle);
-            if (parked && correctType && supplies) result = true;
+            boolean reserved = vehicle.isReserved();
+            if (parked && correctType && supplies && !reserved) result = true;
         }
         
         return result;

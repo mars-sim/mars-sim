@@ -355,6 +355,11 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
 	    malfunctionManager.timePassing(time);
 	    addToTrail(location);
+        
+        // Make sure reservedForMaintenance is false if vehicle needs no maintenance.
+        if (getStatus().equals(MAINTENANCE)) {
+            if (malfunctionManager.getTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
+        }
     }
 
     /**

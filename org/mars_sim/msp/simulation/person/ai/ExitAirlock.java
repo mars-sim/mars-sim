@@ -92,7 +92,29 @@ class ExitAirlock extends Task implements Serializable {
     public static boolean canExitAirlock(Person person, Airlock airlock) {
 
         // Check if EVA suit is available.
-        return (goodEVASuitAvailable(airlock.getEntityInventory()));
+        // return (goodEVASuitAvailable(airlock.getEntityInventory()));
+        boolean result = goodEVASuitAvailable(airlock.getEntityInventory());
+        if (!result) {
+            EVASuit finalSuit = null;
+        
+            UnitIterator i = airlock.getEntityInventory().getUnitsOfClass(EVASuit.class).iterator();
+            while (i.hasNext() && (finalSuit == null)) {
+                EVASuit suit = (EVASuit) i.next();
+                boolean fullyLoaded = suit.isFullyLoaded();
+                boolean lifeSupport = suit.lifeSupportCheck();
+                boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
+                if (fullyLoaded && lifeSupport && !malfunction) finalSuit = suit; 
+                else {
+                    System.out.println("EVA Suit fullyLoaded: " + fullyLoaded);
+                    System.out.println("EVA Suit lifeSupport: " + lifeSupport);
+                    System.out.println("EVA Suit malfunction: " + malfunction);
+                }
+            }
+        
+            if (finalSuit == null) System.out.println("ExitAirlock.getGoodEVASuit() false");
+        }
+        
+        return result;
     }
     
     /**
@@ -120,7 +142,7 @@ class ExitAirlock extends Task implements Serializable {
             boolean fullyLoaded = suit.isFullyLoaded();
             boolean lifeSupport = suit.lifeSupportCheck();
             boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-            if (fullyLoaded && lifeSupport && !malfunction) result = suit;    
+            if (fullyLoaded && lifeSupport && !malfunction) result = suit; 
         }
         
         return result;

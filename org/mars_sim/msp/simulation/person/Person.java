@@ -155,11 +155,10 @@ public class Person extends Unit implements Serializable {
     /**
      * Bury the Person at the current location. The person is removed from
      * any containing Settlements or Vehicles. The body is fixed at the last
-     * of the containing unit.
+     * location of the containing unit.
      */
     public void buryBody() {
-
-        containerUnit.getInventory().dropUnitOutside(this);
+        if (containerUnit != null) containerUnit.getInventory().dropUnitOutside(this);
 	    isBuried = true;
     }
 
@@ -169,6 +168,7 @@ public class Person extends Unit implements Serializable {
      */
     void setDead() {
         mind.setInactive();
+        buryBody();
     }
 
     /** Person can take action with time passing

@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.person.ai;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
 
@@ -50,7 +52,13 @@ class LoadVehicle extends Task implements Serializable {
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();
 	
+        // Determine load rate.
         double amountLoading = LOAD_RATE * time;
+        
+        // If vehicle is not in a garage, load rate is reduced.
+        VehicleMaintenance garage = BuildingManager.getBuilding(vehicle);
+        if (garage == null) amountLoading /= 4D;
+           
 
         if (hasEnoughSupplies(settlement, vehicle)) {
 

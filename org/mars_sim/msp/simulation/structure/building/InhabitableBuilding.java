@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * InhabitableBuilding.java
- * @version 2.75 2003-03-16
+ * @version 2.75 2003-04-28
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.util.*;
+import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.person.*;
 
 /**
@@ -153,4 +154,25 @@ public abstract class InhabitableBuilding extends Building {
         
         return affectedPeople;
     }
+    
+    /**
+     * Time passing for building.
+     * Child building should override this method for things
+     * that happen over time for the building.
+     *
+     * @param time amount of time passing (in millisols)
+     */
+    public void timePassing(double time) {
+        
+        // Use Building.timePassing()
+        super.timePassing(time);
+        
+        // Make sure all occupants are actually in settlement.
+        // If not, remove them as occupants.
+        Inventory inv = manager.getSettlement().getInventory();
+        PersonIterator i = occupants.iterator();
+        while (i.hasNext()) {
+            if (!inv.containsUnit(i.next())) i.remove();
+        }
+    }   
 }

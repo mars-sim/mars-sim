@@ -486,6 +486,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             }
             result.add(shortest);
             unorderedSites.remove(shortest);
+            currentLocation = shortest;
         }
         
         return result;
