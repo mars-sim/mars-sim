@@ -1,5 +1,5 @@
 //*********************** Search Tool Window ***********************
-// Last Modified: 4/5/00
+// Last Modified: 4/6/00
 
 // The SearchWindow is a tool window that allows the user to search for 
 // individual units by name and category.
@@ -124,7 +124,7 @@ public class SearchWindow extends ToolWindow implements ActionListener, ItemList
 		
 		// Create center map option
 		
-		centerMapCheck = new JCheckBox("Center Mars Navigator On Unit");
+		centerMapCheck = new JCheckBox("Recenter Mars Navigator");
 		selectOptionsPane.add(centerMapCheck);
 
 		// Create status label
@@ -177,13 +177,13 @@ public class SearchWindow extends ToolWindow implements ActionListener, ItemList
 		
 		String tempName = unitCategoryNames[searchForSelect.getSelectedIndex()];
 		
-		// If not found, display "Unit Not Found" in statusLabel.
+		// If not found, display "'Category' Not Found" in statusLabel.
 		
 		if (!foundUnit) statusLabel.setText(tempName + " Not Found");
 		
-		// If there is no text entered, display "Enter The Name Of A Unit" in statusLabel.
+		// If there is no text entered, display "Enter The Name of a 'Category'" in statusLabel.
 		
-		if (selectTextField.getText().equals("")) statusLabel.setText("Enter The Name Of A " + tempName);
+		if (selectTextField.getText().equals("")) statusLabel.setText("Enter The Name of a " + tempName);
 	}
 	
 	// ItemListener method overridden
