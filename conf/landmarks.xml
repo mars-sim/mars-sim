@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+
+
+<LANDMARKS_LIST>
+
+    <LANDMARK>
+
+        <!-- Name of the landmark (required) -->
+        <NAME>Landmark 1</NAME>
+
+        <!-- Location of the landmark (required) -->
+        <!-- Requires valid longitude and latitude -->
+        <LOCATION>
+            <LATITUDE>10.0 N</LATITUDE>
+            <LONGITUDE>10.0 E</LONGITUDE>
+        </LOCATION>
+
+    </LANDMARK>
+
+
+    <LANDMARK>
+
+        <NAME>Landmark 2</NAME>
+
+        <LOCATION>
+            <LATITUDE>10.0 N</LATITUDE>
+            <LONGITUDE>15.0 E</LONGITUDE>
+        </LOCATION>
+
+    </LANDMARK>
+
+
+</LANDMARKS_LIST>
+
