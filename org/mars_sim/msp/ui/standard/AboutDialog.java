@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.75 2004-04-014
+ * @version 2.77 2004-10-01
  * @author Scott Davis
  */
 
@@ -78,9 +78,12 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 		buf.append("  Hartmut Prochaska - Java Programming\n");
 		buf.append("  Mihaly Gyulai - Java Programming\n");
 		buf.append("  Kyur Thadeshwar - Java Programming\n");
-		buf.append("  Kent Primrose - Java Programming, JUnit tests\n\n");
+		buf.append("  Kent Primrose - Java Programming, JUnit tests\n");
+		buf.append("  Dima Stephanchuk - Java Programmer, sound\n\n");
 
         buf.append("Testing and Recommendations:\n");
+        buf.append("  Rik Declercq\n");
+        buf.append("  Claude David\n");
         buf.append("  Paul Speed\n");
         buf.append("  Allen Bryan\n");
         buf.append("  Brian K. Smith\n");
@@ -90,6 +93,13 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 
         buf.append("8xZoom map results courtesy of the USGS PDS Planetary Atlas:\n");
 		buf.append("http://pdsmaps.wr.usgs.gov/maps.html\n\n");
+	
+		buf.append("The following open source libraries are used in this project:\n");
+		buf.append("JFreeChart: http://www.jfree.org/jfreechart/\n");
+		buf.append("JUnit: http://www.junit.org\n");
+		buf.append("Plexus: http://plexus.sourceforge.net\n");
+		buf.append("Commons Collections: http://jakarta.apache.org/commons/collections/\n");
+		buf.append("Log4J: http://logging.apache.org/log4j/\n\n");
 	
         buf.append("Martian clock/calendar based on calendars by\n");
         buf.append("Shaun Moss: Areosynchronous Calendar\n(http://www.virtualmars.net/Calendar.asp)\n");
