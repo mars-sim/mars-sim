@@ -55,8 +55,6 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
      */
     public void addVehicle(Vehicle vehicle) throws BuildingException {
         
-        System.out.println("Trying to add " + vehicle.getName() + " to vehicle maintenance building.");
-        
 		// Check if vehicle cannot be added to building.
 		if (vehicles.contains(vehicle)) 
 			throw new BuildingException("Building already contains vehicle.");
@@ -78,7 +76,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
         
 		// Add vehicle to building.
 		vehicles.add(vehicle);
-		System.out.println("Adding " + vehicle.getName());
+		// System.out.println("Adding " + vehicle.getName());
     }
     
     /** 
@@ -90,7 +88,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		if (!containsVehicle(vehicle)) throw new BuildingException("Vehicle not in building.");
 		else {
 			vehicles.remove(vehicle);
-			System.out.println("Removing " + vehicle.getName());
+			// System.out.println("Removing " + vehicle.getName());
 		} 
     }
     
@@ -116,7 +114,15 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {}
+	public void timePassing(double time) throws BuildingException { 
+	
+		// Check to see if any vehicles are in the garage that don't need to be.
+		VehicleIterator i = (new VehicleCollection(vehicles)).iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			if (!vehicle.isReserved() && !vehicle.isReservedForMaintenance()) removeVehicle(vehicle); 
+		}
+	}
 	
 	/**
 	 * Gets the amount of power required when function is at full power.
