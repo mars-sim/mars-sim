@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.75 2004-13-16
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -76,10 +76,10 @@ public class Coordinates implements Serializable {
 
     /**
      * Generate a string representation of this object. It will be the same
-     * format as the formatterString method.
+     * format as the formattedString method.
      *
      * @return String description of Coordinate.
-     * @see #getFormatterString()
+     * @see #getFormattedString()
      */
     public String toString() {
         return getFormattedString();
@@ -202,10 +202,11 @@ public class Coordinates implements Serializable {
         return rho * angle;
     }
 
-    /** Returns common formatted string to represent this location.
-     *  @return formatted longitude & latitude string for this Coordinates object
-     * @see getFormattedLongitudeString()
-     * @see getFormattedLatitudeString()
+    /** 
+     * Gets a common formatted string to represent this location.
+     * @return formatted longitude & latitude string for this Coordinates object
+     * @see #getFormattedLongitudeString()
+     * @see #getFormattedLatitudeString()
      */
     public String getFormattedString() {
         StringBuffer buffer = new StringBuffer();
@@ -215,9 +216,11 @@ public class Coordinates implements Serializable {
         return buffer.toString();
     }
 
-    /** Returns common formatted string to represent longitude for
-     *  this location ex. "35.6º E"
-     *  @return formatted longitude string for this Coordinates object
+    /** 
+     * Gets a common formatted string to represent longitude for
+     * this location. 
+     * ex. "35.6º E"
+     * @return formatted longitude string for this Coordinates object
      */
     public String getFormattedLongitudeString() {
 
@@ -241,9 +244,11 @@ public class Coordinates implements Serializable {
         return new String(first + "." + last + "\u00BA " + direction);
     }
 
-    /** Returns common formatted string to represent latitude for this
-     *  location ex. "35.6º S"
-     *  @return formatted latitude string for this Coordinates object
+    /** 
+     * Gets a common formatted string to represent latitude for this
+     * location. 
+     * ex. "35.6º S"
+     * @return formatted latitude string for this Coordinates object
      */
     public String getFormattedLatitudeString() {
 

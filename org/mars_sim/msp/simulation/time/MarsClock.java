@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.75 2004-03-08
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -198,7 +198,7 @@ public class MarsClock implements Serializable {
         } 
     }
 
-    /** Returns formatted time stamp string
+    /** Returns formatted time stamp string.
      *  ex. "13-Adir-05  056.349"
      *  @return formatted timestamp string
      */
@@ -206,9 +206,10 @@ public class MarsClock implements Serializable {
         return getDateString() + "  " + getTimeString(); 
     }
 
-    /** Returns the current date string
-     *  ex. "13-Adir-05"
-     *  @return current date string
+    /** 
+     * Gets the current date string.
+     * ex. "13-Adir-05"
+     * @return current date string
      */
     public String getDateString() {
         StringBuffer result = new StringBuffer("");
@@ -228,7 +229,7 @@ public class MarsClock implements Serializable {
         return result.toString();
     }
 
-    /** Return the current time string
+    /** Return the current time string.
      *  ex. "05:056.349"
      */
     public String getTimeString() {
@@ -240,7 +241,7 @@ public class MarsClock implements Serializable {
         return result;
     }
 
-    /** Returns the name of the current month
+    /** Returns the name of the current month.
      *  @return name of the current month
      */
     public String getMonthName() {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * USGSMarsMap.java
- * @version 2.75 2003-10-12
+ * @version 2.76 2004-08-06
  * @author Greg Whelan
  */
 
@@ -20,9 +20,7 @@ import javax.swing.*;
  * Node. Specifically from the Planetary Data Systems (PDS) Mars
  * Explorer. Behind their web server is a Solaris application called
  * MapMaker that generates the maps.
- * @see <a href="http://www-pdsimage.wr.usgs.gov/PDS/public/mapmaker/faq.htm" target="_top">
- * PDS Mars Explorer</a>
- * - Be sure to see the FAQ on the "face".
+ * @see <a href="http://www-pdsimage.wr.usgs.gov/PDS/public/mapmaker/faq.htm">PDS Mars Explorer</a>
  */
 public class USGSMarsMap implements Map, ActionListener {
 

@@ -166,8 +166,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     }
 
     /**
-     * Gets the malfunctionable entity the person is currently repairing.
-     * @returns null if none.
+     * Gets the malfunctionable entity the person is currently repairing or null if none.
      * @return entity
      */
     public Malfunctionable getEntity() {

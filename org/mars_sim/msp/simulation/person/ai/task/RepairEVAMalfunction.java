@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -254,8 +254,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
     }	
 
     /**
-     * Gets the malfunctionable entity the person is currently repairing.
-     * @returns null if none.
+     * Gets the malfunctionable entity the person is currently repairing or null if none.
      * @return entity
      */
     public Malfunctionable getEntity() {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.75 2003-07-28
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -28,8 +28,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
     private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
 
-    /** Constructs a MainWindowMenu object
-     *  @mainWindow the main window pane
+    /** 
+     * Constructor
+     * @param mainWindow the main window pane
      */
     public MainWindowMenu(MainWindow mainWindow) {
 

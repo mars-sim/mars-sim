@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -85,7 +85,7 @@ public class LivingAccommodations extends Function implements Serializable {
  	}
  
     /** 
-     * Utilizes water for bathing, washing, etc. based on population.
+     * Utilizes water for bathing, washing, etc based on population.
      * @param time amount of time passing (millisols)
      */
     public void waterUsage(double time) {

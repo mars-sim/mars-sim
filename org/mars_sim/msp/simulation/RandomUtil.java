@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RandomUtil.java
- * @version 2.74 2002-04-21
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -60,11 +60,13 @@ public final class RandomUtil {
         return Math.random() * ceiling;
     }
 
-    /** Returns a random integer from 1 to the given integer.
-     *  1 has twice the change of being chosen as 2 and so forth
-     *  to the given integer.
-     *  @param ceiling the maximum integer result, ( ceiling > 0 )
-     *  @return the random integer
+    /** 
+     * Returns a random integer from 1 to the given integer.
+     * -breakiterator
+     * 1 has twice the chance of being chosen as 2 and so forth
+     * to the given integer.
+     * @param ceiling the maximum integer result, ( ceiling > 0 )
+     * @return the random integer
      */
     public static int getRandomRegressionInteger(int ceiling) {
 

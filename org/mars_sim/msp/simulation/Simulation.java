@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 2.76 2004-07-29
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -60,7 +60,7 @@ public class Simulation implements Serializable {
 	
 	/**
 	 * Gets a singleton instance of the simulation.
-	 * @return
+	 * @return Simulation instance
 	 */
 	public static Simulation instance() {
 		return instance;

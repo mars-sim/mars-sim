@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -96,7 +96,7 @@ public class MissionManager implements Serializable {
 
     /** Determines the total probability weight for available potential missions
      *  for a given person.
-     *  @person the given person
+     *  @param person the given person
      *  @return total probability weight
      */ 
     public double getTotalMissionProbability(Person person) {

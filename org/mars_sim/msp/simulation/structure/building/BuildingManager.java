@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.76 2004-07-02
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
  
@@ -129,7 +129,7 @@ public class BuildingManager implements Serializable {
      *
      * @param person the person to add.
      * @param settlement the settlement to find a building.
-     * @throw BuildingException if person cannot be added to any building.
+     * @throws BuildingException if person cannot be added to any building.
      */
     public static void addToRandomBuilding(Person person, Settlement settlement) throws BuildingException {
         
@@ -155,7 +155,7 @@ public class BuildingManager implements Serializable {
      * Adds a ground vehicle to a random ground vehicle maintenance building within a settlement.
      * @param vehicle the ground vehicle to add.
      * @param settlement the settlement to find a building.
-     * @throw BuildingException if vehicle cannot be added to any building.
+     * @throws BuildingException if vehicle cannot be added to any building.
      */
     public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) throws BuildingException {
         

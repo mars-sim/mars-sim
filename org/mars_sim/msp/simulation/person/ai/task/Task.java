@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -177,7 +177,6 @@ public abstract class Task implements Serializable, Comparable {
      * of the description.
      *
      * @return Description of the task.
-     * @see #getTaskDescription()
      */
     public String toString() {
         return description;
@@ -189,7 +188,7 @@ public abstract class Task implements Serializable, Comparable {
      *
      * @param other Object to compare against.
      * @return integer comparasion of the two objects.
-     * @throw ClassCastException if the object in not of a Task.
+     * @throws ClassCastException if the object in not of a Task.
      */
     public int compareTo(Object other) {
         return name.compareTo(((Task)other).name);

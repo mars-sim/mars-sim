@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Repair.java
- * @version 2.74 2002-05-05
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -15,8 +15,8 @@ import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 public interface Repair {
 
     /**
-     * Gets the malfunctionable entity the person is currently repairing.
-     * @returns null if none.
+     * Gets the malfunctionable entity the person is currently 
+     * repairing or null if none.
      * @return entity
      */
     public Malfunctionable getEntity(); 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2004-08-06
  * @author Scott Davis
  */
 
@@ -135,8 +135,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
     }
 
     /**
-     * Gets the malfunctionable entity the person is currently repairing.
-     * @returns null if none.
+     * Gets the malfunctionable entity the person is currently repairing or null if none.
      * @return entity
      */
     public Malfunctionable getEntity() {
