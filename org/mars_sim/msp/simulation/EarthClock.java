@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-04-29
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ public class EarthClock extends GregorianCalendar {
         setTimeZone(zone);
 
         // Initialize formatter
-        formatter = new SimpleDateFormat("dd/MM/yyyy  hh:mm:ss a z");
+        formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss z");
         formatter.setTimeZone(zone);
 
         // Set Earth clock to Martian Zero-orbit date-time
