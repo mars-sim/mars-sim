@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2003-12-20
+ * @version 2.76 2004-05-22
  * @author Scott Davis
  */
 
@@ -52,9 +52,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private boolean useUSGSMap;  // True if USGS surface map is to be used
     private boolean showDayNightShading; // True if day/night shading is to be used
     private boolean showVehicleTrails; // True if vehicle trails are to be displayed.
+    private boolean showLandmarks; // True if landmarks are to be displayed.
     private MapLayer unitLayer;  // Display layer for showing units.
     private MapLayer vehicleTrailLayer;  // Display layer for showing vehicle trails.
     private MapLayer shadingLayer; // Display layer for showing day/night shading.
+    private MapLayer landmarkLayer; // Display layer for showing landmarks.
     private boolean mapError; // True if there is an error in rendering the map.
     private String mapErrorMessage; // The map error message.
 
@@ -95,6 +97,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         centerCoords = new Coordinates(HALF_PI, 0D);
         showDayNightShading = false;
         showVehicleTrails = true;
+        showLandmarks = true;
         mapError = false;
         mapErrorMessage = null;
 
@@ -119,6 +122,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         unitLayer = new UnitMapLayer(mars, this);
         vehicleTrailLayer = new VehicleTrailMapLayer(mars, this);
         shadingLayer = new ShadingMapLayer(mars, this);
+        landmarkLayer = new LandmarkMapLayer(mars, this);
 
         // initially show real surface map (versus topo map)
         showSurf();
@@ -326,6 +330,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 // Display day/night shading.
                 if (isSurface() && showDayNightShading) shadingLayer.displayLayer(g);
             
+				// Display landmarks.
+				if (showLandmarks) landmarkLayer.displayLayer(g);
+            
                 // Display vehicle trails.
                 if (showVehicleTrails) vehicleTrailLayer.displayLayer(g);
             
@@ -417,6 +424,14 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      */
     public void setVehicleTrails(boolean showVehicleTrails) {
         this.showVehicleTrails = showVehicleTrails;
+    }
+    
+	/**
+	 * Sets the landmarks flag.
+	 * @param showLandmarks true if landmarks are to be displayed.
+	 */
+    public void setLandmarks(boolean showLandmarks) {
+    	this.showLandmarks = showLandmarks;
     }
     
     /** 
