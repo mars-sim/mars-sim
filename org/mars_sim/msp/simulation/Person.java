@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.71 2000-12-03
+ * @version 2.71 2001-01-30
  * @author Scott Davis
  */
 
@@ -137,7 +137,7 @@ public class Person extends Unit {
         }
         else amountRecieved = vehicle.removeOxygen(amount);
         
-        if (amountRecieved != amount) System.out.println(getName() + " needs oxygen.");
+        // if (amountRecieved != amount) System.out.println(getName() + " needs oxygen.");
     }
     
     /** Person consumes given amount of water
@@ -153,7 +153,7 @@ public class Person extends Unit {
         }
         else amountRecieved = vehicle.removeWater(amount);
         
-        if (amountRecieved != amount) System.out.println(getName() + " needs water.");
+        // if (amountRecieved != amount) System.out.println(getName() + " needs water.");
     }
     
     /** Person consumes given amount of food
@@ -169,6 +169,6 @@ public class Person extends Unit {
         }
         else amountRecieved = vehicle.removeFood(amount);
         
-        if (amountRecieved != amount) System.out.println(getName() + " needs food.");
+        // if (amountRecieved != amount) System.out.println(getName() + " needs food.");
     }
 }

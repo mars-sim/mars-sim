@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.71 2000-12-03
+ * @version 2.71 2001-01-30
  * @author Scott Davis
  */
 
@@ -146,10 +146,7 @@ public abstract class Vehicle extends Unit {
     void consumeFuel(double consumedFuel) {
         boolean noFuel = (fuel == 0D);
         fuel -= consumedFuel;
-        if (fuel < 0D) {
-            fuel = 0D;
-            if (!noFuel) System.out.println(getName() + " has run out of fuel.");
-        }
+        if (fuel < 0D) fuel = 0D;
     }
 
     /** Returns the fuel capacity of the vehicle. 

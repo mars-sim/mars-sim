@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * USGSMarsMap.java
- * @version 2.71 2000-10-25
+ * @version 2.71 2001-01-30
  * @author Greg Whelan
  */
 
@@ -107,7 +107,7 @@ public class USGSMarsMap implements Map {
                     projection + "&RESOLUTION=" + resolution + "&SIZE=" + size +
                     "&LAT=" + lat + "&LON=" + lon);
 
-            System.out.println(url);
+            // System.out.println(url);
 
             BufferedReader in =
                     new BufferedReader(new InputStreamReader(url.openStream()));
@@ -132,7 +132,7 @@ public class USGSMarsMap implements Map {
             // </fragile>
 
             URL imageUrl = new URL(psdUrl + imageSrc);
-            System.out.println(imageUrl);
+            // System.out.println(imageUrl);
 
             //imageUrl = new URL("file:tmp.968014862.jpg");
             return (Toolkit.getDefaultToolkit().getImage(imageUrl));
@@ -161,7 +161,7 @@ public class USGSMarsMap implements Map {
                     projection + "&RESOLUTION=" + resolution + "&SIZE=" + size +
                     "&LAT=" + lat + "&LON=" + lon);
 
-            System.out.println(imageUrl);
+            // System.out.println(imageUrl);
 
             //imageUrl = new URL("file:tmp.968014862.jpg");
             return (Toolkit.getDefaultToolkit().getImage(imageUrl));
@@ -196,7 +196,7 @@ public class USGSMarsMap implements Map {
             System.out.println(e);
         }
         imageDone = true;
-        System.out.println("Done loading USGS image");
+        // System.out.println("Done loading USGS image");
     }
 
     /** for component testing. Creates a frame and fills it with a map */
