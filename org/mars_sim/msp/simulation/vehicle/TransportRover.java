@@ -24,7 +24,7 @@ public class TransportRover extends Rover implements Serializable {
     private static final double OXYGEN_CAPACITY = 525D; // Oxygen capacity of rover in kg.
     private static final double WATER_CAPACITY = 2100D; // Water capacity of rover in kg.
     private static final double FOOD_CAPACITY = 787.5D; // Food capacity of rover in kg.
-
+    private static final int    SICKBAY_LEVEL = 3; // Facility level of Sickbay
     private SickBay sickBay = null;
 
     /**
@@ -35,12 +35,12 @@ public class TransportRover extends Rover implements Serializable {
      */
     TransportRover(String name, Settlement settlement, Mars mars) {
         // Use the Rover constructor
-	super(name, settlement, mars);
+	    super(name, settlement, mars);
 
-	initTransportRoverData();
+	    initTransportRoverData();
 
-	// Add EVA suits
-	addEVASuits();
+	    // Add EVA suits
+	    addEVASuits();
     }
 
     /**
@@ -74,7 +74,7 @@ public class TransportRover extends Rover implements Serializable {
 	inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
 	inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
 
-    sickBay = new SickBay("RoverSickBay", 2, mars);
+    sickBay = new SickBay("RoverSickBay", 2, SICKBAY_LEVEL, mars);
     }
 
     /**

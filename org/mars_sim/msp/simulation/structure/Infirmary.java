@@ -18,6 +18,7 @@ public class Infirmary extends Facility
      * Name of Infirmary
      */
     public final static String NAME = "Infirmary";
+    private final static int LEVEL = 5;
 
     private SickBay     sickBay;        // Sickbay of the infirmary
 
@@ -31,7 +32,7 @@ public class Infirmary extends Facility
 
         // Initialize random size from 1 to 5.
         sickBay = new SickBay(NAME, 1 + RandomUtil.getRandomInt(4),
-                              manager.getMars());
+                              LEVEL, manager.getMars());
     }
 
     /**
