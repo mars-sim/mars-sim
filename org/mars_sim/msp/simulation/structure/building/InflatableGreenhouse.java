@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-01-22
+ * @version 2.75 2003-02-05
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.util.*;
-import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /**
@@ -58,7 +58,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
      * @param harvest harvested food to add (kg.)
      */
     public void addHarvest(double harvest) {
-        getBuildingManager().getSettlement().getInventory().addResource(Inventory.FOOD, harvest);
+        getBuildingManager().getSettlement().getInventory().addResource(Resource.FOOD, harvest);
     }
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.74 2002-05-18
+ * @version 2.75 2003-02-07
  * @author Scott Davis
  */
 
@@ -64,7 +64,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         super("Driving vehicle", person, true, mars);
 
         // Set initial parameters
-	description = DRIVING + " " + vehicle.getName();
+        description = DRIVING + " " + vehicle.getName();
         this.vehicle = vehicle;
         this.destination = destination;
         vehicle.setDestination(destination);
@@ -96,8 +96,8 @@ public class DriveGroundVehicle extends Task implements Serializable {
             MarsClock startTripTime, double startTripDistance, String startingPhase) {
         this(person, mars, vehicle, destination, startTripTime, startTripDistance);
 
-	if ((startingPhase != null) && !startingPhase.equals("")) phase = startingPhase;
-	else phase = DRIVING;
+        if ((startingPhase != null) && !startingPhase.equals("")) phase = startingPhase;
+        else phase = DRIVING;
     }
      
     /** Perform the driving task
@@ -109,39 +109,39 @@ public class DriveGroundVehicle extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
         // Set person as driver.
-	vehicle.setDriver(person);
+        vehicle.setDriver(person);
 	
         // If person is incompacitated, end task.
-	if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) done = true;
 	
         // If night time, end task.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) == 0D) {
             // System.out.println(person.getName() + " stopped driving due to darkness.");
-	    vehicle.setSpeed(0D);
+            vehicle.setSpeed(0D);
             vehicle.setDriver(null);
-	    vehicle.setStuck(false);
+            vehicle.setStuck(false);
             done = true;
             return 0D;
         }
 
         // If vehicle has malfunction, end task.
-	if (vehicle.getMalfunctionManager().hasMalfunction()) done = true;
+        if (vehicle.getMalfunctionManager().hasMalfunction()) done = true;
 	
-	// Perform phases of task until time is up or task is done.
+        // Perform phases of task until time is up or task is done.
         while ((timeLeft > 0D) && !done) {
             if (phase.equals(DRIVING)) timeLeft = drivingPhase(timeLeft);
             else if (phase.equals(AVOID_OBSTACLE)) timeLeft = obstaclePhase(timeLeft);
             else if (phase.equals(WINCH_VEHICLE)) timeLeft = winchingPhase(timeLeft);
-	    else break;
+            else break;
         }
 
         // Keep track of the duration of the task.
         timeCompleted += time;
         if (done || (timeCompleted >= duration)) {
-	    // System.out.println(person.getName() + " finished driving " + vehicle.getName());
-	    vehicle.setSpeed(0D);
+            // System.out.println(person.getName() + " finished driving " + vehicle.getName());
+            vehicle.setSpeed(0D);
             vehicle.setDriver(null);
-	    vehicle.setStuck(false);
+            vehicle.setStuck(false);
             done = true;
         }
 
@@ -310,7 +310,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         // Consume fuel for distance traveled.
         SimulationProperties properties = mars.getSimulationProperties();
         double fuelConsumed = distanceTraveled / properties.getRoverFuelEfficiency();
-        vehicle.getInventory().removeResource(Inventory.FUEL, fuelConsumed);
+        vehicle.getInventory().removeResource(Resource.FUEL, fuelConsumed);
 	
         // Add distance traveled to vehicle's odometer.
         vehicle.addTotalDistanceTraveled(distanceTraveled);
@@ -436,17 +436,17 @@ public class DriveGroundVehicle extends Task implements Serializable {
 
         double chance = .001D;
 
-	// Driver skill modification.
-	int skill = person.getSkillManager().getEffectiveSkillLevel("Driving");
-	if (skill <= 3) chance *= (4 - skill);
-	else chance /= (skill - 2);
+        // Driver skill modification.
+        int skill = person.getSkillManager().getEffectiveSkillLevel("Driving");
+        if (skill <= 3) chance *= (4 - skill);
+        else chance /= (skill - 2);
 	
         // Get task phase modification.
         if (phase.equals(AVOID_OBSTACLE)) chance *= 1.2D;
         if (phase.equals(WINCH_VEHICLE)) chance *= 1.3D;
 
-	// Terrain modification.
-	chance *= (1D + Math.sin(vehicle.getTerrainGrade()));
+        // Terrain modification.
+        chance *= (1D + Math.sin(vehicle.getTerrainGrade()));
 
         // Vehicle handling modification.
         chance /= (1D + vehicle.getTerrainHandlingCapability());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.74 2002-05-18
+ * @version 2.75 2003-02-07
  * @author Barry Evans
  */
 
@@ -188,7 +188,7 @@ public class PhysicalCondition implements Serializable {
     public void consumeFood(double amount, Unit container,
                             SimulationProperties props) {
         double amountRecieved =
-                container.getInventory().removeResource(Inventory.FOOD, amount);
+                container.getInventory().removeResource(Resource.FOOD, amount);
 
         if (checkResourceConsumption(amountRecieved, amount,
                                      MIN_VALUE, medic.getStarvation())) {
@@ -233,16 +233,17 @@ public class PhysicalCondition implements Serializable {
      */
     private boolean checkResourceConsumption(double actual, double required,
             int bounds, Complaint complaint) {
+                
         boolean newProblem = false;
         if ((bounds == MIN_VALUE) && (actual < required)) newProblem = true;
-	if ((bounds == MAX_VALUE) && (actual > required)) newProblem = true;
+        if ((bounds == MAX_VALUE) && (actual > required)) newProblem = true;
 
         if (newProblem) {
-	    if (!problems.containsKey(complaint)) {
-		problems.put(complaint, new HealthProblem(complaint, person,
-		        person.getAccessibleAid()));
-	    }
-	}
+            if (!problems.containsKey(complaint)) {
+                problems.put(complaint, new HealthProblem(complaint, person,
+                    person.getAccessibleAid()));
+            }
+        }
         else {
             //Is the person suffering from the illness, if so recovery
             // as the amount has been provided
@@ -271,9 +272,10 @@ public class PhysicalCondition implements Serializable {
      */
     private boolean requireTemperature(LifeSupport support, double minTemperature,
             double maxTemperature) {
-	boolean freeze = checkResourceConsumption(support.getTemperature(),
+                
+        boolean freeze = checkResourceConsumption(support.getTemperature(),
                 minTemperature, MIN_VALUE, medic.getFreezing());
-	boolean hot = checkResourceConsumption(support.getTemperature(),
+        boolean hot = checkResourceConsumption(support.getTemperature(),
 	        maxTemperature, MAX_VALUE, medic.getHeatStroke());
         return freeze || hot;
     }

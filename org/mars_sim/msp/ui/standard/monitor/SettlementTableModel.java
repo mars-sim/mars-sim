@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.74 2002-05-16
+ * @version 2.75 2003-02-05
  * @author Barry Evans
  */
 
@@ -63,8 +63,8 @@ public class SettlementTableModel extends UnitTableModel {
         columnTypes[WATER] = Integer.class;
         columnNames[FUEL] = "Fuel";
         columnTypes[FUEL] = Integer.class;
-	columnNames[ROCK_SAMPLES] = "Rock Samples";
-	columnTypes[ROCK_SAMPLES] = Integer.class;
+        columnNames[ROCK_SAMPLES] = "Rock Samples";
+        columnTypes[ROCK_SAMPLES] = Integer.class;
     };
 
     /**
@@ -100,27 +100,27 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-	        double water = settle.getInventory().getResourceMass(Inventory.WATER);
+	        double water = settle.getInventory().getResourceMass(Resource.WATER);
                 result = new Integer((int) water);
             } break;
 
             case FOOD : {
-	        double food = settle.getInventory().getResourceMass(Inventory.FOOD);
+	        double food = settle.getInventory().getResourceMass(Resource.FOOD);
                 result = new Integer((int) food);
             } break;
 
             case OXYGEN : {
-	        double oxygen = settle.getInventory().getResourceMass(Inventory.OXYGEN);
+	        double oxygen = settle.getInventory().getResourceMass(Resource.OXYGEN);
                 result = new Integer((int) oxygen);
             } break;
 
             case FUEL : {
-	        double fuel = settle.getInventory().getResourceMass(Inventory.FUEL);
+	        double fuel = settle.getInventory().getResourceMass(Resource.FUEL);
                 result = new Integer((int) fuel);
             } break;
 
             case ROCK_SAMPLES : {
-                double rockSamples = settle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
+                double rockSamples = settle.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
 		        result = new Integer((int) rockSamples);
 	        } break;
 

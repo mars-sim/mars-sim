@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.75 2003-01-08
+ * @version 2.75 2003-02-07
  * @author Scott Davis
  */
 
@@ -48,9 +48,9 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     private void initRoverData() {
 
         // Add scope to malfunction manager.
-	malfunctionManager.addScopeString("Rover");
-	malfunctionManager.addScopeString("Crewable");
-	malfunctionManager.addScopeString("LifeSupport");
+        malfunctionManager.addScopeString("Rover");
+        malfunctionManager.addScopeString("Crewable");
+        malfunctionManager.addScopeString("LifeSupport");
 	    
         // Set rover terrain modifier
         setTerrainHandlingCapability(0D);
@@ -59,19 +59,19 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
         setBaseSpeed(BASE_SPEED);
 
         // Set the empty mass of the rover.
-	baseMass = BASE_MASS;
-	
-        // Set inventory total mass capacity.
-	inventory.setTotalCapacity(CARGO_CAPACITY);
-	
-	// Set inventory resource capacities.
-	inventory.setResourceCapacity(Inventory.FUEL, FUEL_CAPACITY);
-	inventory.setResourceCapacity(Inventory.OXYGEN, OXYGEN_CAPACITY);
-	inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
-	inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
+        baseMass = BASE_MASS;
 
-	// Create the rover's airlock.
-	airlock = new Airlock(this, mars, 2);
+        // Set inventory total mass capacity.
+        inventory.setTotalCapacity(CARGO_CAPACITY);
+	
+        // Set inventory resource capacities.
+        inventory.setResourceCapacity(Resource.FUEL, FUEL_CAPACITY);
+        inventory.setResourceCapacity(Resource.OXYGEN, OXYGEN_CAPACITY);
+        inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
+        inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);
+
+        // Create the rover's airlock.
+        airlock = new Airlock(this, mars, 2);
     }
 
     /** 
@@ -130,8 +130,8 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-	if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
-        if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
+        if (inventory.getResourceMass(Resource.OXYGEN) <= 0D) result = false;
+        if (inventory.getResourceMass(Resource.WATER) <= 0D) result = false;
         if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
         if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -152,7 +152,7 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      *  @return the amount of oxgyen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-        return inventory.removeResource(Inventory.OXYGEN, amountRequested) *
+        return inventory.removeResource(Resource.OXYGEN, amountRequested) *
 	        (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
@@ -161,7 +161,7 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      *  @return the amount of water actually received from system (kg)
      */
     public double provideWater(double amountRequested) {
-        return inventory.removeResource(Inventory.WATER, amountRequested)  *
+        return inventory.removeResource(Resource.WATER, amountRequested)  *
 	        (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
@@ -200,7 +200,7 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      * @param time the amount of time passing (in millisols)
      */
     public void timePassing(double time) {
-	super.timePassing(time);
+        super.timePassing(time);
         airlock.timePassing(time);
     }
 
@@ -211,12 +211,12 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     public PersonCollection getAffectedPeople() {
         PersonCollection people = super.getAffectedPeople();
         
-	PersonCollection crew = getCrew();
+        PersonCollection crew = getCrew();
         PersonIterator i = crew.iterator();
         while (i.hasNext()) {
-	    Person person = i.next();
-	    if (!people.contains(person)) people.add(person);
-	}
+            Person person = i.next();
+            if (!people.contains(person)) people.add(person);
+        }
 
         return people;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 2.74 2002-05-05
+ * @version 2.75 2003-02-07
  * @author Scott Davis
  */
 
@@ -39,21 +39,21 @@ abstract class EVAOperation extends Task implements Serializable {
      */
     protected double exitAirlock(double time, Airlockable entity) {
 
-	if (!person.getLocationSituation().equals(Person.OUTSIDE)) {
-	    if (ExitAirlock.canExitAirlock(person, entity)) {
-	        addSubTask(new ExitAirlock(person, mars, entity));
-	        return 0D;
-	    }
-	    else {
-		// System.out.println(person.getName() + " unable to exit airlock of " + entity.getName());
-	        done = true;
-		return time;
-	    }
-	}
-	else {
-	    // System.out.println(person.getName() + " exiting airlock of " + entity.getName());
-	    exitedAirlock = true;;
-	    return time;
+        if (!person.getLocationSituation().equals(Person.OUTSIDE)) {
+            if (ExitAirlock.canExitAirlock(person, entity)) {
+                addSubTask(new ExitAirlock(person, mars, entity));
+                return 0D;
+            }
+            else {
+                // System.out.println(person.getName() + " unable to exit airlock of " + entity.getName());
+                done = true;
+               	return time;
+            }
+        }
+        else {
+            // System.out.println(person.getName() + " exiting airlock of " + entity.getName());
+            exitedAirlock = true;;
+            return time;
         }
     }
 
@@ -67,20 +67,20 @@ abstract class EVAOperation extends Task implements Serializable {
 
         if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             if (EnterAirlock.canEnterAirlock(person, entity)) {
-	        addSubTask(new EnterAirlock(person, mars, entity));
-	        return 0D;
-	    }
-	    else {
+                addSubTask(new EnterAirlock(person, mars, entity));
+                return 0D;
+            }
+            else {
                 // System.out.println(person.getName() + " unable to enter airlock of " + entity.getName());
-		done = true;
-		return time;
-	    }
-	}
-	else {
-	    // System.out.println(person.getName() + " entering airlock of " + entity.getName());
-	    enteredAirlock = true;
+                done = true;
+                return time;
+            }
+        }
+        else {
+            // System.out.println(person.getName() + " entering airlock of " + entity.getName());
+            enteredAirlock = true;
             return time;
-	}
+        }
     }
 
     /**
@@ -90,56 +90,56 @@ abstract class EVAOperation extends Task implements Serializable {
      */
     protected boolean shouldEndEVAOperation() {
 
-	boolean result = false;
+        boolean result = false;
         
-	// Check if it is night time. 
-	if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
-	    // System.out.println(person.getName() + " should end EVA: night time.");
-	    result = true;
-	}
+        // Check if it is night time. 
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
+            // System.out.println(person.getName() + " should end EVA: night time.");
+            result = true;
+        }
 
         EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
-	if (suit == null) {
-	    // System.out.println(person.getName() + " should end EVA: No EVA suit found.");
-	    return true;
-	}
+        if (suit == null) {
+            // System.out.println(person.getName() + " should end EVA: No EVA suit found.");
+            return true;
+        }
         Inventory suitInv = suit.getInventory();
 	
-	// Check if EVA suit is at 15% of its oxygen capacity.
-	double oxygenCap = suitInv.getResourceCapacity(Inventory.OXYGEN);
-	double oxygen = suitInv.getResourceMass(Inventory.OXYGEN);
-	if (oxygen <= (oxygenCap * .15D)) {
-	    // System.out.println(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
-	    result = true;
-	}
-
-	// Check if EVA suit is at 15% of its water capacity.
-	double waterCap = suitInv.getResourceCapacity(Inventory.WATER);
-	double water = suitInv.getResourceMass(Inventory.WATER);
-	if (water <= (waterCap * .15D)) {
-	    // System.out.println(person.getName() + " should end EVA: EVA suit water level less than 15%");	
+        // Check if EVA suit is at 15% of its oxygen capacity.
+        double oxygenCap = suitInv.getResourceCapacity(Resource.OXYGEN);
+        double oxygen = suitInv.getResourceMass(Resource.OXYGEN);
+        if (oxygen <= (oxygenCap * .15D)) {
+            // System.out.println(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
             result = true;
-	}
+        }
 
-	// Check if life support system in suit is working properly.
-	if (!suit.lifeSupportCheck()) {
-	    // System.out.println(person.getName() + " should end EVA: EVA suit failed life support check.");	
-	    result = true;
-	}
+        // Check if EVA suit is at 15% of its water capacity.
+        double waterCap = suitInv.getResourceCapacity(Resource.WATER);
+        double water = suitInv.getResourceMass(Resource.WATER);
+        if (water <= (waterCap * .15D)) {
+            // System.out.println(person.getName() + " should end EVA: EVA suit water level less than 15%");	
+            result = true;
+        }
+
+        // Check if life support system in suit is working properly.
+        if (!suit.lifeSupportCheck()) {
+            // System.out.println(person.getName() + " should end EVA: EVA suit failed life support check.");	
+            result = true;
+        }
 
         // Check if suit has any malfunctions.
-	if (suit.getMalfunctionManager().hasMalfunction()) {
-	    // System.out.println(person.getName() + " should end EVA: EVA suit has malfunction.");	
-	    result = true;
-	}
+        if (suit.getMalfunctionManager().hasMalfunction()) {
+            // System.out.println(person.getName() + " should end EVA: EVA suit has malfunction.");	
+            result = true;
+        }
 	
-	// Check if person's medical condition is sufficient to continue phase.
+        // Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() < .5D) {
-	    // System.out.println(person.getName() + " should end EVA: medical problems.");	
-	    result = true;
-	}
+            // System.out.println(person.getName() + " should end EVA: medical problems.");	
+            result = true;
+        }
 	
-	return result;
+        return result;
     }
 
     /**
@@ -149,19 +149,19 @@ abstract class EVAOperation extends Task implements Serializable {
     protected void checkForAccident(double time) {
 
         EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
-	if (suit != null) {
+        if (suit != null) {
 	    
             double chance = .001D;
 
-	    // EVA operations skill modification.
-	    int skill = person.getSkillManager().getEffectiveSkillLevel("EVA Operations");
-	    if (skill <= 3) chance *= (4 - skill);
-	    else chance /= (skill - 2);
+            // EVA operations skill modification.
+            int skill = person.getSkillManager().getEffectiveSkillLevel("EVA Operations");
+            if (skill <= 3) chance *= (4 - skill);
+            else chance /= (skill - 2);
 
-	    if (RandomUtil.lessThanRandPercent(chance * time)) {
-	        // System.out.println(person.getName() + " has accident during EVA operation.");
-	        suit.getMalfunctionManager().accident();
+            if (RandomUtil.lessThanRandPercent(chance * time)) {
+                // System.out.println(person.getName() + " has accident during EVA operation.");
+                suit.getMalfunctionManager().accident();
             }
-	}
+        }
     }
 }

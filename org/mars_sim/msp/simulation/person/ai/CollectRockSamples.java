@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.74 2002-05-05
+ * @version 2.75 2003-02-07
  * @author Scott Davis
  */
 
@@ -40,9 +40,9 @@ class CollectRockSamples extends EVAOperation implements Serializable {
 		    double requiredSamples, double startingVehicleRockCargo) {
         super("Collecting rock samples", person, mars);
 
-	this.rover = rover;
-	this.requiredSamples = requiredSamples;
-	this.startingVehicleRockCargo = startingVehicleRockCargo;
+        this.rover = rover;
+        this.requiredSamples = requiredSamples;
+        this.startingVehicleRockCargo = startingVehicleRockCargo;
         this.collectedSamples = 0D;
 	
         phase = EXIT_ROVER;
@@ -58,17 +58,17 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 	
-	while ((timeLeft > 0D) && !done) {
+        while ((timeLeft > 0D) && !done) {
             if (phase.equals(EXIT_ROVER)) timeLeft = exitRover(timeLeft);
-	    else if (phase.equals(COLLECT_ROCKS)) timeLeft = collectRocks(timeLeft);
-	    else if (phase.equals(ENTER_ROVER)) timeLeft = enterRover(timeLeft);
-	}
+            else if (phase.equals(COLLECT_ROCKS)) timeLeft = collectRocks(timeLeft);
+            else if (phase.equals(ENTER_ROVER)) timeLeft = enterRover(timeLeft);
+        }
 
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 100 millisols of time spent)
-	// Experience points adjusted by person's "Experience Aptitude" attribute.
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = timeLeft / 100D;
-	NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("EVA Operations", experience);
 	
@@ -82,8 +82,8 @@ class CollectRockSamples extends EVAOperation implements Serializable {
      */
     private double exitRover(double time) {
         time = exitAirlock(time, rover);
-	if (exitedAirlock) phase = COLLECT_ROCKS;
-	return time;
+        if (exitedAirlock) phase = COLLECT_ROCKS;
+        return time;
     }
 
     /**
@@ -93,52 +93,51 @@ class CollectRockSamples extends EVAOperation implements Serializable {
      */
     private double collectRocks(double time) {
 
-	// Check for an accident during the EVA operation.
+        // Check for an accident during the EVA operation.
         checkForAccident(time);
 	    
         // Check if there is reason to cut the collection phase short and return
-	// to the rover.
-	if (shouldEndEVAOperation()) {
+        // to the rover.
+        if (shouldEndEVAOperation()) {
             // System.out.println(person.getName() + " should end EVA operation.");
-	    phase = ENTER_ROVER;
-	    return time;
-	}
+            phase = ENTER_ROVER;
+            return time;
+        }
 
-	double remainingPersonCapacity = person.getInventory()
-	        .getResourceRemainingCapacity(Inventory.ROCK_SAMPLES);
+        double remainingPersonCapacity = person.getInventory()
+	        .getResourceRemainingCapacity(Resource.ROCK_SAMPLES);
         double currentSamplesCollected = rover.getInventory()
-	        .getResourceMass(Inventory.ROCK_SAMPLES) - startingVehicleRockCargo; 
-	double remainingSamplesNeeded = requiredSamples - currentSamplesCollected;
-	double sampleLimit = remainingPersonCapacity;
-	if (remainingSamplesNeeded < remainingPersonCapacity)
-	    sampleLimit = remainingSamplesNeeded;
+	        .getResourceMass(Resource.ROCK_SAMPLES) - startingVehicleRockCargo; 
+        double remainingSamplesNeeded = requiredSamples - currentSamplesCollected;
+        double sampleLimit = remainingPersonCapacity;
+        if (remainingSamplesNeeded < remainingPersonCapacity)
+            sampleLimit = remainingSamplesNeeded;
 
-	double samplesCollected = time * COLLECTION_RATE;
+        double samplesCollected = time * COLLECTION_RATE;
 
         // Modify collection rate by "Areology" skill.
-	int areologySkill = person.getSkillManager().getEffectiveSkillLevel("Areology");
-	if (areologySkill == 0) samplesCollected /= 2D;
-	if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
+        int areologySkill = person.getSkillManager().getEffectiveSkillLevel("Areology");
+        if (areologySkill == 0) samplesCollected /= 2D;
+        if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
 
-	// Add experience to "Areology" skill.
-	// 1 base experience point per 10 millisols of collection time spent.
-	// Experience points adjusted by person's "Experience Aptitude" attribute.
+        // Add experience to "Areology" skill.
+        // 1 base experience point per 10 millisols of collection time spent.
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = time / 100D;
-	experience += experience *
+        experience += experience *
                 (((double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("Areology", experience);
 	
-	// Collect rock samples.
-	if (samplesCollected <= sampleLimit) {
-	    person.getInventory().addResource(Inventory.ROCK_SAMPLES, samplesCollected);
-	    return 0D;
-	}
-	else {
-	    if (sampleLimit >= 0D) 
-                person.getInventory().addResource(Inventory.ROCK_SAMPLES, sampleLimit);
-	    phase = ENTER_ROVER;
-	    return time - (sampleLimit / COLLECTION_RATE);
-	}
+        // Collect rock samples.
+        if (samplesCollected <= sampleLimit) {
+            person.getInventory().addResource(Resource.ROCK_SAMPLES, samplesCollected);
+            return 0D;
+        }
+        else {
+            if (sampleLimit >= 0D) person.getInventory().addResource(Resource.ROCK_SAMPLES, sampleLimit);
+            phase = ENTER_ROVER;
+            return time - (sampleLimit / COLLECTION_RATE);
+        }
     }
 
     /**
@@ -150,23 +149,23 @@ class CollectRockSamples extends EVAOperation implements Serializable {
 
         time = enterAirlock(time, rover);
 
-	if (enteredAirlock) {
-	    double rockSamples = person.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
+        if (enteredAirlock) {
+            double rockSamples = person.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
 
-	    // Load rock samples into rover.
-	    if (rockSamples > 0D) {
-	        rockSamples = person.getInventory().removeResource(Inventory.ROCK_SAMPLES, rockSamples);
-	        // System.out.println(person.getName() + " unloading " + rockSamples + " kg. of rock samples into " + rover.getName());
-	        rover.getInventory().addResource(Inventory.ROCK_SAMPLES, rockSamples);
-	        return 0D;
-	    }
-	    else {
-	        // System.out.println(person.getName() + " ending collect rock samples task.");
-		done = true;
-		return time;
-	    }
-	}
-	return 0D;
+            // Load rock samples into rover.
+            if (rockSamples > 0D) {
+                rockSamples = person.getInventory().removeResource(Resource.ROCK_SAMPLES, rockSamples);
+                // System.out.println(person.getName() + " unloading " + rockSamples + " kg. of rock samples into " + rover.getName());
+                rover.getInventory().addResource(Resource.ROCK_SAMPLES, rockSamples);
+                return 0D;
+            }
+            else {
+                // System.out.println(person.getName() + " ending collect rock samples task.");
+               	done = true;
+                return time;
+            }
+        }
+        return 0D;
     }
 
     /**
@@ -179,13 +178,13 @@ class CollectRockSamples extends EVAOperation implements Serializable {
     public static boolean canCollectRockSamples(Person person, Rover rover, Mars mars) {
         boolean result = true;
 
-	// Check if person can exit the rover.
-	if (!ExitAirlock.canExitAirlock(person, rover)) result = false;
+        // Check if person can exit the rover.
+        if (!ExitAirlock.canExitAirlock(person, rover)) result = false;
 
-	// Check if it is night time outside.
-	if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) == 0) result = false;
+        // Check if it is night time outside.
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) == 0) result = false;
 
-	// Check if person's medical condition will not allow task.
+        // Check if person's medical condition will not allow task.
         if (person.getPerformanceRating() < .5D) result = false;
 	
         return result;

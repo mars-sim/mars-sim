@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryPanel.java
- * @version 2.74 2002-03-17
+ * @version 2.75 2003-02-05
  * @author Scott Davis
  */
 
@@ -36,34 +36,34 @@ public class InventoryPanel extends JPanel {
      */
     public InventoryPanel(Inventory inventory) {
         // Call JPanel constructor.
-	super();
+        super();
 
-	// Initialize data members.
-	this.inventory = inventory;
+        // Initialize data members.
+        this.inventory = inventory;
 
-	// Set default font
-	setFont(new Font("Helvetica", Font.BOLD, 12));
+        // Set default font
+        setFont(new Font("Helvetica", Font.BOLD, 12));
 
-	// Set a border around the panel.
-	setBorder(new CompoundBorder(new EtchedBorder(),
+        // Set a border around the panel.
+        setBorder(new CompoundBorder(new EtchedBorder(),
 	        new EmptyBorder(5, 5, 5, 5)));
 	
-	// Set layout
-	setLayout(new BorderLayout(0, 5));
+        // Set layout
+        setLayout(new BorderLayout(0, 5));
 
-	// Prepare name label.
-	JLabel nameLabel = new JLabel("Inventory", JLabel.CENTER);
-	add(nameLabel, "North");
+        // Prepare name label.
+        JLabel nameLabel = new JLabel("Inventory", JLabel.CENTER);
+        add(nameLabel, "North");
 
-	// Prepare content pane.
-	JPanel contentPane = new JPanel(new GridLayout(2, 1));
-	add(contentPane, "Center");
+        // Prepare content pane.
+        JPanel contentPane = new JPanel(new GridLayout(2, 1));
+        add(contentPane, "Center");
 
         // Prepare resource pane.
-	contentPane.add(prepareResourcePane());
+        contentPane.add(prepareResourcePane());
 	
-	// Prepare equipment pane.
-	contentPane.add(prepareEquipmentPane());
+        // Prepare equipment pane.
+        contentPane.add(prepareEquipmentPane());
     }
 
     /**
@@ -73,67 +73,67 @@ public class InventoryPanel extends JPanel {
     private JPanel prepareResourcePane() {
 
         // Prepare resource pane.
-	JPanel resourcePane = new JPanel(new BorderLayout());
-	resourcePane.setBorder(new CompoundBorder(new EtchedBorder(),
+	    JPanel resourcePane = new JPanel(new BorderLayout());
+        resourcePane.setBorder(new CompoundBorder(new EtchedBorder(),
                 new EmptyBorder(5, 5, 5, 5)));
 	
         // Prepare resource label.
-	JLabel resourceLabel = new JLabel("Resources:", JLabel.CENTER);
-	resourcePane.add(resourceLabel, "North");
+        JLabel resourceLabel = new JLabel("Resources:", JLabel.CENTER);
+        resourcePane.add(resourceLabel, "North");
 	   
         // Prepare resource amounts pane.
-	JPanel resourceAmountOuterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	resourcePane.add(resourceAmountOuterPane, "Center");
-	JPanel resourceAmountPane = new JPanel(new GridLayout(5, 2, 5, 3));
-	resourceAmountOuterPane.add(resourceAmountPane);
+        JPanel resourceAmountOuterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        resourcePane.add(resourceAmountOuterPane, "Center");
+        JPanel resourceAmountPane = new JPanel(new GridLayout(5, 2, 5, 3));
+        resourceAmountOuterPane.add(resourceAmountPane);
 
         // Prepare oxygen name label.
-	JLabel oxygenNameLabel = new JLabel("Oxygen:");
-	resourceAmountPane.add(oxygenNameLabel);
+        JLabel oxygenNameLabel = new JLabel("Oxygen:");
+        resourceAmountPane.add(oxygenNameLabel);
 
-	// Prepare oxygen label.
-	double oxygen = inventory.getResourceMass(Inventory.OXYGEN);
-	oxygenLabel = new JLabel("" + roundOneDecimal(oxygen) + " kg", JLabel.RIGHT);
-	resourceAmountPane.add(oxygenLabel);
+        // Prepare oxygen label.
+        double oxygen = inventory.getResourceMass(Resource.OXYGEN);
+        oxygenLabel = new JLabel("" + roundOneDecimal(oxygen) + " kg", JLabel.RIGHT);
+        resourceAmountPane.add(oxygenLabel);
 
         // Prepare water name label.
-	JLabel waterNameLabel = new JLabel("Water:");
-	resourceAmountPane.add(waterNameLabel);
+        JLabel waterNameLabel = new JLabel("Water:");
+        resourceAmountPane.add(waterNameLabel);
 
-	// Prepare water label.
-	double water = inventory.getResourceMass(Inventory.WATER);
-	waterLabel = new JLabel("" + roundOneDecimal(water) + " kg", JLabel.RIGHT);
-	resourceAmountPane.add(waterLabel);
+        // Prepare water label.
+        double water = inventory.getResourceMass(Resource.WATER);
+        waterLabel = new JLabel("" + roundOneDecimal(water) + " kg", JLabel.RIGHT);
+        resourceAmountPane.add(waterLabel);
 
         // Prepare food name label.
-	JLabel foodNameLabel = new JLabel("Food:");
-	resourceAmountPane.add(foodNameLabel);
+        JLabel foodNameLabel = new JLabel("Food:");
+        resourceAmountPane.add(foodNameLabel);
 	
-	// Prepare food label.
-	double food = inventory.getResourceMass(Inventory.FOOD);
-	foodLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
-	resourceAmountPane.add(foodLabel);
+        // Prepare food label.
+        double food = inventory.getResourceMass(Resource.FOOD);
+        foodLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
+        resourceAmountPane.add(foodLabel);
 
-	// Prepare fuel name label.
-	JLabel fuelNameLabel = new JLabel("Fuel:");
-	resourceAmountPane.add(fuelNameLabel);
+        // Prepare fuel name label.
+        JLabel fuelNameLabel = new JLabel("Fuel:");
+        resourceAmountPane.add(fuelNameLabel);
 
-	// Prepare fuel label.
-	double fuel = inventory.getResourceMass(Inventory.FUEL);
-	fuelLabel = new JLabel("" + roundOneDecimal(fuel) + " kg", JLabel.RIGHT);
-	resourceAmountPane.add(fuelLabel);
+        // Prepare fuel label.
+        double fuel = inventory.getResourceMass(Resource.FUEL);
+        fuelLabel = new JLabel("" + roundOneDecimal(fuel) + " kg", JLabel.RIGHT);
+        resourceAmountPane.add(fuelLabel);
 
-	// Prepare rock samples name label.
-	JLabel rockSamplesNameLabel = new JLabel("Rock Samples:");
-	resourceAmountPane.add(rockSamplesNameLabel);
+        // Prepare rock samples name label.
+        JLabel rockSamplesNameLabel = new JLabel("Rock Samples:");
+        resourceAmountPane.add(rockSamplesNameLabel);
 
-	// Prepare rock samples label.
-	double rockSamples = inventory.getResourceMass(Inventory.ROCK_SAMPLES);
-	rockSamplesLabel = new JLabel("" + roundOneDecimal(rockSamples) + " kg", JLabel.RIGHT);
-	resourceAmountPane.add(rockSamplesLabel);
+        // Prepare rock samples label.
+        double rockSamples = inventory.getResourceMass(Resource.ROCK_SAMPLES);
+        rockSamplesLabel = new JLabel("" + roundOneDecimal(rockSamples) + " kg", JLabel.RIGHT);
+        resourceAmountPane.add(rockSamplesLabel);
 
-	// Return resource pane.
-	return resourcePane;
+        // Return resource pane.
+        return resourcePane;
     }
 
     /**
@@ -143,29 +143,29 @@ public class InventoryPanel extends JPanel {
     private JScrollPane prepareEquipmentPane() {
 
         // Prepare equipment pane.
-	JPanel equipmentPane = new JPanel(new BorderLayout());
-	JScrollPane scroller = new JScrollPane(equipmentPane);
-	scroller.setBorder(new CompoundBorder(new EtchedBorder(),
+        JPanel equipmentPane = new JPanel(new BorderLayout());
+        JScrollPane scroller = new JScrollPane(equipmentPane);
+        scroller.setBorder(new CompoundBorder(new EtchedBorder(),
                 new EmptyBorder(5, 5, 5, 5)));
 
-	// Prepare equipment label.
-	JLabel equipmentLabel = new JLabel("Equipment:", JLabel.CENTER);
-	equipmentPane.add(equipmentLabel, "North");
+        // Prepare equipment label.
+        JLabel equipmentLabel = new JLabel("Equipment:", JLabel.CENTER);
+        equipmentPane.add(equipmentLabel, "North");
 
         // Prepare equipment listing pane.
-	JPanel equipmentListingOuterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	equipmentPane.add(equipmentListingOuterPane, "Center");
-	equipmentListingPane = new JPanel(new GridLayout(0, 2, 5, 3));
-	equipmentListingOuterPane.add(equipmentListingPane);
+        JPanel equipmentListingOuterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        equipmentPane.add(equipmentListingOuterPane, "Center");
+        equipmentListingPane = new JPanel(new GridLayout(0, 2, 5, 3));
+        equipmentListingOuterPane.add(equipmentListingPane);
 	
         EquipmentCollection equipment = inventory.getContainedUnits().getEquipment();
-	cachedEquipment = equipment.sortByName();
+        cachedEquipment = equipment.sortByName();
 
         // Refresh equipment listing pane.
-	refreshEquipmentListing();
+        refreshEquipmentListing();
 	
-	// Return equipment pane.
-	return scroller;
+        // Return equipment pane.
+        return scroller;
     }
 
     /** 
@@ -174,32 +174,32 @@ public class InventoryPanel extends JPanel {
     private void refreshEquipmentListing() {
 
         // Remove old items from equipment listing pane.
-	equipmentListingPane.removeAll();
+        equipmentListingPane.removeAll();
 
-	// Add cached equipment collection.
-	Equipment last = null;
-	int count = 0;
-	EquipmentIterator i = cachedEquipment.iterator();
-	while (i.hasNext()) {
-	    Equipment temp = i.next();
-	    if (last != null) {
-	        if (temp.getName().equals(last.getName())) {
-	            count++;
-	        }
-	        else {
-	            addEquipmentListing(last, count);
-	            count = 1;
-	        }
-	    }
-	    else count++;
+        // Add cached equipment collection.
+        Equipment last = null;
+        int count = 0;
+        EquipmentIterator i = cachedEquipment.iterator();
+        while (i.hasNext()) {
+            Equipment temp = i.next();
+            if (last != null) {
+                if (temp.getName().equals(last.getName())) {
+                    count++;
+                }
+                else {
+                    addEquipmentListing(last, count);
+                    count = 1;
+                }
+            }
+            else count++;
 
             last = temp;
 
             if (!i.hasNext()) addEquipmentListing(last, count);
         }
 
-	// Validate equipment listing pane.
-	equipmentListingPane.validate();
+        // Validate equipment listing pane.
+        equipmentListingPane.validate();
     }
     
     /** 
@@ -210,23 +210,23 @@ public class InventoryPanel extends JPanel {
     private void addEquipmentListing(Equipment equipment, int quantity) {
         
         // Prepare equipment name label.
-	JLabel equipmentNameLabel = new JLabel(equipment.getName() + ":");
-	equipmentListingPane.add(equipmentNameLabel);
+        JLabel equipmentNameLabel = new JLabel(equipment.getName() + ":");
+        equipmentListingPane.add(equipmentNameLabel);
 	                                                             
-	// Prepare equipment quantity label.
-	JLabel equipmentQuantityLabel = new JLabel("" + quantity, JLabel.RIGHT);
-	equipmentListingPane.add(equipmentQuantityLabel);
+        // Prepare equipment quantity label.
+        JLabel equipmentQuantityLabel = new JLabel("" + quantity, JLabel.RIGHT);
+        equipmentListingPane.add(equipmentQuantityLabel);
     }
     
     /**
      * Updates the inventory panel's information.
      */
     public void updateInfo() {
-	// Update the resources.
+        // Update the resources.
         updateResources();
 
-	// Update the equipment.
-	updateEquipment();
+        // Update the equipment.
+        updateEquipment();
     }
 
     /**
@@ -234,20 +234,20 @@ public class InventoryPanel extends JPanel {
      */
     private void updateResources() {
   
-        double oxygen = inventory.getResourceMass(Inventory.OXYGEN);
-	oxygenLabel.setText("" + roundOneDecimal(oxygen) + " kg");
+        double oxygen = inventory.getResourceMass(Resource.OXYGEN);
+        oxygenLabel.setText("" + roundOneDecimal(oxygen) + " kg");
 
-	double water = inventory.getResourceMass(Inventory.WATER);
-	waterLabel.setText("" + roundOneDecimal(water) + " kg");
+        double water = inventory.getResourceMass(Resource.WATER);
+        waterLabel.setText("" + roundOneDecimal(water) + " kg");
 
-	double food = inventory.getResourceMass(Inventory.FOOD);
-	foodLabel.setText("" + roundOneDecimal(food) + " kg");
+        double food = inventory.getResourceMass(Resource.FOOD);
+        foodLabel.setText("" + roundOneDecimal(food) + " kg");
 
-	double fuel = inventory.getResourceMass(Inventory.FUEL);
-	fuelLabel.setText("" + roundOneDecimal(fuel) + " kg");
+        double fuel = inventory.getResourceMass(Resource.FUEL);
+        fuelLabel.setText("" + roundOneDecimal(fuel) + " kg");
 
-	double rockSamples = inventory.getResourceMass(Inventory.ROCK_SAMPLES);
-	rockSamplesLabel.setText("" + roundOneDecimal(rockSamples) + " kg");
+        double rockSamples = inventory.getResourceMass(Resource.ROCK_SAMPLES);
+        rockSamplesLabel.setText("" + roundOneDecimal(rockSamples) + " kg");
     }
 
     /**
@@ -256,23 +256,23 @@ public class InventoryPanel extends JPanel {
     private void updateEquipment() {
  
         EquipmentCollection equipment = inventory.getContainedUnits().getEquipment();
-	EquipmentCollection sortedEquipment = equipment.sortByName();
+        EquipmentCollection sortedEquipment = equipment.sortByName();
 
-	// Check if sorted equipment list equals cached equipment list.
-	boolean match = true;
-	if (sortedEquipment.size() != cachedEquipment.size()) match = false;
-	else {
+        // Check if sorted equipment list equals cached equipment list.
+        boolean match = true;
+        if (sortedEquipment.size() != cachedEquipment.size()) match = false;
+        else {
             EquipmentIterator i1 = sortedEquipment.iterator();
-	    EquipmentIterator i2 = cachedEquipment.iterator();
+            EquipmentIterator i2 = cachedEquipment.iterator();
             while (i1.hasNext()) {
-	        if (i1.next() != i2.next()) match = false;
-	    }
-	}
+                if (i1.next() != i2.next()) match = false;
+            }
+        }
 
-	if (!match) {
-	    cachedEquipment = sortedEquipment;
-	    refreshEquipmentListing();
-	}
+        if (!match) {
+            cachedEquipment = sortedEquipment;
+            refreshEquipmentListing();
+        }
     }
 
     /** Returns a double value rounded to one decimal point 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.74 2002-05-05
+ * @version 2.75 2003-02-07
  * @author Scott Davis
  */
 
@@ -31,11 +31,11 @@ class EnterAirlock extends Task implements Serializable {
     public EnterAirlock(Person person, Mars mars, Airlockable entity) {
         super("Entering airlock from EVA", person, false, mars);
 
-	// Initialize data members
-	description = "Entering " + entity.getName() + " from EVA";
+        // Initialize data members
+        description = "Entering " + entity.getName() + " from EVA";
         this.entity = entity;
 
-	// System.out.println(person.getName() + " is starting to enter " + entity.getName());
+        // System.out.println(person.getName() + " is starting to enter " + entity.getName());
     }
 
     /**
@@ -47,47 +47,47 @@ class EnterAirlock extends Task implements Serializable {
         super("Entering airlock from EVA", person, false, mars);
 
         // System.out.println("Enter Airlock due to strange situation.");
-	// System.out.println("Illness: " + person.getPhysicalCondition().getHealthSituation());
-	// System.out.println("Performance Rating: " + person.getPerformanceRating());
+        // System.out.println("Illness: " + person.getPhysicalCondition().getHealthSituation());
+        // System.out.println("Performance Rating: " + person.getPerformanceRating());
 	
-	// Determine airlockable entity from other people on mission.
-	if (person.getMind().getMission() != null) {
-	    PersonIterator i = person.getMind().getMission().getPeople().iterator();
-	    while (i.hasNext() && (entity == null)) {
-	        Person p = i.next();
-		if (p != person) {
-		    if (p.getSettlement() != null) entity = p.getSettlement();
-		    else if (p.getVehicle() != null) entity = (Rover) p.getVehicle();
-		}
-	    }
-	}
+        // Determine airlockable entity from other people on mission.
+        if (person.getMind().getMission() != null) {
+            PersonIterator i = person.getMind().getMission().getPeople().iterator();
+            while (i.hasNext() && (entity == null)) {
+                Person p = i.next();
+                if (p != person) {
+                    if (p.getSettlement() != null) entity = p.getSettlement();
+                    else if (p.getVehicle() != null) entity = (Rover) p.getVehicle();
+                }
+            }
+        }
 
-	// If not look for any settlements at person's location.
-	if (entity == null) {
-	    SettlementIterator i = mars.getUnitManager().getSettlements().iterator();
-	    while (i.hasNext() && (entity == null)) {
+        // If not look for any settlements at person's location.
+        if (entity == null) {
+            SettlementIterator i = mars.getUnitManager().getSettlements().iterator();
+            while (i.hasNext() && (entity == null)) {
                 Settlement settlement = i.next();
-		if (person.getCoordinates().equals(settlement.getCoordinates())) 
-	            entity = settlement;
+                if (person.getCoordinates().equals(settlement.getCoordinates())) 
+                entity = settlement;
             }
         }
 
-	// If not look for any rovers at person's location.
-	if (entity == null) {
-	    VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
-	    while (i.hasNext() && (entity == null)) {
+        // If not look for any rovers at person's location.
+        if (entity == null) {
+            VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
+            while (i.hasNext() && (entity == null)) {
                 Vehicle vehicle = i.next();
-		if (vehicle instanceof Rover) {
-	            Rover rover = (Rover) vehicle;
-		    if (person.getCoordinates().equals(rover.getCoordinates())) 
-	                entity = rover;
-		}
+            	if (vehicle instanceof Rover) {
+                    Rover rover = (Rover) vehicle;
+            	    if (person.getCoordinates().equals(rover.getCoordinates())) 
+                    entity = rover;
+                }
             }
         }
 
-	// If still no airlockable entity, end task.
-	if (entity == null) done = true;
-	else description = "Entering " + entity.getName() + " from EVA";
+        // If still no airlockable entity, end task.
+        if (entity == null) done = true;
+        else description = "Entering " + entity.getName() + " from EVA";
     }
    
     /** Returns the weighted probability that a person might perform this task.
@@ -99,9 +99,9 @@ class EnterAirlock extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
-	if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 500D;
+        if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 500D;
 
-	return result;
+        return result;
     }
     
     /** 
@@ -116,24 +116,24 @@ class EnterAirlock extends Task implements Serializable {
         Airlock airlock = entity.getAirlock();
 	
         // If person is in airlock, wait around.
-	if (airlock.inAirlock(person)) {
-	    // Make sure airlock is activated.
-	    airlock.activateAirlock();
-	}
-	else {
-	    // If person is outside, try to enter airlock.
-	    if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-	        if (airlock.isOuterDoorOpen()) airlock.enterAirlock(person, false);
-		else airlock.requestOpenDoor();
-	    }
-	    else {
-	        // If person is inside, put stuff away and end task.
-	        putAwayEVASuit();
-		done = true;
-	    }
-	}
+        if (airlock.inAirlock(person)) {
+            // Make sure airlock is activated.
+            airlock.activateAirlock();
+        }
+        else {
+            // If person is outside, try to enter airlock.
+            if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+                if (airlock.isOuterDoorOpen()) airlock.enterAirlock(person, false);
+            	else airlock.requestOpenDoor();
+            }
+            else {
+                // If person is inside, put stuff away and end task.
+                putAwayEVASuit();
+            	done = true;
+            }
+        }
 
-	return 0D;
+        return 0D;
     }
 
     /**
@@ -143,25 +143,25 @@ class EnterAirlock extends Task implements Serializable {
     private void putAwayEVASuit() {
        
         EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
-	Inventory suitInv = suit.getInventory();
-	Inventory personInv = person.getInventory();
-	Inventory entityInv = ((Unit) entity).getInventory();
+        Inventory suitInv = suit.getInventory();
+        Inventory personInv = person.getInventory();
+        Inventory entityInv = ((Unit) entity).getInventory();
 
-	// Refill oxygen in suit from entity's inventory. 
-	double neededOxygen = suitInv.getResourceRemainingCapacity(Inventory.OXYGEN);
-	double takenOxygen = entityInv.removeResource(Inventory.OXYGEN, neededOxygen);
-	// System.out.println(person.getName() + " refilling EVA suit with " + takenOxygen + " oxygen.");
-	suitInv.addResource(Inventory.OXYGEN, takenOxygen);
+        // Refill oxygen in suit from entity's inventory. 
+        double neededOxygen = suitInv.getResourceRemainingCapacity(Resource.OXYGEN);
+        double takenOxygen = entityInv.removeResource(Resource.OXYGEN, neededOxygen);
+        // System.out.println(person.getName() + " refilling EVA suit with " + takenOxygen + " oxygen.");
+        suitInv.addResource(Resource.OXYGEN, takenOxygen);
 
-	// Refill water in suit from entity's inventory.
-	double neededWater = suitInv.getResourceRemainingCapacity(Inventory.WATER);
-	double takenWater = entityInv.removeResource(Inventory.WATER, neededWater);
-	// System.out.println(person.getName() + " refilling EVA suit with " + takenWater + " water.");
-	suitInv.addResource(Inventory.WATER, takenWater);
+        // Refill water in suit from entity's inventory.
+        double neededWater = suitInv.getResourceRemainingCapacity(Resource.WATER);
+        double takenWater = entityInv.removeResource(Resource.WATER, neededWater);
+        // System.out.println(person.getName() + " refilling EVA suit with " + takenWater + " water.");
+        suitInv.addResource(Resource.WATER, takenWater);
 
-	// Return suit to entity's inventory.
-	// System.out.println(person.getName() + " putting away EVA suit into " + entity.getName());
-	personInv.takeUnit(suit, (Unit) entity);
+        // Return suit to entity's inventory.
+        // System.out.println(person.getName() + " putting away EVA suit into " + entity.getName());
+        personInv.takeUnit(suit, (Unit) entity);
     }
 
     /**

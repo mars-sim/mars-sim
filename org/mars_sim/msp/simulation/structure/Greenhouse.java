@@ -126,7 +126,7 @@ public class Greenhouse extends Facility implements Serializable {
             if (workInPhase >= harvestingWork) {
                 workInPhase -= harvestingWork;
                 double foodProduced = getFullHarvestAmount() * (growingWork / workLoad);
-		manager.getSettlement().getInventory().addResource(Inventory.FOOD, foodProduced);
+		manager.getSettlement().getInventory().addResource(Resource.FOOD, foodProduced);
                 phase = "Planting";
                 growingWork = 0D;
                 growthPeriodCompleted = 0D;

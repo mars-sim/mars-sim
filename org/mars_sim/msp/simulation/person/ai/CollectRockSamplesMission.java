@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-05-19
+ * @version 2.75 2003-02-07
  * @author Scott Davis
  */
 
@@ -87,19 +87,19 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement currentSettlement = person.getSettlement();
-	    boolean possible = true;
+            boolean possible = true;
 	    
             if (mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) 
 	        possible = false;
 	    
             if (!ReserveRover.availableRovers(ReserveRover.EXPLORER_ROVER, currentSettlement)) possible = false;
 
-	    double rocks = currentSettlement.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
-	    if (rocks >= 300D) possible = false;
+            double rocks = currentSettlement.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
+            if (rocks >= 300D) possible = false;
 
             if (currentSettlement.getCurrentPopulationNum() <= 1) possible = false;
 	    
-	    if (possible) result = 5D;
+            if (possible) result = 5D;
         }
 
         return result;
@@ -116,9 +116,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         if ((phase.equals(EMBARK)) && !hasPerson(person)) {
             if (person.getSettlement() == startingSettlement) {
                 if (people.size() < missionCapacity) {
-		    if (people.size() < person.getSettlement().getCurrentPopulationNum()) 	
-			result = 50D;
-		}
+            	    if (people.size() < person.getSettlement().getCurrentPopulationNum()) 	
+            		result = 50D;
+            	}
             }
         }
 
@@ -157,8 +157,8 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         if (rover == null) {
             if (reserveRover == null) {
                 reserveRover = new ReserveRover(ReserveRover.EXPLORER_ROVER, person, mars, 
-	                startingSettlement.getCoordinates());
-		assignTask(person, reserveRover);
+                startingSettlement.getCoordinates());
+               	assignTask(person, reserveRover);
                 return;
             }
             else {
@@ -190,7 +190,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If there isn't enough supplies available, end mission.
         if (LoadVehicle.isFullyLoaded(rover)) roverLoaded = true;
         if (!roverLoaded) {
-	    assignTask(person, new LoadVehicle(person, mars, rover));
+            assignTask(person, new LoadVehicle(person, mars, rover));
             if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission();
             return;
         }
@@ -201,14 +201,14 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	    person.getSettlement().getInventory().takeUnit(person, rover);
 
         // If any people in mission haven't entered the rover, return.
-	PersonIterator i = people.iterator();
-	while (i.hasNext()) {
+        PersonIterator i = people.iterator();
+        while (i.hasNext()) {
             Person tempPerson = i.next();
             if (!tempPerson.getLocationSituation().equals(Person.INVEHICLE)) return;
         }
 
         // Make final preperations on rover.
-	startingSettlement.getInventory().dropUnit(rover);
+        startingSettlement.getInventory().dropUnit(rover);
         destination = (Coordinates) collectionSites.elementAt(0);
         rover.setDestination(destination);
         rover.setDestinationType("Coordinates");
@@ -223,14 +223,14 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private void drivingPhase(Person person) {
 
         // If someone has a dangerous medical problem, drive home.
-	if (hasDangerousMedicalProblems() && !phase.equals(DRIVEHOME)) {
+        if (hasDangerousMedicalProblems() && !phase.equals(DRIVEHOME)) {
             phase = DRIVEHOME;
             destination = startingSettlement.getCoordinates();
             rover.setDestinationSettlement(startingSettlement);
             rover.setDestinationType("Settlement");
-	    startingTime = null;
-	    startingDistance = 0D;
-	    siteIndex = collectionSites.size();
+            startingTime = null;
+            startingDistance = 0D;
+            siteIndex = collectionSites.size();
         }	    
 	    
         // Record starting time and distance to destination.
@@ -246,9 +246,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             }
             else {
                 phase = COLLECTSAMPLES + " from Site " + (siteIndex + 1);
-		collectedSamples = 0D;
-		collectingStart = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
-		startCollectingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
+            	collectedSamples = 0D;
+            	collectingStart = rover.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
+            	startCollectingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
             }
             return;
         }
@@ -257,18 +257,18 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // Can't be immediate last driver and can't be at night time.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) > 0D) {
             if (!rover.getMalfunctionManager().hasMalfunction()) {
-	        if (person == lastDriver) {
+                if (person == lastDriver) {
                     lastDriver = null;
                 }
                 else {
                     if ((rover.getDriver() == null) && (rover.getStatus().equals(Vehicle.PARKED))) {
-			if (driveTask != null) driveTask = new DriveGroundVehicle(person, mars, rover, 
+                        if (driveTask != null) driveTask = new DriveGroundVehicle(person, mars, rover, 
                                 destination, startingTime, startingDistance, driveTask.getPhase());
-			else driveTask = new DriveGroundVehicle(person, mars, rover, destination, 
+                        else driveTask = new DriveGroundVehicle(person, mars, rover, destination, 
                                 startingTime, startingDistance);
-		        assignTask(person, driveTask);
+                        assignTask(person, driveTask);
                         lastDriver = person;
-		    }
+                    }
                 }
             }
         }
@@ -282,53 +282,53 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         boolean endPhase = false;
 	
         // Calculate samples collected in phase so far.
-	collectedSamples = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES) - collectingStart;
+        collectedSamples = rover.getInventory().getResourceMass(Resource.ROCK_SAMPLES) - collectingStart;
 
-	if (everyoneInRover()) {
+        if (everyoneInRover()) {
 
-	    // If collected samples are sufficient for this site, end the collecting phase.
-	    if (collectedSamples >= SITE_SAMPLE_AMOUNT) {
-		// System.out.println("CollectRockSamplesMission: collectedSamples: " + collectedSamples);
-		// MarsClock currentTime = mars.getMasterClock().getMarsClock();
-		// double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
-		// System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
-		endPhase = true;
-	    }
+            // If collected samples are sufficient for this site, end the collecting phase.
+            if (collectedSamples >= SITE_SAMPLE_AMOUNT) {
+                // System.out.println("CollectRockSamplesMission: collectedSamples: " + collectedSamples);
+                // MarsClock currentTime = mars.getMasterClock().getMarsClock();
+                // double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
+                // System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
+                endPhase = true;
+	        }
 
-	    // Determine if no one can start the collect rock samples task.
-	    boolean nobodyCollect = true;
-	    PersonIterator j = people.iterator();
-	    while (j.hasNext()) {
-	        if (CollectRockSamples.canCollectRockSamples(j.next(), rover, mars)) nobodyCollect = false;
-	    }
+            // Determine if no one can start the collect rock samples task.
+            boolean nobodyCollect = true;
+            PersonIterator j = people.iterator();
+            while (j.hasNext()) {
+                if (CollectRockSamples.canCollectRockSamples(j.next(), rover, mars)) nobodyCollect = false;
+            }
 	    
-	    // If no one can collect rocks and this is not due to it just being
-	    // night time, end the collecting phase.
-	    int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
-	    if (nobodyCollect && (sunlight > 0)) {
-		// System.out.println("CollectRockSamplesMission: nobody can collect and not nighttime.");
-		// MarsClock currentTime = mars.getMasterClock().getMarsClock();
-		// double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
-		// System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
-		endPhase = true;
-	    }
-	}
+            // If no one can collect rocks and this is not due to it just being
+            // night time, end the collecting phase.
+            int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
+            if (nobodyCollect && (sunlight > 0)) {
+                // System.out.println("CollectRockSamplesMission: nobody can collect and not nighttime.");
+                // MarsClock currentTime = mars.getMasterClock().getMarsClock();
+                // double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
+                // System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
+                endPhase = true;
+            }
+        }
 
-	if (!endPhase) {
-	    if (collectedSamples < SITE_SAMPLE_AMOUNT) {
-	        // If person can collect rock samples, start him/her on that task.
-	        if (CollectRockSamples.canCollectRockSamples(person, rover, mars)) {
+        if (!endPhase) {
+            if (collectedSamples < SITE_SAMPLE_AMOUNT) {
+                // If person can collect rock samples, start him/her on that task.
+                if (CollectRockSamples.canCollectRockSamples(person, rover, mars)) {
                     CollectRockSamples collectRocks = new CollectRockSamples(person, rover, mars, 
                             SITE_SAMPLE_AMOUNT - collectedSamples, 
-                            rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES));
-		    assignTask(person, collectRocks);
+                            rover.getInventory().getResourceMass(Resource.ROCK_SAMPLES));
+                    assignTask(person, collectRocks);
                 }
             }
-	}
-	else {
+        }
+        else {
             // End collecting phase.
             siteIndex++;
-	    if (hasDangerousMedicalProblems()) {
+            if (hasDangerousMedicalProblems()) {
                 siteIndex = collectionSites.size();
             }
             if (siteIndex == collectionSites.size()) {
@@ -354,16 +354,16 @@ class CollectRockSamplesMission extends Mission implements Serializable {
      */
     private boolean hasDangerousMedicalProblems() {
         boolean result = false;
-	PersonIterator i = people.iterator();
-	while (i.hasNext()) {
-	    Person person = i.next();
-	    Iterator meds = person.getPhysicalCondition().getProblems().iterator();
-	    while (meds.hasNext()) {
+        PersonIterator i = people.iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+            Iterator meds = person.getPhysicalCondition().getProblems().iterator();
+            while (meds.hasNext()) {
                 HealthProblem prob = (HealthProblem) meds.next();
-		if (prob.getIllness().getRecoveryTreatment() != null) result = true;
-	    }
-	}
-	return result;
+                if (prob.getIllness().getRecoveryTreatment() != null) result = true;
+            }
+        }
+        return result;
     }
     
     /**
@@ -385,16 +385,16 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private void disembarkingPhase(Person person) {
 
         // Make sure rover is parked at settlement.
-	startingSettlement.getInventory().addUnit(rover);
+        startingSettlement.getInventory().addUnit(rover);
         rover.setDestinationSettlement(null);
         rover.setDestinationType("None");
-	rover.setSpeed(0D);
+        rover.setSpeed(0D);
         rover.setETA(null);
 
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-	    rover.getInventory().takeUnit(person, startingSettlement);
-	}
+            rover.getInventory().takeUnit(person, startingSettlement);
+        }
 
         // Unload rover if necessary.
         if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
@@ -405,8 +405,8 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         // If everyone has disembarked and rover is unloaded, end mission.
         boolean allDisembarked = true;
-	PersonIterator i = people.iterator();
-	while (i.hasNext()) {
+        PersonIterator i = people.iterator();
+        while (i.hasNext()) {
             Person tempPerson = i.next();
             if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
         }
@@ -437,10 +437,10 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
             double startDistanceToSettlement = startingLocation.getDistance(startingSettlement.getCoordinates());
 
-	    // Don't add collection site if greater than remaining rover range.
-	    if (remainingRange < startDistanceToSettlement) {
+            // Don't add collection site if greater than remaining rover range.
+            if (remainingRange < startDistanceToSettlement) {
                 numSites = x;
-		break;
+                break;
             }
 
             direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
@@ -480,6 +480,6 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             }
         }
 
-	super.endMission();
+        super.endMission();
     }
 }

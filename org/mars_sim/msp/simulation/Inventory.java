@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * Inventory.java
- * @version 2.75 2002-10-13
+ * Resource.java
+ * @version 2.75 2003-02-07
  * @author Scott Davis 
  */
 
@@ -16,14 +16,6 @@ import java.util.*;
  *  what the unit contains.
  */
 public class Inventory implements Serializable {
-
-    // Static data members
-    // The resource names.
-    public static final String WATER = "water";
-    public static final String OXYGEN = "oxygen";
-    public static final String FOOD = "food";
-    public static final String FUEL = "fuel";
-    public static final String ROCK_SAMPLES = "rock samples";
 	
     // Data members
     private Unit owner;  // The unit that owns this inventory. 
@@ -42,11 +34,13 @@ public class Inventory implements Serializable {
         this.owner = owner;
 
 	    // Initialize contained resources to zero.
-        containedResources.put(WATER, new Double(0D));
-	    containedResources.put(OXYGEN, new Double(0D));
-	    containedResources.put(FOOD, new Double(0D));
-	    containedResources.put(FUEL, new Double(0D));
-	    containedResources.put(ROCK_SAMPLES, new Double(0D));
+        containedResources.put(Resource.WATER, new Double(0D));
+	    containedResources.put(Resource.OXYGEN, new Double(0D));
+	    containedResources.put(Resource.FOOD, new Double(0D));
+	    containedResources.put(Resource.FUEL, new Double(0D));
+	    containedResources.put(Resource.ROCK_SAMPLES, new Double(0D));
+        containedResources.put(Resource.HYDROGEN, new Double(0D));
+        containedResources.put(Resource.METHANE, new Double(0D));
     }
 
     /**
@@ -98,28 +92,28 @@ public class Inventory implements Serializable {
      */
     public double addResource(String resource, double mass) {
         if (containedResources.containsKey(resource) && (mass > 0D)) {
-	    double remainingResourceCap = getResourceRemainingCapacity(resource);
-	    double remainingTotalCap = getTotalCapacity() - getTotalMass();
+            double remainingResourceCap = getResourceRemainingCapacity(resource);
+            double remainingTotalCap = getTotalCapacity() - getTotalMass();
 	    
-	    double massLimit = Double.MAX_VALUE;
-	    if (remainingResourceCap < massLimit) massLimit = remainingResourceCap;
-	    if (remainingTotalCap < massLimit) massLimit = remainingTotalCap;
+            double massLimit = Double.MAX_VALUE;
+            if (remainingResourceCap < massLimit) massLimit = remainingResourceCap;
+            if (remainingTotalCap < massLimit) massLimit = remainingTotalCap;
 	    
-	    double finalResourceMass = getResourceMass(resource);
+            double finalResourceMass = getResourceMass(resource);
             
 	    
-	    if (mass < massLimit) {
-		finalResourceMass += mass;
-	        containedResources.put(resource, new Double(finalResourceMass));
-		return mass;
-            }
-	    else {
-		finalResourceMass += massLimit;
+            if (mass < massLimit) {
+                finalResourceMass += mass;
                 containedResources.put(resource, new Double(finalResourceMass));
-		return massLimit;
+            	return mass;
+            }
+            else {
+                finalResourceMass += massLimit;
+                containedResources.put(resource, new Double(finalResourceMass));
+                return massLimit;
             }
         }
-	else return 0D;
+        else return 0D;
     }
 
     /**
@@ -130,8 +124,8 @@ public class Inventory implements Serializable {
     public double getResourceCapacity(String resource) {
         if (resourceCapacities.containsKey(resource)) {
             return ((Double) resourceCapacities.get(resource)).doubleValue();
-	}
-	else return Double.MAX_VALUE;
+        }
+        else return Double.MAX_VALUE;
     }
 
     /**
@@ -151,9 +145,9 @@ public class Inventory implements Serializable {
     public double getResourceRemainingCapacity(String resource) {
         double resourceRemaining = getResourceCapacity(resource) 
 	        - getResourceMass(resource);
-	if (resourceRemaining < getRemainingCapacity()) 
-	    return resourceRemaining;
-	else return getRemainingCapacity();
+        if (resourceRemaining < getRemainingCapacity()) 
+            return resourceRemaining;
+        else return getRemainingCapacity();
     }
 
     /** 
@@ -214,10 +208,10 @@ public class Inventory implements Serializable {
      */
     public UnitCollection getAllContainedUnits() {
         UnitCollection results = new UnitCollection(containedUnits);
-	UnitIterator i = containedUnits.iterator();
-	while (i.hasNext()) 
-	    results.mergeUnits(i.next().getInventory().getAllContainedUnits());
-	return results;
+        UnitIterator i = containedUnits.iterator();
+        while (i.hasNext()) 
+            results.mergeUnits(i.next().getInventory().getAllContainedUnits());
+        return results;
     }
     
     /**
@@ -236,10 +230,10 @@ public class Inventory implements Serializable {
      */
     public boolean containsUnit(Class unitClass) {
         UnitIterator i = containedUnits.iterator();
-	while (i.hasNext()) {
+        while (i.hasNext()) {
             if (unitClass.isInstance(i.next())) return true;
-	}
-	return false;
+        }
+        return false;
     }
 
     /** 
@@ -250,16 +244,16 @@ public class Inventory implements Serializable {
     public boolean containsUnitAll(Unit unit) {
         boolean result = false;
 	
-	// See if this unit contains the unit in question.
+        // See if this unit contains the unit in question.
         if (containedUnits.contains(unit)) result = true;
 
-	// Go though each contained unit and see it contains the unit in question.
-	UnitIterator i = containedUnits.iterator();
-	while (i.hasNext()) {
-	    if (i.next().getInventory().containsUnitAll(unit)) result = true;
-	}
+        // Go though each contained unit and see it contains the unit in question.
+        UnitIterator i = containedUnits.iterator();
+        while (i.hasNext()) {
+            if (i.next().getInventory().containsUnitAll(unit)) result = true;
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -269,10 +263,8 @@ public class Inventory implements Serializable {
      */
     public boolean canAddUnit(Unit unit) {
         if (!containsUnit(unit)) {
-	    if ((unit.getMass() + getTotalMass()) <= getTotalCapacity()) {
-	        return true;
+            if ((unit.getMass() + getTotalMass()) <= getTotalCapacity()) return true;
 	    }
-	}
         return false;
     }
     
@@ -283,12 +275,12 @@ public class Inventory implements Serializable {
      */
     public boolean addUnit(Unit unit) {
         if (canAddUnit(unit)) {
-	    containedUnits.add(unit);
-	    unit.setContainerUnit(owner);
-	    unit.setCoordinates(owner.getCoordinates());
-	    return true;
-	}
-	return false;
+            containedUnits.add(unit);
+            unit.setContainerUnit(owner);
+            unit.setCoordinates(owner.getCoordinates());
+            return true;
+        }
+        return false;
     }
   
     /**
@@ -299,13 +291,13 @@ public class Inventory implements Serializable {
      */
     public boolean takeUnit(Unit unit, Unit newOwner) {
         if (newOwner.getInventory().canAddUnit(unit)) {
-	    if (containedUnits.contains(unit)) {
-	        containedUnits.remove(unit);
-	        newOwner.getInventory().addUnit(unit);
-	        return true;
-	    }
-	}
-	return false;
+            if (containedUnits.contains(unit)) {
+                containedUnits.remove(unit);
+                newOwner.getInventory().addUnit(unit);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -316,18 +308,18 @@ public class Inventory implements Serializable {
      */
     public Unit findUnit(Class unitClass) {
         if (containsUnit(unitClass)) {
-	    UnitIterator i = containedUnits.iterator();
-	    while (i.hasNext()) {
-		Unit unit = i.next();
-	        if (unitClass.isInstance(unit)) return unit;
-		else {
-	            if (unit.getInventory().containsUnit(unitClass)) {
-	                return unit.getInventory().findUnit(unitClass);
-		    }
-		}
-	    }
+            UnitIterator i = containedUnits.iterator();
+            while (i.hasNext()) {
+                Unit unit = i.next();
+                if (unitClass.isInstance(unit)) return unit;
+                else {
+                    if (unit.getInventory().containsUnit(unitClass)) {
+                        return unit.getInventory().findUnit(unitClass);
+                    }
+                }
+            }
         }
-	return null;
+        return null;
     }
 
     /**
@@ -337,15 +329,15 @@ public class Inventory implements Serializable {
      * Returns empty collection if no units found.
      */
     public UnitCollection getUnitsOfClass(Class unitClass) {
-	UnitCollection result = new UnitCollection();
+        UnitCollection result = new UnitCollection();
         if (containsUnit(unitClass)) {
             UnitIterator i = containedUnits.iterator();
-	    while (i.hasNext()) {
-	        Unit unit = i.next();
-		if (unitClass.isInstance(unit)) result.add(unit);
-	    }
+            while (i.hasNext()) {
+                Unit unit = i.next();
+            	if (unitClass.isInstance(unit)) result.add(unit);
+            }
         }
-	return result;
+        return result;
     }
     
     /**
@@ -355,15 +347,15 @@ public class Inventory implements Serializable {
      */
     public boolean dropUnit(Unit unit) {
         if (containedUnits.contains(unit)) {
-	    containedUnits.remove(unit);
+            containedUnits.remove(unit);
 	   
-	    unit.setContainerUnit(null);
-	    Unit containerUnit = owner.getContainerUnit();
-	    if (containerUnit != null) containerUnit.getInventory().addUnit(unit); 
+            unit.setContainerUnit(null);
+            Unit containerUnit = owner.getContainerUnit();
+            if (containerUnit != null) containerUnit.getInventory().addUnit(unit); 
 	    
-	    return true;
-	}
-	else return false;
+            return true;
+        }
+        else return false;
     }
 
     /** 
@@ -373,11 +365,11 @@ public class Inventory implements Serializable {
      */
     public boolean dropUnitOutside(Unit unit) {
         if (containedUnits.contains(unit)) {
-	    containedUnits.remove(unit);
-	    unit.setContainerUnit(null);
-	    return true;
-	}
-	else return false;
+            containedUnits.remove(unit);
+            unit.setContainerUnit(null);
+            return true;
+        }
+        else return false;
     }
 
     /**
@@ -386,8 +378,8 @@ public class Inventory implements Serializable {
      */
     public void setCoordinates(Coordinates newLocation) {
         UnitIterator i = containedUnits.iterator();
-	while (i.hasNext()) {
-	    i.next().setCoordinates(newLocation);
-	}
+        while (i.hasNext()) {
+            i.next().setCoordinates(newLocation);
+        }
     }
 }

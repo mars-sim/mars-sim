@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.75 2003-01-08
+ * @version 2.75 2003-02-05
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -59,10 +59,10 @@ public class TransportRover extends Rover implements Serializable {
 	    inventory.setTotalCapacity(CARGO_CAPACITY);
 	
 	    // Set resource capacities of rover
-	    inventory.setResourceCapacity(Inventory.FUEL, FUEL_CAPACITY);
-	    inventory.setResourceCapacity(Inventory.OXYGEN, OXYGEN_CAPACITY);
-	    inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
-	    inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
+	    inventory.setResourceCapacity(Resource.FUEL, FUEL_CAPACITY);
+	    inventory.setResourceCapacity(Resource.OXYGEN, OXYGEN_CAPACITY);
+	    inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
+	    inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);
 
         sickBay = new SickBay("RoverSickBay", 2, SICKBAY_LEVEL, mars, this);
     }

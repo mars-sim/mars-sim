@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.74 2002-04-23
+ * @version 2.75 2003-02-05
  * @author Barry Evans
  */
 
@@ -118,27 +118,27 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-	        double water = vehicle.getInventory().getResourceMass(Inventory.WATER);
+	        double water = vehicle.getInventory().getResourceMass(Resource.WATER);
 	        result = new Integer((int) water);
             } break;
 
             case FOOD : {
-	        double food = vehicle.getInventory().getResourceMass(Inventory.FOOD);
+	        double food = vehicle.getInventory().getResourceMass(Resource.FOOD);
 	        result = new Integer((int) food);
             } break;
 
             case OXYGEN : {
-	        double oxygen = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
+	        double oxygen = vehicle.getInventory().getResourceMass(Resource.OXYGEN);
 	        result = new Integer((int) oxygen);
             } break;
 
             case FUEL : {
-	        double fuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
+	        double fuel = vehicle.getInventory().getResourceMass(Resource.FUEL);
 	        result = new Integer((int) fuel);
             } break;
 
             case ROCK_SAMPLES : {
-	        double rockSamples = vehicle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
+	        double rockSamples = vehicle.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
 	        result = new Integer((int) rockSamples);
             } break;
 
@@ -149,10 +149,10 @@ public class VehicleTableModel extends UnitTableModel {
             case DRIVER : {
                 if (vehicle.getDriver() != null) {
                     result = vehicle.getDriver().getName();
-		}
-		else {
+                }
+                else {
                     result = null;
-		}
+                }
             } break;
 
             // Status is a combination of Mechical failure and maintenance

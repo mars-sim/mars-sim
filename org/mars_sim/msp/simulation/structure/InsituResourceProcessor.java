@@ -71,9 +71,9 @@ public class InsituResourceProcessor extends Facility
         super.timePassing(time);
 	    
         Inventory inv = manager.getSettlement().getInventory();
-        inv.addResource(Inventory.OXYGEN, getOxygenRate() * time);
-        inv.addResource(Inventory.WATER, getWaterRate() * time);
-        inv.addResource(Inventory.FUEL, getFuelRate() * time);
+        inv.addResource(Resource.OXYGEN, getOxygenRate() * time);
+        inv.addResource(Resource.WATER, getWaterRate() * time);
+        inv.addResource(Resource.FUEL, getFuelRate() * time);
 
 	if (manager.getSettlement().getCurrentPopulationNum() > 0)
 	    malfunctionManager.activeTimePassing(time);

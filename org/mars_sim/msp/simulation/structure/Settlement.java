@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-01-22
+ * @version 2.75 2003-02-07
  * @author Scott Davis
  */
 
@@ -56,27 +56,30 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         // Set inventory resource capacities.
         SimulationProperties properties = mars.getSimulationProperties();
         double fuelCap = properties.getSettlementFuelStorageCapacity();
-        inventory.setResourceCapacity(Inventory.FUEL, fuelCap);
+        inventory.setResourceCapacity(Resource.FUEL, fuelCap);
         double oxygenCap = properties.getSettlementOxygenStorageCapacity();
-        inventory.setResourceCapacity(Inventory.OXYGEN, oxygenCap);
+        inventory.setResourceCapacity(Resource.OXYGEN, oxygenCap);
         double waterCap = properties.getSettlementWaterStorageCapacity();
-        inventory.setResourceCapacity(Inventory.WATER, waterCap);
+        inventory.setResourceCapacity(Resource.WATER, waterCap);
         double foodCap = properties.getSettlementFoodStorageCapacity();
-        inventory.setResourceCapacity(Inventory.FOOD, foodCap);
+        inventory.setResourceCapacity(Resource.FOOD, foodCap);
+        
+        inventory.setResourceCapacity(Resource.HYDROGEN, 10000D);
+        inventory.setResourceCapacity(Resource.METHANE, 10000D);
 
         // Set random initial resources from 1/4 to total capacity.
         double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(3D * fuelCap / 4D);
-        inventory.addResource(Inventory.FUEL, fuel); 
+        inventory.addResource(Resource.FUEL, fuel); 
         double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(3D * oxygenCap / 4D);
-        inventory.addResource(Inventory.OXYGEN, oxygen); 
+        inventory.addResource(Resource.OXYGEN, oxygen); 
         double water = (waterCap / 4D) + RandomUtil.getRandomDouble(3D * waterCap / 4D);
-        inventory.addResource(Inventory.WATER, water); 
+        inventory.addResource(Resource.WATER, water); 
         double food = (foodCap / 4D) + RandomUtil.getRandomDouble(3D * foodCap / 4D);
-        inventory.addResource(Inventory.FOOD, food);
+        inventory.addResource(Resource.FOOD, food);
 
         // Set random initial rock samples from 0 to 500 kg.
         double rockSamples = RandomUtil.getRandomDouble(500D);
-        inventory.addResource(Inventory.ROCK_SAMPLES, rockSamples);
+        inventory.addResource(Resource.ROCK_SAMPLES, rockSamples);
 
         // Create airlock for settlement.
         airlock = new Airlock(this, mars, 4);
@@ -167,8 +170,8 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
-        if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
+        if (inventory.getResourceMass(Resource.OXYGEN) <= 0D) result = false;
+        if (inventory.getResourceMass(Resource.WATER) <= 0D) result = false;
         if (getOxygenFlowModifier() < 100D) result = false;
         if (getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -189,7 +192,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      *  @return the amount of oxgyen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-         return inventory.removeResource(Inventory.OXYGEN, amountRequested) *
+         return inventory.removeResource(Resource.OXYGEN, amountRequested) *
              (getOxygenFlowModifier() / 100D);
     }
 
@@ -215,7 +218,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      *  @return the amount of water actually received from system (kg)
      */
     public double provideWater(double amountRequested) {
-        return inventory.removeResource(Inventory.WATER, amountRequested) * 
+        return inventory.removeResource(Resource.WATER, amountRequested) * 
             (getWaterFlowModifier() / 100D);
     }
 
