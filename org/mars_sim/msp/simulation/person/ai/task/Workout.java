@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 2.76 2004-05-04
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -76,6 +76,9 @@ public class Workout extends Task implements Serializable {
 			result = condition.getStress() - (condition.getFatigue() / 10D) + 20D;
 			if (result < 0D) result = 0D;
 		} 
+		
+		// Effort-driven task modifier.
+		result *= person.getPerformanceRating();
 		
 		return result;
 	}

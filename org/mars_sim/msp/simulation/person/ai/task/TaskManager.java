@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.76 2004-05-04
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
@@ -152,16 +151,16 @@ public class TaskManager implements Serializable {
     private void checkForEmergency() {
 
         // Check for emergency malfunction.
-	if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
-	    boolean hasEmergencyRepair = false;
+		if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
+		    boolean hasEmergencyRepair = false;
             Task task = currentTask;
-	    while (task != null) {
+	    	while (task != null) {
                 if (task instanceof RepairEmergencyMalfunction) hasEmergencyRepair = true;
-		task = task.getSubTask();
-	    }
+				task = task.getSubTask();
+	    	}
 
-	    if (!hasEmergencyRepair) addTask(new RepairEmergencyMalfunction(mind.getPerson(), mars));
-	}
+	    	if (!hasEmergencyRepair) addTask(new RepairEmergencyMalfunction(mind.getPerson(), mars));
+		}
     }
 
     /** 
