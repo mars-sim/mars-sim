@@ -50,6 +50,13 @@ public class Treatment implements java.io.Serializable {
     }
 
     /**
+     * Return the name of the treatment
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * Hash code vlaue for this object.
      * @return hash code.
      */
