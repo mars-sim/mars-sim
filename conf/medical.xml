@@ -9,7 +9,7 @@
             <!-- Medical skill required (optional) -->
             <!-- Range: 0 - 100 -->
             <!-- Default: 0 (no skill)  -->
-            <SKILL>20</SKILL>
+            <SKILL>1</SKILL>
     
             <!-- How long the treatment takes in hours  (optional) -->
             <!-- If this is negative, it takes as long as the recovery -->
@@ -30,8 +30,20 @@
         </TREATMENT>
 
         <TREATMENT>
+            <NAME>Minor Operation</NAME>
+            <SKILL>3</SKILL>
+            <DURATION>2.0</DURATION>
+        </TREATMENT>
+
+        <TREATMENT>
+            <NAME>Major Operation</NAME>
+            <SKILL>4</SKILL>
+            <DURATION>4.0</DURATION>
+        </TREATMENT>
+        
+        <TREATMENT>
             <NAME>Hospitalization</NAME>
-            <SKILL>30</SKILL>
+            <SKILL>3</SKILL>
             <DURATION>-1.0</DURATION>
         </TREATMENT>
     </TREATMENT_LIST>
@@ -52,7 +64,8 @@
             <!-- Recovery time in terms of Earth days  (required) -->
             <RECOVERY>14.0</RECOVERY>
 
-            <!-- Probability of this complaint occuring (required) -->
+            <!-- Probability of this complaint occuring (optional) -->
+            <!-- Default: 0 -->
             <!-- Range: 1 - 100 -->
             <PROBABILITY>5</PROBABILITY>
 
@@ -68,6 +81,26 @@
             <!-- None means that the complaint results in death if no recovery -->
             <!-- Default: None -->
             <NEXT></NEXT>
+        </COMPLAINT>
+
+        <COMPLAINT>
+            <NAME>Ruptured Appendix</NAME>
+            <SERIOUS>70</SERIOUS>
+            <DEGRADE>7</DEGRADE>
+            <RECOVERY>14</RECOVERY>
+            <PERFORMANCE>0</PERFORMANCE>
+            <CURE>Major Operation</CURE>
+        </COMPLAINT>
+
+        <COMPLAINT>
+            <NAME>Appendicitis</NAME>
+            <SERIOUS>60</SERIOUS>
+            <DEGRADE>7</DEGRADE>
+            <RECOVERY>14</RECOVERY>
+            <PROBABILITY>5</PROBABILITY>
+            <PERFORMANCE>0</PERFORMANCE>
+            <CURE>Minor Operation</CURE>
+            <NEXT>Ruptured Appendix</NEXT>
         </COMPLAINT>
 
         <COMPLAINT>
@@ -91,7 +124,6 @@
             <SERIOUS>80</SERIOUS>
             <DEGRADE>7</DEGRADE>
             <RECOVERY>14</RECOVERY>
-            <PROBABILITY>1</PROBABILITY>
             <PERFORMANCE>0</PERFORMANCE>
             <CURE>Antibiotics</CURE>
         </COMPLAINT>
