@@ -62,7 +62,6 @@ public class USGSMarsMap implements Map {
     }
 
     private boolean imageInCache(Coordinates location) {
-	
 	return false;
     }
 
