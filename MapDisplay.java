@@ -200,6 +200,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	UnitInfo[] vehicleInfo = navWindow.getMovingVehicleInfo();
 			
 	for (int x=0; x < vehicleInfo.length; x++) {
+	    // what's this .48587 magic number?
 	    if (centerCoords.getAngle(vehicleInfo[x].getCoords()) < .48587D) {
 		IntPoint rectLocation = getUnitRectPosition(vehicleInfo[x].getCoords());
 		IntPoint imageLocation = getUnitDrawLocation(rectLocation, vehicleSymbol);
@@ -224,6 +225,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
 
 	for (int x=0; x < settlementInfo.length; x++) {
+	    // what's this .48587 magic number?
 	    if (centerCoords.getAngle(settlementInfo[x].getCoords()) < .48587D) {
 		IntPoint rectLocation = getUnitRectPosition(settlementInfo[x].getCoords());
 		IntPoint imageLocation = getUnitDrawLocation(rectLocation, settlementSymbol);
@@ -244,7 +246,8 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     /** MouseListener methods overridden. Perform appropriate action
      *  on mouse release. */
     public void mouseReleased(MouseEvent event) { 
-
+	
+	// what's this -149 magic number?
 	Coordinates clickedPosition = centerCoords.convertRectToSpherical((double) event.getX() - 149D,
 									  (double) event.getY() - 149D);
 	boolean unitsClicked = false;

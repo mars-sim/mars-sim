@@ -14,7 +14,8 @@ import javax.swing.*;
 public class SplashWindow extends JWindow implements Runnable {
 
     public SplashWindow() {
-	this.start();
+	//this.start();
+	run();
     }
 
     public void start() {
