@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Laboratory.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -32,6 +32,9 @@ public class Laboratory extends Facility implements Lab, Serializable {
         // Use Facility's constructor.
         super(manager, "Research Laboratories");
 
+        // Add scope string to settlement's malfunction manager.
+	manager.getSettlement().getMalfunctionManager().addScopeString("Laboratory");
+	
         // Initialize random laboratorySize from 1 to 5.
         laboratorySize = 1 + RandomUtil.getRandomInt(4);
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-03-17
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.equipment.*;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import java.util.*;
 
 /** The Settlement class represents a settlement unit on virtual Mars.
@@ -71,7 +72,11 @@ public class Settlement extends Structure implements LifeSupport {
 
     /** Initialize settlement properties */
     public void setProperties() {
-        
+       
+        // Add scope string to malfunction manager.
+	malfunctionManager.addScopeString("Settlement");
+	malfunctionManager.addScopeString("LifeSupport");
+	    
 	// Set inventory total mass capacity.
 	inventory.setTotalCapacity(Double.MAX_VALUE);
 	
@@ -115,6 +120,13 @@ public class Settlement extends Structure implements LifeSupport {
         return facilityManager;
     }
 
+    /** Returns the malfunction manager for the settlement.
+     *  @return the malfunction manager
+     */
+    public MalfunctionManager getMalfunctionManager() {
+        return malfunctionManager;
+    }
+    
     /** Gets the population capacity of the settlement
      *  @return the population capacity
      */

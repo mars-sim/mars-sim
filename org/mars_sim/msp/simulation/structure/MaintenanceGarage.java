@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarage.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -32,6 +32,9 @@ public class MaintenanceGarage extends Facility implements Serializable {
         // Use Facility's constructor.
         super(manager, "Maintenance Garage");
 
+        // Add scope string to settlement's malfunction manager.
+	manager.getSettlement().getMalfunctionManager().addScopeString("MaintenanceGarage");
+	
         // Initialize data members
         vehicles = new VehicleCollection();
 

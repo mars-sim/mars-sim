@@ -5,8 +5,9 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.simulation.malfunction;
 
+import org.mars_sim.msp.simulation.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -15,14 +16,16 @@ import java.util.*;
  */
 public class MalfunctionManager implements Serializable {
 
+    private Unit unit; // The owning unit.
     private Collection scope; // The scope strings of the unit.
     private Collection malfunctions; // The current malfunctions in the unit.
 
     /**
      * Constructs a MalfunctionManager object.
      */
-    public MalfunctionManager() {
+    public MalfunctionManager(Unit unit) {
         // Initialize data members
+	this.unit = unit;
 	scope = new ArrayList();
 	malfunctions = new ArrayList();
     }
@@ -36,5 +39,20 @@ public class MalfunctionManager implements Serializable {
 	    scope.add(scopeString);
     }
 
+    /**
+     * Gets an iterator for the unit's current malfunctions.
+     * @return malfunction iterator
+     */
+    public Iterator getMalfunctions() {
+        return malfunctions.iterator();
+    }
 
+    /**
+     * Adds a randomly selected malfunction to the unit (if possible).
+     */
+    public void addMalfunction() {
+       MalfunctionFactory factory = unit.getMars().getMalfunctionFactory();
+       Malfunction malfunction = factory.getMalfunction(scope);
+       if (malfunction != null) malfunctions.add(malfunction);
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import java.io.Serializable;
 import java.util.*;
 
@@ -27,6 +28,7 @@ public abstract class Vehicle extends Unit implements Serializable {
     public final static String MAINTENANCE = "Periodic Maintenance";
 
     // Data members
+    protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
     private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
     private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
@@ -88,7 +90,11 @@ public abstract class Vehicle extends Unit implements Serializable {
 
     /** Initializes vehicle data */
     private void initVehicleData() {
-        // setStatus("Parked");
+
+	// Initialize malfunction manager.
+	malfunctionManager = new MalfunctionManager(this);
+	malfunctionManager.addScopeString("Vehicle");
+	    
         setDestinationType("None");
         potentialFailures = new HashMap();
         totalMaintenanceWork = 1000D; // (1 sol)

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -64,6 +64,13 @@ public abstract class Unit implements Serializable {
         return location;
     }
 
+    /** Returns the Mars instance
+     *  @return mars
+     */
+    public Mars getMars() {
+        return mars;
+    }
+    
     /** Sets unit's location coordinates 
      *  @param newLocation the new location of the unit
      */

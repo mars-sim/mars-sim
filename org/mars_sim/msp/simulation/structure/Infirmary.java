@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * Infirmary.java
+ * @version 2.74 2002-04-13
+ * @author Barry Evans
+ */
+
 package org.mars_sim.msp.simulation.structure;
 
 import java.io.Serializable;
@@ -20,7 +27,7 @@ public class Infirmary extends Facility
     public final static String NAME = "Infirmary";
     private final static int LEVEL = 5;
 
-    private SickBay     sickBay;        // Sickbay of the infirmary
+    private SickBay sickBay; // Sickbay of the infirmary
 
     /** Constructor for random creation.
      *  @param manager the settlement facility manager
@@ -29,6 +36,9 @@ public class Infirmary extends Facility
 
         // Use Facility's constructor.
         super(manager, NAME);
+
+        // Add scope string to settlement's malfunction manager.
+	manager.getSettlement().getMalfunctionManager().addScopeString("Infirmary");
 
         // Initialize random size from 1 to 5.
         sickBay = new SickBay(NAME, 1 + RandomUtil.getRandomInt(4),

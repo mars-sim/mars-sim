@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessor.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -25,6 +25,9 @@ public class InsituResourceProcessor extends Facility
         
         // User Facility's constructor
         super(manager, "INSITU Resource Processor");
+
+	// Add scope string to settlement's malfunction manager.
+	manager.getSettlement().getMalfunctionManager().addScopeString("InsituResourceProcessor");
     }
     
     /** Returns number of oxygen units that processor is generatng in a millisol.

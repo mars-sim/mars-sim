@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.74 2002-03-17
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -57,6 +57,12 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     
     /** Initialize rover data */
     private void initRoverData() {
+
+        // Add scope to malfunction manager.
+	malfunctionManager.addScopeString("Rover");
+	malfunctionManager.addScopeString("Crewable");
+	malfunctionManager.addScopeString("LifeSupport");
+	    
         // Set rover terrain modifier
         setTerrainHandlingCapability(0D);
 

@@ -219,6 +219,13 @@ public class Mars implements Serializable {
         return medicalManager;
     }
 
+    /** Returns the malfunction factory 
+     *  @return malfunction factory for Mars
+     */
+    public MalfunctionFactory getMalfunctionFactory() {
+        return malfunctionFactory;
+    }
+    
     /** Returns the master clock
      *  @return master clock instance
      */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -29,6 +29,10 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         // User Equipment constructor.
 	super("EVA Suit", location, mars);
 
+        // Add scope to malfunction manager.
+	malfunctionManager.addScopeString("EVASuit");
+	malfunctionManager.addScopeString("LifeSupport");
+	
 	// Set the empty mass of the EVA suit in kg.
 	baseMass = BASE_MASS;
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -53,6 +53,10 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     
     /** Initialize ground vehicle data */
     private void initGroundVehicleData() {
+        
+        // Add scope to malfunction manager.
+	malfunctionManager.addScopeString("GroundVehicle");
+	    
         setTerrainHandlingCapability(0D); // Default terrain capability
         setTerrainGrade(0D);
         elevation = mars.getSurfaceFeatures().getSurfaceTerrain().getElevation(location);

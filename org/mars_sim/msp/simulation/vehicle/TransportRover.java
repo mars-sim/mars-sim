@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-13
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -65,6 +65,9 @@ public class TransportRover extends Rover implements Serializable {
      */
     private void initTransportRoverData() {
 
+        // Add scope to malfunction manager.
+	malfunctionManager.addScopeString("TransportRover");
+	    
         // Set crew capacity
 	crewCapacity = CREW_CAPACITY;
 
