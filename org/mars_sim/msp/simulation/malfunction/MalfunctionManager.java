@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.74 2002-04-28
+ * @version 2.74 2002-05-14
  * @author Scott Davis
  */
 
@@ -65,6 +65,14 @@ public class MalfunctionManager implements Serializable {
         return (malfunctions.size() > 0);
     }
    
+    /**
+     * Checks if the entity has a given malfunction.
+     * @return true if entity has malfunction
+     */
+    public boolean hasMalfunction(Malfunction malfunction) {
+        return malfunctions.contains(malfunction);
+    }
+
     /**
      * Checks if entity has any emergency malfunctions.
      * @return true if emergency malfunction

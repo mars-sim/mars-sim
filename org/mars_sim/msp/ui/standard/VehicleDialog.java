@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-04-23
+ * @version 2.74 2002-05-14
  * @author Scott Davis
  */
 
@@ -45,27 +45,22 @@ public abstract class VehicleDialog extends UnitDialog {
     protected JLabel fuelLabel; // Fuel label
     protected JPanel driverButtonPane; // Driver pane
     protected JButton driverButton; // Driver button
-    protected JLabel damageLabel; // Vehicle damage label
     protected JPanel navigationInfoPane; // Navigation info pane
-    protected JLabel odometerLabel; // Odometer Label
-    protected JLabel lastMaintLabel; // Distance Since Last Maintenance Label
-    protected JLabel failureDetailLabel; // Mechanical failure name label
-    protected JProgressBar repairProgressBar; // Failure repair progress bar
+    protected JLabel maintenanceTimeLabel; // Maintenance time label
     protected JProgressBar maintenanceProgressBar; // Maintenance progress bar
     protected InventoryPanel inventoryPane; // The inventory panel.
-
+    protected JPanel malfunctionInnerPane; // The malfunction inner pane.
+    
     // Cached data members
     protected String status; // Cached status of vehicle
     protected Coordinates location; // Cached location of vehicle
     protected Coordinates destination; // Cached destination of vehicle
     protected int distance; // Cached distance to destination
     protected float speed; // Cached speed of vehicle.
-    protected double distanceTraveled; // Cached total distance traveled by vehicle.
-    protected double distanceMaint; // Cached distance traveled by vehicle since last maintenance.
-    protected String failureName; // Cached mechanical failure name.
     protected int repairProgress; // Cached repair progress percentage.
-    protected int maintenanceProgress; // Cached maintenance progress percentage;
-
+    protected int maintenanceProgress; // Cached maintenance progress percentage.
+    protected Collection malfunctions; // Collection of malfunction panels.
+    
     /** Constructs a VehicleDialog object
      *  @param parentDesktop the desktop pane
      *  @param vehicleUIProxy the vehicle's UI proxy
@@ -91,8 +86,7 @@ public abstract class VehicleDialog extends UnitDialog {
         updateDestination();
         updateSpeed();
         updateDriver();
-        updateOdometer();
-        updateMechanicalFailure();
+        updateMalfunctions();
         updateMaintenance();
 	inventoryPane.updateInfo();
     }
@@ -143,7 +137,7 @@ public abstract class VehicleDialog extends UnitDialog {
         tabPane = new JTabbedPane();
         tabPane.addTab("Navigation", setupNavigationPane());
 	tabPane.addTab("Driver", setupDriverPane());
-        tabPane.addTab("Damage", setupDamagePane());
+        tabPane.addTab("Condition", setupDamagePane());
 	inventoryPane = new InventoryPanel(vehicle.getInventory());
 	tabPane.addTab("Inventory", inventoryPane);
         innerPane.add(tabPane, "Center");
@@ -344,55 +338,26 @@ public abstract class VehicleDialog extends UnitDialog {
         damagePane.add(nameLabel, "North");
 
         // Prepare content pane
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         damagePane.add(contentPane, "Center");
 
-        // Prepare odometer pane
-        JPanel odometerPane = new JPanel(new BorderLayout());
-        odometerPane.setBorder(
-                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        contentPane.add(odometerPane);
-
-        // Prepare title pane
-        JPanel titlePane = new JPanel(new GridLayout(2, 1));
-        odometerPane.add(titlePane, "West");
-
-        // Prepare odometer label
-        JLabel odometerTitleLabel = new JLabel("Total Distance Traveled:");
-        titlePane.add(odometerTitleLabel);
-
-        // Prepare distance since last maintenance label
-        JLabel lastMaintTitleLabel = new JLabel("Since Last Maintenance:");
-        titlePane.add(lastMaintTitleLabel);
-
-        // Prepare value pane
-        JPanel valuePane = new JPanel(new GridLayout(2, 1));
-        odometerPane.add(valuePane, "Center");
-
-        // Prepare odometer value label
-        odometerLabel = new JLabel((int) vehicle.getTotalDistanceTraveled() + " km.",
-                JLabel.RIGHT);
-        valuePane.add(odometerLabel);
-
-        // Prepare distance since last maintenance label
-        lastMaintLabel =
-                new JLabel((int) vehicle.getDistanceLastMaintenance() + " km.",
-                JLabel.RIGHT);
-        valuePane.add(lastMaintLabel);
-
-        // Prepare maintenance pane
-        JPanel maintenancePane = new JPanel(new BorderLayout());
+	// Prepare maintenance pane
+        JPanel maintenancePane = new JPanel(new BorderLayout(0, 5));
         maintenancePane.setBorder(
                 new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        contentPane.add(maintenancePane);
+        contentPane.add(maintenancePane, "North");
 
         // Prepare maintenance label
-        JLabel maintenanceLabel = new JLabel("Periodic Maintenance:", JLabel.CENTER);
+        JLabel maintenanceLabel = new JLabel("Maintenance:", JLabel.CENTER);
         maintenancePane.add(maintenanceLabel, "North");
 
+        // Prepare maintenance time label
+	int maintTime = (int) vehicle.getMalfunctionManager().getTimeSinceLastMaintenance();
+	maintenanceTimeLabel = new JLabel("Since last maintenance: " + maintTime + " millisols");
+	maintenancePane.add(maintenanceTimeLabel, "Center");
+	
         // Prepare maintenance progress bar
         maintenanceProgressBar = new JProgressBar();
         maintenanceProgressBar.setStringPainted(true);
@@ -400,51 +365,37 @@ public abstract class VehicleDialog extends UnitDialog {
         maintenanceProgress = 0;
         if (vehicle.getStatus() == Vehicle.MAINTENANCE) {
 	    MalfunctionManager m = vehicle.getMalfunctionManager();
-            maintenanceProgress = (int)(100F *
-                    ((float) m.getMaintenanceWorkTimeCompleted() /
-                    (float) m.getMaintenanceWorkTime()));
+	    double maintWorkTimeCompleted = m.getMaintenanceWorkTimeCompleted();
+            double maintWorkTimeRequired = m.getMaintenanceWorkTime();
+            maintenanceProgress = (int)(100D * maintWorkTimeCompleted / maintWorkTimeRequired);
 	}
         maintenanceProgressBar.setValue(maintenanceProgress);
 
-        // Prepare failure pane
-        JPanel failurePane = new JPanel(new GridLayout(4, 1));
-        failurePane.setBorder(
-                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        contentPane.add(failurePane);
+        // Prepare malfunction pane
+	JPanel malfunctionPane = new JPanel(new BorderLayout());
+	malfunctionPane.setBorder(
+	        new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+	contentPane.add(malfunctionPane, "Center");
 
-        // Prepare failure label
-        JLabel failureLabel = new JLabel("Malfunction:", JLabel.CENTER);
-        failurePane.add(failureLabel);
+        // Prepare malfunction label
+	JLabel malfunctionLabel = new JLabel("Malfunctions:", JLabel.CENTER);
+	malfunctionPane.add(malfunctionLabel, "North");
 
-        // Prepare failure detail label
-        failureDetailLabel = new JLabel("None", JLabel.CENTER);
-        failurePane.add(failureDetailLabel);
-        Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
-        if ((failure != null) && !failure.isFixed()) {
-            failureDetailLabel.setText(failure.getName());
-            failureName = failure.getName();
-        } else
-            failureName = "None";
-
-        // Prepare repair label
-        JLabel repairLabel = new JLabel("Repair Progress:", JLabel.CENTER);
-        failurePane.add(repairLabel);
-
-        // Prepare repair progress bar
-        repairProgressBar = new JProgressBar();
-        repairProgressBar.setStringPainted(true);
-        failurePane.add(repairProgressBar);
-        repairProgress = 0;
-        if ((failure != null) && !failure.isFixed()) {
-            double totalTime = failure.getWorkTime();
-            double completedTime = failure.getCompletedWorkTime();
-            repairProgress = (int)(100D * (completedTime) / totalTime);
-        }
-        repairProgressBar.setValue(repairProgress);
-
-        // Create vertical glue
-        contentPane.add(Box.createVerticalStrut(25));
-
+        // Prepare malfunction outer pane
+	JPanel malfunctionOuterPane = new JPanel(new BorderLayout());
+	malfunctionPane.add(new JScrollPane(malfunctionOuterPane), "Center");
+	
+	// Prepare malfunction inner pane
+        malfunctionInnerPane = new JPanel(new GridLayout(0, 1));
+        malfunctions = new ArrayList();
+	Iterator i = vehicle.getMalfunctionManager().getMalfunctions();
+	while (i.hasNext()) {
+            MalfunctionPanel m = new MalfunctionPanel("", (Malfunction) i.next());
+	    malfunctions.add(m);
+            malfunctionInnerPane.add(m);
+	}
+        malfunctionOuterPane.add(malfunctionInnerPane, "North");	
+	    
         // Return damage pane
         return damagePane;
     }
@@ -562,67 +513,57 @@ public abstract class VehicleDialog extends UnitDialog {
         }
     }
 
-    /** Update odometer info */
-    protected void updateOdometer() {
+    /** Update malfunction info */
+    protected void updateMalfunctions() {
 
-        // Update odometer label
-        if (distanceTraveled != vehicle.getTotalDistanceTraveled()) {
-            distanceTraveled = vehicle.getTotalDistanceTraveled();
-            odometerLabel.setText((int) distanceTraveled + " km.");
-        }
+        // Add any new malfunctions. 
+        Iterator i = vehicle.getMalfunctionManager().getMalfunctions();
+	while (i.hasNext()) {
+            Malfunction malfunction = (Malfunction) i.next();
+	    boolean match = false;
+            Iterator j = malfunctions.iterator();
+	    while (j.hasNext()) {
+                if (((MalfunctionPanel) j.next()).getMalfunction() == malfunction) match = true;
+	    }
 
-        // Update distance since last maintenance label
-        if (distanceMaint != vehicle.getDistanceLastMaintenance()) {
-            distanceMaint = vehicle.getDistanceLastMaintenance();
-            lastMaintLabel.setText((int) distanceMaint + " km.");
-        }
+	    if (!match) {
+                MalfunctionPanel mPane = new MalfunctionPanel("", malfunction);
+                malfunctions.add(mPane);
+		malfunctionInnerPane.add(mPane);
+	    }
+	}
+
+	// Remove any fixed malfunctions.
+	i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    MalfunctionPanel mPane = (MalfunctionPanel) i.next();
+	    if (!vehicle.getMalfunctionManager().hasMalfunction(mPane.getMalfunction())) {
+                malfunctionInnerPane.remove(mPane);
+		i.remove();
+	    }
+	}
+
+	// Update malfunction panes.
+	i = malfunctions.iterator();
+	while (i.hasNext()) ((MalfunctionPanel) i.next()).updateInfo();
     }
-
-    /** Update mechanical failure */
-    protected void updateMechanicalFailure() {
-
-        // Update failure detail label
-        Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
-        boolean change = false;
-
-        if ((failure == null) || failure.isFixed()) {
-            if (!failureName.equals("None")) {
-                failureName = "None";
-                change = true;
-            }
-        } else {
-            if (failureName.equals("None")) {
-                failureName = failure.getName();
-                change = true;
-            }
-        }
-
-        if (change)
-            failureDetailLabel.setText(failureName);
-
-        // Update repair progress bar
-        int repairProgressTemp = 0;
-        if ((failure != null) && !failure.isFixed()) {
-            double totalTime = failure.getWorkTime();
-            double completedTime = failure.getCompletedWorkTime();
-            repairProgressTemp =
-                    (int)(100F * (completedTime) / totalTime);
-        }
-        if (repairProgress != repairProgressTemp) {
-            repairProgress = repairProgressTemp;
-            repairProgressBar.setValue(repairProgress);
-        }
-    }
-
+    
     /** Update maintenance progress */
     protected void updateMaintenance() {
 
+        MalfunctionManager manager = vehicle.getMalfunctionManager();
+	    
+        // Update maintenance time label.
+	int maintTime = (int) manager.getTimeSinceLastMaintenance();
+	maintenanceTimeLabel.setText("Since last maintenance: " + maintTime + " millisols");
+	    
         // Update maintenance progress bar
         int maintenanceProgressTemp = 0;
-        if (vehicle.getStatus() == Vehicle.MAINTENANCE)
-            maintenanceProgressTemp = (int)(100F *
-                    ((float) vehicle.getMalfunctionManager().getMaintenanceWorkTimeCompleted() /
-                    (float) vehicle.getMalfunctionManager().getMaintenanceWorkTime()));
+        if (vehicle.getStatus() == Vehicle.MAINTENANCE) {
+	    double maintCompleted = manager.getMaintenanceWorkTimeCompleted();
+	    double maintRequired = manager.getMaintenanceWorkTime();
+            maintenanceProgressTemp = (int)(100D * maintCompleted / maintRequired);
+	}
         if (maintenanceProgress != maintenanceProgressTemp) {
             maintenanceProgress = maintenanceProgressTemp;
             maintenanceProgressBar.setValue(maintenanceProgress);
