@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.75 2003-03-16
+ * @version 2.75 2003-04-15
  * @author Scott Davis
  */
 
@@ -9,9 +9,10 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
-import java.util.Iterator;
+import java.util.*;
 import java.io.Serializable;
 
 /** The EatMeal class is a task for eating a meal.
@@ -31,29 +32,26 @@ class EatMeal extends Task implements Serializable {
     public EatMeal(Person person, Mars mars) {
         super("Eating a meal", person, false, mars);
         
-        // If person is in a settlement, try to find a dining area.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-            InhabitableBuilding diningBuilding = null;
+        String location = person.getLocationSituation();
         
-            // Try to find an available recreation building.
-            Iterator i = buildingManager.getBuildings(InhabitableBuilding.class).iterator();
-            while (i.hasNext()) {
-                InhabitableBuilding building = (InhabitableBuilding) i.next();
-                if (building instanceof Dining) {
-                    if (building.getAvailableOccupancy() > 0) diningBuilding = building;
-                }
-            }
+        // If person is in a settlement, try to find a dining area.
+        if (location.equals(Person.INSETTLEMENT)) {
+            Dining diningroom = getAvailableDiningBuilding(person);
+            InhabitableBuilding building = (InhabitableBuilding) diningroom;
             
-            if (diningBuilding != null) {
+            if (diningroom != null) {
                 try {
-                    if (!diningBuilding.containsPerson(person))diningBuilding.addPerson(person);
+                    if (!building.containsPerson(person)) building.addPerson(person);
                 }
                 catch (BuildingException e) {
-                    System.out.println(e.getMessage());
+                    System.out.println("EatMeal: " + e.getMessage());
                 }
             }
+            else {
+                // Add stress increase later.
+            }
         }
+        else if (location.equals(Person.OUTSIDE)) done = true;
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -66,7 +64,7 @@ class EatMeal extends Task implements Serializable {
 
         double result = person.getPhysicalCondition().getHunger() - 250D;
         if (result < 0D) result = 0D;
-
+        
         if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 0D;
 	
         return result;
@@ -90,5 +88,36 @@ class EatMeal extends Task implements Serializable {
         }
         else return 0D;
     }
+    
+    /**
+     * Gets an available dining building that the person can use.
+     * Returns null if no dining building is currently available.
+     *
+     * @param person the person
+     * @return available dining building
+     */
+    private static Dining getAvailableDiningBuilding(Person person) {
+     
+        Dining result = null;
+     
+        String location = person.getLocationSituation();
+        if (location.equals(Person.INSETTLEMENT)) {
+            Settlement settlement = person.getSettlement();
+            List dininglist = new ArrayList();
+            Iterator i = settlement.getBuildingManager().getBuildings(Dining.class).iterator();
+            while (i.hasNext()) {
+                Dining dining = (Dining) i.next();
+                boolean malfunction = ((Building) dining).getMalfunctionManager().hasMalfunction();
+                if (!malfunction) dininglist.add(dining);
+            }
+            
+            if (dininglist.size() > 0) {
+                // Pick random dining building from list.
+                int rand = RandomUtil.getRandomInt(dininglist.size() - 1);
+                result = (Dining) dininglist.get(rand);
+            }
+        }
+        
+        return result;
+    }
 }
-

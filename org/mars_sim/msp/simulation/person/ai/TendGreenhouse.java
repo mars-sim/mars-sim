@@ -161,16 +161,13 @@ public class TendGreenhouse extends Task implements Serializable {
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            ArrayList farmlist = new ArrayList();
+            List farmlist = new ArrayList();
             Iterator i = settlement.getBuildingManager().getBuildings(Farming.class).iterator();
             while (i.hasNext()) {
                 Farming farm = (Farming) i.next();
-                InhabitableBuilding building = (InhabitableBuilding) farm;
                 boolean requiresWork = farm.requiresWork();
-                boolean occupancy = (building.containsPerson(person) || (building.getAvailableOccupancy() > 0));
-                boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-                
-                if (requiresWork && occupancy && !malfunction) farmlist.add(farm);
+                boolean malfunction = ((Building) farm).getMalfunctionManager().hasMalfunction();  
+                if (requiresWork && !malfunction) farmlist.add(farm);
             }
             
             if (farmlist.size() > 0) {

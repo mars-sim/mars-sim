@@ -220,15 +220,13 @@ public class StudyRockSamples extends Task implements Serializable {
         Inventory inv = settlement.getInventory();
         if (inv.getResourceMass(Resource.ROCK_SAMPLES) <= 0D) return null;
         
-        ArrayList lablist = new ArrayList();
+        List lablist = new ArrayList();
         Iterator i = settlement.getBuildingManager().getBuildings(Research.class).iterator();
         while (i.hasNext()) {
             Research lab = (Research) i.next();
-            InhabitableBuilding building = (InhabitableBuilding) lab;
-            boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-            boolean availableBuildingSpace = (building.containsPerson(person) || (building.getAvailableOccupancy() > 0));
+            boolean malfunction = ((Building) lab).getMalfunctionManager().hasMalfunction();
             boolean labSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
-            if (!malfunction && availableBuildingSpace && labSpace) lablist.add(lab);
+            if (!malfunction && labSpace) lablist.add(lab);
         }
         
         if (lablist.size() > 0) {
