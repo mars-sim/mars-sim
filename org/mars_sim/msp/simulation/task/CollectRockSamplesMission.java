@@ -69,12 +69,7 @@ class CollectRockSamplesMission extends Mission {
         if (person.getLocationSituation().equals("In Settlement")) {
             Settlement currentSettlement = person.getSettlement();
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) {
-                int vehicleNum = currentSettlement.getVehicleNum();
-                if (vehicleNum > 0) {
-                    for (int x=0; x < vehicleNum; x++) {
-                        if (!currentSettlement.getVehicle(x).isReserved()) result = 10D;
-                    }
-                }
+                if (ReserveGroundVehicle.availableVehicles(currentSettlement)) result = 10D;
             }
         }
 
@@ -164,7 +159,7 @@ class CollectRockSamplesMission extends Mission {
         if (!vehicleLoaded) {
             LoadVehicle loadVehicle = new LoadVehicle(person, mars, vehicle);
             person.getMind().getTaskManager().addTask(loadVehicle);
-            if (!loadVehicle.hasEnoughSupplies()) endMission(); 
+            if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), vehicle)) endMission(); 
             return;
         }
         

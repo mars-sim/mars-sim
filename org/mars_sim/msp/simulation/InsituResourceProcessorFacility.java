@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.72 2001-07-11
+ * @version 2.73 2001-10-07
  * @author Scott Davis
  */
 
@@ -14,6 +14,9 @@ package org.mars_sim.msp.simulation;
  */
 public class InsituResourceProcessorFacility extends Facility {
 
+    LivingQuartersFacility quarters;  // The settlement's living quarters
+    StoreroomFacility stores;  // The settlement's storerooms
+
     /** Constructs a InsituResourceProcessorFacility object.
      *  @param manager the manager of the processor facility.
      */
@@ -21,43 +24,37 @@ public class InsituResourceProcessorFacility extends Facility {
         
         // User Facility's constructor
         super(manager, "INSITU Resource Processor");
+
+        quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
+        stores = (StoreroomFacility) manager.getFacility("Storerooms");
     }
     
-    /** Returns number of oxygen units that processor can generate in a millisol.
+    /** Returns number of oxygen units that processor is generatng in a millisol.
      *  @return amount of oxygen (in units)
      */
     public double getOxygenRate() {
-        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
-        int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
-        double result = normalPop;
-        if (currentPop > normalPop) result = currentPop;
+        double result = currentPop + 1D;
         result /= 1000D;
         return result;
     }
     
-    /** Returns number of water units that processor can generate in a millisol.
+    /** Returns number of water units that processor is generating in a millisol.
      *  @return amount of water (in units)
      */
     public double getWaterRate() {
-        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
-        int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
-        double result = normalPop;
-        if (currentPop > normalPop) result = currentPop;
+        double result = currentPop + 1D;
         result /= 1000D;
         return result;
     }
     
-    /** Returns number of fuel units that processor can generate in a millisol.
+    /** Returns number of fuel units that processor is generating in a millisol.
      *  @return amount of fuel (in units) 
      */
     public double getFuelRate() {
-        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
-        int normalPop = quarters.getNormalCapacity();
         int currentPop = quarters.getCurrentPopulation();
-        double result = normalPop;
-        if (currentPop > normalPop) result = currentPop;
+        double result = currentPop + 1D;
         result /= 1000D;
         return result;
     }
@@ -66,7 +63,6 @@ public class InsituResourceProcessorFacility extends Facility {
      *  @param amount of time passing (in millisols) 
      */
     void timePassing(double time) {
-        StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
         stores.addOxygen(getOxygenRate() * time);
         stores.addWater(getWaterRate() * time);
         stores.addFuel(getFuelRate() * time);

@@ -83,6 +83,27 @@ class ReserveGroundVehicle extends Task {
         else return 0;
     }
 
+    /** Returns true if settlement has an available ground vehicle.
+     *  @param settlement 
+     *  @return are there any available ground vehicles
+     */
+    public static boolean availableVehicles(Settlement settlement) {
+    
+        boolean result = false;
+
+        FacilityManager facilities = settlement.getFacilityManager();
+        MaintenanceGarageFacility garage = (MaintenanceGarageFacility) facilities.getFacility("Maintenance Garage");
+
+        for (int x=0; x < settlement.getVehicleNum(); x++) {
+            Vehicle vehicle = settlement.getVehicle(x);
+            if (vehicle instanceof GroundVehicle) {
+                if (!vehicle.isReserved() && !garage.vehicleInGarage(vehicle)) result = true;
+            }
+        }
+
+        return result;
+    }
+
     /** Gets the reserved ground vehicle if task is done and successful.
      *  Returns null otherwise.
      *  @return reserved ground vehicle

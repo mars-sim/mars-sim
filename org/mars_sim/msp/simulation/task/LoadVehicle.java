@@ -16,6 +16,7 @@ class LoadVehicle extends Task {
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
     private StoreroomFacility stores;  // The settlement's stores.
+    private Settlement settlement; // The person's settlement.
 
     /** Constructs a LoadVehicle object. 
      *
@@ -28,7 +29,7 @@ class LoadVehicle extends Task {
 
         this.vehicle = vehicle;
 
-        Settlement settlement = person.getSettlement();
+        settlement = person.getSettlement();
         FacilityManager facilities = settlement.getFacilityManager();
         stores = (StoreroomFacility) facilities.getFacility("Storerooms");
     }
@@ -42,7 +43,7 @@ class LoadVehicle extends Task {
 
         double unitsLoading = time;
 
-        if (hasEnoughSupplies()) {
+        if (hasEnoughSupplies(settlement, vehicle)) {
          
             // Load fuel
             double fuelAmount = vehicle.getFuelCapacity() - vehicle.getFuel();
@@ -74,16 +75,21 @@ class LoadVehicle extends Task {
         }
         else done = true;
 
-        if (isFullyLoaded()) done = true;
+        if (isFullyLoaded(vehicle)) done = true;
 
         return 0;
     }
 
     /** Returns true if there are enough supplies in the settlements stores to supply vehicle.
+     *  @param settlement the settlement the vehicle is at
+     *  @param vehicle the vehicle to be checked
      *  @return enough supplies?
      */
-    public boolean hasEnoughSupplies() {
+    public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle) {
         boolean enoughSupplies = true;
+
+        FacilityManager facilities = settlement.getFacilityManager();
+        StoreroomFacility stores = (StoreroomFacility) facilities.getFacility("Storerooms");
 
         double neededFuel = vehicle.getFuelCapacity() - vehicle.getFuel();
         if (neededFuel > stores.getFuelStores() - 50D) enoughSupplies = false;
@@ -101,9 +107,10 @@ class LoadVehicle extends Task {
     }
 
     /** Returns true if the vehicle is fully loaded with supplies.
+     *  @param vehicle to be checked
      *  @return is vehicle fully loaded?
      */
-    public boolean isFullyLoaded() {
+    public static boolean isFullyLoaded(Vehicle vehicle) {
         boolean result = true;
      
         if (vehicle.getFuel() != vehicle.getFuelCapacity()) result = false;
