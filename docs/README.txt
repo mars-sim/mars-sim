@@ -1,5 +1,5 @@
 ** Mars Simulation Project **
-Copyright (C) 2000 Scott Davis
+Copyright (C) 2001 Scott Davis
 http://mars-sim.sourceforge.net/
 
 ----------------------------------------------------------------
@@ -38,28 +38,24 @@ This Java application requires a Java 2 virtual machine.  The latest
 JVM can be downloaded from Sun at:
     http://www.javasoft.com/products/jdk/1.3/jre/
 
-1) Unzip MarsProject_X.XX.zip (where XXX is the version number)
-   ie. "unzip MarsProject_2.65.zip"
+1) Unzip MarsProject_X.XX.zip (where XXX is the version number) into a 
+   directory.  ie. "unzip MarsProject_2.71.zip"
 
-2) Run the Installer application
-      "java Installer"
-   
-   If the Installer application fails from lack of memory or is exceedingly
-   slow, you may wish to download the uncompressed data files instead.
-   http://mars-sim.sourceforge.net/SurfaceDat.zip   (5.4Mb)
-   http://mars-sim.sourceforge.net/TopoDat.zip      (4.7Mb)
-   Just unzip these files into you application directory.
+2) Start the Mars Simulation Project by running the "MarsProject.bat"
+   batch/script file or by typing: java MarsProject
 
-3) Start the Mars Simulation Project
-      "java MarsProject"
+   You will need to make sure the Java virtual machine is in your system
+   path.  
 
 ------------------------------------------------------------------
 
 ** Configuration **
 
-As of version 2.7, the following text files can be modified to change the 
+The following text files can be modified to change the 
 names and number of units:
 
 settlements.conf
 rovers.conf
 people.conf
+
+
