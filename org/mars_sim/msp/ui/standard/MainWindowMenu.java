@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.76 2004-08-06
+ * @version 2.78 2004-10-07
  * @author Scott Davis
  */
 
@@ -26,6 +26,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
     private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
+    private JCheckBoxMenuItem lookAndFeelItem;    // Look and feel menu item
     private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
 
     /** 
@@ -94,6 +95,15 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         monitorToolItem.addActionListener(this);
         toolsMenu.add(monitorToolItem);
 
+		// Create option menu
+		JMenu optionMenu = new JMenu("Option");
+		add(optionMenu);
+		
+		// Create look and feel menu item
+		lookAndFeelItem = new JCheckBoxMenuItem("Native Look & Feel");
+		lookAndFeelItem.addActionListener(this);
+		optionMenu.add(lookAndFeelItem);
+
         // Create help menu
         JMenu helpMenu = new JMenu("Help");
         add(helpMenu);
@@ -114,6 +124,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         else if (selectedItem == saveItem) mainWindow.saveSimulation(true);
         else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false);
         else if (selectedItem == loadItem) mainWindow.loadSimulation();
+        else if (selectedItem == lookAndFeelItem) 
+        	mainWindow.setLookAndFeel(lookAndFeelItem.isSelected());
 
         if (selectedItem == marsNavigatorItem) {
             if (marsNavigatorItem.isSelected()) 

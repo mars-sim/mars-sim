@@ -34,14 +34,8 @@ public class MainWindow extends JFrame implements WindowListener {
         // use JFrame constructor
         super("Mars Simulation Project (version " + VERSION + ")");
 
-        // Prepare custom Mars UI theme
-        MetalLookAndFeel.setCurrentTheme(new MarsTheme());
-        try {
-            UIManager.setLookAndFeel(new MetalLookAndFeel());
-        }
-        catch(UnsupportedLookAndFeelException e) {
-            System.out.println("MainWindow: " + e.toString());
-        }           
+		// Set look and feel of UI.
+		setLookAndFeel(false);
         
         // Prepare frame
         setVisible(false);
@@ -196,6 +190,26 @@ public class MainWindow extends JFrame implements WindowListener {
             System.out.println("Problem saving simulation " + e);
         }
         System.exit(0);
+    }
+    
+    /**
+     * Sets the look and feel of the UI
+     * @param nativeLookAndFeel true if native look and feel should be used.
+     */
+    public void setLookAndFeel(boolean nativeLookAndFeel) {
+    	try {
+    		if (nativeLookAndFeel) {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    		}
+    		else {
+				MetalLookAndFeel.setCurrentTheme(new MarsTheme());
+				UIManager.setLookAndFeel(new MetalLookAndFeel());
+    		}
+			SwingUtilities.updateComponentTreeUI(this);
+    	}
+    	catch (Exception e) {
+			System.err.println("MainWindow: " + e.toString());
+    	}
     }
 
     public void windowClosed(WindowEvent event) {}
