@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIProxyManager.java
- * @version 2.74 2002-03-15
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.equipment.*;
 import java.util.*;
 
 /** Creates and manages a collection of unit UI proxies. */
@@ -40,6 +41,9 @@ public class UIProxyManager {
 
             if (unit instanceof TransportRover)
                 proxies.add(new TransportRoverUIProxy((TransportRover) unit, this));
+                
+            if (unit instanceof Equipment)
+                proxies.add(new EquipmentUIProxy((Equipment) unit, this));
         }
     }
     

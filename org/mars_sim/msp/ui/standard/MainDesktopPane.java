@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.75 2003-06-24
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.ui.standard.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.*;
+import org.mars_sim.msp.ui.standard.unit_window.equipment.EquipmentWindow;
 import org.mars_sim.msp.ui.standard.unit_window.person.PersonWindow;
 import org.mars_sim.msp.ui.standard.unit_window.vehicle.VehicleWindow;
 import org.mars_sim.msp.ui.standard.unit_window.structure.SettlementWindow;
@@ -256,29 +257,33 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         }
         else {
             tempWindow = unitUIProxy.getUnitDialog(this);
-            add(tempWindow, 0);
+            if (tempWindow != null) {
+                add(tempWindow, 0);
 
-            // Set internal frame listener
-            tempWindow.addInternalFrameListener(new UnitWindowListener(this));
+                // Set internal frame listener
+                tempWindow.addInternalFrameListener(new UnitWindowListener(this));
 
-            // Put window in random position on desktop
-            tempWindow.setLocation(getRandomLocation(tempWindow));
+                // Put window in random position on desktop
+                tempWindow.setLocation(getRandomLocation(tempWindow));
 
-            // Add unit window to unitWindows vector
-            unitWindows.addElement(tempWindow);
+                // Add unit window to unitWindows vector
+                unitWindows.addElement(tempWindow);
 
-            // Create new unit button in tool bar if necessary
-            mainWindow.createUnitButton(unitUIProxy);
-
+                // Create new unit button in tool bar if necessary
+                mainWindow.createUnitButton(unitUIProxy);
+            }
         }
-        tempWindow.setVisible(true);
+        
+        if (tempWindow != null) {
+            tempWindow.setVisible(true);
 
-        // Correct window becomes selected
-        try {
-            tempWindow.setSelected(true);
-            tempWindow.moveToFront();
+            // Correct window becomes selected
+            try {
+                tempWindow.setSelected(true);
+                tempWindow.moveToFront();
+            }
+            catch (java.beans.PropertyVetoException e) {}
         }
-        catch (java.beans.PropertyVetoException e) {}
         
         // Open a settlement unit window (remove later)
         if (unitUIProxy instanceof SettlementUIProxy) {
@@ -299,6 +304,14 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         // Open a vehicle unit window (remove later)
         if (unitUIProxy instanceof VehicleUIProxy) {
             UnitWindow window = new VehicleWindow(this, unitUIProxy);
+            add(window, 0);
+            window.pack();
+            window.setVisible(true);
+        }
+        
+        // Open an equipment unit window (remove later)
+        if (unitUIProxy instanceof EquipmentUIProxy) {
+            UnitWindow window = new EquipmentWindow(this, unitUIProxy);
             add(window, 0);
             window.pack();
             window.setVisible(true);

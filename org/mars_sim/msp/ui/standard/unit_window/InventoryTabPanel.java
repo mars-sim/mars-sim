@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.75 2003-07-06
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
@@ -14,15 +14,17 @@ import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.*;
 
 /** 
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
-public class InventoryTabPanel extends TabPanel {
+public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
     
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
+    private JTable equipmentTable;
     
     /**
      * Constructor
@@ -74,12 +76,11 @@ public class InventoryTabPanel extends TabPanel {
         equipmentTableModel = new EquipmentTableModel(proxy);
         
         // Create equipment table
-        JTable equipmentTable = new JTable(equipmentTableModel);
+        equipmentTable = new JTable(equipmentTableModel);
         equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-        equipmentTable.getColumnModel().getColumn(0).setPreferredWidth(120);
-        equipmentTable.getColumnModel().getColumn(1).setPreferredWidth(50);
-        equipmentTable.setCellSelectionEnabled(false);
-        equipmentTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+        equipmentTable.setCellSelectionEnabled(true);
+        equipmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        equipmentTable.getSelectionModel().addListSelectionListener(this);
         equipmentPanel.setViewportView(equipmentTable);
     }
     
@@ -89,6 +90,21 @@ public class InventoryTabPanel extends TabPanel {
     public void update() {
         resourceTableModel.update();
         equipmentTableModel.update();
+    }
+    
+    /**
+     * Called whenever the value of the selection changes.
+     *
+     * @param e the event that characterizes the change.
+     */
+    public void valueChanged(ListSelectionEvent e) {
+        System.out.println("ListSelectionListener.valueChanged()");
+        int index = equipmentTable.getSelectedRow();
+        Equipment selectedEquipment = (Equipment) equipmentTable.getValueAt(index, 0);
+        if (selectedEquipment != null) {
+            UnitUIProxy itemProxy = desktop.getProxyManager().getUnitUIProxy(selectedEquipment);
+            desktop.openUnitWindow(itemProxy);
+        }
     }
     
     /** 
@@ -161,92 +177,52 @@ public class InventoryTabPanel extends TabPanel {
     private class EquipmentTableModel extends AbstractTableModel {
         
         UnitUIProxy proxy;
-        java.util.Map equipmentMap;
-        java.util.Set keys;
+        UnitCollection equipment;
         
         private EquipmentTableModel(UnitUIProxy proxy) {
             this.proxy = proxy;
-            UnitCollection equipment = proxy.getUnit().getInventory().getUnitsOfClass(Equipment.class);
-
-            equipmentMap = new HashMap();
-            keys = equipmentMap.keySet();
-            
-            UnitIterator i = equipment.iterator();
-            while (i.hasNext()) {
-                String name = i.next().getName();
-                if (keys.contains(name)) {
-                    int num = ((Integer) equipmentMap.get(name)).intValue();
-                    equipmentMap.put(name, new Integer(++num));
-                }
-                else equipmentMap.put(name, new Integer(1));
-            }
+            equipment = proxy.getUnit().getInventory().getUnitsOfClass(Equipment.class);
         }
         
         public int getRowCount() {
-            return keys.size();
+            return equipment.size();
         }
         
         public int getColumnCount() {
-            return 2;
+            return 1;
         }
         
         public Class getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
-            if (columnIndex == 1) dataType = Integer.class;
             return dataType;
         }
         
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Equipment";
-            else if (columnIndex == 1) return "Num";
             else return "unknown";
         }
         
         public Object getValueAt(int row, int column) {
-            if (row < keys.size()) {
-                
-                // Get key value.
-                String keyValue = null;
-                Iterator i = keys.iterator();
+            if (row < equipment.size()) {
+                Unit result = null;
                 int count = 0;
+                UnitIterator i = equipment.iterator();
                 while (i.hasNext()) {
-                    String key = (String) i.next();
-                    if (count == row) keyValue = key;
-                    count ++;
+                    Unit item = i.next();
+                    if (count == row) result = item;
+                    count++;
                 }
-                
-                if (column == 0) return keyValue;
-                else if (column == 1) {
-                    Integer num = (Integer) equipmentMap.get(keyValue);
-                    return String.valueOf(num.intValue());
-                }
-                else return "unknown";
-            }
+                return result;
+            }   
             else return "unknown";
         }
   
         public void update() {
-            
-            UnitCollection equipment = proxy.getUnit().getInventory().getUnitsOfClass(Equipment.class);
-            java.util.Map tempMap = new HashMap();
-            java.util.Set tempKeys = tempMap.keySet();
-            
-            UnitIterator i = equipment.iterator();
-            while (i.hasNext()) {
-                String name = i.next().getName();
-                if (tempKeys.contains(name)) {
-                    int num = ((Integer) tempMap.get(name)).intValue();
-                    tempMap.put(name, new Integer(++num));
-                }
-                else tempMap.put(name, new Integer(1));
-            }
-            
-            // If the equipment map cache doesn't match what's in inventory, update it.
-            if (!equipmentMap.equals(tempMap)) {
-                equipmentMap = tempMap;
-                keys = tempKeys;
+            UnitCollection newEquipment = proxy.getUnit().getInventory().getUnitsOfClass(Equipment.class);
+            if (!equipment.equals(newEquipment)) {
+                equipment = newEquipment;
                 fireTableDataChanged();
             }
         }
-    }
+    } 
 }

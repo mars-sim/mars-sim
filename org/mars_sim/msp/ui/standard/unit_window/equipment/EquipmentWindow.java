@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EquipmentWindow.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
@@ -24,7 +24,7 @@ public class EquipmentWindow extends UnitWindow {
      */
     public EquipmentWindow(MainDesktopPane desktop, UnitUIProxy proxy) {
         // Use UnitWindow constructor
-        super(desktop, proxy, true);
+        super(desktop, proxy, false);
         
         Equipment equipment = (Equipment) proxy.getUnit();
         
