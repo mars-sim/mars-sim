@@ -30,6 +30,9 @@ public class ExplorerRover extends Rover implements Serializable {
 	super(name, settlement, mars);
 
 	initExplorerRoverData();
+
+	// Add EVA Suits
+	addEVASuits();
     }
 
     /**
@@ -44,6 +47,9 @@ public class ExplorerRover extends Rover implements Serializable {
 	super(name, mars, manager);
 
 	initExplorerRoverData();
+
+	// Add EVA Suits
+	addEVASuits();
     }
 
     /**

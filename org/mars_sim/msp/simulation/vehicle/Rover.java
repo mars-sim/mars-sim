@@ -78,9 +78,13 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
 	inventory.setResourceCapacity(Inventory.OXYGEN, OXYGEN_CAPACITY);
 	inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
 	inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
+    }
 
-	// Add EVA suits to inventory.
-	for (int x = 0; x < getCrewCapacity(); x++) {
+    /** 
+     * Adds enough EVA suits to inventory to match crew capacity.
+     */
+    protected void addEVASuits() {
+        for (int x=0; x < getCrewCapacity(); x++) {
 	    EVASuit suit = new EVASuit(location, mars);
 	    inventory.addUnit(suit);
 	}

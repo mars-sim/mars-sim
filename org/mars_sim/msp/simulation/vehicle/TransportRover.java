@@ -34,6 +34,9 @@ public class TransportRover extends Rover implements Serializable {
 	super(name, settlement, mars);
 
 	initTransportRoverData();
+
+	// Add EVA suits
+	addEVASuits();
     }
 
     /**
@@ -48,6 +51,9 @@ public class TransportRover extends Rover implements Serializable {
 	super(name, mars, manager);
 
 	initTransportRoverData();
+
+	// Add EVA suits
+	addEVASuits();
     }
 
     /**
