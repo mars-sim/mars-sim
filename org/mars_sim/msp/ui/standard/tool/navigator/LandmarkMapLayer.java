@@ -27,7 +27,7 @@ class LandmarkMapLayer implements MapLayer {
 	private Color TOPO_COLOR = new Color(50, 50, 50);
 	
 	// Label font.
-	private Font MAP_LABEL_FONT = new Font("SansSerif", Font.PLAIN, 12);
+	private Font MAP_LABEL_FONT = new Font("SansSerif", Font.PLAIN, 10);
 	
 	// Horizontal offset for label.
 	private int LABEL_HORIZONTAL_OFFSET = 2;
