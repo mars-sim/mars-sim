@@ -40,9 +40,12 @@ public abstract class Vehicle extends Unit {
     private HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
     private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
     private boolean distanceMark = false;
+
     private static Image surfImage;
     private static Image topoImage;
 
+
+    // static initializer block
     static {
 	surfImage = Toolkit.getDefaultToolkit().getImage("VehicleSymbol.gif");
 	topoImage = Toolkit.getDefaultToolkit().getImage("VehicleSymbolBlack.gif");

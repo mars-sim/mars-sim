@@ -17,9 +17,12 @@ public class Settlement extends Unit {
     protected Vector people;                    // List of inhabitants
     protected Vector vehicles;                  // List of parked vehicles
     protected FacilityManager facilityManager;  // The facility manager for the settlement.
+
     private static Image surfImage;
     private static Image topoImage;
 
+
+    // static initializer block
     static {
 	surfImage = Toolkit.getDefaultToolkit().getImage("SettlementSymbol.gif");
 	topoImage = Toolkit.getDefaultToolkit().getImage("SettlementSymbolBlack.gif");

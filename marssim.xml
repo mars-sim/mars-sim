@@ -68,4 +68,14 @@
     <location>Sagan Station</location>
   </Rover>  
 
+  <Landmark>
+    <name>Viking Lander</name>
+    <location></location>
+  </Landmark>  
+
+  <Landmark>
+    <name>Mars Pathfinder</name>
+    <location></location>
+  </Landmark>  
+
 </marssim>
