@@ -28,8 +28,16 @@ interface MonitorModel extends TableModel {
     public Object getObject(int row);
 
     /**
-     * The Model should be updated to reflect any changes in the underlying
-     * data
+     * Has this model got a natural order that the model conforms to. If this
+     * value is true, then it implies that the user should not be allowed to
+     * order.
      */
-    public void update();
+    public boolean getOrdered();
+
+    /**
+     * The Model should be updated to reflect any changes in the underlying
+     * data.
+     * @return A status string for the contents of the model.
+     */
+    public String update();
 }

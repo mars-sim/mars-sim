@@ -65,8 +65,11 @@ abstract class MonitorTab extends JPanel
         Iterator it = rows.iterator();
         while(it.hasNext())
         {
-            UnitUIProxy proxy = proxyManager.getUnitUIProxy((Unit)it.next());
-            desktop.openUnitWindow(proxy);
+            Object unit = it.next();
+            if (unit instanceof Unit) {
+                UnitUIProxy proxy = proxyManager.getUnitUIProxy((Unit)unit);
+                desktop.openUnitWindow(proxy);
+            }
         }
     }
 
@@ -99,10 +102,11 @@ abstract class MonitorTab extends JPanel
     abstract protected List getSelection();
 
     /**
-     * Update the selected table
+     * Update the selected model.
+     * @return A status string.
      */
-    public void update() {
-        model.update();
+    public String update() {
+        return model.update();
     }
 
     /**
