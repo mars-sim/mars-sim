@@ -25,9 +25,9 @@ public class PhysicalCondition implements Serializable {
     // Static values
     private static int MIN_VALUE = 0;
     private static int MAX_VALUE = 1;
-	
+
     // Data members
-    private boolean isAlive;            // Is the person alive
+    private DeathInfo deathDetails;     // Details of persons death
     private HashMap problems;           // Injury/Illness effecting person
     private HealthProblem serious;      // Mosr serious problem
     private double fatigue;             // Person's fatigue level
@@ -44,7 +44,7 @@ public class PhysicalCondition implements Serializable {
      *
      */
     public PhysicalCondition(Person newPerson, Mars mars) {
-        isAlive = true;
+        deathDetails = null;
         person = newPerson;
         problems = new HashMap();
         performance = 1.0D;
@@ -87,7 +87,7 @@ public class PhysicalCondition implements Serializable {
             ArrayList newProblems = new ArrayList();
 
             Iterator iter = problems.values().iterator();
-            while(getAlive() && iter.hasNext()) {
+            while((deathDetails == null) && iter.hasNext()) {
                 HealthProblem problem = (HealthProblem)iter.next();
 
                 // Advance each problem, they may change into a worse problem.
@@ -119,7 +119,7 @@ public class PhysicalCondition implements Serializable {
         }
 
         // Has the person died ?
-        if (!isAlive) {
+        if (deathDetails != null) {
             return false;
         }
 
@@ -141,7 +141,7 @@ public class PhysicalCondition implements Serializable {
         recalculate |= consumeOxygen(support, props.getPersonOxygenConsumption() * (time / 1000D));
         recalculate |= consumeWater(support, props.getPersonWaterConsumption() * (time / 1000D));
         recalculate |= requireAirPressure(support, props.getPersonMinAirPressure());
-        recalculate |= requireTemperature(support, props.getPersonMinTemperature(), 
+        recalculate |= requireTemperature(support, props.getPersonMinTemperature(),
                 props.getPersonMaxTemperature());
 
         // Build up fatigue & hunger for given time passing.
@@ -151,14 +151,14 @@ public class PhysicalCondition implements Serializable {
         if (recalculate) {
             recalculate();
         }
-        return isAlive;
+        return (deathDetails == null);
     }
 
     /** Adds a new medical complaint to the person.
      *  @param complaint the new medical complaint
      */
     public void addMedicalComplaint(Complaint complaint) {
-    
+
         if ((complaint != null) && !problems.containsKey(complaint)) {
 	    HealthProblem problem = new HealthProblem(complaint, person, person.getAccessibleAid());
 	    problems.put(complaint, problem);
@@ -217,15 +217,15 @@ public class PhysicalCondition implements Serializable {
      * @param complaint Problem assocoiated to this resource.
      * @return Has a new problem been added.
      */
-    private boolean checkResourceConsumption(double actual, double required, 
+    private boolean checkResourceConsumption(double actual, double required,
             int bounds, Complaint complaint) {
         boolean newProblem = false;
         if ((bounds == MIN_VALUE) && (actual < required)) newProblem = true;
 	if ((bounds == MAX_VALUE) && (actual > required)) newProblem = true;
-	
+
         if (newProblem) {
 	    if (!problems.containsKey(complaint)) {
-		problems.put(complaint, new HealthProblem(complaint, person, 
+		problems.put(complaint, new HealthProblem(complaint, person,
 		        person.getAccessibleAid()));
 	    }
 	}
@@ -255,9 +255,9 @@ public class PhysicalCondition implements Serializable {
      * @param temperature minimum temperature person requires (in degrees Celsius)
      * @return new problem added.
      */
-    private boolean requireTemperature(LifeSupport support, double minTemperature, 
+    private boolean requireTemperature(LifeSupport support, double minTemperature,
             double maxTemperature) {
-	boolean freeze = checkResourceConsumption(support.getTemperature(),  
+	boolean freeze = checkResourceConsumption(support.getTemperature(),
                 minTemperature, MIN_VALUE, medic.getFreezing());
 	boolean hot = checkResourceConsumption(support.getTemperature(),
 	        maxTemperature, MAX_VALUE, medic.getHeatStroke());
@@ -265,11 +265,11 @@ public class PhysicalCondition implements Serializable {
     }
 
     /**
-     * Predicate to check if the Person is alive.
-     * @return Boolean of alive state.
+     * Get the details of this Person's death.
+     * @return Deatial of the death, will be null if person os still alive.
      */
-    public boolean getAlive() {
-        return isAlive;
+    public DeathInfo getDeathDetails() {
+        return deathDetails;
     }
 
     /** Gets the person's fatigue level
@@ -317,11 +317,16 @@ public class PhysicalCondition implements Serializable {
 
     /**
      * This Person is now dead.
+     * @param illness THe Compliant that makes person dead.
      */
-    public void setDead() {
+    public void setDead(Complaint illness) {
         fatigue = 0;
         hunger = 0;
-        isAlive = false;
+
+        MarsClock time = person.getMars().getMasterClock().getMarsClock();
+        deathDetails = new DeathInfo(illness, (MarsClock)time.clone(),
+                                     person.getContainerUnit(),
+                                     person.getCoordinates());
     }
 
     /**
@@ -331,7 +336,7 @@ public class PhysicalCondition implements Serializable {
     public String getHealthSituation() {
         String situation = "Well";
         if (serious != null) {
-            if (!isAlive) {
+            if (deathDetails != null) {
                 situation = "Dead, " + serious.getIllness().getName();
             }
             else {

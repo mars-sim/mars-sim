@@ -219,14 +219,14 @@ public class HealthProblem implements Serializable {
 
                 if (nextPhase == null) {
                     state = DEAD;
-                    condition.setDead();
+                    condition.setDead(illness);
                 }
                 else {
                     result = nextPhase;
                 }
             }
             else if (state == TREATMENT) {
-                if ((usedAid != null) && 
+                if ((usedAid != null) &&
                      !illness.getRecoveryTreatment().getRetainAid()) {
                     usedAid.stopTreatment(this);
                     usedAid = null;
