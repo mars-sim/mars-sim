@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.71 2000-09-25
+ * @version 2.71 2000-10-11
  * @author Scott Davis
  */
 
@@ -14,9 +14,13 @@ import java.util.Vector;
  */
 public class FacilityManager {
 
+    // Data members
     private Settlement settlement; // The settlement the facility manager belongs to.
     private Vector facilityList; // Unordered List of the settlement's facilities.
 
+    /** Constructs a FacilityManager object
+     *  @param settlement parent settlement
+     */
     FacilityManager(Settlement settlement) {
 
         // Initialize settlement
@@ -33,18 +37,25 @@ public class FacilityManager {
         facilityList.addElement(new LaboratoryFacility(this));
     }
 
-    /** Returns the settlement the owns this facility manager. */
+    /** Returns the settlement the owns this facility manager. 
+     *  @return parent settlement
+     */
     public Settlement getSettlement() {
         return settlement;
     }
 
-    /** Returns the number of facilities in the manager. */
+    /** Returns the number of facilities in the manager. 
+     *  @return number of facilities the manager controls
+     */
     public int getFacilityNum() {
         return facilityList.size();
     }
 
     /** Returns a facility given an index number. If there is no
-        *  facility at that index number, return null. */
+     *  facility at that index number, return null. 
+     *  @param index index number of the requested facility
+     *  @return requested facility
+     */
     public Facility getFacility(int index) {
         if ((index >= 0) && (index < facilityList.size())) {
             return (Facility) facilityList.elementAt(index);
@@ -54,7 +65,10 @@ public class FacilityManager {
     }
 
     /** Returns a facility given its name. If there is no facility of
-        *  the given name, return null. */
+     *  the given name, return null. 
+     *  @param name name of the requested facility
+     *  @return requested facility
+     */
     public Facility getFacility(String name) {
         for (int x = 0; x < facilityList.size(); x++) {
             Facility tempFacility = getFacility(x);
@@ -65,7 +79,9 @@ public class FacilityManager {
         return null;
     }
 
-    /** Sends facilities a time pulse. */
+    /** Sends facilities a time pulse. 
+     *  @param seconds number of seconds of time passing
+     */
     void timePasses(int seconds) {
         for (int x = 0; x < facilityList.size(); x++) {
             ((Facility) facilityList.elementAt(x)).timePasses(seconds);

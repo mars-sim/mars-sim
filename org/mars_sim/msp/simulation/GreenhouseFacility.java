@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GreenhouseFacility.java
- * @version 2.71 2000-09-17
+ * @version 2.71 2000-10-11
  * @author Scott Davis
  */
 
@@ -14,7 +14,8 @@ package org.mars_sim.msp.simulation;
 
 public class GreenhouseFacility extends Facility {
 
-    private float fullHarvestAmount; // Number of number of food units the greenhouse can produce at full harvest.
+    // Data members
+    private float fullHarvestAmount; // Number of food units the greenhouse can produce at full harvest.
     private float workLoad; // Number of work-hours tending greenhouse required during growth period for full harvest.
     private float growingWork; // Number of work-hours completed for growing phase.
     private float workCompleted; // Number of work-hours completed for current phase.
@@ -22,31 +23,34 @@ public class GreenhouseFacility extends Facility {
     private float growthPeriodCompleted; // Number of days completed in current growth period..
     private String phase; // "Inactive", "Planting", "Growing" or "Harvesting"
 
-    /** Constructor for random creation. */
+    /** Constructor for random creation. 
+     *  @param manager of the greenhouse facility
+     */
     public GreenhouseFacility(FacilityManager manager) {
 
         // Use Facility's constructor.
-
         super(manager, "Greenhouse");
 
         // Initialize data members
-
         workCompleted = 0F;
         growthPeriod = 20F;
         growthPeriodCompleted = 0F;
         phase = "Inactive";
 
         // Randomly determine full harvest amount.
-
         fullHarvestAmount = 10 + RandomUtil.getRandomInteger(20);
 
         // Determine work load based on full harvest amount.
         // (80hrs for 10 food - 160hrs for 30 food)
-
         workLoad = 40F + (4F * fullHarvestAmount);
     }
 
-    /** Constructor for set values (used later when facilities can be built or upgraded.) */
+    /** Constructor for set values (used later when facilities can be built or upgraded.) 
+     *  @param manager manager of the greenhouse facility
+     *  @param workLoad tending work required for a full harvest (in work-hours)
+     *  @param growthPeriod time required to grow crops (in days)
+     *  @param fullHarvestAmount number of food units the greenhouse can produce at full harvest
+     */
     public GreenhouseFacility(FacilityManager manager, float workLoad, float growthPeriod,
             float fullHarvestAmount) {
 
@@ -64,42 +68,58 @@ public class GreenhouseFacility extends Facility {
         phase = "Inactive";
     }
 
-    /** Returns the harvest amount of the greenhouse. */
+    /** Returns the harvest amount of the greenhouse. 
+     *  @return number of food units the greenhouse can produce at full harvest
+     */
     public float getFullHarvestAmount() {
         return fullHarvestAmount;
     }
 
-    /** Returns the work load of the greenhouse. (in work-hours) */
+    /** Returns the work load of the greenhouse. (in work-hours) 
+     *  @return tending work required for a full harvest (in work hours)
+     */
     public float getWorkLoad() {
         return workLoad;
     }
 
-    /** Returns the work completed in this cycle in the growing phase. */
+    /** Returns the work completed in this cycle in the growing phase. 
+     *  @return work completed so far in the growing phase (in work hours)
+     */
     public float getGrowingWork() {
         return growingWork;
     }
 
-    /** Returns the growth period of the greenhouse. (in days) */
+    /** Returns the growth period of the greenhouse. (in days) 
+     *  @return time required to grow crops (in days)
+     */
     public float getGrowthPeriod() {
         return growthPeriod;
     }
 
-    /** Returns the current work completed on the current phase. (in work-hours) */
+    /** Returns the current work completed on the current phase. (in work-hours) 
+     *  @return work completed so far in this phase (in work hours)
+     */
     public float getWorkCompleted() {
         return workCompleted;
     }
 
-    /** Returns the time completed of the current growth cycle. (in days) */
+    /** Returns the time completed of the current growth cycle. (in days) 
+     *  @return time completed in growth cycle (in days)
+     */
     public float getTimeCompleted() {
         return growthPeriodCompleted;
     }
 
-    /** Returns true if a harvest cycle has been started. */
+    /** Returns true if a harvest cycle has been started. 
+     *  @return current phase
+     */
     public String getPhase() {
         return phase;
     }
 
-    /** Adds work to the work completed on a growth cycle. */
+    /** Adds work to the work completed on a growth cycle. 
+     *  @param work-seconds added to growth cycle
+     */
     public void addWorkToGrowthCycle(int seconds) {
 
         float plantingWork = 4F * 60F * 60F;
@@ -133,7 +153,9 @@ public class GreenhouseFacility extends Facility {
         workCompleted = workInPhase / (60F * 60F);
     }
 
-    /** Override Facility's timePasses method to allow for harvest cycle. */
+    /** Override Facility's timePasses method to allow for harvest cycle. 
+     *  @param number of seconds of time passing
+     */
     void timePasses(int seconds) {
 
         if (phase.equals("Growing")) {
@@ -145,4 +167,3 @@ public class GreenhouseFacility extends Facility {
         }
     }
 }
-

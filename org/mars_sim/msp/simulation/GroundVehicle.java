@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.71 2000-09-26
+ * @version 2.71 2000-10-11
  * @author Scott Davis
  */
 
@@ -13,10 +13,17 @@ package org.mars_sim.msp.simulation;
 */
 public abstract class GroundVehicle extends Vehicle {
 
+    // Data members
     private double elevation; // Current elevation in km.
     private double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability.
     private double terrainGrade; // Average angle of terrain over next 7.4km distance in direction vehicle is traveling.
 
+    /** Constructs a GroundVehicle object
+     *  @param name name of the ground vehicle
+     *  @param location coordinate location of the ground vehicle
+     *  @param mars simulated Mars
+     *  @param manager unit manager for the ground vehicle
+     */
     GroundVehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
         // use Vehicle constructor
@@ -40,47 +47,60 @@ public abstract class GroundVehicle extends Vehicle {
         addPotentialFailure("Communications Failure");
     }
 
-    /** Returns the elevation of the vehicle in km. */
+    /** Returns the elevation of the vehicle in km. 
+     *  @return elevation of the ground vehicle (in km)
+     */
     public double getElevation() {
         return elevation;
     }
 
-    /** Sets the elevation of the vehicle (in km.) */
+    /** Sets the elevation of the vehicle (in km.) 
+     *  @param elevation new elevation for ground vehicle
+     */
     void setElevation(double elevation) {
         this.elevation = elevation;
     }
 
-    /** Returns the vehicle's terrain capability */
+    /** Returns the vehicle's terrain capability 
+     *  @return terrain handling capability of the ground vehicle
+     */
     public double getTerrainHandlingCapability() {
         return terrainHandlingCapability;
     }
 
-    /** Sets the vehicle's terrain capability */
+    /** Sets the vehicle's terrain capability 
+     *  @param c sets the ground vehicle's terrain handling capability
+     */
     void setTerrainHandlingCapability(double c) {
         terrainHandlingCapability = c;
     }
 
-    /** Returns terrain steepness as an angle */
+    /** Returns terrain steepness as an angle 
+     *  @return ground vehicle's current terrain grade
+     */
     public double getTerrainGrade() {
         return terrainGrade;
     }
 
-    /** Sets the terrain grade with an angle */
+    /** Sets the terrain grade with an angle 
+     *  @param terrainGrade new terrain grade for the ground vehicle
+     */
     void setTerrainGrade(double terrainGrade) {
         this.terrainGrade = terrainGrade;
     }
 
-    /** Returns true if ground vehicle is stuck */
+    /** Returns true if ground vehicle is stuck 
+     *  @return true if vehicle is currently stuck, false otherwise
+     */
     public boolean isStuck() {
         return (getStatus().equals("Stuck - Using Winch"));
     }
 
-    /** Sets the ground vehicle's stuck value */
+    /** Sets the ground vehicle's stuck value 
+     *  @param stuck true if vehicle is currently stuck, false otherwise
+     */
     void setStuck(boolean stuck) {
-        if (stuck) {
-            setStatus("Stuck - Using Winch");
-        } else {
-            setStatus("Moving");
-        }
+        if (stuck) setStatus("Stuck - Using Winch");
+        else setStatus("Moving");
     }
 }

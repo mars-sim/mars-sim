@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConfFileProcessor.java
- * @version 2.71 2000-09-25
+ * @version 2.71 2000-10-10
  * @author Scott Davis
  */
 
@@ -17,22 +17,30 @@ import java.util.Vector;
 
 class ConfFileProcessor {
 
-    /** Retrieves settlement names from "settlements.conf". */
+    /** Retrieves settlement names from "settlements.conf". 
+     *  @return names of all the settlements
+     */
     static String[] getSettlementNames() {
         return getNames("conf/settlements.conf");
     }
 
-    /** Retrieves rover names from "rovers.conf". */
+    /** Retrieves rover names from "rovers.conf". 
+     *  @return names of all the rovers
+     */
     static String[] getRoverNames() {
         return getNames("conf/rovers.conf");
     }
 
-    /** Retrieves person names from "people.conf". */
+    /** Retrieves person names from "people.conf". 
+     *  @return names of all the people
+     */
     static String[] getPersonNames() {
         return getNames("conf/people.conf");
     }
 
-    /** Retrieves names from a given configuration file. */
+    /** Retrieves names from a given configuration file. 
+     *  @return unit names from a config file
+     */
     static private String[] getNames(String configFile) {
         try {
             LineNumberReader configReader = new LineNumberReader(new FileReader(configFile));

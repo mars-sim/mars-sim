@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.71 2000-09-25
+ * @version 2.71 2000-10-10
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.awt.Point;
  */
 public class Coordinates {
 
+    // Data members
     private double phi; // Phi value of coordinates
     private double theta; // Theta value of coordinates
 
@@ -31,6 +32,10 @@ public class Coordinates {
     // 2 x PI
     private static final double TWO_PI = 2.0D * Math.PI;
 
+    /** Constructs a Coordinates object 
+     *  @param phi the phi angle of the spherical coordinate
+     *  @param theta the theta angle of the spherical coordinate
+     */
     public Coordinates(double phi, double theta) {
 
         // Set Coordinates
@@ -41,7 +46,9 @@ public class Coordinates {
         setTrigFunctions();
     }
 
-    /** copy constructor */
+    /** Clone constructor 
+     *  @param originalCoordinates the Coordinates object to be cloned
+     */
     public Coordinates(Coordinates originalCoordinates) {
         this(originalCoordinates.getPhi(), originalCoordinates.getTheta());
     }
@@ -54,50 +61,69 @@ public class Coordinates {
         cosTheta = Math.cos(theta);
     }
 
-    /** phi accessor */
+    /** phi accessor 
+     *  @return the phi angle value of the coordinate
+     */
     public double getPhi() {
         return phi;
     }
 
-    /** phi mutator */
+    /** phi mutator 
+     *  @param newPhi the new phi angle value for the coordinate
+     */
     public void setPhi(double newPhi) {
         phi = newPhi;
         setTrigFunctions();
     }
 
-    /** theta accessor */
+    /** theta accessor 
+     *  @return the theta angle value of the coordinate
+     */
     public double getTheta() {
         return theta;
     }
 
-    /** theta mutator */
+    /** theta mutator 
+     *  @param newTheta the new theta angle value for the coordinate
+     */
     public void setTheta(double newTheta) {
         theta = newTheta;
         setTrigFunctions();
     }
 
-    /** sine of phi. */
+    /** sine of phi. 
+     *  @return the sine of the phi angle value of the coordinate
+     */
     public double getSinPhi() {
         // <tip> would it be help to use lazy evaluation of sinPhi here? </tip>
         return sinPhi;
     }
 
-    /** sine of theta */
+    /** sine of theta 
+     *  @return the sine of the theta angle value of the coordinate
+     */
     public double getSinTheta() {
         return sinTheta;
     }
 
-    /** cosine of phi */
+    /** cosine of phi 
+     *  @return the cosine of the phi angle value of the coordinate
+     */
     public double getCosPhi() {
         return cosPhi;
     }
 
-    /** cosine of theta */
+    /** cosine of theta 
+     *  @return the cosine of the theta angle value of the coordinate
+     */
     public double getCosTheta() {
         return cosTheta;
     }
 
-    /** Set coordinates */
+    /** Set coordinates 
+     *  @param newCoordinates Coordinates object who's location should be matched by
+     *  this Coordinates object
+     */
     public void setCoords(Coordinates newCoordinates) {
 
         // Update coordinates
@@ -108,7 +134,10 @@ public class Coordinates {
         setTrigFunctions();
     }
 
-    /** Returns true if coordinates have equal phi and theta values */
+    /** Returns true if coordinates have equal phi and theta values 
+     *  @param otherCoords Coordinates object to be matched against
+     *  @return true if Coordinates values match, false otherwise
+     */
     public boolean equals(Object otherCoords) {
 
         if (otherCoords instanceof Coordinates) {
@@ -122,7 +151,10 @@ public class Coordinates {
     }
 
     /** Returns the arc angle in radians between this location and the
-      *  given coordinates */
+     *  given coordinates 
+     *  @param otherCoords remote Coordinates object
+     *  @return angle (in radians) to the remote Coordinates object
+     */
     public double getAngle(Coordinates otherCoords) {
 
         double rho = HALF_CIRCUM_PIXELS / Math.PI;
@@ -140,7 +172,10 @@ public class Coordinates {
     }
 
     /** Returns the distance in kilometers between this location and
-      *  the given coordinates */
+     *  the given coordinates 
+     *  @param otherCoords remote Coordinates object
+     *  @return distance (in km) to the remote Coordinates object
+     */
     public double getDistance(Coordinates otherCoords) {
 
         double rho = HALF_DIAMETER_KM;
@@ -150,7 +185,9 @@ public class Coordinates {
     }
 
     /** Returns common formatted string to represent longitude for
-      *  this location ex. "35.6º E" */
+     *  this location ex. "35.6º E" 
+     *  @return formatted longitude string for this Coordinates object
+     */
     public String getFormattedLongitudeString() {
 
         double degrees;
@@ -174,7 +211,9 @@ public class Coordinates {
     }
 
     /** Returns common formatted string to represent latitude for this
-      *  location ex. "35.6º S" */
+     *  location ex. "35.6º S" 
+     *  @return formatted latitude string for this Coordinates object
+     */
     public String getFormattedLatitudeString() {
 
         double degrees;
@@ -199,8 +238,15 @@ public class Coordinates {
     }
 
     /** Converts spherical coordinates to rectangular coordinates.
-      *  Returns integer x and y display coordinates for spherical
-      *  location. */
+     *  Returns integer x and y display coordinates for spherical
+     *  location. 
+     *  @param newCoords offsetted location
+     *  @param centerCoords location of the center of the map
+     *  @param rho diameter of planet (in km)
+     *  @param half_map half the map's width (in pixels)
+     *  @param low_edge lower edge of map (in pixels)
+     *  @return pixel offset value for map
+     */
     static public IntPoint findRectPosition(Coordinates newCoords, Coordinates centerCoords,
             double rho, int half_map, int low_edge) {
 
@@ -217,7 +263,11 @@ public class Coordinates {
         return new IntPoint(buff_x - low_edge, buff_y - low_edge);
     }
 
-    /** Converts linear rectangular XY position change to spherical coordinates */
+    /** Converts linear rectangular XY position change to spherical coordinates 
+     *  @param x change in x value (in km)
+     *  @param y change in y value (in km)
+     *  @return new spherical location
+     */
     public Coordinates convertRectToSpherical(double x, double y) {
 
         double rho = HALF_CIRCUM_PIXELS / Math.PI;
@@ -251,8 +301,10 @@ public class Coordinates {
     }
 
     /** Returns angle direction to another location on surface of
-      *  sphere 0 degrees is north (clockwise)
-      */
+     *  sphere 0 degrees is north (clockwise)
+     *  @param otherCoords target location
+     *  @return angle direction to target (in radians)
+     */
     public double getDirectionToPoint(Coordinates otherCoords) {
 
         double rho = HALF_CIRCUM_PIXELS / Math.PI;
@@ -298,7 +350,10 @@ public class Coordinates {
         return result;
     }
 
-    /** Makes sure an angle isn't above 2PI or less than zero */
+    /** Makes sure an angle isn't above 2PI or less than zero 
+     *  @param angle raw angle (in radians)
+     *  @return cleaned angle
+     */
     public static double cleanAngle(double angle) {
         if ((angle < 0.0) || (angle > TWO_PI)) {
             angle = Math.IEEEremainder(angle, TWO_PI);
