@@ -69,8 +69,11 @@ public abstract class Unit {
     public abstract UnitDialog getDetailWindow(MainDesktopPane parentDesktop); 
 
     /*
-    public abstract Image getSurfIcon();
-    public abstract Image getTopoIcon();
+    public static Image getSurfIcon() {
+    }
+
+    public static Image getTopoIcon() {
+    }
     */
 
     // perhaps this should be moved into a seperate Time interface

@@ -31,10 +31,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private boolean recreate;                 // True if surface needs to be regenerated
     private boolean labels;                   // True if units should display labels
     private Image mapImage;	              // Main image
-    private Image vehicleSymbol;              // Real vehicle symbol
-    private Image topoVehicleSymbol;          // Topograhical vehicle symbol
-    private Image settlementSymbol;           // Real settlement symbol
-    private Image topoSettlementSymbol;       // Topographical settlement symbol
 
     private int width;
     private int height;
@@ -232,6 +228,32 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	    }
 	}
     }
+
+    /*
+    private void drawUnits(Graphics g) {
+	UnitInfo[] info = navWindow.getSettlementInfo();
+
+	for (int x=0; x < info.length; x++) {
+
+	    // what's this .48587 magic number?
+	    if (centerCoords.getAngle(info[x].getCoords()) < .48587D) {
+		IntPoint rectLocation = getUnitRectPosition(info[x].getCoords());
+		IntPoint imageLocation = getUnitDrawLocation(rectLocation, u.getSurfIcon());
+		if (topo) {
+		    g.drawImage(Settlement.getTopoIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
+		} else {
+		    g.drawImage(Settlement.getSurfIcon(), imageLocation.getiX(), imageLocation.getiY(), this);
+		}
+		if (labels) {
+		    g.setColor(u.getLabelColor(topo));
+		    g.setFont(u.getLabelFont());
+		    IntPoint labelLocation = getLabelLocation(rectLocation, u.getSurfIcon());
+		    g.drawString(info[x].getName(), labelLocation.getiX(), labelLocation.getiY());
+		}
+	    }
+	}
+    }
+    */
 
 
     /** MouseListener methods overridden. Perform appropriate action
