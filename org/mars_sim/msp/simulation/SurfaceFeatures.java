@@ -70,7 +70,7 @@ public class SurfaceFeatures {
         }
 
         return result;
-    }     
+    }    
 
     /** Returns true if location is in a dark polar region.
      *  A dark polar region is where the sun doesn't rise in the current sol.
@@ -94,5 +94,18 @@ public class SurfaceFeatures {
         }
 
         return result;
+    }
+    
+    /**
+     * Checks if location is within a polar region of Mars.
+     * @param location the location to check.
+     * @return true if in polar region.
+     */
+    public boolean inPolarRegion(Coordinates location) {
+    	double polarPhi = .1D * Math.PI;
+    	
+    	if ((location.getPhi() < polarPhi) || (location.getPhi() > Math.PI - polarPhi))
+    		return true;
+    	else return false;
     }
 }
