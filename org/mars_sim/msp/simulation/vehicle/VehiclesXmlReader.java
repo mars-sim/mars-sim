@@ -40,7 +40,7 @@ public class VehiclesXmlReader extends MspXmlReader {
     public VehiclesXmlReader(UnitManager manager, VirtualMars mars) {
         super("conf/vehicles.xml");
 
-        this.manager = manager;
+	this.manager = manager;
         this.mars = mars;
     }
 
@@ -116,6 +116,7 @@ public class VehiclesXmlReader extends MspXmlReader {
      *  @return a rover or null if rover could not be constructed
      */
     private Rover createRover() {
+
         Rover rover = null;
         if (currentSettlement != null) {
             rover = new Rover(currentName, currentSettlement, mars);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -72,7 +72,7 @@ class TravelToSettlement extends Mission implements Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == Person.INSETTLEMENT) {
             Settlement currentSettlement = person.getSettlement();
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) {
                 if (ReserveGroundVehicle.availableVehicles(currentSettlement)) result = 1D; 
@@ -176,7 +176,7 @@ class TravelToSettlement extends Mission implements Serializable {
         
         // Have person get in the vehicle
         // When every person in mission is in vehicle, go to Driving phase.
-        if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
+        if (person.getLocationSituation() != Person.INVEHICLE) {
             person.getMind().getTaskManager().addTask(new EnterVehicle(person, mars, vehicle));
             return;
         }
@@ -184,7 +184,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // If any people in mission haven't entered the vehicle, return.
         for (int x=0; x < people.size(); x++) {
             Person tempPerson = (Person) people.elementAt(x);
-            if (!tempPerson.getLocationSituation().equals(Person.INVEHICLE)) return;
+            if (tempPerson.getLocationSituation() != Person.INVEHICLE) return;
         }
 
         // Make final preperations on vehicle.
@@ -220,7 +220,7 @@ class TravelToSettlement extends Mission implements Serializable {
                 lastDriver = null;
             }
             else {
-                if ((vehicle.getDriver() == null) && vehicle.getStatus().equals("Parked")) {
+                if ((vehicle.getDriver() == null) && (vehicle.getStatus() == Vehicle.PARKED)) {
                     DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, (GroundVehicle) vehicle, destinationSettlement.getCoordinates(), startingTime, startingDistance); 
                     person.getMind().getTaskManager().addTask(driveTask);
                     lastDriver = person;
@@ -238,12 +238,12 @@ class TravelToSettlement extends Mission implements Serializable {
 	destinationSettlement.getInventory().addUnit(vehicle);
         vehicle.setDestinationSettlement(null);
         vehicle.setDestinationType("None");
-        vehicle.setStatus("Parked");
         vehicle.setETA(null);
 
         // Have person exit vehicle if necessary. 
-        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-            person.getMind().getTaskManager().addTask(new ExitVehicle(person, mars, vehicle, destinationSettlement));
+        if (person.getLocationSituation() == Person.INVEHICLE) {
+            person.getMind().getTaskManager().addTask(new ExitVehicle(person, 
+                    mars, vehicle, destinationSettlement));
             return;
         }
 
@@ -258,7 +258,7 @@ class TravelToSettlement extends Mission implements Serializable {
         boolean allDisembarked = true;
         for (int x=0; x < people.size(); x++) {
             Person tempPerson = (Person) people.elementAt(x);
-            if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
+            if (tempPerson.getLocationSituation() == Person.INVEHICLE) allDisembarked = false;
         }
         if (allDisembarked && UnloadVehicle.isFullyUnloaded(vehicle)) endMission(); 
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -66,7 +66,6 @@ class MaintainVehicle extends Task implements Serializable {
             if (!garage.vehicleInGarage(vehicle)) garage.addVehicle(vehicle);
             name = "Performing Maintenance on " + vehicle.getName();
             description = name;
-            vehicle.setStatus("Periodic Maintenance");
             // System.out.println(person.getName() + " " + name);
         } 
 	else done = true;
@@ -80,7 +79,7 @@ class MaintainVehicle extends Task implements Serializable {
     public static double getProbability(Person person, VirtualMars mars) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == Person.INSETTLEMENT) {
             Settlement settlement = person.getSettlement();
 	    VehicleIterator i = settlement.getParkedVehicles().iterator();
 	    while (i.hasNext()) {
@@ -122,7 +121,6 @@ class MaintainVehicle extends Task implements Serializable {
         // Move vehicle out of maintenance garage.
         if (vehicle.getDistanceLastMaintenance() == 0) {
             garage.removeVehicle(vehicle);
-            vehicle.setStatus("Parked");
             done = true;
         }
 

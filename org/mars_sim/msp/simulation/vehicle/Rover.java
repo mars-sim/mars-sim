@@ -24,7 +24,7 @@ public class Rover extends GroundVehicle implements LifeSupport, Serializable {
     Rover(String name, Settlement settlement, VirtualMars mars) {
         // Use GroundVehicle constructor
         super(name, settlement, mars);
-        
+
         initRoverData();
     }
     
@@ -37,7 +37,7 @@ public class Rover extends GroundVehicle implements LifeSupport, Serializable {
     Rover(String name, VirtualMars mars, UnitManager manager) throws Exception {
         // Use GroundVehicle constructor
         super(name, mars, manager);
-        
+
         initRoverData();
     }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterVehicle.java
- * @version 2.74 2002-01-29
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -46,10 +46,8 @@ class EnterVehicle extends Task implements Serializable {
 
         timeCompleted += time;
         if (timeCompleted > duration) {
-
             Settlement settlement = person.getSettlement();
 	    settlement.getInventory().takeUnit(person, vehicle);
-            person.setLocationSituation(Person.INVEHICLE);
 
             done = true;
             return timeCompleted - duration;

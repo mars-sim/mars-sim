@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -138,16 +138,20 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	if (button == destinationCenterMapButton) 
             parentDesktop.centerMapGlobe(vehicle.getDestination());
 
-        // If location button, open window for selected unit
-        if ((button == locationButton) && (vehicle.getStatus().equals("Parked") ||
-                vehicle.getStatus().equals("Periodic Maintenance")))
+        // If location button, open window for settlement. 
+        if ((button == locationButton) && (vehicle.getSettlement() != null)) {
             parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(vehicle.getSettlement()));
-        if ((button == destinationButton) && !(vehicle.getStatus().equals("Parked") ||
-                vehicle.getStatus().equals("Periodic Maintenance")))
+	}
+
+	// If destination button, open window for destination settlement.
+        if ((button == destinationButton) && (vehicle.getDestinationSettlement() != null)) { 
             parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(vehicle.getDestinationSettlement()));
-        if ((button == driverButton) && !(vehicle.getStatus().equals("Parked") ||
-                vehicle.getStatus().equals("Periodic Maintenance")))
+	}
+
+	// If driver button, open window for driver.
+        if ((button == driverButton) && (vehicle.getDriver() != null)) {
             parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(vehicle.getDriver()));
+	}
     }
 
     /** Prepare and add components to window */
@@ -210,9 +214,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         locationButton = new JButton();
         locationButton.setMargin(new Insets(1, 1, 1, 1));
         locationButton.addActionListener(this);
-        if ((vehicle.getStatus().equals("Parked") ||
-                vehicle.getStatus().equals("Periodic Maintenance")) &&
-                (vehicle.getSettlement() != null)) {
+	if (vehicle.getSettlement() != null) {
             locationButton.setText(vehicle.getSettlement().getName());
             locationLabelPane.add(locationButton);
         }
@@ -367,7 +369,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         driverButton.setMargin(new Insets(1, 1, 1, 1));
         driverButton.addActionListener(this);
        
-        if (vehicle.getStatus().equals("Moving")) {
+        if (vehicle.getSpeed() != 0D) {
             driverButton.setText(vehicle.getDriver().getName());
             driverButtonPane.add(driverButton);
         }
@@ -389,9 +391,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	PersonIterator i = vehicle.getPassengers().iterator();
 	while (i.hasNext()) {
 	    Person person = i.next();
-            if (!(vehicle.getStatus().equals("Moving") && (person == vehicle.getDriver()))) {
-                PersonUIProxy tempCrew = (PersonUIProxy) 
-                proxyManager.getUnitUIProxy(person);
+            if (person != vehicle.getDriver()) {
+                PersonUIProxy tempCrew = (PersonUIProxy) proxyManager.getUnitUIProxy(person);
                 crewInfo.addElement(tempCrew);
                 crewListModel.addElement(tempCrew.getUnit().getName());
             }
@@ -489,7 +490,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         maintenanceProgressBar.setStringPainted(true);
         maintenancePane.add(maintenanceProgressBar, "South");
         maintenanceProgress = 0;
-        if (vehicle.getStatus().equals("Periodic Maintenance"))
+        if (vehicle.getStatus() == Vehicle.MAINTENANCE)
             maintenanceProgress = (int)(100F *
                     ((float) vehicle.getCurrentMaintenanceWork() /
                     (float) vehicle.getTotalMaintenanceWork()));
@@ -618,7 +619,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected void updateStatus() {
 
         // Update status label
-        if (!status.equals(vehicle.getStatus())) {
+        if (status != vehicle.getStatus()) {
             status = vehicle.getStatus();
             statusLabel.setText("Status: " + status);
         }
@@ -629,9 +630,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
         if (!location.equals(vehicle.getCoordinates())) {
             location = new Coordinates(vehicle.getCoordinates());
-            if ((vehicle.getStatus().equals("Parked") ||
-                    vehicle.getStatus().equals("Periodic Maintenance")) &&
-                    (vehicle.getSettlement() != null)) {
+            if (vehicle.getSettlement() != null) {
                 if (!locationButton.getText().equals(
                         vehicle.getSettlement().getName()))
                     locationButton.setText(vehicle.getSettlement().getName());
@@ -715,7 +714,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
     /** Update crew info */
     protected void updateCrew() {
-        boolean vehicleMoving = vehicle.getStatus().equals("Moving");
+        boolean vehicleMoving = (vehicle.getStatus() == Vehicle.MOVING);
       
         // Update driver button
         if (!vehicleMoving) {
@@ -821,7 +820,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
         // Update maintenance progress bar
         int maintenanceProgressTemp = 0;
-        if (vehicle.getStatus().equals("Periodic Maintenance"))
+        if (vehicle.getStatus() == Vehicle.MAINTENANCE)
             maintenanceProgressTemp = (int)(100F *
                     ((float) vehicle.getCurrentMaintenanceWork() /
                     (float) vehicle.getTotalMaintenanceWork()));

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMechanicalFailure.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -44,7 +44,7 @@ class RepairMechanicalFailure extends Task implements Serializable {
     public static double getProbability(Person person, VirtualMars mars) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+        if (person.getLocationSituation() == Person.INVEHICLE) {
             Vehicle vehicle = person.getVehicle();
             MechanicalFailure failure = vehicle.getMechanicalFailure();
             if ((failure != null) && !failure.isFixed()) result = 100D;
@@ -80,7 +80,6 @@ class RepairMechanicalFailure extends Task implements Serializable {
         }
         else {
             // If failure is repaired, task is done.
-            vehicle.setStatus("Parked");
             done = true;
             return timeLeft;
         }

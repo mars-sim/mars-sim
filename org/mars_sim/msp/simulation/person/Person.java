@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -27,10 +27,15 @@ public class Person extends Unit implements Serializable {
     public final static String INSETTLEMENT = "In Settlement";
 
     /**
-     * Status string used when Person resides in settlement
+     * Status string used when Person resides in a vehicle 
      */
     public final static String INVEHICLE = "In Vehicle";
 
+    /** 
+     * Status string used when Person is outside
+     */
+    public final static String OUTSIDE = "Outside";
+    
     /**
      * Status string used when Person has been buried
      */
@@ -41,8 +46,8 @@ public class Person extends Unit implements Serializable {
     private NaturalAttributeManager attributes; // Manager for Person's natural attributes
     private SkillManager skills; // Manager for Person's skills
     private Mind mind; // Person's mind
-    private String locationSituation; // Where person is ("In Settlement", "In Vehicle", "Outside")
     private PhysicalCondition health; // Person's physical
+    private boolean isBuried; // True if person is dead and buried.
 
     /** Constructs a Person object at a given settlement
      *  @param name the person's name
@@ -93,7 +98,7 @@ public class Person extends Unit implements Serializable {
         attributes = new NaturalAttributeManager();
         skills = new SkillManager(this);
         mind = new Mind(this, mars);
-        locationSituation = INSETTLEMENT;
+	isBuried = false;
         health = new PhysicalCondition(this, mars);
 
 	// Set base mass of person.
@@ -104,19 +109,21 @@ public class Person extends Unit implements Serializable {
     }
 
     /** Returns a string for the person's relative location "In
-     *  Settlement", "In Vehicle" or "Outside"
+     *  Settlement", "In Vehicle", "Outside" or "Buried"
      *  @return the person's location
      */
     public String getLocationSituation() {
-        return locationSituation;
-    }
+        String location = null;
 
-    /** Sets the person's relative location "In Settlement", "In
-     *  Vehicle" or "Outside"
-     *  @param newLocation the new location
-     */
-    public void setLocationSituation(String newLocation) {
-        locationSituation = newLocation;
+	if (isBuried) location = "BURIED";
+	else {
+	    Unit container = getContainerUnit();
+	    if (container == null) location = OUTSIDE;
+	    else if (container instanceof Settlement) location = INSETTLEMENT;
+	    else if (container instanceof Vehicle) location = INVEHICLE;
+	}
+	    
+        return location;
     }
 
     /** Get settlement person is at, null if person is not at
@@ -126,7 +133,6 @@ public class Person extends Unit implements Serializable {
     public Settlement getSettlement() {
         
         Unit topUnit = getTopContainerUnit();
-
 	if ((topUnit != null) && (topUnit instanceof Settlement)) {
 	    return (Settlement) topUnit;
         }
@@ -178,7 +184,7 @@ public class Person extends Unit implements Serializable {
     public void buryBody() {
 	
         containerUnit.getInventory().dropUnitOutside(this);
-        locationSituation = BURIED;
+	isBuried = true;
     }
 
     /**

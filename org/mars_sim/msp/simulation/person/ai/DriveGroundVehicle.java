@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -36,16 +36,6 @@ class DriveGroundVehicle extends Task implements Serializable {
      * Winch stuck vehicle phase.
      */
     public final static String WINCH_VEHICLE = "Winching Stuck Vehicle";
-
-    /**
-     * Vehicle status description
-     */
-    public static final String PARKED = "Parked";
-
-    /**
-     * Vehicle status description
-     */
-    public static final String MOVING = "Moving";
 
     // Data members
     private GroundVehicle vehicle; // Vehicle person is driving.
@@ -104,7 +94,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         // If night time, end task.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) == 0D) {
             // System.out.println(person.getName() + " stopped driving due to darkness.");
-            vehicle.setStatus(PARKED);
+	    vehicle.setSpeed(0D);
             vehicle.setDriver(null);
             done = true;
             return 0D;
@@ -112,7 +102,6 @@ class DriveGroundVehicle extends Task implements Serializable {
 
 
         while ((timeLeft > 0D) && !done) {
-            vehicle.setStatus(MOVING);
             if (phase.equals(DRIVING)) timeLeft = drivingPhase(timeLeft);
             else if (phase.equals(AVOID_OBSTACLE)) timeLeft = obstaclePhase(timeLeft);
             else if (phase.equals(WINCH_VEHICLE)) timeLeft = winchingPhase(timeLeft);
@@ -122,7 +111,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         timeCompleted += time;
         if (timeCompleted >= duration) {
             // System.out.println(person.getName() + " stopped driving " + vehicle.getName());
-            vehicle.setStatus(PARKED);
+	    vehicle.setSpeed(0D);
             vehicle.setDriver(null);
             done = true;
         }
@@ -308,7 +297,6 @@ class DriveGroundVehicle extends Task implements Serializable {
             distanceToDestination = 0D;
             vehicle.setDistanceToDestination(distanceToDestination);
             vehicle.setCoordinates(destination);
-            vehicle.setStatus(PARKED);
             vehicle.setSpeed(0D);
             vehicle.setDriver(null);
             done = true;
@@ -317,11 +305,6 @@ class DriveGroundVehicle extends Task implements Serializable {
         }
         else {
             // Determine new position.
-            /*
-            double newY = -1D * vehicle.getDirection().getCosDirection() * (distanceTraveled / 7.4D);
-            double newX = vehicle.getDirection().getSinDirection() * (distanceTraveled / 7.4D);
-            vehicle.setCoordinates(startingLocation.convertRectToSpherical(newX, newY));
-            */
             vehicle.setCoordinates(startingLocation.getNewLocation(vehicle.getDirection(), distanceTraveled));
 
             // Update distance to destination.
@@ -460,7 +443,6 @@ class DriveGroundVehicle extends Task implements Serializable {
 
         // Determine if failure happens.
         if (RandomUtil.lessThanRandPercent(percentChance)) {
-            vehicle.setStatus("Broken Down");
             vehicle.newMechanicalFailure();
             // System.out.println(person.getName() + " stopped driving " + vehicle.getName() + " due to mechanical failure.");
             vehicle.setDriver(null);

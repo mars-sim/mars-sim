@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -17,11 +17,15 @@ import java.io.Serializable;
 */
 public abstract class GroundVehicle extends Vehicle implements Serializable {
 
+    // Ground Vehicle Status Strings
+    public final static String STUCK = "Stuck - using winch";
+	
     // Data members
     private double elevation; // Current elevation in km.
     private double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability.
     private double terrainGrade; // Average angle of terrain over next 7.4km distance in direction vehicle is traveling.
-
+    private boolean isStuck; // True if vehicle is stuck.
+    
     /** Constructs a GroundVehicle object at a given settlement
      *  @param name name of the ground vehicle
      *  @param settlement settlement the ground vehicle is parked at
@@ -55,6 +59,18 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
         initFailures();
     }
 
+    /** Returns vehicle's current status
+     *  @return the vehicle's current status
+     */
+    public String getStatus() {
+        String status = null;
+
+	if (isStuck) status = STUCK;
+	else status = super.getStatus();
+
+	return status;
+    }
+    
     /** Initialize potential vehicle failures */
     private void initFailures() {
         addPotentialFailure("Fuel Leak");
@@ -115,14 +131,14 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      *  @return true if vehicle is currently stuck, false otherwise
      */
     public boolean isStuck() {
-        return (getStatus().equals("Stuck - Using Winch"));
+        return isStuck;
     }
 
     /** Sets the ground vehicle's stuck value 
      *  @param stuck true if vehicle is currently stuck, false otherwise
      */
     public void setStuck(boolean stuck) {
-        if (stuck) setStatus("Stuck - Using Winch");
-        else setStatus("Moving");
+	isStuck = stuck;
+	if (isStuck) setSpeed(0D);
     }
 }

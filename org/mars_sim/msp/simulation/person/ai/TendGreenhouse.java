@@ -39,7 +39,7 @@ class TendGreenhouse extends Task implements Serializable {
      *  Returns a 0 if not.
      */
     public static double getProbability(Person person, VirtualMars mars) {
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == Person.INSETTLEMENT) {
             GreenhouseFacility greenhouse =
                    (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
             if ((greenhouse.getPhase().equals("Growing")) &&

@@ -101,8 +101,10 @@ public abstract class Unit implements Serializable {
     public Unit getTopContainerUnit() {
     
         Unit topUnit = getContainerUnit();
-	while (topUnit != null) {
-	    topUnit = topUnit.getContainerUnit();
+	if (topUnit != null) {
+	    while (topUnit.getContainerUnit() != null) {
+	        topUnit = topUnit.getContainerUnit();
+	    }
 	}
 
 	return topUnit;

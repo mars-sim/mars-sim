@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -22,11 +22,17 @@ import java.util.*;
  */
 public abstract class Vehicle extends Unit implements Serializable {
 
+    // Vehicle Status Strings
+    public final static String PARKED = "Parked";
+    public final static String MOVING = "Moving";
+    public final static String MECHANICAL_FAILURE = "Mechanical Failure";
+    public final static String MAINTENANCE = "Periodic Maintenance";
+	
     // Data members
     private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
     private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
-    private String status; // Current status of vehicle ("Moving", "Parked") (other child-specific status allowed)
+    // private String status; // Current status of vehicle ("Moving", "Parked") (other child-specific status allowed)
     private Person driver; // Driver of the vehicle
     private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
@@ -41,7 +47,7 @@ public abstract class Vehicle extends Unit implements Serializable {
     private double maintenanceWork = 0; // Work done for vehicle maintenance.
     private double totalMaintenanceWork; // Total amount of work necessary for vehicle maintenance.
     private HashMap potentialFailures; // A table of potential failures in the vehicle. (populated by child classes)
-    private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
+    private MechanicalFailure mechanicalFailure; // Vehicle's current mechanical failure. 
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
 
@@ -87,7 +93,7 @@ public abstract class Vehicle extends Unit implements Serializable {
 
     /** Initializes vehicle data */
     private void initVehicleData() {
-        setStatus("Parked");
+        // setStatus("Parked");
         setDestinationType("None");
         potentialFailures = new HashMap();
         totalMaintenanceWork = 1000D; // (1 sol)
@@ -98,16 +104,29 @@ public abstract class Vehicle extends Unit implements Serializable {
      *  @return the vehicle's current status
      */
     public String getStatus() {
-        return status;
-    }
+        String status = null;
 
-    /** Sets vehicle's current status
-     *  @param status the vehicle's current status
-     */
-    public void setStatus(String status) {
-        this.status = status;
-        if (status.equals("Parked") || status.equals("Broken Down"))
-            setSpeed(0D);
+        if (containerUnit != null) {
+	    if (containerUnit instanceof Settlement) {
+	        Settlement settlement = (Settlement) containerUnit;
+		FacilityManager facilityManager = settlement.getFacilityManager();
+		MaintenanceGarageFacility garage = (MaintenanceGarageFacility) facilityManager.getFacility("Maintenance Garage");
+		if (garage.vehicleInGarage(this)) status = MAINTENANCE;
+		else status = PARKED;
+	    }
+	    else status = PARKED;
+	}
+	else {
+	    if ((mechanicalFailure != null) && !mechanicalFailure.isFixed()) {
+	        status = MECHANICAL_FAILURE;
+	    }
+	    else {
+	        if (speed == 0D) status = PARKED;
+	        else status = MOVING;
+	    }
+	}
+	    
+        return status;
     }
 
     /** Returns true if vehicle is reserved by someone
@@ -403,6 +422,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         String failureName = (String) keys[failureNum];
 
         mechanicalFailure = new MechanicalFailure(failureName);
+	speed = 0D;
         // System.out.println(name + " has mechanical failure: " + mechanicalFailure.getName());
     }
 

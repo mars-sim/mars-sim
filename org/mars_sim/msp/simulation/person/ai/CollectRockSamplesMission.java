@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -79,7 +79,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == Person.INSETTLEMENT) {
             Settlement currentSettlement = person.getSettlement();
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) {
                 if (ReserveGroundVehicle.availableVehicles(currentSettlement)) result = 2D;
@@ -97,7 +97,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         double result = 0D;
 
-        if (phase.equals(EMBARK) && !hasPerson(person)) {
+        if ((phase == EMBARK) && !hasPerson(person)) {
             if (person.getSettlement() == startingSettlement) {
                 if (people.size() < missionCapacity) result = 50D;
             }
@@ -121,10 +121,10 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         // If the mission is not yet completed, perform the mission phase.
         if (!done) {
-            if (phase.equals(EMBARK)) embarkingPhase(person);
+            if (phase == EMBARK) embarkingPhase(person);
             if (phase.startsWith(DRIVING)) drivingPhase(person);
             if (phase.startsWith(COLLECTSAMPLES)) collectingPhase(person);
-            if (phase.equals(DISEMBARK)) disembarkingPhase(person);
+            if (phase == DISEMBARK) disembarkingPhase(person);
         }
     }
 
@@ -178,7 +178,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         // Have person get in the vehicle
         // When every person in mission is in vehicle, go to Driving phase.
-        if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
+        if (person.getLocationSituation() != Person.INVEHICLE) {
             person.getMind().getTaskManager().addTask(new EnterVehicle(person, mars, vehicle));
             return;
         }
@@ -186,7 +186,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If any people in mission haven't entered the vehicle, return.
         for (int x=0; x < people.size(); x++) {
             Person tempPerson = (Person) people.elementAt(x);
-            if (!tempPerson.getLocationSituation().equals(Person.INVEHICLE)) return;
+            if (tempPerson.getLocationSituation() != Person.INVEHICLE) return;
         }
 
         // Make final preperations on vehicle.
@@ -204,6 +204,10 @@ class CollectRockSamplesMission extends Mission implements Serializable {
      */
     private void drivingPhase(Person person) {
 
+        if (vehicle.getName().equals("Sandstorm")) {
+	    System.out.println(person.getName() + " drivingPhase()");
+	}
+	    
         // Record starting time and distance to destination.
         if ((startingTime == null) || (startingDistance == 0D)) {
             startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
@@ -228,7 +232,12 @@ class CollectRockSamplesMission extends Mission implements Serializable {
                 lastDriver = null;
             }
             else {
-                if ((vehicle.getDriver() == null) && vehicle.getStatus().equals("Parked")) {
+		if (vehicle.getDriver() == null) {
+		    System.out.println(vehicle.getName() + " driver is null");
+		    System.out.println(vehicle.getName() + " status: " + vehicle.getStatus());
+		}
+                if ((vehicle.getDriver() == null) && (vehicle.getStatus() == Vehicle.PARKED)) {
+		    System.out.println(vehicle.getName() + " new driver: " + person.getName());
                     DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, (GroundVehicle) vehicle, destination, startingTime, startingDistance);
                     person.getMind().getTaskManager().addTask(driveTask);
                     lastDriver = person;
@@ -274,11 +283,11 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	startingSettlement.getInventory().addUnit(vehicle);
         vehicle.setDestinationSettlement(null);
         vehicle.setDestinationType("None");
-        vehicle.setStatus("Parked");
+	vehicle.setSpeed(0D);
         vehicle.setETA(null);
 
         // Have person exit vehicle if necessary.
-        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+        if (person.getLocationSituation() == Person.INVEHICLE) {
             person.getMind().getTaskManager().addTask(new ExitVehicle(person, mars, vehicle, startingSettlement));
             return;
         }
@@ -294,7 +303,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         boolean allDisembarked = true;
         for (int x=0; x < people.size(); x++) {
             Person tempPerson = (Person) people.elementAt(x);
-            if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
+            if (tempPerson.getLocationSituation() == Person.INVEHICLE) allDisembarked = false;
         }
         if (allDisembarked && UnloadVehicle.isFullyUnloaded(vehicle)) endMission();
     }

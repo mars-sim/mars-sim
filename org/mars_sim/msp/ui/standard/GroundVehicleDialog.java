@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleDialog.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-07
  * @author Scott Davis
  */
 
@@ -95,7 +95,7 @@ public class GroundVehicleDialog extends VehicleDialog {
 		
 	// Prepare direction display
 	directionDisplay = new VehicleDirectionDisplay(groundVehicle.getDirection(), 
-               (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")));
+               (vehicle.getStatus() == Vehicle.MOVING));
 	JPanel directionDisplayPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 	directionDisplayPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), 
                new LineBorder(Color.green)));
@@ -117,7 +117,7 @@ public class GroundVehicleDialog extends VehicleDialog {
 
     /** Update terrain display */
     protected void updateAveGrade() {
-	if (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")) {
+	if (vehicle.getStatus() != Vehicle.MOVING) {
 		if (terrainGrade != 0D) {
 			terrainDisplay.updateTerrainAngle(0D);
 			terrainGrade = 0D;
