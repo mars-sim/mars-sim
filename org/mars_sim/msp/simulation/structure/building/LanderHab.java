@@ -40,7 +40,7 @@ public class LanderHab extends InhabitableBuilding
     private static final int RESEARCHER_NUM = 4;
     
     // Infirmary info.
-    private static final int INFIRMARY_BEDS = 1;
+    private static final int INFIRMARY_BEDS = 2;
     private static final int INFIRMARY_TREATMENT_LEVEL = 4;
     
     private Map resourceStorageCapacity;
@@ -279,31 +279,96 @@ public class LanderHab extends InhabitableBuilding
     }
     
     /**
-     * A person requests to start the specified treatment using this aid. This
-     * aid may elect to record that this treatment is being performed. If the
-     * treatment can not be satisfied, then a false return value is provided.
+     * Gets the health problems awaiting treatment at the medical station.
      *
-     * @param problem the medical problem.
+     * @return list of health problems
+     */
+    public List getProblemsAwaitingTreatment() {
+        return infirmary.getProblemsAwaitingTreatment();
+    }
+    
+    /**
+     * Gets the health problems currently being treated at the medical station.
+     *
+     * @return list of health problems
+     */
+    public List getProblemsBeingTreated() {
+        return infirmary.getProblemsBeingTreated();
+    }
+    
+    /**
+     * Get a list of supported Treatments at this medical aid.
+     *
+     * @return List of treatments.
+     */
+    public List getSupportedTreatments() {
+        return infirmary.getSupportedTreatments();
+    }
+    
+    /**
+     * Checks if a health problem can be treated at this medical aid.
+     *
+     * @param problem The health problem to check treatment.
      * @return true if problem can be treated.
      */
-    public boolean requestTreatment(HealthProblem problem) {
-        return infirmary.requestTreatment(problem);
+    public boolean canTreatProblem(HealthProblem problem) {
+        return infirmary.canTreatProblem(problem);
+    }
+    
+    /**
+     * Add a health problem to the queue of problems awaiting treatment at this
+     * medical aid.
+     *
+     * @param problem The health problem to await treatment.
+     * @throws Exception if health problem cannot be treated here.
+     */
+    public void requestTreatment(HealthProblem problem) throws Exception {
+        infirmary.requestTreatment(problem);
     }
 
     /**
+     * Starts the treatment of a health problem in the waiting queue.
+     *
+     * @param problem the health problem to start treating.
+     * @throws Exception if treatment cannot be started.
+     */
+    public void startTreatment(HealthProblem problem) throws Exception {
+        infirmary.startTreatment(problem);
+    }
+    
+    /**
      * Stop a previously started treatment.
      *
-     * @param problem the medical problem.
+     * @param problem Health problem stopping treatment on.
+     * @throws Exception if health problem is not being treated.
      */
-    public void stopTreatment(HealthProblem problem) {
+    public void stopTreatment(HealthProblem problem) throws Exception {
         infirmary.stopTreatment(problem);
     }
     
     /**
-     * Get the sick bay of this building.
-     * @return sick bay.
+     * Gets the number of sick beds.
+     *
+     * @return Sick bed count.
      */
-    public SickBay getSickBay() {
-        return infirmary.getSickBay();
+    public int getSickBedNum() {
+        return infirmary.getSickBedNum();
+    }
+    
+    /**
+     * Gets the current number of people being treated here.
+     *
+     * @return Patient count.
+     */
+    public int getPatientNum() {
+        return infirmary.getPatientNum();
+    }
+    
+    /**
+     * Gets the patients at this medical station.
+     * @return Collection of People.
+     */
+    public PersonCollection getPatients() {
+        return infirmary.getPatients();
     }
 }

@@ -38,7 +38,7 @@ public class FacilityManager implements Serializable {
         facilityList.addElement(new MaintenanceGarage(this));
         facilityList.addElement(new Laboratory(this));
         facilityList.addElement(new InsituResourceProcessor(this));
-        facilityList.addElement(new Infirmary(this));
+        // facilityList.addElement(new Infirmary(this));
     }
 
     /** Returns the settlement the owns this facility manager.

@@ -1,13 +1,16 @@
 /**
  * Mars Simulation Project
- * SickBayPanel.java
- * @version 2.75 2003-05-06
- * @author Barry Evans
+ * InfirmaryPanel.java
+ * @version 2.75 2003-05-07
+ * @author Scott Davis
+ * Based on SickBayPanel class
+ * @see SickBayPanel
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.person.medical.*;
+import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import java.util.Iterator;
 import java.util.List;
 import java.awt.*;
@@ -16,10 +19,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.border.*;
 
 /**
- * The SickBayPanel class displays information about a SickBay
+ * The InfirmaryPanel class displays information about an infirmary
  * in the user interface.
  */
-public class SickBayPanel extends FacilityPanel {
+public class InfirmaryPanel extends FacilityPanel {
 
     /**
      * This class provides an internal model on the patient list.
@@ -78,26 +81,28 @@ public class SickBayPanel extends FacilityPanel {
     private final static int MAX_COLUMNS = 60;
 
     // Data members
-    private MedicalStation sickBay;               // The sickbay
+    private MedicalCare infirmary;            // The infirmary
     private JLabel patientNumberLabel;        // A label that displays the current population.
     private PatientTableModel patientModel;   // Model display the current patients.
 
     // Update data cache
     private int currentTreated;               // Size of sick.
 
-    /** Constructs a SickBayPanel object
-     *  @param sickbay the sickaby
-     *  @param desktop the desktop pane
+    /** 
+     * Constructor
+     *
+     * @param infirmary the infirmary
+     * @param desktop the desktop pane
      */
-    public SickBayPanel(MedicalStation station, MainDesktopPane desktop) {
+    public InfirmaryPanel(MedicalCare infirmary, MainDesktopPane desktop) {
 
         // Use FacilityPanel's constructor
         super(desktop);
 
 	    // Initialize data members
-        this.sickBay = station;
-	    tabName = "Sick Bay";
-	    currentTreated = sickBay.getPatientNum();
+        this.infirmary = infirmary;
+	    tabName = "Infirmary";
+	    currentTreated = infirmary.getPatientNum();
 
 	    // Set up components
 	    setLayout(new BorderLayout());
@@ -112,7 +117,7 @@ public class SickBayPanel extends FacilityPanel {
 	    infoPane.add(labelPane, "North");
 
 	    // Prepare population capacity label
-	    JLabel populationCapacityLabel = new JLabel("Capacity: " + sickBay.getSickBedNum(), JLabel.CENTER);
+	    JLabel populationCapacityLabel = new JLabel("Capacity: " + infirmary.getSickBedNum(), JLabel.CENTER);
 	    labelPane.add(populationCapacityLabel);
 
 	    // Prepare current treated patients
@@ -120,7 +125,7 @@ public class SickBayPanel extends FacilityPanel {
 	    labelPane.add(patientNumberLabel);
 
 	    // Prepare patients table, first column name is smaller
-        patientModel = new PatientTableModel(sickBay.getProblemsBeingTreated());
+        patientModel = new PatientTableModel(infirmary.getProblemsBeingTreated());
 	    JTable patientTable = new JTable(patientModel);
         patientTable.getColumnModel().getColumn(0).setPreferredWidth(40);
         JScrollPane scrollList = new JScrollPane(patientTable);
@@ -140,7 +145,7 @@ public class SickBayPanel extends FacilityPanel {
         message.append("Treatments : ");
         int columnCount = 12;
         int rows = 0;
-        Iterator treatments = sickBay.getSupportedTreatments().iterator();
+        Iterator treatments = infirmary.getSupportedTreatments().iterator();
         while(treatments.hasNext()) {
             String item = treatments.next().toString();
             columnCount += item.length();
@@ -168,7 +173,7 @@ public class SickBayPanel extends FacilityPanel {
     public void updateInfo() {
 
 	    // Update current population
-	    int population = sickBay.getPatientNum();
+	    int population = infirmary.getPatientNum();
 	    if (currentTreated != population) {
             currentTreated = population;
             patientNumberLabel.setText(PATIENT_LABEL + currentTreated);
@@ -177,5 +182,4 @@ public class SickBayPanel extends FacilityPanel {
 	    // Update patients list
         patientModel.update();
     }
-
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-05-06
  * @author Barry Evans
  */
 

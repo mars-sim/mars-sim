@@ -37,6 +37,7 @@ public class PhysicalCondition implements Serializable {
     private double performance;         // Performance factor
     private MedicalManager medic;       // Simulation Medical manager
     private Person person;              // Person's of this physical
+    private boolean alive;              // True if person is alive.
 
     /**
      * Construct a Physical Condition instance.
@@ -54,17 +55,41 @@ public class PhysicalCondition implements Serializable {
         medic = mars.getMedicalManager();
         fatigue = RandomUtil.getRandomDouble(1000D);
         hunger = RandomUtil.getRandomDouble(1000D);
+        alive = true;
     }
 
     /**
      * Can any of the existing problems be healed by this FirstAidUnit
      * @param unit FirstAidUnit that can heal.
      */
-    void canStartTreatment(MedicalAid unit) {
+    boolean canTreatProblems(MedicalAid unit) {
+        boolean result = false;
+        
         Iterator iter = problems.values().iterator();
         while(iter.hasNext()) {
-            HealthProblem prob = (HealthProblem)iter.next();
-            prob.canStartTreatment(unit);
+            HealthProblem prob = (HealthProblem) iter.next();
+            if (unit.canTreatProblem(prob)) result = true;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Request treatment at the medical aid for all the person's health
+     * problems that can be treated there.
+     *
+     * @param aid the medical aid the person is using.
+     */
+    void requestAllTreatments(MedicalAid aid) {
+        Iterator iter = problems.values().iterator();
+        while(iter.hasNext()) {
+            HealthProblem prob = (HealthProblem) iter.next();
+            if (aid.canTreatProblem(prob)) {
+                try {
+                    aid.requestTreatment(prob);
+                }
+                catch (Exception e) {}
+            }
         }
     }
 
@@ -88,8 +113,8 @@ public class PhysicalCondition implements Serializable {
             ArrayList newProblems = new ArrayList();
 
             Iterator iter = problems.values().iterator();
-            while((deathDetails == null) && iter.hasNext()) {
-                HealthProblem problem = (HealthProblem)iter.next();
+            while(!isDead() && iter.hasNext()) {
+                HealthProblem problem = (HealthProblem) iter.next();
 
                 // Advance each problem, they may change into a worse problem.
                 // If the current is completed or a new problem exists then
@@ -110,7 +135,6 @@ public class PhysicalCondition implements Serializable {
                 // If a new problem, check it doesn't exist already
                 if (next != null) {
                     newProblems.add(next);
-
                     recalculate = true;
                 }
             }
@@ -127,9 +151,7 @@ public class PhysicalCondition implements Serializable {
         }
 
         // Has the person died ?
-        if (deathDetails != null) {
-            return false;
-        }
+        if (isDead()) return false;
 
         // See if a random illness catches this Person out if nothing new
         if (!recalculate) {
@@ -160,7 +182,7 @@ public class PhysicalCondition implements Serializable {
             recalculate();
         }
 
-        return (deathDetails == null);
+        return (!isDead());
     }
 
     /** Adds a new medical complaint to the person.
@@ -338,8 +360,18 @@ public class PhysicalCondition implements Serializable {
     public void setDead(Complaint illness) {
         fatigue = 0;
         hunger = 0;
+        alive = false;
 
         deathDetails = new DeathInfo(person);
+    }
+    
+    /**
+     * Checks if the person is dead.
+     *
+     * @return true if dead
+     */
+    public boolean isDead() {
+        return !alive;
     }
 
     /**
@@ -349,7 +381,7 @@ public class PhysicalCondition implements Serializable {
     public String getHealthSituation() {
         String situation = "Well";
         if (serious != null) {
-            if (deathDetails != null) {
+            if (isDead()) {
                 situation = "Dead, " + serious.getIllness().getName();
             }
             else {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2003-05-07
  * @author Scott Davis
  */
 
@@ -140,17 +140,19 @@ public abstract class Task implements Serializable, Comparable {
      */
     double performTask(double time) {
         double timeLeft = time;
-        if ((subTask != null) && subTask.isDone()) {
-            if (subTask.getCreateEvents()) {
-                HistoricalEvent newEvent = new HistoricalEvent("Finished " + subTask.getName(),
-                                                       person,
-                                                       subTask.getDescription());
-                mars.getEventManager().registerNewEvent(newEvent);
+        if (subTask != null) {
+            if (subTask.isDone()) {
+                // Create finished historical event if necessary.
+                if (subTask.getCreateEvents()) {
+                    HistoricalEvent newEvent = new HistoricalEvent("Finished " + 
+                        subTask.getName(), person, subTask.getDescription());
+                    mars.getEventManager().registerNewEvent(newEvent);
+                }
+                subTask = null;
             }
-            subTask = null;
+            else timeLeft = subTask.performTask(timeLeft);
         }
-        if (subTask != null) timeLeft = subTask.performTask(timeLeft);
-
+        
         return timeLeft;
     }
 

@@ -10,27 +10,31 @@ package org.mars_sim.msp.simulation.person.ai;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 
 /**
- * This class represents a Task that requires a Person to provide Medical
- * help to someelse. It relies on looking for any Sick Bays in the
- * current location.
+ * This class represents a task that requires a person to provide medical
+ * help to someone else. 
  */
 public class MedicalAssistance extends Task implements Serializable {
 
     private final static String MEDICAL = "Medical";
 
-    private double duration; // How long for treatment
+    private MedicalAid medical;    // The medical station the person is at.
+    private double duration;       // How long for treatment
+    private HealthProblem problem; // Health problem to treat.
 
-    /** Constructs a Medical help object
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
+     *
+     * @param person the person to perform the task
+     * @param mars the virtual Mars
      */
     public MedicalAssistance(Person person, Mars mars) {
         super("Medical Assistance", person, true, mars);
@@ -38,20 +42,30 @@ public class MedicalAssistance extends Task implements Serializable {
         // Sets this task to create historical events.
         setCreateEvents(true);
 
-        // Get the local sickbay to use.
-        SickBay sickbay = getSickbay(person);
+        // Get a local medical aid that needs work.
+        List localAids = getNeedyMedicalAids(person);
+        if (localAids.size() > 0) {
+            int rand = RandomUtil.getRandomInt(localAids.size() - 1);
+            medical = (MedicalAid) localAids.get(rand);
         
-        // Get a curable medical problem at the sickbay.
-        HealthProblem problem = sickbay.getCurableProblem();
+            // Get a curable medical problem waiting for treatment at the medical aid.
+            problem = (HealthProblem) medical.getProblemsAwaitingTreatment().get(0);
 
-        // Treat medical problem.
-        Treatment treatment = problem.getIllness().getRecoveryTreatment();
-	    description = "Apply " + treatment.getName();
-        duration = treatment.getAdjustedDuration(10);
+            // Treat medical problem.
+            Treatment treatment = problem.getIllness().getRecoveryTreatment();
+	        description = "Apply " + treatment.getName();
+            duration = treatment.getAdjustedDuration(10);
 
-        // Start the treatment and update sickBay
-        problem.startTreatment(duration);
-        sickbay.startTreatment(problem);
+            // Start the treatment
+            try {
+                medical.startTreatment(problem);
+            }
+            catch (Exception e) {
+                System.out.println("MedicalAssistance: " + e.getMessage());
+                endTask();
+            }
+        }
+        else endTask();
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -63,13 +77,8 @@ public class MedicalAssistance extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
-        // Get the local sickbay to use.
-        SickBay sickbay = getSickbay(person);
-        if (sickbay != null) {
-            boolean patients = sickbay.hasWaitingPatients();
-            boolean malfunction = sickbay.getOwner().getMalfunctionManager().hasMalfunction();
-            if (patients && !malfunction) result = 50D;
-        }
+        // Get the local medical aids to use.
+        if (getNeedyMedicalAids(person).size() > 0) result = 50D;
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -78,26 +87,59 @@ public class MedicalAssistance extends Task implements Serializable {
     }
 
     /**
-     * Gets the local sickbay.
-     * Returns null if none.
-     * @return sickbay
+     * Gets the local medical aids that have patients waiting.
+     * 
+     * @return List of medical aids
      */
-    static private SickBay getSickbay(Person person) {
-        SickBay result = null;
+    private static List getNeedyMedicalAids(Person person) {
+        List result = new ArrayList();
         
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
             List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.class);
-            int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
-            result = ((MedicalCare) infirmaries.get(rand)).getSickBay();
+            Iterator i = infirmaries.iterator();
+            while (i.hasNext()) {
+                MedicalAid aid = (MedicalAid) i.next();
+                if (isNeedyMedicalAid(aid)) result.add(aid);
+            }
         }
         if (location.equals(Person.INVEHICLE)) {
             Vehicle vehicle = person.getVehicle();
-            if (vehicle instanceof TransportRover)
-                result = (SickBay) ((TransportRover) vehicle).getMedicalFacility();
+            if (vehicle instanceof TransportRover) {
+                MedicalAid aid = ((TransportRover) vehicle).getMedicalFacility();
+                if (isNeedyMedicalAid(aid)) result.add(aid);
+            }
         }
 
+        return result;
+    }
+    
+    /**
+     * Checks if a medical aid needs work.
+     *
+     * @return true if medical aid has patients waiting and is not malfunctioning.
+     */
+    private static boolean isNeedyMedicalAid(MedicalAid aid) {
+        boolean waitingProblems = (aid.getProblemsAwaitingTreatment().size() > 0);
+        boolean malfunction = getMalfunctionable(aid).getMalfunctionManager().hasMalfunction();
+        if (waitingProblems && !malfunction) return true;
+        else return false;
+    }
+    
+    /**
+     * Gets the malfunctionable associated with the medical aid.
+     *
+     * @param aid The medical aid
+     * @return the associated Malfunctionable
+     */
+    private static Malfunctionable getMalfunctionable(MedicalAid aid) {
+        Malfunctionable result = null;
+        
+        if (aid instanceof SickBay) result = ((SickBay) aid).getVehicle();
+        else if (aid instanceof Building) result = (Building) aid;
+        else result = (Malfunctionable) aid;
+        
         return result;
     }
 
@@ -113,7 +155,7 @@ public class MedicalAssistance extends Task implements Serializable {
         if (person.getPerformanceRating() == 0D) endTask();
 
         // If sickbay owner has malfunction, end task.
-        if (getSickbay(person).getOwner().getMalfunctionManager().hasMalfunction()) endTask();
+        if (getMalfunctionable(medical).getMalfunctionManager().hasMalfunction()) endTask();
 
         if (isDone()) return timeLeft;
 
@@ -141,7 +183,7 @@ public class MedicalAssistance extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        Malfunctionable entity = getSickbay(person).getOwner();
+        Malfunctionable entity = getMalfunctionable(medical);
 
         double chance = .001D;
 
@@ -153,6 +195,23 @@ public class MedicalAssistance extends Task implements Serializable {
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // System.out.println(person.getName() + " has accident during medical assistance.");
             entity.getMalfunctionManager().accident();
+        }
+    }
+    
+    /**
+     * Ends the task and performs any final actions.
+     */
+    public void endTask() {
+        super.endTask();
+        
+        // Stop treatment if treatment isn't finished.
+        if (timeCompleted < duration) {
+            try {
+                medical.stopTreatment(problem);
+            }
+            catch (Exception e) {
+                System.out.println("MedicalAssistance.endTask(): " + e.getMessage());
+            }
         }
     }
 }

@@ -1,15 +1,16 @@
 /**
  * Mars Simulation Project
  * SettlementDialog.java
- * @version 2.75 2002-06-08
+ * @version 2.75 2003-05-06
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.simulation.person.medical.SickBay;
+import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -278,21 +279,24 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         tabPane.add(processorPane, processorPane.getTabName());
         facilityPanes[4] = processorPane;
 
-        // Prepare SickBay pane
-        SickBay sickbay = ((Infirmary)facilityManager.getFacility("Infirmary")).getSickBay();
-        SickBayPanel sickbayPane = new SickBayPanel(sickbay, parentDesktop);
-        tabPane.add(sickbayPane, sickbayPane.getTabName());
-        facilityPanes[5] = sickbayPane;
+        // Prepare infirmary pane
+        java.util.List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.class);
+        if (infirmaries.size() > 0) {
+            MedicalCare infirmary = (MedicalCare) infirmaries.get(0);
+            InfirmaryPanel infirmaryPane = new InfirmaryPanel(infirmary, parentDesktop);
+            tabPane.add(infirmaryPane, infirmaryPane.getTabName());
+            facilityPanes[5] = infirmaryPane;
+        }
 
-	// Prepare inventory pane.
-	inventoryPane = new InventoryPanel(settlement.getInventory());
-	tabPane.add(inventoryPane, "Inventory");
+        // Prepare inventory pane.
+        inventoryPane = new InventoryPanel(settlement.getInventory());
+        tabPane.add(inventoryPane, "Inventory");
 
-	// Prepare maintenance pane.
-	tabPane.add(setupMaintenancePane(), "Maint");
+        // Prepare maintenance pane.
+        tabPane.add(setupMaintenancePane(), "Maint");
 
-	// Prepare malfunction pane.
-	tabPane.add(setupMalfunctionPane(), "Malfunction");
+        // Prepare malfunction pane.
+        tabPane.add(setupMalfunctionPane(), "Malfunction");
     }
 
     /** Prepare vehicles pane

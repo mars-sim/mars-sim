@@ -1,18 +1,19 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2003-04-24
+ * @version 2.75 2003-05-06
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
-
+import java.util.List;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
+import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 
@@ -135,7 +136,8 @@ public class Person extends Unit implements Serializable {
         super.setContainerUnit(containerUnit);
 
         MedicalAid aid = getAccessibleAid();
-        if (aid != null) health.canStartTreatment(aid);
+        if ((aid != null) && (health.canTreatProblems(aid)))
+            health.requestAllTreatments(aid);
     }
 
     /** Sets the person's fatigue level
@@ -229,16 +231,20 @@ public class Person extends Unit implements Serializable {
      */
     MedicalAid getAccessibleAid() {
         MedicalAid found = null;
-        Unit topUnit = getTopContainerUnit();
-        if (topUnit != null) {
-            if (topUnit instanceof Settlement) {
-                Settlement settlement = (Settlement)topUnit;
-                found =
-                (Infirmary)settlement.getFacilityManager().getFacility(Infirmary.NAME);
+        
+        String location = getLocationSituation();
+        if (location.equals(INSETTLEMENT)) {
+            Settlement settlement = getSettlement();
+            List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.class);
+            if (infirmaries.size() > 0) {
+                int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
+                found = (MedicalAid) infirmaries.get(rand);
             }
-            else if (topUnit instanceof Vehicle) {
-                found = ((Vehicle)topUnit).getMedicalFacility();
-            }
+        }
+        if (location.equals(Person.INVEHICLE)) {
+            Vehicle vehicle = getVehicle();
+            if (vehicle instanceof TransportRover) 
+                found = ((TransportRover) vehicle).getMedicalFacility();
         }
 
         return found;

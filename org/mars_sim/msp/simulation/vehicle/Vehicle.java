@@ -324,16 +324,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     }
 
     /**
-     * Returns a MedicalAid that is available in this Vehicle. This implementation
-     * return null sinc eby default Vehicles do not carry medical facilities.
-     * This should be overridden by subclasses that support medical facilities.
-     * @return Location medical facility.
-     */
-    public MedicalAid getMedicalFacility() {
-        return null;
-    }
-
-    /**
      * Returns a string describing the vehicle.
      * @return string describing vehicle
      */

@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * TransportRoverDialog.java
- * @version 2.74 2002-03-17
+ * @version 2.75 2003-05-06
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.vehicle.TransportRover;
-import org.mars_sim.msp.simulation.person.medical.SickBay;
+import org.mars_sim.msp.simulation.vehicle.SickBay;
 
 /**
  * The TransportRoverDialog class is the detail window for a transport rover.
@@ -24,8 +24,8 @@ public class TransportRoverDialog extends RoverDialog {
      *  @param TransportRoverUIProxy the transport rover's UI proxy
      */
     public TransportRoverDialog(MainDesktopPane parentDesktop, TransportRoverUIProxy transportRoverUIProxy) {
-	// Use RoverDialog constructor
-	super(parentDesktop, transportRoverUIProxy);
+        // Use RoverDialog constructor
+        super(parentDesktop, transportRoverUIProxy);
     }
 
     /** Override setupComponents */
@@ -36,8 +36,7 @@ public class TransportRoverDialog extends RoverDialog {
 
 	    super.setupComponents();
 
-        sickBayPane = new SickBayPanel((SickBay)rover.getMedicalFacility(),
-                                        parentDesktop);
+        sickBayPane = new SickBayPanel((SickBay) rover.getMedicalFacility(), parentDesktop);
         tabPane.addTab("Sick Bay", sickBayPane);
     }
 

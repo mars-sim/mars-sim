@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.75 2003-02-26
+ * @version 2.75 2003-05-06
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.vehicle;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
-import org.mars_sim.msp.simulation.person.medical.SickBay;
 import java.io.Serializable;
 
 /**
@@ -26,7 +25,8 @@ public class TransportRover extends Rover implements Serializable {
     private static final double OXYGEN_CAPACITY = 1000D; // Oxygen capacity of rover in kg.
     private static final double WATER_CAPACITY = 4000D; // Water capacity of rover in kg.
     private static final double FOOD_CAPACITY = 787.5D; // Food capacity of rover in kg.
-    private static final int SICKBAY_LEVEL = 3; // Facility level of Sickbay
+    private static final int SICKBAY_LEVEL = 3; // Treatment level of sickbay.
+    private static final int SICKBAY_BEDS = 2; // Number of beds in sickbay.
     private SickBay sickBay = null;
 
     /**
@@ -68,7 +68,7 @@ public class TransportRover extends Rover implements Serializable {
 	    inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
 	    inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);
 
-        sickBay = new SickBay("RoverSickBay", 2, SICKBAY_LEVEL, mars, this);
+        sickBay = new SickBay(this, SICKBAY_LEVEL, SICKBAY_BEDS);
     }
 
     /**

@@ -245,9 +245,9 @@ public class MedicalManager implements Serializable {
      * specified level and all those lower.
      *
      * @param level Level of Medical facility.
-     * @return Collection of Treatments
+     * @return List of Treatments
      */
-    public Collection getSupportedTreatments(int level) {
+    public List getSupportedTreatments(int level) {
         Integer key = new Integer(level);
         List results = (List)supported.get(key);
         if (results == null) {
