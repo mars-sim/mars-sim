@@ -70,18 +70,14 @@ public class USGSMarsMap implements Map {
 	return false;
     }
 
-    /** requests an image from the PDS web server.
-     *  @param size is pixels per degree
-     */
-    private Image retrieveImage(int size, double lat, double lon) {
-	imageDone = false;
+    private URL pdsGetImageUrl(int size, double lat, double lon) {
 	try {
 	    URL url = new URL(psdUrl + psdCgi +
-			    "?DATA_SET_NAME=" + dataSet +
-			    "&PROJECTION=" + projection +
-			    "&RESOLUTION=" + resolution +
-			    "&SIZE=" + size + 
-			    "&LAT=" + lat + "&LON=" + lon);
+			      "?DATA_SET_NAME=" + dataSet +
+			      "&PROJECTION=" + projection +
+			      "&RESOLUTION=" + resolution +
+			      "&SIZE=" + size + 
+			      "&LAT=" + lat + "&LON=" + lon);
 
 	    System.out.println(url);
 
@@ -106,12 +102,7 @@ public class USGSMarsMap implements Map {
 	    imageSrc = result.substring(startIndex, endIndex);
 	    // </fragile>
 	    
-	    URL imageUrl = new URL(psdUrl + imageSrc);
-	    System.out.println(imageUrl);
-
-	    //imageUrl = new URL("file:tmp.968014862.jpg");
-	    return (Toolkit.getDefaultToolkit().getImage(imageUrl));
-
+	    return new URL(psdUrl + imageSrc);
 	} catch (MalformedURLException e) {
 	    System.out.println("Weirdness" + e);
 	} catch (IOException e) {
@@ -120,6 +111,45 @@ public class USGSMarsMap implements Map {
 	}
 
 	return null;
+    }
+
+    private URL getImageUrl(int size, double lat, double lon) {
+	URL iu = null;
+	try {
+	    iu =  new URL("http://127.0.0.1/cgi-bin/mapmaker/mapmaker.py" +
+			  "?DATA_SET_NAME=" + dataSet +
+			  "&PROJECTION=" + projection +
+			  "&RESOLUTION=" + resolution +
+			  "&SIZE=" + size + 
+			  "&LAT=" + lat + "&LON=" + lon);
+	} catch (MalformedURLException e) {
+	    System.out.println("Weirdness" + e);
+	}
+
+	return iu;
+    }
+
+    private URL getCachedImageUrl(int size, double lat, double lon) {
+	URL iu = null;
+	try {
+	    iu =  new URL("http://www.geocities.com/gregory_whelan/mars00.jpg");
+	} catch (MalformedURLException e) {
+	    System.out.println("Weirdness" + e);
+	}
+
+	return iu;
+    }
+
+    /** requests an image from the PDS web server.
+     *  @param size is pixels per degree
+     */
+    private Image retrieveImage(int size, double lat, double lon) {
+	imageDone = false;
+	
+	URL imageUrl = getCachedImageUrl(size, lat, lon);
+
+	//imageUrl = new URL("file:tmp.968014862.jpg");
+	return (Toolkit.getDefaultToolkit().getImage(imageUrl));
     }
 
     private void prefetchImage(int size, double lat, double lon) {
@@ -135,7 +165,7 @@ public class USGSMarsMap implements Map {
 	    System.out.println(e);
 	}
 	imageDone = true;
-	System.out.println("Done loading USGS image");
+	//System.out.println("Done loading USGS image");
     }
 
     /** for component testing. Creates a frame and fills it with a map */
