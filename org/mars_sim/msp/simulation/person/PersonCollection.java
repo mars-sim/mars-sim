@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonCollection.java
- * @version 2.75 2003-05-12
+ * @version 2.75 2003-06-30
  * @author Edgar Crisostomo
  */
 
@@ -111,7 +111,7 @@ public class PersonCollection extends MspCollection implements Serializable {
                 PersonIterator i1 = iterator();
                 PersonIterator i2 = pc.iterator();
                 while (i1.hasNext()) {
-                    if (i1.hasNext() != i2.hasNext()) result = false;
+                    if (i1.next() != i2.next()) result = false;
                 }
             }
             else result = false;

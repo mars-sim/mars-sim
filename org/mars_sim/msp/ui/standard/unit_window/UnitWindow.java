@@ -17,13 +17,15 @@ import javax.swing.border.EmptyBorder;
 /**
  * The UnitWindow is the base window for displaying units.
  */
-public abstract class UnitWindow extends JInternalFrame {
+public abstract class UnitWindow extends JInternalFrame implements Runnable {
     
     // Data members
     protected MainDesktopPane desktop; // Main window
     protected UnitUIProxy proxy;       // Unit's UI proxy
     private Collection tabPanels;      // The tab panels
     private JTabbedPane centerPanel;   // The center panel
+    private Thread updateThread; // temp update thread
+    private boolean keepUpdated; // temp
     
     /**
      * Constructor
@@ -60,6 +62,9 @@ public abstract class UnitWindow extends JInternalFrame {
         // Create center panel
         centerPanel = new JTabbedPane();
         mainPane.add(centerPanel, BorderLayout.CENTER);
+        
+        // Remove later
+        start();
     }
     
     /**
@@ -95,5 +100,38 @@ public abstract class UnitWindow extends JInternalFrame {
             TabPanel panel = (TabPanel) i.next();
             panel.update();
         }
+    }
+    
+    // Remove later
+    private void start() {
+
+        keepUpdated = true;
+        if ((updateThread == null) || !updateThread.isAlive()) {
+            updateThread = new Thread(this, "unit window : " + proxy.getUnit().getName());
+            updateThread.start();
+        }
+        else {
+            updateThread.interrupt();
+        }
+    }
+    
+    public void run() {
+
+        // Endless refresh loop
+        while (keepUpdated) {
+            
+            // Pause for 2 seconds between display refresh if visible
+            // otherwise just wait a long time
+            try {
+                // long sleeptime = (isVisible() ? 2000 : 60000);
+                long sleeptime = 2000;
+                Thread.sleep(sleeptime);
+            } catch (InterruptedException e) {}
+
+            // Update display
+            update();
+        }
+        
+        updateThread = null;
     }
 }

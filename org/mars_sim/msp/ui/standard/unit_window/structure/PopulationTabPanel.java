@@ -109,6 +109,7 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
             PersonIterator i = populationCache.iterator();
             while (i.hasNext()) populationListModel.addElement(i.next());
         }
+        
     }
                 
     /** 
