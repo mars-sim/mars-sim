@@ -15,6 +15,15 @@ import java.util.*;
  */
 public class MspCollectionEvent extends EventObject {
 
+    /** A Unit has been added **/
+    public final static String ADD = "Add";
+
+    /** The collection has been cleared **/
+    public final static String CLEAR = "Clear";
+
+    /** A unit has been removed **/
+    public final static String REMOVE = "Remove";
+
     // Data members
     private String  type; // Type of event.
     private Unit    trigger;

@@ -9,6 +9,11 @@ package org.mars_sim.msp.simulation;
 
 import java.util.*;
 
+/**
+ * This class provides an abstract implementation of a Collection for
+ * Unit objects. It provides support for a listener to be notified of the
+ * addition or removal of Units.
+ */
 public abstract class MspCollection implements java.io.Serializable {
 
     // Data members
@@ -42,8 +47,9 @@ public abstract class MspCollection implements java.io.Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean add(Unit o) {
-	    fireMspCollectionEvent("add", o);
-        return elements.add(o);
+        boolean result = elements.add(o);
+	    fireMspCollectionEvent(MspCollectionEvent.ADD, o);
+        return result;
     }
 
     /** Returns true if this collection contains the specific element.
@@ -67,8 +73,9 @@ public abstract class MspCollection implements java.io.Serializable {
      *  @return true if this collection changed as a result of the call
      */
     public boolean remove(Unit o) {
-	    fireMspCollectionEvent("remove", o);
-        return elements.remove(o);
+        boolean result = elements.remove(o);
+	    fireMspCollectionEvent(MspCollectionEvent.REMOVE, o);
+        return result;
     }
 
     /** Returns the number of elements in this collection.
@@ -76,6 +83,14 @@ public abstract class MspCollection implements java.io.Serializable {
      */
     public int size() {
         return elements.size();
+    }
+
+    /**
+     * Convert the internal collection to an array of Units.
+     * @return Array of Units.
+     */
+    public Object[] toArray() {
+        return elements.toArray();
     }
 
     /**
@@ -88,8 +103,8 @@ public abstract class MspCollection implements java.io.Serializable {
 
     /** Removes all of the elements from this collection. */
     public void clear() {
-	    fireMspCollectionEvent("clear", null);
         elements.clear();
+	    fireMspCollectionEvent(MspCollectionEvent.CLEAR, null);
     }
 
     /**
