@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * SettlementsXmlReader.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2003-01-06
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.structure.template.*;
 import java.io.*;
 import java.util.*;
 import com.microstar.xml.*;
@@ -18,39 +19,51 @@ import com.microstar.xml.*;
 public class SettlementsXmlReader extends MspXmlReader {
 
     // XML element types
-    private static final int SETTLEMENTS_LIST = 0;
-    private static final int SETTLEMENT = 1;
-    private static final int NAME = 2;
-    private static final int LOCATION = 4;
-    private static final int LATITUDE = 5;
-    private static final int LONGITUDE = 6;
-    private static final int POP_CAPACITY = 7;
+    private static final int SETTLEMENT_PROPERTIES = 0;
+    private static final int SETTLEMENT_TEMPLATE_LIST = 1;
+    private static final int SETTLEMENT_TEMPLATE = 2;
+    private static final int BUILDING = 3;
+    private static final int VEHICLE = 4;
+    private static final int INITIAL_SETTLEMENT_LIST = 5;
+    private static final int SETTLEMENT = 6;
+    private static final int LOCATION = 7;
 
     // Data members
-    private int settlementMax; // Maximum number of settlements to initialize
-    private int elementType; // The current element type being parsed
-    private SettlementCollection settlements; // The collection of created settlements
-    private Mars mars; // The virtual Mars instance
-    private String currentName; // The current settlement name parsed
-    private String currentLatitude; // The current latitude string parsed
-    private String currentLongitude; // The current longitude string parsed
-    private Coordinates currentLocation; // The current settlement location created
-    private int currentPopulationCapacity; // The current settlement population capacity
+    private int elementType; // The current element type being parsed.
+    private Mars mars; // The virtual Mars instance.
+    private Collection settlementTemplates; // The collection of settlement templates.
+    private SettlementTemplate currentSettlementTemplate; // The current settlement template.
+    private String currentName; // The current name attribute for an element.
+    private String currentType; // The current type attribute for an element.
+    private int currentNumber; // The current number attribute for an element.
+    private SettlementCollection initialSettlements; // The collection of created initial settlements.
+    private String currentTemplate; // The current template attribute for an element.
+    private String currentLatitude; // The current latitude string parsed.
+    private String currentLongitude; // The current longitude string parsed.
+    private Coordinates currentLocation; // The current settlement location created.
+    private Random rand = new Random();
 
     /** Constructor
      *  @param mars the virtual Mars instance
      */
     public SettlementsXmlReader(Mars mars) {
         super("settlements");
-	settlementMax = mars.getSimulationProperties().getInitSettlements();
         this.mars = mars;
     }
 
-    /** Returns the collection of settlements created from the XML file.
+    /** Returns the collection of initial settlements created from the XML file.
      *  @return the collection of settlements
      */
-    public SettlementCollection getSettlements() {
-        return settlements;
+    public SettlementCollection getInitialSettlements() {
+        return initialSettlements;
+    }
+    
+    /**
+     * Returns the collection of settlement templates created from the XML file.
+     * @return collection of settlement templates
+     */
+    public Collection getSettlementTemplates() {
+        return settlementTemplates;
     }
 
     /** Handle the start of an element by printing an event.
@@ -60,24 +73,62 @@ public class SettlementsXmlReader extends MspXmlReader {
      */
     public void startElement(String name) throws Exception {
         super.startElement(name);
-
-        if (name.equals("SETTLEMENTS_LIST")) {
-            elementType = SETTLEMENTS_LIST;
-            settlements = new SettlementCollection();
+        
+        if (name.equals("SETTLEMENT_PROPERTIES")) {
+            elementType = SETTLEMENT_PROPERTIES;
         }
-        if (name.equals("SETTLEMENT")) {
+        else if (name.equals("SETTLEMENT_TEMPLATE_LIST")) {
+            elementType = SETTLEMENT_TEMPLATE_LIST;
+            settlementTemplates = new ArrayList();
+        }
+        else if (name.equals("SETTLEMENT_TEMPLATE")) {
+            elementType = SETTLEMENT_TEMPLATE;
+            currentSettlementTemplate = new SettlementTemplate(currentName);
+            settlementTemplates.add(currentSettlementTemplate);
+        }
+        else if (name.equals("BUILDING")) {
+            elementType = BUILDING;
+        }
+        else if (name.equals("VEHICLE")) {
+            elementType = VEHICLE;
+        }   
+        else if (name.equals("INITIAL_SETTLEMENT_LIST")) {
+            elementType = INITIAL_SETTLEMENT_LIST;
+            initialSettlements = new SettlementCollection();
+        }
+        else if (name.equals("SETTLEMENT")) {
             elementType = SETTLEMENT;
-            currentName = "";
-            currentLatitude = "";
-            currentLongitude = "";
-            currentLocation = null;
-            currentPopulationCapacity = 0;
         }
-        if (name.equals("NAME")) elementType = NAME;
-        if (name.equals("LOCATION")) elementType = LOCATION;
-        if (name.equals("LATITUDE")) elementType = LATITUDE;
-        if (name.equals("LONGITUDE")) elementType = LONGITUDE;
-        if (name.equals("POPULATION_CAPACITY")) elementType = POP_CAPACITY;
+        else if (name.equals("LOCATION")) elementType = LOCATION;
+    }
+    
+    /** Handle an attribute value assignment by printing an event.
+     *  @see com.microstar.xml.XmlHandler#attribute
+     */
+    public void attribute (String name, String value, boolean isSpecified) {
+        super.attribute(name, value, isSpecified);
+        
+        if (name.equals("TYPE")) {
+            currentType = value;
+        }
+        else if (name.equals("NAME")) {
+            currentName = value;
+        }   
+        else if (name.equals("NUMBER")) {
+            try {
+                currentNumber = Integer.parseInt(value);
+            }
+            catch(NumberFormatException e) {}
+        }
+        else if (name.equals("TEMPLATE")) {
+            currentTemplate = value;
+        }
+        else if (name.equals("LATITUDE")) {
+            currentLatitude = value;
+        }
+        else if (name.equals("LONGITUDE")) {
+            currentLongitude = value;
+        }
     }
 
     /** Handle the end of an element by printing an event.
@@ -87,68 +138,57 @@ public class SettlementsXmlReader extends MspXmlReader {
      */
     public void endElement(String name) throws Exception {
         super.endElement(name);
-
+        
         switch (elementType) {
-            case NAME:
-            case LOCATION:
-            case POP_CAPACITY:
-                elementType = SETTLEMENT;
+            case SETTLEMENT_PROPERTIES:
+                elementType = -1;
                 break;
-            case LATITUDE:
-            case LONGITUDE:
-                elementType = LOCATION;
+            case SETTLEMENT_TEMPLATE_LIST:
+                elementType = SETTLEMENT_PROPERTIES;
                 break;
-  	    case SETTLEMENT:
-		if(settlementMax == 0 || settlements.size() < settlementMax) {
-		    settlements.add(createSettlement());
-		}
-		elementType = SETTLEMENTS_LIST;
+            case SETTLEMENT_TEMPLATE:
+                elementType = SETTLEMENT_TEMPLATE_LIST;
+                currentName = "";
                 break;
-        }
-    }
-
-    /** Handle character data by printing an event.
-     *  @see com.microstar.xml.XmlHandler#charData
-     */
-    public void charData(char ch[], int start, int length) {
-        super.charData(ch, start, length);
-
-        String data = new String(ch, start, length).trim();
-
-        switch (elementType) {
-            case NAME:
-                currentName = data;
+            case BUILDING:
+                if (currentNumber <= 0) currentNumber = 1;
+                for (int x=0; x < currentNumber; x++) 
+                    currentSettlementTemplate.addBuilding(currentType);
+                elementType = SETTLEMENT_TEMPLATE;
+                currentType = "";
+                currentNumber = 0;
                 break;
-            case LATITUDE:
-                currentLatitude = data;
+            case VEHICLE:
+                if (currentNumber <= 0) currentNumber = 1;
+                for (int x=0; x < currentNumber; x++) 
+                    currentSettlementTemplate.addVehicle(currentType);
+                elementType = SETTLEMENT_TEMPLATE;
+                currentType = "";
+                currentNumber = 0;
                 break;
-            case LONGITUDE:
-                currentLongitude = data;
+            case INITIAL_SETTLEMENT_LIST:
+                elementType = SETTLEMENT_PROPERTIES;
                 break;
-            case POP_CAPACITY:
-                try {
-                    currentPopulationCapacity = Integer.parseInt(data);
+  	        case SETTLEMENT:
+                SettlementTemplate template = null;
+                Iterator i = settlementTemplates.iterator();
+                while (i.hasNext()) {
+                    SettlementTemplate settlementTemplate = (SettlementTemplate) i.next();
+                    if (currentTemplate.equals(settlementTemplate.getName())) template = settlementTemplate;
                 }
-                catch(NumberFormatException e) {}
-                if (currentPopulationCapacity < 0) currentPopulationCapacity = 0;
+                if (template != null)
+                    initialSettlements.add(template.constructSettlement(currentName, currentLocation, mars));
+		        elementType = INITIAL_SETTLEMENT_LIST;
+                currentName = "";
+                currentTemplate = "";
+                currentLocation = null;
                 break;
+            case LOCATION:
+                currentLocation = createLocation();
+                elementType = SETTLEMENT;
+                currentLatitude = "";
+                currentLongitude = "";
         }
-    }
-
-    /** Creates a settlement based on parsed information.
-     *  @return constructed settlment based on parsed information
-     */
-    private Settlement createSettlement() {
-        Settlement settlement = null;
-
-        if (currentLocation == null) {
-            settlement = new Settlement(currentName, currentPopulationCapacity, mars);
-        }
-        else {
-            settlement = new Settlement(currentName, currentLocation, currentPopulationCapacity, mars);
-        }
-
-        return settlement;
     }
 
     /** Create a coordinates location if parameters are valid.
@@ -157,15 +197,40 @@ public class SettlementsXmlReader extends MspXmlReader {
     private Coordinates createLocation() {
         double phi = 0D;
         double theta = 0D;
-
+        
         try {
-            phi = parseLatitude(currentLatitude);
-            theta = parseLongitude(currentLongitude);
-            return new Coordinates(phi, theta);
+            if (currentLatitude.equals("random")) phi = getRandomLatitude();
+            else phi = parseLatitude(currentLatitude);
+            
+            if (currentLongitude.equals("random")) theta = getRandomLongitude();
+            else theta = parseLongitude(currentLongitude);
         }
         catch(IllegalArgumentException e) {}
 
         return new Coordinates(phi, theta);
+    }
+    
+    /**
+     * Gets a random latitude.
+     *
+     * @return latitude
+     */
+    private double getRandomLatitude() {
+        // Random latitude should be less likely to be near the poles.
+        double phi = (rand.nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
+        if (phi > Math.PI) phi = Math.PI;
+        if (phi < 0D) phi = 0D;
+        return phi;
+    }
+    
+    /**
+     * Gets a random longitude.
+     *
+     * @return longitude
+     */
+    private double getRandomLongitude() {
+        double theta = (double)(Math.random() * (2D * Math.PI)); 
+        return theta;
     }
 
     /** Parse a latitude string into a phi value

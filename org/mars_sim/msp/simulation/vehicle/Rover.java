@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.74 2002-04-29
+ * @version 2.75 2003-01-08
  * @author Scott Davis
  */
 
@@ -40,19 +40,6 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     Rover(String name, Settlement settlement, Mars mars) {
         // Use GroundVehicle constructor
         super(name, settlement, mars);
-
-        initRoverData();
-    }
-    
-    /** Constructs a Rover object
-     *  @param name the name of the rover
-     *  @param mars the virtual Mars
-     *  @param manager the unit manager
-     *  @throws Exception when there are no available settlements
-     */
-    Rover(String name, Mars mars, UnitManager manager) throws Exception {
-        // Use GroundVehicle constructor
-        super(name, mars, manager);
 
         initRoverData();
     }

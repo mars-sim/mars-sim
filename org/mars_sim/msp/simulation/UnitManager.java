@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.74 2002-05-08
+ * @version 2.75 2003-01-05
  * @author Scott Davis
  */
 
@@ -22,9 +22,18 @@ import java.util.*;
  */
 public class UnitManager implements Serializable {
 
+    // Static Data Members
+    public static String SETTLEMENT = "settlement";
+    public static String PERSON = "person";
+    public static String VEHICLE = "vehicle";
+    public static String EQUIPMENT = "equipment";
+    
     // Data members
     private Mars mars; // Virtual Mars
     private UnitCollection units; // Collection of all units
+    private ArrayList settlementNames; // List of possible settlement names
+    private ArrayList vehicleNames; // List of possible vehicle names
+    private ArrayList personNames; // List of possible person names
 
     /** Constructs a UnitManager object
      *  @param mars the virtual Mars
@@ -32,52 +41,124 @@ public class UnitManager implements Serializable {
     UnitManager(SimulationProperties p, Mars mars) {
         // Initialize virtual mars to parameter
         this.mars = mars;
-
-        // Initialize all unit vectors
+   
+        // Initialize unit collection
         units = new UnitCollection();
+    }
+    
+    /**
+     * Constructs initial units.
+     */
+    void constructInitialUnits() {
+        
+        // Initialize name lists;
+        initializePersonNames();
+        initializeSettlementNames();
+        initializeVehicleNames();
+        
+        // Create initial settlements
+        createInitialSettlements();
 
-        // Create settlements
-        createSettlements();
-
-        // Create vehicles
-        createVehicles();
-
-        // Create people
-        createPeople();
-
-	// Add inventoried units.
-	addInventoryUnits();
+	    // Add any inventoried units.
+	    addInventoryUnits();
     }
 
-    /** Creates initial settlements from XML config file */
-    private void createSettlements() {
-        SettlementsXmlReader settlementsReader =
-	    new SettlementsXmlReader(mars);
+    /**
+     * Initializes the list of possible person names.
+     */
+    private void initializePersonNames() {
+        PersonNamesXmlReader personNamesReader = new PersonNamesXmlReader();
+        personNamesReader.parse();
+        personNames = personNamesReader.getPersonNames();
+    }
+    
+    /**
+     * Initializes the list of possible vehicle names.
+     */
+    private void initializeVehicleNames() {
+        VehicleNamesXmlReader vehicleNamesReader = new VehicleNamesXmlReader();
+        vehicleNamesReader.parse();
+        vehicleNames = vehicleNamesReader.getVehicleNames();
+    }
+    
+    /**
+     * Initializes the list of possible settlement names.
+     */
+    private void initializeSettlementNames() {
+        SettlementNamesXmlReader settlementNamesReader = new SettlementNamesXmlReader();
+        settlementNamesReader.parse();
+        settlementNames = settlementNamesReader.getSettlementNames();
+    }
+    
+    /**
+     * Adds a unit to the unit manager if it doesn't already have it.
+     *
+     * @param unit new unit to add.
+     */
+    public void addUnit(Unit unit) {
+        if (!units.contains(unit)) units.add(unit);
+    }
+    
+    /**
+     * Gets a new name for a unit.
+     *
+     * @param unitType the type of unit.
+     * @return new name
+     * @throws IllegalArgumentException if unitType is not valid.
+     */
+    public String getNewName(String unitType) throws IllegalArgumentException {
+        Collection initialNameList = null;
+        ArrayList usedNames = new ArrayList();
+        
+        if (unitType.equals(SETTLEMENT)) {
+            initialNameList = settlementNames;
+            SettlementIterator si = getSettlements().iterator();
+            while (si.hasNext()) usedNames.add(si.next().getName());
+        }
+        else if (unitType.equals(VEHICLE)) {
+            initialNameList = vehicleNames;
+            VehicleIterator vi = getVehicles().iterator();
+            while (vi.hasNext()) usedNames.add(vi.next().getName());
+        }
+        else if (unitType.equals(PERSON)) {
+            initialNameList = personNames;
+            PersonIterator pi = getPeople().iterator();
+            while (pi.hasNext()) usedNames.add(pi.next().getName());
+        }
+        else throw new IllegalArgumentException("Inproper unitType");
+ 
+        ArrayList remainingNames = new ArrayList();
+        Iterator i = initialNameList.iterator();
+        while (i.hasNext()) {
+            String name = (String) i.next();
+            if (!usedNames.contains(name)) remainingNames.add(name);
+        }
+            
+        String result = "";
+        if (remainingNames.size() > 0) result = (String) remainingNames.get(
+                RandomUtil.getRandomInt(remainingNames.size() - 1));
+        else if (usedNames.size() > 0) result = (String) usedNames.get(
+                RandomUtil.getRandomInt(usedNames.size() - 1));      
+                
+        return result;
+    }       
+    
+    /** Creates initial settlements */
+    private void createInitialSettlements() {
+        System.out.println("Creating initial settlements");
+        SettlementsXmlReader settlementsReader = new SettlementsXmlReader(mars);
         settlementsReader.parse();
-        units.mergeSettlements(settlementsReader.getSettlements());
-    }
-
-    /** Creats initial vehicles from XML config file */
-    private void createVehicles() {
-        VehiclesXmlReader vehiclesReader = new VehiclesXmlReader(this, mars);
-        vehiclesReader.parse();
-        units.mergeVehicles(vehiclesReader.getVehicles());
-    }
-
-    /** Creates initial people from XML config file */
-    private void createPeople() {
-        PeopleXmlReader peopleReader = new PeopleXmlReader(this, mars);
-        peopleReader.parse();
-        units.mergePeople(peopleReader.getPeople());
+        units.mergeSettlements(settlementsReader.getInitialSettlements());
+        System.out.println("Finished creating settlements");
     }
 
     /** Adds all units in inventories. */
     private void addInventoryUnits() {
-	UnitCollection contained = new UnitCollection();
-	UnitIterator i = units.iterator();
-	while (i.hasNext())
-	    contained.mergeUnits(i.next().getInventory().getAllContainedUnits());
-	units.mergeUnits(contained);
+	    UnitCollection contained = new UnitCollection();
+	    UnitIterator i = units.iterator();
+	    while (i.hasNext())
+	        contained.mergeUnits(i.next().getInventory().getAllContainedUnits());
+	    units.mergeUnits(contained);
     }
 
     /** Notify all the units that time has passed.

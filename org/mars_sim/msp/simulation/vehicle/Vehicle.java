@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.75 2002-06-12
+ * @version 2.75 2003-01-08
  * @author Scott Davis
  */
 
@@ -57,45 +57,20 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 
         settlement.getInventory().addUnit(this);
         initVehicleData();
-    }
-
-    /** Constructs a Vehicle object
-     *  @param name the vehicle's name
-     *  @param mars the virtual Mars
-     *  @param manager the unit manager
-     *  @throws Exception when there are no available settlements
-     */
-    Vehicle(String name, Mars mars, UnitManager manager) throws Exception {
-        // use Unit constructor
-        super(name, new Coordinates(0D, 0D), mars);
-
-        if (manager.getSettlementNum() == 0) throw new Exception("No available settlements");
-
-        Settlement leastVehicles = null;
-        int least = Integer.MAX_VALUE;
-        SettlementIterator i = manager.getSettlements().iterator();
-        while (i.hasNext()) {
-            Settlement settlement = i.next();
-            if (settlement.getParkedVehicleNum() < least) {
-                least = settlement.getParkedVehicleNum();
-                leastVehicles = settlement;
-            }
-        }
-	leastVehicles.getInventory().addUnit(this);
-
-        initVehicleData();
+        
+        System.out.println("Constructing vehicle: " + name);
     }
 
     /** Initializes vehicle data */
     private void initVehicleData() {
 
-	// Initialize malfunction manager.
-	malfunctionManager = new MalfunctionManager(this, mars);
-	malfunctionManager.addScopeString("Vehicle");
+	    // Initialize malfunction manager.
+	    malfunctionManager = new MalfunctionManager(this, mars);
+	    malfunctionManager.addScopeString("Vehicle");
 	    
         setDestinationType("None");
         direction = new Direction(0);
-	trail = new ArrayList();
+	    trail = new ArrayList();
     }
 
     /** Returns vehicle's current status
@@ -105,24 +80,24 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         String status = null;
 
         if (containerUnit != null) {
-	    if (containerUnit instanceof Settlement) {
-	        Settlement settlement = (Settlement) containerUnit;
-		FacilityManager facilityManager = settlement.getFacilityManager();
-		MaintenanceGarage garage = (MaintenanceGarage) facilityManager.getFacility("Maintenance Garage");
-		if (garage.vehicleInGarage(this)) status = MAINTENANCE;
-		else status = PARKED;
+	        if (containerUnit instanceof Settlement) {
+	            Settlement settlement = (Settlement) containerUnit;
+		        FacilityManager facilityManager = settlement.getFacilityManager();
+		        MaintenanceGarage garage = (MaintenanceGarage) facilityManager.getFacility("Maintenance Garage");
+		        if (garage.vehicleInGarage(this)) status = MAINTENANCE;
+		        else status = PARKED;
+	        }
+	        else status = PARKED;
 	    }
-	    else status = PARKED;
-	}
-	else {
-	    if (malfunctionManager.hasMalfunction()) {
-	        status = MALFUNCTION;
+    	else {
+	        if (malfunctionManager.hasMalfunction()) {
+	            status = MALFUNCTION;
+	        }
+	        else {
+	            if (speed == 0D) status = PARKED;
+	            else status = MOVING;
+	        }
 	    }
-	    else {
-	        if (speed == 0D) status = PARKED;
-	        else status = MOVING;
-	    }
-	}
 
         return status;
     }
@@ -204,9 +179,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void addDistanceLastMaintenance(double distance) {
         distanceMaint += distance;
-        if ((distanceMaint > 5000D) && !distanceMark) {
-            distanceMark = true;
-        }
+        if ((distanceMaint > 5000D) && !distanceMark) distanceMark = true;
     }
 
     /** Sets vehicle's distance since last maintenance to zero */
@@ -232,17 +205,17 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      *  @return the driver
      */
     public Person getDriver() {
-	if (!inventory.containsUnit(driver)) driver = null;
+	    if (!inventory.containsUnit(driver)) driver = null;
         else if (driver.getPhysicalCondition().getDeathDetails() != null) driver = null;
-	return driver;
+	    return driver;
     }
 
     /** Sets the driver of the vehicle
      *  @param driver the driver
      */
     public void setDriver(Person driver) {
-	if (!inventory.containsUnit(driver)) this.driver = null;
-	else this.driver = driver;
+	    if (!inventory.containsUnit(driver)) this.driver = null;
+	    else this.driver = driver;
     }
 
     /** Returns the current settlement vehicle is parked at.
@@ -251,12 +224,10 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public Settlement getSettlement() {
 
-	Unit topUnit = getTopContainerUnit();
+	    Unit topUnit = getTopContainerUnit();
 
-	if ((topUnit != null) && (topUnit instanceof Settlement)) {
-	    return (Settlement) topUnit;
-	}
-	else return null;
+	    if ((topUnit != null) && (topUnit instanceof Settlement)) return (Settlement) topUnit;
+	    else return null;
     }
 
     /** Returns distance to destination in kilometers
@@ -369,8 +340,8 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void timePassing(double time) {
         if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
-	malfunctionManager.timePassing(time);
-	addToTrail(location);
+	    malfunctionManager.timePassing(time);
+	    addToTrail(location);
     }
 
     /**
@@ -390,14 +361,14 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
             if (task instanceof Maintenance) {
                 if (((Maintenance) task).getEntity() == this) {
                     if (!people.contains(person)) people.add(person);
-		}
+		        }
             }
 
             // Add all people repairing this vehicle.
             if (task instanceof Repair) {
                 if (((Repair) task).getEntity() == this) {
                     if (!people.contains(person)) people.add(person);
-		}
+		        }
             }
         }
 
@@ -420,12 +391,12 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    
         if (getSettlement() != null) {
             if (trail.size() > 0) trail.clear();
-	}
-	else if (trail.size() > 0) {
-	    Coordinates lastLocation = (Coordinates) trail.get(trail.size() - 1);
-	    if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D)) 
-	        trail.add(new Coordinates(location));
-	}
-	else trail.add(new Coordinates(location));
+	    }
+	    else if (trail.size() > 0) {
+	        Coordinates lastLocation = (Coordinates) trail.get(trail.size() - 1);
+	        if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D)) 
+	            trail.add(new Coordinates(location));
+	    }
+	    else trail.add(new Coordinates(location));
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-05-08
+ * @version 2.75 2003-01-07
  * @author Scott Davis
  */
 
@@ -12,7 +12,9 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.equipment.*;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import java.util.*;
 
 /** The Settlement class represents a settlement unit on virtual Mars.
@@ -30,89 +32,67 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
     int populationCapacity; // The population capacity of the settlement
     FacilityManager facilityManager; // The facility manager for the settlement
     protected Airlock airlock; // the settlement's airlock.
+    
+    BuildingManager buildingManager; // The settlement's building manager.
 
     /** Constructs a Settlement object at a given location
      *  @param name the settlement's name
      *  @param location the settlement's location
-     *  @param populationCapacity the settlement's population capacity
      *  @param mars the virtual Mars
      */
-    Settlement(String name, Coordinates location, int populationCapacity, Mars mars) {
+    public Settlement(String name, Coordinates location, Mars mars) {
         // Use Unit constructor
         super(name, location, mars);
 
+        System.out.println("Creating settlement " + name);
+        
         // Initialize data members
-        if (populationCapacity == 0) this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
-        else this.populationCapacity = populationCapacity;
+        this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
         facilityManager = new FacilityManager(this, mars);
-	setProperties();
-    }
-
-    /** Constructs a Settlement object at a random location
-     *  @param name the settlement's name
-     *  @param populationCapacity the settlement's population capacity
-     *  @param mars the virtual Mars
-     */
-    Settlement(String name, int populationCapacity, Mars mars) {
-
-        // Use Unit constructor
-        super(name, new Coordinates(0D, 0D), mars);
-
-        // Determine random location of settlement, 
-	// adjust so it will be less likely to be near the poles.
-        double settlementPhi = (rand.nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
-        if (settlementPhi > Math.PI) settlementPhi = Math.PI;
-        if (settlementPhi < 0D) settlementPhi = 0D;
-        double settlementTheta = (double)(Math.random() * (2D * Math.PI));
-        setCoordinates(new Coordinates(settlementPhi, settlementTheta));
-
-        // Initialize data members
-        if (populationCapacity == 0) this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
-        else this.populationCapacity = populationCapacity;
-        facilityManager = new FacilityManager(this, mars);
-	setProperties();
+        buildingManager = new BuildingManager(this);
+        setProperties();
     }
 
     /** Initialize settlement properties */
     public void setProperties() {
        
         // Add scope string to malfunction manager.
-	malfunctionManager.addScopeString("Settlement");
-	malfunctionManager.addScopeString("LifeSupport");
+        malfunctionManager.addScopeString("Settlement");
+        malfunctionManager.addScopeString("LifeSupport");
 	    
-	// Set inventory total mass capacity.
-	inventory.setTotalCapacity(Double.MAX_VALUE);
+        // Set inventory total mass capacity.
+        inventory.setTotalCapacity(Double.MAX_VALUE);
 	
         // Set inventory resource capacities.
         SimulationProperties properties = mars.getSimulationProperties();
-	double fuelCap = properties.getSettlementFuelStorageCapacity();
+        double fuelCap = properties.getSettlementFuelStorageCapacity();
         inventory.setResourceCapacity(Inventory.FUEL, fuelCap);
-	double oxygenCap = properties.getSettlementOxygenStorageCapacity();
+	    double oxygenCap = properties.getSettlementOxygenStorageCapacity();
         inventory.setResourceCapacity(Inventory.OXYGEN, oxygenCap);
-	double waterCap = properties.getSettlementWaterStorageCapacity();
+	    double waterCap = properties.getSettlementWaterStorageCapacity();
         inventory.setResourceCapacity(Inventory.WATER, waterCap);
-	double foodCap = properties.getSettlementFoodStorageCapacity();
+	    double foodCap = properties.getSettlementFoodStorageCapacity();
         inventory.setResourceCapacity(Inventory.FOOD, foodCap);
 
-	// Set random initial resources from 1/4 to total capacity.
-	double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(3D * fuelCap / 4D);
-	inventory.addResource(Inventory.FUEL, fuel); 
-	double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(3D * oxygenCap / 4D);
-	inventory.addResource(Inventory.OXYGEN, oxygen); 
-	double water = (waterCap / 4D) + RandomUtil.getRandomDouble(3D * waterCap / 4D);
-	inventory.addResource(Inventory.WATER, water); 
-	double food = (foodCap / 4D) + RandomUtil.getRandomDouble(3D * foodCap / 4D);
-	inventory.addResource(Inventory.FOOD, food);
+    	// Set random initial resources from 1/4 to total capacity.
+	    double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(3D * fuelCap / 4D);
+	    inventory.addResource(Inventory.FUEL, fuel); 
+	    double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(3D * oxygenCap / 4D);
+	    inventory.addResource(Inventory.OXYGEN, oxygen); 
+	    double water = (waterCap / 4D) + RandomUtil.getRandomDouble(3D * waterCap / 4D);
+	    inventory.addResource(Inventory.WATER, water); 
+	    double food = (foodCap / 4D) + RandomUtil.getRandomDouble(3D * foodCap / 4D);
+	    inventory.addResource(Inventory.FOOD, food);
 
-	// Set random initial rock samples from 0 to 500 kg.
-	double rockSamples = RandomUtil.getRandomDouble(500D);
-	inventory.addResource(Inventory.ROCK_SAMPLES, rockSamples);
+	    // Set random initial rock samples from 0 to 500 kg.
+	    double rockSamples = RandomUtil.getRandomDouble(500D);
+	    inventory.addResource(Inventory.ROCK_SAMPLES, rockSamples);
 
-	// Create airlock for settlement.
-	airlock = new Airlock(this, mars, 4);
+	    // Create airlock for settlement.
+	    airlock = new Airlock(this, mars, 4);
 
-	// Adds enough EVA suits for inhabitant capacity.
-	for (int x=0; x < getPopulationCapacity(); x++) 
+	    // Adds enough EVA suits for inhabitant capacity.
+	    for (int x=0; x < getPopulationCapacity(); x++) 
             inventory.addUnit(new EVASuit(location, mars));
     }
 	
@@ -366,5 +346,14 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         }
 
         return people;
+    }
+    
+    /**
+     * Gets the settlement's building manager.
+     * 
+     * @return building manager
+     */
+    public BuildingManager getBuildingManager() {
+        return buildingManager;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.74 2002-04-29
+ * @version 2.75 2003-01-09
  * @author Scott Davis
  */
 
@@ -61,12 +61,13 @@ public class Mars implements Serializable {
 
         // Initialize all units
         units = new UnitManager(properties, this);
+        units.constructInitialUnits();
 
         // Initialize orbit info
         orbitInfo = new OrbitInfo();
 
-	// Initialize weather
-	weather = new Weather(this);
+	    // Initialize weather
+	    weather = new Weather(this);
 
         // Initialize and start master clock
         masterClock = new MasterClock(this);
@@ -81,17 +82,17 @@ public class Mars implements Serializable {
     private void initializeTransients(SimulationProperties initProps) {
 
         // Initialize simulation properties
-	if (initProps != null) properties = initProps;
-	else properties = new SimulationProperties();
+	    if (initProps != null) properties = initProps;
+	    else properties = new SimulationProperties();
 
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
 
         // Initialize malfunction factory
-	malfunctionFactory = new MalfunctionFactory();
+	    malfunctionFactory = new MalfunctionFactory();
 
-	// Set state file
-	setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
+	    // Set state file
+	    setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
 
         // Create an event manager
         eventManager = new HistoricalEventManager(this);
@@ -260,9 +261,9 @@ public class Mars implements Serializable {
         // Store the persistent values in sequence
         out.writeObject(units);
         out.writeObject(missionManager);
-	out.writeObject(medicalManager);
+	    out.writeObject(medicalManager);
         out.writeObject(orbitInfo);
-	out.writeObject(weather);
+	    out.writeObject(weather);
         out.writeObject(masterClock);
     }
 
@@ -275,9 +276,9 @@ public class Mars implements Serializable {
         // Load in the persistent values in sequence
         units = (UnitManager)in.readObject();
         missionManager = (MissionManager)in.readObject();
-	medicalManager = (MedicalManager)in.readObject();
+	    medicalManager = (MedicalManager)in.readObject();
         orbitInfo = (OrbitInfo)in.readObject();
-	weather = (Weather)in.readObject();
+	    weather = (Weather)in.readObject();
         masterClock = (MasterClock)in.readObject();
     }
 }

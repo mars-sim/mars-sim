@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.74 2002-05-09
+ * @version 2.75 2003-01-08
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -34,7 +34,7 @@ public class TransportRover extends Rover implements Serializable {
      * @param settlement the settlementt he rover is parked at
      * @param mars the mars instance
      */
-    TransportRover(String name, Settlement settlement, Mars mars) {
+    public TransportRover(String name, Settlement settlement, Mars mars) {
         // Use the Rover constructor
         super(name, settlement, mars);
 
@@ -45,41 +45,24 @@ public class TransportRover extends Rover implements Serializable {
     }
 
     /**
-     * Constructs an TransportRover object
-     * @param name the name of the rover
-     * @param mars the mars instance
-     * @param manager the unit manager
-     * @throws Exception when there are no available settlements
-     */
-    TransportRover(String name, Mars mars, UnitManager manager) throws Exception {
-        // Use the Rover constructor
-	super(name, mars, manager);
-
-	initTransportRoverData();
-
-	// Add EVA suits
-	addEVASuits();
-    }
-
-    /**
      * Initialize rover data
      */
     private void initTransportRoverData() {
 
         // Add scope to malfunction manager.
-	malfunctionManager.addScopeString("TransportRover");
+	    malfunctionManager.addScopeString("TransportRover");
 	    
         // Set crew capacity
-	crewCapacity = CREW_CAPACITY;
+	    crewCapacity = CREW_CAPACITY;
 
         // Set the cargo capacity of rover.
-	inventory.setTotalCapacity(CARGO_CAPACITY);
+	    inventory.setTotalCapacity(CARGO_CAPACITY);
 	
-	// Set resource capacities of rover
-	inventory.setResourceCapacity(Inventory.FUEL, FUEL_CAPACITY);
-	inventory.setResourceCapacity(Inventory.OXYGEN, OXYGEN_CAPACITY);
-	inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
-	inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
+	    // Set resource capacities of rover
+	    inventory.setResourceCapacity(Inventory.FUEL, FUEL_CAPACITY);
+	    inventory.setResourceCapacity(Inventory.OXYGEN, OXYGEN_CAPACITY);
+	    inventory.setResourceCapacity(Inventory.WATER, WATER_CAPACITY);
+	    inventory.setResourceCapacity(Inventory.FOOD, FOOD_CAPACITY);
 
         sickBay = new SickBay("RoverSickBay", 2, SICKBAY_LEVEL, mars, this);
     }
@@ -100,5 +83,4 @@ public class TransportRover extends Rover implements Serializable {
     public MedicalAid getMedicalFacility() {
         return sickBay;
     }
-
 }

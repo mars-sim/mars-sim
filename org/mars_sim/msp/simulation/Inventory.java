@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 2.75 2002-05-24
+ * @version 2.75 2002-10-13
  * @author Scott Davis 
  */
 
@@ -38,15 +38,15 @@ public class Inventory implements Serializable {
      */
     public Inventory(Unit owner) {
 	
-	// Set owning unit.
+	    // Set owning unit.
         this.owner = owner;
 
-	// Initialize contained resources to zero.
+	    // Initialize contained resources to zero.
         containedResources.put(WATER, new Double(0D));
-	containedResources.put(OXYGEN, new Double(0D));
-	containedResources.put(FOOD, new Double(0D));
-	containedResources.put(FUEL, new Double(0D));
-	containedResources.put(ROCK_SAMPLES, new Double(0D));
+	    containedResources.put(OXYGEN, new Double(0D));
+	    containedResources.put(FOOD, new Double(0D));
+	    containedResources.put(FUEL, new Double(0D));
+	    containedResources.put(ROCK_SAMPLES, new Double(0D));
     }
 
     /**
@@ -66,7 +66,7 @@ public class Inventory implements Serializable {
         if (containedResources.containsKey(resource)) {
             return ((Double) containedResources.get(resource)).doubleValue();
         }
-	else return 0D;
+	    else return 0D;
     }
     
     /**
@@ -77,17 +77,17 @@ public class Inventory implements Serializable {
      */
     public double removeResource(String resource, double mass) {
         if (containedResources.containsKey(resource)) {
-	    double containedMass = ((Double) containedResources.get(resource)).doubleValue();
-	    if (mass > containedMass) {
+	        double containedMass = ((Double) containedResources.get(resource)).doubleValue();
+	        if (mass > containedMass) {
                 containedResources.put(resource, new Double(0D));
-		return containedMass;
+		        return containedMass;
             }
-	    else {
+	        else {
                 containedResources.put(resource, new Double(containedMass - mass));
-		return mass;
+		        return mass;
             }
         }
-	else return 0D;
+	    else return 0D;
     }
 
     /**

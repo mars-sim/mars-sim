@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * VehiclesXmlReader.java
+ * VehicleNamesXmlReader.java
  * @version 2.75 2003-01-08
  * @author Scott Davis
  */
@@ -12,27 +12,32 @@ import java.io.*;
 import java.util.*;
 import com.microstar.xml.*;
 
-/** The VehiclesXmlReader class parses the vehicles.xml XML file and
- *  creates vehicle-related properties.
+/** 
+ * The VehicleNamesXmlReader class parses the vehicle_names.xml XML file and
+ * creates a list of possible vehicle names.
  */
-public class VehiclesXmlReader extends MspXmlReader {
+public class VehicleNamesXmlReader extends MspXmlReader {
 
     // XML element types
+    private static final int VEHICLE_NAME_LIST = 0;
+    private static final int VEHICLE_NAME = 1;
 
     // Data members
-    private Mars mars; // The virtual Mars instance
-    private UnitManager manager; // The unit manager
-    private int elementType; // The current element type being parsed
+    private int elementType; // The current element type being parsed.
+    private ArrayList vehicleNames; // The collection of vehicle names.
 
-    /** Constructor
-     *  @param manager the unit manager
-     *  @param mars the virtual Mars instance
+    /** 
+     * Constructor
      */
-    public VehiclesXmlReader(UnitManager manager, Mars mars) {
-        super("vehicles");
-        
-	    this.manager = manager;
-        this.mars = mars;
+    public VehicleNamesXmlReader() {
+        super("vehicle_names");
+    }
+
+    /**
+     * Returns the collection of vehicle names.
+     */
+    public ArrayList getVehicleNames() {
+        return vehicleNames;
     }
 
     /** Handle the start of an element by printing an event.
@@ -43,6 +48,13 @@ public class VehiclesXmlReader extends MspXmlReader {
     public void startElement(String name) throws Exception {
         super.startElement(name);
 
+        if (name.equals("VEHICLE_NAME_LIST")) {
+            elementType = VEHICLE_NAME_LIST;
+            vehicleNames = new ArrayList();
+        }
+        else if (name.equals("VEHICLE_NAME")) {
+            elementType = VEHICLE_NAME;
+        }
     }
 
     /** Handle the end of an element by printing an event.
@@ -53,6 +65,13 @@ public class VehiclesXmlReader extends MspXmlReader {
     public void endElement(String name) throws Exception {
         super.endElement(name);
 
+        switch (elementType) {
+            case VEHICLE_NAME_LIST:
+                elementType = -1;
+                break;
+            case VEHICLE_NAME:
+                elementType = VEHICLE_NAME_LIST;
+        }
     }
 
     /** Handle character data by printing an event.
@@ -62,7 +81,7 @@ public class VehiclesXmlReader extends MspXmlReader {
         super.charData(ch, start, length);
 
         String data = new String(ch, start, length).trim();
-
+     
+        if (elementType == VEHICLE_NAME) vehicleNames.add(data);
     }
 }
-

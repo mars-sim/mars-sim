@@ -33,14 +33,14 @@ public abstract class Unit implements Serializable {
         this.location = new Coordinates(location);
         this.mars = mars;
 	
-	// Default base mass is effectively infinite.  Child classes can override.
-	baseMass = Double.MAX_VALUE;
+	    // Default base mass is effectively infinite.  Child classes can override.
+	    baseMass = Double.MAX_VALUE;
 
-	// Child units should set parameters on inventory.
-	inventory = new Inventory(this); 
+	    // Child units should set parameters on inventory.
+	    inventory = new Inventory(this); 
 
-	// Defaults to no containing unit.
-	containerUnit = null;
+	    // Defaults to no containing unit.
+	    containerUnit = null;
     }
 
     /** Returns unit's UnitManager 
@@ -108,13 +108,13 @@ public abstract class Unit implements Serializable {
     public Unit getTopContainerUnit() {
     
         Unit topUnit = getContainerUnit();
-	if (topUnit != null) {
-	    while (topUnit.getContainerUnit() != null) {
-	        topUnit = topUnit.getContainerUnit();
+	    if (topUnit != null) {
+	        while (topUnit.getContainerUnit() != null) {
+	            topUnit = topUnit.getContainerUnit();
+	        }
 	    }
-	}
 
-	return topUnit;
+	    return topUnit;
     }
 
     /** Sets the unit's container unit.

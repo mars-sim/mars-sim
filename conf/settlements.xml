@@ -1,66 +1,31 @@
 <?xml version="1.0" ?>
 
-<SETTLEMENTS_LIST>
+<SETTLEMENT_PROPERTIES>
 
-    <SETTLEMENT>
+    <SETTLEMENT_TEMPLATE_LIST>
+        <SETTLEMENT_TEMPLATE NAME="Mars Direct Base">
+            <BUILDING TYPE="Lander Hab" />
+            <BUILDING TYPE="Inflatable Greenhouse" />
+            <BUILDING TYPE="Nuclear Reactor" />
+            <BUILDING TYPE="ERV Base" NUMBER="2" />
+            <VEHICLE TYPE="Explorer Rover" />
+        </SETTLEMENT_TEMPLATE>
+    </SETTLEMENT_TEMPLATE_LIST>
 
-        <!-- Name of the settlement (required) -->
-        <NAME>Port Zubrin</NAME>
+    <INITIAL_SETTLEMENT_LIST>
 
-        <!-- Location of the settlement (optional) -->
-        <!-- Requires valid longitude and latitude -->
-        <!-- Default: random longitude and latitude -->
-        <LOCATION>
-            <LATITUDE>0.0 N</LATITUDE>
-            <LONGITUDE>0.0 E</LONGITUDE>
-        </LOCATION>
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+    
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+    
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+    
+    </INITIAL_SETTLEMENT_LIST>
 
-        <!-- Maximum number of inhabitants the settlement can support (optional) -->
-        <!-- Default: 20 inhabitants -->
-        <POPULATION_CAPACITY>20</POPULATION_CAPACITY>
-
-    </SETTLEMENT>
-
-    <SETTLEMENT>
-        <NAME>Lowell Station</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Sagan Station</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Goddard Settlement</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Port Braun</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Burroughstown</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>McKay Base</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Asimov Base</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Clarketown</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Sojourner Station</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Viking Base</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Mariner Settlement</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Camp Bradbury</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Heinlein Station</NAME>
-    </SETTLEMENT>
-    <SETTLEMENT>
-        <NAME>Port Kokh</NAME>
-    </SETTLEMENT>
-</SETTLEMENTS_LIST>
+</SETTLEMENT_PROPERTIES>

@@ -56,12 +56,14 @@ public class Person extends Unit implements Serializable {
      *  @param settlement the settlement the person is at
      *  @param mars the virtual Mars
      */
-    Person(String name, Settlement settlement, Mars mars) {
+    public Person(String name, Settlement settlement, Mars mars) {
         // Use Unit constructor
         super(name, settlement.getCoordinates(), mars);
 
         initPersonData(mars);
-	settlement.getInventory().addUnit(this);
+	    settlement.getInventory().addUnit(this);
+        
+        System.out.println("Constructing person: " + name);
     }
 
     /** Constructs a Person object
@@ -100,14 +102,14 @@ public class Person extends Unit implements Serializable {
         attributes = new NaturalAttributeManager();
         skills = new SkillManager(this);
         mind = new Mind(this, mars);
-	isBuried = false;
+	    isBuried = false;
         health = new PhysicalCondition(this, mars);
 
-	// Set base mass of person.
+	    // Set base mass of person.
         baseMass = 70D;
 
-	// Set inventory total mass capacity.
-	inventory.setTotalCapacity(100D);
+	    // Set inventory total mass capacity.
+	    inventory.setTotalCapacity(100D);
     }
 
     /** Returns a string for the person's relative location "In
@@ -117,13 +119,13 @@ public class Person extends Unit implements Serializable {
     public String getLocationSituation() {
         String location = null;
 
-	if (isBuried) location = BURIED;
-	else {
-	    Unit container = getContainerUnit();
-	    if (container == null) location = OUTSIDE;
-	    else if (container instanceof Settlement) location = INSETTLEMENT;
-	    else if (container instanceof Vehicle) location = INVEHICLE;
-	}
+	    if (isBuried) location = BURIED;
+	    else {
+	        Unit container = getContainerUnit();
+	        if (container == null) location = OUTSIDE;
+	        else if (container instanceof Settlement) location = INSETTLEMENT;
+	        else if (container instanceof Vehicle) location = INVEHICLE;
+	    }
 
         return location;
     }
@@ -147,9 +149,9 @@ public class Person extends Unit implements Serializable {
     public Vehicle getVehicle() {
 
         if ((containerUnit != null) && (containerUnit instanceof Vehicle)) {
-	    return (Vehicle) containerUnit;
-	}
-	else return null;
+	        return (Vehicle) containerUnit;
+	    }
+	    else return null;
     }
 
     /** Sets the unit's container unit.
@@ -185,7 +187,7 @@ public class Person extends Unit implements Serializable {
     public void buryBody() {
 
         containerUnit.getInventory().dropUnitOutside(this);
-	isBuried = true;
+	    isBuried = true;
     }
 
     /**
@@ -286,33 +288,33 @@ public class Person extends Unit implements Serializable {
 
         UnitCollection lifeSupportUnits = new UnitCollection();
 
-	// Get all container units.
-	Unit container = getContainerUnit();
-	while (container != null) {
+	    // Get all container units.
+	    Unit container = getContainerUnit();
+	    while (container != null) {
             if (container instanceof LifeSupport) lifeSupportUnits.add(container);
-	    container = container.getContainerUnit();
-	}
+	        container = container.getContainerUnit();
+	    }
 
-	// Get all contained units.
+	    // Get all contained units.
         UnitIterator i = inventory.getContainedUnits().iterator();
-	while (i.hasNext()) {
-	    Unit contained = i.next();
-	    if (contained instanceof LifeSupport) lifeSupportUnits.add(contained);
-	}
+	    while (i.hasNext()) {
+	        Unit contained = i.next();
+	        if (contained instanceof LifeSupport) lifeSupportUnits.add(contained);
+	    }
 
-	// Get first life support unit that checks out.
-	i = lifeSupportUnits.iterator();
-	while (i.hasNext()) {
-	    LifeSupport goodUnit = (LifeSupport) i.next();
-	    if (goodUnit.lifeSupportCheck()) return goodUnit;
-	}
+	    // Get first life support unit that checks out.
+	    i = lifeSupportUnits.iterator();
+	    while (i.hasNext()) {
+	        LifeSupport goodUnit = (LifeSupport) i.next();
+	        if (goodUnit.lifeSupportCheck()) return goodUnit;
+	    }
 
-	// If no good units, just get first life support unit.
-	i = lifeSupportUnits.iterator();
-	if (i.hasNext()) return (LifeSupport) i.next();
+	    // If no good units, just get first life support unit.
+	    i = lifeSupportUnits.iterator();
+	    if (i.hasNext()) return (LifeSupport) i.next();
 
-	// If no life support units at all, return null.
-	return null;
+	    // If no life support units at all, return null.
+	    return null;
     }
 
 

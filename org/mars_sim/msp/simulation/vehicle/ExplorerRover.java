@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRover.java
- * @version 2.74 2002-04-21
+ * @version 2.75 2003-01-08
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -28,31 +28,14 @@ public class ExplorerRover extends Rover implements Serializable {
      * @param settlement the settlementt he rover is parked at
      * @param mars the mars instance
      */
-    ExplorerRover(String name, Settlement settlement, Mars mars) {
+    public ExplorerRover(String name, Settlement settlement, Mars mars) {
         // Use the Rover constructor
-	super(name, settlement, mars);
+	    super(name, settlement, mars);
 
-	initExplorerRoverData();
+	    initExplorerRoverData();
 
-	// Add EVA Suits
-	addEVASuits();
-    }
-
-    /**
-     * Constructs an ExplorerRover object
-     * @param name the name of the rover
-     * @param mars the mars instance
-     * @param manager the unit manager
-     * @throws Exception when there are no available settlements
-     */
-    ExplorerRover(String name, Mars mars, UnitManager manager) throws Exception {
-        // Use the Rover constructor
-	super(name, mars, manager);
-
-	initExplorerRoverData();
-
-	// Add EVA Suits
-	addEVASuits();
+	    // Add EVA Suits
+	    addEVASuits();
     }
 
     /**
@@ -61,15 +44,15 @@ public class ExplorerRover extends Rover implements Serializable {
     private void initExplorerRoverData() {
        
         // Add scope to malfunction manager.
-	malfunctionManager.addScopeString("ExplorerRover");
-	malfunctionManager.addScopeString("Laboratory");
+	    malfunctionManager.addScopeString("ExplorerRover");
+	    malfunctionManager.addScopeString("Laboratory");
 	    
         // Set crew capacity
-	crewCapacity = CREW_CAPACITY;
+	    crewCapacity = CREW_CAPACITY;
 
-	// Construct mobile lab.
-	String[] techSpeciality = { "Aerology" };
-	lab = new MobileLaboratory(1, 1, techSpeciality);
+	    // Construct mobile lab.
+	    String[] techSpeciality = { "Aerology" };
+	    lab = new MobileLaboratory(1, 1, techSpeciality);
     }
 
     /** 
