@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-07-21
  * @author Scott Davis
  */
 
@@ -54,7 +54,6 @@ class MaintainVehicle extends Task {
             if (!garage.vehicleInGarage(vehicle))
                 garage.addVehicle(vehicle);
             name = "Performing Maintenance on " + vehicle.getName();
-            System.out.println(person.getName() + " performing maintenance on " + vehicle.getName());
             description = name;
             vehicle.setStatus("Periodic Maintenance");
         } else isDone = true;

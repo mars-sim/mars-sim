@@ -265,7 +265,7 @@ class EmbarkFromSettlement extends Task {
                     passenger.getTaskManager().clearCurrentTask();
                     passenger.setVehicle(vehicle);
                     passenger.setLocationSituation("In Vehicle");
-                    embarkingSettlement.personLeave(person);
+                    embarkingSettlement.personLeave(passenger);
                     vehicle.addPassenger(passenger);
                 }
             }

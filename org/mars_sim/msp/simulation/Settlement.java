@@ -81,11 +81,22 @@ public class Settlement extends Structure {
         }
     }
 
+    /** Determines if given person is an inhabitant of this settlement.
+     *  @return true if person is an inhabitant of this settlement
+     */
+    public boolean isInhabitant(Person person) {
+        boolean result = false;
+        for (int x=0; x < people.size(); x++) {
+            if (people.contains(person)) result = true;
+        }
+        return result;
+    } 
+
     /** Bring in a new inhabitant 
      *  @param newPerson the new person
      */
     public void addPerson(Person newPerson) {
-        people.addElement(newPerson);
+        if (!isInhabitant(newPerson)) people.addElement(newPerson);
     }
 
     /** Make a given inhabitant leave the settlement 

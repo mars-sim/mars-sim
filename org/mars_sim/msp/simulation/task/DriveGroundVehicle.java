@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.72 2001-07-16
+ * @version 2.72 2001-07-21
  * @author Scott Davis
  */
 
@@ -188,7 +188,7 @@ class DriveGroundVehicle extends Task {
         // If speed given the terrain would be better than 1kph, return to normal driving.
         // Otherwise, set speed to .2kph for winching speed.
         if (getSpeed(vehicle.getDirection()) > 1D) {
-            phase = "Normal Driving";
+            phase = "Driving";
             vehicle.setStuck(false);
             return(time);
         } 
