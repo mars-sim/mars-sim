@@ -18,6 +18,8 @@ import javax.swing.*;
  */
 public class MainWindow extends JFrame implements WindowListener {
 
+    private static final String VERSION = "2.71";
+
     // Data members
     private UnitToolBar unitToolbar; // The unit tool bar
     private MainDesktopPane desktop; // The main desktop
@@ -29,7 +31,7 @@ public class MainWindow extends JFrame implements WindowListener {
     public MainWindow(VirtualMars mars) {
 
         // use JFrame constructor
-        super("Mars Simulation Project (version 2.71)");
+        super("Mars Simulation Project (version " + VERSION + ")");
 
         // Create unit UI proxy manager.
         Unit[] units = mars.getUnitManager().getUnits();

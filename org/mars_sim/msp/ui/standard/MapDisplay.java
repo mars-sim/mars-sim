@@ -304,7 +304,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 unitPosition.getiY() - (unitImage.getHeight(this) / 2));
     }
 
-    private static final int labelHorizOffset = 10;
+    private static final int labelHorizOffset = 2;
 
     /** Returns label draw postion on map panel 
      *  @param unitPosition absolute unit position
@@ -314,6 +314,10 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private IntPoint getLabelLocation(IntPoint unitPosition, Image unitImage) {
         // this differs from getUnitDrawLocation by adding 10 to the horizontal position
         return new IntPoint(unitPosition.getiX() + (unitImage.getWidth(this) / 2) + labelHorizOffset,
-                unitPosition.getiY() + (unitImage.getHeight(this) / 2));
+			    unitPosition.getiY() + (unitImage.getHeight(this) / 2));
+	/*
+        return new IntPoint(unitPosition.getiX() + labelHorizOffset,
+			    unitPosition.getiY() + (unitImage.getHeight(this) / 2));
+	*/
     }
 }

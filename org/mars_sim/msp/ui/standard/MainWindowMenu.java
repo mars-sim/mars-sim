@@ -59,10 +59,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	searchToolItem.addActionListener(this);
 	toolsMenu.add(searchToolItem);
 		
+	// Create options menu
+	JMenu optionsMenu = new JMenu("Options");
+	add(optionsMenu);
+		
 	// choose terrain image source from web
-	terrainFromWebItem = new JCheckBoxMenuItem("Terrain from web", false);
+	terrainFromWebItem = new JCheckBoxMenuItem("Terrain From Web", false);
 	terrainFromWebItem.addActionListener(this);
-	toolsMenu.add(terrainFromWebItem);
+	optionsMenu.add(terrainFromWebItem);
 		
 	// Create help menu
 	JMenu helpMenu = new JMenu("Help");
