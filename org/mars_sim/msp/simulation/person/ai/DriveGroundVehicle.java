@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.74 2002-02-09
+ * @version 2.74 2002-02-14
  * @author Scott Davis
  */
 
@@ -100,7 +100,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             return 0D;
         }
 
-
+	// Perform phases of task until time is up or task is done.
         while ((timeLeft > 0D) && !done) {
             if (phase.equals(DRIVING)) timeLeft = drivingPhase(timeLeft);
             else if (phase.equals(AVOID_OBSTACLE)) timeLeft = obstaclePhase(timeLeft);

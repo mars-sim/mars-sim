@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-16
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** The TravelToSettlement class is a mission to travel from one settlement 
- *  to another randomly selected one within range of an available vehicle.  
+ *  to another randomly selected one within range of an available rover.  
  *
  *  May also be constructed with predetermined destination. 
  */
@@ -29,15 +29,15 @@ class TravelToSettlement extends Mission implements Serializable {
     // Data members
     private Settlement startingSettlement;
     private Settlement destinationSettlement;
-    private Vehicle vehicle;
+    private Rover rover;
     private MarsClock startingTime;
     private double startingDistance;
     private Person lastDriver;
-    private boolean vehicleLoaded;
-    private boolean vehicleUnloaded;
+    private boolean roverLoaded;
+    private boolean roverUnloaded;
 
     // Tasks tracked
-    ReserveGroundVehicle reserveVehicle;
+    ReserveRover reserveRover;
 
     /** Constructs a TravelToSettlement object with destination settlement
      *  randomly determined.
@@ -49,15 +49,15 @@ class TravelToSettlement extends Mission implements Serializable {
         // Initialize data members
         startingSettlement = startingPerson.getSettlement();
         destinationSettlement = null;
-        vehicle = null;
+        rover = null;
         startingTime = null;
         startingDistance = 0D;
         lastDriver = null;
-        vehicleLoaded = false;
-        vehicleUnloaded = false;
+        roverLoaded = false;
+        roverUnloaded = false;
 
         // Initialize tracked tasks to null;
-        reserveVehicle = null;
+        reserveRover = null;
 
         // Set initial phase
         phase = EMBARK;
@@ -75,7 +75,7 @@ class TravelToSettlement extends Mission implements Serializable {
         if (person.getLocationSituation() == Person.INSETTLEMENT) {
             Settlement currentSettlement = person.getSettlement();
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) {
-                if (ReserveGroundVehicle.availableVehicles(currentSettlement)) result = 1D; 
+                if (ReserveRover.availableRovers(currentSettlement)) result = 1D; 
             }
         }
 
@@ -140,57 +140,57 @@ class TravelToSettlement extends Mission implements Serializable {
             }
         }
 
-        // Reserve a ground vehicle.
-        // If a ground vehicle cannot be reserved, end mission.
-        if (vehicle == null) {
-            if (reserveVehicle == null) {
-                reserveVehicle = new ReserveGroundVehicle(person, mars, destinationSettlement.getCoordinates());
-                person.getMind().getTaskManager().addTask(reserveVehicle);
+        // Reserve a rover.
+        // If a rover cannot be reserved, end mission.
+        if (rover == null) {
+            if (reserveRover == null) {
+                reserveRover = new ReserveRover(person, mars, destinationSettlement.getCoordinates());
+                person.getMind().getTaskManager().addTask(reserveRover);
                 return;
             }
             else { 
-                if (reserveVehicle.isDone()) {
-                    vehicle = reserveVehicle.getReservedVehicle();
-                    if (vehicle == null) {
+                if (reserveRover.isDone()) {
+                    rover = reserveRover.getReservedRover();
+                    if (rover == null) {
                         endMission(); 
                         return;
                     }
                     else {
-                        if (vehicle.getMaxPassengers() < missionCapacity) 
-                            setMissionCapacity(vehicle.getMaxPassengers());
+                        if (rover.getMaxPassengers() < missionCapacity) 
+                            setMissionCapacity(rover.getMaxPassengers());
                     }
                 }
                 else return;
             }
         }
                     
-        // Load the vehicle with fuel and supplies.
+        // Load the rover with fuel and supplies.
         // If there isn't enough supplies available, end mission.
-        if (isVehicleLoaded()) vehicleLoaded = true;
-        if (!vehicleLoaded) {
-            LoadVehicle loadVehicle = new LoadVehicle(person, mars, vehicle);
-            person.getMind().getTaskManager().addTask(loadVehicle);
-            if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), vehicle)) endMission(); 
+        if (isRoverLoaded()) roverLoaded = true;
+        if (!roverLoaded) {
+            LoadVehicle loadRover = new LoadVehicle(person, mars, rover);
+            person.getMind().getTaskManager().addTask(loadRover);
+            if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission(); 
             return;
         }
         
-        // Have person get in the vehicle
-        // When every person in mission is in vehicle, go to Driving phase.
+        // Have person get in the rover 
+        // When every person in mission is in rover, go to Driving phase.
         if (person.getLocationSituation() != Person.INVEHICLE) {
-            person.getMind().getTaskManager().addTask(new EnterVehicle(person, mars, vehicle));
-            return;
+	    startingSettlement.getInventory().takeUnit(person, rover);
         }
         
-        // If any people in mission haven't entered the vehicle, return.
-        for (int x=0; x < people.size(); x++) {
-            Person tempPerson = (Person) people.elementAt(x);
+        // If any people in mission haven't entered the rover, return.
+	PersonIterator i = people.iterator();
+	while (i.hasNext()) {
+            Person tempPerson = i.next();
             if (tempPerson.getLocationSituation() != Person.INVEHICLE) return;
         }
 
-        // Make final preperations on vehicle.
-	startingSettlement.getInventory().dropUnit(vehicle);
-        vehicle.setDestinationSettlement(destinationSettlement);
-        vehicle.setDestinationType("Settlement");
+        // Make final preperations on rover.
+	startingSettlement.getInventory().dropUnitOutside(rover);
+        rover.setDestinationSettlement(destinationSettlement);
+        rover.setDestinationType("Settlement");
 
         // Transition phase to Driving.
         phase = DRIVING;
@@ -204,24 +204,25 @@ class TravelToSettlement extends Mission implements Serializable {
         // Record starting time and distance to destination.
         if ((startingTime == null) || (startingDistance == 0D)) {
             startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
-            startingDistance = vehicle.getCoordinates().getDistance(destinationSettlement.getCoordinates());
+            startingDistance = rover.getCoordinates().getDistance(destinationSettlement.getCoordinates());
         }
 
-        // If vehicle has reached destination, transition to Disembarking phase.
+        // If rover has reached destination, transition to Disembarking phase.
         if (person.getCoordinates().equals(destinationSettlement.getCoordinates())) {
             phase = DISEMBARK;
             return;
         }
  
-        // If vehicle doesn't currently have a driver, start drive task for person.
+        // If rover doesn't currently have a driver, start drive task for person.
         // Can't be immediate last driver and can't be at night time.
-        if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) > 0D) {
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) > 0D) {
             if (person == lastDriver) {
                 lastDriver = null;
             }
             else {
-                if ((vehicle.getDriver() == null) && (vehicle.getStatus() == Vehicle.PARKED)) {
-                    DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, (GroundVehicle) vehicle, destinationSettlement.getCoordinates(), startingTime, startingDistance); 
+                if ((rover.getDriver() == null) && (rover.getStatus() == Rover.PARKED)) {
+                    DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, rover, 
+				    destinationSettlement.getCoordinates(), startingTime, startingDistance); 
                     person.getMind().getTaskManager().addTask(driveTask);
                     lastDriver = person;
                 }   
@@ -234,33 +235,32 @@ class TravelToSettlement extends Mission implements Serializable {
      */ 
     private void disembarkingPhase(Person person) {
         
-        // Make sure vehicle is parked at settlement.
-	destinationSettlement.getInventory().addUnit(vehicle);
-        vehicle.setDestinationSettlement(null);
-        vehicle.setDestinationType("None");
-        vehicle.setETA(null);
+        // Make sure rover is parked at settlement.
+	destinationSettlement.getInventory().addUnit(rover);
+        rover.setDestinationSettlement(null);
+        rover.setDestinationType("None");
+        rover.setETA(null);
 
-        // Have person exit vehicle if necessary. 
+        // Have person exit rover if necessary. 
         if (person.getLocationSituation() == Person.INVEHICLE) {
-            person.getMind().getTaskManager().addTask(new ExitVehicle(person, 
-                    mars, vehicle, destinationSettlement));
+	    rover.getInventory().takeUnit(person, destinationSettlement);
+        }
+
+        // Unload rover if necessary.
+        if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
+        if (!roverUnloaded) {
+            person.getMind().getTaskManager().addTask(new UnloadVehicle(person, mars, rover));
             return;
         }
 
-        // Unload vehicle if necessary.
-        if (UnloadVehicle.isFullyUnloaded(vehicle)) vehicleUnloaded = true;
-        if (!vehicleUnloaded) {
-            person.getMind().getTaskManager().addTask(new UnloadVehicle(person, mars, vehicle));
-            return;
-        }
-
-        // If everyone has disembarked and vehicle is unloaded, end mission.
+        // If everyone has disembarked and rover is unloaded, end mission.
         boolean allDisembarked = true;
-        for (int x=0; x < people.size(); x++) {
-            Person tempPerson = (Person) people.elementAt(x);
+	PersonIterator i = people.iterator();
+	while (i.hasNext()) {
+            Person tempPerson = i.next();
             if (tempPerson.getLocationSituation() == Person.INVEHICLE) allDisembarked = false;
         }
-        if (allDisembarked && UnloadVehicle.isFullyUnloaded(vehicle)) endMission(); 
+        if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) endMission(); 
     }
 
     /** Determines a random destination settlement other than current one.
@@ -312,13 +312,13 @@ class TravelToSettlement extends Mission implements Serializable {
         return result;
     }
 
-    /** Determine if a vehicle is fully loaded with fuel and supplies.
-     *  @return true if vehicle is fully loaded.
+    /** Determine if a rover is fully loaded with fuel and supplies.
+     *  @return true if rover is fully loaded.
      */
-    private boolean isVehicleLoaded() {
+    private boolean isRoverLoaded() {
         boolean result = true;
 
-	Inventory i = vehicle.getInventory();
+	Inventory i = rover.getInventory();
 
         if (i.getResourceRemainingCapacity(Inventory.FUEL) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Inventory.OXYGEN) > 0D) result = false;
@@ -332,11 +332,11 @@ class TravelToSettlement extends Mission implements Serializable {
     /** Finalizes the mission */
     protected void endMission() {
 
-        if (vehicle != null) vehicle.setReserved(false);
+        if (rover != null) rover.setReserved(false);
         else {
-            if ((reserveVehicle != null) && reserveVehicle.isDone()) {
-                vehicle = reserveVehicle.getReservedVehicle();
-                if (vehicle != null) vehicle.setReserved(false); 
+            if ((reserveRover != null) && reserveRover.isDone()) {
+                rover = reserveRover.getReservedRover();
+                if (rover != null) rover.setReserved(false); 
             }
         }
 

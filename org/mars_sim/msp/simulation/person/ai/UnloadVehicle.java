@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-02-16
  * @author Scott Davis
  */
 
@@ -19,9 +19,6 @@ class UnloadVehicle extends Task implements Serializable {
 
     // The amount of resources (kg) one person can unload per millisol.
     private static double UNLOAD_RATE = 10D;
-
-    // The amount of Oxygen that should be left
-    private static double MINIMUMOXYGEN = 50D;
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be unloaded.
@@ -59,10 +56,8 @@ class UnloadVehicle extends Task implements Serializable {
 	settlement.getInventory().addResource(Inventory.FUEL, fuelAmount);
         amountUnloading -= fuelAmount;
 
-        // Unload oxygen. Always keep a minimum amount in the tank to allow
-        // for slow people leaving vehicle
-	double oxygenAmount = vehicle.getInventory().getResourceMass(Inventory.OXYGEN) - MINIMUMOXYGEN;
-        if (oxygenAmount < 0D) oxygenAmount = 0D;
+        // Unload oxygen. 
+	double oxygenAmount = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
         if (oxygenAmount > amountUnloading) oxygenAmount = amountUnloading;
 	vehicle.getInventory().removeResource(Inventory.OXYGEN, oxygenAmount);
 	settlement.getInventory().addResource(Inventory.OXYGEN, oxygenAmount);
@@ -85,6 +80,7 @@ class UnloadVehicle extends Task implements Serializable {
         // Unload Rock Samples 
 	double rockAmount = vehicle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
         if (rockAmount > amountUnloading) rockAmount = amountUnloading;
+	if (rockAmount > 0D) System.out.println(person.getName() + " unloading " + rockAmount + " kg of rock samples from " + vehicle.getName());
 	vehicle.getInventory().removeResource(Inventory.ROCK_SAMPLES, rockAmount);
 	settlement.getInventory().addResource(Inventory.ROCK_SAMPLES, rockAmount);
         amountUnloading -= rockAmount;
@@ -103,7 +99,7 @@ class UnloadVehicle extends Task implements Serializable {
         boolean result = true;
 
         if (vehicle.getInventory().getResourceMass(Inventory.FUEL) != 0D) result = false;
-        if (vehicle.getInventory().getResourceMass(Inventory.OXYGEN) > MINIMUMOXYGEN) result = false;
+        if (vehicle.getInventory().getResourceMass(Inventory.OXYGEN) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Inventory.WATER) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Inventory.FOOD) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES) != 0D) result = false;

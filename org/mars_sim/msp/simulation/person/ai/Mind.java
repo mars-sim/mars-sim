@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-14
  * @author Scott Davis
  */
 
@@ -92,11 +92,11 @@ public class Mind implements Serializable {
      * be also aborted.
      */
     public void setInactive() {
+	taskManager.clearTask();
         if (hasActiveMission()) {
             mission.removePerson(person);
             mission = null;
         }
-        taskManager = null;
     }
 
     /** Sets the person's current mission.

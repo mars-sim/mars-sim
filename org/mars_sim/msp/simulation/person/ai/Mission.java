@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-13
  * @author Scott Davis
  */
 
@@ -21,7 +21,7 @@ public abstract class Mission implements Serializable {
 
     // Data members
     protected VirtualMars mars; // Virtual Mars
-    protected Vector people; // People in mission
+    protected PersonCollection people; // People in mission
     protected String name; // Name of mission
     protected MissionManager missionManager; // The simulation's mission manager
     protected boolean done; // True if mission is completed
@@ -37,7 +37,7 @@ public abstract class Mission implements Serializable {
         // Initialize data members
         this.name = name;
         this.missionManager = missionManager;
-        people = new Vector();
+        people = new PersonCollection();
         done = false;
         mars = missionManager.getMars();
         phase = "";
@@ -52,7 +52,7 @@ public abstract class Mission implements Serializable {
      */
     void addPerson(Person person) {
         if (!people.contains(person)) {
-            people.addElement(person);
+            people.add(person);
             // System.out.println(person.getName() + " added to mission: " + name);
         }
     }
@@ -62,7 +62,7 @@ public abstract class Mission implements Serializable {
      */
     protected void removePerson(Person person) {
         if (people.contains(person)) {
-            people.removeElement(person);
+            people.remove(person);
             if (people.size() == 0) done = true;
             // System.out.println(person.getName() + " removed from mission: " + name);
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 2.74 2002-02-09
+ * @version 2.74 2002-02-18
  * @author Scott Davis 
  */
 
@@ -97,15 +97,16 @@ public class Inventory implements Serializable {
      * @param the mass actually added in kg.
      */
     public double addResource(String resource, double mass) {
-        if (containedResources.containsKey(resource)) {
+        if (containedResources.containsKey(resource) && (mass > 0D)) {
 	    double remainingResourceCap = getResourceRemainingCapacity(resource);
 	    double remainingTotalCap = getTotalCapacity() - getTotalMass();
 	    
 	    double massLimit = Double.MAX_VALUE;
 	    if (remainingResourceCap < massLimit) massLimit = remainingResourceCap;
 	    if (remainingTotalCap < massLimit) massLimit = remainingTotalCap;
-	   
+	    
 	    double finalResourceMass = getResourceMass(resource);
+
 	    if (mass < massLimit) {
 		finalResourceMass += mass;
 	        containedResources.put(resource, new Double(finalResourceMass));
@@ -147,7 +148,11 @@ public class Inventory implements Serializable {
      * @return the remaining mass capacity in kg.
      */
     public double getResourceRemainingCapacity(String resource) {
-        return getResourceCapacity(resource) - getResourceMass(resource);
+        double resourceRemaining = getResourceCapacity(resource) 
+	        - getResourceMass(resource);
+	if (resourceRemaining < getRemainingCapacity()) 
+	    return resourceRemaining;
+	else return getRemainingCapacity();
     }
 
     /** 
@@ -156,6 +161,14 @@ public class Inventory implements Serializable {
      */
     public double getTotalCapacity() {
         return totalCapacity;
+    }
+
+    /**
+     * Gets the remaining mass capacity of the inventory.
+     * @return remaining mass capacity in kg.
+     */
+    public double getRemainingCapacity() {
+        return totalCapacity - getTotalMass();
     }
 
     /** 
