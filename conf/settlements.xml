@@ -7,7 +7,8 @@
             <BUILDING TYPE="Lander Hab" />
             <BUILDING TYPE="Inflatable Greenhouse" />
             <BUILDING TYPE="Nuclear Reactor" NUMBER="2" />
-            <BUILDING TYPE="ERV Base" NUMBER="2" />
+            <BUILDING TYPE="Starting ERV Base" />
+            <BUILDING TYPE="ERV Base" />
             <VEHICLE TYPE="Explorer Rover" />
         </SETTLEMENT_TEMPLATE>
     </SETTLEMENT_TEMPLATE_LIST>
@@ -22,6 +23,54 @@
             <LOCATION LATITUDE="random" LONGITUDE="random" />
         </SETTLEMENT>
     
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
+        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
+            <LOCATION LATITUDE="random" LONGITUDE="random" />
+        </SETTLEMENT>
+        
         <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
             <LOCATION LATITUDE="random" LONGITUDE="random" />
         </SETTLEMENT>

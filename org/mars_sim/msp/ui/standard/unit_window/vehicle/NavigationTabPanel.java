@@ -278,7 +278,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         else if (!destinationLocationCache.equals(vehicle.getDestination())) destinationChange = true;
         
         if (destinationChange) {
-            destinationLocationCache.setCoords(vehicle.getDestination());
+        	if (destinationLocationCache == null) 
+        		destinationLocationCache = new Coordinates(vehicle.getDestination());
+            else destinationLocationCache.setCoords(vehicle.getDestination());
             destinationLatitudeLabel.setText("Latitude: " + 
                 destinationLocationCache.getFormattedLatitudeString());
             destinationLongitudeLabel.setText("Longitude: " + 
@@ -343,5 +345,12 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      */
     public void actionPerformed(ActionEvent event) {
         JComponent source = (JComponent) event.getSource();
+        
+        // If center map button is pressed, center navigator tool
+        // at destination location.
+        if (source == centerMapButton) {
+        	if (destinationLocationCache != null) 
+        		desktop.centerMapGlobe(destinationLocationCache);
+        }
     }
 }

@@ -10,21 +10,29 @@ package org.mars_sim.msp.ui.standard.tool.navigator;
 import java.awt.Image;
 import org.mars_sim.msp.simulation.Coordinates;  
 
-/** The Map interface represents a map usable by the MapDisplay class */
+/** 
+ * The Map interface represents a map usable by the MapDisplay class.
+ */
 public interface Map {
     
-    /** creates a 2D map at a given center point 
-     *  @param newCenter the new center location
+    /** 
+     * Creates a 2D map at a given center point.
+     * 
+     * @param newCenter the new center location
      */
     public void drawMap(Coordinates newCenter);
     
-    /** determines if a requested map is complete 
-     *  @return true if requested map is complete
+    /** 
+     * Checks if a requested map is complete.
+     * 
+     * @return true if requested map is complete
      */
     public boolean isImageDone();
     
-    /** returns constructed map image 
-     *  @return constructed map image
+    /** 
+     * Gets the constructed map image.
+     * 
+     * @return constructed map image
      */
     public Image getMapImage();
 }

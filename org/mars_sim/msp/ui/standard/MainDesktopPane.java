@@ -18,10 +18,6 @@ import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.standard.unit_window.*;
-import org.mars_sim.msp.ui.standard.unit_window.equipment.EquipmentWindow;
-import org.mars_sim.msp.ui.standard.unit_window.person.PersonWindow;
-import org.mars_sim.msp.ui.standard.unit_window.vehicle.VehicleWindow;
-import org.mars_sim.msp.ui.standard.unit_window.structure.SettlementWindow;
 
 /** 
  * The MainDesktopPane class is the desktop part of the project's UI.
@@ -348,17 +344,29 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      
         // Update all unit windows.
         Iterator i1 = unitWindows.iterator();
-        while (i1.hasNext()) {
-            UnitWindow window = (UnitWindow) i1.next();
-            window.update();
+        try {
+        	while (i1.hasNext()) {
+            	UnitWindow window = (UnitWindow) i1.next();
+	            window.update();
+    	    }
+        }
+        catch (ConcurrentModificationException e) {
+        	// Concurrent modifications exceptions may occur as 
+        	// unit windows are opened.
         }
         
         // Update all tool windows.
         Iterator i2 = toolWindows.iterator();
-        while (i2.hasNext()) {
-            ToolWindow window = (ToolWindow) i2.next();
-            window.update();
+        try {
+        	while (i2.hasNext()) {
+            	ToolWindow window = (ToolWindow) i2.next();
+            	window.update();
+        	}
         }
+    	catch (ConcurrentModificationException e) {
+    		// Concurrent modifications exceptions may occur as
+    		// unit windows are opened.
+    	}
     }
     
     /**

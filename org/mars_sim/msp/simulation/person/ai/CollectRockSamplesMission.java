@@ -275,10 +275,17 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         boolean endPhase = false;
 	
+		Inventory inv = rover.getInventory();
+		double rocksCollected = inv.getResourceMass(Resource.ROCK_SAMPLES);
+    	double rockCapacity = inv.getResourceCapacity(Resource.ROCK_SAMPLES);
+	
         // Calculate samples collected in phase so far.
-        collectedSamples = rover.getInventory().getResourceMass(Resource.ROCK_SAMPLES) - collectingStart;
+        collectedSamples = rocksCollected - collectingStart;
 
         if (everyoneInRover()) {
+
+			// Check if rover capacity for rock samples is met, then end this phase.
+			if (collectedSamples >= rockCapacity) endPhase = true;
 
             // If collected samples are sufficient for this site, end the collecting phase.
             if (collectedSamples >= SITE_SAMPLE_AMOUNT) {
@@ -314,7 +321,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
                 if (CollectRockSamples.canCollectRockSamples(person, rover, mars)) {
                     CollectRockSamples collectRocks = new CollectRockSamples(person, rover, mars, 
                             SITE_SAMPLE_AMOUNT - collectedSamples, 
-                            rover.getInventory().getResourceMass(Resource.ROCK_SAMPLES));
+                            inv.getResourceMass(Resource.ROCK_SAMPLES));
                     assignTask(person, collectRocks);
                 }
             }
@@ -322,10 +329,15 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         else {
             // End collecting phase.
             siteIndex++;
-            if (hasDangerousMedicalProblems()) {
-                siteIndex = collectionSites.size();
-            }
-            if (siteIndex == collectionSites.size()) {
+            boolean driveHome = false;
+            
+            // If any of the crew has a dangerous medical problem, head home.
+            if (hasDangerousMedicalProblems()) driveHome = true;
+            
+            // If the rover is full of rock samples, head home.
+        	if (collectedSamples >= rockCapacity) driveHome = true;
+            
+            if (driveHome || (siteIndex == collectionSites.size())) {
                 phase = DRIVEHOME;
                 destination = startingSettlement.getCoordinates();
                 rover.setDestinationSettlement(startingSettlement);

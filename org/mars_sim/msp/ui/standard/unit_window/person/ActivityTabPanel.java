@@ -158,7 +158,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         Mission mission = null;
         if (!dead) {
             taskManager = mind.getTaskManager();
-            mission = mind.getMission();
+            if (mind.hasActiveMission()) mission = mind.getMission();
         }
         
         // Update task text area if necessary.
@@ -176,12 +176,14 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         // Update mission text area if necessary.
         if (dead) missionCache = deathInfo.getMission();
         else if (mission != null) missionCache = mission.getDescription();
+        else missionCache = "";
         if (!missionCache.equals(missionTextArea.getText())) 
             missionTextArea.setText(missionCache);
         
         // Update mission phase text area if necessary.
         if (dead) missionPhaseCache = deathInfo.getMissionPhase();
         else if (mission != null) missionPhaseCache = mission.getPhase();
+        else missionPhaseCache = "";
         if (!missionPhaseCache.equals(missionPhaseTextArea.getText())) 
             missionPhaseTextArea.setText(missionPhaseCache);
     }

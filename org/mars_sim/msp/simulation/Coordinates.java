@@ -27,8 +27,10 @@ public class Coordinates implements Serializable {
 
     // Half the map circumference in pixels.
     private static final double HALF_CIRCUM_PIXELS = 1440D;
-    // Half the diameter of Mars in Km.
-    private static final double HALF_DIAMETER_KM = 3393D;
+    
+    // Radius of Mars in Km.
+    public static final double MARS_RADIUS_KM = 3393D;
+    
     // 2 x PI
     private static final double TWO_PI = 2.0D * Math.PI;
 
@@ -138,8 +140,8 @@ public class Coordinates implements Serializable {
     public void setCoords(Coordinates newCoordinates) {
 
         // Update coordinates
-        phi = newCoordinates.phi;
-        theta = newCoordinates.theta;
+        phi = newCoordinates.getPhi();
+        theta = newCoordinates.getTheta();
 
         // Update trigonometric functions
         setTrigFunctions();
@@ -151,10 +153,9 @@ public class Coordinates implements Serializable {
      */
     public boolean equals(Object otherCoords) {
 
-        if (otherCoords instanceof Coordinates) {
-            // this temp usage is unnecessary...
-            Coordinates temp = (Coordinates) otherCoords;
-            if ((phi == temp.getPhi()) && (theta == temp.getTheta()))
+        if ((otherCoords != null) && (otherCoords instanceof Coordinates)) {
+        	Coordinates other = (Coordinates) otherCoords;
+            if ((phi == other.getPhi()) && (theta == other.getTheta()))
                 return true;
         }
 
@@ -184,7 +185,7 @@ public class Coordinates implements Serializable {
      */
     public double getDistance(Coordinates otherCoords) {
 
-        double rho = HALF_DIAMETER_KM;
+        double rho = MARS_RADIUS_KM;
         double angle = getAngle(otherCoords);
 
         return rho * angle;
@@ -269,13 +270,31 @@ public class Coordinates implements Serializable {
     static public IntPoint findRectPosition(Coordinates newCoords, Coordinates centerCoords,
             double rho, int half_map, int low_edge) {
 
-        double sin_offset = Math.sin(centerCoords.getPhi() + Math.PI);
-        double cos_offset = Math.cos(centerCoords.getPhi() + Math.PI);
-        double col_correction = (Math.PI / -2D) - centerCoords.getTheta();
-        double temp_col = newCoords.getTheta() + col_correction;
-        double temp_buff_x = rho * newCoords.getSinPhi();
+        return centerCoords.findRectPosition(newCoords.getPhi(), newCoords.getTheta(), rho, 
+            half_map, low_edge);
+    }
+    
+    /**
+     * Converts spherical coordinates to rectangular coordinates.
+     * Returns integer x and y display coordinates for spherical
+     * location.
+     *
+     * @param newPhi the new phi coordinate
+     * @param newTheta the new theta coordinate
+     * @param rho diameter of planet (in km)
+     * @param half_map half the map's width (in pixels)
+     * @param low_edge lower edge of map (in pixels)
+     * @return pixel offset value for map
+     */
+    public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int half_map, int low_edge) {
+        
+        double sin_offset = Math.sin(getPhi() + Math.PI);
+        double cos_offset = Math.cos(getPhi() + Math.PI);
+        double col_correction = (Math.PI / -2D) - getTheta();
+        double temp_col = newTheta + col_correction;
+        double temp_buff_x = rho * Math.sin(newPhi);
         double temp_buff_y1 = temp_buff_x * cos_offset;
-        double temp_buff_y2 = rho * newCoords.getCosPhi() * sin_offset;
+        double temp_buff_y2 = rho * Math.cos(newPhi) * sin_offset;
         int buff_x = (int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map;
         int buff_y = (int) Math.round((temp_buff_y1 * Math.sin(temp_col)) + temp_buff_y2) + half_map;
 
