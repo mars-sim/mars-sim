@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.ui.standard.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.standard.monitor.UnitTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -167,6 +168,14 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             }
         }
         return resultWindow;
+    }
+
+    /** Displays a new Unit model in the monitor window
+     *  @param model the new model to display
+     */
+    public void addModel(UnitTableModel model) {
+        ((MonitorWindow) getToolWindow("Monitor Tool")).
+                displayModel(model);
     }
 
     /** Centers the map and the globe on given coordinates
