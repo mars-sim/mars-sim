@@ -90,6 +90,6 @@
 	<landmark name="Viking Lander 1" longitude="48.2 W" latitude="22.7 N" />
 	<landmark name="Viking Lander 2" longitude="134.0 E" latitude="48.3 N" />
 	<landmark name="Mars Pathfinder" longitude="33.6 W" latitude="19.3 N" />
-	<landmark name="MER Spirit" longitude="175.5 E" latitude="14.6 S" />
-	<landmark name="MER Opportunity" longitude="5.5 W" latitude="1.9 S" />
+	<landmark name="Mars Exploration Rover Spirit" longitude="175.5 E" latitude="14.6 S" />
+	<landmark name="Mars Exploration Rover Opportunity" longitude="5.5 W" latitude="1.9 S" />
 </landmark-list>
