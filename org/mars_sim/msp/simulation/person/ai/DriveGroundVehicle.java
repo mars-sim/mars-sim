@@ -17,6 +17,36 @@ import java.io.Serializable;
  */
 class DriveGroundVehicle extends Task implements Serializable {
 
+    /**
+     * Driving phase.
+     */
+    public static final String DRIVING = "Driving";
+
+    /**
+     * Avoiding obstacle phase.
+     */
+    public final static String AVOID_OBSTACLE = "Avoiding Obstacle";
+
+    /**
+     * Back up  vehicle phase.
+     */
+    public final static String BACKUP = "Backup Vehicle";
+
+    /**
+     * Winch stuck vehicle phase.
+     */
+    public final static String WINCH_VEHICLE = "Winching Stuck Vehicle";
+
+    /**
+     * Vehicle status description
+     */
+    public static final String PARKED = "Parked";
+
+    /**
+     * Vehicle status description
+     */
+    public static final String MOVING = "Moving";
+    
     // Data members
     private GroundVehicle vehicle; // Vehicle person is driving.
     private Coordinates destination; // Destination coordinates.
@@ -41,7 +71,7 @@ class DriveGroundVehicle extends Task implements Serializable {
      */
     public DriveGroundVehicle(Person person, VirtualMars mars, GroundVehicle vehicle, 
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
-        super("Driving " + vehicle.getName(), person, mars);
+        super(DRIVING + vehicle.getName(), person, mars);
 
         // Set initial parameters
         this.vehicle = vehicle; 
@@ -50,7 +80,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         closestDistance = Double.MAX_VALUE;
         obstacleTimeCount = 0D;
         backingUpDistance = 0D;
-        phase = "Driving";
+        phase = DRIVING;
         vehicle.setDriver(person);
         backingUp = false;
         startTime = startTripTime;
@@ -74,24 +104,25 @@ class DriveGroundVehicle extends Task implements Serializable {
         // If night time, end task. 
         if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) == 0D) {
             // System.out.println(person.getName() + " stopped driving due to darkness.");
-            vehicle.setStatus("Parked");
+            vehicle.setStatus(PARKED);
             vehicle.setDriver(null);
             done = true;
             return 0D;
         } 
 
+
         while ((timeLeft > 0D) && !done) {
-            vehicle.setStatus("Moving");
-            if (phase.equals("Driving")) timeLeft = drivingPhase(timeLeft);
-            else if (phase.equals("Avoiding Obstacle")) timeLeft = obstaclePhase(timeLeft);
-            else if (phase.equals("Winching Stuck Vehicle")) timeLeft = winchingPhase(timeLeft);
+            vehicle.setStatus(MOVING);
+            if (phase.equals(DRIVING)) timeLeft = drivingPhase(timeLeft);
+            else if (phase.equals(AVOID_OBSTACLE)) timeLeft = obstaclePhase(timeLeft);
+            else if (phase.equals(WINCH_VEHICLE)) timeLeft = winchingPhase(timeLeft);
         }
    
         // Keep track of the duration of the task.
         timeCompleted += time;
         if (timeCompleted >= duration) {
             // System.out.println(person.getName() + " stopped driving " + vehicle.getName());
-            vehicle.setStatus("Parked");
+            vehicle.setStatus(PARKED);
             vehicle.setDriver(null);
             done = true;
         }
@@ -120,7 +151,7 @@ class DriveGroundVehicle extends Task implements Serializable {
 
         // If speed is less the 1 kph, change to avoiding obstacle phase.
         if (speed < 1D) {
-            phase = "Avoiding Obstacle";
+            phase = AVOID_OBSTACLE;
             return(time);
         }
  
@@ -152,7 +183,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         // vehicle should be considered stuck and needs to be winched free.
         if ((obstacleTimeCount >= 100D) && !vehicle.isStuck()) {
             vehicle.setStuck(true);
-            phase = "Winching Stuck Vehicle";
+            phase = WINCH_VEHICLE;
             obstacleTimeCount = 0D;
             backingUp = false;
             backingUpDistance = 0D;
@@ -221,7 +252,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         // If speed given the terrain would be better than 1kph, return to normal driving.
         // Otherwise, set speed to .2kph for winching speed.
         if (getSpeed(vehicle.getDirection()) > 1D) {
-            phase = "Driving";
+            phase = DRIVING;
             vehicle.setStuck(false);
             return(time);
         } 
@@ -266,7 +297,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         vehicle.addDistanceLastMaintenance(distanceTraveled);
 
         // If backing up, add distanceTraveled to backingUpDistance 
-        if (phase.equals("Backing Up")) backingUpDistance += distanceTraveled;
+        if (phase.equals(BACKUP)) backingUpDistance += distanceTraveled;
 
         double result = 0;
 
@@ -276,7 +307,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             distanceToDestination = 0D;
             vehicle.setDistanceToDestination(distanceToDestination);
             vehicle.setCoordinates(destination);
-            vehicle.setStatus("Parked");
+            vehicle.setStatus(PARKED);
             vehicle.setSpeed(0D);
             vehicle.setDriver(null);
             done = true;
@@ -337,7 +368,7 @@ class DriveGroundVehicle extends Task implements Serializable {
             if (getSpeed(resultDirection) > 1D) foundGoodPath = true;
         }
 
-        if (foundGoodPath) phase = "Driving";
+        if (foundGoodPath) phase = DRIVING;
         else backingUp = true; 
 
         return resultDirection;
@@ -416,11 +447,11 @@ class DriveGroundVehicle extends Task implements Serializable {
 
         // Modify by the current phase of the driving task.
         double phaseModifier = 0D;
-        if (phase.equals("Avoiding Obstacle")) {
+        if (phase.equals(AVOID_OBSTACLE)) {
             if (backingUp) phaseModifier = .2D;
             else phaseModifier = .1D;
         }
-        else if (phase.equals("Winching Stuck Vehicle")) phaseModifier = .3D;
+        else if (phase.equals(WINCH_VEHICLE)) phaseModifier = .3D;
 
         // Determine light condition modifier based on available sunlight
         double lightModifier = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
