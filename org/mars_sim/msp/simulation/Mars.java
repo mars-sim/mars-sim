@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.74 2002-03-17
+ * @version 2.74 2002-04-13
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation;
 
 import org.mars_sim.msp.simulation.person.ai.MissionManager;
 import org.mars_sim.msp.simulation.person.medical.MedicalManager;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
 import java.util.*;
 import java.io.*;
 
@@ -32,6 +33,7 @@ public class Mars implements Serializable {
     // Transient Data members
     private transient SurfaceFeatures surfaceFeatures; // Surface features
     private transient SimulationProperties properties; // The user-defined simulation properties
+    private transient MalfunctionFactory malfunctionFactory; // The malfunction factory
     private transient Thread clockThread;
 
     // Persistent Data members
@@ -79,6 +81,9 @@ public class Mars implements Serializable {
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
 
+        // Initialize malfunction factory
+	malfunctionFactory = new MalfunctionFactory();
+	
 	// Set state file
 	setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
     }
