@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.70 2000-09-01
+ * @version 2.70 2000-09-09
  * @author Scott Davis
  */
 
@@ -10,10 +10,10 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
-/** The MapDisplay class is the visual component for the surface map of
- *  Mars in the UI. It can show either the surface or topographical
- *  maps at a given point. It uses two Map objects to display the
- *  maps.
+/** The MapDisplay class is the visual component for the surface map
+ *  of Mars in the UI. It can show either the surface or topographical
+ *  maps at a given point. It maintains two Map objects; one for the
+ *  topographical map image, and one for the surface map image.
  *
  *  It will recenter the map on the location of a mouse click, or open
  *  a vehicle/settlement window if one of their icons is clicked.
@@ -199,7 +199,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 		    if (labels) {
 			g.setColor(u.getLabelColor(topo));
 			g.setFont(u.getLabelFont());
-			IntPoint labelLocation = getLabelLocation(rectLocation, u.getSurfIcon());
+			IntPoint labelLocation = getLabelLocation(imageLocation);
 			g.drawString(info.getName(), labelLocation.getiX(), labelLocation.getiY());
 		    }
 		}
