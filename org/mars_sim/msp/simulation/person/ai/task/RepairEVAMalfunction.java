@@ -9,16 +9,11 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.malfunction.Malfunction;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
 
 /**
  * The RepairEVAMalfunction class is a task to repair a malfunction requiring an EVA.
@@ -158,7 +153,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         double experience = time / 50D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
-        person.getSkillManager().addExperience("EVA Operations", experience);
+        person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
 
         return timeLeft;
     }
@@ -194,7 +189,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	    
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -220,7 +215,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         double experience = time / 50D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
-        person.getSkillManager().addExperience("Mechanic", experience);
+        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
 	
         // Check if there are no more malfunctions. 
         if (!hasEVAMalfunction(entity)) phase = ENTER_AIRLOCK;

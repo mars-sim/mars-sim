@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 
@@ -64,7 +64,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		double experience = time / 100D;
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
 		experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
-		person.getSkillManager().addExperience("EVA Operations", experience);
+		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
 	
 		return timeLeft;
 	}
@@ -115,7 +115,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		double samplesCollected = time * collectionRate;
 
 		// Modify collection rate by "Areology" skill.
-		int areologySkill = person.getSkillManager().getEffectiveSkillLevel("Areology");
+		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
 		if (areologySkill == 0) samplesCollected /= 2D;
 		if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
 
@@ -125,7 +125,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		double experience = time / 100D;
 		experience += experience *
 				(((double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude") - 50D) / 100D);
-		person.getSkillManager().addExperience("Areology", experience);
+		person.getSkillManager().addExperience(Skill.AREOLOGY, experience);
 	
 		// Collect rock samples.
 		if (samplesCollected <= sampleLimit) {

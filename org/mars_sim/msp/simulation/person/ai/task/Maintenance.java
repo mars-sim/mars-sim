@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 
@@ -143,7 +143,7 @@ public class Maintenance extends Task implements Serializable {
 	
         // Determine effective work time based on "Mechanic" skill.
         double workTime = timeLeft;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -156,7 +156,7 @@ public class Maintenance extends Task implements Serializable {
         double experience = timeLeft / 100D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
-        person.getSkillManager().addExperience("Mechanic", experience);
+        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
 
         // If maintenance is complete, task is done.
         if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
@@ -180,7 +180,7 @@ public class Maintenance extends Task implements Serializable {
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 

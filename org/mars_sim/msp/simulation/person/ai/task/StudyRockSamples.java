@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -14,7 +14,7 @@ import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
@@ -134,7 +134,7 @@ public class StudyRockSamples extends Task implements Serializable {
 	
         // Determine effective research time based on "Areology" skill.
         double researchTime = timeLeft;
-        int areologySkill = person.getSkillManager().getEffectiveSkillLevel("Areology");
+        int areologySkill = person.getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
         if (areologySkill == 0) researchTime /= 2D;
         if (areologySkill > 1) researchTime += researchTime * (.2D * areologySkill);
 
@@ -148,7 +148,7 @@ public class StudyRockSamples extends Task implements Serializable {
         double experience = timeLeft / 100D;
         experience += experience *
                 (((double) person.getNaturalAttributeManager().getAttribute("Academic Aptitude") - 50D) / 100D);
-        person.getSkillManager().addExperience("Areology", experience);
+        person.getSkillManager().addExperience(Skill.AREOLOGY, experience);
 
         // Keep track of the duration of this task.
         timeCompleted += time;
@@ -177,7 +177,7 @@ public class StudyRockSamples extends Task implements Serializable {
         double chance = .001D;
 
         // Areology skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel("Areology");
+        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 

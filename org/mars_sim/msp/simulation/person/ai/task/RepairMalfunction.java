@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-06
  * @author Scott Davis
  */
 
@@ -11,12 +11,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.malfunction.Malfunction;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
 
 /**
  * The RepairMalfunction class is a task to repair a malfunction.
@@ -104,7 +100,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = timeLeft;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -131,7 +127,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         double experience = timeLeft / 50D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
-        person.getSkillManager().addExperience("Mechanic", experience);
+        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
 
         // Check if there are no more malfunctions.
         if (!hasMalfunction(person)) endTask();
@@ -155,7 +151,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 

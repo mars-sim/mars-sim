@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 
@@ -9,7 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
@@ -178,7 +178,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         double newPoints = time / 100D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-        person.getSkillManager().addExperience("Driving", newPoints);
+        person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
 
         // Check for accident.
         if (!isDone()) checkForAccident(timeUsed);
@@ -242,7 +242,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         newPoints *= 4D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-        person.getSkillManager().addExperience("Driving", newPoints);
+        person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
 
         // Check for accident.
         if (!isDone()) checkForAccident(timeUsed);
@@ -281,7 +281,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         double newPoints = time / 100D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-        person.getSkillManager().addExperience("Driving", newPoints);
+        person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
 
         // Check for accident.
         if (!isDone()) checkForAccident(timeUsed);
@@ -397,7 +397,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         vehicle.setTerrainGrade(terrainGrade);
 
         // Get the driver's driving skill.
-        int skillLevel = person.getSkillManager().getEffectiveSkillLevel("Driving");
+        int skillLevel = person.getSkillManager().getEffectiveSkillLevel(Skill.DRIVING);
 
         // Get vehicle's terrain handling capability.
         double handling = vehicle.getTerrainHandlingCapability();
@@ -440,7 +440,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         double chance = .001D;
 
         // Driver skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel("Driving");
+        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.DRIVING);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 	

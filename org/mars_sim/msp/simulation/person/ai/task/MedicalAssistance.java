@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-05
  * @author Barry Evans
  */
 
@@ -12,7 +12,7 @@ import java.util.*;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
 import org.mars_sim.msp.simulation.person.medical.Treatment;
@@ -30,7 +30,6 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 public class MedicalAssistance extends Task implements Serializable {
 
 	private static final double STRESS_MODIFIER = 1D; // The stress modified per millisol.
-    private final static String MEDICAL = "Medical";
 
     private MedicalAid medical;    // The medical station the person is at.
     private double duration;       // How long for treatment
@@ -58,7 +57,7 @@ public class MedicalAssistance extends Task implements Serializable {
             problem = (HealthProblem) medical.getProblemsAwaitingTreatment().get(0);
 
             // Get the person's medical skill.
-            int skill = person.getSkillManager().getEffectiveSkillLevel(MEDICAL);
+            int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MEDICAL);
             
             // Treat medical problem.
             Treatment treatment = problem.getIllness().getRecoveryTreatment();
@@ -200,7 +199,7 @@ public class MedicalAssistance extends Task implements Serializable {
             int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             
-            person.getSkillManager().addExperience(MEDICAL, newPoints);
+            person.getSkillManager().addExperience(Skill.MEDICAL, newPoints);
 
             problem.startRecovery();
             endTask();
@@ -220,7 +219,7 @@ public class MedicalAssistance extends Task implements Serializable {
         double chance = .001D;
 
         // Medical skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel("Medical");
+        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MEDICAL);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-05
  * @author Scott Davis
  */
 
@@ -10,12 +10,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.Iterator;
 import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.malfunction.Malfunction;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
 
 /**
  * The RepairEmergencyMalfunction class is a task to repair an emergency malfunction.
@@ -92,7 +88,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = timeLeft;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -110,7 +106,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         double experience = timeLeft / 20D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
-        person.getSkillManager().addExperience("Mechanic", experience);
+        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
 
         return (timeLeft * (remainingWorkTime / workTime));
     }
