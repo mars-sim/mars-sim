@@ -31,19 +31,16 @@ public class TerrainElevation {
      *  @param topoSum the file URL for the topographical map sum
      */
     TerrainElevation(String topoData, String topoIndex, String topoSum) {
-        URL found = getClass().getClassLoader().getResource(topoData);
-        try {
-            map = new RandomAccessFile(found.getFile(), "r");
-        }
-        catch (IOException e) {
-        }
-
-        if (map == null) {
-            System.out.println("Could not open " + topoData);
-            System.out.println("  You can find it at: http://mars-sim.sourceforge.net/TopoDat.zip");
-            System.out.println("  Download and then unzip in the directory mars-sim/map_data");
-            System.exit(0);
-        }
+		try {
+			URL found = getClass().getClassLoader().getResource(topoData);
+			map = new RandomAccessFile(found.getFile(), "r");
+		}
+		catch (Exception e) {
+			System.out.println("Could not open " + topoData);
+			System.out.println("  You can find it at: http://mars-sim.sourceforge.net/TopoDat.zip");
+			System.out.println("  Download and then unzip in the directory mars-sim/map_data");
+			System.exit(0);
+		}
         loadArrays(topoIndex, topoSum);
     }
 

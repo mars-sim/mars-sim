@@ -33,7 +33,7 @@ public class SurfMarsMap extends CannedMarsMap {
             URL found = getClass().getClassLoader().getResource("map_data/SurfaceMarsMap.dat");
             map = new RandomAccessFile(found.getFile(), "r");
         }
-        catch (FileNotFoundException ex) {
+        catch (Exception e) {
             System.out.println("Could not find SurfaceMarsMap.dat");
             System.out.println("  You can find it at: http://mars-sim.sourceforge.net/SurfaceDat.zip");
             System.out.println("  Download and then unzip in the directory mars-sim/map_data");
