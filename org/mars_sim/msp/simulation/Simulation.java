@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-07-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -51,9 +51,7 @@ public class Simulation implements Serializable {
 		
 		try {
 			// Initialize transient data members.
-			simConfig = new SimulationConfig();
-			malfunctionFactory = new MalfunctionFactory(simConfig.getMalfunctionConfiguration());
-			eventManager = new HistoricalEventManager();
+			initializeTransientDate();
 		}
 		catch (Exception e) {
 			System.err.println("Simulation could not be created: " + e.getMessage());
@@ -77,6 +75,9 @@ public class Simulation implements Serializable {
 		simulation.stop();
 		
 		try {
+			// Initialize transient data members to reload configuration.
+			simulation.initializeTransientDate();
+			
 			// Initialize intransient data members.
 			simulation.initializeIntransientData();
 			simulation.start();
@@ -84,6 +85,16 @@ public class Simulation implements Serializable {
 		catch (Exception e) {
 			throw new Exception("New simulation could not be created: " + e.getMessage());
 		}
+	}
+	
+	/**
+	 * Initialize transient data in the simulation.
+	 * @throws Exception if transient data could not be loaded.
+	 */
+	private void initializeTransientDate() throws Exception {
+		simConfig = new SimulationConfig();
+		malfunctionFactory = new MalfunctionFactory(simConfig.getMalfunctionConfiguration());
+		eventManager = new HistoricalEventManager();
 	}
 	
 	/**

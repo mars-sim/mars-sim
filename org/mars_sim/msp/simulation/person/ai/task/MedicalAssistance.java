@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-07-30
  * @author Barry Evans
  */
 
@@ -99,7 +99,7 @@ public class MedicalAssistance extends Task implements Serializable {
         double result = 0D;
 
         // Get the local medical aids to use.
-        if (getNeedyMedicalAids(person).size() > 0) result = 50D;
+        if (getNeedyMedicalAids(person).size() > 0) result = 75D;
         
         // Crowding task modifier.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {

@@ -3,7 +3,7 @@
 <!-- List of crops settlers can grow in greenhouses. -->
 <!-- Growing time is number of sols between planting and harvest. -->
 <!-- Note: Growing times for crops are arbitrary - Scott -->
-<!-- Todo: Find more accurate growing times for crops in greenhouse. -->
+<!-- To do: Find more accurate growing times for crops in greenhouse. -->
 <crop-list>
     <crop name="strawberries" growing-time="70.0" />
     <crop name="lettuce" growing-time="76.0" />

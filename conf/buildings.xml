@@ -5,6 +5,7 @@
 
 	<!-- The lander hab is a general purpose habitat for 4 people. -->
 	<!-- It serves as a sort of jack-of-all-trades building. -->
+	<!-- name: the name of the building. -->
 	<building name="Lander Hab">
 		
 		<!-- The power requirements of the building. -->
@@ -41,7 +42,7 @@
 			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
 			<EVA airlock-capacity="4" eva-suits="8" />
 			
-			<!-- The building has recreation facilities (movies, games, etc.). -->
+			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation />
 			
 			<!-- The building has facilities for cooking and eating meals. -->

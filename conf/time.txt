@@ -1,0 +1,14 @@
+Time
+----
+
+Martian time is represented in the simulation by Shaun Moss's "Areosynchronous Calendar". 
+http://pweb.jps.net/~gangale3/moss/Virtual_Mars/Calendar.asp
+
+The Areosynchronous Calendar is a derivative of Tom Gangale's Darian Calendar.
+http://pweb.jps.net/!tgangale/mars/mst/darifrm.htm
+
+The week and month names are based on Frans Blok's "The Rotterdam System".
+http://www.geocities.com/fra_nl/rotmonth.html
+
+The time of the day is based on Bruce Mackenzie's "Metric Time for Mars".
+http://pweb.jps.net/~tgangale/mars/other/mcknzfrm.htm

@@ -26,25 +26,26 @@
 		<!-- List of entities that are susceptible to this malfunction. (min 1 entity required) -->
 		<entity-list>
 			<entity name="Life Support" />
+			<entity name="Rover" />
+			<entity name="EVA Suit" />
 		</entity-list>
 		
 		<!-- List of effects this malfunction can produce. (optional) -->
 		<effect-list>
 		
 			<!-- Resource effects have a change rate for a given resource in inventory. -->
-			<!-- Values: Change rate of resource in inventory. (kg/second) -->
+			<!-- Values: Change rate of resource in inventory. (kg/millisol) -->
 			<!-- See resources.txt -->
 			<effect type="resource" name="Oxygen" change-rate="-.1" />
 			
 			<!-- Life support effects have a change rate in life support provided. -->
-			<!-- Values: Change rate of life support. (kg/second) -->
+			<!-- Values: Change rate of life support. (kg/millisol) -->
 			<!-- See resources.txt -->
 			<effect type="life support" name="Oxygen" change-rate="-.01" />
 			
 			<!-- Life support effects have a change rate in life support provided. -->
-			<!-- Values: Change rate of life support. (kg/second) -->
-			<!-- See resources.txt -->
-			<effect type="life support" name="Air Pressure" change-rate=".01" />
+			<!-- Values: Change rate of life support. (atm/millisol) -->
+			<effect type="life support" name="Air Pressure" change-rate="-.01" />
 		</effect-list>
 		
 		<!-- List of medical injuries that can be immediately caused by this malfunction. (optional) -->
@@ -61,9 +62,9 @@
 		<repair-time value="100.0" />
 		<emergency-repair-time value="10.0" />
 		<entity-list>
-			<entity name="Inhabitable Building" />
-			<entity name="Vehicle" />
-			<entity name="EVA Suit" />
+			<entity name="Life Support" />
+			<entity name="Rover" />
+			<entity name="EVA Suit" />			
 		</entity-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
@@ -77,8 +78,8 @@
 		<repair-time value="200.0" />
 		<emergency-repair-time value="20.0" />
 		<entity-list>
-			<entity name="Inhabitable Building" />
-			<entity name="Vehicle" />
+			<entity name="Life Support" />
+			<entity name="Rover" />
 		</entity-list>
 		<effect-list>
 			<effect type="life support" name="Oxygen" change-rate="-.01" />
@@ -97,7 +98,7 @@
 		<repair-time value="400.0" />
 		<emergency-repair-time value="40.0" />
 		<entity-list>
-			<entity name="Inhabitable Building" />
+			<entity name="Life Support" />
 		</entity-list>
 		<effect-list>
 			<effect type="life support" name="Oxygen" change-rate="-.02" />
@@ -128,7 +129,6 @@
 		<eva-repair-time value="50.0" />
 		<entity-list>
 			<entity name="Rover" />
-			<entity name="ERV Base" />
 		</entity-list>
 		<effect-list>
 			<effect type="resource" name="Methane" change-rate="-.1" />
@@ -189,7 +189,6 @@
 			<entity name="Rover" />
 			<entity name="Living Accomodations" />
 			<entity name="Farming" />
-			<entity name="ERV Base" />
 			<entity name="EVA Suit" />
 		</entity-list>
 		<effects-list>
@@ -220,7 +219,6 @@
 		<entity-list>
 			<entity name="Living Accommodations" />
 			<entity name="Farming" />
-			<entity name="ERV Base" />
 			<entity name="Rover" />
 		</entity-list>
 		<effects-list>

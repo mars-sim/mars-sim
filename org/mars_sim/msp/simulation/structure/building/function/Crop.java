@@ -193,7 +193,7 @@ public class Crop implements Serializable {
                 if (newSol != currentSol) {
                     double maxDailyHarvest = maxHarvest / (cropType.getGrowingTime() / 1000D);
                     double dailyWorkCompleted = currentPhaseWorkCompleted / dailyTendingWorkRequired;
-                    actualHarvest = actualHarvest + (maxDailyHarvest * (dailyWorkCompleted - .5D));
+                    actualHarvest += (maxDailyHarvest * (dailyWorkCompleted - .5D));
                     currentSol = newSol;
                     currentPhaseWorkCompleted = 0D;
                 }
@@ -220,6 +220,12 @@ public class Crop implements Serializable {
                     
                 // Modifiy harvest amount.
                 actualHarvest += maxPeriodHarvest * harvestModifier;
+                
+                // Check if crop is dying if it's 20% along on it's growing time and its condition is less than 10% normal.
+                if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) && (getCondition() < .1D)) {
+                	phase = FINISHED;
+                	// System.out.println("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
+                }
             }
         }
     }
