@@ -14,17 +14,20 @@ public class Treatment implements java.io.Serializable {
 
     /**
      * Create a Treatment.
+     *
+     * @param name The unique name.
+     * @param skill Required Medical skill.
+     * @param earthDuration The duration of trwatment in earth hours.
      */
     public Treatment(String name, int skill, double earthDuration) {
         this.name = name;
         this.requiredSkill = skill;
         if (earthDuration < 0) {
-            // Negative duratino means, the treatment takes as long as recovery
-            // so make as large as possible
-            duration = Double.MAX_VALUE;
+            // Negative duration means, the treatment takes as long as recovery
+            duration = -1;
         }
         else {
-            duration = MarsClock.convertSecondsToMillisols(duration * 60D);
+            duration = MarsClock.convertSecondsToMillisols(earthDuration * 360D);
         }
     }
 
@@ -54,6 +57,13 @@ public class Treatment implements java.io.Serializable {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Return the Medical skill requried for this treatment
+     */
+    public int getSkill() {
+        return requiredSkill;
     }
 
     /**
