@@ -1,5 +1,5 @@
 //************************** TaskRelax **************************
-// Last Modified: 5/24/00
+// Last Modified: 7/25/00
 
 // The TaskRelax class is a simple task that implements resting and doing nothing for a while.
 // The duration of the task is by default chosen randomly, up to one day (approx).
@@ -38,6 +38,9 @@ class TaskRelax extends Task {
 	// This task simply waits until the set duration of the task is complete, then ends the task.
 	
 	public void doTask(int seconds) {
+	
+		super.doTask(seconds);
+		if (subTask != null) return;
 	
 		timeCompleted += seconds;
 		if (timeCompleted > duration) isDone = true;
