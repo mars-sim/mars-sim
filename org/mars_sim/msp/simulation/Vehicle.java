@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.71 2000-10-30
+ * @version 2.71 2000-11-15
  * @author Scott Davis
  */
 
@@ -28,6 +28,12 @@ public abstract class Vehicle extends Unit {
     private int maxPassengers = 0; // Maximum number of passengers the vehicle can carry.
     private double fuel = 0; // Current amount of fuel in the vehicle.
     private double fuelCapacity = 0; // Maximum amount of fuel the vehicle can carry.
+    private double oxygen = 0; // Curent amount of oxygen in the vehicle.
+    private double oxygenCapacity = 0; // Maximum amount of oxygen the vehicle can carry.
+    private double water = 0; // Curent amount of water in the vehicle.
+    private double waterCapacity = 0; // Maximum amount of water the vehicle can carry.
+    private double food = 0; // Curent amount of food in the vehicle.
+    private double foodCapacity = 0; // Maximum amount of food the vehicle can carry.
 
     private Coordinates destinationCoords; // Coordinates of the destination
     private Settlement destinationSettlement; // Destination settlement (it applicable)
@@ -158,6 +164,129 @@ public abstract class Vehicle extends Unit {
         fuelCapacity = capacity;
     }
 
+    /** Returns the current amount of oxygen in the vehicle. 
+     *  @return the vehicle's oxygen stores (in units)
+     */
+    public double getOxygen() {
+        return oxygen;
+    }
+
+    /** Adds oxygen to the vehicle. 
+     *  @param addedOxygen the amount of oxygen to be added (in units)
+     */
+    void addOxygen(double addedOxygen) {
+        fuel += addedOxygen;
+        if (oxygen > oxygenCapacity) {
+            oxygen = oxygenCapacity;
+        }
+    }
+
+    /** Consumes a portion of the vehicle's oxygen. 
+     *  @param consumedOxygen the amount of oxygen consumed (in units)
+     */
+    void consumeOxygen(double consumedOxygen) {
+        oxygen -= consumedOxygen;
+        if (oxygen < 0D) {
+            oxygen = 0D;
+        }
+    }
+
+    /** Returns the oxygen capacity of the vehicle. 
+     *  @return the vehicle's oxygen capacity
+     */
+    public double getOxygenCapacity() {
+        return oxygenCapacity;
+    }    
+    
+    /** Sets the oxygen capacity of the vehicle. 
+     *  @param capacity the vehicle's oxygen capacity
+     */
+    void setOxygenCapacity(double capacity) {
+        oxygenCapacity = capacity;
+    }
+    
+    /** Returns the current amount of water in the vehicle. 
+     *  @return the vehicle's water stores (in units)
+     */
+    public double getWater() {
+        return water;
+    }
+
+    /** Adds water to the vehicle. 
+     *  @param addedWater the amount of water to be added (in units)
+     */
+    void addWater(double addedWater) {
+        water += addedWater;
+        if (water > waterCapacity) {
+            water = waterCapacity;
+        }
+    }
+
+    /** Consumes a portion of the vehicle's water. 
+     *  @param consumedWater the amount of water consumed (in units)
+     */
+    void consumeWater(double consumedWater) {
+        water -= consumedWater;
+        if (water < 0D) {
+            water = 0D;
+        }
+    }
+
+    /** Returns the water capacity of the vehicle. 
+     *  @return the vehicle's water capacity
+     */
+    public double getWaterCapacity() {
+        return waterCapacity;
+    }
+    
+    /** Sets the water capacity of the vehicle. 
+     *  @param capacity the vehicle's water capacity
+     */
+    void setWaterCapacity(double capacity) {
+        waterCapacity = capacity;
+    }
+    
+    /** Returns the current amount of food in the vehicle. 
+     *  @return the vehicle's food stores (in units)
+     */
+    public double getFood() {
+        return food;
+    }
+
+    /** Adds food to the vehicle. 
+     *  @param addedFood the amount of food to be added (in units)
+     */
+    void addFood(double addedFood) {
+        food += addedFood;
+        if (food > foodCapacity) {
+            food = foodCapacity;
+        }
+    }
+
+    /** Consumes a portion of the vehicle's food. 
+     *  @param consumedFood the amount of food consumed (in units)
+     */
+    void consumeFood(double consumedFood) {
+        food -= consumedFood;
+        if (food < 0D) {
+            food = 0D;
+        }
+    }
+    
+    /** Returns the food capacity of the vehicle. 
+     *  @return the vehicle's food capacity
+     */
+    public double getFoodCapacity() {
+        return foodCapacity;
+    }
+    
+    /** Sets the food capacity of the vehicle. 
+     *  @param capacity the vehicle's food capacity
+     */
+    void setFoodCapacity(double capacity) {
+        foodCapacity = capacity;
+    }
+    
     /** Returns total distance traveled by vehicle (in km.) 
      *  @return the total distanced traveled by the vehicle (in km)
      */

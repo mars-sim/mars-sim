@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-10-30
+ * @version 2.71 2000-11-16
  * @author Scott Davis
  */
 
@@ -299,7 +299,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
      *  @return crew pane
      */
     protected JPanel setupCrewPane() {
-
+        
         // Prepare crew pane
         JPanel crewPane = new JPanel();
         crewPane.setBorder(
@@ -317,7 +317,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 vehicle.getMaxPassengers(), JLabel.CENTER);
         maxCrewLabel.setForeground(Color.black);
         maxCrewPane.add(maxCrewLabel, "Center");
-
+        
         // Prepare driver pane
         JPanel driverPane = new JPanel(new BorderLayout());
         driverPane.setBorder(
@@ -332,16 +332,17 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         // Prepare driver button pane
         driverButtonPane = new JPanel();
         driverPane.add(driverButtonPane, "Center");
-
+        
         // Prepare driver button
         driverButton = new JButton();
         driverButton.setMargin(new Insets(1, 1, 1, 1));
         driverButton.addActionListener(this);
+       
         if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
             driverButton.setText(vehicle.getDriver().getName());
             driverButtonPane.add(driverButton);
         }
-
+        
         // Prepare crew list pane
         JPanel crewListPane = new JPanel(new BorderLayout());
         crewListPane.setBorder(
@@ -364,7 +365,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 crewListModel.addElement(tempCrew.getUnit().getName());
             }
         }
-
+        
         // This prevents the list from sizing strange due to having no contents
         if (vehicle.getPassengerNum() <= 1) crewListModel.addElement(" ");
 
@@ -377,7 +378,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         JPanel crewScrollPane = new JPanel();
         crewScrollPane.add(crewScroll);
         crewListPane.add(crewScrollPane, "Center");
-
+        
         // Return crew pane
         return crewPane;
     }

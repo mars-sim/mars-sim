@@ -33,12 +33,12 @@ public class StoreroomFacility extends Facility {
         // Use Facility's constructor.
         super(manager, "Storerooms");
 
-        // Initialize random capacity for each good from 10 to 100.
-        foodStores = 10 + RandomUtil.getRandomInteger(90);
-        oxygenStores = 10 + RandomUtil.getRandomInteger(90);
-        waterStores = 10 + RandomUtil.getRandomInteger(90);
-        fuelStores = 10 + RandomUtil.getRandomInteger(90);
-        partsStores = 10 + RandomUtil.getRandomInteger(90);
+        // Initialize random amount for each good from 100 to 500.
+        foodStores = 100 + RandomUtil.getRandomInteger(400);
+        oxygenStores = 100 + RandomUtil.getRandomInteger(400);
+        waterStores = 100 + RandomUtil.getRandomInteger(400);
+        fuelStores = 100 + RandomUtil.getRandomInteger(400);
+        partsStores = 100 + RandomUtil.getRandomInteger(400);
     }
 
     /** Constructor for set storage values (used later when facilities can be built or upgraded.) 

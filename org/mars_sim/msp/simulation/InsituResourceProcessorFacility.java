@@ -31,9 +31,9 @@ public class InsituResourceProcessorFacility extends Facility {
         super(manager, "INSITU Resource Processor");
         
         // Initialize data members
-        oxygenUnits = 1D;
-        waterUnits = 1D;
-        fuelUnits = 1D;
+        oxygenUnits = 10D;
+        waterUnits = 10D;
+        fuelUnits = 10D;
     }
     
     /** Returns number of oxygen units that processor can generate in a day.

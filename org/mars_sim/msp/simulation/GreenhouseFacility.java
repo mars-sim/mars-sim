@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GreenhouseFacility.java
- * @version 2.71 2000-10-11
+ * @version 2.71 2000-11-15
  * @author Scott Davis
  */
 
@@ -37,12 +37,12 @@ public class GreenhouseFacility extends Facility {
         growthPeriodCompleted = 0F;
         phase = "Inactive";
 
-        // Randomly determine full harvest amount.
-        fullHarvestAmount = 10 + RandomUtil.getRandomInteger(20);
+        // Randomly determine full harvest amount. (200-300)
+        fullHarvestAmount = 200 + RandomUtil.getRandomInteger(100);
 
         // Determine work load based on full harvest amount.
-        // (80hrs for 10 food - 160hrs for 30 food)
-        workLoad = 40F + (4F * fullHarvestAmount);
+        // (80hrs for 200 food - 120hrs for 300 food)
+        workLoad = .4F * fullHarvestAmount;
     }
 
     /** Constructor for set values (used later when facilities can be built or upgraded.) 

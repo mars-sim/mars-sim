@@ -169,23 +169,23 @@ class TaskDrive extends Task {
 
         // Initialize subPhase if necessary
         if (subPhase.equals(""))
-            subPhase = new String("Determine Destination");
-
-        // Determine the destination
-        if (subPhase.equals("Determine Destination"))
-            seconds -= determineDestination(seconds);
+            subPhase = new String("Reserve Vehicle");
 
         // Reserve a vehicle
         if (subPhase.equals("Reserve Vehicle"))
             seconds -= reserveVehicle(seconds);
 
+        // Top off fuel and supplies
+        if (subPhase.equals("Prepare Vehicle"))
+            seconds -= prepareVehicle(seconds);    
+            
+        // Determine the destination
+        if (subPhase.equals("Determine Destination"))
+            seconds -= determineDestination(seconds);    
+            
         // Invite passengers
         if (subPhase.equals("Invite Passengers"))
             seconds -= invitePassengers(seconds);
-
-        // Stub
-        if (subPhase.equals("Prepare Vehicle"))
-            seconds -= prepareVehicle(seconds);
 
         // Get in vehicle
         if (subPhase.equals("Get In Vehicle"))
@@ -201,6 +201,118 @@ class TaskDrive extends Task {
         return seconds;
     }
 
+    /** Reserve a vehicle so that no one else can take it (10 seconds).
+     *  Get unreserved vehicle if at settlement.
+     *  If settlement has no free vehicles, end task.
+     *  If task already defines a vehicle, move on.
+     *  @param seconds the seconds to perform this sub-phase
+     *  @return the seconds remaining for task 
+     */
+    private int reserveVehicle(int seconds) {
+        if (vehicle != null) {
+            subPhase = new String("Prepare Vehicle");
+            return seconds;
+        } else if (doSubPhase(seconds, 10)) {
+            boolean foundVehicle = false;
+
+            if (embarkingSettlement != null) {
+                for (int x = 0; x < embarkingSettlement.getVehicleNum(); x++) {
+                    Vehicle tempVehicle = embarkingSettlement.getVehicle(x);
+                    MaintenanceGarageFacility garage = (MaintenanceGarageFacility)
+                            embarkingSettlement.getFacilityManager().getFacility("Maintenance Garage");
+                    if (!tempVehicle.isReserved() && !garage.vehicleInGarage(tempVehicle)) {
+                        if (!foundVehicle && GroundVehicle.class.isInstance(tempVehicle)) {
+                            vehicle = (GroundVehicle) tempVehicle;
+                            vehicle.setReserved(true);
+                            foundVehicle = true;
+                        }
+                    }
+                }
+
+                if (foundVehicle)
+                    subPhase = new String("Prepare Vehicle");
+                else
+                    isDone = true;
+            } else
+                isDone = true;
+            return 10;
+        } else
+            return seconds;
+    }
+
+    /** Vehicle preparation checks here. (100 seconds)
+     *  Fill vehicle with fuel and supplies from settlement 
+     *  storage if applicable.
+     *  @param seconds the seconds to perform this sub-phase
+     *  @return the seconds remaining for task
+     */
+    private int prepareVehicle(int seconds) {
+        if (doSubPhase(seconds, 100)) {
+
+            // Fill vehicle with fuel and supplies if at a settlement.
+            if (embarkingSettlement != null) {
+                StoreroomFacility stores =
+                        (StoreroomFacility) embarkingSettlement.getFacilityManager().getFacility("Storerooms");
+                boolean resourcesAvailable = true;
+                
+                // Top off fuel
+                double neededFuel = vehicle.getFuelCapacity() - vehicle.getFuel();
+                if (neededFuel < stores.getFuelStores()) {
+                    stores.removeFuel(neededFuel);
+                    vehicle.addFuel(neededFuel);
+                }
+                else {
+                    System.out.println(vehicle.getName() + " cannot acquire enough fuel from " + embarkingSettlement.getName());
+                    resourcesAvailable = false;
+                }
+                
+                // Top off oxygen
+                double neededOxygen = vehicle.getOxygenCapacity() - vehicle.getOxygen();
+                if (neededOxygen < stores.getOxygenStores()) {
+                    stores.removeOxygen(neededOxygen);
+                    vehicle.addOxygen(neededOxygen);
+                }
+                else {
+                    System.out.println(vehicle.getName() + " cannot acquire enough oxygen from " + embarkingSettlement.getName());
+                    resourcesAvailable = false;
+                }
+                
+                // Top off water
+                double neededWater = vehicle.getWaterCapacity() - vehicle.getWater();
+                if (neededWater < stores.getWaterStores()) {
+                    stores.removeWater(neededWater);
+                    vehicle.addWater(neededWater);
+                }
+                else {
+                    System.out.println(vehicle.getName() + " cannot acquire enough water from " + embarkingSettlement.getName());
+                    resourcesAvailable = false;
+                }
+                
+                // Top off food
+                double neededFood = vehicle.getFoodCapacity() - vehicle.getFood();
+                if (neededFood < stores.getFoodStores()) {
+                    stores.removeFood(neededFood);
+                    vehicle.addFood(neededFood);
+                }
+                else {
+                    System.out.println(vehicle.getName() + " cannot acquire enough food from " + embarkingSettlement.getName());
+                    resourcesAvailable = false;
+                }
+                
+                // If not enough resources in storage, cancel trip.
+                if (!resourcesAvailable) {
+                    vehicle.setReserved(false);
+                    isDone = true;
+                    return seconds;
+                }
+            }
+
+            subPhase = new String("Determine Destination");
+            return 100;
+        } else
+            return seconds;
+    }
+    
     /** Determine destination if there isn't already one. (0 seconds)
      *  Set the destination of the vehicle.
      *  This phase only chooses settlements as destinations.
@@ -233,61 +345,24 @@ class TaskDrive extends Task {
             }
         }
 
-        if (destinationType.equals("Settlement"))
+        if (destinationType.equals("Settlement")) {
             destinationCoordinates = destinationSettlement.getCoordinates();
+            vehicle.setDestinationSettlement(destinationSettlement);
+        }
+        else if (destinationType.equals("Coordinates")) {
+            vehicle.setDestination(destinationCoordinates);
+        }
 
-        subPhase = new String("Reserve Vehicle");
+        // Set description
+        if (destinationSettlement != null)
+            description = "Drive " + vehicle.getName() + " to " + destinationSettlement.getName() + ".";
+        else description = "Drive " + vehicle.getName() + " to location.";
+        
+        subPhase = new String("Invite Passengers");
 
         return 0;
     }
-
-    /** Reserve a vehicle so that no one else can take it (10 seconds).
-     *  Get unreserved vehicle if at settlement.
-     *  If settlement has no free vehicles, end task.
-     *  If task already defines a vehicle, move on.
-     *  @param seconds the seconds to perform this sub-phase
-     *  @return the seconds remaining for task 
-     */
-    private int reserveVehicle(int seconds) {
-        if (vehicle != null) {
-            subPhase = new String("Invite Passengers");
-            if (destinationType.equals("Settlement"))
-                vehicle.setDestinationSettlement(destinationSettlement);
-            else if (destinationType.equals("Coordinates"))
-                vehicle.setDestination(destinationCoordinates);
-            return seconds;
-        } else if (doSubPhase(seconds, 10)) {
-            boolean foundVehicle = false;
-
-            if (embarkingSettlement != null) {
-                for (int x = 0; x < embarkingSettlement.getVehicleNum(); x++) {
-                    Vehicle tempVehicle = embarkingSettlement.getVehicle(x);
-                    MaintenanceGarageFacility garage = (MaintenanceGarageFacility)
-                            embarkingSettlement.getFacilityManager().getFacility("Maintenance Garage");
-                    if (!tempVehicle.isReserved() && !garage.vehicleInGarage(tempVehicle)) {
-                        if (!foundVehicle && GroundVehicle.class.isInstance(tempVehicle)) {
-                            vehicle = (GroundVehicle) tempVehicle;
-                            vehicle.setReserved(true);
-                            if (destinationType.equals("Settlement"))
-                                vehicle.setDestinationSettlement(destinationSettlement);
-                            else if (destinationType.equals("Coordinates"))
-                                vehicle.setDestination(destinationCoordinates);
-                            foundVehicle = true;
-                        }
-                    }
-                }
-
-                if (foundVehicle)
-                    subPhase = new String("Invite Passengers");
-                else
-                    isDone = true;
-            } else
-                isDone = true;
-            return 10;
-        } else
-            return seconds;
-    }
-
+    
     /** Invite other people in current settlement to come along on the trip. (0 seconds)
      *  If not currently at a settlement, go to next phase;
      *  @param seconds the seconds to perform this sub-phase
@@ -312,42 +387,9 @@ class TaskDrive extends Task {
                 }
             }
         }
-        subPhase = new String("Prepare Vehicle");
+        subPhase = new String("Get In Vehicle");
 
         return 0;
-    }
-
-    /** Vehicle preparation checks here. (100 seconds)
-     *  Fill vehicle with fuel from settlement storage if applicable.
-     *  @param seconds the seconds to perform this sub-phase
-     *  @return the seconds remaining for task
-     */
-    private int prepareVehicle(int seconds) {
-        if (doSubPhase(seconds, 100)) {
-
-            // Fill vehicle with fuel if at a settlement.
-            if (embarkingSettlement != null) {
-                double neededFuel = vehicle.getFuelCapacity() - vehicle.getFuel();
-                StoreroomFacility stores =
-                        (StoreroomFacility) embarkingSettlement.getFacilityManager().getFacility("Storerooms");
-                double fuelAdded = neededFuel;
-                if (fuelAdded > stores.getFuelStores())
-                    fuelAdded = stores.getFuelStores();
-                stores.removeFuel(fuelAdded);
-                vehicle.addFuel(fuelAdded);
-            }
-
-            // Set description
-            if (destinationSettlement != null)
-                description =
-                        "Drive " + vehicle.getName() + " to " + destinationSettlement.getName() + ".";
-            else
-                description = "Drive " + vehicle.getName() + " to location.";
-
-            subPhase = new String("Get In Vehicle");
-            return 100;
-        } else
-            return seconds;
     }
 
     /** Get in vehicle. (100 seconds)
