@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.76 2004-08-06
+ * @version 2.77 2004-08-09
  * @author Scott Davis
  */
 
@@ -260,4 +260,15 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
     public Malfunctionable getEntity() {
         return entity;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+		int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
+		return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 2.76 2004-06-02
+ * @version 2.77 2004-08-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -137,5 +137,13 @@ public class Workout extends Task implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		return 0;	
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.76 2004-08-06
+ * @version 2.77 2004-08-09
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 
@@ -19,6 +20,9 @@ import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
  * tasks internally to accomplish things.
  */
 public abstract class Task implements Serializable, Comparable {
+	
+	private static final double JOB_STRESS_MODIFIER = .5D;
+	private static final double SKILL_STRESS_MODIFIER = .1D;
 
     // Data members
     protected String name;            // The name of the task
@@ -200,7 +204,27 @@ public abstract class Task implements Serializable, Comparable {
      */
     private void modifyStress(double time) {
     	PhysicalCondition condition = person.getPhysicalCondition();
-    	condition.setStress(condition.getStress() + stressModifier);
+    	
+    	double effectiveStressModifier = stressModifier;
+    	
+    	if (stressModifier > 0D) {
+    		
+    		// Reduce stress modifier if task is in person's current job description.
+    		Job job = person.getMind().getJob();
+    		if (job.isJobRelatedTask(this.getClass())) {
+    			// System.out.println("Job: " + job.getName() + " related to " + this.getName() + " task");
+    			effectiveStressModifier*= JOB_STRESS_MODIFIER;
+    		}
+    		
+    		// Reduce stress modifier for person's skill related to the task.
+    		int skill = this.getEffectiveSkillLevel();
+    		effectiveStressModifier-= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
+    		
+    		// If effective stress modifier < 0, set it to 0.
+    		if (effectiveStressModifier < 0D) effectiveStressModifier = 0D;
+    	}
+    	
+    	condition.setStress(condition.getStress() + effectiveStressModifier);
     }
     
     /**
@@ -239,4 +263,10 @@ public abstract class Task implements Serializable, Comparable {
 		
 		return modifier;
 	}
+	
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public abstract int getEffectiveSkillLevel();
 }

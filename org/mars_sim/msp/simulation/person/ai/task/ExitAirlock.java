@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-08-09
  * @author Scott Davis
  */
 
@@ -12,7 +12,7 @@ import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 
 /** 
  * The ExitAirlock class is a task for exiting a airlock from an EVA operation.
@@ -152,4 +152,13 @@ class ExitAirlock extends Task implements Serializable {
         
         return result;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		return manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+	}
 }

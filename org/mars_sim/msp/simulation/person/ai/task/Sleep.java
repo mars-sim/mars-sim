@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.76 2004-06-02
+ * @version 2.77 2004-08-09
  * @author Scott Davis
  */
 
@@ -67,7 +67,7 @@ class Sleep extends Task implements Serializable {
 
 		// Fatigue modifier.
 		double fatigue = person.getPhysicalCondition().getFatigue();
-        if (fatigue > 500D) result = (fatigue - 500D) / 10D;
+        if (fatigue > 500D) result = (fatigue - 500D) / 5D;
         
         // Dark outside modifier.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -168,5 +168,13 @@ class Sleep extends Task implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		return 0;	
 	}
 }

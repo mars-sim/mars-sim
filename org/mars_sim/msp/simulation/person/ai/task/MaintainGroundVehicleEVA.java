@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-08-09
  * @author Scott Davis
  */
 
@@ -317,4 +317,15 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         
         return result;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+		int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
+		return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-08-09
  * @author Scott Davis
  */
 
@@ -500,4 +500,13 @@ public class DriveGroundVehicle extends Task implements Serializable {
 
         return eta;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		return manager.getEffectiveSkillLevel(Skill.DRIVING);
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-08-09
  * @author Scott Davis
  */
 
@@ -202,5 +202,16 @@ public class CollectResources extends EVAOperation implements Serializable {
 		boolean medical = person.getPerformanceRating() < .5D;
 	
 		return (exitable && (sunlight || darkRegion) && !medical);
+	}
+	
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+		int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
+		return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
 	}
 }

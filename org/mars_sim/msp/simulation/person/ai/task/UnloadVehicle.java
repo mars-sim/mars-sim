@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.76 2004-06-01
+ * @version 2.77 2004-08-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -125,4 +125,12 @@ public class UnloadVehicle extends Task implements Serializable {
 
         return result;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		return 0;	
+	}
 }

@@ -96,4 +96,14 @@ public abstract class Job implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public abstract double getSettlementNeed(Settlement settlement);
+	
+	/**
+	 * Checks if a task is related to this job.
+	 * @param taskClass the task class
+	 * @return true if job related task.
+	 */
+	public boolean isJobRelatedTask(Class taskClass) {
+		if (jobTasks.contains(taskClass)) return true;
+		else return false;
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.76 2004-07-30
+ * @version 2.77 2004-08-09
  * @author Barry Evans
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Doctor;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
 import org.mars_sim.msp.simulation.person.medical.Treatment;
@@ -21,7 +22,7 @@ import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.vehicle.Medical;
 import org.mars_sim.msp.simulation.vehicle.SickBay;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
  * This class represents a task that requires a person to provide medical
@@ -99,7 +100,7 @@ public class MedicalAssistance extends Task implements Serializable {
         double result = 0D;
 
         // Get the local medical aids to use.
-        if (getNeedyMedicalAids(person).size() > 0) result = 75D;
+        if (getNeedyMedicalAids(person).size() > 0) result = 100D;
         
         // Crowding task modifier.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
@@ -115,8 +116,10 @@ public class MedicalAssistance extends Task implements Serializable {
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
         
-		// Job modifier.
-		result *= person.getMind().getJob().getStartTaskProbabilityModifier(MedicalAssistance.class);        
+		// Job modifier if there is a nearby doctor.
+		if (isThereADoctorInTheHouse(person)) {
+			result *= person.getMind().getJob().getStartTaskProbabilityModifier(MedicalAssistance.class);
+		}        
 
         return result;
     }
@@ -211,7 +214,6 @@ public class MedicalAssistance extends Task implements Serializable {
             // Modify experience by experience aptitude.
             int experienceAptitude = person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-            
             person.getSkillManager().addExperience(Skill.MEDICAL, newPoints);
 
             problem.startRecovery();
@@ -300,4 +302,44 @@ public class MedicalAssistance extends Task implements Serializable {
     	
     	return result;
     }
+    
+    /**
+     * Checks to see if there is a doctor in the settlement or vehicle the person is in.
+     * @param person the person checking.
+     * @return true if a doctor nearby.
+     */
+    private static boolean isThereADoctorInTheHouse(Person person) {
+    	boolean result = false;
+    	
+    	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+    		PersonIterator i = person.getSettlement().getInhabitants().iterator();
+    		while (i.hasNext()) {
+    			Person inhabitant = i.next();
+    			if ((inhabitant != person) && (inhabitant.getMind().getJob()) 
+    				instanceof Doctor) result = true;
+    		}
+    	}
+    	else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+    		if (person.getVehicle() instanceof Rover) {
+    			Rover rover = (Rover) person.getVehicle();
+    			PersonIterator i = rover.getCrew().iterator();
+    			while (i.hasNext()) {
+    				Person crewmember = i.next(); 
+    				if ((crewmember != person) && (crewmember.getMind().getJob() instanceof Doctor))
+    					result = true;
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		return manager.getEffectiveSkillLevel(Skill.MEDICAL);
+	}    
 }

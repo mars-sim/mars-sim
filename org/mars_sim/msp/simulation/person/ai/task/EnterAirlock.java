@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-08-09
  * @author Scott Davis
  */
 
@@ -10,13 +10,11 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
-// import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.vehicle.Airlockable;
@@ -187,4 +185,13 @@ class EnterAirlock extends Task implements Serializable {
     public static boolean canEnterAirlock(Person person, Airlock airlock) {
         return true;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		return manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+	}
 }

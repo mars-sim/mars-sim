@@ -58,4 +58,13 @@ public class ResearchBotany extends ResearchScience implements Serializable {
 
 		return result;
 	}
+	
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		return manager.getEffectiveSkillLevel(Skill.BOTANY);
+	}  
 }

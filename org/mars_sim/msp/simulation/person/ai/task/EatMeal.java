@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-08-09
  * @author Scott Davis
  */
 
@@ -127,4 +127,12 @@ class EatMeal extends Task implements Serializable {
         
         return result;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		return 0;
+	}
 }

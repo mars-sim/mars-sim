@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResearchMedicine.java
- * @version 2.76 2004-06-08
+ * @version 2.77 2004-08-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -58,4 +58,13 @@ public class ResearchMedicine extends ResearchScience implements Serializable {
 
 		return result;
 	}
+	
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		return manager.getEffectiveSkillLevel(Skill.MEDICAL);
+	}  
 }

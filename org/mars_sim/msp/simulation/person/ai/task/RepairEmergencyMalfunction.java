@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.76 2004-08-06
+ * @version 2.77 2004-08-09
  * @author Scott Davis
  */
 
@@ -141,4 +141,13 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
     public Malfunctionable getEntity() {
         return entity;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		return manager.getEffectiveSkillLevel(Skill.MECHANICS);
+	}  
 }

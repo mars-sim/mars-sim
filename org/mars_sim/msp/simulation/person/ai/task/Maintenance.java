@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.76 2004-06-08
+ * @version 2.76 2004-08-09
  * @author Scott Davis
  */
 
@@ -63,7 +63,7 @@ public class Maintenance extends Task implements Serializable {
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (!manager.hasMalfunction() && !(entity instanceof Vehicle)) {
                 double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
-                // if (entityProb > 50D) entityProb = 50D;
+                if (entityProb > 100D) entityProb = 100D;
                 result += entityProb;
             }   
         }
@@ -214,4 +214,13 @@ public class Maintenance extends Task implements Serializable {
     	
     	return result;
     }
+    
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getSkillManager();
+		return manager.getEffectiveSkillLevel(Skill.MECHANICS);
+	}    
 }
