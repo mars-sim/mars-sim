@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-01-20
+ * @version 2.75 2003-01-22
  * @author Scott Davis
  */
 
@@ -28,6 +28,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
     private FacilityManager facilityManager; // The facility manager for the settlement
     protected Airlock airlock; // the settlement's airlock.
     private BuildingManager buildingManager; // The settlement's building manager.
+    private PowerGrid powerGrid; // The settlement's building power grid.
 
     /** Constructs a Settlement object at a given location
      *  @param name the settlement's name
@@ -41,6 +42,9 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         // Initialize data members
         facilityManager = new FacilityManager(this, mars);
         buildingManager = new BuildingManager(this);
+       
+        // Initialize power grid
+        powerGrid = new PowerGrid(this);
        
         // Add scope string to malfunction manager.
         malfunctionManager.addScopeString("Settlement");
@@ -294,10 +298,12 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         return airlock;
     }
     
-    /** Perform time-related processes
-     *  @param time the amount of time passing (in millisols)
+    /** 
+     * Perform time-related processes
+     * @param time the amount of time passing (in millisols)
      */
     public void timePassing(double time) {
+        powerGrid.timePassing(time);
         facilityManager.timePassing(time);
         buildingManager.timePassing(time);
         airlock.timePassing(time);

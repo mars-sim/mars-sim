@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ERVBase.java
- * @version 2.75 2002-09-03
+ * @version 2.75 2003-01-22
  * @author Scott Davis
  */
  
@@ -13,6 +13,9 @@ package org.mars_sim.msp.simulation.structure.building;
  */
 public class ERVBase extends Building {
     
+    // True if ERVBase is processing chemicals.
+    private boolean processing;
+    
     /**
      * Constructor
      * @param manager - building manager.
@@ -20,5 +23,16 @@ public class ERVBase extends Building {
     public ERVBase(BuildingManager manager) {
         // Use Bulding constructor
         super("Earth Return Vehicle (ERV) Base", manager);
+        
+        processing = true;
+    }
+    
+    /**
+     * Gets the power this building currently uses.
+     * @return power in kW.
+     */
+    public double getPowerUsed() {
+        // ERVBase has its own power supply.
+        return 0D;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-01-15
+ * @version 2.75 2003-01-22
  * @author Scott Davis
  */
  
@@ -139,5 +139,28 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         for (int x=0; x < newCrops; x++) {
             crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this));
         }    
-    }   
+    }  
+    
+    /**
+     * Gets the power this building currently uses.
+     * @return power in kW.
+     */
+    public double getPowerUsed() {
+        
+        // Amount of power (kW) required for 1kg of harvest
+        // for a currently growing crop.
+        double powerGrowingMass = .1D;
+        
+        // Power (kW) required for normal operations.
+        double powerUsed = 10D;
+        
+        Iterator i = crops.iterator();
+        while (i.hasNext()) {
+            Crop crop = (Crop) i.next();
+            if (crop.getPhase().equals(Crop.GROWING))
+                powerUsed += powerGrowingMass * crop.getMaxHarvest();
+        }
+        
+        return powerUsed;
+    }
 }

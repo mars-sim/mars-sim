@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-01-15
+ * @version 2.75 2003-01-22
  * @author Scott Davis
  */
  
@@ -34,5 +34,13 @@ public class LanderHab extends InhabitableBuilding
      */
     public int getAccommodationCapacity() {
         return ACCOMMODATION_CAPACITY;
+    }
+    
+    /**
+     * Gets the power this building currently uses.
+     * @return power in kW.
+     */
+    public double getPowerUsed() {
+        return 20D;
     }
 }
