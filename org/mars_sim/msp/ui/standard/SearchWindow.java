@@ -1,6 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
+ * $Id: SearchWindow.java,v 1.6 2002-03-12 17:53:32 jpatokal Exp $
  * @version 2.73 2001-11-25
  * @author Scott Davis
  */
@@ -138,11 +139,11 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         pack();
     }
 
-    /** ActionListener method overridden */
-    public void actionPerformed(ActionEvent event) {
-
-        // Search for named unit when button is pushed.
-        // Retrieve info on all units of selected category.
+    /**
+     * Search for named unit when button is pushed.
+     * Retrieve info on all units of selected category.
+     */
+    private void search() {
         Iterator unitProxies = null;
         String category = (String) searchForSelect.getSelectedItem();
         if (category.equals("People"))
@@ -202,6 +203,11 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         statusLabel.setText(" ");
     }
 
+    /** ActionListener method overridden */
+    public void actionPerformed(ActionEvent event) {
+	search();
+    }
+
     // MouseListener methods overridden
     public void mouseClicked(MouseEvent event) {}
     public void mousePressed(MouseEvent event) {}
@@ -209,6 +215,11 @@ public class SearchWindow extends ToolWindow implements ActionListener,
     public void mouseExited(MouseEvent event) {}
 
     public void mouseReleased(MouseEvent event) {
+	if(event.getClickCount() == 2) {
+	    search();
+	    return;
+	}
+
         if (!lockUnitList) {
             // Change search text to selected name.
             String selectedUnitName = (String) unitList.getSelectedValue();
