@@ -114,6 +114,11 @@ public class PhysicalCondition implements Serializable {
             }
         }
 
+        // Has the person died ?
+        if (!isAlive) {
+            return false;
+        }
+
         // See if a random illness catches this Person out if nothing new
         if (!recalculate) {
             Complaint randomComplaint = medic.getProbableComplaint(person);
