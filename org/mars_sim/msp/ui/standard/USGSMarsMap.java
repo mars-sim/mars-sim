@@ -130,7 +130,7 @@ public class USGSMarsMap implements Map {
 	    urlBuff.append("&LON=" + lon);
             URL url = new URL(urlBuff.toString());
 
-            System.out.println(url);
+            // System.out.println(url);
 
             BufferedReader in =
                     new BufferedReader(new InputStreamReader(url.openStream()));
@@ -144,24 +144,24 @@ public class USGSMarsMap implements Map {
                 if (count == 6) result = line;
 		count++;
             }
-	    System.out.println(result);
+	    // System.out.println(result);
             int startIndex = result.indexOf("<TH COLSPAN=2 ROWSPAN=2><IMG SRC = \"") + 36;
             int endIndex = result.indexOf("\"", startIndex);
             imageSrc = result.substring(startIndex, endIndex);
             // </fragile>
 
             URL imageUrl = new URL(imageSrc);
-            System.out.println(imageUrl);
+            // System.out.println(imageUrl);
 
             return (Toolkit.getDefaultToolkit().getImage(imageUrl));
 	    // return null;
 
         } catch (MalformedURLException e) {
-            System.out.println("Weirdness" + e);
+            // System.out.println("Weirdness" + e);
         }
         catch (IOException e) {
             // should deal with the case where a user has no internet connection
-            System.out.println("Weirdness" + e);
+            // System.out.println("Weirdness" + e);
         }
 
         return null;
