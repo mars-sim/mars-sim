@@ -35,6 +35,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     private JButton goThere; // Location entry submit button
     private JCheckBox unitLabelCheckbox; // Show unit labels checkbox
     private JCheckBox dayNightCheckbox; // Day/night tracking checkbox
+    private JCheckBox usgsCheckbox; // Show USGS map mode
 
     /** Constructs a NavigatorWindow object 
      *  @param desktop the desktop pane
@@ -109,7 +110,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         mainPane.add(topoPane);
 
         // Prepare checkbox panel
-        JPanel checkBoxPane = new JPanel(new GridLayout(3, 1));
+        JPanel checkBoxPane = new JPanel(new GridLayout(4, 1));
         topoPane.add(checkBoxPane, "West");
 
         // Prepare show topographical map checkbox
@@ -128,6 +129,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         dayNightCheckbox.setSelected(false);
         dayNightCheckbox.addItemListener(this);
         checkBoxPane.add(dayNightCheckbox);
+
+        // Prepare USGS checkbox
+        usgsCheckbox = new JCheckBox("8x Surface Map Zoom");
+        usgsCheckbox.setSelected(false);
+        usgsCheckbox.addItemListener(this);
+        checkBoxPane.add(usgsCheckbox);
 
         // Prepare legend icon
         legend = new LegendDisplay();
@@ -217,11 +224,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
             globeNav.showTopo();
             map.showTopo();
             dayNightCheckbox.setEnabled(false);
+            usgsCheckbox.setEnabled(false);
         } else {
             legend.showMap();
             globeNav.showSurf();
             map.showSurf();
             dayNightCheckbox.setEnabled(true);
+            usgsCheckbox.setEnabled(true);
         }
     }
     
@@ -276,6 +285,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         else if (object == dayNightCheckbox) {
             globeNav.setDayNightTracking(dayNightCheckbox.isSelected());
             map.setDayNightTracking(dayNightCheckbox.isSelected());
+        }
+        else if (object == usgsCheckbox) {
+            setUSGSMap(usgsCheckbox.isSelected());
         }
     }
 

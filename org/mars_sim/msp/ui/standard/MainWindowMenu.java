@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.71 2000-10-07
+ * @version 2.72 2001-05-19
  * @author Scott Davis
  */
 
@@ -21,7 +21,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JMenuItem exitItem;                   // Exit menu item
     private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
-    private JCheckBoxMenuItem terrainFromWebItem; // origin of terrain image
     private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
 	
     /** Constructs a MainWindowMenu object 
@@ -59,15 +58,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	searchToolItem.addActionListener(this);
 	toolsMenu.add(searchToolItem);
 		
-	// Create options menu
-	JMenu optionsMenu = new JMenu("Options");
-	add(optionsMenu);
-		
-	// choose terrain image source from web
-	terrainFromWebItem = new JCheckBoxMenuItem("Use USGS Map", false);
-	terrainFromWebItem.addActionListener(this);
-	optionsMenu.add(terrainFromWebItem);
-		
 	// Create help menu
 	JMenu helpMenu = new JMenu("Help");
 	add(helpMenu);
@@ -99,11 +89,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	    } else {
 		mainWindow.closeToolWindow("Search Tool");
 	    }
-	}
-		
-	if (selectedItem == terrainFromWebItem) {
-	    NavigatorWindow nw = (NavigatorWindow)(mainWindow.getToolWindow("Mars Navigator"));
-	    nw.setUSGSMap(terrainFromWebItem.isSelected());
 	}
 		
 	if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
