@@ -24,6 +24,9 @@ import javax.swing.table.*;
 public class MonitorWindow extends ToolWindow
 implements Runnable {
 
+    final private static String ROWSUFFIX = " items";
+    final private static int STATUSHEIGHT = 17;
+
     /**
      * This class represents a single table displayed in the tabs section
      * of the monitor. Each one has a single UnitTableModel associated.
@@ -133,6 +136,7 @@ implements Runnable {
     // Data members
     private MainDesktopPane desktop; // Desktop pane
     private JTabbedPane tabsSection;
+    private JLabel rowCount;
     private ArrayList tabs = new ArrayList();
     private Thread updateThread;     // Model update thread
 
@@ -215,6 +219,18 @@ implements Runnable {
         tabsSection = new JTabbedPane();
         mainPane.add(tabsSection, "Center");
 
+        // Create a status panel
+        JPanel statusPanel = new JPanel();
+        statusPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
+        mainPane.add(statusPanel, "South");
+
+        // Status item for row
+        rowCount = new JLabel(ROWSUFFIX);
+        rowCount.setHorizontalAlignment(SwingConstants.LEFT);
+        rowCount.setBorder(BorderFactory.createLoweredBevelBorder());
+        statusPanel.add(rowCount);
+        Dimension dims = new Dimension(100, STATUSHEIGHT);
+        rowCount.setPreferredSize(dims);
 
         // Add the default table tabs
         UIProxyManager proxyManager = desktop.getProxyManager();
@@ -222,7 +238,15 @@ implements Runnable {
         addTab(new VehicleTableModel(proxyManager));
         addTab(new SettlementTableModel(proxyManager));
         tabsSection.setSelectedIndex(0);
+        tabChanged();
 
+        // Add a listener for the tab changes
+        tabsSection.addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        tabChanged();
+                    }
+                }
+                );
 
         // Have to define a starting size
         setSize(new Dimension(600, 300));
@@ -248,6 +272,14 @@ implements Runnable {
             selected = (TableTab)tabs.get(selectedIdx);
         }
         return selected;
+    }
+
+    private void tabChanged() {
+        TableTab selected = getSelected();
+        if (selected != null) {
+            rowCount.setText("  " + selected.getModel().getRowCount() +
+                             ROWSUFFIX);
+        }
     }
 
     /** Starts display update thread, and creates a new one if necessary */

@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import org.mars_sim.msp.simulation.VirtualMars;
 
 /** The MainWindowMenu class is the menu for the main window. 
  */
@@ -18,6 +19,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
     // Data members
     private MainWindow mainWindow;                // The main window frame
+    private JMenuItem loadItem;                   // Load menu item
+    private JMenuItem saveItem;                   // Save menu item
+    private JMenuItem saveAsItem;                 // Save As menu item
     private JMenuItem exitItem;                   // Exit menu item
     private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
@@ -38,6 +42,21 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	// Create file menu
 	JMenu fileMenu = new JMenu("File");
 	add(fileMenu);
+		
+	// Create load menu item
+	loadItem = new JMenuItem("Load");
+	loadItem.addActionListener(this);
+	fileMenu.add(loadItem);
+		
+	// Create save menu item
+	saveItem = new JMenuItem("Save");
+	saveItem.addActionListener(this);
+	fileMenu.add(saveItem);
+		
+	// Create save as menu item
+	saveAsItem = new JMenuItem("Save As");
+	saveAsItem.addActionListener(this);
+	fileMenu.add(saveAsItem);
 		
 	// Create exit menu item
 	exitItem = new JMenuItem("Exit");
@@ -80,8 +99,40 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	    JMenuItem selectedItem = (JMenuItem) event.getSource();
 		
 	    if (selectedItem == exitItem) {
-		    mainWindow.getVirtualMars().store();
-            System.exit(0);
+		    mainWindow.exitSimulation();
+		}
+		
+        try{ 
+	        if (selectedItem == saveItem) {
+		        mainWindow.getVirtualMars().store(null);
+		    }
+	        else if (selectedItem == saveAsItem) {
+                VirtualMars mars = mainWindow.getVirtualMars(); 
+                JFileChooser chooser = new JFileChooser(mars.DEFAULT_DIR);
+                chooser.setDialogTitle("Selected storage location");
+                int returnVal = chooser.showSaveDialog(mainWindow);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+		            mars.store(chooser.getSelectedFile());
+                }
+		    }
+	        else if (selectedItem == loadItem) {
+                JFileChooser chooser = new JFileChooser(VirtualMars.DEFAULT_DIR);
+                chooser.setDialogTitle("Selected stored simulation");
+                int returnVal = chooser.showOpenDialog(mainWindow);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    VirtualMars mars = VirtualMars.load(chooser.getSelectedFile());
+		            if (mars != null) {
+                        mainWindow.setVirtualMars(mars);
+                        mars.start();
+                    }
+                }
+		    }
+		
+		}
+		catch(Exception e) {
+            e.printStackTrace();
+		    JOptionPane.showMessageDialog(null, "Error saving state",
+                    e.toString(), JOptionPane.ERROR_MESSAGE);
 		}
 		
 	    if (selectedItem == marsNavigatorItem) {

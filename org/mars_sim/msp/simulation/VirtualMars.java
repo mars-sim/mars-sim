@@ -19,14 +19,23 @@ public class VirtualMars implements Serializable {
     /**
      * The name of the state file
      */
-    public final static String STATE_FILE = "marssim.ser";
+    public final static String DEFAULT_FILE = "default.sim";
+
+    /**
+     * The default directory to hold simulation files
+     */
+    public final static String DEFAULT_DIR = "saved";
+
     static final long serialVersionUID = -4771084409109255152L;
 
     // Transient Data members
     private transient OrbitInfo orbitInfo; // Orbital information
     private transient SurfaceFeatures surfaceFeatures; // Surface features
     private transient SimulationProperties properties; // The user-defined simulation properties
+    private transient Thread clockThread;
+
     // Persistent Data members
+    private String stateFile; // Name of file to load/store this simulation.
     private UnitManager units; // Unit controller
     private MissionManager missionManager; // Mission controller
     private MasterClock masterClock; // Master clock for virtual world
@@ -35,6 +44,7 @@ public class VirtualMars implements Serializable {
     public VirtualMars() {
 
         initialiseTransients();
+        setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
 
         // Initialize mission manager
         missionManager = new MissionManager(this);
@@ -44,68 +54,101 @@ public class VirtualMars implements Serializable {
 
         // Initialize and start master clock
         masterClock = new MasterClock(this);
-    } 
- 
-    private void initialiseTransients() { 
- 
+    }
+
+    private void initialiseTransients() {
+
         // Initialize simulation properties
         properties = new SimulationProperties();
 
         // Initialize orbit info
         orbitInfo = new OrbitInfo();
- 
+
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
     }
 
-    /** 
-     * This method starts the execution of the simulation 
-     */ 
-    public void start() { 
- 
-        Thread clockThread = new Thread(masterClock);
+    private void setStateFile(String fileName) {
+        stateFile = fileName;
+    }
+
+    /**
+     * This method starts the execution of the simulation
+     */
+    public void start() {
+
+        clockThread = new Thread(masterClock);
         clockThread.start();
     }
 
-    /** 
-     * This method loads a previous simulation state 
-     */ 
-    public static VirtualMars load() { 
- 
-        VirtualMars mars = null;
-        try {
-	        FileInputStream istream = new FileInputStream(STATE_FILE);
-	        ObjectInputStream p = new ObjectInputStream(istream);
+    /**
+     * Stop the simulation
+     */
+    public void stop() {
+        clockThread.stop();
+        clockThread = null;
+    }
 
-	        mars = (VirtualMars)p.readObject();
-	        istream.close();
+    /**
+     * This method loads a previous simulation state from the specified file.
+     * If no file is specified, then the default file name is used.
+     * @param fileName Filename of load file.
+     * @return A newly created Virtual Mars.
+     */
+    public static VirtualMars load(File fileName)
+                throws Exception {
+
+        if (fileName == null) {
+            fileName = new File(DEFAULT_DIR + '/' + DEFAULT_FILE);
         }
-        catch(Exception e) {
-            System.out.println("Problem reading state " + e);
+
+        FileInputStream istream;
+        try {
+	        istream = new FileInputStream(fileName);
+	    }
+        catch(FileNotFoundException e) {
+            return null;
         }
+
+        ObjectInputStream p = new ObjectInputStream(istream);
+
+        VirtualMars mars = (VirtualMars)p.readObject();
+        mars.setStateFile(fileName.getAbsolutePath());
+        istream.close();
+
         return mars;
     }
 
 
-    /** 
-     * This method stores the current simulation state 
-     */ 
-    public void store() { 
- 
-        try {
-	        FileOutputStream ostream = new FileOutputStream(STATE_FILE);
-	        ObjectOutputStream p = new ObjectOutputStream(ostream);
+    /**
+     * This method stores the current simulation state to a file. If the
+     * specified file is null, then the associated file name is used.
+     * @param fileName Name of the file to hold simulation data.
+     * @throws IOException Problem saving the file
+     */
+    public void store(File outFile)
+            throws IOException {
 
-	        p.writeObject(this);
-	        p.flush();
-	        ostream.close();
+        if (outFile == null) {
+            outFile = new File(stateFile);
         }
-        catch(Exception e) {
-            System.out.println("Problem writting state " + e);
+
+        // Make sure the parent directory is set
+        File parentFile = outFile.getParentFile();
+        if (!parentFile.exists()) {
+            parentFile.mkdirs();
         }
+
+        // Store the state
+        FileOutputStream ostream = new FileOutputStream(outFile);
+        ObjectOutputStream p = new ObjectOutputStream(ostream);
+
+        p.writeObject(this);
+        p.flush();
+        ostream.close();
     }
 
-    /** Clock pulse from master clock 
+    /** Clock pulse from master clock
      *  @param time amount of time passing (in millisols)
      */
     void clockPulse(double time) {
@@ -134,7 +177,7 @@ public class VirtualMars implements Serializable {
         return surfaceFeatures;
     }
 
-    /** Returns the unit manager 
+    /** Returns the unit manager
      *  @return unit manager for virtual Mars
      */
     public UnitManager getUnitManager() {
@@ -158,16 +201,16 @@ public class VirtualMars implements Serializable {
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
         // Store the persistent values in sequence
-        out.writeObject(units); 
+        out.writeObject(units);
         out.writeObject(missionManager);
         out.writeObject(masterClock);
     }
 
-    private void readObject(java.io.ObjectInputStream in) 
-            throws IOException, ClassNotFoundException { 
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
 
-        // Initialise the transient values 
-        initialiseTransients(); 
+        // Initialise the transient values
+        initialiseTransients();
 
         // Load in the persistent values in sequence
         units = (UnitManager)in.readObject();

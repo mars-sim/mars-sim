@@ -18,13 +18,25 @@ import java.awt.*;
 public class MarsProject {
 
     /** Constructs a MarsProject object */
-    public MarsProject() {
+    public MarsProject(String args[]) {
 
         // create a splash window
         SplashWindow splashWindow = new SplashWindow();
 
         // create virtual mars
-        VirtualMars mars = VirtualMars.load();
+        File loadFile = null;
+        if (args.length == 1) {
+            loadFile = new File(args[0]);
+        }
+        VirtualMars mars = null;
+        try {
+            mars = VirtualMars.load(loadFile);
+        }
+        catch (Exception e) {
+            System.out.println("Problem loading default " + e);
+        }
+
+        // If no loaded simulation, create a new one.
         if (mars == null) {
             System.out.println("Constructing new simulation");
             mars = new VirtualMars();
@@ -49,10 +61,10 @@ public class MarsProject {
         }
     }
 
-    /** The starting method for the application 
+    /** The starting method for the application
      *  @param args the command line arguments
      */
     public static void main(String args[]) {
-        MarsProject marsSim = new MarsProject();
+        MarsProject marsSim = new MarsProject(args);
     }
 }

@@ -31,13 +31,11 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
     /** Constructs a MainDesktopPane object 
      *  @param mainWindow the main outer window
-     *  @param proxyManager the unit UI proxy manager
      */
-    public MainDesktopPane(MainWindow mainWindow, UIProxyManager proxyManager) {
+    public MainDesktopPane(MainWindow mainWindow) {
 
         // Initialize data members
         this.mainWindow = mainWindow;
-        this.proxyManager = proxyManager;
         unitWindows = new Vector();
         toolWindows = new Vector();
 
@@ -49,9 +47,6 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Set component listener
         addComponentListener(this);
-
-        // Prepare tool windows
-        prepareToolWindows();
 
         // Create background logo label and make it partially transparent
         logoLabel = new JLabel(new ImageIcon("images/logo2.gif"), JLabel.LEFT);
@@ -130,6 +125,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
     /** Creates tool windows */
     private void prepareToolWindows() {
+
+        toolWindows.clear();
 
         // Prepare navigator window
         NavigatorWindow navWindow = new NavigatorWindow(this);
@@ -280,6 +277,30 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      *  @return the unit UI proxy manager
      */
     public UIProxyManager getProxyManager() { return proxyManager; }
+
+    /** set the unit UI proxy manager. 
+     *  @param manager The unit UI proxy manager
+     */
+    public void setProxyManager(UIProxyManager manager) {
+        proxyManager = manager;
+
+        // Dispose unit windows
+        for (int x = 0; x < unitWindows.size(); x++) {
+            UnitDialog tempWindow = (UnitDialog) unitWindows.elementAt(x);
+            tempWindow.dispose();
+            mainWindow.disposeUnitButton(tempWindow.getUnitProxy());
+        }
+        unitWindows.clear();
+
+        // Dispose tool windows
+        for (int x = 0; x < toolWindows.size(); x++) {
+            ToolWindow tempWindow = (ToolWindow) toolWindows.elementAt(x);
+            tempWindow.dispose();
+        }
+
+        // Prepare tool windows
+        prepareToolWindows();
+    }
     
     /** Returns a random location on the desktop for a given JInternalFrame 
      *  @param tempWindow an internal window

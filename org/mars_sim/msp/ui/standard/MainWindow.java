@@ -35,9 +35,6 @@ public class MainWindow extends JFrame implements WindowListener {
         // use JFrame constructor
         super("Mars Simulation Project (version " + VERSION + ")");
 
-        // Initialize data members
-        this.mars = mars;
-
  	    // Prepare custom Mars UI theme
 	    MetalLookAndFeel.setCurrentTheme(new MarsTheme());
     	try {
@@ -46,10 +43,6 @@ public class MainWindow extends JFrame implements WindowListener {
   	    catch(UnsupportedLookAndFeelException e) {
 		    System.out.println("MainWindow: " + e.toString());
 	    }
-
-        // Create unit UI proxy manager.
-        proxyManager = new UIProxyManager(mars.getUnitManager().getUnits());
-        
         // Prepare frame
         setVisible(false);
         addWindowListener(this);
@@ -70,7 +63,7 @@ public class MainWindow extends JFrame implements WindowListener {
         mainPane.add(unitToolbar, "South");
 
         // Prepare desktop
-        desktop = new MainDesktopPane(this, proxyManager);
+        desktop = new MainDesktopPane(this);
         mainPane.add(desktop, "Center");
 
         // Set frame size
@@ -87,8 +80,11 @@ public class MainWindow extends JFrame implements WindowListener {
         setLocation(((screen_size.width - frame_size.width) / 2),
                 ((screen_size.height - frame_size.height) / 2));
 
+        setVirtualMars(mars);
+
         // Show frame
         setVisible(true);
+
     }
 
     /** Returns the virtual Mars instance 
@@ -96,6 +92,24 @@ public class MainWindow extends JFrame implements WindowListener {
      */
     public VirtualMars getVirtualMars() {
         return mars;
+    }
+
+    /** Set the virtual Mars instance 
+     *  @param newMars The new virtual mars instance
+     */
+    public void setVirtualMars(VirtualMars newMars) {
+
+        if (mars != null) {
+            mars.stop();
+        }
+
+        // Initialize data members
+        mars = newMars;
+
+        // Create unit UI proxy manager.
+        proxyManager = new UIProxyManager(mars.getUnitManager().getUnits());
+        
+        desktop.setProxyManager(proxyManager);
     }
 
     /** Create a new unit button in toolbar 
@@ -158,9 +172,22 @@ public class MainWindow extends JFrame implements WindowListener {
 
     // WindowListener methods overridden
     public void windowClosing(WindowEvent event) {
-        mars.store();
+        exitSimulation(); 
+    }
+
+    /**
+     * Exit the simulation for running and exit.
+     */
+    public void exitSimulation() {
+        try { 
+            mars.store(null);
+        } 
+        catch(Exception e) { 
+            System.out.println("Problem saving simulation " + e); 
+        } 
         System.exit(0);
     }
+
     public void windowClosed(WindowEvent event) {}
     public void windowDeiconified(WindowEvent event) {}
     public void windowIconified(WindowEvent event) {}

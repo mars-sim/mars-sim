@@ -100,6 +100,11 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
      */
     public Unit getUnit() { return parentUnit; }
 
+    /** Returns the unitProxy for this window 
+     *  @return unitProxy
+     */
+    public UnitUIProxy getUnitProxy() { return unitUIProxy; }
+
     /** ActionListener method overriden */
     public void actionPerformed(ActionEvent event) {
         Object button = event.getSource();
