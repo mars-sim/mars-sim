@@ -30,6 +30,17 @@
 			<!-- A rover for collecting rock samples from remote sites
 			     and ice prospecting. -->
 			<vehicle type="Explorer Rover" number="1" />
+			
+			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
+			<resupply>
+				
+				<!-- Resupply mission from Earth. -->
+			    <!-- name: the resupply mission's name  -->
+				<!-- arrival-time: arrival time (in Sols) since the settlement is founded.  -->
+				<!-- (668 Sols = 1 Martian orbit) -->
+				<resupply-mission name="Mars Direct Base resupply 1" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="1336.0" />
+			</resupply>
 		</template>
 	
 		<template name="Mars Direct Base (phase 2)">
@@ -39,6 +50,9 @@
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="2" />
 			<vehicle type="Explorer Rover" number="2" />
+			<resupply>
+				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668" />
+			</resupply>
 		</template>
 		
 		<template name="Mars Direct Base (phase 3)">
@@ -52,6 +66,52 @@
 		</template>
 	
 	</settlement-template-list>
+	
+	<!-- Settlement resupply missions from Earth. -->
+	<resupply-list>
+	
+		<!-- Resupply mission from Earth. -->
+		<!-- name: the unique name of the resupply mission. -->
+		<resupply name="Mars Direct Base resupply 1">
+		
+			<!-- A new building for the settlement. -->
+			<!-- type: the type of building (see buildings.xml) -->
+			<!-- number: the number of these buildings provided. -->
+			<building type="Lander Hab" number="1" />
+			
+			<building type="Inflatable Greenhouse" number="1" />
+			<building type="Nuclear Reactor" number="1" />
+			<building type="Starting ERV Base" number="1" />
+			
+			<!-- A new vehicle for the settlement. -->
+			<!-- type: the type of vehicle (see vehicles.xml) -->
+			<!-- number: the number of these vehicles provided. -->
+			<vehicle type="Explorer Rover" number="1" />
+			
+			<!-- New immigrants from Earth. -->
+			<!-- number: the number of immigrants. -->
+			<person number="4" />
+			
+			<!-- Resource provided in this resupply. -->
+			<!-- type: the type of resource (see resources.txt) -->
+			<!-- amount: the amount of the resource (kg) -->
+			<resource type="hydrogen" amount="1000.0" />
+			<resource type="food" amount="500.0" />
+		</resupply>
+		
+		<resupply name="Mars Direct Base resupply 2">
+			<building type="Lander Hab" number="1" />
+			<building type="Inflatable Greenhouse" number="1" />
+			<building type="Nuclear Reactor" number="1" />
+			<building type="Starting ERV Base" number="1" />
+			<vehicle type="Explorer Rover" number="1" />
+			<vehicle type="Transport Rover" number="1" />
+			<person  number="4" />
+			<resource type="hydrogen" amount="1000.0" />
+			<resource type="food" amount="500.0" />
+		</resupply>
+	
+	</resupply-list>
 	
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
