@@ -1,5 +1,5 @@
 //************************ Virtual Mars ************************
-// Last Modified: 2/28/00
+// Last Modified: 5/30/00
 
 // The VirtualMars class represents virtual Mars in the simulation.  It contains
 // all the units, a master clock, and access to the topography data.
@@ -61,15 +61,6 @@ public class VirtualMars {
 	// Returns a unit dialog for a given unit ID
 	
 	public UnitDialog getDetailWindow(int unitID, MainDesktopPane desktop) { return units.getDetailWindow(unitID, desktop); };
-	/*
-	// Returns the coordinates of a named unit
-	
-	public Coordinates getUnitCoords(String unitName) { return units.getUnitCoords(unitName); }
-	
-	// Returns sorted array of unit names with a given category
-	
-	public String[] getSortedUnitNames(String unitCategory) { return units.getSortedUnitNames(unitCategory); }
-	*/
 }
 
 // Mars Simulation Project
