@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitMapLayer.java
- * @version 2.75 2003-09-17
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -25,13 +25,11 @@ class UnitMapLayer implements MapLayer {
 
     /**
      * Constructor
-     *
-     * @param mars the mars instance.
      * @param mapDisplay the mapDisplay to use.
      */
-    UnitMapLayer(Mars mars, MapDisplay mapDisplay) {
+    UnitMapLayer(MapDisplay mapDisplay) {
         
-        manager = mars.getUnitManager();
+        manager = Simulation.instance().getUnitManager();
         this.mapDisplay = mapDisplay;
     }
     

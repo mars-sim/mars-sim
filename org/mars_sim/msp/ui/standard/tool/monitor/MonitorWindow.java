@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.75 2004-01-17
+ * @version 2.76 2004-06-02
  * @author Barry Evans
  */
 
@@ -26,7 +26,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
@@ -161,12 +161,11 @@ public class MonitorWindow extends ToolWindow implements Runnable {
         rowCount.setPreferredSize(dims);
 
         // Add the default table tabs
-        Mars mars = desktop.getMainWindow().getMars();
-        UnitManager unitManager = mars.getUnitManager();
+        UnitManager unitManager = Simulation.instance().getUnitManager();
         addTab(new TableTab(new PersonTableModel(unitManager), true));
         addTab(new TableTab(new VehicleTableModel(unitManager), true));
         addTab(new TableTab(new SettlementTableModel(unitManager), true));
-        eventsTab = new EventTab(new EventTableModel(mars.getEventManager()));
+        eventsTab = new EventTab(new EventTableModel(Simulation.instance().getEventManager()));
         addTab(eventsTab);
 
         tabsSection.setSelectedIndex(0);

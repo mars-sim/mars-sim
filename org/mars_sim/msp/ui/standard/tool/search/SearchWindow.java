@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.75 2003-09-10
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -90,7 +90,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Create unit list
         unitListModel = new DefaultListModel();
-        UnitManager unitManager = desktop.getMainWindow().getMars().getUnitManager();
+        UnitManager unitManager = Simulation.instance().getUnitManager();
         PersonIterator people = unitManager.getPeople().sortByName().iterator();
         while (people.hasNext()) unitListModel.addElement(people.next());
         unitList = new JList(unitListModel);
@@ -140,7 +140,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
     private void search() {
         UnitCollection units = new UnitCollection();
         String category = (String) searchForSelect.getSelectedItem();
-        UnitManager unitManager = desktop.getMainWindow().getMars().getUnitManager();
+        UnitManager unitManager = Simulation.instance().getUnitManager();
         if (category.equals("People"))
             units.mergePeople(unitManager.getPeople().sortByName());
         if (category.equals("Settlements"))
@@ -178,7 +178,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         unitListModel.clear();
         UnitCollection units = new UnitCollection();
         String category = (String) searchForSelect.getSelectedItem();
-        UnitManager unitManager = desktop.getMainWindow().getMars().getUnitManager();
+        UnitManager unitManager = Simulation.instance().getUnitManager();
         if (category.equals("People"))
             units.mergePeople(unitManager.getPeople().sortByName());
         if (category.equals("Settlements"))

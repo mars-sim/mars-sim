@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTrailMapLayer.java
- * @version 2.75 2003-10-13
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -23,13 +23,11 @@ class VehicleTrailMapLayer implements MapLayer {
 
     /**
      * Constructor
-     *
-     * @param mars the mars instance.
      * @param mapDisplay the mapDisplay to use.
      */
-    VehicleTrailMapLayer(Mars mars, MapDisplay mapDisplay) {
+    VehicleTrailMapLayer(MapDisplay mapDisplay) {
         
-        manager = mars.getUnitManager();
+        manager = Simulation.instance().getUnitManager();
         this.mapDisplay = mapDisplay;
     }
     

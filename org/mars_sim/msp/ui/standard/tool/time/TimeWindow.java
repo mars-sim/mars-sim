@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.75 2004-04-11
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -46,7 +46,7 @@ public class TimeWindow extends ToolWindow {
         super("Time Tool", desktop);
 
         // Initialize data members
-        master = desktop.getMainWindow().getMars().getMasterClock();
+        master = Simulation.instance().getMasterClock();
         marsTime = master.getMarsClock();
         earthTime = master.getEarthClock();
         uptimer = master.getUpTimer(); 

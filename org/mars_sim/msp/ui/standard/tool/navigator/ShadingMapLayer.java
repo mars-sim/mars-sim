@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ShadingMapLayer.java
- * @version 2.75 2004-02-10
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.awt.image.MemoryImageSource;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.OrbitInfo;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SurfaceFeatures;
 
 /**
@@ -31,12 +32,11 @@ class ShadingMapLayer implements MapLayer {
 
     /**
      * Constructor
-     *
-     * @param mars the mars instance.
      * @param mapDisplay the mapDisplay to use.
      */
-    ShadingMapLayer(Mars mars, MapDisplay mapDisplay) {
+    ShadingMapLayer(MapDisplay mapDisplay) {
         
+        Mars mars = Simulation.instance().getMars();
         surfaceFeatures = mars.getSurfaceFeatures();
         orbitInfo = mars.getOrbitInfo();
         this.mapDisplay = mapDisplay;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LandmarkMapLayer.java
- * @version 2.76 2004-05-22
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.navigator;
@@ -38,12 +38,11 @@ class LandmarkMapLayer implements MapLayer {
 
 	/**
 	 * Constructor
-	 * @param mars the mars instance.
 	 * @param mapDisplay the mapDisplay to use.
 	 */
-	LandmarkMapLayer(Mars mars, MapDisplay mapDisplay) {
+	LandmarkMapLayer(MapDisplay mapDisplay) {
         
-		landmarks = mars.getSurfaceFeatures().getLandmarks();
+		landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
 		this.mapDisplay = mapDisplay;
 	}
 

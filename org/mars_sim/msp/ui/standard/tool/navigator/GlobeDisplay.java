@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.75 2004-02-10
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ import javax.swing.JComponent;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.IntPoint;
 import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo;
@@ -42,7 +43,6 @@ class GlobeDisplay extends JComponent implements Runnable {
     private int width; // width of the globe display component
     private int height; // height of the globe display component
     private boolean useUSGSMap;  // True if USGS surface map is to be used
-    private Mars mars; // Virtual mars object
     private int[] shadingArray; // Array used to generate day/night shading image
     private boolean showDayNightShading; // True if day/night shading is to be used
 
@@ -53,13 +53,11 @@ class GlobeDisplay extends JComponent implements Runnable {
      *
      * @param width the width of the globe display
      * @param height the height of the globe display
-     * @param mars the Mars instance
      */
-    public GlobeDisplay(int width, int height, Mars mars) {
+    public GlobeDisplay(int width, int height) {
 
         this.width = width;
         this.height = height;
-        this.mars = mars;
 
         // Set component size
         setPreferredSize(new Dimension(width, height));
@@ -173,6 +171,7 @@ class GlobeDisplay extends JComponent implements Runnable {
         int centerX = width / 2;
         int centerY = height / 2;
 
+		Mars mars = Simulation.instance().getMars();
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
 
         Coordinates location = new Coordinates(0D, 0D);
@@ -210,7 +209,7 @@ class GlobeDisplay extends JComponent implements Runnable {
      *  @param g graphics context
      */
     protected void drawUnits(Graphics g) {
-        UnitIterator i = mars.getUnitManager().getUnits().iterator();
+        UnitIterator i = Simulation.instance().getUnitManager().getUnits().iterator();
         while (i.hasNext()) {
             Unit unit = i.next();
             UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);

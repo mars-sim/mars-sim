@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.76 2004-05-22
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -20,7 +20,7 @@ import javax.swing.JComponent;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.IntPoint;
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo;
@@ -37,7 +37,6 @@ import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
 public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
     // Data members
-    private Mars mars; // Virtual Mars object
     private NavigatorWindow navWindow; // Navigator Tool Window
     private Map surfMap; // Surface image object
     private Map usgsMap; // USGS surface image object
@@ -80,15 +79,13 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      * @param navWindow the navigator window pane
      * @param width the width of the map shown
      * @param height the height of the map shown
-     * @param mars the Mars instance.
      */
-    public MapDisplay(NavigatorWindow navWindow, int width, int height, Mars mars) {
+    public MapDisplay(NavigatorWindow navWindow, int width, int height) {
 
         // Initialize data members
         this.navWindow = navWindow;
         this.width = width;
         this.height = height;
-        this.mars = mars;
 
         wait = false;
         recreate = true;
@@ -113,16 +110,16 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         addMouseListener(this);
 
         // Create surface objects for both real, USGS and topographical modes
-        topoMap = new TopoMarsMap(this, mars);
+        topoMap = new TopoMarsMap(this);
         surfMap = new SurfMarsMap(this);
         usgsMap = new USGSMarsMap(this);
         useUSGSMap = false;
         
         // Create map display layers.
-        unitLayer = new UnitMapLayer(mars, this);
-        vehicleTrailLayer = new VehicleTrailMapLayer(mars, this);
-        shadingLayer = new ShadingMapLayer(mars, this);
-        landmarkLayer = new LandmarkMapLayer(mars, this);
+        unitLayer = new UnitMapLayer(this);
+        vehicleTrailLayer = new VehicleTrailMapLayer(this);
+        shadingLayer = new ShadingMapLayer(this);
+        landmarkLayer = new LandmarkMapLayer(this);
 
         // initially show real surface map (versus topo map)
         showSurf();
@@ -385,7 +382,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 (double)(event.getY() - HALF_MAP - 1), rho);
         boolean unitsClicked = false;
 
-        UnitIterator i = mars.getUnitManager().getUnits().iterator();
+        UnitIterator i = Simulation.instance().getUnitManager().getUnits().iterator();
 
         // Open window if unit is clicked on the map
         while (i.hasNext()) {
@@ -417,6 +414,14 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     public void setDayNightTracking(boolean showDayNightShading) {
         this.showDayNightShading = showDayNightShading;
     }
+    
+    /**
+     * Is day/night tracking showing?
+     * @return true if day/night tracking.
+     */
+    public boolean isDayNightTracking() {
+    	return showDayNightShading;
+    }
 
     /**
      * Sets the vehicle trails flag.
@@ -426,12 +431,28 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         this.showVehicleTrails = showVehicleTrails;
     }
     
+    /**
+     * Are vehicle trails showing?
+     * @return true if vehicle trails are showing.
+     */
+ 	public boolean isVehicleTrails() {
+ 		return showVehicleTrails;
+ 	}
+    
 	/**
 	 * Sets the landmarks flag.
 	 * @param showLandmarks true if landmarks are to be displayed.
 	 */
     public void setLandmarks(boolean showLandmarks) {
     	this.showLandmarks = showLandmarks;
+    }
+    
+    /**
+     * Are landmarks showing?
+     * @return trow if landmarks are showing.
+     */
+    public boolean isLandmarks() {
+    	return showLandmarks;
     }
     
     /** 

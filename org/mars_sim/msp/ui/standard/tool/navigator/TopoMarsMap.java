@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * TopoMarsMap.java
- * @version 2.75 2003-12-20
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  * @author Greg Whelan
  */
 
 package org.mars_sim.msp.ui.standard.tool.navigator;
 
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Simulation;
 import javax.swing.JComponent;
 
 /**
@@ -17,11 +17,11 @@ import javax.swing.JComponent;
  */
 public class TopoMarsMap extends CannedMarsMap {
 
-    /** Constructs a TopoMarsMap object
-     *  @param displayArea the display component
-     *  @param mars the Mars instance.
+    /** 
+     * Constructor
+     * @param displayArea the display component
      */
-    public TopoMarsMap(JComponent displayArea, Mars mars) {
-    	super(displayArea, mars.getSurfaceFeatures().getSurfaceTerrain().getTopoColors());
+    public TopoMarsMap(JComponent displayArea) {
+    	super(displayArea, Simulation.instance().getMars().getSurfaceFeatures().getSurfaceTerrain().getTopoColors());
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.75 2004-04-09
+ * @version 2.76 2004-06-02
  * @author Scott Davis
  */
 
@@ -20,17 +20,16 @@ import org.mars_sim.msp.simulation.*;
  */
 public class MainWindow extends JFrame implements WindowListener {
 
-    private static final String VERSION = "2.75";
+    private static final String VERSION = "2.76";
 
     // Data members
-    private Mars mars;               // The virtual Mars
     private UnitToolBar unitToolbar; // The unit tool bar
     private MainDesktopPane desktop; // The main desktop
 
-    /** Constructs a MainWindow object
-     *  @param mars the virtual Mars
+    /** 
+     * Constructor
      */
-    public MainWindow(Mars mars) {
+    public MainWindow() {
 
         // use JFrame constructor
         super("Mars Simulation Project (version " + VERSION + ")");
@@ -42,10 +41,7 @@ public class MainWindow extends JFrame implements WindowListener {
         }
         catch(UnsupportedLookAndFeelException e) {
             System.out.println("MainWindow: " + e.toString());
-        }
-        
-        // Set the Mars instance.
-        setMars(mars);             
+        }           
         
         // Prepare frame
         setVisible(false);
@@ -87,26 +83,6 @@ public class MainWindow extends JFrame implements WindowListener {
         // Show frame
         setVisible(true);
     }
-
-    /** Returns the virtual Mars instance
-     *  @return the virutal Mars instance
-     */
-    public Mars getMars() {
-        return mars;
-    }
-
-    /** Set the virtual Mars instance
-     *  @param newMars The new virtual mars instance
-     */
-    public void setMars(Mars newMars) {
-
-        if (mars != null) {
-            mars.stop();
-        }
-
-        // Initialize data members
-        mars = newMars;
-    }
     
     /**
      * Gets the main desktop panel.
@@ -122,22 +98,19 @@ public class MainWindow extends JFrame implements WindowListener {
      */
     public void loadSimulation() {
         try {
-            JFileChooser chooser = new JFileChooser(Mars.DEFAULT_DIR);
+            JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
             chooser.setDialogTitle("Selected stored simulation");
             int returnVal = chooser.showOpenDialog(this);
             if(returnVal == JFileChooser.APPROVE_OPTION) {
-                Mars newmars = Mars.load(chooser.getSelectedFile());
-                if (newmars != null) {
-                    setMars(newmars);
-                    newmars.start();
-                    desktop.resetDesktop();
-                }
+            	Simulation simulation = Simulation.instance();
+            	simulation.loadSimulation(chooser.getSelectedFile());
+            	desktop.resetDesktop();
             }
         }
         catch(Exception e) {
             e.printStackTrace();
 	        JOptionPane.showMessageDialog(null, "Problem loading simulation",
-                        e.toString(), JOptionPane.ERROR_MESSAGE);
+				e.toString(), JOptionPane.ERROR_MESSAGE);
 	    }
     }
 
@@ -146,15 +119,8 @@ public class MainWindow extends JFrame implements WindowListener {
      * dialog.
      */
     public void newSimulation() {
-
-	    // Note: this should be shifted into a separate thread.
-	    
 	    try {
-			// NewDialog newDialog = new NewDialog(this);
-	    	Mars newmars = new Mars();
-	    	setMars(newmars);
-	    	newmars.start();
-	    	// newDialog.dispose();
+			Simulation.createNewSimulation();
            	desktop.resetDesktop();
 	    }
 	    catch (Exception e) {
@@ -172,7 +138,7 @@ public class MainWindow extends JFrame implements WindowListener {
         File fileLocn = null;
 
         if (!useDefault) {
-            JFileChooser chooser = new JFileChooser(Mars.DEFAULT_DIR);
+            JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
             chooser.setDialogTitle("Selected storage location");
             int returnVal = chooser.showSaveDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -185,12 +151,12 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // Attempt a save
         try {
-            mars.store(fileLocn);
+        	Simulation.instance().saveSimulation(fileLocn);
         }
         catch(Exception e) {
             e.printStackTrace();
 	        JOptionPane.showMessageDialog(null, "Problem saving simualtion",
-                        e.toString(), JOptionPane.ERROR_MESSAGE);
+				e.toString(), JOptionPane.ERROR_MESSAGE);
 	    }
     }
     
@@ -222,7 +188,9 @@ public class MainWindow extends JFrame implements WindowListener {
      */
     public void exitSimulation() {
         try {
-            mars.store(null);
+        	Simulation sim = Simulation.instance();
+        	sim.saveSimulation(null);
+        	sim.stop();
         }
         catch(Exception e) {
             System.out.println("Problem saving simulation " + e);
