@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StoreroomFacility.java
- * @version 2.71 2000-10-17
+ * @version 2.71 2000-11-13
  * @author Scott Davis
  */
 
@@ -21,6 +21,10 @@ public class StoreroomFacility extends Facility {
     private double fuelStores; // The settlement's stores of fuel (methane and other fuel).
     private double partsStores; // The settlement's stores of mechanical and electrical parts.
 
+    // Constant data members
+    private double MAX_UNITS_STORAGE = 1000D; /* The maximum number of units storeroom can hold
+                                                 for any given resource type. */
+    
     /** Constructor for random creation. 
      *  @param manager the storeroom's facility manager
      */
@@ -86,6 +90,7 @@ public class StoreroomFacility extends Facility {
      */
     void addFood(double amount) {
         foodStores += Math.abs(amount);
+        if (foodStores > MAX_UNITS_STORAGE) foodStores = MAX_UNITS_STORAGE;
     }
 
     /** Returns the amount of oxygen stored at the settlement. 
@@ -115,6 +120,7 @@ public class StoreroomFacility extends Facility {
      */
     void addOxygen(double amount) {
         oxygenStores += Math.abs(amount);
+        if (oxygenStores > MAX_UNITS_STORAGE) oxygenStores = MAX_UNITS_STORAGE;
     }
 
     /** Returns the amount of water stored at the settlement. 
@@ -144,6 +150,7 @@ public class StoreroomFacility extends Facility {
      */
     void addWater(double amount) {
         waterStores += Math.abs(amount);
+        if (waterStores > MAX_UNITS_STORAGE) waterStores = MAX_UNITS_STORAGE;
     }
 
     /** Returns the amount of fuel stored at the settlement. 
@@ -173,6 +180,7 @@ public class StoreroomFacility extends Facility {
      */
     void addFuel(double amount) {
         fuelStores += Math.abs(amount);
+        if (fuelStores > MAX_UNITS_STORAGE) fuelStores = MAX_UNITS_STORAGE;
     }
 
     /** Returns the amount of parts stored at the settlement. 
@@ -202,5 +210,6 @@ public class StoreroomFacility extends Facility {
      */
     void addParts(double amount) {
         partsStores += Math.abs(amount);
+        if (partsStores > MAX_UNITS_STORAGE) partsStores = MAX_UNITS_STORAGE;
     }
 }

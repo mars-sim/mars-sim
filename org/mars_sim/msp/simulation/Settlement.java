@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.71 2000-10-17
+ * @version 2.71 2000-11-13
  * @author Scott Davis
  */
 
@@ -12,7 +12,7 @@ import java.util.Vector;
 /** The Settlement class represents a settlement unit on virtual Mars.
  *  It contains information related to the state of the settlement.
  */
-public class Settlement extends Unit {
+public class Settlement extends Structure {
 
     // Data members
     Vector people; // List of inhabitants

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.71 2000-10-11
+ * @version 2.71 2000-11-13
  * @author Scott Davis
  */
 
@@ -35,6 +35,7 @@ public class FacilityManager {
         facilityList.addElement(new StoreroomFacility(this));
         facilityList.addElement(new MaintenanceGarageFacility(this));
         facilityList.addElement(new LaboratoryFacility(this));
+        facilityList.addElement(new InsituResourceProcessorFacility(this));
     }
 
     /** Returns the settlement the owns this facility manager. 
