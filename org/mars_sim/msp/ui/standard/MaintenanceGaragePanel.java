@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGaragePanel.java
- * @version 2.74 2002-05-13
+ * @version 2.75 2002-07-07
  * @author Scott Davis
  */
 
@@ -73,7 +73,7 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 		
 	// Prepare current total mass label
 	currentTotalMass = (int) maintenanceGarage.getCurrentVehicleMass();
-	massTotalLabel = new JLabel("Current Vehicle Mass: " + currentTotalMass + " kg.", JLabel.CENTER);
+	massTotalLabel = new JLabel("Current Vehicle Mass: " + (int) currentTotalMass + " kg.", JLabel.CENTER);
 	labelPane.add(massTotalLabel);
 		
 	// Prepare parked vehicles pane
@@ -151,7 +151,7 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 	// Change vehicle size total currently if necessary.
 	if (currentTotalMass != maintenanceGarage.getCurrentVehicleMass()) {
 	    currentTotalMass = maintenanceGarage.getCurrentVehicleMass();
-	    massTotalLabel.setText("Current Total Vehicle Size: " + (int) currentTotalMass);
+	    massTotalLabel.setText("Current Vehicle Mass: " + (int) currentTotalMass + " kg.");
 	}
 		
 	// Get vehicles in garage array.
