@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.75 2003-06-10
+ * @version 2.75 2003-06-24
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import org.mars_sim.msp.ui.standard.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.*;
 import org.mars_sim.msp.ui.standard.unit_window.person.PersonWindow;
+import org.mars_sim.msp.ui.standard.unit_window.vehicle.VehicleWindow;
 import org.mars_sim.msp.ui.standard.unit_window.structure.SettlementWindow;
 import java.awt.*;
 import java.awt.event.*;
@@ -290,6 +291,14 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         // Open a person unit window (remove later)
         if (unitUIProxy instanceof PersonUIProxy) {
             UnitWindow window = new PersonWindow(this, unitUIProxy);
+            add(window, 0);
+            window.pack();
+            window.setVisible(true);
+        }
+        
+        // Open a vehicle unit window (remove later)
+        if (unitUIProxy instanceof VehicleUIProxy) {
+            UnitWindow window = new VehicleWindow(this, unitUIProxy);
             add(window, 0);
             window.pack();
             window.setVisible(true);
