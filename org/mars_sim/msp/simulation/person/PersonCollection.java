@@ -8,11 +8,12 @@
 package org.mars_sim.msp.simulation.person;
 
 import java.util.*; // ArrayList
+import java.io.Serializable;
 
 /** The PersonCollection class is a homogenous collection of Person objects
  *  with useful methods for accessing and sorting them. 
  */
-public class PersonCollection {
+public class PersonCollection implements Serializable {
 
     // We can replace this with another type of collection if we need to.
     private ArrayList elements;  // Used internally to hold elements.

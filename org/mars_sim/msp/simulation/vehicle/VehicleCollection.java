@@ -8,11 +8,12 @@
 package org.mars_sim.msp.simulation.vehicle;
 
 import java.util.*; // ArrayList
+import java.io.Serializable;
 
 /** The VehicleCollection class is a homogenous collection of Vehicle objects
  *  with useful methods for accessing and sorting them. 
  */
-public class VehicleCollection {
+public class VehicleCollection implements Serializable {
 
     // We can replace this with another type of collection if we need to.
     private ArrayList elements;  // Used internally to hold elements.
