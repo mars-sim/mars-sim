@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.72 2001-06-24
+ * @version 2.73 2001-09-23
  * @author Scott Davis
  */
 
@@ -62,10 +62,8 @@ public class UnitManager {
 
             // Determine random location of settlement, adjust so it will be less likely to be near the poles
             double settlementPhi = (baseRand.nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
-            if (settlementPhi > Math.PI)
-                settlementPhi = Math.PI;
-            if (settlementPhi < 0D)
-                settlementPhi = 0D;
+            if (settlementPhi > Math.PI) settlementPhi = Math.PI;
+            if (settlementPhi < 0D) settlementPhi = 0D;
             double settlementTheta = (double)(Math.random() * (2D * Math.PI));
             Coordinates settlementCoords = new Coordinates(settlementPhi, settlementTheta);
             createSettlement(settlementNames[x], settlementCoords);
@@ -91,11 +89,25 @@ public class UnitManager {
         String[] roverNames = ConfFileProcessor.getRoverNames();
 
         for (int x = 0; x < roverNames.length; x++) {
-            // Create a rover
-            // Place rover initially at random settlement
-            int randSettlement = RandomUtil.getRandomInt(settlementsVector.size() - 1);
+
+            // Choose a settlement for rover.
+            Vector minRovers = new Vector();
+            int min = Integer.MAX_VALUE;
+            for (int y=0; y < settlementsVector.size(); y++) {
+                Settlement settlement = (Settlement) settlementsVector.elementAt(y);
+                int roverNum = settlement.getVehicleNum();
+                if (roverNum == min) minRovers.addElement(settlement);
+                else if (roverNum < min) {
+                    minRovers.removeAllElements();
+                    minRovers.addElement(settlement);
+                    min = roverNum;
+                }
+            }
+
+            // Create the rover
+            int randSettlement = RandomUtil.getRandomInt(minRovers.size() - 1);
             createVehicle(roverNames[x], new Coordinates(0D, 0D),
-                    (Settlement) settlementsVector.elementAt(randSettlement));
+                    (Settlement) minRovers.elementAt(randSettlement));
         }
     }
 
@@ -117,14 +129,32 @@ public class UnitManager {
         // Get people names from "people.conf"
         String[] peopleNames = ConfFileProcessor.getPersonNames();
 
-        // Create a Person opject for each name
+        // Create a Person object for each name
         // Choose a random settlement to put the person.
         for (int x = 0; x < peopleNames.length; x++) {
 
-            // Place person initially in random settlement
-            int randSettlement = RandomUtil.getRandomInt(settlementsVector.size() - 1);
+            Vector minPeople = new Vector();
+            int min = Integer.MAX_VALUE;
+            for (int y=0; y < settlementsVector.size(); y++) {
+                Settlement settlement = (Settlement) settlementsVector.elementAt(y);
+                int inhabitantNum = settlement.getPeopleNum();
+                FacilityManager facilityManager = settlement.getFacilityManager();
+                LivingQuartersFacility livingQuarters = (LivingQuartersFacility) facilityManager.getFacility("Living Quarters");
+                int maxCapacity = livingQuarters.getMaximumCapacity();
+                if (inhabitantNum < maxCapacity) {
+                    if (inhabitantNum == min) minPeople.addElement(settlement);
+                    else if (inhabitantNum < min) {
+                        minPeople.removeAllElements();
+                        minPeople.addElement(settlement);
+                        min = inhabitantNum;
+                    }
+                }
+            }
+
+            // Create the person 
+            int randSettlement = RandomUtil.getRandomInt(minPeople.size() - 1);
             createPerson(peopleNames[x], new Coordinates(0D, 0D),
-                    (Settlement) settlementsVector.elementAt(randSettlement));
+                    (Settlement) minPeople.elementAt(randSettlement));
         }
     }
 
