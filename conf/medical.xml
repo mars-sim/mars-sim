@@ -170,7 +170,8 @@
             <!-- Values: 0+ medical skill level -->
             <skill value="2" />
 
-            <!-- Required medical tech level of facility. (optional)-->
+            <!-- Required medical tech level of facility. (optional) -->
+            <!-- (see tech_level.txt) -->
             <!-- Values: 0 - 10 -->
             <medical-tech-level value="2" />
     

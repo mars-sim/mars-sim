@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.75 2004-04-01
+ * @version 2.75 2004-04-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -32,6 +32,7 @@ public class BuildingConfig {
 	private static final String COMMUNICATION = "communication";
 	private static final String EVA = "EVA";
 	private static final String AIRLOCK_CAPACITY = "airlock-capacity";
+	private static final String EVA_SUITS = "eva-suits";
 	private static final String RECREATION = "recreation";
 	private static final String DINING = "dining";
 	private static final String RESOURCE_PROCESSING = "resource-processing";
@@ -291,6 +292,19 @@ public class BuildingConfig {
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element evaElement = (Element) functionsElement.getElementsByTagName(EVA).item(0);
 		return Integer.parseInt(evaElement.getAttribute(AIRLOCK_CAPACITY));
+	}
+	
+	/**
+	 * Gets the number of EVA suits in the building.
+	 * @param buildingName the name of the building
+	 * @return number of EVA suits
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getEVASuitNumber(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element evaElement = (Element) functionsElement.getElementsByTagName(EVA).item(0);
+		return Integer.parseInt(evaElement.getAttribute(EVA_SUITS));
 	}
 	
 	/**

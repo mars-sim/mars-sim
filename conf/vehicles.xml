@@ -63,12 +63,12 @@
 		<eva-suits value="4" />
 
 		<!-- Sickbay -->
-		<!-- Medical tech level of sickbay - default: 1 -->
+		<!-- Medical tech level of sickbay (see tech_level.txt) - default: 1 -->
 		<!-- Number of beds in sickbay - default: 1 -->
 		<sickbay tech-level="1" beds="1" />
 
 		<!-- Lab -->
-		<!-- Science tech level of lab - default: 1 -->
+		<!-- Science tech level of lab (see tech_level.txt) - default: 1 -->
 		<lab tech-level="1">
 			<!-- Science tech speciality -->
 			<tech-speciality value="Aerology" />	

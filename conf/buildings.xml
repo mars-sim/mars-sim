@@ -38,7 +38,7 @@
 		
 			<!-- The building has an airlock and changing room for EVA operations. -->
 			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
-			<EVA airlock-capacity="4" />
+			<EVA airlock-capacity="4" eva-suits="8" />
 			
 			<!-- The building has recreation facilities (movies, games, etc.). -->
 			<recreation />
