@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.75 04-03-24
+ * @version 2.76 04-05-17
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.ReserveRover;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -26,12 +26,15 @@ public class Exploration extends CollectResourcesMission {
 	
 	//	Number of collection sites.
 	private static final int NUM_SITES = 8;
+	
+	// Minimum number of people to do mission.
+	private final static int MIN_PEOPLE = 2;
 
 	public Exploration(MissionManager missionManager, Person startingPerson) {
 		
 		// Use CollectResourcesMission constructor.
 		super("Exploration", missionManager, startingPerson, Resource.ROCK_SAMPLES, 
-			SITE_GOAL, COLLECTION_RATE, NUM_SITES);
+			SITE_GOAL, COLLECTION_RATE, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/** 
@@ -46,17 +49,26 @@ public class Exploration extends CollectResourcesMission {
 
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Settlement settlement = person.getSettlement();
-            
-			boolean darkArea = mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates());
 	    
-			boolean reservableRover = ReserveRover.availableRovers(ReserveRover.EXPLORER_ROVER, settlement);
+			boolean reservableRover = ReserveRover.availableRovers(Resource.ROCK_SAMPLES, SITE_GOAL, settlement);
 
 			double rocks = settlement.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
 			boolean enoughRockSamples = (rocks >= 500D);
 
-			boolean minSettlementPop = (settlement.getCurrentPopulationNum() == 1);
+			// At least one person left to hold down the fort.
+			boolean remainingInhabitant = false;
+			PersonIterator i = settlement.getInhabitants().iterator();
+			while (i.hasNext()) {
+				Person inhabitant = i.next();
+				if (!inhabitant.getMind().hasActiveMission() && (inhabitant != person)) 
+					remainingInhabitant = true;
+			}
 	    
-			if (!darkArea && reservableRover && !enoughRockSamples && !minSettlementPop) result = 5D;
+			if (reservableRover && !enoughRockSamples && remainingInhabitant) result = 5D;
+			
+			// Crowding modifier
+			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+			if (crowding > 0) result *= (crowding + 1);				
 		}
         
 		return result;
@@ -73,12 +85,30 @@ public class Exploration extends CollectResourcesMission {
 
 		if ((phase.equals(EMBARK)) && !hasPerson(person)) {
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-				if (person.getSettlement() == startingSettlement) {
-					if (people.size() < missionCapacity) {
-						if (people.size() < person.getSettlement().getCurrentPopulationNum() - 1) 	
-							result = 50D;
-					}
+				
+				Settlement settlement = person.getSettlement();
+				
+				// Person is at mission starting settlement.
+				boolean inStartingSettlement = (person.getSettlement() == startingSettlement);
+				
+				// Mission still has room for another person.
+				boolean withinMissionCapacity = (people.size() < missionCapacity);
+				
+				// At least one person left to hold down the fort.
+				boolean remainingInhabitant = false;
+				PersonIterator i = settlement.getInhabitants().iterator();
+				while (i.hasNext()) {
+					Person inhabitant = i.next();
+					if (!inhabitant.getMind().hasActiveMission() && (inhabitant != person)) 
+						remainingInhabitant = true;
 				}
+				
+				if (inStartingSettlement && withinMissionCapacity && remainingInhabitant) 
+					result = 50D;
+				
+				// Crowding modifier.
+				int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+				if (crowding > 0) result *= (crowding + 1);
 			}
 		}
 

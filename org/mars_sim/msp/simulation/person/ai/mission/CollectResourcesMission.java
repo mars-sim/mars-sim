@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-17
  * @author Scott Davis
  */
 
@@ -57,6 +57,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol). 
 	ReserveRover reserveRoverTask;  // Mission task to reserve a rover.
 	private int numSites; // Number of collection sites.
+	private int minPeople; // Minimum number of people for the mission.
 
 	/**
 	 * Constructor
@@ -67,10 +68,11 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	 * @param siteResourceGoal The goal amount of resources to collect at a site (kg).
 	 * @param resourceCollectionRate The resource collection rate for a person (kg/millisol).
 	 * @param numSites The number of collection sites.
+	 * @param minPeople The mimimum number of people for the mission.
 	 */
 	CollectResourcesMission(String missionName, MissionManager missionManager, 
 			Person startingPerson, String resourceType, double siteResourceGoal, 
-			double resourceCollectionRate, int numSites) {
+			double resourceCollectionRate, int numSites, int minPeople) {
 		
 		// Use Mission parent constructor
 		super(missionName, missionManager, startingPerson);
@@ -81,6 +83,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		this.siteResourceGoal = siteResourceGoal;
 		this.resourceCollectionRate = resourceCollectionRate;
 		this.numSites = numSites;
+		this.minPeople = minPeople;
 		
 		// Set initial mission phase.
 		phase = EMBARK;
@@ -167,8 +170,16 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		rover.setDestination(destination);
 		rover.setDestinationType("Coordinates");
 
-		// Transition phase to Driving.
-		phase = DRIVESITE_1;
+		if (getPeopleNumber() >= minPeople) {
+			// Transition phase to Driving.
+			phase = DRIVESITE_1;
+		}
+		else {
+			// Transition phase to Disembarking.
+			rover.setDestinationSettlement(startingSettlement);
+			phase = DISEMBARK;
+			System.out.println("CollectResourcesMission does not have required " + minPeople + " people.");
+		}
 	}
 	
 	/** 
@@ -259,8 +270,9 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	    
 			// If no one can collect resources and this is not due to it just being
 			// night time, end the collecting phase.
+			boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(rover.getCoordinates());
 			double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
-			if (nobodyCollect && (sunlight > 0D)) endPhase = true;
+			if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) endPhase = true;
 			
 			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
 			if (hasDangerousMedicalProblems() || hasDangerousMedicalProblemAtHome()) endPhase = true;
@@ -435,8 +447,6 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 		double limit = roverRange / 4D;
 		double siteDistance = RandomUtil.getRandomDouble(limit);
 		Coordinates newLocation = startingLocation.getNewLocation(direction, siteDistance);
-		if (surfaceFeatures.inDarkPolarRegion(newLocation)) 
-			throw new Exception("First location found in dark polar region.");
 		unorderedSites.add(newLocation);
 		Coordinates currentLocation = newLocation;
         
@@ -451,11 +461,9 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 				limit = tempLimit1 / tempLimit2;
 				siteDistance = RandomUtil.getRandomDouble(limit);
 				newLocation = currentLocation.getNewLocation(direction, siteDistance);
-				if (!surfaceFeatures.inDarkPolarRegion(startingLocation)) {
-					unorderedSites.add(newLocation);
-					currentLocation = newLocation;
-					remainingRange -= siteDistance;
-				}
+				unorderedSites.add(newLocation);
+				currentLocation = newLocation;
+				remainingRange -= siteDistance;
 			}
 		}
 
@@ -505,7 +513,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			}
 		}
 		else {
-			reserveRoverTask = new ReserveRover(ReserveRover.EXPLORER_ROVER, person, mars);
+			reserveRoverTask = new ReserveRover(resourceType, siteResourceGoal, person, mars);
 			assignTask(person, reserveRoverTask);
 		}
         

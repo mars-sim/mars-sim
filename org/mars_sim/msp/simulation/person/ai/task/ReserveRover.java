@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-17
  * @author Scott Davis
  */
 
@@ -12,19 +12,13 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.Rover;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /** The ReserveRover class is a task for reserving a rover 
  *  at a settlement for a trip.
  *  The duration of the task is 50 millisols.
  */
 public class ReserveRover extends Task implements Serializable {
-	
-	// Rover types
-	public static final String EXPLORER_ROVER = "Explorer Rover";
-	public static final String TRANSPORT_ROVER = "Transport Rover";
 	
 	// Static members
 	private static final double STRESS_MODIFIER = 0D; // The stress modified per millisol.
@@ -33,31 +27,38 @@ public class ReserveRover extends Task implements Serializable {
     private double duration = 50D;   // The predetermined duration of task in millisols
     private Rover reservedRover;     // The reserved rover 
     private Coordinates destination; // The destination coordinates for the trip
-    private String roverType;         // The type of rover
+    private String resourceType;     // The type of resource the rover should be able to carry.
+    private double resourceAmount;   // The required amount of resource the rover should be able to carry.
 
-    /** Constructs a ReserveRover object with a destination.
-     *  @param roverType the type of rover to be reserved
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
-     *  @param destination the destination of the trip
+    /** 
+     * Constructs a ReserveRover object with a destination.
+     * @param resource the type of resource the rover must be able to carry.
+     * @param amount the amount of the resource the rover must be able to carry.
+     * @param person the person to perform the task
+     * @param mars the virtual Mars
+     * @param destination the destination of the trip
      */
-    public ReserveRover(String roverType, Person person, Mars mars, Coordinates destination) {
+    public ReserveRover(String resource, double amount, Person person, Mars mars, Coordinates destination) {
         super("Reserving a rover", person, false, false, STRESS_MODIFIER, mars);
 
-        this.roverType = roverType;
+        this.resourceType = resource;
+        this.resourceAmount = amount;
         this.destination = destination;
         reservedRover = null;
     }
 
-    /** Constructs a ReserveRover object without a destinatiion.
-     *  @param roverType the type of rover to be reserved
-     *  @param person the person to perform the task
-     *  @param mars the virtual Mars
+    /** 
+     * Constructs a ReserveRover object without a destinatiion.
+     * @param resource the type of resource the rover must be able to carry.
+     * @param amount the amount of the resource the rover must be able to carry.
+     * @param person the person to perform the task
+     * @param mars the virtual Mars
      */
-    public ReserveRover(String roverType, Person person, Mars mars) {
+    public ReserveRover(String resource, double amount, Person person, Mars mars) {
         super("Reserving a rover", person, false, false, STRESS_MODIFIER, mars);
 
-        this.roverType = roverType;
+        this.resourceType = resource;
+        this.resourceAmount = amount;
         destination = null;
         reservedRover = null;
     }
@@ -75,14 +76,20 @@ public class ReserveRover extends Task implements Serializable {
         timeCompleted += time;
         if (timeCompleted > duration) {
             Settlement settlement = person.getSettlement();
+            
+            VehicleCollection reservableRovers = new VehicleCollection();
+            
             VehicleIterator i = settlement.getParkedVehicles().iterator();
             while (i.hasNext()) {
                 Vehicle vehicle = i.next();
                 
-                // boolean reservable = vehicle.getStatus().equals(Vehicle.PARKED);
+                boolean isRover = (vehicle instanceof Rover);
+                
                 boolean reservable = !vehicle.isReserved();
                 
-                boolean correctRoverType = roverType.equals(vehicle.getDescription());
+                boolean resourceCapable = true;
+                if (resourceType != null) 
+                	resourceCapable = (vehicle.getInventory().getResourceCapacity(resourceType) >= resourceAmount);
                 
                 boolean inRange = false;
                 if (destination != null) {
@@ -93,11 +100,19 @@ public class ReserveRover extends Task implements Serializable {
                 
                 boolean supplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle);
                 
-                if ((reservedRover == null) && correctRoverType && reservable && inRange && supplies) {
-                    reservedRover = (Rover) vehicle;
-                    reservedRover.setReserved(true);
-                }
+                if (isRover && (reservedRover == null) && resourceCapable && reservable && inRange && supplies) 
+                	reservableRovers.add(vehicle);
             }
+            
+            // Get rover with highest crew capacity.
+            int bestCrewCapacity = 0;
+            VehicleIterator i2 = reservableRovers.iterator();
+            while (i2.hasNext()) {
+            	Rover rover = (Rover) i2.next();
+            	if (rover.getCrewCapacity() > bestCrewCapacity) reservedRover = rover;
+            }
+            
+            if (reservedRover != null) reservedRover.setReserved(true);
 
             endTask();
             return timeCompleted - duration;
@@ -108,22 +123,26 @@ public class ReserveRover extends Task implements Serializable {
     /** 
      * Returns true if settlement has an available rover.
      *
-     * @param roverType the type of rover
+     * @param resource the type of resource the rover must carry.
+     * @param amount the amount of the resource the rover must carry.
      * @param settlement
      * @return are there any available rovers 
      */
-    public static boolean availableRovers(String roverType, Settlement settlement) {
+    public static boolean availableRovers(String resource, double amount, Settlement settlement) {
 
         boolean result = false;
 
         VehicleIterator i = settlement.getParkedVehicles().iterator();
         while (i.hasNext()) {
             Vehicle vehicle = i.next();
+            
+			boolean resourceCapable = true;
+			if (resource != null) resourceCapable = (vehicle.getInventory().getResourceCapacity(resource) >= amount);
+            
             boolean parked = vehicle.getStatus().equals(Vehicle.PARKED);
-            boolean correctType = roverType.equals(vehicle.getDescription());
             boolean supplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle);
             boolean reserved = vehicle.isReserved();
-            if (parked && correctType && supplies && !reserved) result = true;
+            if (parked && resourceCapable && supplies && !reserved) result = true;
         }
         
         return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.75 2004-04-02
+ * @version 2.76 2004-05-17
  * @author Scott Davis
  */
 
@@ -32,6 +32,9 @@ class TravelToSettlement extends Mission implements Serializable {
     private final static String DISEMBARK = "Disembarking";
     private final static String DRIVING = "Driving";
     private final static String EMBARK = "Embarking";
+    
+    // Minimum number of people to do mission.
+    private final static int MIN_PEOPLE = 2;
     
     // Data members
     private Settlement startingSettlement;
@@ -69,6 +72,8 @@ class TravelToSettlement extends Mission implements Serializable {
 
         // Set initial phase
         phase = EMBARK;
+        
+        // System.out.println("Travel to Settlement mission");
     }
 
     /** Gets the weighted probability that a given person would start this mission.
@@ -81,35 +86,70 @@ class TravelToSettlement extends Mission implements Serializable {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Settlement currentSettlement = person.getSettlement();
-            boolean possible = true;
+            Settlement settlement = person.getSettlement();
 	    
-            if (ReserveRover.availableRovers(ReserveRover.TRANSPORT_ROVER, currentSettlement)) {
-		        if (currentSettlement.getCurrentPopulationNum() > 1) result = 1D;
-            }
+	    	// Check if available rover.
+	    	boolean availableRovers = ReserveRover.availableRovers(null, 0D, settlement);
+            
+			// At least one person left to hold down the fort.
+			boolean remainingInhabitant = false;
+			PersonIterator i = settlement.getInhabitants().iterator();
+			while (i.hasNext()) {
+				Person inhabitant = i.next();
+				if (!inhabitant.getMind().hasActiveMission() && (inhabitant != person)) 
+					remainingInhabitant = true;
+			}
+            
+            if (availableRovers && remainingInhabitant) result = 1D;
+            
+            // Crowding modifier.
+            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+            if (crowding > 0) result *= (crowding + 1);
         }
 
         return result;
     }
 
-    /** Gets the weighted probability that a given person join this mission.
-     *  @param person the given person
-     *  @return the weighted probability
-     */
-    public double getJoiningProbability(Person person) {
+	/** 
+	 * Gets the weighted probability that a given person join this mission.
+	 * @param person the given person
+	 * @return the weighted probability
+	 */
+	public double getJoiningProbability(Person person) {
 
-        double result = 0D;
+		double result = 0D;
 
-        if (phase.equals(EMBARK) && !hasPerson(person)) { 
-            if (person.getSettlement() == startingSettlement) {
-                if (people.size() < missionCapacity) {
-                    if (people.size() < startingSettlement.getCurrentPopulationNum()) result = 50D;
-                }
-            }
-        }
+		if ((phase.equals(EMBARK)) && !hasPerson(person)) {
+			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+				
+				Settlement settlement = person.getSettlement();
+				
+				// Person is at mission starting settlement.
+				boolean inStartingSettlement = (person.getSettlement() == startingSettlement);
+				
+				// Mission still has room for another person.
+				boolean withinMissionCapacity = (people.size() < missionCapacity);
+				
+				// At least one person left to hold down the fort.
+				boolean remainingInhabitant = false;
+				PersonIterator i = settlement.getInhabitants().iterator();
+				while (i.hasNext()) {
+					Person inhabitant = i.next();
+					if (!inhabitant.getMind().hasActiveMission() && (inhabitant != person)) 
+						remainingInhabitant = true;
+				}
+				
+				if (inStartingSettlement && withinMissionCapacity && remainingInhabitant) 
+					result = 50D;
+				
+				// Crowding modifier.
+				int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+				if (crowding > 0) result *= (crowding + 1);
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}	
 
     /** Performs the mission.
      *  Mission may determine a new task for a person in the mission. 
@@ -144,20 +184,15 @@ class TravelToSettlement extends Mission implements Serializable {
                 endMission();
                 return;
             } 
-            setMissionCapacity(getSettlementCapacity(destinationSettlement));
             description = "Travel To " + destinationSettlement.getName();
-            if (mars.getSurfaceFeatures().inDarkPolarRegion(destinationSettlement.getCoordinates())) {
-                endMission(); 
-                return;
-            }
         }
 
         // Reserve a rover.
         // If a rover cannot be reserved, end mission.
         if (rover == null) {
             if (reserveRover == null) {
-                reserveRover = new ReserveRover(ReserveRover.TRANSPORT_ROVER, person, mars, 
-		        destinationSettlement.getCoordinates());
+                reserveRover = new ReserveRover(null, 0D, person, mars, 
+		        	destinationSettlement.getCoordinates());
                 assignTask(person, reserveRover);
                 return;
             }
@@ -168,10 +203,7 @@ class TravelToSettlement extends Mission implements Serializable {
                         endMission(); 
                         return;
                     }
-                    else {
-                        if (rover.getCrewCapacity() < missionCapacity) 
-                            setMissionCapacity(rover.getCrewCapacity());
-                    }
+                    else setMissionCapacity(rover.getCrewCapacity());
                 }
                 else return;
             }
@@ -204,15 +236,23 @@ class TravelToSettlement extends Mission implements Serializable {
         rover.setDestinationSettlement(destinationSettlement);
         rover.setDestinationType("Settlement");
 
-        // Transition phase to Driving.
-        phase = DRIVING;
+		if (getPeopleNumber() >= MIN_PEOPLE) {
+        	// Transition phase to Driving.
+        	phase = DRIVING;
+		}
+		else {
+			// Transition phase to Disembarking.
+			rover.setDestinationSettlement(startingSettlement);
+			phase = DISEMBARK;
+			System.out.println("TravelToSettlementMission does not have required " + MIN_PEOPLE + " people.");
+		}
     }
 
     /** Performs the driving phase of the mission.
      *  @param person the person currently performing the mission
      */ 
     private void drivingPhase(Person person) {
-      
+
         // Record starting time and distance to destination.
         if ((startingTime == null) || (startingDistance == 0D)) {
             startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
@@ -278,9 +318,7 @@ class TravelToSettlement extends Mission implements Serializable {
             if (garageBuilding != null) 
             	garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
         }
-        catch (Exception e) {
-        	System.err.println("TravelToSettlement.disembarkingPhase(): " + e.getMessage());
-        }
+        catch (Exception e) {}
         
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
@@ -292,9 +330,7 @@ class TravelToSettlement extends Mission implements Serializable {
                 }
                 else BuildingManager.addToRandomBuilding(rover, destinationSettlement);
             }
-            catch (BuildingException e) { 
-                System.out.println("CollectRockSamplesMission.disembarkingPhase(): " + e.getMessage()); 
-            }
+            catch (BuildingException e) {}
         }
 
         // Unload rover if necessary.
@@ -324,13 +360,13 @@ class TravelToSettlement extends Mission implements Serializable {
 
         SettlementCollection settlements = unitManager.getSettlements();
 
-        // Create collection of valid destination settlements.
+        // Create collection of valid destination settlements that have available population capacity.
         SettlementIterator iterator = settlements.iterator();
         while (iterator.hasNext()) {
             Settlement tempSettlement = iterator.next();
-            if ((tempSettlement == startingSettlement) || (getSettlementCapacity(tempSettlement) < people.size())) 
-                iterator.remove();
-        }
+            if (tempSettlement == startingSettlement) iterator.remove();
+            else if (tempSettlement.getAvailablePopulationCapacity() <= 0) iterator.remove();
+        } 
 
         // Get settlements sorted by proximity to current settlement.
         SettlementCollection sortedSettlements = settlements.sortByProximity(startingSettlement.getCoordinates());
@@ -341,29 +377,6 @@ class TravelToSettlement extends Mission implements Serializable {
         return result;
     }
  
-    /** Determines settlement capacity.
-     *  @param settlement the settlement 
-     *  @return settlement capacity as int
-     */
-    private int getSettlementCapacity(Settlement settlement) {
-        int result = 0;
-     
-        // Determine current capacity of settlement.
-        result = settlement.getAvailablePopulationCapacity();
-        
-        // Subtract number of people currently traveling to settlement.
-        VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
-        while (i.hasNext()) {
-            Vehicle tempVehicle = i.next();
-            Settlement tempSettlement = tempVehicle.getDestinationSettlement();
-            if ((tempSettlement != null) && (tempSettlement == settlement)) {
-                if (tempVehicle instanceof Crewable)
-                result -= ((Crewable) tempVehicle).getCrewCapacity();
-            }
-        }
-
-        return result;
-    }
 
     /** Determine if a rover is fully loaded with fuel and supplies.
      *  @return true if rover is fully loaded.
