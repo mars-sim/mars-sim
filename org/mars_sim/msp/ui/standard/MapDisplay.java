@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.73 2001-11-25
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -25,7 +25,7 @@ import javax.swing.*;
 public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
     // Data members
-    private VirtualMars mars; // Virtual Mars object
+    private Mars mars; // Virtual Mars object
     private UIProxyManager proxyManager; // Unit UI proxy manager
     private NavigatorWindow navWindow; // Navigator Tool Window
     private Map surfMap; // Surface image object
@@ -58,7 +58,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  @param height the height of the map shown
      */
     public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager,
-            int width, int height, VirtualMars mars) {
+            int width, int height, Mars mars) {
 
         // Initialize data members
         this.navWindow = navWindow;

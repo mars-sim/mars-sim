@@ -1,11 +1,11 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.73 2001-12-14
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
-import org.mars_sim.msp.simulation.VirtualMars;
+import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.ui.standard.*;
 import java.io.*;
 import javax.swing.plaf.metal.*;
@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /** MarsProject is the main class for the application. It creates both
- *  virtual Mars and the user interface.
+ *  Mars and the user interface.
  */
 public class MarsProject {
 
@@ -23,12 +23,12 @@ public class MarsProject {
         // create a splash window
         SplashWindow splashWindow = new SplashWindow();
         
-        // create virtual mars
+        // create Mars
         boolean usage = false;
-        VirtualMars mars = null;
+        Mars mars = null;
         if (args.length == 1) {
             if (args[0].equals("-new")) {
-                mars = new VirtualMars();
+                mars = new Mars();
             }
             else {
                 usage = true;
@@ -41,7 +41,7 @@ public class MarsProject {
                 File loadFile = new File(args[1]);
                 if (loadFile.exists()) {
                     try {
-                        mars = VirtualMars.load(loadFile);
+                        mars = Mars.load(loadFile);
                     }
                     catch (Exception e) {
                         System.err.println("Problem loading existing simulation " + e);
@@ -62,7 +62,7 @@ public class MarsProject {
         // Load a the default simulation
         else if (args.length == 0) {
             try {
-                mars = VirtualMars.load(null);
+                mars = Mars.load(null);
             }
             catch (Exception e) {
                 System.err.println("Problem loading default simulation " + e);
@@ -71,7 +71,7 @@ public class MarsProject {
 
             // If no default, then create a new one
             if (mars == null) {
-                mars = new VirtualMars();
+                mars = new Mars();
             }
         }
         else {

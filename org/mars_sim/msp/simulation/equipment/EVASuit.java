@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -24,7 +24,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     /**
      * Constructs a EVASuit object.
      */
-    public EVASuit(Coordinates location, VirtualMars mars) {
+    public EVASuit(Coordinates location, Mars mars) {
     
         // User Equipment constructor.
 	super("EVA Suit", location, mars);

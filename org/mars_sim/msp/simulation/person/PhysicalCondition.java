@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.74 2002-02-25
+ * @version 2.74 2002-03-11
  * @author Barry Evans
  */
 
@@ -39,7 +39,7 @@ public class PhysicalCondition implements Serializable {
      * @param mars main simulation control.
      *
      */
-    public PhysicalCondition(Person newPerson, VirtualMars mars) {
+    public PhysicalCondition(Person newPerson, Mars mars) {
         isAlive = true;
         person = newPerson;
         problems = new HashMap();

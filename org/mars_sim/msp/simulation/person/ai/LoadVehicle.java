@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ class LoadVehicle extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @param vehicle the vehicle to be loaded
      */
-    public LoadVehicle(Person person, VirtualMars mars, Vehicle vehicle) {
+    public LoadVehicle(Person person, Mars mars, Vehicle vehicle) {
         super("Loading vehicle", person, true, mars);
 
 	description = "Loading " + vehicle.getName();

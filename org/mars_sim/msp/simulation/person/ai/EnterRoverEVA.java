@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterRoverEVA.java
- * @version 2.74 2002-03-07
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -28,7 +28,7 @@ class EnterRoverEVA extends Task implements Serializable {
      * @param mars the virtual Mars
      * @param rover the rover to be entered
      */
-    public EnterRoverEVA(Person person, VirtualMars mars, Rover rover) {
+    public EnterRoverEVA(Person person, Mars mars, Rover rover) {
         super("Entering rover from EVA", person, false, mars);
 
 	// Initialize data members

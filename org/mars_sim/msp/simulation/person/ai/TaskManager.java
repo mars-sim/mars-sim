@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -24,7 +24,7 @@ public class TaskManager implements Serializable {
     // Data members
     private Task currentTask; // The current task the person is doing.
     private Mind mind; // The mind of the person the task manager is responsible for.
-    private VirtualMars mars; // The virtual Mars
+    private Mars mars; // The virtual Mars
 
     // Array of available tasks
     private Class[] availableTasks = { Relax.class, TendGreenhouse.class,
@@ -38,7 +38,7 @@ public class TaskManager implements Serializable {
      *  @param person the person the task manager is for
      *  @param mars the virtual Mars
      */
-    public TaskManager(Mind mind, VirtualMars mars) {
+    public TaskManager(Mind mind, Mars mars) {
         // Initialize data members
         this.mind = mind;
         this.mars = mars;
@@ -133,7 +133,7 @@ public class TaskManager implements Serializable {
     public Task getNewTask(double totalProbabilityWeight) {
 
         // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
+        Class[] parametersForFindingMethod = { Person.class, Mars.class };
         Object[] parametersForInvokingMethod = { mind.getPerson(), mars };
 
         // Get a random number from 0 to the total weight
@@ -173,7 +173,7 @@ public class TaskManager implements Serializable {
         double result = 0D;
 
         // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
+        Class[] parametersForFindingMethod = { Person.class, Mars.class };
         Object[] parametersForInvokingMethod = { mind.getPerson(), mars };
 
         // Sum the probable weights of each available task.

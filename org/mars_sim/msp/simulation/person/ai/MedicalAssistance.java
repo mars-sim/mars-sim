@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.74 2002-03-09
+ * @version 2.74 2002-03-11
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.VirtualMars;
+import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.Infirmary;
 import org.mars_sim.msp.simulation.structure.FacilityManager;
@@ -31,7 +31,7 @@ public class MedicalAssistance extends Task implements Serializable {
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public MedicalAssistance(Person person, VirtualMars mars) {
+    public MedicalAssistance(Person person, Mars mars) {
         super("Medical Assistance", person, true, mars);
 
         SickBay sickbay = getSickbay(person);
@@ -55,7 +55,7 @@ public class MedicalAssistance extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) {
+    public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
         SickBay infirmary = getSickbay(person);

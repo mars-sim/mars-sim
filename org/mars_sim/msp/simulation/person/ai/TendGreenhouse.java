@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -22,7 +22,7 @@ class TendGreenhouse extends Task implements Serializable {
     private Settlement settlement; // The settlement the greenhouse is in.
     private double duration; // The duration (in millisols) the person will perform the task.
 
-    public TendGreenhouse(Person person, VirtualMars mars) {
+    public TendGreenhouse(Person person, Mars mars) {
         // Use Task constructor
         super("Tending Greenhouse", person, true, mars);
 
@@ -39,7 +39,7 @@ class TendGreenhouse extends Task implements Serializable {
      *  Returns a 25 probability if person is at a settlement.
      *  Returns a 0 if not.
      */
-    public static double getProbability(Person person, VirtualMars mars) {
+    public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 	    
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {

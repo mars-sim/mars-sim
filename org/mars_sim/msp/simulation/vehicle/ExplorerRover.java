@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRover.java
- * @version 2.74 2002-03-03
+ * @version 2.74 2002-03-11
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -25,7 +25,7 @@ public class ExplorerRover extends Rover implements Serializable {
      * @param settlement the settlementt he rover is parked at
      * @param mars the mars instance
      */
-    ExplorerRover(String name, Settlement settlement, VirtualMars mars) {
+    ExplorerRover(String name, Settlement settlement, Mars mars) {
         // Use the Rover constructor
 	super(name, settlement, mars);
 
@@ -42,7 +42,7 @@ public class ExplorerRover extends Rover implements Serializable {
      * @param manager the unit manager
      * @throws Exception when there are no available settlements
      */
-    ExplorerRover(String name, VirtualMars mars, UnitManager manager) throws Exception {
+    ExplorerRover(String name, Mars mars, UnitManager manager) throws Exception {
         // Use the Rover constructor
 	super(name, mars, manager);
 

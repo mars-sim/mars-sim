@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.73 2001-12-04
+ * @version 2.73 2001-03-11
  * @author Scott Davis
  */
 
@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class MasterClock implements Runnable, Serializable {
 
     // Data members
-    private VirtualMars mars;     // Virtual Mars
+    private Mars mars;            // Virtual Mars
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
@@ -32,7 +32,7 @@ public class MasterClock implements Runnable, Serializable {
     /** Constructs a MasterClock object
      *  @param mars the virtual mars that uses the clock
      */
-    public MasterClock(VirtualMars mars) {
+    public MasterClock(Mars mars) {
         // Initialize data members
         this.mars = mars;
 

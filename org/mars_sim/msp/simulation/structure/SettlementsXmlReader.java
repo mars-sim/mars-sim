@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementsXmlReader.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ public class SettlementsXmlReader extends MspXmlReader {
     // Data members
     private int elementType; // The current element type being parsed
     private SettlementCollection settlements; // The collection of created settlements
-    private VirtualMars mars; // The virtual Mars instance
+    private Mars mars; // The virtual Mars instance
     private String currentName; // The current settlement name parsed
     private String currentLatitude; // The current latitude string parsed
     private String currentLongitude; // The current longitude string parsed
@@ -39,7 +39,7 @@ public class SettlementsXmlReader extends MspXmlReader {
     /** Constructor
      *  @param mars the virtual Mars instance
      */
-    public SettlementsXmlReader(VirtualMars mars) {
+    public SettlementsXmlReader(Mars mars) {
         super("conf/settlements.xml");
 
         this.mars = mars;

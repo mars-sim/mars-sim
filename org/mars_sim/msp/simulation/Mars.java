@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * VirtualMars.java
- * @version 2.74 2002-01-13
+ * Mars.java
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -12,10 +12,10 @@ import org.mars_sim.msp.simulation.person.medical.MedicalManager;
 import java.util.*;
 import java.io.*;
 
-/** VirtualMars represents Mars in the simulation. It contains all the
+/** Mars represents the planet Mars in the simulation. It contains all the
  *  units, a master clock, and access to the topography data.
  */
-public class VirtualMars implements Serializable {
+public class Mars implements Serializable {
 
     /**
      * The name of the state file
@@ -42,8 +42,8 @@ public class VirtualMars implements Serializable {
     private MasterClock masterClock; // Master clock for virtual world
     private OrbitInfo orbitInfo; // Orbital information
 
-    /** Constructs a VirtualMars object */
-    public VirtualMars() {
+    /** Constructs a Mars object */
+    public Mars() {
 
         initialiseTransients();
         setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
@@ -100,9 +100,9 @@ public class VirtualMars implements Serializable {
      * This method loads a previous simulation state from the specified file.
      * If no file is specified, then the default file name is used.
      * @param fileName Filename of load file.
-     * @return A newly created Virtual Mars.
+     * @return A newly created Mars.
      */
-    public static VirtualMars load(File fileName)
+    public static Mars load(File fileName)
                 throws Exception {
 
         if (fileName == null) {
@@ -119,7 +119,7 @@ public class VirtualMars implements Serializable {
 
         ObjectInputStream p = new ObjectInputStream(istream);
 
-        VirtualMars mars = (VirtualMars)p.readObject();
+        Mars mars = (Mars)p.readObject();
 
         mars.setStateFile(fileName.getAbsolutePath());
         istream.close();
@@ -186,21 +186,21 @@ public class VirtualMars implements Serializable {
     }
 
     /** Returns the unit manager
-     *  @return unit manager for virtual Mars
+     *  @return unit manager for Mars
      */
     public UnitManager getUnitManager() {
         return units;
     }
 
     /** Returns the mission manager
-     *  @return mission manager for virtual Mars
+     *  @return mission manager for Mars
      */
     public MissionManager getMissionManager() {
         return missionManager;
     }
 
     /** Returns the medical manager
-     *  @return medical manager for virtual Mars
+     *  @return medical manager for Mars
      */
     public MedicalManager getMedicalManager() {
         return medicalManager;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.72 2001-08-12
+ * @version 2.72 2002-03-11
  * @author Scott Davis
  */
  
@@ -12,11 +12,11 @@ public class SurfaceFeatures {
     
     // Data members 
     private TerrainElevation surfaceTerrain;
-    private VirtualMars mars;
+    private Mars mars;
     // We can add landmarks here later - Scott
     
     /** Constructs a SurfaceFeatures object */
-    public SurfaceFeatures(VirtualMars mars) {
+    public SurfaceFeatures(Mars mars) {
         
         this.mars = mars;
         surfaceTerrain = new TerrainElevation("map_data/TopoMarsMap.dat", "map_data/TopoMarsMap.index",

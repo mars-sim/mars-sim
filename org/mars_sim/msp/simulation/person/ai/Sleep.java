@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -25,7 +25,7 @@ class Sleep extends Task implements Serializable {
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public Sleep(Person person, VirtualMars mars) {
+    public Sleep(Person person, Mars mars) {
         super("Sleeping", person, false, mars);
 
         duration = 250D + RandomUtil.getRandomInt(100);
@@ -40,7 +40,7 @@ class Sleep extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) {
+    public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
         if (person.getPhysicalCondition().getFatigue() > 750D) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclesXmlReader.java
- * @version 2.74 2002-03-03
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ public class VehiclesXmlReader extends MspXmlReader {
     private int elementType; // The current element type being parsed
     private int vehicleType; // The current vehicle type being parsed
     private VehicleCollection vehicles; // The collection of created settlements
-    private VirtualMars mars; // The virtual Mars instance
+    private Mars mars; // The virtual Mars instance
     private UnitManager manager; // The unit manager
     private String currentName; // The current vehicle's name
     private Settlement currentSettlement; // The current vehicle's settlement
@@ -38,7 +38,7 @@ public class VehiclesXmlReader extends MspXmlReader {
      *  @param manager the unit manager
      *  @param mars the virtual Mars instance
      */
-    public VehiclesXmlReader(UnitManager manager, VirtualMars mars) {
+    public VehiclesXmlReader(UnitManager manager, Mars mars) {
         super("conf/vehicles.xml");
 
 	this.manager = manager;

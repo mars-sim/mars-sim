@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.74 2002-01-29
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -17,7 +17,7 @@ public abstract class Unit implements Serializable {
     // Data members
     protected Coordinates location; // Unit location coordinates
     protected String name;          // Unit name
-    protected VirtualMars mars;     // The virtual Mars
+    protected Mars mars;            // The virtual Mars
     protected double baseMass;      // The mass of the unit without inventory
     protected Inventory inventory;  // The unit's inventory
     protected Unit containerUnit;   // The unit containing this unit
@@ -27,7 +27,7 @@ public abstract class Unit implements Serializable {
      *  @param location the unit's location
      *  @param mars the virtual Mars
      */
-    public Unit(String name, Coordinates location, VirtualMars mars) {
+    public Unit(String name, Coordinates location, Mars mars) {
         // Initialize data members from parameters
         this.name = name;
         this.location = new Coordinates(location);

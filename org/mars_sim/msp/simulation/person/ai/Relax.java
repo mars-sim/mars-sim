@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -25,7 +25,7 @@ class Relax extends Task implements Serializable {
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public Relax(Person person, VirtualMars mars) {
+    public Relax(Person person, Mars mars) {
         super("Relaxing", person, false, mars);
 
         duration = RandomUtil.getRandomInt(100);
@@ -37,7 +37,7 @@ class Relax extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) {
+    public static double getProbability(Person person, Mars mars) {
         return 50D;
     }
 

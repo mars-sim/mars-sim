@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-03-03
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -68,7 +68,7 @@ class TravelToSettlement extends Mission implements Serializable {
      *  @param mars the virtual Mars
      *  @return the weighted probability
      */
-    public static double getNewMissionProbability(Person person, VirtualMars mars) {
+    public static double getNewMissionProbability(Person person, Mars mars) {
 
         double result = 0D;
 

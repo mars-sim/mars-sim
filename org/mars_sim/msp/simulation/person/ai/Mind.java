@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.74 2002-02-14
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -27,7 +27,7 @@ public class Mind implements Serializable {
      *  @param person the person owning this mind
      *  @param mars the virtual Mars
      */
-    public Mind(Person person, VirtualMars mars) {
+    public Mind(Person person, Mars mars) {
 
         // Initialize data members
         this.person = person;

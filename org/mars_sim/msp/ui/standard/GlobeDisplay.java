@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.73 2001-12-20
+ * @version 2.74 2001-03-11
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     private int width; // width of the globe display component
     private int height; // height of the globe display component
     private boolean useUSGSMap;  // True if USGS surface map is to be used
-    private VirtualMars mars; // Virtual mars object
+    private Mars mars; // Virtual mars object
     private int[] shadingArray; // Array used to generate day/night shading image
     private boolean showDayNightShading; // True if day/night shading is to be used
 
@@ -40,7 +40,7 @@ class GlobeDisplay extends JComponent implements Runnable {
      *  @width the width of the globe display
      *  @height the height of the globe display
      */
-    public GlobeDisplay(UIProxyManager proxyManager, int width, int height, VirtualMars mars) {
+    public GlobeDisplay(UIProxyManager proxyManager, int width, int height, Mars mars) {
 
         this.proxyManager = proxyManager;
         this.width = width;

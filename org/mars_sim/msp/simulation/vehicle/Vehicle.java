@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-02-28
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -50,7 +50,7 @@ public abstract class Vehicle extends Unit implements Serializable {
      *  @param settlement the settlement the vehicle is parked at
      *  @param mars the virtual Mars
      */
-    Vehicle(String name, Settlement settlement, VirtualMars mars) {
+    Vehicle(String name, Settlement settlement, Mars mars) {
         // use Unit constructor
         super(name, settlement.getCoordinates(), mars);
 
@@ -64,7 +64,7 @@ public abstract class Vehicle extends Unit implements Serializable {
      *  @param manager the unit manager
      *  @throws Exception when there are no available settlements
      */
-    Vehicle(String name, VirtualMars mars, UnitManager manager) throws Exception {
+    Vehicle(String name, Mars mars, UnitManager manager) throws Exception {
         // use Unit constructor
         super(name, new Coordinates(0D, 0D), mars);
 

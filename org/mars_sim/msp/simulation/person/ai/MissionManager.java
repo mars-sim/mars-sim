@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.74 2002-01-15
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -22,7 +22,7 @@ public class MissionManager implements Serializable {
 
     // Data members
     private Vector missions; // Current missions in the simulation. 
-    private VirtualMars mars; // Virtual Mars 
+    private Mars mars; // Virtual Mars 
 
     // Array of potential new missions
     Class[] potentialMissions = { TravelToSettlement.class, CollectRockSamplesMission.class };
@@ -30,7 +30,7 @@ public class MissionManager implements Serializable {
     /** Constructs a MissioniManager object
      *  @param mars the virtual Mars
      */
-    public MissionManager(VirtualMars mars) {
+    public MissionManager(Mars mars) {
 
         // Initialize data members
         this.mars = mars;
@@ -40,7 +40,7 @@ public class MissionManager implements Serializable {
     /** Returns the virtual Mars in the simulation
      *  @return virtual Mars
      */
-    public VirtualMars getMars() {
+    public Mars getMars() {
         return mars;
     }
 
@@ -98,7 +98,7 @@ public class MissionManager implements Serializable {
         double result = 0D;
      
         // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
+        Class[] parametersForFindingMethod = { Person.class, Mars.class };
         Object[] parametersForInvokingMethod = { person, mars };
 
         // Sum the probable weights for each available potential mission.
@@ -123,7 +123,7 @@ public class MissionManager implements Serializable {
     Mission getNewMission(Person person, double totalProbabilityWeight) {
         
         // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
+        Class[] parametersForFindingMethod = { Person.class, Mars.class };
         Object[] parametersForInvokingMethod = { person, mars };
 
         // Get a random number from 0 to the total probability weight.

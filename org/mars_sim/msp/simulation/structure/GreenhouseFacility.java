@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GreenhouseFacility.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -46,7 +46,7 @@ public class GreenhouseFacility extends Facility implements Serializable {
      *  @return Amount of food (kg) the greenhouse can produce at full harvest
      */
     public double getFullHarvestAmount() {
-        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        SimulationProperties properties = manager.getMars().getSimulationProperties();
         return properties.getGreenhouseFullHarvest();
     }
 
@@ -68,7 +68,7 @@ public class GreenhouseFacility extends Facility implements Serializable {
      *  @return time required to grow crops (in millisols)
      */
     public double getGrowthPeriod() {
-        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        SimulationProperties properties = manager.getMars().getSimulationProperties();
         return properties.getGreenhouseGrowingCycle();
     }
 

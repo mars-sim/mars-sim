@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-03-07
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -32,7 +32,7 @@ public class Settlement extends Structure implements LifeSupport {
      *  @param populationCapacity the settlement's population capacity
      *  @param mars the virtual Mars
      */
-    Settlement(String name, Coordinates location, int populationCapacity, VirtualMars mars) {
+    Settlement(String name, Coordinates location, int populationCapacity, Mars mars) {
         // Use Unit constructor
         super(name, location, mars);
 
@@ -48,7 +48,7 @@ public class Settlement extends Structure implements LifeSupport {
      *  @param populationCapacity the settlement's population capacity
      *  @param mars the virtual Mars
      */
-    Settlement(String name, int populationCapacity, VirtualMars mars) {
+    Settlement(String name, int populationCapacity, Mars mars) {
 
         // Use Unit constructor
         super(name, new Coordinates(0D, 0D), mars);

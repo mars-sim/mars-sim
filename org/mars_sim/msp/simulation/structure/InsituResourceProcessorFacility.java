@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -32,7 +32,7 @@ public class InsituResourceProcessorFacility extends Facility
      */
     public double getOxygenRate() {
         int currentPop = manager.getSettlement().getCurrentPopulationNum();
-        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        SimulationProperties properties = manager.getMars().getSimulationProperties();
         double result = (currentPop * properties.getPersonOxygenConsumption()) + 6D;
         result /= 1000D;
         return result;
@@ -43,7 +43,7 @@ public class InsituResourceProcessorFacility extends Facility
      */
     public double getWaterRate() {
         int currentPop = manager.getSettlement().getCurrentPopulationNum();
-        SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
+        SimulationProperties properties = manager.getMars().getSimulationProperties();
         double result = (currentPop * properties.getPersonWaterConsumption()) + 6D;
         result /= 1000D;
         return result;

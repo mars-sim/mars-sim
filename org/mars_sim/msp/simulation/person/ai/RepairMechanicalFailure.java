@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMechanicalFailure.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -25,7 +25,7 @@ class RepairMechanicalFailure extends Task implements Serializable {
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public RepairMechanicalFailure(Person person, VirtualMars mars) {
+    public RepairMechanicalFailure(Person person, Mars mars) {
         super("Repairing vehicle", person, true, mars);
 
         vehicle = person.getVehicle();
@@ -40,7 +40,7 @@ class RepairMechanicalFailure extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) {
+    public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {

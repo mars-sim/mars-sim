@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.73 2001-12-14
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import org.mars_sim.msp.simulation.VirtualMars;
+import org.mars_sim.msp.simulation.Mars;
 
 /** The MainWindowMenu class is the menu for the main window. 
  */
@@ -114,17 +114,17 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	    mainWindow.exitSimulation();
 	}
 	else if (selectedItem == newItem) {
-            VirtualMars mars = new VirtualMars();
-            mainWindow.setVirtualMars(mars);
+            Mars mars = new Mars();
+            mainWindow.setMars(mars);
             mars.start();
 	}
 		
         try{ 
 	    if (selectedItem == saveItem) {
-	        mainWindow.getVirtualMars().store(null);
+	        mainWindow.getMars().store(null);
 	    }
             else if (selectedItem == saveAsItem) {
-                VirtualMars mars = mainWindow.getVirtualMars(); 
+                Mars mars = mainWindow.getMars(); 
                 JFileChooser chooser = new JFileChooser(mars.DEFAULT_DIR);
                 chooser.setDialogTitle("Selected storage location");
                 int returnVal = chooser.showSaveDialog(mainWindow);
@@ -133,13 +133,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
                 }
 	    }
 	    else if (selectedItem == loadItem) {
-                JFileChooser chooser = new JFileChooser(VirtualMars.DEFAULT_DIR);
+                JFileChooser chooser = new JFileChooser(Mars.DEFAULT_DIR);
                 chooser.setDialogTitle("Selected stored simulation");
                 int returnVal = chooser.showOpenDialog(mainWindow);
                 if(returnVal == JFileChooser.APPROVE_OPTION) {
-                    VirtualMars mars = VirtualMars.load(chooser.getSelectedFile());
+                    Mars mars = Mars.load(chooser.getSelectedFile());
 	            if (mars != null) {
-                        mainWindow.setVirtualMars(mars);
+                        mainWindow.setMars(mars);
                         mars.start();
                     }
                 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -25,7 +25,7 @@ class EatMeal extends Task implements Serializable {
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public EatMeal(Person person, VirtualMars mars) {
+    public EatMeal(Person person, Mars mars) {
         super("Eating a meal", person, false, mars);
     }
 
@@ -35,7 +35,7 @@ class EatMeal extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) {
+    public static double getProbability(Person person, Mars mars) {
 
         double result = person.getPhysicalCondition().getHunger() - 250D;
         if (result < 0) result = 0;

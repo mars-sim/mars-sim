@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.74 2002-02-28
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ class MaintainVehicle extends Task implements Serializable {
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public MaintainVehicle(Person person, VirtualMars mars) {
+    public MaintainVehicle(Person person, Mars mars) {
         super("Performing Maintenance on vehicle", person, true, mars);
 
         settlement = person.getSettlement();
@@ -72,7 +72,7 @@ class MaintainVehicle extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) {
+    public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.74 2002-01-22
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -22,7 +22,7 @@ public class MainWindow extends JFrame implements WindowListener {
     private static final String VERSION = "2.74";
 
     // Data members
-    private VirtualMars mars;        // The virtual Mars
+    private Mars mars;               // The virtual Mars
     private UnitToolBar unitToolbar; // The unit tool bar
     private MainDesktopPane desktop; // The main desktop
     private UIProxyManager proxyManager; // The unit UI proxy manager
@@ -30,19 +30,19 @@ public class MainWindow extends JFrame implements WindowListener {
     /** Constructs a MainWindow object 
      *  @param mars the virtual Mars
      */
-    public MainWindow(VirtualMars mars) {
+    public MainWindow(Mars mars) {
 
         // use JFrame constructor
         super("Mars Simulation Project (version " + VERSION + ")");
 
- 	    // Prepare custom Mars UI theme
-	    MetalLookAndFeel.setCurrentTheme(new MarsTheme());
+ 	// Prepare custom Mars UI theme
+	MetalLookAndFeel.setCurrentTheme(new MarsTheme());
     	try {
-		    UIManager.setLookAndFeel(new MetalLookAndFeel());
-	    } 
-  	    catch(UnsupportedLookAndFeelException e) {
-		    System.out.println("MainWindow: " + e.toString());
-	    }
+	    UIManager.setLookAndFeel(new MetalLookAndFeel());
+	} 
+  	catch(UnsupportedLookAndFeelException e) {
+	    System.out.println("MainWindow: " + e.toString());
+	}
         // Prepare frame
         setVisible(false);
         addWindowListener(this);
@@ -80,7 +80,7 @@ public class MainWindow extends JFrame implements WindowListener {
         setLocation(((screen_size.width - frame_size.width) / 2),
                 ((screen_size.height - frame_size.height) / 2));
 
-        setVirtualMars(mars);
+        setMars(mars);
 
         // Show frame
         setVisible(true);
@@ -90,14 +90,14 @@ public class MainWindow extends JFrame implements WindowListener {
     /** Returns the virtual Mars instance 
      *  @return the virutal Mars instance
      */
-    public VirtualMars getVirtualMars() {
+    public Mars getMars() {
         return mars;
     }
 
     /** Set the virtual Mars instance 
      *  @param newMars The new virtual mars instance
      */
-    public void setVirtualMars(VirtualMars newMars) {
+    public void setMars(Mars newMars) {
 
         if (mars != null) {
             mars.stop();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.72 2001-05-16
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -67,7 +67,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         topMainPane.add(leftTopPane);
 
         // Prepare globe display
-        VirtualMars mars = desktop.getMainWindow().getVirtualMars();
+        Mars mars = desktop.getMainWindow().getMars();
         globeNav = new GlobeDisplay(desktop.getProxyManager(), 150, 150, mars);
         JPanel globePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),

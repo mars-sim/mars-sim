@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 2.74 2002-03-10
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -19,7 +19,7 @@ public class Airlock implements Serializable {
     private double airlockTime;    // The amount of time required for the airlock to 
                                    // pressurize/depressurize. (in millisols)
     private Unit unit;             // the unit the airlock is attached to.
-    private VirtualMars mars;      // The Mars instance.
+    private Mars mars;             // The Mars instance.
     private boolean activated;     // True if airlock is activated.
     private boolean pressurized;   // True if airlock is pressurized.
     private boolean innerDoorOpen; // True if inner door is open.
@@ -34,7 +34,7 @@ public class Airlock implements Serializable {
      * @param mars the Mars instance
      * @param capacity number of people airlock can hold
      */
-    public Airlock(Unit unit, VirtualMars mars, int capacity) {
+    public Airlock(Unit unit, Mars mars, int capacity) {
         
         // Initialize data members
 	this.unit = unit;

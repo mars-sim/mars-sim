@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -20,7 +20,7 @@ import java.io.Serializable;
 public abstract class Mission implements Serializable {
 
     // Data members
-    protected VirtualMars mars; // Virtual Mars
+    protected Mars mars; // Virtual Mars
     protected PersonCollection people; // People in mission
     protected String name; // Name of mission
     protected String description; // Description of the mission
@@ -141,7 +141,7 @@ public abstract class Mission implements Serializable {
      *  @param mars the virtual Mars
      *  @return the weighted probability
      */
-    public static double getNewMissionProbability(Person person, VirtualMars mars) {
+    public static double getNewMissionProbability(Person person, Mars mars) {
         return 0D;
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ class UnloadVehicle extends Task implements Serializable {
      *  @param mars the virtual Mars
      *  @param vehicle the vehicle to be unloaded
      */
-    public UnloadVehicle(Person person, VirtualMars mars, Vehicle vehicle) {
+    public UnloadVehicle(Person person, Mars mars, Vehicle vehicle) {
         super("Unloading vehicle", person, true, mars);
 
 	description = "Unloading " + vehicle.getName();

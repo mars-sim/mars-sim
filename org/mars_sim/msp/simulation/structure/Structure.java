@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Structure.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
  
@@ -20,7 +20,7 @@ public abstract class Structure extends Unit {
      *  @param location the unit's location
      *  @param mars the virtual Mars
      */
-    Structure(String name, Coordinates location, VirtualMars mars) {
+    Structure(String name, Coordinates location, Mars mars) {
         super(name, location, mars);
     }
 }

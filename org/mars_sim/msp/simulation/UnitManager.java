@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -23,13 +23,13 @@ import java.util.*;
 public class UnitManager implements Serializable {
 
     // Data members
-    private VirtualMars mars; // Virtual Mars
+    private Mars mars; // Virtual Mars
     private UnitCollection units; // Collection of all units
 
     /** Constructs a UnitManager object
      *  @param mars the virtual Mars
      */
-    UnitManager(VirtualMars mars) {
+    UnitManager(Mars mars) {
         // Initialize virtual mars to parameter
         this.mars = mars;
 

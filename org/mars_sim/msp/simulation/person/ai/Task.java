@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -20,8 +20,8 @@ abstract class Task implements Serializable, Comparable {
     // Data members
     protected String name;            // The name of the task
     protected Person person;          // The person performing the task.
-    protected VirtualMars mars;       // The virtual Mars
-    protected boolean done;         // True if task is finished
+    protected Mars mars;              // The virtual Mars
+    protected boolean done;           // True if task is finished
     protected double timeCompleted;   // The current amount of time spent on the task (in microsols)
     protected String description;     // Description of the task
     protected Task subTask;           // Sub-task of the current task
@@ -36,7 +36,7 @@ abstract class Task implements Serializable, Comparable {
      *  @param effort Does this task require physical effort
      *  @param mars the virtual Mars
      */
-    public Task(String name, Person person, boolean effort, VirtualMars mars) {
+    public Task(String name, Person person, boolean effort, Mars mars) {
         this.name = name;
         this.person = person;
         this.mars = mars;
@@ -105,7 +105,7 @@ abstract class Task implements Serializable, Comparable {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) { return 0D; }
+    public static double getProbability(Person person, Mars mars) { return 0D; }
 
     /** Perform the task for the given number of seconds.
      *  Children should override and implement this.

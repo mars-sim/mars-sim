@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -31,7 +31,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      *  @param settlement settlement the ground vehicle is parked at
      *  @param mars simulated Mars
      */
-    GroundVehicle(String name, Settlement settlement, VirtualMars mars) {
+    GroundVehicle(String name, Settlement settlement, Mars mars) {
         // use Vehicle constructor
         super(name, settlement, mars);
 
@@ -44,7 +44,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      *  @param manager the unit manager
      *  @throws Exception when there are no available settlements
      */
-    GroundVehicle(String name, VirtualMars mars, UnitManager manager) throws Exception {
+    GroundVehicle(String name, Mars mars, UnitManager manager) throws Exception {
         // use Vehicle constructor
         super(name, mars, manager);
 

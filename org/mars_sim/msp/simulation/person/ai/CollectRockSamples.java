@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -37,7 +37,7 @@ class CollectRockSamples extends Task implements Serializable {
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      */
-    public CollectRockSamples(Person person, Rover rover, VirtualMars mars, 
+    public CollectRockSamples(Person person, Rover rover, Mars mars, 
 		    double requiredSamples, double startingVehicleRockCargo) {
         super("Collecting rock samples", person, true, mars);
 
@@ -174,7 +174,7 @@ class CollectRockSamples extends Task implements Serializable {
      * @param mars the virtual mars instance
      * @return true if person can perform the task.
      */
-    public static boolean canCollectRockSamples(Person person, Rover rover, VirtualMars mars) {
+    public static boolean canCollectRockSamples(Person person, Rover rover, Mars mars) {
         boolean result = true;
 
 	// Check if person can exit the rover.

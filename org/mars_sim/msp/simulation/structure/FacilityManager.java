@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -17,14 +17,14 @@ import java.io.Serializable;
 public class FacilityManager implements Serializable {
 
     // Data members
-    private VirtualMars mars; // The virtual Mars instance
+    private Mars mars; // The virtual Mars instance
     private Settlement settlement; // The settlement the facility manager belongs to.
     private Vector facilityList; // Unordered List of the settlement's facilities.
 
     /** Constructs a FacilityManager object
      *  @param settlement parent settlement
      */
-    FacilityManager(Settlement settlement, VirtualMars mars) {
+    FacilityManager(Settlement settlement, Mars mars) {
 
         // Initialize data members
         this.settlement = settlement;
@@ -51,7 +51,7 @@ public class FacilityManager implements Serializable {
     /** Returns the virtual Mars instance.
      *  @return virtual Mars instance
      */
-    public VirtualMars getVirtualMars() {
+    public Mars getMars() {
         return mars;
     }
 

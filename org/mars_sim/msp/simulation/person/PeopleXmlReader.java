@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeopleXmlReader.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -33,7 +33,7 @@ public class PeopleXmlReader extends MspXmlReader {
     // Data members
     private int elementType; // The current element type being parsed
     private PersonCollection people; // The collection of created people
-    private VirtualMars mars; // The virtual Mars instance
+    private Mars mars; // The virtual Mars instance
     private UnitManager manager; // The unit manager
     private String currentName; // The current person name parsed
     private Settlement currentSettlement; // The current settlement
@@ -48,7 +48,7 @@ public class PeopleXmlReader extends MspXmlReader {
      *  @param manager the unit manager
      *  @param mars the virtual Mars instance
      */
-    public PeopleXmlReader(UnitManager manager, VirtualMars mars) {
+    public PeopleXmlReader(UnitManager manager, Mars mars) {
         super("conf/people.xml");
 
         this.manager = manager;

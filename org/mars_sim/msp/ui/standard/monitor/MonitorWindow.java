@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.73 2002-02-04
+ * @version 2.74 2002-03-11
  * @author Barry Evans
  */
 
@@ -147,7 +147,7 @@ implements Runnable {
 
         // Add the default table tabs
         UnitManager unitManager =
-                desktop.getMainWindow().getVirtualMars().getUnitManager();
+                desktop.getMainWindow().getMars().getUnitManager();
         addTab(new TableTab(new PersonTableModel(unitManager), true));
         addTab(new TableTab(new VehicleTableModel(unitManager), true));
         addTab(new TableTab(new SettlementTableModel(unitManager), true));

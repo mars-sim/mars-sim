@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -55,7 +55,7 @@ public class Person extends Unit implements Serializable {
      *  @param settlement the settlement the person is at
      *  @param mars the virtual Mars
      */
-    Person(String name, Settlement settlement, VirtualMars mars) {
+    Person(String name, Settlement settlement, Mars mars) {
         // Use Unit constructor
         super(name, settlement.getCoordinates(), mars);
 
@@ -69,7 +69,7 @@ public class Person extends Unit implements Serializable {
      *  @param manager the unit manager
      *  @throws Exception if no suitable settlement is found
      */
-    Person(String name, VirtualMars mars, UnitManager manager) throws Exception {
+    Person(String name, Mars mars, UnitManager manager) throws Exception {
         // Use Unit constructor
         super(name, new Coordinates(0D, 0D), mars);
 
@@ -94,7 +94,7 @@ public class Person extends Unit implements Serializable {
     }
 
     /** Initialize person data */
-    private void initPersonData(VirtualMars mars) {
+    private void initPersonData(Mars mars) {
         // Initialize data members
         attributes = new NaturalAttributeManager();
         skills = new SkillManager(this);
