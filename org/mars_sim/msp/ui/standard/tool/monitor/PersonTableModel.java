@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.76 2004-06-10
+ * @version 2.77 2004-08-21
  * @author Barry Evans
  */
 
@@ -23,16 +23,17 @@ public class PersonTableModel extends UnitTableModel {
 
     // Column indexes
     private final static int  NAME = 0;           // Person name column
-    private final static int  LOCATION = 1;       // Location column
-    private final static int  HUNGER = 2;         // Hunger column
-    private final static int  FATIGUE = 3;        // Fatigue column
-	private final static int  STRESS = 4;         // Stress column
-    private final static int  PERFORMANCE = 5;    // Performance conlumn
-    private final static int  JOB = 6;            // Job column
-    private final static int  TASK = 7;           // Task column
-    private final static int  MISSION = 8;        // Mission column
-    private final static int  HEALTH = 9;         // Health column
-    private final static int  COLUMNCOUNT = 10;   // The number of Columns
+    private final static int  GENDER = 1;         // Gender column
+    private final static int  LOCATION = 2;       // Location column
+    private final static int  HUNGER = 3;         // Hunger column
+    private final static int  FATIGUE = 4;        // Fatigue column
+	private final static int  STRESS = 5;         // Stress column
+    private final static int  PERFORMANCE = 6;    // Performance conlumn
+    private final static int  JOB = 7;            // Job column
+    private final static int  TASK = 8;           // Task column
+    private final static int  MISSION = 9;        // Mission column
+    private final static int  HEALTH = 10;         // Health column
+    private final static int  COLUMNCOUNT = 11;   // The number of Columns
     private static String columnNames[];          // Names of Columns
     private static Class columnTypes[];           // Types of Columns
     
@@ -44,6 +45,8 @@ public class PersonTableModel extends UnitTableModel {
         columnTypes = new Class[COLUMNCOUNT];
         columnNames[NAME] = "Name";
         columnTypes[NAME] = String.class;
+        columnNames[GENDER] = "Gender";
+        columnTypes[GENDER] = String.class;
         columnNames[HUNGER] = "Hunger";
         columnTypes[HUNGER] = Integer.class;
         columnNames[FATIGUE] = "Fatigue";
@@ -176,6 +179,12 @@ public class PersonTableModel extends UnitTableModel {
             case NAME : {
                 result = person.getName();
             } break;
+
+			case GENDER : {
+				String genderStr = person.getGender().substring(0, 1).toUpperCase() +
+					person.getGender().substring(1);
+				result = genderStr;
+			} break;
 
             case HUNGER : {
                 double hunger = person.getPhysicalCondition().getHunger();
