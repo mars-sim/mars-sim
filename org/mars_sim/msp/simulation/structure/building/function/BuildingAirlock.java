@@ -5,12 +5,13 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.structure.building;
+package org.mars_sim.msp.simulation.structure.building.function;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
 
 /** 
  * The BuildingAirlock class represents an airlock for a building.

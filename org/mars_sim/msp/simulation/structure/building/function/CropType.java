@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
  
-package org.mars_sim.msp.simulation.structure.building;
+package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 

@@ -9,8 +9,7 @@ package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.ui.standard.*;
 
 /**

@@ -4,9 +4,10 @@
  * @version 2.75 2004-03-18
  * @author Scott Davis
  */
-package org.mars_sim.msp.simulation.structure.building;
+package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.util.*;
+
 import org.w3c.dom.*;
 
 /**

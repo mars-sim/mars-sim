@@ -9,8 +9,7 @@ package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**

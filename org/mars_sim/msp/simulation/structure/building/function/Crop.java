@@ -5,13 +5,12 @@
  * @author Scott Davis
  */
  
-package org.mars_sim.msp.simulation.structure.building;
+package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.List;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /**
  * The Crop class is a food crop grown on a farm.

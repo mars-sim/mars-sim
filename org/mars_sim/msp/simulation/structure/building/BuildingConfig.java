@@ -372,7 +372,7 @@ public class BuildingConfig {
 			NodeList inputNodes = processElement.getElementsByTagName(INPUT);
 			for (int y=0; y < inputNodes.getLength(); y++) {
 				Element inputElement = (Element) inputNodes.item(y);
-				String resource = inputElement.getAttribute(RESOURCE);
+				String resource = inputElement.getAttribute(RESOURCE).toLowerCase();
 				double rate = Double.parseDouble(inputElement.getAttribute(RATE));
 				boolean ambient = Boolean.valueOf(inputElement.getAttribute(AMBIENT)).booleanValue();
 				process.addMaxInputResourceRate(resource, rate, ambient);
@@ -382,7 +382,7 @@ public class BuildingConfig {
 			NodeList outputNodes = processElement.getElementsByTagName(OUTPUT);
 			for (int y=0; y < outputNodes.getLength(); y++) {
 				Element outputElement = (Element) outputNodes.item(y);
-				String resource = outputElement.getAttribute(RESOURCE);
+				String resource = outputElement.getAttribute(RESOURCE).toLowerCase();
 				double rate = Double.parseDouble(outputElement.getAttribute(RATE));
 				boolean ambient = Boolean.valueOf(outputElement.getAttribute(AMBIENT)).booleanValue();
 				process.addMaxOutputResourceRate(resource, rate, ambient);

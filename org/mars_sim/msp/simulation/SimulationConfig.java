@@ -12,7 +12,7 @@ import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
-import org.mars_sim.msp.simulation.structure.building.CropConfig;
+import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
