@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -86,6 +86,9 @@ class MaintainVehicle extends Task implements Serializable {
                     result = 25D;
             }
         }
+
+	// Effort-driven task modifier.
+	result *= person.getPerformanceRating();
 
         return result;
     }

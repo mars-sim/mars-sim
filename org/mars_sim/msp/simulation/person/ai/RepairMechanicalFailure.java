@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMechanicalFailure.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -48,6 +48,9 @@ class RepairMechanicalFailure extends Task implements Serializable {
             MechanicalFailure failure = vehicle.getMechanicalFailure();
             if ((failure != null) && !failure.isFixed()) result = 100D;
         }
+
+	// Effort-driven task modifier.
+	result *= person.getPerformanceRating();
 
         return result;
     }

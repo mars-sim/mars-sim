@@ -105,7 +105,7 @@ abstract class Task implements Serializable, Comparable {
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person, VirtualMars mars) { return 0; }
+    public static double getProbability(Person person, VirtualMars mars) { return 0D; }
 
     /** Perform the task for the given number of seconds.
      *  Children should override and implement this.

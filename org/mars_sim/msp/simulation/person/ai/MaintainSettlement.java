@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainSettlement.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -41,8 +41,14 @@ class MaintainSettlement extends Task implements Serializable {
      *  @return the weighted probability that a person might perform this task
      */
     public static double getProbability(Person person, VirtualMars mars) {
-        if (person.getSettlement() != null) return 50D;
-        else return 0D;
+        double result = 0D;
+	    
+        if (person.getSettlement() != null) result = 50D;
+
+        // Effort-driven task modifier.
+	result*= person.getPerformanceRating();
+	
+	return result;
     }
 
     /** This task simply waits until the set duration of the task is complete, then ends the task.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-24
  * @author Scott Davis
  */
 
@@ -40,16 +40,21 @@ class TendGreenhouse extends Task implements Serializable {
      *  Returns a 0 if not.
      */
     public static double getProbability(Person person, VirtualMars mars) {
+        double result = 0D;
+	    
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             GreenhouseFacility greenhouse =
                    (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
             if ((greenhouse.getPhase().equals("Growing")) &&
                     (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
-                return 0D;
-            else
-                return 25D;
-        } else
-            return 0D;
+                result = 0D;
+            else result = 25D;
+	}
+
+	// Effort-driven task modifier.
+	result *= person.getPerformanceRating();
+
+	return result;
     }
 
     /** Performs the tending greenhouse task for a given amount of time.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitRoverEVA.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-02-23
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ class ExitRoverEVA extends Task implements Serializable {
      * @param rover the rover to exit
      */
     public ExitRoverEVA(Person person, VirtualMars mars, Rover rover) {
-        super("Exiting rover for EVA", person, false, mars);
+        super("Exiting rover for EVA", person, true, mars);
 
         // Initialize data members
 	description = "Exiting " + rover.getName() + " for EVA";

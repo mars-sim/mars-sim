@@ -113,13 +113,13 @@ public class TaskManager implements Serializable {
 
     /** Perform the current task for a given amount of time.
      *  @param time amount of time to perform the action
-     *  @param effciency The performance rating of person performance task.
+     *  @param efficiency The performance rating of person performance task.
      */
-    public void performTask(double time, double effeciency) {
+    public void performTask(double time, double efficiency) {
         if (currentTask != null) {
             // For effort driven task, reduce the effective time
             if (currentTask.getEffortDriven()) {
-                time *= effeciency;
+                time *= efficiency;
             }
             currentTask.performTask(time);
         }
