@@ -366,6 +366,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void timePassing(double time) {
         if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
+	malfunctionManager.timePassing(time);
     }
 
     /**

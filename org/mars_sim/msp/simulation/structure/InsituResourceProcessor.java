@@ -68,12 +68,15 @@ public class InsituResourceProcessor extends Facility
      *  @param amount of time passing (in millisols) 
      */
     void timePassing(double time) {
+        super.timePassing(time);
+	    
         Inventory inv = manager.getSettlement().getInventory();
         inv.addResource(Inventory.OXYGEN, getOxygenRate() * time);
         inv.addResource(Inventory.WATER, getWaterRate() * time);
         inv.addResource(Inventory.FUEL, getFuelRate() * time);
 
-	malfunctionManager.activeTimePassing(time);
+	if (manager.getSettlement().getCurrentPopulationNum() > 0)
+	    malfunctionManager.activeTimePassing(time);
     }
 }
 

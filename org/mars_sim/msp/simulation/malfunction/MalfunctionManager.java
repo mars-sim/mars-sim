@@ -18,6 +18,7 @@ import java.util.*;
  */
 public class MalfunctionManager implements Serializable {
 
+    // Data members
     private Malfunctionable entity; // The owning entity.
     private double timeSinceLastMaintenance; // Time passing (in millisols) since 
                                              // last maintenance on entity.
@@ -27,6 +28,12 @@ public class MalfunctionManager implements Serializable {
     private Collection malfunctions; // The current malfunctions in the unit.
     private Mars mars; // The virtual Mars.
 
+    // Life support modifiers.
+    private double oxygenFlowModifier = 100D;
+    private double waterFlowModifier = 100D;
+    private double airPressureModifier = 100D;
+    private double temperatureModifier = 100D;
+    
     /**
      * Constructs a MalfunctionManager object.
      */
@@ -112,7 +119,7 @@ public class MalfunctionManager implements Serializable {
 
     /**
      * Time passing while the unit is being actively used.
-     * @param amount of time passing (in millisols)
+     * @param time amount of time passing (in millisols)
      */
     public void activeTimePassing(double time) {
 
@@ -127,6 +134,81 @@ public class MalfunctionManager implements Serializable {
 	}
     }
 
+    /**
+     * Time passing for unit.
+     * @param time amount of time passing (in millisols)
+     */
+    public void timePassing(double time) {
+   
+        // Determine life support modifiers.
+	setLifeSupportModifiers(time);
+
+	// Deplete resources.
+	depleteResources(time);
+    }
+
+    /**
+     * Determine life support modifiers for given time.
+     * @param time amount of time passing (in millisols)
+     */
+    public void setLifeSupportModifiers(double time) {
+	    
+	double tempOxygenFlowModifier = 0D;
+	double tempWaterFlowModifier = 0D;
+	double tempAirPressureModifier = 0D;
+	double tempTemperatureModifier = 0D;
+	    
+        // Make any life support modifications.
+	Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+	        Map effects = malfunction.getLifeSupportEffects();
+		if (effects.get("Oxygen") != null)
+	            tempOxygenFlowModifier += ((Double) effects.get("Oxygen")).doubleValue();
+		if (effects.get("Water") != null)
+	            tempWaterFlowModifier += ((Double) effects.get("Water")).doubleValue();
+		if (effects.get("Air Pressure") != null)
+	            tempAirPressureModifier += ((Double) effects.get("Air Pressure")).doubleValue();
+		if (effects.get("Temperature") != null)
+	            tempTemperatureModifier += ((Double) effects.get("Temperature")).doubleValue();
+	    }
+	}
+
+	if (tempOxygenFlowModifier < 0D) oxygenFlowModifier += tempOxygenFlowModifier * time;
+	else oxygenFlowModifier = 100D;
+
+	if (tempWaterFlowModifier < 0D) waterFlowModifier += tempWaterFlowModifier * time;
+	else waterFlowModifier = 100D;
+
+	if (tempAirPressureModifier < 0D) airPressureModifier += tempAirPressureModifier * time;
+	else airPressureModifier = 100D;
+
+	if (tempTemperatureModifier != 0D) temperatureModifier += tempTemperatureModifier * time;
+        else temperatureModifier = 100D;
+    }
+
+    /**
+     * Depletes resources due to malfunctions.
+     * @param time amount of time passing (in millisols)
+     */
+    public void depleteResources(double time) {
+
+        Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+	        Map effects = malfunction.getResourceEffects();
+	        Iterator i2 = effects.keySet().iterator();
+	        while (i2.hasNext()) {
+	            String key = (String) i2.next();
+		    double amount = ((Double) effects.get(key)).doubleValue();
+		    entity.getInventory().removeResource(key, amount * time);
+	        }
+	    }
+	}
+    }
+	
     /**
      * Called when the unit has an accident.
      */
@@ -217,5 +299,37 @@ public class MalfunctionManager implements Serializable {
 		}
 	    }
 	}
+    }
+
+    /**
+     * Gets the oxygen flow modifier.
+     * @return modifier
+     */
+    public double getOxygenFlowModifier() {
+        return oxygenFlowModifier;
+    }
+
+    /**
+     * Gets the water flow modifier.
+     * @return modifier
+     */
+    public double getWaterFlowModifier() {
+        return waterFlowModifier; 
+    }
+
+    /**
+     * Gets the air flow modifier.
+     * @return modifier
+     */
+    public double getAirPressureModifier() {
+        return airPressureModifier;
+    }
+
+    /**
+     * Gets the temperature modifier.
+     * @return modifier
+     */
+    public double getTemperatureModifier() {
+        return temperatureModifier;
     }
 }

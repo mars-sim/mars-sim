@@ -140,7 +140,8 @@ public class Greenhouse extends Facility implements Serializable {
      *  @param time the amount of time passing (in millisols) 
      */
     void timePassing(double time) {
-
+        super.timePassing(time);
+	    
         if (phase.equals("Growing")) {
             growthPeriodCompleted += time;
             if (growthPeriodCompleted >= getGrowthPeriod()) {
@@ -149,7 +150,8 @@ public class Greenhouse extends Facility implements Serializable {
             }
         }
 
-	malfunctionManager.activeTimePassing(time);
+	if (manager.getSettlement().getCurrentPopulationNum() > 0)
+	    malfunctionManager.activeTimePassing(time);
     }
 
     /**

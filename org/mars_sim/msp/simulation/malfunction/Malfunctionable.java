@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * Malfunctionable.java
- * @version 2.74 2002-04-25
+ * @version 2.74 2002-04-29
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.malfunction;
 
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 
 /**
@@ -31,4 +32,10 @@ public interface Malfunctionable {
      * @return person collection
      */
     public PersonCollection getAffectedPeople();
+
+    /**
+     * Gets the inventory associated with this entity.
+     * @return inventory
+     */
+    public Inventory getInventory();
 }

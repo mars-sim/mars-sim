@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.74 2002-04-25
+ * @version 2.74 2002-04-29
  * @author Barry Evans
  */
 
@@ -22,10 +22,14 @@ import java.util.Iterator;
  */
 public class PhysicalCondition implements Serializable {
 
-
+    // Static values
+    private static int MIN_VALUE = 0;
+    private static int MAX_VALUE = 1;
+	
+    // Data members
     private boolean isAlive;            // Is the person alive
     private HashMap problems;           // Injury/Illness effecting person
-    private HealthProblem serious;     // Mosr serious problem
+    private HealthProblem serious;      // Mosr serious problem
     private double fatigue;             // Person's fatigue level
     private double hunger;              // Person's hunger level
     private double performance;         // Performance factor
@@ -137,7 +141,8 @@ public class PhysicalCondition implements Serializable {
         recalculate |= consumeOxygen(support, props.getPersonOxygenConsumption() * (time / 1000D));
         recalculate |= consumeWater(support, props.getPersonWaterConsumption() * (time / 1000D));
         recalculate |= requireAirPressure(support, props.getPersonMinAirPressure());
-        recalculate |= requireTemperature(support, props.getPersonMinTemperature());
+        recalculate |= requireTemperature(support, props.getPersonMinTemperature(), 
+                props.getPersonMaxTemperature());
 
         // Build up fatigue & hunger for given time passing.
         fatigue += time;
@@ -155,7 +160,6 @@ public class PhysicalCondition implements Serializable {
     public void addMedicalComplaint(Complaint complaint) {
     
         if ((complaint != null) && !problems.containsKey(complaint)) {
-	    System.out.println(person.getName() + " has new health problem: " + complaint.getName());
 	    HealthProblem problem = new HealthProblem(complaint, person, person.getAccessibleAid());
 	    problems.put(complaint, problem);
 	    recalculate();
@@ -173,7 +177,7 @@ public class PhysicalCondition implements Serializable {
                 container.getInventory().removeResource(Inventory.FOOD, amount);
 
         if (checkResourceConsumption(amountRecieved, amount,
-                                     medic.getStarvation())) {
+                                     MIN_VALUE, medic.getStarvation())) {
             recalculate();
         }
     }
@@ -186,12 +190,11 @@ public class PhysicalCondition implements Serializable {
     private boolean consumeOxygen(LifeSupport support, double amount) {
         double amountRecieved = support.provideOxygen(amount);
 
-        return checkResourceConsumption(amountRecieved, amount,
-                                        medic.getSuffocation());
+        return checkResourceConsumption(amountRecieved, amount / 2D,
+                                        MIN_VALUE, medic.getSuffocation());
     }
 
     /** Person consumes given amount of water
-     *
      *  @param support Life support system providing water.
      *  @param amount amount of water to consume (in kg)
      *  @return new problem added.
@@ -199,8 +202,8 @@ public class PhysicalCondition implements Serializable {
     private boolean consumeWater(LifeSupport support, double amount) {
         double amountReceived = support.provideWater(amount);
 
-        return checkResourceConsumption(amountReceived, amount,
-                                        medic.getDehydration());
+        return checkResourceConsumption(amountReceived, amount / 2D,
+                                        MIN_VALUE, medic.getDehydration());
     }
 
     /**
@@ -214,22 +217,23 @@ public class PhysicalCondition implements Serializable {
      * @param complaint Problem assocoiated to this resource.
      * @return Has a new problem been added.
      */
-    private boolean checkResourceConsumption(double actual, double required,
-                                Complaint complaint) {
+    private boolean checkResourceConsumption(double actual, double required, 
+            int bounds, Complaint complaint) {
         boolean newProblem = false;
-
-        if (actual < required) {
-            problems.put(complaint, new HealthProblem(complaint, person,
-                                                      person.getAccessibleAid()));
-            newProblem = true;
-        }
+        if ((bounds == MIN_VALUE) && (actual < required)) newProblem = true;
+	if ((bounds == MAX_VALUE) && (actual > required)) newProblem = true;
+	
+        if (newProblem) {
+	    if (!problems.containsKey(complaint)) {
+		problems.put(complaint, new HealthProblem(complaint, person, 
+		        person.getAccessibleAid()));
+	    }
+	}
         else {
             //Is the person suffering from the illness, if so recovery
             // as the amount has been provided
             HealthProblem illness = (HealthProblem)problems.get(complaint);
-            if (illness != null) {
-                illness.startRecovery();
-            }
+            if (illness != null) illness.startRecovery();
         }
         return newProblem;
     }
@@ -242,7 +246,7 @@ public class PhysicalCondition implements Serializable {
      */
     private boolean requireAirPressure(LifeSupport support, double pressure) {
         return checkResourceConsumption(support.getAirPressure(), pressure,
-                                        medic.getDecompression());
+                                        MIN_VALUE, medic.getDecompression());
     }
 
     /**
@@ -251,9 +255,13 @@ public class PhysicalCondition implements Serializable {
      * @param temperature minimum temperature person requires (in degrees Celsius)
      * @return new problem added.
      */
-    private boolean requireTemperature(LifeSupport support, double temperature) {
-        return checkResourceConsumption(support.getTemperature(), temperature,
-                                        medic.getFreezing());
+    private boolean requireTemperature(LifeSupport support, double minTemperature, 
+            double maxTemperature) {
+	boolean freeze = checkResourceConsumption(support.getTemperature(),  
+                minTemperature, MIN_VALUE, medic.getFreezing());
+	boolean hot = checkResourceConsumption(support.getTemperature(),
+	        maxTemperature, MAX_VALUE, medic.getHeatStroke());
+        return freeze || hot;
     }
 
     /**

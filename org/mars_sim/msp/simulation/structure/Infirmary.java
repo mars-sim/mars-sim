@@ -82,6 +82,7 @@ public class Infirmary extends Facility
      * @param time the amount of time passing (millisols)
      */
     public void timePassing(double time) {
+	super.timePassing(time);
         if (sickBay.getTreatedPatientCount() > 0) 
 	    malfunctionManager.activeTimePassing(time);
     }

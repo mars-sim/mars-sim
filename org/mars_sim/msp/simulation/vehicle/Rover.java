@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.74 2002-04-27
+ * @version 2.74 2002-04-29
  * @author Scott Davis
  */
 
@@ -25,7 +25,9 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     private static final double OXYGEN_CAPACITY = 350D; // Oxygen capacity of rover in kg.
     private static final double WATER_CAPACITY = 1400D; // Water capacity of rover in kg.
     private static final double FOOD_CAPACITY = 525D; // Food capacity of rover in kg.
-	
+    private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
+    private double NORMAL_TEMP = 25D; // Normal temperature (celsius)
+    
     // Data members
     protected int crewCapacity = 0; // The rover's capacity for crewmembers.
     protected Airlock airlock; // The rover's airlock.
@@ -141,10 +143,12 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
+	if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
         if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
-
-        // need to also check for temp and air pressure.
+        if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
+        if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
+        if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
+        if (getTemperature() != NORMAL_TEMP) result = false;
 	
         return result;
     }
@@ -161,7 +165,8 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      *  @return the amount of oxgyen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-        return inventory.removeResource(Inventory.OXYGEN, amountRequested);
+        return inventory.removeResource(Inventory.OXYGEN, amountRequested) *
+	        (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
     /** Gets water from system.
@@ -169,23 +174,30 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      *  @return the amount of water actually received from system (kg)
      */
     public double provideWater(double amountRequested) {
-        return inventory.removeResource(Inventory.WATER, amountRequested);
+        return inventory.removeResource(Inventory.WATER, amountRequested)  *
+	        (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
     /** Gets the air pressure of the life support system.
      *  @return air pressure (atm)
      */
     public double getAirPressure() {
-        // Return 1 atm for now
-        return 1D;
+        double result = NORMAL_AIR_PRESSURE * 
+	        (malfunctionManager.getAirPressureModifier() / 100D);
+        double ambient = mars.getWeather().getAirPressure(location);
+        if (result < ambient) return ambient;
+        else return result;
     }
 
     /** Gets the temperature of the life support system.
      *  @return temperature (degrees C)
      */
     public double getTemperature() {
-        // Return 25 degrees celsius for now
-        return 25D;
+        double result = NORMAL_TEMP *
+	        (malfunctionManager.getTemperatureModifier() / 100D);
+        double ambient = mars.getWeather().getTemperature(location);
+        if (result < ambient) return ambient;
+        else return result;
     }
 
     /** 
@@ -201,6 +213,7 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      * @param time the amount of time passing (in millisols)
      */
     public void timePassing(double time) {
+	super.timePassing(time);
         airlock.timePassing(time);
     }
 

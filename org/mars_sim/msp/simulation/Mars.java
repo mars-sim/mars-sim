@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.74 2002-04-28
+ * @version 2.74 2002-04-29
  * @author Scott Davis
  */
 
@@ -43,6 +43,7 @@ public class Mars implements Serializable {
     private MedicalManager medicalManager; // Medical complaints
     private MasterClock masterClock; // Master clock for virtual world
     private OrbitInfo orbitInfo; // Orbital information
+    private Weather weather; // Martian weather
 
     /** Constructs a Mars object */
     public Mars(SimulationProperties initProps) {
@@ -61,6 +62,9 @@ public class Mars implements Serializable {
 
         // Initialize orbit info
         orbitInfo = new OrbitInfo();
+
+	// Initialize weather
+	weather = new Weather(this);
 
         // Initialize and start master clock
         masterClock = new MasterClock(this);
@@ -96,7 +100,6 @@ public class Mars implements Serializable {
      * This method starts the execution of the simulation
      */
     public void start() {
-
         clockThread = new Thread(masterClock, "Master Clock");
         clockThread.start();
     }
@@ -198,6 +201,13 @@ public class Mars implements Serializable {
         return surfaceFeatures;
     }
 
+    /** Returns Martian weather
+     *  @return weather
+     */
+    public Weather getWeather() {
+        return weather;
+    }
+    
     /** Returns the unit manager
      *  @return unit manager for Mars
      */
@@ -240,6 +250,7 @@ public class Mars implements Serializable {
         out.writeObject(missionManager);
 	out.writeObject(medicalManager);
         out.writeObject(orbitInfo);
+	out.writeObject(weather);
         out.writeObject(masterClock);
     }
 
@@ -254,6 +265,7 @@ public class Mars implements Serializable {
         missionManager = (MissionManager)in.readObject();
 	medicalManager = (MedicalManager)in.readObject();
         orbitInfo = (OrbitInfo)in.readObject();
+	weather = (Weather)in.readObject();
         masterClock = (MasterClock)in.readObject();
     }
 }

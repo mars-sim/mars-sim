@@ -162,6 +162,7 @@ public class Laboratory extends Facility implements Lab, Serializable {
      * @param time the amount of time passing (millisols)
      */
     public void timePassing(double time) {
+	super.timePassing(time);
         if (researcherNum > 0) malfunctionManager.activeTimePassing(time);
     }
 

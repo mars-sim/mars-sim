@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Facility.java
- * @version 2.74 2002-04-27
+ * @version 2.74 2002-04-29
  * @author Scott Davis
  */
 
@@ -63,7 +63,9 @@ public abstract class Facility implements Malfunctionable, Serializable {
      *  Override in children to use this. 
      *  @param time the amount of time passing (in millisols) 
      */
-    void timePassing(double time) {}
+    void timePassing(double time) {
+        malfunctionManager.timePassing(time);
+    }
 
     /**
      * Gets a collection of people affected by this entity.
@@ -97,5 +99,13 @@ public abstract class Facility implements Malfunctionable, Serializable {
         }
 
         return people;
+    }
+
+    /**
+     * Gets the inventory associated with the facility.
+     * @return inventory
+     */
+    public Inventory getInventory() {
+        return manager.getSettlement().getInventory();
     }
 }

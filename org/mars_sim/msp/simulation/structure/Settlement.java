@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-04-27
+ * @version 2.74 2002-04-29
  * @author Scott Davis
  */
 
@@ -23,6 +23,8 @@ public class Settlement extends Structure implements LifeSupport {
     // Default population capacity for a settlement
     private static int DEFAULT_POPULATION_CAPACITY = 20;
     private static Random rand = new Random();
+    private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
+    private double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
 
     // Data members
     int populationCapacity; // The population capacity of the settlement
@@ -194,9 +196,11 @@ public class Settlement extends Structure implements LifeSupport {
         boolean result = true;
 
 	if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
-	if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
-
-	// need to also check for temp and air pressure
+        if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
+        if (getOxygenFlowModifier() < 100D) result = false;
+        if (getWaterFlowModifier() < 100D) result = false;
+        if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
+        if (getTemperature() != NORMAL_TEMP) result = false;
 	
 	return result;
     }
@@ -213,7 +217,25 @@ public class Settlement extends Structure implements LifeSupport {
      *  @return the amount of oxgyen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-         return inventory.removeResource(Inventory.OXYGEN, amountRequested);
+         return inventory.removeResource(Inventory.OXYGEN, amountRequested) *
+	         (getOxygenFlowModifier() / 100D);
+    }
+
+    /**
+     * Gets the oxygen flow modifier for this settlement.
+     * @return oxygen flow modifier
+     */
+    public double getOxygenFlowModifier() {
+
+        double result = malfunctionManager.getOxygenFlowModifier();
+
+	Iterator i = facilityManager.getFacilities();
+	while (i.hasNext()) {
+	    Facility facility = (Facility) i.next();
+	    result *= (facility.getMalfunctionManager().getOxygenFlowModifier() / 100D);
+	}
+
+	return result;
     }
     
     /** Gets water from system.
@@ -221,25 +243,81 @@ public class Settlement extends Structure implements LifeSupport {
      *  @return the amount of water actually received from system (kg)
      */
     public double provideWater(double amountRequested) {
-        return inventory.removeResource(Inventory.WATER, amountRequested);
+        return inventory.removeResource(Inventory.WATER, amountRequested) * 
+	        (getWaterFlowModifier() / 100D);
     }
 
+    /**
+     * Gets the water flow modifier for this settlement.
+     * @return water flow modifier
+     */
+    public double getWaterFlowModifier() {
+
+        double result = malfunctionManager.getWaterFlowModifier();
+
+	Iterator i = facilityManager.getFacilities();
+	while (i.hasNext()) {
+	    Facility facility = (Facility) i.next();
+	    result *= (facility.getMalfunctionManager().getWaterFlowModifier() / 100D);
+	}
+
+	return result;
+    }
+    
     /** Gets the air pressure of the life support system.
      *  @return air pressure (atm)
      */
     public double getAirPressure() {
-        // Return 1 atm for now
-        return 1D;
+        double result = NORMAL_AIR_PRESSURE * (getAirPressureModifier() / 100D);
+        double ambient = mars.getWeather().getAirPressure(location);
+        if (result < ambient) return ambient;
+        else return result;
     }
 
+    /**
+     * Gets the air pressure modifier for this settlement.
+     * @return air pressure flow modifier
+     */
+    public double getAirPressureModifier() {
+
+        double result = malfunctionManager.getAirPressureModifier();
+
+	Iterator i = facilityManager.getFacilities();
+	while (i.hasNext()) {
+	    Facility facility = (Facility) i.next();
+	    result *= (facility.getMalfunctionManager().getAirPressureModifier() / 100D);
+	}
+
+	return result;
+    }
+    
     /** Gets the temperature of the life support system.
      *  @return temperature (degrees C)
      */
     public double getTemperature() {
-        // Return 25 degrees celsius for now
-	return 25D;
+	double result = NORMAL_TEMP * (getTemperatureModifier() / 100D);
+        double ambient = mars.getWeather().getTemperature(location);
+        if (result < ambient) return ambient;
+        else return result;
     }
 
+    /**
+     * Gets the temperature modifier for this settlement.
+     * @return temperature flow modifier
+     */
+    public double getTemperatureModifier() {
+
+        double result = malfunctionManager.getTemperatureModifier();
+
+	Iterator i = facilityManager.getFacilities();
+	while (i.hasNext()) {
+	    Facility facility = (Facility) i.next();
+	    result *= (facility.getMalfunctionManager().getTemperatureModifier() / 100D);
+	}
+
+	return result;
+    }
+    
     /**
      * Gets the settlement's airlock.
      * @return settlement's airlock
@@ -254,7 +332,9 @@ public class Settlement extends Structure implements LifeSupport {
     public void timePassing(double time) {
         facilityManager.timePassing(time);
 	airlock.timePassing(time);
-	malfunctionManager.activeTimePassing(time);
+	if (getCurrentPopulationNum() > 0)
+	    malfunctionManager.activeTimePassing(time);
+	malfunctionManager.timePassing(time);
     }
 
     /**

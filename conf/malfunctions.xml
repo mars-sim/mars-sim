@@ -15,8 +15,12 @@
         <EFFECTS>
             <RESOURCE>
                 <NAME>Oxygen</NAME>
-                <CHANGE_RATE>-1.0</CHANGE_RATE>
-            </RESOURCE>
+                <CHANGE_RATE>-.01</CHANGE_RATE>
+	    </RESOURCE>
+	    <LIFE_SUPPORT>
+		<NAME>Oxygen</NAME>
+		<CHANGE_RATE>-.01</CHANGE_RATE>
+	    </LIFE_SUPPORT>
 	    <LIFE_SUPPORT>
 	        <NAME>Air Pressure</NAME>
 		<CHANGE_RATE>-.01</CHANGE_RATE>
@@ -37,12 +41,6 @@
 	    <ENTITY>Vehicle</ENTITY>
 	    <ENTITY>EVASuit</ENTITY>
         </SCOPE>
-        <EFFECTS>
-	    <LIFE_SUPPORT>
-	        <NAME>Oxygen</NAME>
-		<CHANGE_RATE>-.5</CHANGE_RATE>
-	    </LIFE_SUPPORT>
-	</EFFECTS>
 	<MEDICAL_COMPLAINT>
             <NAME>Minor Burns</NAME>
             <PROBABILITY>5.0</PROBABILITY>
@@ -64,7 +62,11 @@
         <EFFECTS>
 	    <LIFE_SUPPORT>
 	        <NAME>Oxygen</NAME>
-		<CHANGE_RATE>-1.0</CHANGE_RATE>
+		<CHANGE_RATE>-.01</CHANGE_RATE>
+	    </LIFE_SUPPORT>
+	    <LIFE_SUPPORT>
+		<NAME>Temperature</NAME>
+		<CHANGE_RATE>+.01</CHANGE_RATE>
 	    </LIFE_SUPPORT>
 	</EFFECTS>
 	<MEDICAL_COMPLAINT>
@@ -92,7 +94,11 @@
         <EFFECTS>
 	    <LIFE_SUPPORT>
 	        <NAME>Oxygen</NAME>
-		<CHANGE_RATE>-2.0</CHANGE_RATE>
+		<CHANGE_RATE>-.02</CHANGE_RATE>
+	    </LIFE_SUPPORT>
+	    <LIFE_SUPPORT>
+		<NAME>Temperature</NAME>
+		<CHANGE_RATE>+.02</CHANGE_RATE>
 	    </LIFE_SUPPORT>
 	</EFFECTS>
 	<MEDICAL_COMPLAINT>
@@ -125,7 +131,7 @@
         <NAME>Fuel Leak</NAME>
 	<SEVERITY>50</SEVERITY>
 	<PROBABILITY>30.0</PROBABILITY>
-	<EMERGENCY_WORK_TIME>0.0</EMERGENCY_WORK_TIME>
+	<EMERGENCY_WORK_TIME>100.0</EMERGENCY_WORK_TIME>
 	<WORK_TIME>0.0</WORK_TIME>
 	<EVA_WORK_TIME>50.0</EVA_WORK_TIME>
         <SCOPE>
@@ -134,7 +140,7 @@
         <EFFECTS>
 	    <RESOURCE>
 	        <NAME>Fuel</NAME>
-		<CHANGE_RATE>-1.0</CHANGE_RATE>
+		<CHANGE_RATE>-.1</CHANGE_RATE>
 	    </RESOURCE>
 	</EFFECTS>
     </MALFUNCTION>

@@ -156,6 +156,7 @@ public class MaintenanceGarage extends Facility implements Serializable {
      * @param time the amount of time passing (millisols)
      */
     public void timePassing(double time) {
+	super.timePassing(time);
         if (vehicles.size() > 0) malfunctionManager.activeTimePassing(time);
     }
 

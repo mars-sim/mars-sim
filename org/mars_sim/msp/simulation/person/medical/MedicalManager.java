@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalManager.java
- * @version 2.74 2002-02-25
+ * @version 2.74 2002-04-29
  * @author Barry Evans
  */
 
@@ -38,6 +38,7 @@ public class MedicalManager implements Serializable {
     private Complaint dehydration;       // Pre-defined complaint
     private Complaint decompression;     // Pre-defined complaint
     private Complaint freezing;          // Pre-defined complaint
+    private Complaint heatStroke;        // Pre-defined complaint
 
     /**
      * The name of the suffocation complaint
@@ -65,6 +66,11 @@ public class MedicalManager implements Serializable {
     public final static String FREEZING = "Freezing";
 
     /**
+     * The name of the heat stroke complaint
+     */
+    public final static String HEAT_STROKE = "Heat Stroke";
+    
+    /**
      * Construct a new Medical Manager. This also constructs all the
      * pre-defined Complaints and the user-defined ones in the XML
      * propery file.
@@ -87,31 +93,32 @@ public class MedicalManager implements Serializable {
         // Quite serious, 70, and has a 80% performance factor.
         // Zero recovery as death will result if unchecked.
         starvation = createEnvironmentComplaint(STARVATION, 70,
-                                     props.getPersonLackOfFoodPeriod(),
-                                     80);
+                props.getPersonLackOfFoodPeriod(), 80);
 
-        // Most serious complaint, 100, and has a '0' performance factor, i.e.
+        // Most serious complaint, 100, and has a 25% performance factor, i.e.
         // Person can be nothing.
         suffocation = createEnvironmentComplaint(SUFFOCATION, 100,
-                                       props.getPersonLackOfOxygenPeriod(),
-                                       0);
+                props.getPersonLackOfOxygenPeriod(), 25);
 
         // Very serious complaint, 70, and a 70% performance effect. Zero
         // recovery as death will result
         dehydration = createEnvironmentComplaint(DEHYDRATION, 60,
-                                      props.getPersonLackOfWaterPeriod(),
-                                      70);
+                props.getPersonLackOfWaterPeriod(), 70);
 
-        // Very serious complaint, 100, and has a 0% performance factor. Zero
-	    // recovery as death will result
-	    decompression = createEnvironmentComplaint(DECOMPRESSION, 100,
-                                    props.getPersonDecompressionTime() / 60D,
-                                    0);
+        // Very serious complaint, 100, and has a 10% performance factor. Zero
+        // recovery as death will result
+        decompression = createEnvironmentComplaint(DECOMPRESSION, 100,
+                props.getPersonDecompressionTime() / 60D, 10);
 
         // Somewhat serious complaint, 80, and a 40% performance factor. Zero
-	    // recovery as death will result
-	    freezing = createEnvironmentComplaint(FREEZING, 80,
-                                      props.getPersonFreezingTime(),40);
+        // recovery as death will result
+        freezing = createEnvironmentComplaint(FREEZING, 80,
+                props.getPersonFreezingTime(), 40);
+
+        // Somewhat serious complaint, 80, and a 40% performance factor. Zero
+        // recovery as death will result
+        heatStroke = createEnvironmentComplaint(HEAT_STROKE, 80,
+                100D, 40);
 
         /** Creates initial complaints from XML config file */
         XmlReader medicalReader = new XmlReader(this);
@@ -296,5 +303,15 @@ public class MedicalManager implements Serializable {
      */
     public Complaint getFreezing() {
         return freezing;
+    }
+
+    /**
+     * Return the pre-defined Medical Complaint that signifies a Heat Stroke
+     * complaint.
+     *
+     * @return Medical complaint for heat stroke.
+     */
+    public Complaint getHeatStroke() {
+        return heatStroke;
     }
 }

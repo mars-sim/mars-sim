@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PropertiesXmlReader.java
- * @version 2.74 2002-03-10
+ * @version 2.74 2002-04-30
  * @author Scott Davis
  */
 
@@ -41,7 +41,8 @@ class PropertiesXmlReader extends MspXmlReader {
     private static final int MIN_TEMPERATURE = 21;
     private static final int FREEZING_TIME = 22;
     private static final int AIRLOCK_CYCLE_TIME = 23;
-
+    private static final int MAX_TEMPERATURE = 24;
+    
     private static final int INIT_PROPERTIES = 100;
     private static final int INIT_SETTLEMENTS = 101;
 
@@ -59,6 +60,7 @@ class PropertiesXmlReader extends MspXmlReader {
     private double personMinAirPressure; // The minimum air pressure property
     private double personDecompression; // The decompression property
     private double personMinTemperature; // The minimum temperature property
+    private double personMaxTemperature; // The maximum temperature property
     private double personFreezingTime; // The freezing time property
     private double roverFuelEfficiency; // The rover fuel efficiency property
     private double roverRange; // The rover range property
@@ -156,10 +158,12 @@ class PropertiesXmlReader extends MspXmlReader {
 	if (name.equals("MIN_TEMPERATURE")) {
             elementType = MIN_TEMPERATURE;
 	}
+	if (name.equals("MAX_TEMPERATURE")) {
+	    elementType = MAX_TEMPERATURE;
+	}
 	if (name.equals("FREEZING_TIME")) {
 	    elementType = FREEZING_TIME;
 	}
-
 	if (name.equals("INIT_PROPERTIES")) {
 	    elementType = INIT_PROPERTIES;
 	}
@@ -198,6 +202,7 @@ class PropertiesXmlReader extends MspXmlReader {
 	    case MIN_AIR_PRESSURE:
 	    case DECOMPRESSION:
 	    case MIN_TEMPERATURE:
+	    case MAX_TEMPERATURE:
 	    case FREEZING_TIME:
                 elementType = PERSON_PROPERTIES;
                 break;
@@ -260,6 +265,8 @@ class PropertiesXmlReader extends MspXmlReader {
 		personDecompression = Double.parseDouble(data);
 	    case MIN_TEMPERATURE:
 		personMinTemperature = Double.parseDouble(data);
+	    case MAX_TEMPERATURE:
+	        personMaxTemperature = Double.parseDouble(data);
 	    case FREEZING_TIME:
 		personFreezingTime = Double.parseDouble(data);
             case OXYGEN_STORAGE_CAPACITY:
@@ -396,6 +403,15 @@ class PropertiesXmlReader extends MspXmlReader {
      */
     public double getPersonMinTemperature() {
         return personMinTemperature;
+    }
+
+    /**
+     * Gets the person maximum temperature property.
+     * Default value is 48 degrees Celsius
+     * @return person maximum temperature property
+     */
+    public double getPersonMaxTemperature() {
+        return personMaxTemperature;
     }
 
     /**

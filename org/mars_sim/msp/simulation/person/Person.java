@@ -159,9 +159,7 @@ public class Person extends Unit implements Serializable {
         super.setContainerUnit(containerUnit);
 
         MedicalAid aid = getAccessibleAid();
-	    if (aid != null) {
-	        health.canStartTreatment(aid);
-	    }
+        if (aid != null) health.canStartTreatment(aid);
     }
 
     /** Sets the person's fatigue level
@@ -195,6 +193,7 @@ public class Person extends Unit implements Serializable {
      */
     void setDead() {
         mind.setInactive();
+	System.out.println(getName() + ": " + health.getHealthSituation());
     }
 
     /** Person can take action with time passing

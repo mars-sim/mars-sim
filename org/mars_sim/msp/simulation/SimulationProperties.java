@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationProperties.java
- * @version 2.74 2002-03-10
+ * @version 2.74 2002-04-30
  * @author Scott Davis
  */
 
@@ -180,6 +180,15 @@ public class SimulationProperties {
      */
     public double getPersonMinTemperature() {
         return propertiesReader.getPersonMinTemperature();
+    }
+
+    /**
+     * Gets the person maximum temperature property.
+     * Default value is 48 degrees Celsius.
+     * @return person maximum temperature property
+     */
+    public double getPersonMaxTemperature() {
+        return propertiesReader.getPersonMaxTemperature();
     }
 
     /**
