@@ -126,34 +126,101 @@ public class MarsClock {
      *  @return formatted timestamp string
      */
     public String getTimeStamp() {
-       
-        StringBuffer result = new StringBuffer(""); 
-        
-        // Append orbit to timestamp
-        result.append("" + orbit + "-");
+        return getDateString() + ":" + getTimeString(); 
+    }
 
-        // Append month to timestamp
+    /** Returns the current date string
+     *  ex. "13-Adir-05"
+     *  @return current date string
+     */
+    public String getDateString() {
+        StringBuffer result = new StringBuffer("");
+
+        // Append orbit
+        result.append("" + orbit + "-");
+   
+                  
+        // Append month
         result.append(getMonthName() + "-");
 
-        // Append sol of month to timestamp
+        // Append sol of month
         String solString = "" + sol;
         if (solString.length() == 1) solString = "0" + solString;
-        result.append(solString + ":");
-       
-        // Append millisols to timestamp
-        String millisolString = "" + (Math.floor(millisol * 1000D) / 1000D);
-        if (millisol < 100D) millisolString = "0" + millisolString;
-        if (millisol < 10D) millisolString = "0" + millisolString;
-        while (millisolString.length() < 7) millisolString += "0";
-        result.append(millisolString);
+        result.append(solString);
 
         return result.toString();
     }
-   
+
+    /** Return the current time string
+     *  ex. "05:056.349"
+     */
+    public String getTimeString() {
+        String result = "" + (Math.floor(millisol * 1000D) / 1000D);
+        if (millisol < 100D) result = "0" + result;
+        if (millisol < 10D) result = "0" + result;
+        while (result.length() < 7) result += "0";
+
+        return result;
+    }
+
     /** Returns the name of the current month
      *  @return name of the current month
      */
     public String getMonthName() {
         return MONTH_NAMES[month - 1];
     }
+
+    /** Returns the orbit
+     *  @return the orbit as an integer
+     */
+    public int getOrbit() { return orbit; }
+
+    /** Returns the month (1 - 24)
+     *  @return the month as an integer
+     */
+    public int getMonth() { return month; }
+
+    /** Returns the sol of month (1 - 28)
+     *  @return the sol of month as an integer
+     */
+    public int getSolOfMonth() { return sol; }
+
+    /** Returns the millisol 
+     *  @return the millisol as a double
+     */ 
+    public double getMillisol() { return millisol; }
+
+    /** Returns the week of the month (1-4)
+     *  @return the week of the month as an integer
+     */
+    public int getWeekOfMonth() {
+        return ((sol -1) / 7) + 1;
+    }
+
+    /** Returns the sol number of the week (1-7)
+     *  @return the sol number of the week as an integer
+     */ 
+    public int getSolOfWeek() {
+        return sol - ((getWeekOfMonth() - 1) * 7);
+    }
+
+    /** Return the sol name of the week
+     *  @return the sol name of the week as a String
+     */
+    public String getSolOfWeekName() {
+        return WEEK_SOL_NAMES[getSolOfWeek() - 1];
+    }
+    
+    /** Returns the number of sols in the current week
+     *  @return the number of osls in the current week as an integer
+     */
+    public int getSolsInWeek() {
+        int result = SOLS_IN_WEEK_LONG;
+
+        if (getSolsInMonth(month, orbit) == SOLS_IN_MONTH_SHORT) {
+            if (getWeekOfMonth() == 4) 
+                result = SOLS_IN_WEEK_SHORT;
+        }
+        return result;
+    }    
 }
