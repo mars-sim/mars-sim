@@ -21,19 +21,20 @@ public class VehicleTableModel extends UnitTableModel {
 
     // Column indexes
     private final static int  NAME = 0;
-    private final static int  DESTINATION = 1;
-    private final static int  DESTDIST = 2;
-    private final static int  LOCATION = 3;
-    private final static int  CREW = 4;
-    private final static int  SPEED = 5;
-    private final static int  DRIVER = 6;
-    private final static int  STATUS = 7;
-    private final static int  OXYGEN = 8;
-    private final static int  FUEL = 9;
-    private final static int  WATER = 10;
-    private final static int  FOOD = 11;
-    private final static int  ROCK_SAMPLES = 12;
-    private final static int  COLUMNCOUNT = 13; // The number of Columns
+    private final static int DESCRIPTION = 1;
+    private final static int  DESTINATION = 2;
+    private final static int  DESTDIST = 3;
+    private final static int  LOCATION = 4;
+    private final static int  CREW = 5;
+    private final static int  SPEED = 6;
+    private final static int  DRIVER = 7;
+    private final static int  STATUS = 8;
+    private final static int  OXYGEN = 9;
+    private final static int  FUEL = 10;
+    private final static int  WATER = 11;
+    private final static int  FOOD = 12;
+    private final static int  ROCK_SAMPLES = 13;
+    private final static int  COLUMNCOUNT = 14; // The number of Columns
     private static String columnNames[]; // Names of Columns
     private static Class columnTypes[]; // Names of Columns
 
@@ -45,6 +46,8 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes = new Class[COLUMNCOUNT];
         columnNames[NAME] = "Name";
         columnTypes[NAME] = String.class;
+        columnNames[DESCRIPTION] = "Description";
+        columnTypes[DESCRIPTION] = String.class;
         columnNames[DRIVER] = "Driver";
         columnTypes[DRIVER] = String.class;
         columnNames[STATUS] = "Status";
@@ -67,8 +70,8 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes[WATER] = Integer.class;
         columnNames[FUEL] = "Fuel";
         columnTypes[FUEL] = Integer.class;
-	columnNames[ROCK_SAMPLES] = "Rock Samples";
-	columnTypes[ROCK_SAMPLES] = Integer.class;
+	    columnNames[ROCK_SAMPLES] = "Rock Samples";
+	    columnTypes[ROCK_SAMPLES] = Integer.class;
     }
 
     /**
@@ -102,10 +105,14 @@ public class VehicleTableModel extends UnitTableModel {
                 result = vehicle.getName();
             } break;
 
+            case DESCRIPTION : {
+                result = vehicle.getDescription();
+            } break;
+
             case CREW : {
-		if (vehicle instanceof Crewable) 
-		    result = new Integer(((Crewable) vehicle).getCrewNum());
-		else result = new Integer(0);
+		        if (vehicle instanceof Crewable)
+		            result = new Integer(((Crewable) vehicle).getCrewNum());
+		        else result = new Integer(0);
             } break;
 
             case WATER : {
