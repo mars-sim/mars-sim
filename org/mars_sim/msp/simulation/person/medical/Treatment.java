@@ -1,6 +1,11 @@
-package org.mars_sim.msp.simulation.person.medical;
+/**
+ * Mars Simulation Project
+ * Treatment.java
+ * @version 2.75 2004-03-16
+ * @author Barry Evans
+ */
 
-import org.mars_sim.msp.simulation.MarsClock;
+package org.mars_sim.msp.simulation.person.medical;
 
 /**
  * This class represents a Medical treatment that can be applied to
@@ -20,22 +25,22 @@ public class Treatment implements java.io.Serializable, Comparable {
      *
      * @param name The unique name.
      * @param skill Required Medical skill.
-     * @param earthDuration The duration of trwatment in earth hours.
+     * @param duration The duration of treatment in millisols.
      * @param retainAid Does the recovery after treatment require the medical aid
      */
-    public Treatment(String name, int skill, double earthDuration,
+    public Treatment(String name, int skill, double duration,
                      boolean selfAdmin, boolean retainAid, int facilityLevel) {
         this.name = name;
         this.requiredSkill = skill;
         this.selfAdmin = selfAdmin;
         this.retainAid = retainAid;
         this.facilityLevel = facilityLevel;
-        if (earthDuration < 0) {
+        if (duration < 0D) {
             // Negative duration means, the treatment takes as long as recovery
-            duration = -1;
+            duration = -1D;
         }
         else {
-            duration = MarsClock.convertSecondsToMillisols(earthDuration * 360D);
+            this.duration = duration;
         }
     }
 

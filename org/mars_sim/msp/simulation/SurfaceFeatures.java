@@ -7,6 +7,8 @@
  
 package org.mars_sim.msp.simulation;
 
+import java.util.*;
+
 /** SurfaceFeatures represents the surface terrain and landmarks of the virtual Mars. */
 public class SurfaceFeatures {
     
@@ -14,18 +16,23 @@ public class SurfaceFeatures {
     private TerrainElevation surfaceTerrain;
     private Mars mars;
     // We can add landmarks here later - Scott
-    Landmark[] landmarks;
-    LandmarksXmlReader landmarksReader;
+    private List landmarks;
     
-    /** Constructs a SurfaceFeatures object */
-    public SurfaceFeatures(Mars mars) {
+    /** 
+     * Constructor 
+     * @throws Exception when error in creating surface features.
+     */
+    public SurfaceFeatures(Mars mars) throws Exception {
         
         this.mars = mars;
         surfaceTerrain = new TerrainElevation();
 
-        landmarksReader = new LandmarksXmlReader();
-        landmarksReader.parse();
-        landmarks = landmarksReader.getLandmarks();
+		try {
+			landmarks = mars.getSimulationConfiguration().getLandmarkConfiguration().getLandmarkList();
+		}
+		catch (Exception e) {
+			throw new Exception("Landmarks could not be loaded: " + e.getMessage());
+		}
     }
     
     /** Returns the surface terrain

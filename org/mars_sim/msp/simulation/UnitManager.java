@@ -1,18 +1,18 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2003-07-20
+ * @version 2.75 2004-03-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+import java.util.*;
+import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.simulation.equipment.*;
-import java.io.*;
-import java.util.*;
 
 /** The UnitManager class contains and manages all units in virtual
  *  Mars. It has methods for getting information about units. It is
@@ -33,7 +33,7 @@ public class UnitManager implements Serializable {
     private UnitCollection units; // Collection of all units
     private ArrayList settlementNames; // List of possible settlement names
     private ArrayList vehicleNames; // List of possible vehicle names
-    private ArrayList personNames; // List of possible person names
+    private List personNames; // List of possible person names
 
     /** Constructs a UnitManager object
      *  @param mars the virtual Mars
@@ -48,8 +48,9 @@ public class UnitManager implements Serializable {
     
     /**
      * Constructs initial units.
+     * @throws Exception in unable to load names.
      */
-    void constructInitialUnits() {
+    void constructInitialUnits() throws Exception {
         
         // Initialize name lists;
         initializePersonNames();
@@ -62,11 +63,15 @@ public class UnitManager implements Serializable {
 
     /**
      * Initializes the list of possible person names.
+     * @throws Exception if unable to load name list.
      */
-    private void initializePersonNames() {
-        PersonNamesXmlReader personNamesReader = new PersonNamesXmlReader();
-        personNamesReader.parse();
-        personNames = personNamesReader.getPersonNames();
+    private void initializePersonNames() throws Exception {
+ 		try {
+    		personNames = mars.getSimulationConfiguration().getPersonConfiguration().getPersonNameList();
+ 		}
+ 		catch (Exception e) {
+ 			throw new Exception("person names could not be loaded: " + e.getMessage());
+ 		}
     }
     
     /**

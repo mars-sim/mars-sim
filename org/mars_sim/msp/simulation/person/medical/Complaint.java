@@ -1,7 +1,8 @@
 /**
  * Mars Simulation Project
+ * Complaint.java
+ * @version 2.75 2004-03-16
  * @author Barry Evans
- * @version 2.75 2004-03-10
  */
 
 package org.mars_sim.msp.simulation.person.medical;
@@ -31,8 +32,9 @@ public class Complaint implements Serializable {
     private double recoveryPeriod;          // Time before Person recovers
     private double probability;             // Probability of occuring
     private double performanceFactor;       // Factor effecting Person performance
-    private Treatment recoveryTreatment;     // Treatment needed for recovery
-    Complaint nextPhase;                      // Next phase of this illness
+    private Treatment recoveryTreatment;    // Treatment needed for recovery
+    Complaint nextPhase;                    // Next phase of this illness
+    String nextPhaseStr;					// Temporary next phase complaint name.
 
     /**
      * Create a Medical Complaint instance.
@@ -41,10 +43,10 @@ public class Complaint implements Serializable {
      * @param seriousness How serious is this complaint.
      * @param degrade The time it takes before this complaint advances, if this
      * value is zero, then the Person can shelf heel themselves. This value is
-     * in Earth minutes.
+     * in millisols.
      * @param recovery The time is takes for a Person to recover. If this value
      * is zero it means the complaint results in death unless treated. This
-     * value is in Earth minutes.
+     * value is in millisols.
      * @param probability The probability of this illness occuring, this can be
      * between 0 and MAXPROBABILITY.
      * @param performance The percentage that a Persons performance is decreased.
@@ -54,18 +56,51 @@ public class Complaint implements Serializable {
     Complaint(String name, int seriousness,
                              double degrade, double recovery,
                              double probability,
-                             int performance,
+                             double performance,
                              Treatment recoveryTreatment, Complaint next) {
         this.name = name;
         this.seriousness = seriousness;
-        // Convert from minutes into Millisols
-        // this.degradePeriod = MarsClock.convertSecondsToMillisols(degrade * 60D);
-        // this.recoveryPeriod = MarsClock.convertSecondsToMillisols(recovery * 60D);
+        this.degradePeriod = degrade;
+        this.recoveryPeriod = recovery;
         this.performanceFactor = (performance / 100D);
         this.nextPhase = next;
+        this.nextPhaseStr = "";
+        if (next != null) this.nextPhaseStr = next.getName();
         this.probability = probability;
         this.recoveryTreatment = recoveryTreatment;
     }
+    
+    /**
+     * Constructor using string to store next complaint.
+     * @param name name of complaint
+     * @param seriousness seriousness of complaint
+     * @param degrade degrade time until next complaint
+     * @param recovery recovery time
+     * @param probability probability of complaint
+     * @param recoveryTreatment treatment for recovery
+     * @param nextStr next complaint name
+     * @param performance performance factor
+     */
+    Complaint(String name, int seriousness, double degrade, double recovery, 
+    		double probability, Treatment recoveryTreatment, 
+    		String nextStr, double performance) {
+    	this.name = name;
+		this.seriousness = seriousness;
+		this.degradePeriod = degrade;
+		this.recoveryPeriod = recovery;
+		this.performanceFactor = (performance / 100D);
+		this.probability = probability;
+		this.recoveryTreatment = recoveryTreatment;
+		this.nextPhaseStr = nextStr; 
+    }
+
+	/**
+	 * Sets the next complaint this complaint degrades to.
+	 * @param nextComplaint the next complaint
+	 */
+	void setNextComplaint(Complaint nextComplaint) {
+		this.nextPhase = nextComplaint;
+	}
 
     /**
      * Get the degrade period.
@@ -89,6 +124,14 @@ public class Complaint implements Serializable {
      */
     public Complaint getNextPhase() {
         return nextPhase;
+    }
+    
+    /**
+     * Gets the next complaint's string name.
+     * @return complaint name
+     */
+    String getNextPhaseStr() {
+    	return nextPhaseStr;
     }
 
     /**

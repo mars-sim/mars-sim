@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalManager.java
- * @version 2.75 2004-03-10
+ * @version 2.75 2004-03-16
  * @author Barry Evans
  */
 
@@ -68,59 +68,74 @@ public class MedicalManager implements Serializable {
      * pre-defined Complaints and the user-defined ones in the XML
      * propery file.
      *
-     * @param config person configuration.
+     * @param personConfig person configuration.
+     * @param medicalConfig medical configuration.
      * @throws Exception if unable to construct.
      */
-    public MedicalManager(PersonConfig config) throws Exception {
+    public MedicalManager(PersonConfig personConfig, MedicalConfig medicalConfig) throws Exception {
 
-        initMedical(config);
+        initMedical(personConfig, medicalConfig);
     }
 
     /**
      * Initialise the Medical Complaints from the configuration.
      *
-     * @param props Global properties.
+     * @param personConfig the person configuration.
+     * @param medicalConfig the medical configuration.
      * @throws exception if not able to initialize complaints.
      */
-    public void initMedical(PersonConfig config) throws Exception{
-        // Create the pre-defined complaints, using properties.
+    public void initMedical(PersonConfig personConfig, MedicalConfig medicalConfig) throws Exception{
+        // Create the pre-defined complaints, using person configuration.
 
 		try {
 			
         	// Quite serious, 70, and has a 80% performance factor.
         	// Zero recovery as death will result if unchecked.
         	starvation = createEnvironmentComplaint(STARVATION, 70,
-                	config.getFoodDeprivationTime() * 1000D, 80);
+				personConfig.getFoodDeprivationTime() * 1000D, 80);
 
         	// Most serious complaint, 100, and has a 25% performance factor, i.e.
         	// Person can be nothing.
         	suffocation = createEnvironmentComplaint(SUFFOCATION, 100,
-                	config.getOxygenDeprivationTime(), 25);
+				personConfig.getOxygenDeprivationTime(), 25);
 
         	// Very serious complaint, 70, and a 70% performance effect. Zero
         	// recovery as death will result
         	dehydration = createEnvironmentComplaint(DEHYDRATION, 60,
-                	config.getWaterDeprivationTime() * 1000D, 70);
+				personConfig.getWaterDeprivationTime() * 1000D, 70);
 
         	// Very serious complaint, 100, and has a 10% performance factor. Zero
         	// recovery as death will result
         	decompression = createEnvironmentComplaint(DECOMPRESSION, 100,
-                	config.getDecompressionTime(), 10);
+				personConfig.getDecompressionTime(), 10);
 
         	// Somewhat serious complaint, 80, and a 40% performance factor. Zero
         	// recovery as death will result
         	freezing = createEnvironmentComplaint(FREEZING, 80,
-                	config.getFreezingTime(), 40);
+				personConfig.getFreezingTime(), 40);
 
         	// Somewhat serious complaint, 80, and a 40% performance factor. Zero
         	// recovery as death will result
         	heatStroke = createEnvironmentComplaint(HEAT_STROKE, 80,
                 	100D, 40);
 
-        	/** Creates initial complaints from XML config file */
-        	XmlReader medicalReader = new XmlReader(this);
+			// Create treatments from medical config.
+			try {
+				Iterator i = medicalConfig.getTreatmentList().iterator();
+				while (i.hasNext()) addTreatment((Treatment) i.next());
+			}
+			catch (Exception e) {
+				throw new Exception("Error loading treatments: " + e.getMessage());
+			}
 
-        	medicalReader.parse();
+			// Create additional complaints from medical config.
+			try {
+				Iterator j = medicalConfig.getComplaintList().iterator();
+				while (j.hasNext()) addComplaint((Complaint) j.next());
+			}
+			catch (Exception e) {
+				throw new Exception("Error loading complaints: " + e.getMessage());
+			}
 		}
 		catch (Exception e) {
 			throw new Exception("Medical manager cannot be initialized: " + e.getMessage());
@@ -155,6 +170,17 @@ public class MedicalManager implements Serializable {
         // Add an entry keyed on name.
         complaints.put(name, complaint);
     }
+    
+    /**
+     * Adds a new complaint to the map.
+     * @param newComplaint the new complaint to add.
+     * @throws Exception if complaint already exists in map.
+     */
+    void addComplaint(Complaint newComplaint) throws Exception {
+    	if (!complaints.containsKey(newComplaint.getName())) 
+    		complaints.put(newComplaint.getName(), newComplaint);
+    	else throw new Exception("Complaint " + newComplaint.getName() + " already exists in map.");
+    }
 
     /**
      * Package friendly factory method.
@@ -165,6 +191,17 @@ public class MedicalManager implements Serializable {
                                                selfHeal, retainAid, level);
         treatments.put(name, newTreatment);
     }
+
+	/**
+	 * Adds a new treatment to the map.
+	 * @param newTreatment the new treatment to add.
+	 * @throws Exception if treatment already exists in map.
+	 */
+	void addTreatment(Treatment newTreatment) throws Exception {
+		if (!treatments.containsKey(newTreatment.getName()))
+			treatments.put(newTreatment.getName(), newTreatment);
+		else throw new Exception("Treatment " + newTreatment.getName() + " already exists in map.");
+	}
 
     /**
      * Select a probable complaint to strike the Person down. This uses

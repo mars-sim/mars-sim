@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.75 2004-03-10
+ * @version 2.75 2004-03-16
  * @author Scott Davis
  */
 
@@ -57,7 +57,8 @@ public class Mars implements Serializable {
 		initializeTransients(initProps);
 
         // Initialize the Medical conditions
-        medicalManager = new MedicalManager(configuration.getPersonConfiguration());
+        medicalManager = new MedicalManager(configuration.getPersonConfiguration(), 
+        	configuration.getMedicalConfiguration());
 
         // Initialize mission manager
         missionManager = new MissionManager(this);
@@ -81,19 +82,15 @@ public class Mars implements Serializable {
     /**
      * Initialize transient simulation properties.
      * @param initProps simulation properties if any or null.
+     * @throws Exception when error in initializing transient properties.
      */
-    private void initializeTransients(SimulationProperties initProps) {
+    private void initializeTransients(SimulationProperties initProps) throws Exception {
 
         // Initialize simulation properties
 	    if (initProps != null) properties = initProps;
 	    else properties = new SimulationProperties();
 
-		try {
-			configuration = new SimulationConfig();
-		}
-		catch (Exception e) {
-			System.out.println("Configuration error: " + e.getMessage());
-		}
+		configuration = new SimulationConfig();
 
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
@@ -274,8 +271,8 @@ public class Mars implements Serializable {
         return masterClock;
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-            throws IOException {
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+    	
         // Store the persistent values in sequence
         out.writeObject(units);
         out.writeObject(missionManager);
@@ -285,8 +282,7 @@ public class Mars implements Serializable {
         out.writeObject(masterClock);
     }
 
-    private void readObject(java.io.ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
+    private void readObject(java.io.ObjectInputStream in) throws IOException, Exception {
 
         // Initialise the transient values
         initializeTransients(null);

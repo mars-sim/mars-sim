@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationProperties.java
- * @version 2.75 2004-03-09
+ * @version 2.75 2004-03-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation;
 import java.io.*;
 import javax.xml.parsers.*;
 import org.mars_sim.msp.simulation.person.PersonConfig;
+import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -38,46 +39,24 @@ public class SimulationConfig {
 
 	// DOM documents
 	private Document simulationDoc;
-	private Document peopleDoc;
-	private Document vehicleDoc;
-	private Document settlementDoc;
-	private Document medicalDoc;
-	private Document malfunctionDoc;
-	private Document cropDoc;
-	private Document landmarksDoc;
-	private Document buildingsDoc;
 	
-	// Subset configuration
+	// Subset configuration classes
 	private PersonConfig personConfig;
+	private MedicalConfig medicalConfig;
+	private LandmarkConfig landmarkConfig;
 
 	/**
 	 * Constructor
 	 */
 	SimulationConfig() throws Exception {
 		
-		// Load configurations files into DOM documents.
-		loadConfigFiles();
-		
-		// Create subset configuration files.
-		personConfig = new PersonConfig(peopleDoc);
-	}
-	
-	/**
-	 * Loads all XML configuration files for the simulation.
-	 * @throws Exception if any XML could not be parsed or files could not be found.
-	 */
-	private void loadConfigFiles() throws Exception {
-		
-		// Load and parse each XML configuration file.
+		// Load simulation document
 		simulationDoc = parseXMLFile(SIMULATION_FILE);
-		peopleDoc = parseXMLFile(PEOPLE_FILE);
-		vehicleDoc = parseXMLFile(VEHICLE_FILE);
-		settlementDoc = parseXMLFile(SETTLEMENT_FILE);
-		medicalDoc = parseXMLFile(MEDICAL_FILE);
-		malfunctionDoc = parseXMLFile(MALFUNCTION_FILE);
-		cropDoc = parseXMLFile(CROP_FILE);
-		landmarksDoc = parseXMLFile(LANDMARKS_FILE);
-		buildingsDoc = parseXMLFile(BUILDINGS_FILE);
+		
+		// Load subset configuration classes.
+		personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
+		medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
+		landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARKS_FILE));
 	}
 	
 	/**
@@ -168,5 +147,21 @@ public class SimulationConfig {
 	 */	
 	public PersonConfig getPersonConfiguration() {
 		return personConfig;
+	}
+	
+	/**
+	 * Gets the medical config subset.
+	 * @return medical config
+	 */
+	public MedicalConfig getMedicalConfiguration() {
+		return medicalConfig;
+	}
+	
+	/**
+	 * Gest the landmark config subset.
+	 * @return landmark config
+	 */
+	public LandmarkConfig getLandmarkConfiguration() {
+		return landmarkConfig;
 	}
 }

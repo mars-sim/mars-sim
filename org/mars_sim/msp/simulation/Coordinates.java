@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.75 2003-12-18
+ * @version 2.75 2004-13-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
+import java.text.ParseException;
 
 /** Spherical Coordinates. Represents a location on virtual Mars in
  *  spherical coordinates. It provides some useful methods involving
@@ -53,6 +54,16 @@ public class Coordinates implements Serializable {
      */
     public Coordinates(Coordinates originalCoordinates) {
         this(originalCoordinates.getPhi(), originalCoordinates.getTheta());
+    }
+    
+    /**
+     * Constructor with a latitude and longitude string.
+     * @param latitude String representing latitude value. ex. "25.344 N" or "25.344º N"
+     * @param longitude String representing longitude value. ex. "63.5532 W" or "63.5532º W"
+     * @throws Exception if latitude or longitude strings are invalid.
+     */
+    public Coordinates(String latitude, String longitude) throws Exception {
+    	this(parseLatitude(latitude), parseLongitude(longitude));
     }
 
     /** Sets commonly-used trigonometric functions of coordinates */
@@ -440,20 +451,66 @@ public class Coordinates implements Serializable {
         return finalCoordinates;
     }
 
+	/** 
+	 * Parse a latitude string into a phi value.
+	 * ex. "25.344 N" or "25.344º N"
+	 * @param latitude as string
+	 * @return phi value
+	 * @throws ParseException if latitude string could not be parsed.
+	 */
+	public static double parseLatitude(String latitude) throws ParseException {
+		double latValue = 0D;
 
-    /** Makes sure an angle isn't above 2PI or less than zero
-     *  @param angle raw angle (in radians)
-     *  @return cleaned angle
-     */
-    /*
-    public static double cleanAngle(double angle) {
-        if ((angle < 0.0) || (angle > TWO_PI)) {
-            angle = Math.IEEEremainder(angle, TWO_PI);
-        }
-        //while (angle > (2D * Math.PI)) angle -= (2D * Math.PI);
-        //while (angle < 0D) angle += (2D * Math.PI);
-        return angle;
-    }
-    */
+		if (latitude.trim().equals("")) throw new ParseException("Latitude is blank", 0);
+		
+		try {
+			String numberString = latitude.substring(0, latitude.length() - 2);
+			if (numberString.endsWith("\u00BA")) numberString = numberString.substring(0, numberString.length() - 1);
+			latValue = Double.parseDouble(numberString);
+		}
+		catch(NumberFormatException e) { 
+			throw new ParseException("Latitude number invalid: " + latitude, 0);
+		}
+		
+		if ((latValue > 90D) || (latValue < 0)) throw new ParseException("Latitude value out of range: " + latValue, 0);
+		
+		char direction = latitude.charAt(latitude.length() - 1);
+		if (direction == 'N') latValue = 90D - latValue;
+		else if (direction == 'S') latValue += 90D;
+		else throw new ParseException("Latitude direction wrong: " + direction, 0);
+
+		double phi = Math.PI * (latValue / 180D);
+		return phi;
+	}
+	
+	/** 
+	 * Parse a longitude string into a theta value.
+	 * ex. "63.5532 W" or "63.5532º W"
+	 * @param longitude as string
+	 * @return theta value
+	 * @throws ParseException if longitude string could not be parsed.
+	 */
+	public static double parseLongitude(String longitude) throws ParseException {
+		double longValue = 0D;
+
+		if (longitude.trim().equals("")) throw new ParseException("Longitude is blank", 0);
+		
+		try {
+			String numberString = longitude.substring(0, longitude.length() - 2);
+			if (numberString.endsWith("\u00BA")) numberString = numberString.substring(0, numberString.length() - 1);
+			longValue = Double.parseDouble(numberString);
+		}
+		catch(NumberFormatException e) { 
+			throw new ParseException("Longitude number invalid: " + longitude, 0);
+		}
+		
+		if ((longValue > 180D) || (longValue < 0)) throw new ParseException("Longitude value out of range: " + longValue, 0);
+		
+		char direction = longitude.charAt(longitude.length() - 1);
+		if (direction == 'W') longValue = 360D - longValue;
+		else if (direction != 'E') throw new ParseException("Longitude direction wrong: " + direction, 0);
+
+		double theta = (2 * Math.PI) * (longValue / 360D);
+		return theta;
+	}	
 }
-
