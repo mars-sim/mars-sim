@@ -1,16 +1,16 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 2.78 2004-11-12
+ * @version 2.78 2004-11-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.time.MarsClock;
 
@@ -20,11 +20,14 @@ import org.mars_sim.msp.simulation.time.MarsClock;
 public class Cooking extends Function implements Serializable {
 
 	public static final String NAME = "Cooking";
+	
+	// The base amount of work time (cooking skill 0) to produce a cooked meal.
+	public static final double COOKED_MEAL_WORK_REQUIRED = 20D;
 
 	// Data members
-	private int numCooks;
 	private int cookCapacity;
 	private List meals;
+	private double cookingWorkTime;
 	
 	/**
 	 * Constructor
@@ -35,7 +38,7 @@ public class Cooking extends Function implements Serializable {
 		// Use Function constructor.
 		super(NAME, building);
 		
-		numCooks = 0;
+		cookingWorkTime = 0D;
 		meals = new ArrayList();
 		
 		SimulationConfig simConfig = Simulation.instance().getSimConfig();
@@ -58,34 +61,51 @@ public class Cooking extends Function implements Serializable {
 	}
 	
 	/**
-	 * Adds a cook to the facility.
-	 */
-	public void addCook() {
-		if (numCooks < cookCapacity) numCooks++;
-	}
-	
-	/**
-	 * Removes a cook from the facility.
-	 *
-	 */
-	public void removeCook() {
-		if (numCooks > 0) numCooks--;
-	}
-	
-	/**
 	 * Get the current number of cooks using this facility.
 	 * @return number of cooks
 	 */
 	public int getNumCooks() {
-		return numCooks;
+		int result = 0;
+        
+		if (getBuilding().hasFunction(LifeSupport.NAME)) {
+			try {
+				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
+				PersonIterator i = lifeSupport.getOccupants().iterator();
+				while (i.hasNext()) {
+					Task task = i.next().getMind().getTaskManager().getTask();
+					if (task instanceof CookMeal) result++;
+				}
+			}
+			catch (Exception e) {}
+		}
+        
+		return result;
 	}
 	
 	/**
-	 * Gets the number of cooked meals at this facility.
-	 * @return number of meals
+	 * Gets the skill level of the best cook using this facility.
+	 * @return skill level.
 	 */
-	public int getNumberOfMeals() {
-		return meals.size();
+	public int getBestCookSkill() {
+		int result = 0;
+		
+		if (getBuilding().hasFunction(LifeSupport.NAME)) {
+			try {
+				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
+				PersonIterator i = lifeSupport.getOccupants().iterator();
+				while (i.hasNext()) {
+					Person person = i.next();
+					Task task = person.getMind().getTaskManager().getTask();
+					if (task instanceof CookMeal) {
+						int cookingSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.COOKING);
+						if (cookingSkill > result) result = cookingSkill;
+					}
+				}
+			}
+			catch (Exception e) {}
+		}
+        
+		return result;
 	}
 	
 	/**
@@ -126,6 +146,30 @@ public class Cooking extends Function implements Serializable {
 	}
 	
 	/**
+	 * Cleanup kitchen after mealtime.
+	 */
+	public void cleanup() {
+		cookingWorkTime = 0D;
+	}
+	
+	/**
+	 * Adds cooking work to this facility. 
+	 * The amount of work is dependent upon the person's cooking skill.
+	 * @param workTime work time (millisols)
+	 */
+	public void addWork(double workTime) {
+		cookingWorkTime += workTime;
+		while (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) {
+			int mealQuality = getBestCookSkill();
+			MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			getBuilding().getInventory().removeResource(Resource.FOOD, 1D);
+			meals.add(new CookedMeal(mealQuality, time));
+			cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
+			System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + " has " + meals.size() + " hot meals, quality=" + mealQuality);
+		}
+	}
+	
+	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
@@ -148,7 +192,7 @@ public class Cooking extends Function implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
-		return numCooks * 10D;
+		return getNumCooks() * 10D;
 	}
 
 	/**

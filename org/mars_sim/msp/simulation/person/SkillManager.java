@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.76 2004-05-21
+ * @version 2.78 2004-11-15
  * @author Scott Davis
  */
 
@@ -27,7 +27,7 @@ public class SkillManager implements Serializable {
 
         // Add starting skills randomly for person.
         String[] startingSkills = { Skill.DRIVING, Skill.BOTANY, Skill.MECHANICS,
-                                    Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL };
+                                    Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL, Skill.COOKING };
 
         for (int x = 0; x < startingSkills.length; x++) {
             int skillLevel = getInitialSkillLevel(0, 50);
@@ -121,8 +121,6 @@ public class SkillManager implements Serializable {
      */
     public void addExperience(String skillName, double experiencePoints) {
     	
-    	// int initialSkill = getSkillLevel(skillName);
-    	
         if (hasSkill(skillName)) ((Skill) skills.get(skillName)).addExperience(experiencePoints);
         else {
             addNewSkill(new Skill(skillName));
@@ -130,8 +128,5 @@ public class SkillManager implements Serializable {
         }
         
         int finalSkill = getSkillLevel(skillName);
-        // if (finalSkill > initialSkill) 
-        //	System.out.println(person.getMind().getJob().getName() + " " + person.getName() + 
-		//		" increases " + skillName + " skill to " + finalSkill);
     }
 }

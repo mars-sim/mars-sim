@@ -73,6 +73,17 @@ public class BuildingPanel extends JPanel {
         	catch (BuildingException e) {}
         }
         
+		// Prepare cooking panel if building has cooking.
+		if (building.hasFunction(Cooking.NAME)) {
+			try {
+				Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
+				BuildingFunctionPanel cookingPanel = new CookingBuildingPanel(kitchen, desktop);
+				functionPanels.add(cookingPanel);
+				functionListPanel.add(cookingPanel);
+			}
+			catch (BuildingException e) {}
+		}
+        
         // Prepare medical care panel if building has medical care.
         if (building.hasFunction(MedicalCare.NAME)) {
         	try {
