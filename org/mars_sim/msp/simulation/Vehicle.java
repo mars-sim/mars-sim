@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.72 2001-07-11
+ * @version 2.72 2001-07-14
  * @author Scott Davis
  */
 
@@ -35,7 +35,6 @@ public abstract class Vehicle extends Unit {
     private double food = 0; // Curent amount of food in the vehicle.
     private double foodCapacity = 0; // Maximum amount of food the vehicle can carry.
     protected double range; // Maximum range of vehicle.
-
     private Coordinates destinationCoords; // Coordinates of the destination
     private Settlement destinationSettlement; // Destination settlement (it applicable)
     private String destinationType; // Type of destination ("None", "Settlement" or "Coordinates")
@@ -44,10 +43,10 @@ public abstract class Vehicle extends Unit {
     private int vehicleSize = 1; // Size of vehicle in arbitrary units.(Value of size units will be established later.)
     private double maintenanceWork = 0; // Work done for vehicle maintenance.
     private double totalMaintenanceWork; // Total amount of work necessary for vehicle maintenance.
-
     private HashMap potentialFailures; // A table of potential failures in the vehicle. (populated by child classes)
     private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
-    private boolean distanceMark = false;
+    private boolean distanceMark = false; // True if vehicle is due for maintenance.
+    private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
 
     /** Constructs a Vehicle object
      *  @param name the vehicle's name
@@ -330,7 +329,8 @@ public abstract class Vehicle extends Unit {
         return distanceMaint;
     }
 
-    /** Adds a distance (in km.) to the vehicle's distance since last maintenance 
+    /** Adds a distance (in km.) to the vehicle's distance since last maintenance.
+     *  Set distanceMark to true if vehicle is due for maintenance.
      *  @param distance distance to add (in km)
      */
     public void addDistanceLastMaintenance(double distance) {
@@ -527,7 +527,23 @@ public abstract class Vehicle extends Unit {
     public Settlement getDestinationSettlement() {
         return destinationSettlement;
     }
-
+    
+    /** Returns the ETA (Estimated Time of Arrival)
+     *  @return ETA as string ("13-Adir-05  056.349")
+     */
+    public String getETA() {
+        if (estimatedTimeOfArrival != null) 
+            return estimatedTimeOfArrival.getTimeStamp();
+        else return "";
+    }
+    
+    /** Sets the ETA (Estimated Time of Arrival) of the vehicle.
+     *  @param newETA new ETA of the vehicle
+     */
+    public void setETA(MarsClock newETA) {
+        this.estimatedTimeOfArrival = newETA;
+    }
+            
     /** Returns the vehicle's size. 
      *  @return the vehicle's size
      */

@@ -38,14 +38,14 @@ public class MainWindow extends JFrame implements WindowListener {
         // Initialize data members
         this.mars = mars;
 
-	// Prepare custom Mars UI theme
-	MetalLookAndFeel.setCurrentTheme(new MarsTheme());
-	try {
-		UIManager.setLookAndFeel(new MetalLookAndFeel());
-	} 
-	catch(UnsupportedLookAndFeelException e) {
-		System.out.println("MainWindow: " + e.toString());
-	}
+ 	    // Prepare custom Mars UI theme
+	    MetalLookAndFeel.setCurrentTheme(new MarsTheme());
+    	try {
+		    UIManager.setLookAndFeel(new MetalLookAndFeel());
+	    } 
+  	    catch(UnsupportedLookAndFeelException e) {
+		    System.out.println("MainWindow: " + e.toString());
+	    }
 
         // Create unit UI proxy manager.
         Unit[] units = mars.getUnitManager().getUnits();

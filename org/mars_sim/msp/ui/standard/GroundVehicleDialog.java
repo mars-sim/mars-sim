@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-12-06
+ * @version 2.72 2001-07-14
  * @author Scott Davis
  */
 
@@ -153,5 +153,5 @@ public class GroundVehicleDialog extends VehicleDialog {
     /** Set window size 
      *  @return the window's size
      */
-	protected Dimension setWindowSize() { return new Dimension(300, 435); }
+	protected Dimension setWindowSize() { return new Dimension(310, 435); }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.72 2001-04-02
+ * @version 2.72 2001-07-14
  * @author Scott Davis
  */
 
@@ -133,26 +133,20 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Prepare navigator window
         NavigatorWindow navWindow = new NavigatorWindow(this);
-        try {
-	    navWindow.setClosed(true);
-	} catch (java.beans.PropertyVetoException e) { }
-
+        try { navWindow.setClosed(true); } 
+        catch (java.beans.PropertyVetoException e) { }
         toolWindows.addElement(navWindow);
 
         // Prepare search tool window
         SearchWindow searchWindow = new SearchWindow(this);
-        try {
-	    searchWindow.setClosed(true);
-	} catch (java.beans.PropertyVetoException e) { }
-
+        try { searchWindow.setClosed(true); } 
+        catch (java.beans.PropertyVetoException e) { }
         toolWindows.addElement(searchWindow);
 
         // Prepare time tool window
         TimeWindow timeWindow = new TimeWindow(this);
-        try {
-            timeWindow.setClosed(true);
-        } catch (java.beans.PropertyVetoException e) { }
-
+        try { timeWindow.setClosed(true); } 
+        catch (java.beans.PropertyVetoException e) { }
         toolWindows.addElement(timeWindow);
     }
 
@@ -185,11 +179,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      */
     public boolean isToolWindowOpen(String toolName) {
         ToolWindow tempWindow = getToolWindow(toolName);
-        if (tempWindow != null) {
-            return !tempWindow.isClosed();
-        } else {
-            return false;
-        }
+        if (tempWindow != null) return !tempWindow.isClosed();
+        else return false;
     }
 
     /** Opens a tool window if necessary 
@@ -204,11 +195,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                     tempWindow.setOpened();
                 }
                 add(tempWindow, 0);
-                try {
-                    tempWindow.setClosed(false);
-                } catch (Exception e) {
-                    System.out.println(e.toString());
-                }
+                try { tempWindow.setClosed(false); } 
+                catch (Exception e) { System.out.println(e.toString()); }
             }
             tempWindow.show();
         }
@@ -220,9 +208,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     public void closeToolWindow(String toolName) {
         ToolWindow tempWindow = getToolWindow(toolName);
         if ((tempWindow != null) && !tempWindow.isClosed()) {
-            try {
-                tempWindow.setClosed(true);
-            } catch (java.beans.PropertyVetoException e) {}
+            try { tempWindow.setClosed(true); } 
+            catch (java.beans.PropertyVetoException e) {}
         }
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.72 2001-06-24
+ * @version 2.72 2001-07-14
  * @author Scott Davis
  */
 
@@ -57,6 +57,20 @@ public class MarsClock {
         sol = 1;
         millisol = 0D;
     }
+    
+    /** Constructs a MarsClock object with a given time
+     *  param orbit current orbit
+     *  param month current month
+     *  param sol current sol
+     *  param millisol current millisol
+     */
+    public MarsClock(int orbit, int month, int sol, double millisol) {
+        // Set date/time to given parameters.
+        this.orbit = orbit;
+        this.month = month;
+        this.sol = sol;
+        this.millisol = millisol;
+    }
 
     /** Converts seconds to millisols
      *  @param seconds decimal number of seconds
@@ -72,6 +86,41 @@ public class MarsClock {
      */
     public static double convertMillisolsToSeconds(double millisols) {
         return millisols * SECONDS_IN_MILLISOL;
+    }
+    
+    /** Returns the time difference between two Mars clock instances.
+     *  @param firstTime first Mars clock instance
+     *  @param secondTime second Mars clock instance
+     *  @return time difference in millisols
+     */
+    public static double getTimeDiff(MarsClock firstTime, MarsClock secondTime) {
+        return getTotalMillisols(firstTime) - getTotalMillisols(secondTime);
+    }
+    
+    /** Returns the total millisols in the Mars clock from orbit 0.
+     *  @param time Mars clock instance
+     *  @return total millisols
+     */
+    private static double getTotalMillisols(MarsClock time) {
+        double result = 0D;
+        
+        // Add millisols up to current orbit
+        for (int x=1; x < time.getOrbit(); x++) {
+            if (MarsClock.isLeapOrbit(x)) result += SOLS_IN_ORBIT_LEAPYEAR * 1000D;
+            else result += SOLS_IN_ORBIT_NON_LEAPYEAR * 1000D;
+        }
+        
+        // Add millisols up to current month
+        for (int x=1; x < time.getMonth(); x++) 
+            result += MarsClock.getSolsInMonth(x, time.getOrbit()) * 1000D;
+            
+        // Add millisols up to current sol
+        result += (time.getSolOfMonth() - 1) * 1000D;
+   
+        // Add millisols in current sol
+        result += time.getMillisol();
+        
+        return result;
     }
 
     /** Returns the number of sols in a month for
@@ -262,5 +311,12 @@ public class MarsClock {
         }
         
         return season;
+    }
+    
+    /** Creates a clone of this MarsClock object, with the time set the same.
+     *  @return clone of this MarsClock object
+     */
+    public Object clone() {
+        return new MarsClock(orbit, month, sol, millisol);
     }
 }

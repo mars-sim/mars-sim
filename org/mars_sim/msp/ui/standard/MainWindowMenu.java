@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.72 2001-05-19
+ * @version 2.72 2001-07-14
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JMenuItem exitItem;                   // Exit menu item
     private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
+    private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
     private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
 	
     /** Constructs a MainWindowMenu object 
@@ -58,6 +59,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	searchToolItem.addActionListener(this);
 	toolsMenu.add(searchToolItem);
 		
+    // Create time tool menu item
+    timeToolItem = new JCheckBoxMenuItem("Time Tool");
+    timeToolItem.addActionListener(this);
+    toolsMenu.add(timeToolItem);    
+        
 	// Create help menu
 	JMenu helpMenu = new JMenu("Help");
 	add(helpMenu);
@@ -71,33 +77,45 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     // ActionListener method overriding
     public void actionPerformed(ActionEvent event) {
 		
-	JMenuItem selectedItem = (JMenuItem) event.getSource();
+	    JMenuItem selectedItem = (JMenuItem) event.getSource();
 		
-	if (selectedItem == exitItem) System.exit(0);
+	    if (selectedItem == exitItem) System.exit(0);
 		
-	if (selectedItem == marsNavigatorItem) {
-	    if (marsNavigatorItem.isSelected()) {
-		mainWindow.openToolWindow("Mars Navigator");
-	    } else {
-		mainWindow.closeToolWindow("Mars Navigator");
+	    if (selectedItem == marsNavigatorItem) {
+	        if (marsNavigatorItem.isSelected()) {
+		        mainWindow.openToolWindow("Mars Navigator");
+	        } 
+            else {
+		        mainWindow.closeToolWindow("Mars Navigator");
+	        }
 	    }
-	}
 		
-	if (selectedItem == searchToolItem) {
-	    if (searchToolItem.isSelected()) {
-		mainWindow.openToolWindow("Search Tool");
-	    } else {
-		mainWindow.closeToolWindow("Search Tool");
+	    if (selectedItem == searchToolItem) {
+	        if (searchToolItem.isSelected()) {
+		        mainWindow.openToolWindow("Search Tool");
+	        } 
+            else {
+		        mainWindow.closeToolWindow("Search Tool");
+	        }
 	    }
-	}
 		
-	if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
+        if (selectedItem == timeToolItem) {
+            if (timeToolItem.isSelected()) {
+                mainWindow.openToolWindow("Time Tool");
+            }
+            else {
+                mainWindow.closeToolWindow("Time Tool");
+            }
+        }
+        
+	    if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
     }
 	
     // MenuListener method overriding
     public void menuSelected(MenuEvent event) { 
-	marsNavigatorItem.setSelected(mainWindow.isToolWindowOpen("Mars Navigator"));
-	searchToolItem.setSelected(mainWindow.isToolWindowOpen("Search Tool"));
+	    marsNavigatorItem.setSelected(mainWindow.isToolWindowOpen("Mars Navigator"));
+	    searchToolItem.setSelected(mainWindow.isToolWindowOpen("Search Tool"));
+        timeToolItem.setSelected(mainWindow.isToolWindowOpen("Time Tool"));
     }
 	
     public void menuCanceled(MenuEvent event) {}

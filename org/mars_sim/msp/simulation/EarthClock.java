@@ -51,7 +51,7 @@ public class EarthClock extends GregorianCalendar {
     }
 
     /** Returns the date/time formatted in a string 
-     *  @return date/time formatted in a string. ex "05/06/2055 03:37:22 PM GMT"
+     *  @return date/time formatted in a string. ex "2055-05-06 03:37:22 GMT"
      */
     public String getTimeStamp() {
         return formatter.format(getTime());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.72 2001-07-11
+ * @version 2.72 2001-07-14
  * @author Scott Davis
  */
 
@@ -23,6 +23,9 @@ class DriveGroundVehicle extends Task {
     private double backingUpDistance; // Distance vehicle has backed up to avoid an obstacle.
     private Coordinates startingLocation; // Current location of vehicle.
     private boolean backingUp; // True if vehicle is backing up to avoid an obstacle.
+    private double speedSkillModifier;  // Skill modifier to vehicle speed.
+    private MarsClock startTime; // Starting date/time of the trip.
+    private double startDistance; // Starting distance to destination of the trip.
 
     /** Constructs a DriveGroundVehicle object
      *  @param person the person to perform the task
@@ -42,6 +45,8 @@ class DriveGroundVehicle extends Task {
         phase = "Driving";
         vehicle.setStatus("Moving");
         backingUp = false;
+        startTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
+        startDistance = vehicle.getCoordinates().getDistance(destination);
     }
 
     /** Perform the driving task 
@@ -88,7 +93,7 @@ class DriveGroundVehicle extends Task {
  
         // Drive vehicle
         timeUsed = time - drive(time);
-
+        
         // Add experience points for driver's 'Driving' skill.
         // Add one point for every 100 millisols.
         double newPoints = time / 100D;
@@ -232,7 +237,8 @@ class DriveGroundVehicle extends Task {
         // If starting distance to destination is less than distance traveled, stop at destination.
         if (distanceToDestination < distanceTraveled) {
             distanceTraveled = vehicle.getDistanceToDestination();
-            vehicle.setDistanceToDestination(0D);
+            distanceToDestination = 0D;
+            vehicle.setDistanceToDestination(distanceToDestination);
             vehicle.setCoordinates(destination);
             isDone = true;
             return time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
@@ -244,12 +250,16 @@ class DriveGroundVehicle extends Task {
             vehicle.setCoordinates(startingLocation.convertRectToSpherical(newX, newY));
             
             // Update distance to destination.
-            vehicle.setDistanceToDestination(vehicle.getCoordinates().getDistance(destination));
+            distanceToDestination = vehicle.getCoordinates().getDistance(destination);
+            vehicle.setDistanceToDestination(distanceToDestination);
         }
 
         // Update every passenger's location.
         for (int x = 0; x < vehicle.getPassengerNum(); x++)
             vehicle.getPassenger(x).setCoordinates(vehicle.getCoordinates());
+            
+        // Update vehicle's ETA (Estimated Time of Arrival).
+        vehicle.setETA(getETA());
 
         return 0D;
     }
@@ -313,18 +323,18 @@ class DriveGroundVehicle extends Task {
         if (tempAngle > (Math.PI / 2D)) tempAngle = Math.PI / 2D;
 
         // Modify base speed by driver's skill level.
-        double skillModifier = 0D;
+        speedSkillModifier = 0D;
         double baseSpeed = vehicle.getBaseSpeed();
-        if (skillLevel <= 5) skillModifier = 0D - ((baseSpeed / 2D) * ((5D - skillLevel) / 5D));
+        if (skillLevel <= 5) speedSkillModifier = 0D - ((baseSpeed / 2D) * ((5D - skillLevel) / 5D));
         else if (skillLevel > 5) {
             double tempSpeed = baseSpeed;
             for (int x=0; x < skillLevel - 5; x++) {
                 tempSpeed /= 2D; 
-                skillModifier += tempSpeed;
+                speedSkillModifier += tempSpeed;
             }
         }   
 
-        double speed = (vehicle.getBaseSpeed() + skillModifier) * Math.cos(tempAngle);
+        double speed = (vehicle.getBaseSpeed() + speedSkillModifier) * Math.cos(tempAngle);
         if (speed < 0D) speed = 0D;
 
         return speed;
@@ -379,5 +389,37 @@ class DriveGroundVehicle extends Task {
                 crewmember.getTaskManager().addSubTask(mechanicTask);
             }
         }
+    }
+    
+    /** Determines the ETA (Estimated Time of Arrival) to the destination.
+     *  @return MarsClock instance of date/time for ETA
+     */
+    private MarsClock getETA() {
+        MarsClock currentTime = (MarsClock) mars.getMasterClock().getMarsClock();
+        
+        // Determine time difference from start of trip in millisols.
+        double millisolsDiff = MarsClock.getTimeDiff(currentTime, startTime);
+        double hoursDiff = MarsClock.convertMillisolsToSeconds(millisolsDiff) / 60D / 60D;
+        
+        // Determine average speed so far in km/hr.
+        double avgSpeed = (distanceToDestination - startDistance) / hoursDiff;
+        
+        // Determine estimated speed in km/hr.
+        double estimatedSpeed = .9D * (vehicle.getBaseSpeed() + speedSkillModifier);
+        
+        // Determine final estimated speed in km/hr.
+        double tempAvgSpeed = avgSpeed * ((startDistance - distanceToDestination) / startDistance);
+        double tempEstimatedSpeed = estimatedSpeed * (distanceToDestination / startDistance);
+        double finalEstimatedSpeed = tempAvgSpeed + tempEstimatedSpeed;
+        
+        // Determine time to destination in millisols.
+        double hoursToDestination = distanceToDestination / finalEstimatedSpeed;
+        double millisolsToDestination = MarsClock.convertSecondsToMillisols(hoursToDestination * 60D * 60D);
+        
+        // Determine ETA
+        MarsClock eta = (MarsClock) currentTime.clone();
+        eta.addTime(millisolsToDestination);
+        
+        return eta;
     }
 }
