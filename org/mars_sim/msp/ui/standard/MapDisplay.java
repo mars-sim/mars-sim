@@ -44,6 +44,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private static final int HALF_MAP = 150;
     private static final double HALF_MAP_ANGLE = .48587D;
 
+    public static final int LOCAL_SURFACE_IMAGE = 0;
+    public static final int INTERNET_SURFACE_IMAGE = 1;
+
     /** Constructs a MapDisplay object 
      *  @param navWindow the navigator window pane
      *  @param proxyManager the UI proxy manager
@@ -51,7 +54,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  @param height the height of the map shown
      */
     public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager, 
-            int width, int height) {
+            int width, int height, int surfaceImageSource) {
 
         // Initialize data members
         this.navWindow = navWindow;
@@ -74,12 +77,19 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         addMouseListener(this);
 
         // Create surface objects for both real and topographical modes
-        surfMap = new SurfMarsMap(this);
-        //surfMap = new USGSMarsMap(this);
-        topoMap = new TopoMarsMap(this);
-
+	topoMap = new TopoMarsMap(this);
+	selectSurfaceImageSource(surfaceImageSource);
+	
         // initially show real surface map (versus topo map)
         showSurf();
+    }
+
+    public void selectSurfaceImageSource(int surfaceImageSource) {
+	if (surfaceImageSource == LOCAL_SURFACE_IMAGE) {
+	    surfMap = new SurfMarsMap(this);
+	} else {
+	    surfMap = new USGSMarsMap(this);
+	}
     }
 
     /** Change label display flag 

@@ -84,7 +84,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         topMainPane.add(Box.createHorizontalStrut(5));
 
         // Prepare surface map display
-        map = new MapDisplay(this, desktop.getProxyManager(), 300, 300);
+        map = new MapDisplay(this, desktop.getProxyManager(), 300, 300, MapDisplay.LOCAL_SURFACE_IMAGE);
         JPanel mapPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
@@ -251,5 +251,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
      */
     public void openUnitWindow(UnitUIProxy unitProxy) {
         desktop.openUnitWindow(unitProxy);
+    }
+
+    /** accessor for the MapDisplay */
+    public MapDisplay getMapDisplay() {
+	return map;
     }
 }

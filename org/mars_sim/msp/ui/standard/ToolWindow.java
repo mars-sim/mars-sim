@@ -16,7 +16,7 @@ public abstract class ToolWindow extends JInternalFrame {
 
     // Data members
     protected String toolName; // The name of the tool the window is for.
-    protected boolean notOpened; // True if window hasn't yet been opened.
+    protected boolean opened;  // True if window is open.
 
     /** Constructs a ToolWindow object 
      *  @toolName the name of the tool
@@ -32,8 +32,7 @@ public abstract class ToolWindow extends JInternalFrame {
         // Initialize tool name
         this.toolName = new String(toolName);
 
-        // Set notOpened to true
-        notOpened = true;
+        opened = false;
     }
 
     /** Returns tool name 
@@ -47,11 +46,11 @@ public abstract class ToolWindow extends JInternalFrame {
      *  @return true if tool window has not previously been opened
      */
     public boolean hasNotBeenOpened() {
-        return notOpened;
+        return !opened;
     }
 
     /** Sets notOpened to false. */
     public void setOpened() {
-        notOpened = false;
+        opened = true;
     }
 }

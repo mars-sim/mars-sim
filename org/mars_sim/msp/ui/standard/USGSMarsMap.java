@@ -25,8 +25,14 @@ import javax.swing.*;
 public class USGSMarsMap implements Map {
 
     // Data members
+    /*
     private static final String psdUrl = "http://www-pdsimage.wr.usgs.gov";
     private static final String psdCgi = "/cgi-bin/panpic.cgi";
+    */
+    //private static final String psdUrl = "http://192.168.1.50";
+    private static final String psdUrl = "http://63.229.31.9";
+    private static final String psdCgi = "/cgi-bin/mapmaker/mapmaker.py";
+
     private static final String projection = "SIMP";
     private static final String resolution = "3";
     private static final String dataSet = "merged.des";
@@ -93,7 +99,7 @@ public class USGSMarsMap implements Map {
      *  @param lat latitude
      *  @param lon longitude
      */
-    private Image retrieveImage(int size, double lat, double lon) {
+    private Image retrievePdsImage(int size, double lat, double lon) {
         imageDone = false;
         try {
             URL url =
@@ -126,6 +132,35 @@ public class USGSMarsMap implements Map {
             // </fragile>
 
             URL imageUrl = new URL(psdUrl + imageSrc);
+            System.out.println(imageUrl);
+
+            //imageUrl = new URL("file:tmp.968014862.jpg");
+            return (Toolkit.getDefaultToolkit().getImage(imageUrl));
+
+        } catch (MalformedURLException e) {
+            System.out.println("Weirdness" + e);
+        }
+        catch (IOException e) {
+            // should deal with the case where a user has no internet connection
+            System.out.println("Weirdness" + e);
+        }
+
+        return null;
+    }
+
+    /** requests an image from the PDS web server.
+     *  @param size is pixels per degree
+     *  @param lat latitude
+     *  @param lon longitude
+     */
+    private Image retrieveImage(int size, double lat, double lon) {
+        imageDone = false;
+        try {
+            URL imageUrl =
+                    new URL(psdUrl + psdCgi + "?DATA_SET_NAME=" + dataSet + "&PROJECTION=" +
+                    projection + "&RESOLUTION=" + resolution + "&SIZE=" + size +
+                    "&LAT=" + lat + "&LON=" + lon);
+
             System.out.println(imageUrl);
 
             //imageUrl = new URL("file:tmp.968014862.jpg");

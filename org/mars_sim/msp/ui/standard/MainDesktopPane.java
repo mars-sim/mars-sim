@@ -126,15 +126,17 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Prepare navigator window
         NavigatorWindow navWindow = new NavigatorWindow(this);
-        try { navWindow.setClosed(true); } 
-        catch (java.beans.PropertyVetoException e) {}
+        try {
+	    navWindow.setClosed(true);
+	} catch (java.beans.PropertyVetoException e) { }
 
         toolWindows.addElement(navWindow);
 
         // Prepare search tool window
         SearchWindow searchWindow = new SearchWindow(this);
-        try { searchWindow.setClosed(true); } 
-        catch (java.beans.PropertyVetoException e) {}
+        try {
+	    searchWindow.setClosed(true);
+	} catch (java.beans.PropertyVetoException e) { }
 
         toolWindows.addElement(searchWindow);
     }
@@ -143,7 +145,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      *  @param toolName the name of the tool window
      *  @return the tool window
      */
-    private ToolWindow getToolWindow(String toolName) {
+    ToolWindow getToolWindow(String toolName) {
         ToolWindow resultWindow = null;
         for (int x = 0; x < toolWindows.size(); x++) {
             ToolWindow tempWindow = (ToolWindow) toolWindows.elementAt(x);

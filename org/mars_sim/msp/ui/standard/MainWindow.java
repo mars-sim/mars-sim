@@ -91,6 +91,13 @@ public class MainWindow extends JFrame implements WindowListener {
         return desktop.isToolWindowOpen(toolName);
     }
 
+    /** Finds a tool window
+     *  @param toolName the name of the tool window
+     */
+    public ToolWindow getToolWindow(String toolName) {
+        return desktop.getToolWindow(toolName);
+    }
+
     /** Opens a tool window if necessary 
      *  @param toolName the name of the tool window
      */
