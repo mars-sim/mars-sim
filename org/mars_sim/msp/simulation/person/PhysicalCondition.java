@@ -1,7 +1,8 @@
 /**
  * Mars Simulation Project
+ * PhysicalCondition.java 
+ * @version 2.74 2002-02-25
  * @author Barry Evans
- * @version 2.74
  */
 
 package org.mars_sim.msp.simulation.person;
@@ -92,6 +93,8 @@ public class PhysicalCondition implements Serializable {
         // Consume necessary oxygen and water.
         consumeOxygen(support, props.getPersonOxygenConsumption() * (time / 1000D));
         consumeWater(support, props.getPersonWaterConsumption() * (time / 1000D));
+	requireAirPressure(support, props.getPersonMinAirPressure());
+	requireTemperature(support, props.getPersonMinTemperature());
 
         // Build up fatigue & hunger for given time passing.
         fatigue += time;
@@ -122,18 +125,18 @@ public class PhysicalCondition implements Serializable {
     }
 
     /** Person consumes given amount of oxygen
-     *  @param support Life support system providing water.
+     *  @param support Life support system providing oxygen.
      *  @param amount amount of oxygen to consume (in kg)
      */
     private void consumeOxygen(LifeSupport support, double amount) {
         double amountRecieved = support.provideOxygen(amount);
 
         if (amountRecieved != amount) {
-            setProblem(medic.getLackOfOxygen());
+            setProblem(medic.getSuffocation());
         }
         else {
-            // If Person is straving, then start recovery has there is oxygen
-            if ((illness != null) && illness.equals(medic.getLackOfOxygen())) {
+            // If Person is suffocating, then start recovery has there is oxygen
+            if ((illness != null) && illness.equals(medic.getSuffocation())) {
                 startRecovery();
             }
         }
@@ -151,13 +154,47 @@ public class PhysicalCondition implements Serializable {
             setProblem(medic.getDehydration());
         }
         else {
-            // If Person is straving, then start recovery has there is food
+            // If Person is dehydrating, then start recovery has there is water 
             if ((illness != null) && illness.equals(medic.getDehydration())) {
                 startRecovery();
             }
         }
     }
 
+    /** 
+     * Person requires minimum air pressure.
+     * @param support Life support system providing air pressure.
+     * @param pressure minimum air pressure person requires (in atm)
+     */
+    private void requireAirPressure(LifeSupport support, double pressure) {
+        if (support.getAirPressure() < pressure) {
+            setProblem(medic.getDecompression());
+	}
+	else {
+	    // If person is decompressing, then start the recovery process.
+	    if ((illness != null) && illness.equals(medic.getDecompression())) {
+	        startRecovery();
+	    }
+	}
+    }
+
+    /**
+     * Person requires minimum temperature.
+     * @param support Life support system providing temperature.
+     * @param temperature minimum temperature person requires (in degrees Celsius)
+     */
+    private void requireTemperature(LifeSupport support, double temperature) {
+        if (support.getTemperature() < temperature) {
+	    setProblem(medic.getFreezing());
+	}
+	else {
+	    // If person is freezing, then start the recovery process.
+	    if ((illness != null) && illness.equals(medic.getFreezing())) {
+                startRecovery();
+	    }
+	}
+    }
+	    
     /**
      * Predicate to check if the Person is alive.
      * @return Boolean of alive state.

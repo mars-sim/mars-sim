@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PropertiesXmlReader.java
- * @version 2.73 2001-12-14
+ * @version 2.74 2002-02-25
  * @author Scott Davis
  */
 
@@ -36,7 +36,11 @@ class PropertiesXmlReader extends MspXmlReader {
     private static final int LACK_OF_OXYGEN = 16;
     private static final int LACK_OF_WATER = 17;
     private static final int LACK_OF_FOOD = 18;
-
+    private static final int MIN_AIR_PRESSURE = 19;
+    private static final int DECOMPRESSION = 20;
+    private static final int MIN_TEMPERATURE = 21;
+    private static final int FREEZING_TIME = 22;
+    
     // Data members
     private int elementType; // The current element type being parsed
     private int propertyCatagory; // The property catagory
@@ -47,6 +51,10 @@ class PropertiesXmlReader extends MspXmlReader {
     private double personLackOfWater; // The period a person can survive without water
     private double personFoodConsumption; // The person food consumption property
     private double personLackOfFood; // The period a person can survive without food
+    private double personMinAirPressure; // The minimum air pressure property
+    private double personDecompression; // The decompression property
+    private double personMinTemperature; // The minimum temperature property
+    private double personFreezingTime; // The freezing time property
     private double roverOxygenStorageCapacity; // The rover oxygen storage capacity property
     private double roverWaterStorageCapacity; // The rover water storage capacity property
     private double roverFoodStorageCapacity; // The rover food storage capacity property
@@ -133,6 +141,18 @@ class PropertiesXmlReader extends MspXmlReader {
         if (name.equals("LACK_OF_WATER")) {
             elementType = LACK_OF_WATER;
         }
+	if (name.equals("MIN_AIR_PRESSURE")) {
+	    elementType = MIN_AIR_PRESSURE;
+	}
+	if (name.equals("DECOMPRESSION")) {
+            elementType = DECOMPRESSION;
+	}
+	if (name.equals("MIN_TEMPERATURE")) {
+            elementType = MIN_TEMPERATURE;
+	}
+	if (name.equals("FREEZING_TIME")) {
+	    elementType = FREEZING_TIME;
+	}
     }
 
     /** Handle the end of an element by printing an event.
@@ -159,6 +179,10 @@ class PropertiesXmlReader extends MspXmlReader {
             case LACK_OF_FOOD:
             case LACK_OF_OXYGEN:
             case LACK_OF_WATER:
+	    case MIN_AIR_PRESSURE:
+	    case DECOMPRESSION:
+	    case MIN_TEMPERATURE:
+	    case FREEZING_TIME:
                 elementType = PERSON_PROPERTIES;
                 break;
             case FUEL_EFFICIENCY:
@@ -208,6 +232,14 @@ class PropertiesXmlReader extends MspXmlReader {
             case LACK_OF_WATER:
                 personLackOfWater = Double.parseDouble(data);
                 break;
+	    case MIN_AIR_PRESSURE:
+		personMinAirPressure = Double.parseDouble(data);
+	    case DECOMPRESSION:
+		personDecompression = Double.parseDouble(data);
+	    case MIN_TEMPERATURE:
+		personMinTemperature = Double.parseDouble(data);
+	    case FREEZING_TIME:
+		personFreezingTime = Double.parseDouble(data);
             case OXYGEN_STORAGE_CAPACITY:
                 double oxygen = Double.parseDouble(data);
                 if (propertyCatagory == ROVER_PROPERTIES) roverOxygenStorageCapacity = oxygen;
@@ -313,6 +345,46 @@ class PropertiesXmlReader extends MspXmlReader {
         return personFoodConsumption;
     }
 
+    /**
+     * Gets the person minimum air pressure property.
+     * Default value is .25 atm.
+     * @return the person minimum air pressure property
+     */
+    public double getPersonMinAirPressure() {
+        return personMinAirPressure;
+    }
+
+    /**
+     * Gets the person decompression time property.
+     * Value must be >= 0.
+     * Default value is 90.0 seconds.
+     * @return person decompression time property
+     */
+    public double getPersonDecompressionTime() {
+        if (personDecompression < 0D) personDecompression = 90D;
+	return personDecompression;
+    }
+
+    /**
+     * Gets the person minimum temperature property.
+     * Default value is 0 degrees Celsius
+     * @return person minimum temperature property
+     */
+    public double getPersonMinTemperature() {
+        return personMinTemperature;
+    }
+
+    /**
+     * Gets the person freezing time property.
+     * Value must be >= 0.
+     * Default value is 240.0 minutes.
+     * @return person freezing time property
+     */
+    public double getPersonFreezingTime() {
+        if (personFreezingTime < 0D) personFreezingTime = 240D;
+	return personFreezingTime;
+    }
+    
     /** Gets the rover oxygen storage capacity property.
      *  Value must be >= 0.
      *  Default value is 350.0.

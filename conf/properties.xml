@@ -20,7 +20,7 @@
         <!-- Default: 4.0 -->
         <WATER_CONSUMPTION>4.0</WATER_CONSUMPTION>
 
-        <!-- Number of Earth minutes a person can survive without Water-->
+        <!-- Number of Earth minutes a person can survive without Water -->
         <!-- Default: 8640, 6 days -->
         <LACK_OF_WATER>8640.0</LACK_OF_WATER>
 
@@ -28,10 +28,26 @@
         <!-- Default: 1.5 -->
         <FOOD_CONSUMPTION>1.5</FOOD_CONSUMPTION>
 
-        <!-- Number of Earth mintues a person can survive without Food-->
+        <!-- Number of Earth minutes a person can survive without Food -->
         <!-- Default: 30240.0, 21 days -->
         <LACK_OF_FOOD>30240.0</LACK_OF_FOOD>
-    
+
+	<!-- Minimum air pressure (atm) a person can withstand -->
+	<!-- Default: .25 atm -->
+	<MIN_AIR_PRESSURE>.25</MIN_AIR_PRESSURE>
+
+	<!-- Number of Earth seconds a person can survive in decompression -->
+	<!-- Default: 90.0 seconds -->
+	<DECOMPRESSION>90.0</DECOMPRESSION>
+
+	<!-- Minimum temperature (degrees celsius) a person can withstand -->
+	<!-- Default: 0 degrees celsius -->
+	<MIN_TEMPERATURE>0.0</MIN_TEMPERATURE>
+
+	<!-- Number of Earth minutes a person can survive below minimum temperature -->
+	<!-- Default: 240 minutes (4 hours) -->
+	<FREEZING_TIME>240.0</FREEZING_TIME>
+	
     </PERSON_PROPERTIES>
 
     <ROVER_PROPERTIES>

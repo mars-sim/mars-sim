@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationProperties.java
- * @version 2.73 2001-12-09
+ * @version 2.74 2002-02-25
  * @author Scott Davis
  */
 
@@ -96,6 +96,44 @@ public class SimulationProperties {
         return propertiesReader.getPersonFoodConsumption();
     }
 
+    /**
+     * Gets the person minimum air pressure property.
+     * Default value is .25 atm.
+     * @return the person minimum air pressure property
+     */
+    public double getPersonMinAirPressure() {
+        return propertiesReader.getPersonMinAirPressure();
+    }
+
+    /**
+     * Gets the person decompression time property.
+     * Value must be >= 0.
+     * Default value is 90.0 seconds.
+     * @return person decompression time property
+     */
+    public double getPersonDecompressionTime() {
+        return propertiesReader.getPersonDecompressionTime();
+    }
+
+    /**
+     * Gets the person minimum temperature property.
+     * Default value is 0 degrees Celsius.
+     * @return person minimum temperature property
+     */
+    public double getPersonMinTemperature() {
+        return propertiesReader.getPersonMinTemperature();
+    }
+
+    /**
+     * Gets the person freezing time property.
+     * Value must be >= 0.
+     * Default value is 240.0 minutes.
+     * @return person freezing time property
+     */
+    public double getPersonFreezingTime() {
+        return propertiesReader.getPersonFreezingTime();
+    }
+    
     /** Gets the rover oxygen storage capacity property.
      *  Value must be >= 0.
      *  Default value is 350.0 kg.

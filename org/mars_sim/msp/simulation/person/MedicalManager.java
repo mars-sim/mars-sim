@@ -1,7 +1,8 @@
 /**
  * Mars Simulation Project
+ * MedicalManager.java
+ * @version 2.74 2002-02-25
  * @author Barry Evans
- * @version 2.74
  */
 
 package org.mars_sim.msp.simulation.person;
@@ -25,14 +26,16 @@ public class MedicalManager implements Serializable {
     public final static int MINSPERDAY = (24 * 60);
 
     private HashMap complaints = new HashMap(); // Possible MedicalComplaints
-    private MedicalComplaint starvation;        // Starvation problem
-    private MedicalComplaint lackOfOxygen;      // Pre-defined complaint
+    private MedicalComplaint starvation;        // Pre-defined complaint 
+    private MedicalComplaint suffocation;       // Pre-defined complaint
     private MedicalComplaint dehydration;       // Pre-defined complaint
-
+    private MedicalComplaint decompression;     // Pre-defined complaint
+    private MedicalComplaint freezing;          // Pre-defined complaint
+    
     /**
-     * The name of the Lack Of Oxygen complaint
+     * The name of the suffocation complaint
      */
-    public final static String LACKOFOXYGEN = "Lack Of Oxygen";
+    public final static String SUFFOCATION = "Suffocation";
 
     /**
      * The name of the Dehydration complaint
@@ -44,6 +47,16 @@ public class MedicalManager implements Serializable {
      */
     public final static String STARVATION = "Starvation";
 
+    /**
+     * The name of the decompression complaint
+     */
+    public final static String DECOMPRESSION = "Decompression";
+
+    /**
+     * The name of the freezing complaint
+     */
+    public final static String FREEZING = "Freezing";
+    
     /**
      * Construct a new Medical Manager. This also constructs all the
      * pre-defined MedicalComplaints and the user-defined ones in the XML
@@ -72,7 +85,7 @@ public class MedicalManager implements Serializable {
 
         // Most serious complaint, 100, and has a '0' performance factor, i.e.
         // Person can be nothing. Zero recovery as results in death.
-        lackOfOxygen = createComplaint(LACKOFOXYGEN, 100,
+        suffocation = createComplaint(SUFFOCATION, 100,
                                        props.getPersonLackOfOxygenPeriod(),
                                        0D, 0, 0, null);
 
@@ -81,7 +94,19 @@ public class MedicalManager implements Serializable {
         dehydration = createComplaint(DEHYDRATION, 60,
                                       props.getPersonLackOfWaterPeriod(),
                                       0D, 0, 70, null);
-
+      
+        // Very serious complaint, 100, and has a 0% performance factor. Zero
+	// recovery as death will result
+	decompression = createComplaint(DECOMPRESSION, 100,
+                                      props.getPersonDecompressionTime() / 60D, 
+				      0D, 0, 0, null);
+	
+        // Somewhat serious complaint, 80, and a 40% performance factor. Zero 
+	// recovery as death will result
+	freezing = createComplaint(FREEZING, 80,
+                                      props.getPersonFreezingTime(),
+				      0D, 0, 40, null);
+	
         /** Creates initial complaints from XML config file */
         MedicalXmlReader medicalReader = new MedicalXmlReader(this);
         medicalReader.parse();
@@ -160,17 +185,17 @@ public class MedicalManager implements Serializable {
     }
 
     /**
-     * Return the pre-defined Medical Complaint that signifies a Lack of Oxygen
+     * Return the pre-defined Medical Complaint that signifies a suffocation 
      * complaint.
      *
      * @return Medical complaint for shortage of oxygen.
      */
-    public MedicalComplaint getLackOfOxygen() {
-        return lackOfOxygen;
+    public MedicalComplaint getSuffocation() {
+        return suffocation;
     }
     /**
-     * Return the pre-defined Medical Complaint that signifies a lack
-     * of water complaint.
+     * Return the pre-defined Medical Complaint that signifies a dehydration 
+     * complaint.
      *
      * @return Medical complaint for shortage of water.
      */
@@ -186,5 +211,25 @@ public class MedicalManager implements Serializable {
      */
     public MedicalComplaint getStarvation() {
         return starvation;
+    }
+
+    /**
+     * Return the pre-defined Medical Complaint that signifies a Decompression
+     * conplaint.
+     *
+     * @return Medical complaint for decompression.
+     */
+    public MedicalComplaint getDecompression() {
+        return decompression;
+    }
+
+    /**
+     * Return the pre-defined Medical Complaint that signifies a Freezing
+     * complaint.
+     *
+     * @return Medical complaint for freezing.
+     */
+    public MedicalComplaint getFreezing() {
+        return freezing;
     }
 }
