@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.75 2003-12-20
+ * @version 2.75 2004-02-10
  * @author Scott Davis
  */
  
@@ -35,35 +35,35 @@ public class SurfaceFeatures {
         return surfaceTerrain;
     }
 
-    /** Returns a number representing the current sunlight
-     *  conditions at a particular location.
+    /** 
+     * Returns a float value representing the current sunlight
+     * conditions at a particular location.
      *  
-     *  return value is 127 if full daylight
-     *  return value is 0 if night time
-     *  return value is between 0 and 127 if twilight
-     *  
-     *  @return number representing the current sunlight conditions
+     * @return value from 0.0 - 1.0
+     * 0.0 represents night time darkness.
+     * 1.0 represents daylight. 
+     * Values in between 0.0 and 1.0 represent twilight conditions. 
      */
-    public int getSurfaceSunlight(Coordinates location) {
+    public double getSurfaceSunlight(Coordinates location) {
         
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         double angleFromSun = sunDirection.getAngle(location);
 
-        int result = 0;
-        double twilightzone = .2D;
+        double result = 0;
+        double twilightzone = .2D; // Angle width of twilight border (radians)
         if (angleFromSun < (Math.PI / 2D) - (twilightzone / 2D)) {
-            result = 127;
+            result = 1D;
         }
         else if (angleFromSun > (Math.PI / 2D) + (twilightzone / 2D)) {
-            result = 0;
+            result = 0D;
         }
         else {
             double twilightAngle = angleFromSun - ((Math.PI / 2D) - (twilightzone / 2D));
-            result = (int) Math.round(127D * (1 - (twilightAngle / twilightzone)));
+            result = 1D - (twilightAngle / twilightzone);
         }
 
         return result;
-    }       
+    }     
 
     /** Returns true if location is in a dark polar region.
      *  A dark polar region is where the sun doesn't rise in the current sol.

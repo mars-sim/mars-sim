@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.75 04-01-11
+ * @version 2.75 2004-02-10
  * @author Scott Davis
  */
 
@@ -251,8 +251,8 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	    
 			// If no one can collect resources and this is not due to it just being
 			// night time, end the collecting phase.
-			int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
-			if (nobodyCollect && (sunlight > 0)) endPhase = true;
+			double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
+			if (nobodyCollect && (sunlight > 0D)) endPhase = true;
 		}
 
 		if (!endPhase) {

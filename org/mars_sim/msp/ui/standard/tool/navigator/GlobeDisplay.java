@@ -1,17 +1,30 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.75 2003-09-10
+ * @version 2.75 2004-02-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.navigator;
  
-import java.awt.*;
-import java.awt.image.*;
-import javax.swing.*;
-import org.mars_sim.msp.simulation.*;  
-import org.mars_sim.msp.ui.standard.unit_display_info.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.image.MemoryImageSource;
+
+import javax.swing.JComponent;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.IntPoint;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
 
 /** 
  * The Globe Display class displays a graphical globe of Mars in the
@@ -169,8 +182,9 @@ class GlobeDisplay extends JComponent implements Runnable {
                 int yDiff = y - centerY;
                 if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
                     centerCoords.convertRectToSpherical(xDiff, yDiff, 47.74648293D, location);
-                    int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
-                    shadingArray[x + (y * width)] = ((127 - sunlight) << 24) & 0xFF000000;
+                    double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
+                    int sunlightInt = (int) (127 * sunlight);
+                    shadingArray[x + (y * width)] = ((127 - sunlightInt) << 24) & 0xFF000000;
                 }
                 else shadingArray[x + (y * 150)] = 0xFF000000;
             }

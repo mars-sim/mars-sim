@@ -1,15 +1,22 @@
 /**
  * Mars Simulation Project
  * ShadingMapLayer.java
- * @version 2.75 2003-09-21
+ * @version 2.75 2004-02-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.navigator;
 
-import java.awt.*;
-import java.awt.image.*;
-import org.mars_sim.msp.simulation.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.image.MemoryImageSource;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.OrbitInfo;
+import org.mars_sim.msp.simulation.SurfaceFeatures;
 
 /**
  * The ShadingMapLayer is a graphics layer to display twilight and night time shading.
@@ -59,8 +66,9 @@ class ShadingMapLayer implements MapLayer {
         for (int x = 0; x < width; x+=2) {
             for (int y = 0; y < height; y+=2) {
                 mapDisplay.getMapCenter().convertRectToSpherical(x - centerX, y - centerY, rho, location);
-                int sunlight = surfaceFeatures.getSurfaceSunlight(location);
-                int shadeColor = ((127 - sunlight) << 24) & 0xFF000000;
+                double sunlight = surfaceFeatures.getSurfaceSunlight(location);
+                int sunlightInt = (int) (127 * sunlight);
+                int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000;
                 shadingArray[x + (y * width)] = shadeColor;
                 shadingArray[x + 1 + (y * width)] = shadeColor;
                 if (y < height -1) {
