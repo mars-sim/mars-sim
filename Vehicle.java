@@ -40,7 +40,13 @@ public abstract class Vehicle extends Unit {
     private HashMap potentialFailures;           // A table of potential failures in the vehicle. (populated by child classes)
     private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
     private boolean distanceMark = false;
+    private static Image surfImage;
+    private static Image topoImage;
 
+    static {
+	surfImage = Toolkit.getDefaultToolkit().getImage("VehicleSymbol.gif");
+	topoImage = Toolkit.getDefaultToolkit().getImage("VehicleSymbolBlack.gif");
+    }
     
     public Vehicle(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 
@@ -53,6 +59,14 @@ public abstract class Vehicle extends Unit {
 	passengers = new Vector();
 	potentialFailures = new HashMap();
 	totalMaintenanceWork = 12 * 60 * 60; // (12 hours)
+    }
+
+    public static Image getSurfIcon() {
+	return surfImage;
+    }
+
+    public static Image getTopoIcon() {
+	return topoImage;
     }
 
     /** Returns vehicle's current status */

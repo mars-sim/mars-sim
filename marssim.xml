@@ -1,63 +1,71 @@
 <marssim>
 
-  <settlement>
+  <Settlement>
     <name>Port Zubrin</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Lowell Station</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Sagan Station</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Goddard Settlement</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Port Braun</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Burroughstown</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>McKay Base</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Asimov Base</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Clarketown</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Sojourner Station</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Viking Base</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Mariner Settlement</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Camp Bradbury</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Heinlein Station</name>
-  </settlement>
+  </Settlement>
 
-  <settlement>
+  <Settlement>
     <name>Schiaparelli Settlement</name>
-  </settlement>
+  </Settlement>
+
+  <Rover>
+    <location>Port Zubrin</location>
+  </Rover>  
+
+  <Rover>
+    <location>Sagan Station</location>
+  </Rover>  
 
 </marssim>

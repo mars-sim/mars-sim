@@ -67,4 +67,10 @@ public abstract class Unit {
 
     /** Returns a detail window for the unit */
     public abstract UnitDialog getDetailWindow(MainDesktopPane parentDesktop); 
+
+    /*
+    public abstract Image getSurfIcon();
+    public abstract Image getTopoIcon();
+    */
+
 }

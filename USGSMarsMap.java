@@ -32,6 +32,8 @@ public class USGSMarsMap implements Map {
     private Image img;
     private Coordinates currentView; // for future use
     
+    private Image prefetchedImage;
+
 
     public USGSMarsMap() {}
 
@@ -43,7 +45,10 @@ public class USGSMarsMap implements Map {
 	if (imageInCache(newCenter)) {
 	    // simply translate the image
 	} else {
-	    retrieveImage(3, // pixels per degree
+	    img = retrieveImage(3, // pixels per degree
+				90 - Math.toDegrees(newCenter.getPhi()),
+				360 - Math.toDegrees(newCenter.getTheta()));
+	    prefetchImage(10, // pixels per degree
 			  90 - Math.toDegrees(newCenter.getPhi()),
 			  360 - Math.toDegrees(newCenter.getTheta()));
 	    currentView = newCenter;
@@ -68,7 +73,7 @@ public class USGSMarsMap implements Map {
     /** requests an image from the PDS web server.
      *  @param size is pixels per degree
      */
-    private void retrieveImage(int size, double lat, double lon) {
+    private Image retrieveImage(int size, double lat, double lon) {
 	imageDone = false;
 	try {
 	    URL url = new URL(psdUrl + psdCgi +
@@ -105,7 +110,7 @@ public class USGSMarsMap implements Map {
 	    System.out.println(imageUrl);
 
 	    //imageUrl = new URL("file:tmp.968014862.jpg");
-	    img = Toolkit.getDefaultToolkit().getImage(imageUrl);
+	    return (Toolkit.getDefaultToolkit().getImage(imageUrl));
 
 	} catch (MalformedURLException e) {
 	    System.out.println("Weirdness" + e);
@@ -113,6 +118,12 @@ public class USGSMarsMap implements Map {
 	    // should deal with the case where a user has no internet connection
 	    System.out.println("Weirdness" + e);
 	}
+
+	return null;
+    }
+
+    private void prefetchImage(int size, double lat, double lon) {
+	prefetchedImage = retrieveImage(size, lat, lon);
     }
 
     private void waitForMapLoaded() {

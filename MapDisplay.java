@@ -64,10 +64,10 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
 	topoMap = new TopoMarsMap(this);
 
 	// Load vehicle and settlement images
-	vehicleSymbol = Toolkit.getDefaultToolkit().getImage("VehicleSymbol.gif"); 
-	topoVehicleSymbol = Toolkit.getDefaultToolkit().getImage("VehicleSymbolBlack.gif");
-	settlementSymbol = Toolkit.getDefaultToolkit().getImage("SettlementSymbol.gif");
-	topoSettlementSymbol = Toolkit.getDefaultToolkit().getImage("SettlementSymbolBlack.gif");
+	vehicleSymbol = Vehicle.getSurfIcon();
+	topoVehicleSymbol = Vehicle.getTopoIcon();
+	settlementSymbol = Settlement.getSurfIcon();
+	topoSettlementSymbol = Settlement.getTopoIcon();
 	
 	// initially show real surface map (versus topo map)
 	showSurf();
