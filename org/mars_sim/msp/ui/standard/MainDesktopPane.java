@@ -15,6 +15,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -246,6 +247,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 catch (Exception e) { System.out.println(e.toString()); }
             }
             window.show();
+            //bring to front if it overlaps with other windows
+            try {
+            window.setSelected(true);
+            } catch (PropertyVetoException e) {
+            // ignore if setSelected is vetoed	
+            }
         }
     }
 
