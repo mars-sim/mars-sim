@@ -139,7 +139,7 @@ class Installer extends Canvas implements ActionListener, WindowListener {
 			
 			// Load image as ImageIcon to make sure image loads completely
 			
-			Image compressedMap = (new ImageIcon(mapNames[x] + "MarsMap.jpg")).getImage();
+			Image compressedMap = (new ImageIcon("map_data/" + mapNames[x] + "MarsMap.jpg")).getImage();
 			
 			// Display status of data file being created
 			
@@ -149,7 +149,7 @@ class Installer extends Canvas implements ActionListener, WindowListener {
 			try {
 				// Prepare Buffered Output Stream To Create DAT File
 				
-				dataOut = new FileOutputStream(mapNames[x] + "MarsMap.dat");
+				dataOut = new FileOutputStream("map_data/" + mapNames[x] + "MarsMap.dat");
 				buffOut = new BufferedOutputStream(dataOut);
 				
 				// Create Array To Hold Compressed Row Of Data
