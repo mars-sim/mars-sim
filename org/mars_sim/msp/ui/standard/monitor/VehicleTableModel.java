@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-09
  * @author Barry Evans
  */
 
@@ -138,7 +138,7 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case DRIVER : {
-                result = vehicle.getDriver();
+                result = vehicle.getDriver().getName();
             } break;
 
             // Status is a combination of Mechincal failure and maintenance
