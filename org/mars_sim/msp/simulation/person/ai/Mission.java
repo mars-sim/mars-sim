@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.74 2002-02-13
+ * @version 2.74 2002-02-22
  * @author Scott Davis
  */
 
@@ -84,7 +84,15 @@ public abstract class Mission implements Serializable {
     public int getPeopleNumber() {
         return people.size();
     }
- 
+
+    /** 
+     * Gets a collection of the people in the mission.
+     * @return collection of people
+     */
+    public PersonCollection getPeople() {
+        return new PersonCollection(people);
+    }
+    
     /** Returns the mission's manager
      *  @return mission manager
      */
@@ -164,5 +172,6 @@ public abstract class Mission implements Serializable {
      */ 
     protected void endMission() {
         done = true;
+	people.clear();
     }
 } 

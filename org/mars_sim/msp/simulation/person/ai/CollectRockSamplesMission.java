@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-02-20
+ * @version 2.74 2002-02-22
  * @author Scott Davis
  */
 
@@ -342,8 +342,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         rover.setETA(null);
 
         // Have person exit rover if necessary.
-        if (person.getLocationSituation().equals(Person.INVEHICLE)) 
+        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
 	    rover.getInventory().takeUnit(person, startingSettlement);
+	}
 
         // Unload rover if necessary.
         if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;
@@ -359,6 +360,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             Person tempPerson = i.next();
             if (tempPerson.getLocationSituation().equals(Person.INVEHICLE)) allDisembarked = false;
         }
+
         if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) endMission();
     }
 
@@ -428,6 +430,6 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             }
         }
 
-        done = true;
+	super.endMission();
     }
 }

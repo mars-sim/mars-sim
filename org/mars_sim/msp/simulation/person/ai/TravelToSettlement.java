@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-02-19
+ * @version 2.74 2002-02-22
  * @author Scott Davis
  */
 
@@ -342,6 +342,6 @@ class TravelToSettlement extends Mission implements Serializable {
             }
         }
 
-        done = true;
+	super.endMission();
     }
 }

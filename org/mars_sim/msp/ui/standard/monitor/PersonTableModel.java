@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-02-22
  * @author Barry Evans
  */
 
@@ -62,6 +62,7 @@ public class PersonTableModel extends UnitTableModel {
     // Data members
     private Vehicle         vehicle;    // Monitored Vehicle
     private Settlement      settlement; // Monitored Location
+    private Mission         mission; // Monitored Mission
 
     /**
      * Constructs a PersonTableModel object that displays all Person from the
@@ -97,7 +98,7 @@ public class PersonTableModel extends UnitTableModel {
 
     /**
      * Constructs a PersonTableModel object that displays all Person from the
-     * specified Vechile
+     * specified Vehicle
      *
      * @param settlement Monitored settlement Person objects.
      */
@@ -112,6 +113,23 @@ public class PersonTableModel extends UnitTableModel {
         }
     }
 
+    /**
+     * Constructs a PersonTableModel object that displays all Person from the
+     * specified Mission.
+     *
+     * @param mission Monitored mission Person objects.
+     */
+    public PersonTableModel(Mission mission) {
+        super(mission.getName() + " - People", columnNames, columnTypes);
+
+	this.mission = mission;
+
+	PersonIterator iter = mission.getPeople().iterator();
+	while(iter.hasNext()) {
+            add(iter.next());
+	}
+    }
+    
     /**
      * Compare the current contents to the expected. This would be alot easier
      * if pure Collection were used as the comparision methods have to be
@@ -129,9 +147,13 @@ public class PersonTableModel extends UnitTableModel {
         else if (settlement != null) {
             people = settlement.getInhabitants();
         }
+	else if (mission != null) {
+	    people = mission.getPeople();
+	}
 
         // Compare current to actual
         if (people != null) {
+
             // Rows been deleted ?
             if (contents.size() > people.size()) {
                 for( int i = 0; i < contents.size(); i++) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.74 2002-01-22
+ * @version 2.74 2002-02-22
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.ui.standard.monitor.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -289,12 +290,29 @@ public class PersonDialog extends UnitDialog {
 		taskDescriptionTopPane.add(taskDescriptionPane, "North");
 		taskPane.add(new JScrollPane(taskDescriptionTopPane), "Center");
 
+        JPanel missionNamePanel = new JPanel(new BorderLayout());
+	taskDescriptionPane.add(missionNamePanel);
+		
         // Display current mission.
         // Display "Mission: None" if person currently has no task.
         missionLabel = new JLabel("Mission: None", JLabel.LEFT);
         if (mind.hasActiveMission()) missionLabel.setText("Mission: " + mind.getMission().getName());
         missionLabel.setForeground(Color.black);
-        taskDescriptionPane.add(missionLabel);
+        missionNamePanel.add(missionLabel, "West");
+
+	// Add monitor button.
+	JButton monitorButton = new JButton(new ImageIcon("images/Monitor.gif"));
+	monitorButton.setMargin(new Insets(1, 1, 1, 1));
+	monitorButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+		    Mind mind = person.getMind();
+                    if (mind.hasActiveMission())
+	                parentDesktop.addModel(new PersonTableModel(mind.getMission()));
+	        }
+	    });
+	JPanel monitorPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+	monitorPanel.add(monitorButton);
+	missionNamePanel.add(monitorPanel);
 
         // Display current mission phase.
         // Display "Mission Phase:" if person doesn't have an active mission phase.
