@@ -6,4 +6,24 @@
     <!-- Default value: 1000.0 -->
     <TIME_RATIO>887.75244</TIME_RATIO>
 
+    <!-- The average amount of oxygen breathed by a person each Martian Sol -->
+    <!-- Oxygen amount in kilograms -->
+    <OXYGEN_USAGE>1.0</OXYGEN_USAGE>
+
+    <!-- The average amount of water drank by a person each Martian Sol -->
+    <!-- Water amount in kilograms -->
+    <WATER_USAGE>4.0</WATER_USAGE>
+
+    <!-- The average amount of food eaten by a person each Martian Sol -->
+    <!-- Food amount in kilograms -->
+    <FOOD_USAGE>1.5</FOOD_USAGE>
+
+    <ROVER_OXYGEN_CAPACITY>350</ROVER_OXYGEN_CAPACITY>
+
+    <ROVER_WATER_CAPACITY>1400</ROVER_WATER_CAPACITY>
+
+    <ROVER_FOOD_CAPACITY>525</ROVER_FOOD_CAPACITY>
+
+    <ROVER_METHANE_CAPACITY></ROVER_METHANE_CAPACITY>
+
 </PROPERTY_LIST>

@@ -12,11 +12,8 @@ import java.io.Serializable;
 /** The MasterClock represents the simulated time clock on virtual
  *  Mars. Virtual Mars has only one master clock. The master clock
  *  delivers a clock pulse the virtual Mars every second or so, which
- *  represents 10 minutes of simulated time.  All actions taken with
+ *  represents a pulse of simulated time.  All actions taken with
  *  virtual Mars and its units are synchronized with this clock pulse.
- *
- *  Note: Later the master clock will control calendaring information
- *  as well, so Martian calendars and clocks can be displayed.
  */
 public class MasterClock implements Runnable, Serializable {
 
@@ -25,7 +22,8 @@ public class MasterClock implements Runnable, Serializable {
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
-    private transient double timePulse;     // Time pulse length in millisols
+    private boolean timeRatioSet; // Time ratio set flag
+    private double timeRatio;     // Time compression ratio
 
     // Sleep duration in milliseconds 
     private final static int SLEEP_DURATION = 1000;
@@ -39,8 +37,9 @@ public class MasterClock implements Runnable, Serializable {
         // Initialize data members
         this.mars = mars;
 
-        // Get time ratio property
-        setRatio(mars.getSimulationProperties().getTimeRatio());
+        // Initialize data members
+        timeRatioSet = false;
+        timeRatio = 1D;
 
         // Create a Martian clock
         marsTime = new MarsClock();
@@ -73,15 +72,35 @@ public class MasterClock implements Runnable, Serializable {
         return uptimer;
     }
 
-    /**
-     * Set the time simulation ratio
-     * @param timeRatio The new time ratio.
+    /** Sets the simulation's time compression
+     *  ratio.
+     *  @param timeRatio the time compression ratio
      */
     public void setRatio(double timeRatio) {
         if (timeRatio > 0D) {
-            double timePulseSeconds = timeRatio * (SLEEP_DURATION / 1000D);
+            timeRatioSet = true;
+            this.timeRatio = timeRatio;
+        }
+    }
+
+    /** Gets the time pulse length
+     *  @return time pulse length in millisols
+     */
+    public double getTimePulse() {
+
+        // Get time ratio from simulation properties.
+        double ratio;
+        if (timeRatioSet) ratio = timeRatio;
+        else ratio = mars.getSimulationProperties().getTimeRatio();
+
+        double timePulse;
+        if (ratio > 0D) {
+            double timePulseSeconds = ratio * (SLEEP_DURATION / 1000D);
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
         }
+        else timePulse = 1D;
+    
+        return timePulse;
     }
 
     /** Run clock */
@@ -92,8 +111,11 @@ public class MasterClock implements Runnable, Serializable {
                 Thread.currentThread().sleep(SLEEP_DURATION);
             } catch (InterruptedException e) {}
 
-            //Increament the uptimer
+            //Increment the uptimer
             uptimer.addTime(SLEEP_DURATION);
+
+            // Get the time pulse length in millisols.
+            double timePulse = getTimePulse();
 
             // Send virtual Mars a clock pulse representing the time pulse length (in millisols).
             mars.clockPulse(timePulse);

@@ -173,9 +173,6 @@ public class VirtualMars implements Serializable {
         units = (UnitManager)in.readObject();
         missionManager = (MissionManager)in.readObject();
         masterClock = (MasterClock)in.readObject();
-
-        // Set the simulation speed
-        masterClock.setRatio(getSimulationProperties().getTimeRatio());
     }
 }
 
