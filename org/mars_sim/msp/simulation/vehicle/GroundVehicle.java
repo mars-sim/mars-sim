@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.74 2002-04-13
+ * @version 2.74 2002-04-18
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.vehicle;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.structure.*;
 import java.io.Serializable;
 

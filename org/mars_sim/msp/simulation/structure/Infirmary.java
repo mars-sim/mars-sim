@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Infirmary.java
- * @version 2.74 2002-04-13
+ * @version 2.74 2002-04-21
  * @author Barry Evans
  */
 
@@ -37,8 +37,8 @@ public class Infirmary extends Facility
         // Use Facility's constructor.
         super(manager, NAME);
 
-        // Add scope string to settlement's malfunction manager.
-	manager.getSettlement().getMalfunctionManager().addScopeString("Infirmary");
+        // Add scope string to malfunction manager.
+	malfunctionManager.addScopeString("Infirmary");
 
         // Initialize random size from 1 to 5.
         sickBay = new SickBay(NAME, 1 + RandomUtil.getRandomInt(4),
@@ -74,5 +74,14 @@ public class Infirmary extends Facility
         sickBay.stopTreatment(problem);
 
         // Must check if anyome else can join infirmary
+    }
+
+    /**
+     * Time passing for infirmary.
+     * @param time the amount of time passing (millisols)
+     */
+    public void timePassing(double time) {
+        if (sickBay.getTreatedPatientCount() > 0) 
+	    malfunctionManager.activeTimePassing(time);
     }
 }

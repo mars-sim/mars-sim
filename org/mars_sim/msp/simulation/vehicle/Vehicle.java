@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-04-13
+ * @version 2.74 2002-04-21
  * @author Scott Davis
  */
 
@@ -11,7 +11,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -19,7 +19,7 @@ import java.util.*;
  *  generic information about the vehicle. This class needs to be
  *  subclassed to represent a specific type of vehicle.
  */
-public abstract class Vehicle extends Unit implements Serializable {
+public abstract class Vehicle extends Unit implements Serializable, Malfunctionable {
 
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
@@ -92,7 +92,7 @@ public abstract class Vehicle extends Unit implements Serializable {
     private void initVehicleData() {
 
 	// Initialize malfunction manager.
-	malfunctionManager = new MalfunctionManager(this);
+	malfunctionManager = new MalfunctionManager(this, mars);
 	malfunctionManager.addScopeString("Vehicle");
 	    
         setDestinationType("None");
@@ -433,4 +433,20 @@ public abstract class Vehicle extends Unit implements Serializable {
      * @return string describing vehicle
      */
     public abstract String getDescription();
+
+    /**
+     * Gets the unit's malfunction manager.
+     * @return malfunction manager
+     */
+    public MalfunctionManager getMalfunctionManager() {
+        return malfunctionManager;
+    }
+
+    /**
+     * Time passing for vehicle.
+     * @param time the amount of time passing (millisols)
+     */
+    public void timePassing(double time) {
+        if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
+    }
 }

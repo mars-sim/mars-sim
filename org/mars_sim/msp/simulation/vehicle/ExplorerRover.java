@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRover.java
- * @version 2.74 2002-04-13
+ * @version 2.74 2002-04-21
  */
 
 package org.mars_sim.msp.simulation.vehicle;
@@ -62,6 +62,7 @@ public class ExplorerRover extends Rover implements Serializable {
        
         // Add scope to malfunction manager.
 	malfunctionManager.addScopeString("ExplorerRover");
+	malfunctionManager.addScopeString("Laboratory");
 	    
         // Set crew capacity
 	crewCapacity = CREW_CAPACITY;

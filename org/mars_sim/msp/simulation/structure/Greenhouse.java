@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Greenhouse.java
- * @version 2.74 2002-04-13
+ * @version 2.74 2002-04-21
  * @author Scott Davis
  */
 
@@ -32,8 +32,8 @@ public class Greenhouse extends Facility implements Serializable {
         // Use Facility's constructor.
         super(manager, "Greenhouse");
 
-        // Add scope string to settlement's malfunction manager.
-	manager.getSettlement().getMalfunctionManager().addScopeString("Greenhouse");
+        // Add scope string to malfunction manager.
+	malfunctionManager.addScopeString("Greenhouse");
 	
         // Initialize data members
         workCompleted = 0D;
@@ -144,5 +144,7 @@ public class Greenhouse extends Facility implements Serializable {
                 workCompleted = 0D;
             }
         }
+
+	malfunctionManager.activeTimePassing(time);
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionXmlReader.java
- * @version 2.74 2002-04-16
+ * @version 2.74 2002-04-21
  * @author Scott Davis 
  */
 
@@ -62,7 +62,7 @@ class MalfunctionXmlReader extends MspXmlReader {
      * @param manager malfunction factory to load
      */
     MalfunctionXmlReader(MalfunctionFactory factory) {
-        super("malfunction");
+        super("malfunctions");
 
         this.factory = factory;
     }
@@ -181,6 +181,7 @@ class MalfunctionXmlReader extends MspXmlReader {
 	        factory.addMalfunction(new Malfunction(currentName, currentSeverity, currentProbability,
 		        currentEmergencyWorkTime, currentWorkTime, currentEVAWorkTime, scope, 
 			resourceEffects, lifeSupportEffects, medicalComplaints));
+		elementType = MALFUNCTION_LIST;
 		break;
         }
     }

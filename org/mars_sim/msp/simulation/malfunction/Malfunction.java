@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Malfunction.java
- * @version 2.74 2002-04-04
+ * @version 2.74 2002-04-21
  * @author Scott Davis
  */
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-18
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ import java.io.Serializable;
 /**
  *  The Drive Ground Vehicle class is a task for driving a ground vehicle to a destination.
  */
-class DriveGroundVehicle extends Task implements Serializable {
+public class DriveGroundVehicle extends Task implements Serializable {
 
     /**
      * Driving phase.
@@ -162,8 +162,8 @@ class DriveGroundVehicle extends Task implements Serializable {
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         person.getSkillManager().addExperience("Driving", newPoints);
 
-        // Check for mechanical breakdown.
-        if (!done) checkMechanicalBreakdown(timeUsed);
+        // Check for accident.
+        if (!done) checkForAccident(timeUsed);
 
         return time - timeUsed;
     }
@@ -225,8 +225,8 @@ class DriveGroundVehicle extends Task implements Serializable {
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         person.getSkillManager().addExperience("Driving", newPoints);
 
-        // Check for mechanical breakdown.
-        if (!done) checkMechanicalBreakdown(timeUsed);
+        // Check for accident.
+        if (!done) checkForAccident(timeUsed);
 
         return time - timeUsed;
     }
@@ -264,8 +264,8 @@ class DriveGroundVehicle extends Task implements Serializable {
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         person.getSkillManager().addExperience("Driving", newPoints);
 
-        // Check for mechanical breakdown.
-        if (!done) checkMechanicalBreakdown(timeUsed);
+        // Check for accident.
+        if (!done) checkForAccident(timeUsed);
 
         return time - timeUsed;
     }
@@ -407,57 +407,39 @@ class DriveGroundVehicle extends Task implements Serializable {
         return speed;
     }
 
-    /** Checks for vehicle breakdown to mechanical failure.
-     *  @param time the amount of time vehicle is driven (millisols)
+    /**
+     * Check if vehicle has had an accident.
+     * @param time the amount of time vehicle has been driven (millisols)
      */
-    private void checkMechanicalBreakdown(double time) {
-        // Base 1% of breakdown per 100 millisols of driving.
-        double percentChance = time / 100D;
+    private void checkForAccident(double time) {
 
-        // Modify by total mileage on vehicle.
-        // Taken out until vehicle construction/scrapping is implemented.
-        // double mileageModifier - .1D * (vehicle.getTotalDistanceTraveled() / 10000D);
+        double chance = .01D;
 
-        // Modify by distance since last maintenance if over 5,000 km.
-        double maintenanceModifier = 0D;
-        if (vehicle.getDistanceLastMaintenance() > 5000D)
-            maintenanceModifier = 1D * (vehicle.getDistanceLastMaintenance() / 5000D);
+	// Driver skill modification.
+	int skill = person.getSkillManager().getEffectiveSkillLevel("Driving");
+	if (skill <= 3) chance *= (4 - skill);
+	else chance /= (skill - 2);
+	
+        // Get task phase modification.
+        if (phase.equals(AVOID_OBSTACLE)) chance *= 1.2D;
+        if (phase.equals(WINCH_VEHICLE)) chance *= 1.3D;
 
-        // Modify by driver's skill level.
-        int skillLevel = person.getSkillManager().getEffectiveSkillLevel("Driving");
-        double skillModifier = .1D * (double) skillLevel;
+	// Terrain modification.
+	chance *= (1D + Math.sin(vehicle.getTerrainGrade()));
 
-        // Modify by terrain.
-        double terrainModifier = .5D * Math.sin(vehicle.getTerrainGrade());
+        // Vehicle handling modification.
+        chance /= (1D + vehicle.getTerrainHandlingCapability());
 
-        // Modifier by terrain handling capability of vehicle.
-        double handlingModifier = .1D * vehicle.getTerrainHandlingCapability();
-
-        // Modify by the current phase of the driving task.
-        double phaseModifier = 0D;
-        if (phase.equals(AVOID_OBSTACLE)) {
-            if (backingUp) phaseModifier = .2D;
-            else phaseModifier = .1D;
-        }
-        else if (phase.equals(WINCH_VEHICLE)) phaseModifier = .3D;
-
-        // Determine light condition modifier based on available sunlight
+        // Light condition modification.
         double lightModifier = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
-        lightModifier = ((127D - lightModifier) / 127D) * .5D;
+        chance *= ((5D * (127D - lightModifier) / 127D) + 1D);
 
-        // Add modifiers to base chance.
-        percentChance += maintenanceModifier - skillModifier + terrainModifier - handlingModifier
-            + phaseModifier + lightModifier;
-
-        // Determine if failure happens.
-        if (RandomUtil.lessThanRandPercent(percentChance)) {
-            vehicle.newMechanicalFailure();
-            // System.out.println(person.getName() + " stopped driving " + vehicle.getName() + " due to mechanical failure.");
-            vehicle.setDriver(null);
-            done = true;
-        }
+        if (RandomUtil.lessThanRandPercent(chance * time)) {
+            System.out.println(person.getName() + " has accident driving " + vehicle.getName());
+	    vehicle.getMalfunctionManager().accident();
+	}
     }
-
+    
     /** Determines the ETA (Estimated Time of Arrival) to the destination.
      *  @return MarsClock instance of date/time for ETA
      */

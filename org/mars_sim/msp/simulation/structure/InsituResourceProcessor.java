@@ -26,8 +26,8 @@ public class InsituResourceProcessor extends Facility
         // User Facility's constructor
         super(manager, "INSITU Resource Processor");
 
-	// Add scope string to settlement's malfunction manager.
-	manager.getSettlement().getMalfunctionManager().addScopeString("InsituResourceProcessor");
+	// Add scope string to malfunction manager.
+	malfunctionManager.addScopeString("InsituResourceProcessor");
     }
     
     /** Returns number of oxygen units that processor is generatng in a millisol.
@@ -70,6 +70,8 @@ public class InsituResourceProcessor extends Facility
         inv.addResource(Inventory.OXYGEN, getOxygenRate() * time);
         inv.addResource(Inventory.WATER, getWaterRate() * time);
         inv.addResource(Inventory.FUEL, getFuelRate() * time);
+
+	malfunctionManager.activeTimePassing(time);
     }
 }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RandomUtil.java
- * @version 2.73 2001-11-08
+ * @version 2.74 2002-04-21
  * @author Scott Davis
  */
 
@@ -27,7 +27,7 @@ public final class RandomUtil {
      *  @return true if random percent is less than percentage limit
      */
     public static boolean lessThanRandPercent(double randomLimit) {
-        double rand = (Math.random() * 100D) + 1D;
+        double rand = Math.random() * 100D;
         if (rand < randomLimit) return true;
         else return false;
     }

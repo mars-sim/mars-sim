@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 2.74 2002-04-11
+ * @version 2.74 2002-04-21
  * @author Scott Davis 
  */
 
@@ -23,6 +23,9 @@ public class MalfunctionFactory {
      */
     public MalfunctionFactory() {
         malfunctions = new ArrayList();
+
+	MalfunctionXmlReader malfunctionReader = new MalfunctionXmlReader(this);
+	malfunctionReader.parse();
     }
 
     /**
@@ -56,7 +59,7 @@ public class MalfunctionFactory {
 	while (i.hasNext()) {
 	    Malfunction temp = (Malfunction) i.next();
 	    double probability = temp.getProbability();
-	    if (result == null) {
+	    if (temp.unitScopeMatch(scope) && (result == null)) {
 	        if (r < probability) result = temp.getClone();
                 else r -= probability;
 	    }

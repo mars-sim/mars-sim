@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Laboratory.java
- * @version 2.74 2002-04-13
+ * @version 2.74 2002-04-21
  * @author Scott Davis
  */
 
@@ -32,8 +32,8 @@ public class Laboratory extends Facility implements Lab, Serializable {
         // Use Facility's constructor.
         super(manager, "Research Laboratories");
 
-        // Add scope string to settlement's malfunction manager.
-	manager.getSettlement().getMalfunctionManager().addScopeString("Laboratory");
+        // Add scope string to malfunction manager.
+	malfunctionManager.addScopeString("Laboratory");
 	
         // Initialize random laboratorySize from 1 to 5.
         laboratorySize = 1 + RandomUtil.getRandomInt(4);
@@ -151,5 +151,13 @@ public class Laboratory extends Facility implements Lab, Serializable {
     public void removeResearcher() {
         researcherNum--;
 	if (researcherNum < 0) researcherNum = 0;
+    }
+
+    /**
+     * Time passing for laboratory.
+     * @param time the amount of time passing (millisols)
+     */
+    public void timePassing(double time) {
+        if (researcherNum > 0) malfunctionManager.activeTimePassing(time);
     }
 }
