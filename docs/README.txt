@@ -39,7 +39,7 @@ JVM can be downloaded from Sun at:
     http://www.javasoft.com/products/jdk/1.3/jre/
 
 1) Unzip MarsProject_X.XX.zip (where XXX is the version number) into a 
-   directory.  ie. "unzip MarsProject_2.71.zip"
+   directory.  ie. "unzip MarsProject_2.73.zip"
 
 2) Start the Mars Simulation Project by running the "MarsProject.bat"
    batch/script file or by typing: java MarsProject
@@ -47,15 +47,22 @@ JVM can be downloaded from Sun at:
    You will need to make sure the Java virtual machine is in your system
    path.  
 
+Command line arguments: java MarsProject [-new | -load file]
+
+   -new    Forces the simulation to start with a new simulation.
+           Default behavior is to load the default saved simulation.
+
+   -load file    Loads a saved simulation from the given file path.
+
 ------------------------------------------------------------------
 
 ** Configuration **
 
-The following text files can be modified to change the 
-names and number of units:
+Several XML files are available in the "conf" directory for the user to 
+configure units and modify properties in the simulation.
 
-settlements.conf
-rovers.conf
-people.conf
-
+people.xml - Adding/configuring people
+settlements.xml - Adding/configuring settlements
+vehicles.xml - Adding/configuring vehicles
+properties.xml - Configuring simulation properties
 
