@@ -99,22 +99,18 @@ class CollectRockSamples extends Task implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      */
     private double collectRocks(double time) {
-
         // Check if there is reason to cut the collection phase short and return
 	// to the rover.
 	if (shouldEndCollectionPhase()) {
 	    phase = ENTER_ROVER;
 	    return time;
 	}
-	    
+	
         double remainingPersonCapacity = person.getInventory()
 	        .getResourceRemainingCapacity(Inventory.ROCK_SAMPLES);
-	
         double currentSamplesCollected = rover.getInventory()
 	        .getResourceMass(Inventory.ROCK_SAMPLES) - startingVehicleRockCargo; 
-
 	double remainingSamplesNeeded = requiredSamples - currentSamplesCollected;
-
 	double sampleLimit = remainingPersonCapacity;
 	if (remainingSamplesNeeded < remainingPersonCapacity)
 	    sampleLimit = remainingSamplesNeeded;
@@ -215,9 +211,6 @@ class CollectRockSamples extends Task implements Serializable {
 
         EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
 	if (suit == null) {
-	    System.out.println("**************************************************************");
-	    System.out.println(person.getName() + " doesn't have an EVA suit!");
-	    System.out.println("**************************************************************");
 	    return true;
 	}
         Inventory suitInv = suit.getInventory();

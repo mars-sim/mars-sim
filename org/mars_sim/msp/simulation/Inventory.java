@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 2.74 2002-02-18
+ * @version 2.74 2002-03-12
  * @author Scott Davis 
  */
 
@@ -80,7 +80,7 @@ public class Inventory implements Serializable {
 	    double containedMass = ((Double) containedResources.get(resource)).doubleValue();
 	    if (mass > containedMass) {
                 containedResources.put(resource, new Double(0D));
-		return mass - containedMass;
+		return containedMass;
             }
 	    else {
                 containedResources.put(resource, new Double(containedMass - mass));
@@ -106,7 +106,8 @@ public class Inventory implements Serializable {
 	    if (remainingTotalCap < massLimit) massLimit = remainingTotalCap;
 	    
 	    double finalResourceMass = getResourceMass(resource);
-
+            
+	    
 	    if (mass < massLimit) {
 		finalResourceMass += mass;
 	        containedResources.put(resource, new Double(finalResourceMass));
