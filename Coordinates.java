@@ -1,5 +1,5 @@
 //************************** Spherical Coordinates Class **************************
-// Last Modified: 2/27/99
+// Last Modified: 8/20/00
 
 // The Coordinates class represents a location on virtual Mars in spherical coordinates.
 // It provides some useful methods involving those coordinates, as well as some static
@@ -73,7 +73,7 @@ public class Coordinates {
 	
 	// Get sine of theta value (accessor)
 	
-	public double getThetaPhi() { return sinTheta; }
+	public double getSinTheta() { return sinTheta; }
 	
 	// Get cosine of phi value (accessor)
 	
