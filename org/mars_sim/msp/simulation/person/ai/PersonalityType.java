@@ -10,7 +10,7 @@ package org.mars_sim.msp.simulation.person.ai;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.PersonConfig;
+import org.mars_sim.msp.simulation.person.*;
 
 /**
  * The MBTI (Myers-Briggs Type Indicator) personality type for the person.
@@ -34,15 +34,24 @@ public class PersonalityType implements Serializable {
 	private static final String ENTJ = "ENTJ";
 	private static final String ENFP = "ENFP";
 	private static final String ENFJ = "ENFJ";
+	
+	// The solitude stress modifier per millisol.
+	private static final double BASE_SOLITUDE_STRESS_MODIFIER = .1D;
+
+	// The company stress modifier per millisol.
+	private static final double BASE_COMPANY_STRESS_MODIFIER = .1D;
 
 	// Domain members
 	private static Map personalityTypes = null;
 	private String personalityType;
+	private Person person;
 
 	/**
 	 * Constructor
 	 */
-	PersonalityType() throws Exception {
+	PersonalityType(Person person) throws Exception {
+		
+		this.person = person;
 		
 		// Load personality type map if necessary.
 		if (personalityTypes == null) loadPersonalityTypes();
@@ -205,5 +214,28 @@ public class PersonalityType implements Serializable {
 		}
 		if (count != 100D) 
 			throw new Exception("PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
+	}
+	
+	/**
+	 * Updates a person's stress based on his/her personality.
+	 * @param time the time passing (millisols)
+	 * @throws Exception if problem updating stress.
+	 */
+	public void updateStress(double time) throws Exception {
+		
+		PersonCollection localGroup = person.getLocalGroup();
+		PhysicalCondition condition = person.getPhysicalCondition();
+		
+		// Introverts reduce stess when alone.
+		if (isIntrovert() && (localGroup.size() == 0)) {
+			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
+			condition.setStress(condition.getStress() - solitudeStressModifier);
+		}
+		
+		// Extroverts reduce stress when with company.
+		if (isExtrovert() && (localGroup.size() > 0)) {
+			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
+			condition.setStress(condition.getStress() - companyStressModifier);
+		}
 	}
 }
