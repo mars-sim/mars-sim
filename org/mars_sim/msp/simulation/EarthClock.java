@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.72 2001-02-29
+ * @version 2.72 2001-04-09
  * @author Scott Davis
  */
 
@@ -32,10 +32,22 @@ public class EarthClock extends GregorianCalendar {
         formatter = new SimpleDateFormat("MM/dd/yyyy  hh:mm:ss a z");
         formatter.setTimeZone(zone);
 
-        // Set starting date/time to midnight, January 1st, 2035
-        clear(); 
-        set(2035, Calendar.JANUARY, 1);
-        complete();
+        // Set Earth clock to Martian Zero-orbit date-time
+        // "06/18/2015 07:22:10 GMT" 
+        // This date may need to be adjusted if it is inaccurate
+        clear();
+        try {
+            DateFormat tempFormatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+            tempFormatter.setTimeZone(zone);
+       	    setTime(tempFormatter.parse("06/18/2015 07:22:10"));
+        }
+        catch(ParseException e) { System.out.println(e.toString()); }
+ 
+        // Add 15 Martian orbits to date
+        double solsInOrbit = 668.5921;
+        double secondsInSol = 88775.244;
+        int secondsInOrbit = (int) (solsInOrbit * secondsInSol);
+        add(Calendar.SECOND, 15 * secondsInOrbit);
     }
 
     /** Returns the date/time formatted in a string 

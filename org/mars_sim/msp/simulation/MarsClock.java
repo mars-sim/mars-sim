@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.72 2001-04-07
+ * @version 2.72 2001-04-09
  * @author Scott Davis
  */
 
@@ -51,34 +51,11 @@ public class MarsClock {
     /** Constructs a MarsClock object */
     public MarsClock() {
     
-        // Set initial date to 0-Adir-01:000.000  
-        orbit = 0;
+        // Set initial date to 15-Adir-01:000.000  
+        orbit = 15;
         month = 1;
         sol = 1;
         millisol = 0D;
-
-        // Construct a zeroOrbitClock and set it to
-        // "6/18/2015 7:22:10 GMT", the start date of 
-        // the zero orbit for the Mars clock.
-        EarthClock zeroOrbitClock = new EarthClock();
-        zeroOrbitClock.set(Calendar.YEAR, 2015);
-        zeroOrbitClock.set(Calendar.MONTH, 6);
-        zeroOrbitClock.set(Calendar.DATE, 18);
-        zeroOrbitClock.set(Calendar.HOUR_OF_DAY, 7);
-        zeroOrbitClock.set(Calendar.MINUTE, 22);
-        zeroOrbitClock.set(Calendar.SECOND, 10);
-       
-        // Find millisecond time difference between
-        // current Earth clock date and zero orbit date. 
-        long zeroOrbitTime = zeroOrbitClock.getTime().getTime();
-        long currentTime = new EarthClock().getTime().getTime();
-        double millisecondsDiff = currentTime - zeroOrbitTime;
-
-        // Convert milliseconds to millisols
-        double millisolsDiff = convertSecondsToMillisols((double) millisecondsDiff / 1000D);
-
-        // Add diff time to Mars clock
-        addTime(millisolsDiff);
     }
 
     /** Converts seconds to millisols
