@@ -1,17 +1,19 @@
 //***************** Tool Button *****************
-// Last Modified: 2/23/00
+// Last Modified: 4/6/00
 
 // The ToolButton class is a UI button for a tool window.
 // It is displayed in the unit tool bar.
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.*;
 
 public class ToolButton extends JButton {
 
 	// Data members
 	
-	private String toolName;  // The name of the tool which the button represents.
+	private String toolName;        // The name of the tool which the button represents.
+	private JToolTip toolButtonTip; // Customized tool tip with white background.
 
 	// Constructor
 
@@ -25,6 +27,13 @@ public class ToolButton extends JButton {
 		
 		this.toolName = new String(toolName);
 		
+		// Initialize tool tip for button
+		
+		toolButtonTip = new JToolTip();
+		toolButtonTip.setBackground(Color.white);
+		toolButtonTip.setBorder(new LineBorder(Color.green));
+		setToolTipText(toolName);
+		
 		// Prepare default tool button values
 		
 		setAlignmentX(.5F);
@@ -34,6 +43,10 @@ public class ToolButton extends JButton {
 	// Returns tool name
 	
 	public String getToolName() { return new String(toolName); }
+	
+	// Overrides JComponent's createToolTip() method
+	
+	public JToolTip createToolTip() { return toolButtonTip; }
 }
 
 // Mars Simulation Project
