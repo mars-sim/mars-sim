@@ -22,7 +22,7 @@ import org.mars_sim.msp.simulation.RandomUtil;
  */
 public class MedicalManager implements Serializable {
 
-    private final static int MINSPERDAY = (24 * 60);
+    public final static int MINSPERDAY = (24 * 60);
 
     private HashMap complaints = new HashMap(); // Possible MedicalComplaints
     private MedicalComplaint starvation;        // Starvation problem
@@ -53,6 +53,15 @@ public class MedicalManager implements Serializable {
      */
     public MedicalManager(SimulationProperties props) {
 
+        initMedical(props);
+    }
+
+    /**
+     * Initialise the Medical Complaints from the properties and XML file.
+     *
+     * @param props Global properties.
+     */
+    public void initMedical(SimulationProperties props) {
         // Create the pre-defined complaints, using properties.
 
         // Quite serious, 70, and has a 80% performance factor.
@@ -72,32 +81,21 @@ public class MedicalManager implements Serializable {
         dehydration = createComplaint(DEHYDRATION, 60,
                                       props.getPersonLackOfWaterPeriod(),
                                       0D, 0, 70, null);
-        complaints.put(DEHYDRATION, dehydration);
 
-        // The following should be loaded from an XML file, later work
-        // These are illness/injuries that happen at random
+        /** Creates initial complaints from XML config file */
+        MedicalXmlReader medicalReader = new MedicalXmlReader(this);
+        medicalReader.parse();
 
-        createComplaint("Cold", 10, 0, (7 * MINSPERDAY), 30, 70, null);
-        createComplaint("Pulled Tendon/Muscle", 30, 0, (14 * MINSPERDAY),
-                        20, 60, null);
-        MedicalComplaint next = createComplaint("Gangrene", 80,
-                                        (7 * MINSPERDAY), (14 * MINSPERDAY),
-                                        1, 0, null);
-        createComplaint("Broken bone", 60, (7 * MINSPERDAY), (14 * MINSPERDAY),
-                        10, 0, next);
-        createComplaint("Laceration", 20, (7 * MINSPERDAY), (2 * MINSPERDAY),
-                        10, 70, next);
-        createComplaint("Meningitis", 70, (4 * MINSPERDAY), (14 * MINSPERDAY),
-                        5, 0, null);
     }
 
     /**
-     * Private factory method.
+     * Package friendly factory method.
      */
-    private MedicalComplaint createComplaint(String name, int seriousness,
+    MedicalComplaint createComplaint(String name, int seriousness,
                              double degrade, double recovery,
                              int probability,
                              int performance, MedicalComplaint next) {
+
         MedicalComplaint complaint = new MedicalComplaint(name, seriousness,
                                                         degrade, recovery,
                                                         probability, performance,
@@ -144,7 +142,6 @@ public class MedicalManager implements Serializable {
         // than the random value
         if (possibles != null) {
             // Just take one of the possibles at random
-            System.out.println("Calc. prob = " + r + ", found = " + possibles);
             int index = RandomUtil.getRandomInt(possibles.size() - 1);
             complaint = (MedicalComplaint)possibles.get(index);
         }
