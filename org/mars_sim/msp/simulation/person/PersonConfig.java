@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 2.77 2004-08-20
+ * @version 2.77 2004-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person;
@@ -31,7 +31,9 @@ public class PersonConfig {
 	private static final String MAX_TEMPERATURE = "max-temperature";
 	private static final String FREEZING_TIME = "freezing-time";
 	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
-	private static final String GENDER_RATIO = "gender-ratio";
+	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
+	private static final String PERSONALITY_TYPES = "personality-types";
+	private static final String MBTI = "mbti";
 	
 	private Document personDoc;
 	private List nameList;
@@ -249,9 +251,30 @@ public class PersonConfig {
 	 */
 	public double getGenderRatio() throws Exception {
 		Element root = personDoc.getDocumentElement();
-		Element genderRatioElement = (Element) root.getElementsByTagName(GENDER_RATIO).item(0);
+		Element genderRatioElement = (Element) root.getElementsByTagName(GENDER_MALE_PERCENTAGE).item(0);
 		String genderRatioStr = genderRatioElement.getAttribute("value");
-		double genderRatio = Double.parseDouble(genderRatioStr);
+		double genderRatio = Double.parseDouble(genderRatioStr) / 100D;
 		return genderRatio;
+	}
+	
+	/**
+	 * Gets the average percentage for a particular MBTI personality type for settlers.
+	 * @param personalityType the MBTI personality type
+	 * @return percentage
+	 * @throws Exception if personality type could not be found.
+	 */
+	public double getPersonalityTypePercentage(String personalityType) throws Exception {
+		double result = 0D;
+		
+		Element root = personDoc.getDocumentElement();
+		Element personalityTypeList = (Element) root.getElementsByTagName(PERSONALITY_TYPES).item(0);
+		NodeList personalityTypes = personalityTypeList.getElementsByTagName(MBTI);
+		for (int x=0; x < personalityTypes.getLength(); x++) {
+			Element mbtiElement = (Element) personalityTypes.item(x);
+			String type = mbtiElement.getAttribute("type");
+			if (type.equals(personalityType)) result = Double.parseDouble(mbtiElement.getAttribute("percentage"));
+		}
+		
+		return result;		
 	}
 }

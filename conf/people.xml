@@ -55,9 +55,33 @@
 	<!-- Default: .1 -->
 	<stress-breakdown-chance value=".1" />
 
-	<!-- The average ratio of males to total population in the simulation. -->
-	<!-- Default .5 (equal numbers of males and females) -->
-	<gender-ratio value=".5" />
+	<!-- The average percentage of males to total population in the simulation. -->
+	<!-- Default 50 (equal numbers of males and females) -->
+	<gender-male-percentage value="50.0" />
+	
+	<!-- The average percentages of the 16 MBTI (Myers-Briggs Type Indicator) personality types among settlers. -->
+	<!-- Myers-Briggs Type Indicator: http://www.wikipedia.org/wiki/MBTI -->
+	<!-- Note: The total percentage for all personality types must equal 100%. -->
+	<!-- TODO: Find percentage statistics appropriate for Martian settlers, perhaps statistics studies of scientists, -->
+	<!-- engineers or computer programmers. -->
+	<personality-types>
+		<mbti type="ISTP" percentage="3.0" />
+		<mbti type="ISTJ" percentage="19.0" />
+		<mbti type="ISFP" percentage="2.0" />
+		<mbti type="ISFJ" percentage="8.0" />
+		<mbti type="INTP" percentage="6.0" />
+		<mbti type="INTJ" percentage="7.0" />
+		<mbti type="INFP" percentage="6.0" />
+		<mbti type="INFJ" percentage="5.0" />
+		<mbti type="ESTP" percentage="2.0" />
+		<mbti type="ESTJ" percentage="13.0" />
+		<mbti type="ESFP" percentage="2.0" />
+		<mbti type="ESFJ" percentage="8.0" />
+		<mbti type="ENTP" percentage="4.0" />
+		<mbti type="ENTJ" percentage="3.0" />
+		<mbti type="ENFP" percentage="7.0" />
+		<mbti type="ENFJ" percentage="5.0" />		
+	</personality-types>
 
 	<!-- List of person names -->
 	<person-name-list>		
@@ -266,6 +290,7 @@
 		<person-name value="Lois Walling" gender="female" />
 		<person-name value="Ellan Schadegg" gender="female" />
 		<person-name value="Carlita Voytek" gender="female" />
+		<person-name value="Paula Jenkins" gender="female" />
 		
 	</person-name-list>
 
