@@ -178,7 +178,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	}
 	
 	// Add EVA work to malfunction.
-        malfunction.addEVAWorkTime(workTime);
+        double workTimeLeft = malfunction.addEVAWorkTime(workTime);
 
         // Add experience to "Mechanic" skill.
         // (1 base experience point per 20 millisols of time spent)
@@ -198,7 +198,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         // Check if an accident happens during maintenance.
         checkForAccident(time);
 
-	return 0D;
+	return (workTimeLeft / workTime) * time;
     }
 
     /**

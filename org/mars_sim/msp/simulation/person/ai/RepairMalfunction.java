@@ -115,7 +115,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	
 	// Add work to malfunction.
         // System.out.println(description);
-        malfunction.addWorkTime(workTime);
+        double workTimeLeft = malfunction.addWorkTime(workTime);
 
         // Add experience to "Mechanic" skill.
         // (1 base experience point per 20 millisols of time spent)
@@ -135,7 +135,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         // Check if an accident happens during maintenance.
         checkForAccident(timeLeft);
 
-	return 0D;
+	return (workTimeLeft / workTime) / timeLeft;
     }
 
     /**

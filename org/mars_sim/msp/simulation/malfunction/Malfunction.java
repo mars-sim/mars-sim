@@ -115,13 +115,16 @@ public class Malfunction implements Serializable {
     /** 
      * Adds work time to the malfunction. 
      * @param time work time (in millisols)
+     * @return remaining work time not used (in millisols)
      */
-    public void addWorkTime(double time) {
+    public double addWorkTime(double time) {
         workTimeCompleted += time;
         if (workTimeCompleted >= workTime) {
+            double remaining = workTimeCompleted - workTime;
 	    workTimeCompleted = workTime;
-	    // System.out.println("Work time completed: " + name);
+	    return remaining;
 	}
+	return 0D;
     }
 
     /**
@@ -143,13 +146,16 @@ public class Malfunction implements Serializable {
     /** 
      * Adds emergency work time to the malfunction. 
      * @param time emergency work time (in millisols)
+     * @return remaining work time not used (in millisols)
      */
-    public void addEmergencyWorkTime(double time) {
+    public double addEmergencyWorkTime(double time) {
         emergencyWorkTimeCompleted += time;
         if (emergencyWorkTimeCompleted >= emergencyWorkTime) {
+            double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
 	    emergencyWorkTimeCompleted = emergencyWorkTime;
-	    // System.out.println("Emergency work time completed: " + name);
+	    return remaining;
 	}
+	return 0D;
     }
     
     /**
@@ -171,13 +177,16 @@ public class Malfunction implements Serializable {
     /** 
      * Adds EVA work time to the malfunction. 
      * @param time EVA work time (in millisols)
+     * @return remaining work time not used (in millisols)
      */
-    public void addEVAWorkTime(double time) {
+    public double addEVAWorkTime(double time) {
         EVAWorkTimeCompleted += time;
-        if (EVAWorkTimeCompleted >= EVAWorkTime) { 
+        if (EVAWorkTimeCompleted >= EVAWorkTime) {
+            double remaining = EVAWorkTimeCompleted - EVAWorkTime;
 	    EVAWorkTimeCompleted = EVAWorkTime;
-	    // System.out.println("EVA work time completed: " + name);
+	    return remaining;
 	}
+	return 0D;
     }
 
     /**

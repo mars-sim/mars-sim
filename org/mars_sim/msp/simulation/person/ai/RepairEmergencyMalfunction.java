@@ -90,8 +90,8 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	// Add work to emergency malfunction.
 	// System.out.println(person.getName() + " working on " + malfunction.getName() + " - workTime: " + workTime);
 	description = "Repairing Emergency " + malfunction.getName();
-        malfunction.addEmergencyWorkTime(workTime);
-
+        double workTimeLeft = malfunction.addEmergencyWorkTime(workTime);
+	
         // Add experience to "Mechanic" skill.
         // (1 base experience point per 20 millisols of time spent)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
@@ -103,7 +103,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	// Check if there are no more emergency malfunctions. 
         if (!hasEmergencyMalfunction(person)) done = true;
 
-	return 0D;
+	return (workTimeLeft / workTime) * timeLeft;
     }
 
     /**
