@@ -30,6 +30,8 @@ public class TerrainElevation {
 	}
 	catch(IOException e) {
 	    System.out.println("Could not open " + topoData);
+	    System.out.println("  You can find it at: http://mars-sim.sourceforge.net/TopoDat.zip");
+	    System.out.println("  Download and then unzip in the directory mars-sim/map_data");
 	    System.exit(0);
 	}
 	loadArrays(topoIndex, topoSum);
