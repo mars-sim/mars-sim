@@ -1,5 +1,5 @@
 //************************** Settlement Detail Window **************************
-// Last Modified: 3/2/00
+// Last Modified: 4/9/00
 
 // The SettlementDialog class is a detail window for a settlement.
 // It displays information about the settlement and its status.
@@ -82,9 +82,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 			model.removeAllElements();
 			for (int x=0; x < numVehicles; x++) {
 				Vehicle tempVehicle = settlement.getVehicle(x);
-				String reservation = " -";
-				if (tempVehicle.isReserved()) reservation = " *";
-				if (tempVehicle != null) model.addElement(tempVehicle.getName() + reservation);
+				if (tempVehicle != null) model.addElement(tempVehicle.getName());
 			}
 			validate();
 		}
