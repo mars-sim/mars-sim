@@ -29,7 +29,6 @@ import javax.swing.event.*;
 public class MonitorWindow extends ToolWindow
 implements Runnable {
 
-    final private static String ROWSUFFIX = " items";
     final private static int STATUSHEIGHT = 17;
     final private static int REFRESH_PERIOD = 3000;
 
@@ -141,7 +140,7 @@ implements Runnable {
         mainPane.add(statusPanel, "South");
 
         // Status item for row
-        rowCount = new JLabel(ROWSUFFIX);
+        rowCount = new JLabel("  ");
         rowCount.setHorizontalAlignment(SwingConstants.LEFT);
         rowCount.setBorder(BorderFactory.createLoweredBevelBorder());
         statusPanel.add(rowCount);
@@ -149,11 +148,12 @@ implements Runnable {
         rowCount.setPreferredSize(dims);
 
         // Add the default table tabs
-        UnitManager unitManager =
-                desktop.getMainWindow().getMars().getUnitManager();
+        Mars mars = desktop.getMainWindow().getMars();
+        UnitManager unitManager = mars.getUnitManager();
         addTab(new TableTab(new PersonTableModel(unitManager), true));
         addTab(new TableTab(new VehicleTableModel(unitManager), true));
         addTab(new TableTab(new SettlementTableModel(unitManager), true));
+        addTab(new TableTab(new EventTableModel(mars.getEventManager()), true));
 
         tabsSection.setSelectedIndex(0);
         tabChanged();
@@ -225,9 +225,8 @@ implements Runnable {
     private void tabChanged() {
         MonitorTab selected = getSelected();
         if (selected != null) {
-            selected.update();
-            rowCount.setText("  " + selected.getModel().getRowCount() +
-                             ROWSUFFIX);
+            String status = selected.update();
+            rowCount.setText(status);
         }
     }
 
@@ -291,7 +290,8 @@ implements Runnable {
             // Update window
             MonitorTab selected = getSelected();
             if (selected != null) {
-                selected.update();
+                String status = selected.update();
+                rowCount.setText(status);
             }
         }
     }
