@@ -104,7 +104,7 @@ public abstract class Vehicle extends Unit implements Serializable {
 	    if (containerUnit instanceof Settlement) {
 	        Settlement settlement = (Settlement) containerUnit;
 		FacilityManager facilityManager = settlement.getFacilityManager();
-		MaintenanceGarageFacility garage = (MaintenanceGarageFacility) facilityManager.getFacility("Maintenance Garage");
+		MaintenanceGarage garage = (MaintenanceGarage) facilityManager.getFacility("Maintenance Garage");
 		if (garage.vehicleInGarage(this)) status = MAINTENANCE;
 		else status = PARKED;
 	    }

@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * InsituResourceProcessorFacility.java
+ * InsituResourceProcessor.java
  * @version 2.74 2002-03-11
  * @author Scott Davis
  */
@@ -10,18 +10,18 @@ package org.mars_sim.msp.simulation.structure;
 import org.mars_sim.msp.simulation.*;
 import java.io.Serializable;
 
-/** The InsituResourceProcessorFacility class represents 
+/** The InsituResourceProcessor class represents 
  *  a settlement's INSITU (on site) resource processor
  *  which chemically processes Martian air to generate 
  *  oxygen, water and methane (fuel).
  */
-public class InsituResourceProcessorFacility extends Facility 
+public class InsituResourceProcessor extends Facility 
                 implements Serializable {
 
-    /** Constructs a InsituResourceProcessorFacility object.
+    /** Constructs a InsituResourceProcessor object.
      *  @param manager the manager of the processor facility.
      */
-    public InsituResourceProcessorFacility(FacilityManager manager) {
+    public InsituResourceProcessor(FacilityManager manager) {
         
         // User Facility's constructor
         super(manager, "INSITU Resource Processor");

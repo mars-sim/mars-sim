@@ -21,7 +21,7 @@ class MaintainVehicle extends Task implements Serializable {
 
     // Data members
     private Vehicle vehicle; // Vehicle that person is performing the task on.
-    private MaintenanceGarageFacility garage; // The maintenance garage at the settlement.
+    private MaintenanceGarage garage; // The maintenance garage at the settlement.
     private Settlement settlement; // The settlement the person is at.
 
     /** Constructor for periodic vehicle maintenance in a garage. This is an
@@ -33,7 +33,7 @@ class MaintainVehicle extends Task implements Serializable {
         super("Performing Maintenance on vehicle", person, true, mars);
 
         settlement = person.getSettlement();
-        garage = (MaintenanceGarageFacility) settlement.getFacilityManager().getFacility("Maintenance Garage");
+        garage = (MaintenanceGarage) settlement.getFacilityManager().getFacility("Maintenance Garage");
 
         // Create collection of vehicles needing maintenance.
         VehicleCollection vehiclesNeedingMaint = new VehicleCollection();

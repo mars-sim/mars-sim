@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.74 2002-02-28
+ * @version 2.74 2002-03-11
  * @author Barry Evans
  */
 
@@ -125,8 +125,7 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case GARAGED : {
-                MaintenanceGarageFacility garage = (MaintenanceGarageFacility)
-                                fMgr.getFacility("Maintenance Garage");
+                MaintenanceGarage garage = (MaintenanceGarage) fMgr.getFacility("Maintenance Garage");
                 result = new Integer((int) garage.getVehicleCapacity());
             } break;
 
@@ -135,21 +134,18 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case GREENHOUSE : {
-                GreenhouseFacility greenhouse = (GreenhouseFacility)
-                                fMgr.getFacility("Greenhouse");
+                Greenhouse greenhouse = (Greenhouse) fMgr.getFacility("Greenhouse");
                 result = greenhouse.getPhase();
             } break;
 
             case GREEN_GROW : {
-                GreenhouseFacility greenhouse = (GreenhouseFacility)
-                                fMgr.getFacility("Greenhouse");
+                Greenhouse greenhouse = (Greenhouse) fMgr.getFacility("Greenhouse");
                 result = new Integer((int)(100F * (greenhouse.getTimeCompleted()
                                         / greenhouse.getGrowthPeriod())));
             } break;
 
             case GREEN_WORK : {
-                GreenhouseFacility greenhouse = (GreenhouseFacility)
-                                fMgr.getFacility("Greenhouse");
+                Greenhouse greenhouse = (Greenhouse) fMgr.getFacility("Greenhouse");
 
                 result = new Integer((int)(100F * (greenhouse.getWorkCompleted()
                                         / greenhouse.getWorkLoad())));

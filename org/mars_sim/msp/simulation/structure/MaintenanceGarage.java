@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MaintenanceGarageFacility.java
- * @version 2.74 2002-02-28
+ * MaintenanceGarage.java
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -13,12 +13,12 @@ import java.io.Serializable;
 import java.util.Vector;
 
 /**
- * The MaintenanceGarageFacility class represents the pressurized maintenance garage in a settlement.
+ * The MaintenanceGarage class represents the pressurized maintenance garage in a settlement.
  * Vehicles can be taken to a maintenance garage for repair and maintenance.
  * Note: Any number or size of vehicles can always be parked outside a settlement.  The garage's
  * capacity only reflects those vehicles in the garage itself.
  */
-public class MaintenanceGarageFacility extends Facility implements Serializable {
+public class MaintenanceGarage extends Facility implements Serializable {
 
     // Data members
     private double vehicleCapacity; // The total mass (kg) of vehicles the garage can accomidate.
@@ -27,7 +27,7 @@ public class MaintenanceGarageFacility extends Facility implements Serializable 
     /** Constructor for random creation. 
      *  @param manager the garage's facility manager
      */
-    MaintenanceGarageFacility(FacilityManager manager) {
+    MaintenanceGarage(FacilityManager manager) {
 
         // Use Facility's constructor.
         super(manager, "Maintenance Garage");
@@ -43,7 +43,7 @@ public class MaintenanceGarageFacility extends Facility implements Serializable 
      *  @param manager the garage's facility manager
      *  @param vehicleCapacity total mass (kg) of vehicles the garage can accomidate 
      */
-    MaintenanceGarageFacility(FacilityManager manager, double vehicleCapacity) {
+    MaintenanceGarage(FacilityManager manager, double vehicleCapacity) {
 
         // Use Facility's constructor.
         super(manager, "Maintenance Garage");

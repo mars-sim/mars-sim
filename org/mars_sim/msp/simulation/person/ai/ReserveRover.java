@@ -69,7 +69,7 @@ class ReserveRover extends Task implements Serializable {
 
             Settlement settlement = person.getSettlement();
             FacilityManager facilities = settlement.getFacilityManager();
-            MaintenanceGarageFacility garage = (MaintenanceGarageFacility) 
+            MaintenanceGarage garage = (MaintenanceGarage) 
 	            facilities.getFacility("Maintenance Garage");
 
 	    VehicleIterator i = settlement.getParkedVehicles().iterator();
@@ -112,7 +112,7 @@ class ReserveRover extends Task implements Serializable {
         boolean result = false;
 
         FacilityManager facilities = settlement.getFacilityManager();
-        MaintenanceGarageFacility garage = (MaintenanceGarageFacility) 
+        MaintenanceGarage garage = (MaintenanceGarage) 
 	        facilities.getFacility("Maintenance Garage");
 
 	VehicleIterator i = settlement.getParkedVehicles().iterator();

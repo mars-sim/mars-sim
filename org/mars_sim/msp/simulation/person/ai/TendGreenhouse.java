@@ -18,7 +18,7 @@ import org.mars_sim.msp.simulation.structure.*;
  */
 class TendGreenhouse extends Task implements Serializable {
 
-    private GreenhouseFacility greenhouse; // The greenhouse the person is tending.
+    private Greenhouse greenhouse; // The greenhouse the person is tending.
     private Settlement settlement; // The settlement the greenhouse is in.
     private double duration; // The duration (in millisols) the person will perform the task.
 
@@ -29,7 +29,7 @@ class TendGreenhouse extends Task implements Serializable {
         // Initialize data members
 	description = "Tending Greenhouse at " + person.getSettlement().getName();
         this.settlement = person.getSettlement();
-        this.greenhouse = (GreenhouseFacility) settlement.getFacilityManager().getFacility("Greenhouse");
+        this.greenhouse = (Greenhouse) settlement.getFacilityManager().getFacility("Greenhouse");
 
         // Randomly determine duration, from 0 - 250 millisols
         duration = RandomUtil.getRandomDouble(250D);
@@ -43,8 +43,8 @@ class TendGreenhouse extends Task implements Serializable {
         double result = 0D;
 	    
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            GreenhouseFacility greenhouse =
-                   (GreenhouseFacility) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
+            Greenhouse greenhouse =
+                   (Greenhouse) person.getSettlement().getFacilityManager().getFacility("Greenhouse");
             if ((greenhouse.getPhase().equals("Growing")) &&
                     (greenhouse.getGrowingWork() >= greenhouse.getWorkLoad()))
                 result = 0D;

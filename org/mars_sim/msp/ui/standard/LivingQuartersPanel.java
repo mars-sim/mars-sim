@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * LivingQuartersFacilityPanel.java
- * @version 2.74 2002-01-30
+ * LivingQuartersPanel.java
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -17,10 +17,10 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 /**
- * The LivingQuartersFacilityPanel class displays information about a settlement's
+ * The LivingQuartersPanel class displays information about a settlement's
  * living conditions in the user interface.
  */
-public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseListener {
+public class LivingQuartersPanel extends FacilityPanel implements MouseListener {
 
     // Data members
     private Settlement settlement;                  // The settlement
@@ -31,11 +31,11 @@ public class LivingQuartersFacilityPanel extends FacilityPanel implements MouseL
     private Person[] inhabitants;                     // An array of the current inhabitants.
     private int currentPopulation;                  // The current population number.
 
-    /** Constructs a LivingQuartersFacilityPanel object
+    /** Constructs a LivingQuartersPanel object
      *  @param settlement the settlement
      *  @param desktop the desktop pane
      */
-    public LivingQuartersFacilityPanel(Settlement settlement, MainDesktopPane desktop) {
+    public LivingQuartersPanel(Settlement settlement, MainDesktopPane desktop) {
 
         // Use FacilityPanel's constructor
         super(desktop);

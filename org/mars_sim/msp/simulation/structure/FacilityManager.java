@@ -34,10 +34,10 @@ public class FacilityManager implements Serializable {
         facilityList = new Vector();
 
         // Add manditory facilities to manager.
-        facilityList.addElement(new GreenhouseFacility(this));
-        facilityList.addElement(new MaintenanceGarageFacility(this));
-        facilityList.addElement(new LaboratoryFacility(this));
-        facilityList.addElement(new InsituResourceProcessorFacility(this));
+        facilityList.addElement(new Greenhouse(this));
+        facilityList.addElement(new MaintenanceGarage(this));
+        facilityList.addElement(new Laboratory(this));
+        facilityList.addElement(new InsituResourceProcessor(this));
         facilityList.addElement(new Infirmary(this));
     }
 

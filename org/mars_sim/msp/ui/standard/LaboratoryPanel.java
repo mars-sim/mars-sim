@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * LaboratoryFacilityPanel.java
- * @version 2.74 2001-01-13
+ * LaboratoryPanel.java
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -13,20 +13,19 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-/** The LaboratoryFacilityPanel class displays information about a
+/** The LaboratoryPanel class displays information about a
  *  settlement's laboratory facility in the user interface.
  */
-public class LaboratoryFacilityPanel extends FacilityPanel {
+public class LaboratoryPanel extends FacilityPanel {
 
     // Data members
-    private LaboratoryFacility laboratory; // The laboratory facility this panel displays.
+    private Laboratory laboratory; // The laboratory facility this panel displays.
 
-    /** Constructs a LaboratoryFacilityPanel object 
+    /** Constructs a LaboratoryPanel object 
      *  @param laboratory the laboratory facility
      *  @param desktop the desktop pane
      */
-    public LaboratoryFacilityPanel(LaboratoryFacility laboratory,
-            MainDesktopPane desktop) {
+    public LaboratoryPanel(Laboratory laboratory, MainDesktopPane desktop) {
 
         // Use FacilityPanel's constructor
         super(desktop);

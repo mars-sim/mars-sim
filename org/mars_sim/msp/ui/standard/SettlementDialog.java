@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementDialog.java
- * @version 2.74 2002-01-30
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -134,31 +134,31 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         facilityPanes = new FacilityPanel[5];
         
         // Prepare greenhouse pane
-        GreenhouseFacility greenhouse = (GreenhouseFacility) facilityManager.getFacility("Greenhouse");
-        GreenhouseFacilityPanel greenhousePane = new GreenhouseFacilityPanel(greenhouse, parentDesktop);
+        Greenhouse greenhouse = (Greenhouse) facilityManager.getFacility("Greenhouse");
+        GreenhousePanel greenhousePane = new GreenhousePanel(greenhouse, parentDesktop);
         tabPane.add(greenhousePane, greenhousePane.getTabName());
         facilityPanes[0] = greenhousePane;
         
         // Prepare laboratory pane
-        LaboratoryFacility laboratory = (LaboratoryFacility) facilityManager.getFacility("Research Laboratories");
-        LaboratoryFacilityPanel laboratoryPane = new LaboratoryFacilityPanel(laboratory, parentDesktop);
+        Laboratory laboratory = (Laboratory) facilityManager.getFacility("Research Laboratories");
+        LaboratoryPanel laboratoryPane = new LaboratoryPanel(laboratory, parentDesktop);
         tabPane.add(laboratoryPane, laboratoryPane.getTabName());
         facilityPanes[1] = laboratoryPane;
         
         // Prepare living quarters pane
-        LivingQuartersFacilityPanel livingQuartersPane = new LivingQuartersFacilityPanel(settlement, parentDesktop);
+        LivingQuartersPanel livingQuartersPane = new LivingQuartersPanel(settlement, parentDesktop);
         tabPane.add(livingQuartersPane, livingQuartersPane.getTabName());
         facilityPanes[2] = livingQuartersPane;
         
         // Prepare maintenance garage pane
-        MaintenanceGarageFacility garage = (MaintenanceGarageFacility) facilityManager.getFacility("Maintenance Garage");
-        MaintenanceGarageFacilityPanel garagePane = new MaintenanceGarageFacilityPanel(garage, parentDesktop);
+        MaintenanceGarage garage = (MaintenanceGarage) facilityManager.getFacility("Maintenance Garage");
+        MaintenanceGaragePanel garagePane = new MaintenanceGaragePanel(garage, parentDesktop);
         tabPane.add(garagePane, garagePane.getTabName());
         facilityPanes[3] = garagePane;
         
         // Prepare INSITU resoruce processor pane
-        InsituResourceProcessorFacility processor = (InsituResourceProcessorFacility) facilityManager.getFacility("INSITU Resource Processor");
-        InsituResourceProcessorFacilityPanel processorPane = new InsituResourceProcessorFacilityPanel(processor, parentDesktop);
+        InsituResourceProcessor processor = (InsituResourceProcessor) facilityManager.getFacility("INSITU Resource Processor");
+        InsituResourceProcessorPanel processorPane = new InsituResourceProcessorPanel(processor, parentDesktop);
         tabPane.add(processorPane, processorPane.getTabName());
         facilityPanes[4] = processorPane;
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * FacilityManager.java
- * @version 2.73 2001-12-07
+ * GreenhousePanel.java
+ * @version 2.74 2001-03-11
  * @author Scott Davis
  */
 
@@ -14,12 +14,12 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 /**
- * The GreenhouseFacilityPanel class displays information about a settlement's greenhouse facility in the user interface.
+ * The GreenhousePanel class displays information about a settlement's greenhouse facility in the user interface.
  **/
-public class GreenhouseFacilityPanel extends FacilityPanel {
+public class GreenhousePanel extends FacilityPanel {
 	
     // Data members
-    private GreenhouseFacility greenhouse;  // The greenhouse facility this panel displays.
+    private Greenhouse greenhouse;          // The greenhouse facility this panel displays.
     private JLabel maxHarvestLabel;         // A Label to display the full harvest amount.
     private JLabel growingCycleLabel;       // A label to display if growing cycle is active.
     private JProgressBar growthProgress;    // A progress bar for the growing cycle.
@@ -31,11 +31,11 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
     private double growthPeriodCompleted;   // Number of days completed of current growth period.
     private double growingWork;             // Number of work-hours tending greenhouse completed for current growth period.
 	
-    /** Constructs a GreenhouseFacilityPanel object 
+    /** Constructs a GreenhousePanel object 
      *  @param greenhouse the greenhouse
      *  @param desktop the desktop pane
      */
-    public GreenhouseFacilityPanel(GreenhouseFacility greenhouse, MainDesktopPane desktop) {
+    public GreenhousePanel(Greenhouse greenhouse, MainDesktopPane desktop) {
 
 	// Use FacilityPanel's constructor
 	super(desktop);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MaintenanceGarageFacilityPanel.java
- * @version 2.74 2002-02-28
+ * MaintenanceGaragePanel.java
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -17,13 +17,13 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 /**
- * The MaintenanceGarageFacilityPanel class displays information about a 
+ * The MaintenanceGaragePanel class displays information about a 
  * settlement's maintenance garage facility in the user interface.
  */
-public class MaintenanceGarageFacilityPanel extends FacilityPanel implements ActionListener {
+public class MaintenanceGaragePanel extends FacilityPanel implements ActionListener {
 
     // Data members	
-    private MaintenanceGarageFacility maintenanceGarage;  // The maintenance garage facility this panel displays.
+    private MaintenanceGarage maintenanceGarage;  // The maintenance garage facility this panel displays.
     private Vector parkedVehicles;       // A vector of vehicles currently in the garage.
     private Vector vehicleButtons;       // A vector of vehicle buttons.
     private Vector vehicleProgressBars;  // A vector of vehicle progress bars.
@@ -33,11 +33,11 @@ public class MaintenanceGarageFacilityPanel extends FacilityPanel implements Act
     // Cached garage data
     private double currentTotalMass;   // The current mass of vehicles in the garage.
 	
-    /** Constructs a MaintenanceGarageFacilityPanel 
+    /** Constructs a MaintenanceGaragePanel 
      *  @param maintenanceGarage the maintenance garage facility
      *  @param desktop the desktop pane
      */
-    public MaintenanceGarageFacilityPanel(MaintenanceGarageFacility maintenanceGarage, MainDesktopPane desktop) {
+    public MaintenanceGaragePanel(MaintenanceGarage maintenanceGarage, MainDesktopPane desktop) {
 	
 	// Use FacilityPanel's constructor
 	super(desktop);

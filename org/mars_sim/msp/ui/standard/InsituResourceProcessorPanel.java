@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * InsituResourceProcessorFacilityPanel.java
- * @version 2.74 2002-01-13
+ * InsituResourceProcessorPanel.java
+ * @version 2.74 2002-03-11
  * @author Scott Davis
  */
 
@@ -13,29 +13,29 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-/** The InsituResourceProcessorFacilityPanel class 
+/** The InsituResourceProcessorPanel class 
  *  is the standard UI representation of a settlement's
  *  INSITU resource processor facility as a panel
  *  in the settlement's info window.
  */
-public class InsituResourceProcessorFacilityPanel extends FacilityPanel {
+public class InsituResourceProcessorPanel extends FacilityPanel {
 
     // Data members
-    private InsituResourceProcessorFacility processor;  // The INSITU processor this panel displays.
-    private JLabel fuelValueLabel;                      // A label displaying the rate of fuel generation.
-    private JLabel oxygenValueLabel;                    // A label displaying the rate of oxygen generation.
-    private JLabel waterValueLabel;                     // A label displaying the rate of water generation.
+    private InsituResourceProcessor processor; // The INSITU processor this panel displays.
+    private JLabel fuelValueLabel;             // A label displaying the rate of fuel generation.
+    private JLabel oxygenValueLabel;           // A label displaying the rate of oxygen generation.
+    private JLabel waterValueLabel;            // A label displaying the rate of water generation.
 
     // Update date cache
-    private double fuel;                                // Fuel generation rate
-    private double oxygen;                              // Oxygen generation rate
-    private double water;                               // Water generation rate
+    private double fuel;                       // Fuel generation rate
+    private double oxygen;                     // Oxygen generation rate
+    private double water;                      // Water generation rate
 
-    /** Constructs a InsituResourceProcessorFacilityPanel object.
+    /** Constructs a InsituResourceProcessorPanel object.
      *  @param processor the INSITU resource processor
      *  @param desktop the desktop pane
      */
-    public InsituResourceProcessorFacilityPanel(InsituResourceProcessorFacility processor, MainDesktopPane desktop) {
+    public InsituResourceProcessorPanel(InsituResourceProcessor processor, MainDesktopPane desktop) {
 
         // Use FacilityPanel's constructor
         super(desktop);
