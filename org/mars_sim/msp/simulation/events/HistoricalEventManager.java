@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 2.75 2004-01-14
+ * @version 2.76 2004-05-12
  * @author Barry Evans
  */
 
@@ -30,7 +30,7 @@ public class HistoricalEventManager {
     /** This defines the maximum number of events that are stored.
      *  It should be a standard property.
      */
-    private final static int TRANSIENT_EVENTS = 200;
+    private final static int TRANSIENT_EVENTS = 1000;
 
 	// Event categories
 	public final static String MEDICAL = "Medical";
