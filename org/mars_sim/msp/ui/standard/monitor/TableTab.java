@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TableTab.java
- * @version 2.73 2002-01-30
+ * @version 2.74 2002-05-16
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.monitor;
@@ -134,7 +134,7 @@ class TableTab extends MonitorTab {
 
     private JTable table;                   // Table component
     private TableSorter sortedModel;        // Sortable modle proxy
-    private boolean sortAscending = false;  // Constructor will flip this
+    private boolean sortAscending = true;   // Constructor will flip this
     private int sortedColumn = 0;           // Sort column is defined
 
     /**

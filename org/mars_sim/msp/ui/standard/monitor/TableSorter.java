@@ -19,7 +19,7 @@ public class TableSorter extends AbstractTableModel
                     implements TableModelListener, MonitorModel {
 
     int             indexes[];
-    boolean         sortAscending = true;
+    boolean         sortAscending = false;
     int             sortedColumn;
     MonitorModel    sourceModel;
 
