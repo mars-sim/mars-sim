@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-02-19
  * @author Scott Davis
  */
 
@@ -92,9 +92,9 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             if (!ReserveRover.availableRovers(currentSettlement)) possible = false;
 
 	    double rocks = currentSettlement.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
-	    if (rocks >= 100D) possible = false;
+	    if (rocks >= 300D) possible = false;
 
-	    if (possible) result = 2D;
+	    if (possible) result = 5D;
         }
 
         return result;

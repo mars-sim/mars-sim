@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-02-19
  * @author Scott Davis
  */
 
@@ -19,7 +19,7 @@ public class Rover extends GroundVehicle implements LifeSupport, Serializable {
 
     // The amount of time required for the rover's airlock to 
     // pressurize/depressurize. (in millisols)
-    public static final double AIRLOCK_TIME = 10D;
+    public static final double AIRLOCK_TIME = 20D;
 	
     // Data members
     private boolean airlockOccupied = false; // True if airlock is currently occupied.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-02-19
  * @author Scott Davis
  */
 
@@ -105,7 +105,11 @@ class ReserveRover extends Task implements Serializable {
 	while (i.hasNext()) {
 	    Vehicle vehicle = i.next();
             if (vehicle instanceof Rover) {
-                if (!vehicle.isReserved() && !garage.vehicleInGarage(vehicle)) result = true;
+                if (!vehicle.isReserved() && !garage.vehicleInGarage(vehicle)) {
+		    if (LoadVehicle.hasEnoughSupplies(settlement, vehicle)) {	
+		        result = true;
+		    }
+	        }
             }
         }
 

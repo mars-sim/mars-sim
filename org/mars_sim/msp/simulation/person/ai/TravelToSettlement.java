@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-02-16
+ * @version 2.74 2002-02-19
  * @author Scott Davis
  */
 
@@ -74,6 +74,8 @@ class TravelToSettlement extends Mission implements Serializable {
 
         if (person.getLocationSituation() == Person.INSETTLEMENT) {
             Settlement currentSettlement = person.getSettlement();
+            boolean possible = true;
+	    
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) {
                 if (ReserveRover.availableRovers(currentSettlement)) result = 1D; 
             }
