@@ -1,5 +1,5 @@
 //************************** Person Detail Window **************************
-// Last Modified: 3/3/00
+// Last Modified: 5/19/00
 
 // The PersonDialog class is a detail window for a person.
 // It displays information about the person and the person's current status.
@@ -213,7 +213,7 @@ public class PersonDialog extends UnitDialog {
 		tabPane.addTab("Location", setupLocationPane());
 		tabPane.addTab("Attributes", setupAttributePane());
 		tabPane.addTab("Skills", setupSkillPane());
-		mainPane.add(tabPane);
+		mainPane.add(tabPane, "Center");
 	}
 	
 	// Set up task panel
