@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.73 2001-10-07
+ * @version 2.73 2001-11-08
  * @author Scott Davis
  */
 
@@ -118,8 +118,12 @@ class TravelToSettlement extends Mission {
         
         // Determine the destination settlement.
         if (destinationSettlement == null) { 
-            destinationSettlement = getRandomDestinationSettlement(startingSettlement); 
-            setMissionCapacity(getDestinationSettlementCapacity(destinationSettlement));
+            destinationSettlement = getRandomDestinationSettlement(startingSettlement);
+            if (destinationSettlement == null) {
+                endMission();
+                return;
+            } 
+            setMissionCapacity(getSettlementCapacity(destinationSettlement));
             name = "Travel To " + destinationSettlement.getName();
             if (mars.getSurfaceFeatures().inDarkPolarRegion(destinationSettlement.getCoordinates())) {
                 endMission(); 
@@ -259,32 +263,59 @@ class TravelToSettlement extends Mission {
         UnitManager unitManager = startingSettlement.getUnitManager();
         Settlement result = null;
 
-        // Choose a random settlement other than current one.
-        // 75% chance of selecting ove of the closest three settlements.
-        if (RandomUtil.lessThanRandPercent(75)) 
-            result = unitManager.getRandomOfThreeClosestSettlements(startingSettlement);
-        else result = unitManager.getRandomSettlement(startingSettlement);
+        Vector settlements = unitManager.getSettlements();
+
+        // Create vector of valid destination settlements.
+        Iterator iterator = settlements.iterator();
+        while (iterator.hasNext()) {
+            Settlement tempSettlement = (Settlement) iterator.next();
+            if ((tempSettlement == startingSettlement) || (getSettlementCapacity(tempSettlement) < people.size())) 
+                iterator.remove();
+        }
+
+        // Sort valid settlements by distance from current settlement.
+        Coordinates currentLocation = startingSettlement.getCoordinates(); 
+        Vector sortedSettlements = new Vector();
+        iterator = settlements.iterator();
+        while (iterator.hasNext()) {
+            double closestDistance = Double.MAX_VALUE;
+            Settlement closestSettlement = null;
+            Iterator inner = settlements.iterator();
+            while (iterator.hasNext()) {
+                Settlement tempSettlement = (Settlement) inner.next();
+                double distance = currentLocation.getDistance(tempSettlement.getCoordinates());
+                if ((distance < closestDistance) && !sortedSettlements.contains(tempSettlement)) {
+                    closestDistance = distance;
+                    closestSettlement = tempSettlement;
+                }
+            }
+            sortedSettlements.addElement(closestSettlement);
+        }
+
+        // Randomly determine settlement with closer settlements being more likely. 
+        if (sortedSettlements.size() > 0) {
+            int chosenSettlementNum = RandomUtil.getRandomRegressionInteger(sortedSettlements.size());
+            result = (Settlement) sortedSettlements.elementAt(chosenSettlementNum - 1);
+        }
     
         return result;
     }
  
-    /** Determines destination settlement capacity.
-     *  @param destinationSettlement the destination settlement of the mission
-     *  @return destination settlement capacity as int
+    /** Determines settlement capacity.
+     *  @param settlement the settlement 
+     *  @return settlement capacity as int
      */
-    private int getDestinationSettlementCapacity(Settlement destinationSettlement) {
+    private int getSettlementCapacity(Settlement settlement) {
         int result = 0;
      
         // Determine current capacity of settlement.
-        FacilityManager manager = destinationSettlement.getFacilityManager();
-        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
-        result += quarters.getMaximumCapacity() - quarters.getCurrentPopulation();
+        result = settlement.getPopulationCapacity() - settlement.getCurrentPopulation();
         
         // Subtract number of people currently traveling to settlement.
         Vehicle[] vehicles = mars.getUnitManager().getVehicles();
         for (int x=0; x < vehicles.length; x++) {
             Settlement tempSettlement = vehicles[x].getDestinationSettlement();
-            if ((tempSettlement != null) && (tempSettlement == destinationSettlement))
+            if ((tempSettlement != null) && (tempSettlement == settlement))
                 result -= vehicles[x].getPassengerNum();
         }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.73 2001-10-31
+ * @version 2.73 2001-11-08
  * @author Scott Davis
  */
 
@@ -101,7 +101,6 @@ public class UnitManager {
         unitVector.addElement(tempSettlement);
         settlementsVector.addElement(tempSettlement);
     }
-
 
     /** Creates initial vehicles at random settlements */
     private void createVehicles() {
@@ -233,58 +232,8 @@ public class UnitManager {
         return (Settlement) settlementsVector.elementAt(r);
     }
 
-    /** Get a random settlement other than given current one. 
-     *  @return a random settlement
-     */
-    public Settlement getRandomSettlement(Settlement current) {
-        Settlement newSettlement;
-        do {
-            newSettlement = getRandomSettlement();
-        } while (newSettlement == current)
-            ;
-
-        return newSettlement;
-    }
-
-    /** Get a random settlement among the closest three settlements to
-     *  the given location.
-     *  @return a random settlement  
-     */
-    public Settlement getRandomOfThreeClosestSettlements(Coordinates location) {
-        Vector tempVector = new Vector();
-        Vector resultVector = new Vector();
-
-        for (int x = 0; x < settlementsVector.size(); x++) {
-            Settlement tempSettlement = (Settlement) settlementsVector.elementAt(x);
-            if (!tempSettlement.getCoordinates().equals(location))
-                tempVector.addElement(tempSettlement);
-        }
-
-        for (int x = 0; x < 3; x++) {
-            Settlement nearestSettlement = null;
-            double smallestDistance = 100000D;
-            for (int y = 0; y < tempVector.size(); y++) {
-                Settlement tempSettlement = (Settlement) tempVector.elementAt(y);
-                double tempDistance = location.getDistance(tempSettlement.getCoordinates());
-                if ((tempDistance < smallestDistance) && (tempDistance != 0D)) {
-                    smallestDistance = tempDistance;
-                    nearestSettlement = tempSettlement;
-                }
-            }
-            resultVector.addElement(nearestSettlement);
-            tempVector.removeElement(nearestSettlement);
-        }
-
-        int r = RandomUtil.getRandomInt(2);
-        return (Settlement) resultVector.elementAt(r);
-    }
-
-    /** Get a random settlement among the closest three settlements to
-     *  the given settlement
-     *  @return a random settlement  
-     */
-    public Settlement getRandomOfThreeClosestSettlements(Settlement current) {
-        return getRandomOfThreeClosestSettlements(current.getCoordinates());
+    public Vector getSettlements() {
+        return new Vector(settlementsVector);
     }
 
     /** The total number of units 
@@ -303,7 +252,7 @@ public class UnitManager {
             units[x] = (Unit) unitVector.elementAt(x);
         return units;
     }
-    
+ 
     public Vehicle[] getVehicles() {
         Vehicle[] vehicles = new Vehicle[vehiclesVector.size()];
         for (int x=0; x < vehicles.length; x++)

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.72 2001-08-14
+ * @version 2.73 2001-11-08
  * @author Scott Davis
  */
 
@@ -17,6 +17,7 @@ public class Settlement extends Structure {
     // Data members
     Vector people; // List of inhabitants
     Vector vehicles; // List of parked vehicles
+    int populationCapacity; // The population capacity of the settlement
     FacilityManager facilityManager; // The facility manager for the settlement.
 
     /** Constructs a Settlement object
@@ -33,6 +34,7 @@ public class Settlement extends Structure {
         // Initialize data members
         people = new Vector();
         vehicles = new Vector();
+        populationCapacity = 0;
         facilityManager = new FacilityManager(this);
     }
 
@@ -41,6 +43,20 @@ public class Settlement extends Structure {
      */
     public FacilityManager getFacilityManager() {
         return facilityManager;
+    }
+
+    /** Gets the population capacity of the settlement
+     *  @return the population capacity
+     */
+    public int getPopulationCapacity() {
+        return populationCapacity;
+    }
+
+    /** Gets the current population of the settlement
+     *  @return the number of inhabitants
+     */
+    public int getCurrentPopulation() {
+        return people.size();
     }
 
     /** Get number of inhabitants in settlement 
