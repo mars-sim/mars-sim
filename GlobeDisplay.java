@@ -1,13 +1,17 @@
-//******************* Small Globe of Mars *******************
-// Last Modified: 2/21/00
-
-// The Globe Display class displays a graphical globe of Mars in the
-// "Mars Navigator" tool.
+/**
+ * Mars Simulation Project
+ * GlobeDisplay.java
+ * @version 2.70 2000-08-31
+ * @author Scott Davis
+ */
 
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 
+/** The Globe Display class displays a graphical globe of Mars in the
+ *  "Mars Navigator" tool.
+ */
 class GlobeDisplay extends JComponent implements Runnable {
 
 	// Data members
@@ -141,8 +145,8 @@ class GlobeDisplay extends JComponent implements Runnable {
 		UnitInfo[] vehicleInfo = navWindow.getMovingVehicleInfo();
 		for (int x=0; x < vehicleInfo.length; x++) {
 			if (centerCoords.getAngle(vehicleInfo[x].getCoords()) < (Math.PI / 2D)) {
-				int[] tempLocation = getUnitDrawLocation(vehicleInfo[x].getCoords());
-				g.fillRect(tempLocation[0], tempLocation[1], 1, 1);
+				IntPoint tempLocation = getUnitDrawLocation(vehicleInfo[x].getCoords());
+				g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
 			}
 		}
 
@@ -153,8 +157,8 @@ class GlobeDisplay extends JComponent implements Runnable {
 		UnitInfo[] settlementInfo = navWindow.getSettlementInfo();
 		for (int x=0; x < settlementInfo.length; x++) {
 			if (centerCoords.getAngle(settlementInfo[x].getCoords()) < (Math.PI / 2D)) {
-				int[] tempLocation = getUnitDrawLocation(settlementInfo[x].getCoords());
-				g.fillRect(tempLocation[0], tempLocation[1], 1, 1);
+				IntPoint tempLocation = getUnitDrawLocation(settlementInfo[x].getCoords());
+				g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
 			}
 		}
 
@@ -195,37 +199,11 @@ class GlobeDisplay extends JComponent implements Runnable {
 		g.drawString(longString, longPosition, 142);
 	}
 	
-	// Returns unit x, y position on globe panel
-	
-	private int[] getUnitDrawLocation(Coordinates unitCoords) {
-		double rho = 150D / Math.PI;
-		int half_map = 75;
-		int low_edge = 0;
-		return Coordinates.findRectPosition(unitCoords, centerCoords, rho, half_map, low_edge);
-	}
+    /** Returns unit x, y position on globe panel */
+    private IntPoint getUnitDrawLocation(Coordinates unitCoords) {
+	double rho = 150D / Math.PI;
+	int half_map = 75;
+	int low_edge = 0;
+	return Coordinates.findRectPosition(unitCoords, centerCoords, rho, half_map, low_edge);
+    }
 }
-
-// Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
-//
-// For questions or comments on this project, contact:
-//
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
-// 
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA

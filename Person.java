@@ -20,11 +20,11 @@ public class Person extends Unit {
 
 	// Constructor
 
-	public Person(int unitID, String name, Coordinates location, VirtualMars mars, UnitManager manager) {
+	public Person(String name, Coordinates location, VirtualMars mars, UnitManager manager) {
 		
 		// Use Unit constructor
 		
-		super(unitID, name, location, mars, manager);
+		super(name, location, mars, manager);
 		
 		// Initialize data members
 		
