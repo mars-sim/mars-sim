@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.72 2001-07-28
+ * @version 2.72 2001-08-13
  * @author Scott Davis
  */
 
@@ -241,7 +241,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         destinationButton = new JButton();
         destinationButton.setMargin(new Insets(1, 1, 1, 1));
         destinationButton.addActionListener(this);
-        if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
+        // if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
+        if (vehicle.getDestination() != null) {
             if (vehicle.getDestinationType().equals("Settlement")) {
                 destinationButton.setText(
                         vehicle.getDestinationSettlement().getName());
@@ -255,15 +256,15 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
         // Prepare destination latitude label
         destinationLatitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
-        if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")))
-            destinationLatitudeLabel.setText("Latitude: ");
+        // if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")))
+        if (vehicle.getDestination() != null) destinationLatitudeLabel.setText("Latitude: ");
         destinationLatitudeLabel.setForeground(Color.black);
         destinationCoordsPane.add(destinationLatitudeLabel);
 
         // Prepare destination longitude label
         destinationLongitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
-        if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")))
-            destinationLongitudeLabel.setText("Longitude: ");
+        // if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")))
+        if (vehicle.getDestination() != null) destinationLongitudeLabel.setText("Longitude: ");
         destinationLongitudeLabel.setForeground(Color.black);
         destinationCoordsPane.add(destinationLongitudeLabel);
        
@@ -278,7 +279,8 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
         // Prepare distance to destination label
         distanceDestinationLabel = new JLabel("Distance: ", JLabel.LEFT);
-        if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
+        // if (!(vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance"))) {
+        if (vehicle.getDestination() != null) {
             int tempDistance = (int) Math.round(vehicle.getDistanceToDestination());
             distanceDestinationLabel.setText("Distance: " + tempDistance + " km.");
         }
@@ -636,15 +638,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 
         // Update destination button
         if (destinationType.equals("Settlement")) {
-            if (!destinationButton.getText().equals(
-                    vehicle.getDestinationSettlement().getName()))
-                destinationButton.setText(
-                        vehicle.getDestinationSettlement().getName());
-            if (destinationLabelPane.getComponentCount() == 1)
-                destinationLabelPane.add(destinationButton);
+            if (!destinationButton.getText().equals(vehicle.getDestinationSettlement().getName()))
+                destinationButton.setText(vehicle.getDestinationSettlement().getName());
+            if (destinationLabelPane.getComponentCount() == 1) destinationLabelPane.add(destinationButton);
         } else {
-            if (destinationLabelPane.getComponentCount() > 1)
-                destinationLabelPane.remove(destinationButton);
+            if (destinationLabelPane.getComponentCount() > 1) destinationLabelPane.remove(destinationButton);
         }
 
         // Update destination longitude and latitude labels
@@ -705,19 +703,18 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         DefaultListModel model = (DefaultListModel) crewList.getModel();
         boolean match = false;
 
-        // Check if crew list matches vehicle's crew
-        int crewNum = vehicle.getPassengerNum();
-        if (vehicle.getStatus().equals("Moving")) crewNum -= 1;
-        if ((model.getSize()) == crewNum) {
+        // Check if model matches passengers
+        Vector tempPassengers = new Vector();
+        for (int x=0; x < tempPassengers.size(); x++) {
+            Person tempPerson = vehicle.getPassenger(x);
+            if (tempPerson != vehicle.getDriver()) tempPassengers.addElement(vehicle.getPassenger(x));
+        }
+
+        if (model.getSize() == tempPassengers.size()) {
             match = true;
-            int passengerCount = 0;
-            for (int x = 0; x < vehicle.getPassengerNum(); x++) {
-                if (!(vehicleMoving && (vehicle.getPassenger(x) == vehicle.getDriver()))) {
-                    if (!((String) model.getElementAt(passengerCount)).equals(
-                            vehicle.getPassenger(x).getName()))
-                        match = false;
-                    passengerCount++;
-                }
+            for (int x=0; x < tempPassengers.size(); x++) {
+                String tempName = (String) model.getElementAt(x);
+                if (!tempName.equals(vehicle.getPassenger(x).getName())) match = false;
             }
         }
 
@@ -728,7 +725,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             for (int x = 0; x < vehicle.getPassengerNum(); x++) {
                 Person tempPassenger = vehicle.getPassenger(x);
                 if (tempPassenger != null) {
-                    if (!(vehicleMoving && (tempPassenger == vehicle.getDriver()))) { 
+                    if (!(tempPassenger == vehicle.getDriver())) { 
                         crewInfo.addElement(proxyManager.getUnitUIProxy(tempPassenger));
                         model.addElement(tempPassenger.getName());
                     }

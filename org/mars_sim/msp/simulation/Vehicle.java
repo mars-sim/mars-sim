@@ -500,7 +500,7 @@ public abstract class Vehicle extends Unit {
      */
     public void setDestination(Coordinates destinationCoords) {
         this.destinationCoords = destinationCoords;
-        destinationType = "Coordinates";
+        if (destinationType == null) destinationType = "Coordinates";
     }
 
     /** Returns the destination coordinates.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.72 2001-08-05
+ * @version 2.72 2001-08-12
  * @author Scott Davis
  */
 
@@ -23,7 +23,7 @@ public class MissionManager {
     private VirtualMars mars; // Virtual Mars 
 
     // Array of potential new missions
-    Class[] potentialMissions = { TravelToSettlement.class };
+    Class[] potentialMissions = { TravelToSettlement.class, CollectRockSamplesMission.class };
 
     /** Constructs a MissioniManager object
      *  @param mars the virtual Mars
@@ -73,7 +73,7 @@ public class MissionManager {
     void addMission(Mission newMission) {
         if (!missions.contains(newMission)) {
             missions.addElement(newMission);
-            System.out.println("MissionManager: Added new mission - " + newMission.getName());
+            // System.out.println("MissionManager: Added new mission - " + newMission.getName());
         }
     }
 
@@ -83,7 +83,7 @@ public class MissionManager {
     void removeMission(Mission oldMission) {
         if (missions.contains(oldMission)) {
             missions.removeElement(oldMission);
-            System.out.println("MissionManager: Removed old mission - " + oldMission.getName());
+            // System.out.println("MissionManager: Removed old mission - " + oldMission.getName());
         }
     } 
 
@@ -106,7 +106,7 @@ public class MissionManager {
                 result += ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
             } 
             catch (Exception e) { 
-                System.out.println("MissionManager.getTotalMissionProbability(): " + e.toString());
+                // System.out.println("MissionManager.getTotalMissionProbability(): " + e.toString());
             }
         }
 
@@ -140,13 +140,13 @@ public class MissionManager {
                 }
             } 
             catch (Exception e) { 
-                System.out.println("MissionManager.getNewMission() (1): " + e.toString());
+                // System.out.println("MissionManager.getNewMission() (1): " + e.toString());
             }
         }
 
         // Initialize construction parameters
-        Class[] parametersForFindingConstructor = { MissionManager.class };
-        Object[] parametersForInvokingConstructor = { this };
+        Class[] parametersForFindingConstructor = { MissionManager.class, Person.class };
+        Object[] parametersForInvokingConstructor = { this, person };
 
         // Construct the mission
         try {
@@ -154,7 +154,7 @@ public class MissionManager {
             return (Mission) construct.newInstance(parametersForInvokingConstructor);
         }
         catch (Exception e) {
-            System.out.println("MissionManager.getNewMission() (2): " + e.toString());
+            // System.out.println("MissionManager.getNewMission() (2): " + e.toString());
             return null;
         } 
     }
@@ -198,7 +198,7 @@ public class MissionManager {
             }
         }
 
-        if (result == null) System.out.println("MissionManager.getActiveMission(): Returned null");
+        // if (result == null) System.out.println("MissionManager.getActiveMission(): Returned null");
 
         return result;
     }

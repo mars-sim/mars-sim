@@ -20,7 +20,7 @@ class ReserveGroundVehicle extends Task {
     private GroundVehicle reservedVehicle; // The reserved vehicle
     private Coordinates destination; // The destination coordinates for the trip
 
-    /** Constructs a ReserveGroundVehicle object
+    /** Constructs a ReserveGroundVehicle object with a destination.
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      *  @param destination the destination of the trip
@@ -31,7 +31,20 @@ class ReserveGroundVehicle extends Task {
         this.destination = destination; 
         reservedVehicle = null;
 
-        System.out.println(person.getName() + " is reserving a vehicle.");
+        // System.out.println(person.getName() + " is reserving a vehicle.");
+    }
+
+    /** Constructs a ReserveGroundVehicle object without a destinatiion.
+     *  @param person the person to perform the task
+     *  @param mars the virtual Mars
+     */
+    public ReserveGroundVehicle(Person person, VirtualMars mars) {
+        super("Reserving a vehicle", person, mars);
+
+        destination = null;
+        reservedVehicle = null;
+
+        // System.out.println(person.getName() + " is reserving a vehicle.");
     }
 
     /** Perform this task for the given amount of time. 
@@ -50,16 +63,21 @@ class ReserveGroundVehicle extends Task {
             MaintenanceGarageFacility garage = (MaintenanceGarageFacility) facilities.getFacility("Maintenance Garage");
             
             for (int x=0; x < settlement.getVehicleNum(); x++) {
-                Vehicle tempVehicle = settlement.getVehicle(x);
-                if (tempVehicle instanceof GroundVehicle) {
-                    if (!tempVehicle.isReserved() && !garage.vehicleInGarage(tempVehicle)) {
-                        if (tempVehicle.getRange() > person.getCoordinates().getDistance(destination)) {
-                            if (reservedVehicle == null) {
-                                reservedVehicle = (GroundVehicle) tempVehicle;
-                                reservedVehicle.setReserved(true);
-                                System.out.println(person.getName() + " has reserved " + reservedVehicle.getName());
-                            }
-                        }
+                if (reservedVehicle == null) {
+                    Vehicle tempVehicle = settlement.getVehicle(x);
+                    boolean reservable = true;
+
+                    if (!(tempVehicle instanceof GroundVehicle)) reservable = false;
+                    if (tempVehicle.isReserved()) reservable = false; 
+                    if (garage.vehicleInGarage(tempVehicle)) reservable = false;
+                    if (destination != null) {
+                        if (tempVehicle.getRange() < person.getCoordinates().getDistance(destination)) reservable = false;
+                    }
+
+                    if (reservable) { 
+                        reservedVehicle = (GroundVehicle) tempVehicle;
+                        reservedVehicle.setReserved(true);
+                        // System.out.println(person.getName() + " has reserved " + reservedVehicle.getName());
                     }
                 }
             }

@@ -29,7 +29,7 @@ class RepairMechanicalFailure extends Task {
         failure = vehicle.getMechanicalFailure();
         name = "Repairing " + failure.getName() + " on " + vehicle.getName();
         description = name;
-        System.out.println(person.getName() + " " + name); 
+        // System.out.println(person.getName() + " " + name); 
     }
 
     /** Returns the weighted probability that a person might perform this task.

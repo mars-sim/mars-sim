@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.72 2001-05-10
+ * @version 2.72 2001-08-12
  * @author Scott Davis
  */
  
@@ -58,5 +58,29 @@ public class SurfaceFeatures {
         }
 
         return result;
-    }        
+    }       
+
+    /** Returns true if location is in a dark polar region.
+     *  A dark polar region is where the sun doesn't rise in the current sol.
+     *  @return true if location is in dark polar region
+     */
+    public boolean inDarkPolarRegion(Coordinates location) {
+        
+        boolean result = false;
+
+        Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
+        double sunPhi = sunDirection.getPhi();
+        double darkPhi = 0D;
+
+        if (sunPhi < (Math.PI / 2D)) {
+            darkPhi = Math.PI - ((Math.PI / 2D) - sunPhi);
+            if (location.getPhi() >= darkPhi) result = true;
+        }
+        else {
+            darkPhi = sunPhi - (Math.PI / 2D);
+            if (location.getPhi() < darkPhi) result = true;
+        }
+
+        return result;
+    }
 }

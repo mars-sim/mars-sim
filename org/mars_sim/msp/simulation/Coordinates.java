@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.72 2001-05-16
+ * @version 2.72 2001-08-12
  * @author Scott Davis
  */
 
@@ -258,7 +258,7 @@ public class Coordinates {
         return new IntPoint(buff_x - low_edge, buff_y - low_edge);
     }
 
-	/** Converts linear rectangular XY position change to spherical coordinates 
+    /** Converts linear rectangular XY position change to spherical coordinates 
      *  @param x change in x value (in km)
      *  @param y change in y value (in km)
      *  @param rho rho value of map used
@@ -366,6 +366,37 @@ public class Coordinates {
 
         return new Direction(result);
     }
+
+    /** Gets a new location with a given direction and distance
+     *  from the current location.
+     *  @param direction direction to new location 
+     *  @param distance distance to new location (in km)
+     *  @return new location coordinates
+     */
+    public Coordinates getNewLocation(Direction direction, double distance) {
+
+        double iterationDistance = 10D;
+        int iterations = (int) (distance / iterationDistance);
+        double remainder = 0D;
+        if (distance > 10D) remainder = distance - (iterations * iterationDistance);
+        else remainder = distance;
+
+        // Get successive iteration locations.
+        Coordinates startCoords = this;
+        for (int x=0; x < iterations; x++) {
+            double newY = -1D * direction.getCosDirection() * (iterationDistance / 7.4D);
+            double newX = direction.getSinDirection() * (iterationDistance / 7.4D);
+            startCoords = startCoords.convertRectToSpherical(newX, newY);
+        }
+
+        // Get final location based on remainder.
+        double finalY = -1D * direction.getCosDirection() * (remainder / 7.4D);
+        double finalX = direction.getSinDirection() * (remainder / 7.4D);
+        Coordinates finalCoordinates = startCoords.convertRectToSpherical(finalX, finalY);
+
+        return finalCoordinates;
+    }
+            
 
     /** Makes sure an angle isn't above 2PI or less than zero 
      *  @param angle raw angle (in radians)

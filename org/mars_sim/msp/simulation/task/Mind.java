@@ -106,7 +106,7 @@ public class Mind {
         // Determine sum of weights based on given parameters
         double weightSum = 0D;
         if (tasks) weightSum += taskWeights;
-        if (missions && (missionManager.getNumActiveMissions() == 0)) weightSum += missionWeights;
+        if (missions) weightSum += missionWeights;
         if (activeMissions) weightSum += activeMissionWeights; 
 
         // Select randomly across the total weight sum.
@@ -121,22 +121,21 @@ public class Mind {
             else rand -= taskWeights;
         }
         if (missions) {
-            if (missionManager.getNumActiveMissions() == 0) {
-                if (rand < missionWeights) {
-                    System.out.println(person.getName() + " starting a new mission.");
-                    Mission newMission = missionManager.getNewMission(person, missionWeights);
-                    missionManager.addMission(newMission);
-                    newMission.addPerson(person);
-                    setMission(newMission);
-                    return;
-                }
+            if (rand < missionWeights) {
+                // System.out.println(person.getName() + " starting a new mission.");
+                Mission newMission = missionManager.getNewMission(person, missionWeights);
+                missionManager.addMission(newMission);
+                newMission.addPerson(person);
+                setMission(newMission);
+                return;
             }
             else rand -= missionWeights;
         }
         if (activeMissions) {
             if (rand < activeMissionWeights) {
-                System.out.println(person.getName() + " joining a mission.");
+                // System.out.println(person.getName() + " joining a mission.");
                 Mission activeMission = missionManager.getActiveMission(person, activeMissionWeights);
+                if (activeMission == null) return;
                 activeMission.addPerson(person);
                 setMission(activeMission);
                 return;

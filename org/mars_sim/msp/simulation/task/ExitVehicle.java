@@ -30,7 +30,7 @@ class ExitVehicle extends Task {
         // Initialize data members
         this.vehicle = vehicle; 
         this.destinationSettlement = destinationSettlement;
-        System.out.println(person.getName() + " is exiting " + vehicle.getName());
+        // System.out.println(person.getName() + " is exiting " + vehicle.getName());
     }
 
     /** Performs this task for the given amount of time. 

@@ -56,7 +56,7 @@ class MaintainVehicle extends Task {
             name = "Performing Maintenance on " + vehicle.getName();
             description = name;
             vehicle.setStatus("Periodic Maintenance");
-            System.out.println(person.getName() + " " + name);
+            // System.out.println(person.getName() + " " + name);
         } else done = true;
     }
 

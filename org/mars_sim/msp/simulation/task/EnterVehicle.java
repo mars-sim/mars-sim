@@ -28,7 +28,7 @@ class EnterVehicle extends Task {
         super("Entering " + vehicle.getName(), person, mars);
        
         this.vehicle = vehicle;
-        System.out.println(person.getName() + " is entering " + vehicle.getName());
+        // System.out.println(person.getName() + " is entering " + vehicle.getName());
     }
 
     /** Performs this task for the given amount of time. 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.72 2001-02-18
+ * @version 2.72 2001-08-15
  * @author Scott Davis
  */
 
@@ -53,8 +53,10 @@ public class AboutDialog extends JDialog implements ActionListener,
 
         buf.append("Developers:\n");
         buf.append("  Scott Davis - Java programming, graphics\n");
-        buf.append("  James Barnard - 3D graphics, sound\n");
-        buf.append("  Greg Whelan - Java programming\n");
+        buf.append("  James Barnard - 3D graphics\n");
+        buf.append("  Greg Whelan - Java programming, zoom map\n");
+        buf.append("  Cameron Riley - Ant script programming\n");
+        buf.append("  Mike Jones - Orbital equations\n");
         buf.append("  Brian Donovan - Java programming\n");
         buf.append("  Jarred McCaffrey - Java programming\n");
         buf.append("  Dalen Kruse - Java Programming\n");
@@ -63,10 +65,16 @@ public class AboutDialog extends JDialog implements ActionListener,
         buf.append("Testing and Recommendations:\n");
         buf.append("  Allen Bryan\n");
         buf.append("  Brian K. Smith\n");
-        buf.append("  Mike Jones\n");
+        buf.append("  Kent Primrose\n");
         buf.append("  Dan Sepanski\n");
         buf.append("  Joe Wagner\n");
         buf.append("  Tom Zanoni\n\n");
+
+        buf.append("Martian clock/calendar based on calendars by\n");
+        buf.append("Shaun Moss: Areosynchronous Calendar\n(http://www.virtualmars.net/Calendar.asp)\n");
+        buf.append("Tom Gangale: Darian Calendar\n(http://members.xoom.com/mars_ultor/mars/mst/darifrm.htm)\n");
+        buf.append("Frans Blok: The Rotterdam System\n(http://www.geocities.com/fra_nl/rotmonth.html)\n");
+        buf.append("Bruce Mackenzie: Metric Time for Mars\n(http://members.nbci.com/_XMCM/mars_ultor/mars/other/mcknzfrm.htm)\n\n");
 
         buf.append("Map images and data courtesy of NASA JPL ");
         buf.append("(www.jpl.nasa.gov) and Malin Space Science Systems ");
@@ -108,7 +116,7 @@ public class AboutDialog extends JDialog implements ActionListener,
         closeButtonPane.add(closeButton);
 
         // Set the size of the window
-        setSize(350, 400);
+        setSize(400, 400);
 
         // Center the window on the parent window.
         Point parentLocation = mainWindow.getLocation();

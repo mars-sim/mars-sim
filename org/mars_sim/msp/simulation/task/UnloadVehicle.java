@@ -32,7 +32,7 @@ class UnloadVehicle extends Task {
         FacilityManager facilities = settlement.getFacilityManager();
         stores = (StoreroomFacility) facilities.getFacility("Storerooms");
 
-        System.out.println(person.getName() + " is unloading " + vehicle.getName()); 
+        // System.out.println(person.getName() + " is unloading " + vehicle.getName()); 
     }
 
     /** Performs this task for a given period of time 
@@ -50,7 +50,7 @@ class UnloadVehicle extends Task {
         stores.addFuel(fuelAmount);
         vehicle.consumeFuel(fuelAmount);
         unitsUnloading -= fuelAmount;
-        if (fuelAmount > 0D) System.out.println(person.getName() + " unloading " + fuelAmount + " fuel from " + vehicle.getName());        
+        // if (fuelAmount > 0D) System.out.println(person.getName() + " unloading " + fuelAmount + " fuel from " + vehicle.getName());        
 
         // Unload oxygen 
         double oxygenAmount = vehicle.getOxygen();
@@ -58,7 +58,7 @@ class UnloadVehicle extends Task {
         stores.addOxygen(oxygenAmount);
         vehicle.removeOxygen(oxygenAmount);
         unitsUnloading -= oxygenAmount;
-        if (oxygenAmount > 0D) System.out.println(person.getName() + " unloading " + oxygenAmount + " oxygen from " + vehicle.getName());       
+        // if (oxygenAmount > 0D) System.out.println(person.getName() + " unloading " + oxygenAmount + " oxygen from " + vehicle.getName());       
  
         // Unload water 
         double waterAmount = vehicle.getWater();
@@ -66,7 +66,7 @@ class UnloadVehicle extends Task {
         stores.addWater(waterAmount);
         vehicle.removeWater(waterAmount);
         unitsUnloading -= waterAmount;
-        if (waterAmount > 0D) System.out.println(person.getName() + " unloading " + waterAmount + " water from " + vehicle.getName());       
+        // if (waterAmount > 0D) System.out.println(person.getName() + " unloading " + waterAmount + " water from " + vehicle.getName());       
 
         // Unload Food 
         double foodAmount = vehicle.getFood();
@@ -74,7 +74,7 @@ class UnloadVehicle extends Task {
         stores.addFood(foodAmount);
         vehicle.removeFood(foodAmount);
         unitsUnloading -= foodAmount;
-        if (foodAmount > 0D) System.out.println(person.getName() + " unloading " + foodAmount + " food from " + vehicle.getName());       
+        // if (foodAmount > 0D) System.out.println(person.getName() + " unloading " + foodAmount + " food from " + vehicle.getName());       
 
         if (isFullyUnloaded()) done = true;
 

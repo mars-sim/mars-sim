@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.72 2001-08-07
+ * @version 2.72 2001-08-12
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ public abstract class Mission {
      *  @param name the name of the mission
      *  @param missionManager the simulation's misison manager
      */
-    public Mission(String name, MissionManager missionManager) {
+    public Mission(String name, MissionManager missionManager, Person startingPerson) {
 
         // Initialize data members
         this.name = name;
@@ -40,6 +40,9 @@ public abstract class Mission {
         mars = missionManager.getMars();
         phase = "";
         missionCapacity = Integer.MAX_VALUE;
+
+        // Add starting person to mission.
+        people.add(startingPerson);
     }
 
     /** Adds a person to the mission. 
@@ -48,7 +51,7 @@ public abstract class Mission {
     void addPerson(Person person) {
         if (!people.contains(person)) {
             people.addElement(person);
-            System.out.println(person.getName() + " added to mission: " + name);
+            // System.out.println(person.getName() + " added to mission: " + name);
         }
     }
 
@@ -58,7 +61,7 @@ public abstract class Mission {
     protected void removePerson(Person person) {
         if (people.contains(person)) {
             people.removeElement(person);
-            System.out.println(person.getName() + " removed from mission: " + name);
+            // System.out.println(person.getName() + " removed from mission: " + name);
         }
     }
 
@@ -142,6 +145,6 @@ public abstract class Mission {
      */
     protected void setMissionCapacity(int newCapacity) {
         missionCapacity = newCapacity;
-        System.out.println(name + " mission capacity: " + missionCapacity);
+        // System.out.println(name + " mission capacity: " + missionCapacity);
     }
 } 

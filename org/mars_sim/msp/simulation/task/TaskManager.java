@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.72 2001-08-07
+ * @version 2.72 2001-08-12
  * @author Scott Davis
  */
 
@@ -28,7 +28,8 @@ public class TaskManager {
     private Class[] availableTasks = { Relax.class, TendGreenhouse.class, MaintainVehicle.class, 
                                        Sleep.class, EatMeal.class, RepairMechanicalFailure.class,
                                        ReserveGroundVehicle.class, LoadVehicle.class, EnterVehicle.class,
-                                       DriveGroundVehicle.class, ExitVehicle.class, UnloadVehicle.class };
+                                       DriveGroundVehicle.class, ExitVehicle.class, UnloadVehicle.class,
+                                       CollectRockSamples.class };
 
     /** Constructs a TaskManager object
      *  @param person the person the task manager is for
@@ -104,7 +105,7 @@ public class TaskManager {
      */
     public void performTask(double time) {
         if (currentTask != null) currentTask.performTask(time);
-        else System.out.println("TaskManager.performTask(): currentTask is null");
+        // else System.out.println("TaskManager.performTask(): currentTask is null");
     }
 
     /** Gets a new task for the person based on tasks available.
@@ -133,7 +134,7 @@ public class TaskManager {
                 }
             } 
             catch (Exception e) {
-                System.out.println("TaskManager.getNewTask() (1): " + e.toString());
+                // System.out.println("TaskManager.getNewTask() (1): " + e.toString());
             }
         }
         
@@ -142,7 +143,7 @@ public class TaskManager {
             Constructor construct = (task.getConstructor(parametersForFindingMethod));
             return (Task) construct.newInstance(parametersForInvokingMethod);
         } catch (Exception e) {
-            System.out.println("TaskManager.getNewTask() (2): " + e.toString());
+            // System.out.println("TaskManager.getNewTask() (2): " + e.toString());
             return null;
         }
     }
@@ -163,7 +164,7 @@ public class TaskManager {
                 Method probability = availableTasks[x].getMethod("getProbability", parametersForFindingMethod);
                 result += ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
             } catch (Exception e) {
-                System.out.println("TaskManager.getTotalTaskProbability(): " + e.toString());
+                // System.out.println("TaskManager.getTotalTaskProbability(): " + e.toString());
             }
         }
 

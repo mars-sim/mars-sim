@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.72 2001-08-07
+ * @version 2.72 2001-08-13
  * @author Scott Davis
  */
 
@@ -42,7 +42,8 @@ class DriveGroundVehicle extends Task {
 
         // Set initial parameters
         this.vehicle = vehicle; 
-        this.destination = new Coordinates(destination);
+        this.destination = destination;
+        vehicle.setDestination(destination);
         closestDistance = Double.MAX_VALUE;
         obstacleTimeCount = 0D;
         backingUpDistance = 0D;
@@ -55,7 +56,7 @@ class DriveGroundVehicle extends Task {
         // Determine duration (from 200 to 300 millisols)
         duration = 200D + RandomUtil.getRandomDouble(100D);
 
-        System.out.println(person.getName() + " is driving " + vehicle.getName());
+        // System.out.println(person.getName() + " is driving " + vehicle.getName());
     }
 
     /** Perform the driving task 
@@ -68,8 +69,8 @@ class DriveGroundVehicle extends Task {
         if (subTask != null) return timeLeft;
 
         // If night time, end task. 
-        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0D) {
-            System.out.println(person.getName() + " stopped driving " + vehicle.getName() + " due to darkness.");
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) == 0D) {
+            // System.out.println(person.getName() + " stopped driving due to darkness.");
             vehicle.setStatus("Parked");
             vehicle.setDriver(null);
             done = true;
@@ -86,7 +87,7 @@ class DriveGroundVehicle extends Task {
         // Keep track of the duration of the task.
         timeCompleted += time;
         if (timeCompleted >= duration) {
-            System.out.println(person.getName() + " stopped driving " + vehicle.getName());
+            // System.out.println(person.getName() + " stopped driving " + vehicle.getName());
             vehicle.setStatus("Parked");
             vehicle.setDriver(null);
             done = true;
@@ -131,7 +132,7 @@ class DriveGroundVehicle extends Task {
         person.getSkillManager().addExperience("Driving", newPoints);
 
         // Check for mechanical breakdown.
-        checkMechanicalBreakdown(timeUsed);
+        if (!done) checkMechanicalBreakdown(timeUsed);
 
         return time - timeUsed;
     }
@@ -194,7 +195,7 @@ class DriveGroundVehicle extends Task {
         person.getSkillManager().addExperience("Driving", newPoints);
 
         // Check for mechanical breakdown.
-        checkMechanicalBreakdown(timeUsed);
+        if (!done) checkMechanicalBreakdown(timeUsed);
 
         return time - timeUsed; 
     }
@@ -233,7 +234,7 @@ class DriveGroundVehicle extends Task {
         person.getSkillManager().addExperience("Driving", newPoints);
 
         // Check for mechanical breakdown.
-        checkMechanicalBreakdown(timeUsed);
+        if (!done) checkMechanicalBreakdown(timeUsed);
 
         return time - timeUsed;
     }
@@ -271,14 +272,21 @@ class DriveGroundVehicle extends Task {
             distanceToDestination = 0D;
             vehicle.setDistanceToDestination(distanceToDestination);
             vehicle.setCoordinates(destination);
+            vehicle.setStatus("Parked");
+            vehicle.setSpeed(0D);
+            vehicle.setDriver(null);
             done = true;
             result = time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
+            // System.out.println(vehicle.getName() + " reached destination.");
         }
         else {
             // Determine new position.
+            /*
             double newY = -1D * vehicle.getDirection().getCosDirection() * (distanceTraveled / 7.4D);
             double newX = vehicle.getDirection().getSinDirection() * (distanceTraveled / 7.4D);
             vehicle.setCoordinates(startingLocation.convertRectToSpherical(newX, newY));
+            */
+            vehicle.setCoordinates(startingLocation.getNewLocation(vehicle.getDirection(), distanceTraveled));
             
             // Update distance to destination.
             distanceToDestination = vehicle.getCoordinates().getDistance(destination);
@@ -422,7 +430,7 @@ class DriveGroundVehicle extends Task {
         if (RandomUtil.lessThanRandPercent(percentChance)) {
             vehicle.setStatus("Broken Down");
             vehicle.newMechanicalFailure();
-            System.out.println(person.getName() + " stopped driving " + vehicle.getName() + " due to mechanical failure.");
+            // System.out.println(person.getName() + " stopped driving " + vehicle.getName() + " due to mechanical failure.");
             vehicle.setDriver(null);
             done = true;
         }
