@@ -37,13 +37,13 @@ class EatMeal extends Task implements Serializable {
      */
     public static double getProbability(Person person, VirtualMars mars) {
 
-        double result = person.getHunger() - 250D;
+        double result = person.getPhysicalCondition().getHunger() - 250D;
         if (result < 0) result = 0;
-        
+
         return result;
     }
 
-    /** This task allows the person to eat for the duration. 
+    /** This task allows the person to eat for the duration.
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */

@@ -12,8 +12,8 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 
 /** The Mind class represents a person's mind.
- *  It keeps track of missions and tasks which 
- *  the person is involved. 
+ *  It keeps track of missions and tasks which
+ *  the person is involved.
  */
 public class Mind implements Serializable {
 
@@ -25,7 +25,7 @@ public class Mind implements Serializable {
 
     /** Constructs a Mind object
      *  @param person the person owning this mind
-     *  @param mars the virtual Mars 
+     *  @param mars the virtual Mars
      */
     public Mind(Person person, VirtualMars mars) {
 
@@ -86,6 +86,19 @@ public class Mind implements Serializable {
         else return false;
     }
 
+    /**
+     * Set this mind as inactive. Needs move work on this; has to abort the Task
+     * can not just close it. This abort action would then allow the Mission to
+     * be also aborted.
+     */
+    public void setInactive() {
+        if (hasActiveMission()) {
+            mission.removePerson(person);
+            mission = null;
+        }
+        taskManager = null;
+    }
+
     /** Sets the person's current mission.
      *  @param newMission the new mission
      */
@@ -95,7 +108,7 @@ public class Mind implements Serializable {
         newMission.addPerson(person);
     }
 
-    /** Determines a new action for the person based on 
+    /** Determines a new action for the person based on
      *  available tasks, missions and active missions.
      */
     public void getNewAction(boolean tasks, boolean missions, boolean activeMissions) {
@@ -109,7 +122,7 @@ public class Mind implements Serializable {
         double weightSum = 0D;
         if (tasks) weightSum += taskWeights;
         if (missions) weightSum += missionWeights;
-        if (activeMissions) weightSum += activeMissionWeights; 
+        if (activeMissions) weightSum += activeMissionWeights;
 
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);

@@ -34,7 +34,7 @@ class Sleep extends Task implements Serializable {
 
     /** Returns the weighted probability that a person might perform this task.
      *  Returns 10 if person's fatigue is over 750.
-     *  Returns an additional 50 if it is night time. 
+     *  Returns an additional 50 if it is night time.
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
      *  @return the weighted probability that a person might perform this task
@@ -42,7 +42,7 @@ class Sleep extends Task implements Serializable {
     public static double getProbability(Person person, VirtualMars mars) {
         double result = 0D;
 
-        if (person.getFatigue() > 750D) {
+        if (person.getPhysicalCondition().getFatigue() > 750D) {
             result = 25D;
             if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0)
                 result += 50D;
@@ -51,7 +51,7 @@ class Sleep extends Task implements Serializable {
         return result;
     }
 
-    /** This task allows the person to sleep for the duration. 
+    /** This task allows the person to sleep for the duration.
      *  @param time the amount of time to perform this task (in millisols)
      *  @return amount of time remaining after finishing with task (in millisols)
      */
