@@ -54,21 +54,24 @@ public class BuildingPanel extends JPanel {
         
         // Prepare inhabitable panel if building is inhabitable.
         if (building instanceof InhabitableBuilding) {
-            BuildingFunctionPanel inhabitablePanel = new InhabitableBuildingPanel((InhabitableBuilding) building, desktop);
+            BuildingFunctionPanel inhabitablePanel = 
+                new InhabitableBuildingPanel((InhabitableBuilding) building, desktop);
             functionPanels.add(inhabitablePanel);
             functionListPanel.add(inhabitablePanel);
         }
         
         // Prepare farming panel if building has farming.
         if (building instanceof Farming) {
-            BuildingFunctionPanel farmingPanel = new FarmingBuildingPanel((Farming) building, desktop);
+            BuildingFunctionPanel farmingPanel = 
+                new FarmingBuildingPanel((Farming) building, desktop);
             functionPanels.add(farmingPanel);
             functionListPanel.add(farmingPanel);
         }
         
         // Prepare research panel if building has research.
         if (building instanceof Research) {
-            BuildingFunctionPanel researchPanel = new ResearchBuildingPanel((Research) building, desktop);
+            BuildingFunctionPanel researchPanel = 
+                new ResearchBuildingPanel((Research) building, desktop);
             functionPanels.add(researchPanel);
             functionListPanel.add(researchPanel);
         }
@@ -78,13 +81,23 @@ public class BuildingPanel extends JPanel {
         functionPanels.add(powerPanel);
         functionListPanel.add(powerPanel);
         
+        // Prepare resource processing panel if building has resource processes.
+        if (building instanceof ResourceProcessing) {
+            BuildingFunctionPanel resourceProcessingPanel = 
+                new ResourceProcessingBuildingPanel((ResourceProcessing) building, desktop);
+            functionPanels.add(resourceProcessingPanel);
+            functionListPanel.add(resourceProcessingPanel);
+        }
+        
         // Prepare malfunctionable panel.
-        BuildingFunctionPanel malfunctionPanel = new MalfunctionableBuildingPanel((Malfunctionable) building, desktop);
+        BuildingFunctionPanel malfunctionPanel = 
+            new MalfunctionableBuildingPanel((Malfunctionable) building, desktop);
         functionPanels.add(malfunctionPanel);
         functionListPanel.add(malfunctionPanel);
         
         // Prepare maintenance panel.
-        BuildingFunctionPanel maintenancePanel = new MaintenanceBuildingPanel((Malfunctionable) building, desktop);
+        BuildingFunctionPanel maintenancePanel = 
+            new MaintenanceBuildingPanel((Malfunctionable) building, desktop);
         functionPanels.add(maintenancePanel);
         functionListPanel.add(maintenancePanel);
     }

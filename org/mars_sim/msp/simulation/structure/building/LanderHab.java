@@ -82,13 +82,13 @@ public class LanderHab extends InhabitableBuilding
         Inventory inv = getInventory();
         
         // Create water recycling process
-        ResourceProcess waterRecycling = new ResourceProcess("water recycling", inv);
+        ResourceProcess waterRecycling = new ResourceProcess("Water Recycling", inv);
         waterRecycling.addMaxInputResourceRate(Resource.WASTE_WATER, .0002D, false);
         waterRecycling.addMaxOutputResourceRate(Resource.WATER, .00017D, false);
         processManager.addResourceProcess(waterRecycling);
         
         // Create carbon scrubbing process
-        ResourceProcess carbonScrubbing = new ResourceProcess("carbon scrubbing", inv);
+        ResourceProcess carbonScrubbing = new ResourceProcess("Carbon Scrubbing", inv);
         carbonScrubbing.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .000067D, false);
         carbonScrubbing.addMaxOutputResourceRate(Resource.OXYGEN, .00005D, false);
         processManager.addResourceProcess(carbonScrubbing);

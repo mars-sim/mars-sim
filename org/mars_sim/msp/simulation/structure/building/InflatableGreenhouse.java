@@ -52,7 +52,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         Inventory inv = getInventory();
         
         // Create carbon dioxide pump process
-        ResourceProcess carbonDioxidePump = new ResourceProcess("carbon dioxide pump", inv);
+        ResourceProcess carbonDioxidePump = new ResourceProcess("Carbon Dioxide Pump", inv);
         carbonDioxidePump.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .0001D, true);
         carbonDioxidePump.addMaxOutputResourceRate(Resource.CARBON_DIOXIDE, .0001D, false);
         processManager.addResourceProcess(carbonDioxidePump);
