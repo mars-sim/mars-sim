@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-06-08
+ * @version 2.75 2004-03-18
  * @author Scott Davis
  */
  
@@ -20,25 +20,8 @@ import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.function.Farming;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.ResourceProcessing;
-import org.mars_sim.msp.simulation.structure.building.function.Storage;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.impl
-	.StandardResourceProcessing;
+import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.function.impl.StandardResourceProcessing;
 
 /**
  * The InflatableGreenhouse class represents a 
@@ -64,8 +47,9 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
     /**
      * Constructor
      * @param manager - building manager.
+     * @throws Exception if building could not be constructed.
      */
-    public InflatableGreenhouse(BuildingManager manager) {
+    public InflatableGreenhouse(BuildingManager manager) throws Exception {
         // User InhabitableBulding constructor
         super("Inflatable Greenhouse", manager, 3);
         
@@ -93,11 +77,17 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         if (numCrops == 0) numCrops = 1;
       
         // Create crops;
-        crops = new ArrayList();
-        Settlement settlement = manager.getSettlement();
-        for (int x=0; x < numCrops; x++) {
-            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / numCrops), this, settlement.getMars(), settlement));
-        }  
+        try {
+        	crops = new ArrayList();
+        	Settlement settlement = manager.getSettlement();
+        	for (int x=0; x < numCrops; x++) {
+            	crops.add(new Crop(Crop.getRandomCropType(settlement.getMars().getSimulationConfiguration().getCropConfiguration()), 
+            		(maxHarvest / numCrops), this, settlement.getMars(), settlement));
+        	}
+        }
+        catch (Exception e) {
+        	throw new Exception("Crops could not be loaded for greenhouse: " + e.getMessage());  
+        }
         
         // Set up resource storage capacity map.
         resourceStorageCapacity = new HashMap();
@@ -241,11 +231,16 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         }
         
         // Add any new crops.
-        Settlement settlement = getBuildingManager().getSettlement();
-        for (int x=0; x < newCrops; x++) {
-            crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / (double) numCrops), 
-                this, settlement.getMars(), settlement));
-        }    
+        try {
+        	Settlement settlement = getBuildingManager().getSettlement();
+        	for (int x=0; x < newCrops; x++) {
+            	crops.add(new Crop(Crop.getRandomCropType(settlement.getMars().getSimulationConfiguration().getCropConfiguration()), 
+            		(maxHarvest / (double) numCrops), this, settlement.getMars(), settlement));
+        	}
+        }
+        catch (Exception e) {
+        	System.err.println("Inflatable greenhouse could not add new crop: " + e.getMessage());    
+        }
     }  
     
     /**

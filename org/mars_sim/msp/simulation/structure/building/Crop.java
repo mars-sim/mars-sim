@@ -1,16 +1,19 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.75 2003-06-08
+ * @version 2.75 2004-03-18
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
+import java.util.List;
+
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /**
@@ -23,9 +26,6 @@ public class Crop implements Serializable {
     public static final String GROWING = "Growing";
     public static final String HARVESTING = "Harvesting";
     public static final String FINISHED = "Finished";
-    
-    // Crop types
-    private static ArrayList cropTypes = null;
     
     // Data members
     private CropType cropType; // The type of crop.
@@ -59,9 +59,9 @@ public class Crop implements Serializable {
         this.settlement = settlement;
         
         // Determine work required.
-        plantingWorkRequired = maxHarvest * 10D;
+        plantingWorkRequired = maxHarvest;
         dailyTendingWorkRequired = maxHarvest;
-        harvestingWorkRequired = maxHarvest * 10D;
+        harvestingWorkRequired = maxHarvest * 5D;
         
         phase = PLANTING;
         actualHarvest = 0D;
@@ -232,16 +232,13 @@ public class Crop implements Serializable {
     
     /**
      * Gets a random crop type.
+     * @param cropConfig the crop configuration.
      * @return crop type
+     * @throws Exception if crops could not be found.
      */
-    public static CropType getRandomCropType() {
-        
-        if (cropTypes == null) {
-            CropXmlReader cropReader = new CropXmlReader();
-            cropReader.parse();
-            cropTypes = cropReader.getCropTypes();
-        }
-        
+    public static CropType getRandomCropType(CropConfig cropConfig) throws Exception {
+    	
+    	List cropTypes = cropConfig.getCropList();    
         int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
         return (CropType) cropTypes.get(r);
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.75 2004-03-17
+ * @version 2.75 2004-03-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -11,6 +11,7 @@ import javax.xml.parsers.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
+import org.mars_sim.msp.simulation.structure.building.CropConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -46,6 +47,7 @@ public class SimulationConfig {
 	private MedicalConfig medicalConfig;
 	private LandmarkConfig landmarkConfig;
 	private MalfunctionConfig malfunctionConfig;
+	private CropConfig cropConfig;
 
 	/**
 	 * Constructor
@@ -60,6 +62,7 @@ public class SimulationConfig {
 		medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
 		landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARKS_FILE));
 		malfunctionConfig = new MalfunctionConfig(parseXMLFile(MALFUNCTION_FILE));
+		cropConfig = new CropConfig(parseXMLFile(CROP_FILE));
 	}
 	
 	/**
@@ -174,5 +177,13 @@ public class SimulationConfig {
 	 */
 	public MalfunctionConfig getMalfunctionConfiguration() {
 		return malfunctionConfig;
+	}
+	
+	/**
+	 * Gets the crop config subset.
+	 * @return crop config
+	 */
+	public CropConfig getCropConfiguration() {
+		return cropConfig;
 	}
 }

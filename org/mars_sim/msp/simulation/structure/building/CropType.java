@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropType.java
- * @version 2.75 2003-01-15
+ * @version 2.75 2004-03-18
  * @author Scott Davis
  */
  
