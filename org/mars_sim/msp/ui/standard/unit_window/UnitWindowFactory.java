@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindowFactory.java
- * @version 2.75 2003-07-22
+ * @version 2.75 2003-07-28
  * @author Scott Davis
  */
 
@@ -21,7 +21,7 @@ import org.mars_sim.msp.ui.standard.unit_window.vehicle.VehicleWindow;
 /**
  * The UnitWindowFactory is a factory for creating unit windows for units.
  */
-public abstract class UnitWindowFactory {
+public class UnitWindowFactory {
     
     /**
      * Private constructor

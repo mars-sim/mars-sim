@@ -1,17 +1,18 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.75 2003-07-22
+ * @version 2.75 2003-07-28
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;  
   
-import org.mars_sim.msp.simulation.*;   
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import org.mars_sim.msp.simulation.*;   
+import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
 /** 
  * The NavigatorWindow is a tool window that displays a map and a
@@ -22,7 +23,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
         ItemListener {
 
     // Data members
-    private MainDesktopPane desktop; // Desktop pane
     private MapDisplay map; // map navigation
     private GlobeDisplay globeNav; // Globe navigation
     private NavButtonDisplay navButtons; // Compass navigation buttons
@@ -44,13 +44,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
     public NavigatorWindow(MainDesktopPane desktop) {
 
         // use ToolWindow constructor
-        super("Mars Navigator");
-
-        // set internal frame listener
-        addInternalFrameListener(new ViewFrameListener());
-
-        // initialize data members
-        this.desktop = desktop;
+        super("Mars Navigator", desktop);
 
         // Prepare content pane
         JPanel mainPane = new JPanel();

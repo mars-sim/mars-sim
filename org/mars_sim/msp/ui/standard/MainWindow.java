@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.75 2003-07-20
+ * @version 2.75 2003-07-28
  * @author Scott Davis
  */
 
@@ -15,8 +15,9 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.plaf.metal.*;
 
-/** The MainWindow class is the primary UI frame for the project. It
- *  contains the tool bars and main desktop pane.
+/** 
+ * The MainWindow class is the primary UI frame for the project. It
+ * contains the tool bars and main desktop pane.
  */
 public class MainWindow extends JFrame implements WindowListener {
 
@@ -107,33 +108,14 @@ public class MainWindow extends JFrame implements WindowListener {
         // Initialize data members
         mars = newMars;
     }
-
-    /** 
-     * Create a new unit button in toolbar.
+    
+    /**
+     * Gets the main desktop panel.
      *
-     * @param unit the unit the button is for.
+     * @return desktop
      */
-    public void createUnitButton(Unit unit) {
-        unitToolbar.createUnitButton(unit);
-    }
-
-    /** 
-     * Checks if tool window is open.
-     *
-     * @param the name of the tool window
-     * @return true if tool window is open
-     */
-    public boolean isToolWindowOpen(String toolName) {
-        return desktop.isToolWindowOpen(toolName);
-    }
-
-    /** 
-     * Finds a tool window.
-     *
-     * @param toolName the name of the tool window
-     */
-    public ToolWindow getToolWindow(String toolName) {
-        return desktop.getToolWindow(toolName);
+    public MainDesktopPane getDesktop() {
+        return desktop;
     }
 
     /**
@@ -215,44 +197,16 @@ public class MainWindow extends JFrame implements WindowListener {
                         e.toString(), JOptionPane.ERROR_MESSAGE);
 	    }
     }
-
+    
     /** 
-     * Opens a tool window if necessary.
+     * Create a new unit button in toolbar.
      *
-     * @param toolName the name of the tool window
+     * @param unit the unit the button is for.
      */
-    public void openToolWindow(String toolName) {
-        desktop.openToolWindow(toolName);
+    public void createUnitButton(Unit unit) {
+        unitToolbar.createUnitButton(unit);
     }
-
-    /** 
-     * Closes a tool window if it is open.
-     *
-     * @param the name of the tool window
-     */
-    public void closeToolWindow(String toolName) {
-        desktop.closeToolWindow(toolName);
-    }
-
-    /** 
-     * Opens a window for a unit if it isn't already open.
-     * Also makes a new unit button in toolbar if necessary.
-     *
-     * @param unit the unit the window is for.
-     */
-    public void openUnitWindow(Unit unit) {
-        desktop.openUnitWindow(unit);
-    }
-
-    /** 
-     * Disposes a unit window.
-     *
-     * @param unit the unit to dispose.
-     */
-    public void disposeUnitWindow(Unit unit) {
-        desktop.disposeUnitWindow(unit);
-    }
-
+    
     /** 
      * Disposes a unit button in toolbar.
      *

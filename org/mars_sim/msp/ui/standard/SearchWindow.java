@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.75 2003-07-20
+ * @version 2.75 2003-07-28
  * @author Scott Davis
  */
 
@@ -15,6 +15,7 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
 /** 
  * The SearchWindow is a tool window that allows the user to search
@@ -24,7 +25,6 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         ItemListener, MouseListener, DocumentListener {
 
     // Data members
-    private MainDesktopPane desktop; // Desktop pane
     private JComboBox searchForSelect; // Category selecter
     private JList unitList; // List of selectable units
     private DefaultListModel unitListModel; // Model for unit select list
@@ -44,7 +44,7 @@ public class SearchWindow extends ToolWindow implements ActionListener,
     public SearchWindow(MainDesktopPane desktop) {
 
         // Use ToolWindow constructor
-        super("Search Tool");
+        super("Search Tool", desktop);
 
         // Initialize locks
         lockUnitList = false;
@@ -55,9 +55,6 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         unitCategoryNames[0] = "Person";
         unitCategoryNames[1] = "Settlement";
         unitCategoryNames[2] = "Vehicle";
-
-        // Set internal frame listener
-        addInternalFrameListener(new ViewFrameListener());
 
         // Initialize data members
         this.desktop = desktop;

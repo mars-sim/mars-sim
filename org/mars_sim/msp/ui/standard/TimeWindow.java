@@ -1,17 +1,18 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.74 2002-03-17
+ * @version 2.75 2003-07-28
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;  
  
-import org.mars_sim.msp.simulation.*;  
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
+import org.mars_sim.msp.simulation.*;  
+import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
 /** The TimeWindow is a tool window that displays the current 
  *  Martian and Earth time 
@@ -21,7 +22,6 @@ public class TimeWindow extends ToolWindow implements Runnable {
     private final static int RATIO_SCALE = 500;
 
     // Data members
-    private MainDesktopPane desktop; // Desktop pane
     private MasterClock master;      // Master Clock
     private SimulationProperties properties;  // The simulation properties
     private MarsClock marsTime;      // Martian Clock
@@ -43,13 +43,9 @@ public class TimeWindow extends ToolWindow implements Runnable {
     public TimeWindow(MainDesktopPane desktop) {
 
         // Use TimeWindow constructor
-        super("Time Tool");
-
-        // Set internal frame listener
-        addInternalFrameListener(new ViewFrameListener());
+        super("Time Tool", desktop);
 
         // Initialize data members
-        this.desktop = desktop;
         master = desktop.getMainWindow().getMars().getMasterClock();
         properties = desktop.getMainWindow().getMars().getSimulationProperties();
         marsTime = master.getMarsClock();

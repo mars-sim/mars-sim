@@ -1,24 +1,21 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2003-07-28
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard.monitor;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.ui.standard.ImageLoader;
-import org.mars_sim.msp.ui.standard.ToolWindow;
-import org.mars_sim.msp.ui.standard.MainDesktopPane;
-import org.mars_sim.msp.ui.standard.ViewFrameListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
-
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
 /** The MonitorWindow is a tool window that displays a selection of tables
  *  each of which monitor a set of Units.
@@ -31,7 +28,6 @@ implements Runnable {
 
 
     // Data members
-    private MainDesktopPane desktop; // Desktop pane
     private JTabbedPane tabsSection;
     private JLabel rowCount;
     private ArrayList tabs = new ArrayList();
@@ -44,14 +40,9 @@ implements Runnable {
     public MonitorWindow(MainDesktopPane desktop) {
 
         // Use TableWindow constructor
-        super("Monitor Tool");
+        super("Monitor Tool", desktop);
+        
         setMaximizable(true);
-
-        // Set internal frame listener
-        addInternalFrameListener(new ViewFrameListener());
-
-        // Initialize data members
-        this.desktop = desktop;
 
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 2.72 2001-04-07
+ * @version 2.75 2003-07-28
  * @author Scott Davis
  */
 
@@ -113,6 +113,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 
 		// show tool window on desktop
-		parentMainWindow.openToolWindow(((ToolButton) event.getSource()).getToolName());
+		parentMainWindow.getDesktop().openToolWindow(
+            ((ToolButton) event.getSource()).getToolName());
 	}
 }

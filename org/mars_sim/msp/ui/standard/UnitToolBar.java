@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 2.75 2003-07-20
+ * @version 2.75 2003-07-28
  * @author Scott Davis
  */
 
@@ -96,6 +96,6 @@ public class UnitToolBar extends JToolBar implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         // show unit window on desktop
         Unit unit = ((UnitButton) event.getSource()).getUnit();
-        parentMainWindow.openUnitWindow(unit);
+        parentMainWindow.getDesktop().openUnitWindow(unit);
     }
 }
