@@ -22,13 +22,14 @@ public class SettlementTableModel extends UnitTableModel {
     private final static int POPULATION = 1;
     private final static int GARAGED = 2;
     private final static int PARKED = 3;
-    private final static int GROWING = 4;
-    private final static int GREENHOUSE = 5;
-    private final static int OXYGEN = 6;
-    private final static int WATER = 7;
-    private final static int FOOD = 8;
-    private final static int FUEL = 9;
-    private final static int COLUMNCOUNT = 10;    // The number of Columns
+    private final static int GREENHOUSE = 4;
+    private final static int GREEN_GROW = 5;
+    private final static int GREEN_WORK = 6;
+    private final static int OXYGEN = 7;
+    private final static int WATER = 8;
+    private final static int FOOD = 9;
+    private final static int FUEL = 10;
+    private final static int COLUMNCOUNT = 11;    // The number of Columns
     private static String columnNames[];          // Names of Columns
     private static Class columnTypes[];           // Types of columns
 
@@ -43,10 +44,12 @@ public class SettlementTableModel extends UnitTableModel {
         columnTypes[POPULATION] = Integer.class;
         columnNames[PARKED] = "Parked";
         columnTypes[PARKED] = Integer.class;
-        columnNames[GROWING] = "Growing";
-        columnTypes[GROWING] = String.class;
         columnNames[GREENHOUSE] = "Greenhouse";
         columnTypes[GREENHOUSE] = String.class;
+        columnNames[GREEN_GROW] = "Growing %";
+        columnTypes[GREEN_GROW] = Integer.class;
+        columnNames[GREEN_WORK] = "Work %";
+        columnTypes[GREEN_WORK] = Integer.class;
         columnNames[FOOD] = "Food";
         columnTypes[FOOD] = Integer.class;
         columnNames[OXYGEN] = "Oxygen";
@@ -57,27 +60,19 @@ public class SettlementTableModel extends UnitTableModel {
         columnTypes[FUEL] = Integer.class;
     };
 
-    private UIProxyManager proxyManager;
-
     /**
      * Constructs a SettlementTableModel model that displays all Settlements
      * from a UIProxymanager.
      *
-     * @param proxyManager Proxy manager that holds settlements.
+     * @param unitManager Unit manager that holds settlements.
      */
-    public SettlementTableModel(UIProxyManager proxyManager) {
-        super("Settlement", columnNames, columnTypes);
+    public SettlementTableModel(UnitManager unitManager) {
+        super("All Settlement", columnNames, columnTypes);
 
-        this.proxyManager = proxyManager;
-        addAll();
-    }
-
-    /**
-     * Find all the Settlement units in the simulation and add them to this
-     * model
-     */
-    public void addAll() {
-        add(proxyManager.getOrderedSettlementProxies());
+        SettlementIterator iter = unitManager.getSettlements().sortByName().iterator();
+        while(iter.hasNext()) {
+            add(iter.next());
+        }
     }
 
     /**
@@ -87,7 +82,7 @@ public class SettlementTableModel extends UnitTableModel {
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
-        Settlement settle = (Settlement)getUnit(rowIndex).getUnit();
+        Settlement settle = (Settlement)getUnit(rowIndex);
         FacilityManager fMgr = settle.getFacilityManager();
 
         // Invoke the appropriate method, switch is the best solution
@@ -131,24 +126,25 @@ public class SettlementTableModel extends UnitTableModel {
                 result = new Integer(settle.getParkedVehicleNum());
             } break;
 
-            case GROWING : {
+            case GREENHOUSE : {
                 GreenhouseFacility greenhouse = (GreenhouseFacility)
                                 fMgr.getFacility("Greenhouse");
                 result = greenhouse.getPhase();
             } break;
 
-            case GREENHOUSE : {
-                StringBuffer buffer = new StringBuffer();
+            case GREEN_GROW : {
                 GreenhouseFacility greenhouse = (GreenhouseFacility)
                                 fMgr.getFacility("Greenhouse");
-                buffer.append("Grow ");
-                buffer.append((int)(100F * (greenhouse.getTimeCompleted()
+                result = new Integer((int)(100F * (greenhouse.getTimeCompleted()
                                         / greenhouse.getGrowthPeriod())));
-                buffer.append("% Work ");
-                buffer.append((int)(100F * (greenhouse.getWorkCompleted()
+            } break;
+
+            case GREEN_WORK : {
+                GreenhouseFacility greenhouse = (GreenhouseFacility)
+                                fMgr.getFacility("Greenhouse");
+
+                result = new Integer((int)(100F * (greenhouse.getWorkCompleted()
                                         / greenhouse.getWorkLoad())));
-                buffer.append('%');
-                result = buffer.toString();
             } break;
 
         }

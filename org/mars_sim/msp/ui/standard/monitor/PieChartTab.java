@@ -10,6 +10,9 @@ package org.mars_sim.msp.ui.standard.monitor;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
+import javax.swing.table.TableModel;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TableModelEvent;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.HashSet;
@@ -51,13 +54,15 @@ class PieChartTab extends MonitorTab {
     /**
      *  Basic Pie Dataset with a method to recalculate.
      */
-    class TablePieDataset extends DefaultPieDataset {
-        private UnitTableModel model;
+    class TablePieDataset extends DefaultPieDataset
+            implements TableModelListener {
+
+        private TableModel model;
         private int column;
 
-        public TablePieDataset(UnitTableModel model, int column) {
-            this.model = model;
+        public TablePieDataset(TableModel model, int column) {
             this.column = column;
+            setModel(model);
         }
 
         /**
@@ -66,7 +71,7 @@ class PieChartTab extends MonitorTab {
          * are less than OTHERPERC are combined into a single entry.
          *
          */
-        public void calculate() {
+        void calculate() {
             int rows = model.getRowCount();
 
             // Must clear incase values have disappeared
@@ -135,6 +140,32 @@ class PieChartTab extends MonitorTab {
 
             calculate();
         }
+
+        /**
+         * Specify the model to monitor. This class will attached itself as
+         * a listener. If a model is already attached, this one will be
+         * deattached before this.
+         * This action triggers the reloading of the catagories.
+         * @param newModel New table model to monitor.
+         */
+        public void setModel(TableModel newModel) {
+            if (model != null) {
+                model.removeTableModelListener(this);
+            }
+
+            model = newModel;
+            if (model != null) {
+                model.addTableModelListener(this);
+                calculate();
+            }
+        }
+
+        /**
+         * The underlying model has changed
+         */
+        public void tableChanged(TableModelEvent e) {
+            calculate();
+        }
     }
 
     private TablePieDataset pieModel = null;
@@ -154,7 +185,7 @@ class PieChartTab extends MonitorTab {
         setName(title);
 
         pieModel = new TablePieDataset(model, column);
-        chart = ChartFactory.createPieChart(title, pieModel, true);
+        chart = ChartFactory.createPieChart(null, pieModel, true);
         chart.setChartBackgroundPaint(getBackground());
         pieModel.calculate();
 
@@ -166,14 +197,6 @@ class PieChartTab extends MonitorTab {
 
         chartpanel = new JFreeChartPanel(chart);
         add(chartpanel, "Center");
-    }
-
-    /**
-     * Update the selected table
-     */
-    public void update() {
-        super.update();
-        pieModel.calculate();
     }
 
     /**
@@ -211,6 +234,15 @@ class PieChartTab extends MonitorTab {
         String title = getModel().getName() + " - " +
                        getModel().getColumnName(column);
         setName(title);
-        ((TextTitle)chart.getTitle(0)).setText(title);
+    }
+
+    /**
+     * The tab has been remove
+     */
+    public void removeTab() {
+        chart = null;
+        pieModel.setModel(null);
+        pieModel = null;
+        super.removeTab();
     }
 }

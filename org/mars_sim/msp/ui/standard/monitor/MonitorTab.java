@@ -7,8 +7,10 @@
 
 package org.mars_sim.msp.ui.standard.monitor;
 
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.UnitUIProxy;
+import org.mars_sim.msp.ui.standard.UIProxyManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -49,7 +51,7 @@ abstract class MonitorTab extends JPanel
     /**
      * Remove this view.
      */
-    public void remove() {
+    public void removeTab() {
         model = null;
     }
 
@@ -58,11 +60,13 @@ abstract class MonitorTab extends JPanel
      */
     public void displayDetails(MainDesktopPane desktop)
     {
+        UIProxyManager proxyManager = desktop.getProxyManager();
         ArrayList units = model.getUnits(getSelection());
         Iterator it = units.iterator();
         while(it.hasNext())
         {
-            desktop.openUnitWindow((UnitUIProxy)it.next());
+            UnitUIProxy proxy = proxyManager.getUnitUIProxy((Unit)it.next());
+            desktop.openUnitWindow(proxy);
         }
     }
 
@@ -76,8 +80,8 @@ abstract class MonitorTab extends JPanel
         Iterator it = units.iterator();
         if (it.hasNext())
         {
-            UnitUIProxy unit = (UnitUIProxy) it.next();
-            desktop.centerMapGlobe(unit.getUnit().getCoordinates());
+            Unit unit = (Unit) it.next();
+            desktop.centerMapGlobe(unit.getCoordinates());
         }
     }
 
@@ -93,16 +97,6 @@ abstract class MonitorTab extends JPanel
      * @return array of row indexes.
      */
     abstract protected int[] getSelection();
-
-    /**
-     * Remove the selected rows for the model.
-     */
-    public void removeSelectedRows()
-    {
-        int rows[] = getSelection();
-        Collection units = model.getUnits(rows);
-        model.remove(units);
-    }
 
     /**
      * Update the selected table

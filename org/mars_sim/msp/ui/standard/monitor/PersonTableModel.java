@@ -14,6 +14,8 @@ import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
+import java.util.List;
+
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults
  * the source of the lsit is the Unit Manager.
@@ -58,29 +60,105 @@ public class PersonTableModel extends UnitTableModel {
     }
 
     // Data members
-    private UIProxyManager proxyManager;        // Source of all Person
+    private Vehicle         vehicle;    // Monitored Vehicle
+    private Settlement      settlement; // Monitored Location
 
     /**
      * Constructs a PersonTableModel object that displays all Person from the
      * proxy manager.
      *
-     * @param proxyManager Manager containing Person objects.
+     * @param unitManager Manager containing Person objects.
      */
-    public PersonTableModel(UIProxyManager proxyManager) {
-        super("Person", columnNames, columnTypes);
+    public PersonTableModel(UnitManager unitManager) {
+        super("All People", columnNames, columnTypes);
 
-        this.proxyManager = proxyManager;
-        addAll();
+        PersonIterator iter = unitManager.getPeople().sortByName().iterator();
+        while(iter.hasNext()) {
+            add(iter.next());
+        }
     }
 
     /**
-     * Find all the Person units in the simulation and add them to this
-     * model
+     * Constructs a PersonTableModel object that displays all Person from the
+     * specified Vechile
+     *
+     * @param vehicle Monitored vehicle Person objects.
      */
-    public void addAll() {
-        add(proxyManager.getOrderedPersonProxies());
+    public PersonTableModel(Vehicle vehicle) {
+        super(vehicle.getName() + " - People", columnNames, columnTypes);
+
+        this.vehicle = vehicle;
+
+        PersonIterator iter = vehicle.getPassengers().iterator();
+        while(iter.hasNext()) {
+            add(iter.next());
+        }
     }
 
+    /**
+     * Constructs a PersonTableModel object that displays all Person from the
+     * specified Vechile
+     *
+     * @param settlement Monitored settlement Person objects.
+     */
+    public PersonTableModel(Settlement settlement) {
+        super(settlement.getName() + " - People", columnNames, columnTypes);
+
+        this.settlement = settlement;
+
+        PersonIterator iter = settlement.getInhabitants().iterator();
+        while(iter.hasNext()) {
+            add(iter.next());
+        }
+    }
+
+    /**
+     * Compare the current contents to the expected. This would be alot easier
+     * if pure Collection were used as the comparision methods have to be
+     * implemented by hand.
+     *
+     * @param contents The contents of this model.
+     */
+    protected void checkContents(List contents) {
+        PersonCollection people = null;
+
+        // Find an appropriate source collection,
+        if (vehicle != null) {
+            people = vehicle.getPassengers();
+        }
+        else if (settlement != null) {
+            people = settlement.getInhabitants();
+        }
+
+        // Compare current to actual
+        if (people != null) {
+            // Rows been deleted ?
+            if (contents.size() > people.size()) {
+                for( int i = 0; i < contents.size(); i++) {
+                    Person person = (Person)contents.get(i);
+                    if (people.contains(person)) {
+                        i++;
+                    }
+                    else {
+                        contents.remove(i);
+                        fireTableRowsDeleted(i,i);
+                    }
+                }
+            }
+
+            // Rows added
+            else if (contents.size() < people.size()) {
+                PersonIterator iter = people.iterator();
+                while(iter.hasNext()) {
+                    Person person = iter.next();
+                    if (!contents.contains(person)) {
+                        contents.add(person);
+                        fireTableRowsDeleted(contents.size(), contents.size());
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Return the value of a Cell
@@ -89,7 +167,7 @@ public class PersonTableModel extends UnitTableModel {
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
-        Person person = (Person)getUnit(rowIndex).getUnit();
+        Person person = (Person)getUnit(rowIndex);
 
         // Invoke the appropriate method, switch is the best solution
         // althought disliked by some

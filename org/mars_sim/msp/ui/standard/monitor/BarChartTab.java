@@ -12,6 +12,9 @@ import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
 import javax.swing.JComponent;
+import javax.swing.table.TableModel;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TableModelEvent;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,19 +46,18 @@ class BarChartTab extends MonitorTab {
      *  displayed.
      */
     class TableBarDataset extends AbstractSeriesDataset
-            implements CategoryDataset {
+            implements CategoryDataset, TableModelListener {
 
-        private UnitTableModel model;
+        private TableModel model;
         private int[] columns;
         private List  categories;
 
-        public TableBarDataset(UnitTableModel model, int columns[]) {
-            this.model = model;
+        public TableBarDataset(TableModel model, int columns[]) {
 
-            loadCategories();
+            setModel(model);
+
             setColumns(columns);
         }
-
 
         /**
          * Return the list of displayed categories.
@@ -144,9 +146,32 @@ class BarChartTab extends MonitorTab {
         }
 
         /**
-         * The table model has changed
+         * Specify the model to monitor. This class will attached itself as
+         * a listener. If a model is already attached, this one will be
+         * deattached before this.
+         * This action triggers the reloading of the catagories.
+         * @param newModel New table model to monitor.
          */
-        public void update() {
+        public void setModel(TableModel newModel) {
+            if (model != null) {
+                model.removeTableModelListener(this);
+            }
+
+            model = newModel;
+            if (model != null) {
+                model.addTableModelListener(this);
+                loadCategories();
+            }
+        }
+
+        /**
+         * The underlying model has changed
+         */
+        public void tableChanged(TableModelEvent e) {
+            if ((e.getType() == TableModelEvent.INSERT) ||
+                (e.getType() == TableModelEvent.DELETE)) {
+                loadCategories();
+            }
             fireDatasetChanged();
         }
     }
@@ -167,7 +192,7 @@ class BarChartTab extends MonitorTab {
         setName(title);
 
         barModel = new TableBarDataset(model, columns);
-        chart = ChartFactory.createVerticalBarChart(title, null, null, barModel, true);
+        chart = ChartFactory.createVerticalBarChart(null, null, null, barModel, true);
         Plot plot = chart.getPlot();
         HorizontalCategoryAxis hAxis = (HorizontalCategoryAxis)plot.getAxis(Plot.HORIZONTAL_AXIS);
         hAxis.setVerticalCategoryLabels(true);
@@ -187,7 +212,7 @@ class BarChartTab extends MonitorTab {
 
         // Check the width for possible scrolling
         int chartwidth = columnWidth * barModel.getCategoryCount();
-        System.out.println("Calculated width = " + chartwidth);
+
         if (chartwidth > SCROLLTHRESHOLD) {
             // Scrolling will kick in, then fix the hieght so that it
             // automatically adjusts to Scroll Viewport hieght; the width
@@ -227,17 +252,10 @@ class BarChartTab extends MonitorTab {
     /**
      * The tab has been remove
      */
-    public void remove() {
+    public void removeTab() {
         chart = null;
+        barModel.setModel(null);
         barModel = null;
-        super.remove();
-    }
-
-    /**
-     * Update the selected table
-     */
-    public void update() {
-        super.update();
-        barModel.update();
+        super.removeTab();
     }
 }

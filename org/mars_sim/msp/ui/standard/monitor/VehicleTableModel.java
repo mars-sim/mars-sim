@@ -68,29 +68,19 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes[FUEL] = Integer.class;
     }
 
-    // Data members
-    private UIProxyManager proxyManager;
-
     /**
      * Constructs a VehicleTableModel object. It creates the list of possible
-     * Vehicles from the global proxy manager.
+     * Vehicles from the Unit manager.
      *
-     * @param proxyManager Proxy manager contains displayable Vehicles.
+     * @param unitManager Proxy manager contains displayable Vehicles.
      */
-    public VehicleTableModel(UIProxyManager proxyManager) {
-        super("Vehicle", columnNames, columnTypes);
+    public VehicleTableModel(UnitManager unitManager) {
+        super("All Vehicles", columnNames, columnTypes);
 
-        this.proxyManager = proxyManager;
-
-        addAll();
-    }
-
-    /**
-     * Find all the Vehicle units in the simulation and add them to this
-     * model
-     */
-    public void addAll() {
-        add(proxyManager.getOrderedVehicleProxies());
+        VehicleIterator iter = unitManager.getVehicles().sortByName().iterator();
+        while(iter.hasNext()) {
+            add(iter.next());
+        }
     }
 
     /**
@@ -100,7 +90,7 @@ public class VehicleTableModel extends UnitTableModel {
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
-        Vehicle vehicle = (Vehicle)getUnit(rowIndex).getUnit();
+        Vehicle vehicle = (Vehicle)getUnit(rowIndex);
 
         // Invoke the appropriate method, switch is the best solution
         // althought disliked by some

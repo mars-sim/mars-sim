@@ -30,6 +30,7 @@ implements Runnable {
 
     final private static String ROWSUFFIX = " items";
     final private static int STATUSHEIGHT = 17;
+    final private static int REFRESH_PERIOD = 3000;
 
 
     // Data members
@@ -97,32 +98,6 @@ implements Runnable {
         toolbar.add(tabRemove);
         toolbar.addSeparator();
 
-        // Create buttons to modify model contents
-        JButton loadButton = new JButton(new ImageIcon("images/Reload.gif"));
-        loadButton.setToolTipText("Load all matching units");
-        loadButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            MonitorTab selected = getSelected();
-                            if (selected != null) {
-                                selected.getModel().addAll();
-                            }
-                        }
-                    });
-        toolbar.add(loadButton);
-
-        JButton removeButton = new JButton(new ImageIcon("images/RowDelete.gif"));
-        removeButton.setToolTipText("Load all matching units");
-        removeButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            MonitorTab selected = getSelected();
-                            if (selected != null) {
-                                selected.removeSelectedRows();
-                            }
-                        }
-                    });
-        toolbar.add(removeButton);
-        toolbar.addSeparator();
-
         // Create buttons based on selection
         JButton mapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
         mapButton.setMargin(new Insets(1, 1, 1, 1));
@@ -171,11 +146,11 @@ implements Runnable {
         rowCount.setPreferredSize(dims);
 
         // Add the default table tabs
-        UIProxyManager proxyManager = desktop.getProxyManager();
-        PersonTableModel pmodel = new PersonTableModel(proxyManager);
-        addTab(new TableTab(pmodel, true));
-        addTab(new TableTab(new VehicleTableModel(proxyManager), true));
-        addTab(new TableTab(new SettlementTableModel(proxyManager), true));
+        UnitManager unitManager =
+                desktop.getMainWindow().getVirtualMars().getUnitManager();
+        addTab(new TableTab(new PersonTableModel(unitManager), true));
+        addTab(new TableTab(new VehicleTableModel(unitManager), true));
+        addTab(new TableTab(new SettlementTableModel(unitManager), true));
 
         tabsSection.setSelectedIndex(0);
         tabChanged();
@@ -264,7 +239,7 @@ implements Runnable {
         tabs.remove(oldTab);
         tabsSection.remove(oldTab);
 
-        oldTab.remove();
+        oldTab.removeTab();
         if (getSelected() == oldTab) {
             tabsSection.setSelectedIndex(0);
         }
@@ -306,7 +281,7 @@ implements Runnable {
 
             // Pause for 1 second between display refreshes
             try {
-                updateThread.sleep(1000);
+                updateThread.sleep(REFRESH_PERIOD);
             }
             catch (InterruptedException e) {
             }

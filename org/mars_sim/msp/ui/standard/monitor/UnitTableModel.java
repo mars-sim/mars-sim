@@ -10,8 +10,7 @@ package org.mars_sim.msp.ui.standard.monitor;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.UnitUIProxy;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -33,7 +32,7 @@ abstract public class UnitTableModel extends AbstractTableModel {
      *  @param names Names of the columns displayed.
      *  @param types The Classes of the individual columns.
      */
-    public UnitTableModel(String name, String names[], Class types[]) {
+    protected UnitTableModel(String name, String names[], Class types[]) {
 
         // Initialize data members
         this.name = name;
@@ -43,27 +42,10 @@ abstract public class UnitTableModel extends AbstractTableModel {
     }
 
     /**
-     * This method provideds a means to load the model with all the relevant
-     * matching Units of the physical model. It should be overridden by the
-     * subclasses to implement the required criteria.
-     */
-    public abstract void addAll();
-
-    /**
-     * Add the Units specified in the array to the current model.
-     * @param units Units to add.
-     */
-    public void add(Iterator i) {
-        while (i.hasNext()) {
-            add((UnitUIProxy) i.next());
-        }
-    }
-
-    /**
      * Add a unit to the model.
      * @param newUnit Unit to add to the model.
      */
-    public void add(UnitUIProxy newUnit) {
+    protected void add(Unit newUnit) {
         if (!units.contains(newUnit)) {
             int size = units.size();
             units.add(newUnit);
@@ -127,8 +109,8 @@ abstract public class UnitTableModel extends AbstractTableModel {
      * @param index Index of the row.
      * @return Unit matching row
      */
-    public UnitUIProxy getUnit(int index) {
-        return (UnitUIProxy)units.get(index);
+    protected Unit getUnit(int index) {
+        return (Unit)units.get(index);
     }
 
     /**
@@ -145,34 +127,24 @@ abstract public class UnitTableModel extends AbstractTableModel {
     }
 
     /**
-     * Remove the units at the specified positions
-     * @param rows Units to be deleted.
+     * Compare the current contents to the expected.
+     *
+     * @param contents The contents of this model.
      */
-    public void remove(Collection unitRows) {
-
-        // Remove the rows from the model
-        units.removeAll(unitRows);
-        fireTableDataChanged();
-    }
-
-    /**
-     * Remote a unit from the model
-     * @param oldUnit Unit to remove.
-     */
-    public void remove(Unit oldUnit) {
-        int oldIndex = units.indexOf(oldUnit);
-        if (oldIndex >= 0) {
-            units.remove(oldIndex);
-            fireTableRowsDeleted(oldIndex, oldIndex);
-        }
+    protected void checkContents(List contents) {
     }
 
     /**
      * Update the model contents. Ideally this should not be needed as the
      * model should be event driven and always know about the current
      * Unit state.
+     *
+     * It also check whether the contents have changed
      */
-    public void update() {
+    void update() {
+        // Check the contents first
+        checkContents(units);
+
         // Just signal that all the cells have changed, this will refresh
         // displated cells.
         fireTableRowsUpdated(0, units.size());
