@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
  * UnitCollection.java
- * @version 2.74 2002-02-26
- * @author Scott Davis 
+ * @version 2.75 2002-05-24
+ * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
@@ -14,13 +14,15 @@ import org.mars_sim.msp.simulation.equipment.*;
 import java.util.*; // ArrayList
 import java.io.Serializable;
 
-/** The UnitCollection class is a homogenous collection of Unit objects
- *  with useful methods for accessing and sorting them. 
+/**
+ * This class supports a heterogenenours list of Units. It extends the
+ * MspCollection class that provides the basic list of Units functionality.
+ * This calls adds to the functionality by allowing the selections of Unit to
+ * be extracted from the underlying List according to the Unit subclass.
+ * Also merging actions are supported.
  */
 public class UnitCollection extends MspCollection implements Serializable {
 
-    // We can replace this with another type of collection if we need to.
-    private ArrayList elements;  // Used internally to hold elements.
 
     // inner class to implement our type-safe iterator
     private class ThisIterator implements UnitIterator {
@@ -29,7 +31,7 @@ public class UnitCollection extends MspCollection implements Serializable {
         /** Constructor */
         ThisIterator(Collection collection) {
             iterator = collection.iterator();
-        } 
+        }
 
         /** Returns the next element in the interation.
          *  @return the next element in the interation
@@ -37,15 +39,15 @@ public class UnitCollection extends MspCollection implements Serializable {
         public Unit next() {
             return (Unit) iterator.next();
         }
-  
+
         /** Returns true if the iteration has more elements.
          *  @return true if the iterator has more elements
          */
         public boolean hasNext() {
             return iterator.hasNext();
         }
-  
-        /** Removes from the underlying collection the 
+
+        /** Removes from the underlying collection the
          *  last element returned by the iterator.
          */
         public void remove() {
@@ -55,72 +57,21 @@ public class UnitCollection extends MspCollection implements Serializable {
 
     /** Constructs a UnitCollection object */
     public UnitCollection() {
-        elements = new ArrayList();
     }
 
     /** Constructs a UnitCollection object
      *  @param collection collection of elements to copy
      */
     public UnitCollection(UnitCollection collection) {
-        elements = new ArrayList();
         UnitIterator iterator = collection.iterator();
         while(iterator.hasNext()) add(iterator.next());
-    }
-
-    /** Returns the number of elements in this collection.
-     *  @return the number of elements in this collection
-     */ 
-    public int size() {
-        return elements.size();
-    }
-
-    /** Returns true if this collection has no elements.
-     *  @return true if this collection contains no elements
-     */
-    public boolean isEmpty() {
-        if (elements.size() == 0) return true;
-        else return false;
-    }
-
-    /** Returns true if this collection contains the specific element.
-     *  @param o element whose presence in this collection is to be tested
-     *  @return true if this collection contains the specified element
-     */
-    public boolean contains(Unit o) {
-        return elements.contains(o);
     }
 
     /** Returns an iterator over the elements in this collection.
      *  @return an Iterator over the elements in this collection
      */
     public UnitIterator iterator() {
-        return new ThisIterator(elements);
-    }
-
-
-    /** Ensures that this collection contains the specified element.
-     *  @param o element whose presence in this collection is to be ensured
-     *  @return true if this collection changed as a result of the call
-     */
-    public boolean add(Unit o) {
-	fireMspCollectionEvent(new MspCollectionEvent(this, "add"));
-        return elements.add(o);
-    }
-
-    /** Removes a single instance of the specified element from this 
-     *  collection, if it is present.
-     *  @param o element to be removed from this collection, if present
-     *  @return true if this collection changed as a result of the call
-     */
-    public boolean remove(Unit o) {
-	fireMspCollectionEvent(new MspCollectionEvent(this, "remove"));
-        return elements.remove(o);
-    }
-
-    /** Removes all of the elements from this collection. */
-    public void clear() {
-	fireMspCollectionEvent(new MspCollectionEvent(this, "clear"));
-        elements.clear();
+        return new ThisIterator(getUnits());
     }
 
     /**
@@ -129,12 +80,12 @@ public class UnitCollection extends MspCollection implements Serializable {
      */
     public void mergeUnits(UnitCollection units) {
         UnitIterator i = units.iterator();
-	while (i.hasNext()) {
-	    Unit unit = i.next();
-	    if (!elements.contains(unit)) add(unit);
-	}
+	    while (i.hasNext()) {
+	        Unit unit = i.next();
+	        if (!contains(unit)) add(unit);
+	    }
     }
-    
+
     /** Merges a settlement collection into this unit collection.
      *  @param settlements settlement collection to merge
      */
@@ -142,10 +93,10 @@ public class UnitCollection extends MspCollection implements Serializable {
         SettlementIterator i = settlements.iterator();
         while (i.hasNext()) {
             Settlement settlement = i.next();
-            if (!elements.contains(settlement)) add(settlement);
+            if (!contains(settlement)) add(settlement);
         }
     }
-    
+
     /** Gets a subset of this collection of all the settlements.
      *  @return settlements collection subset
      */
@@ -158,7 +109,7 @@ public class UnitCollection extends MspCollection implements Serializable {
         }
         return settlements;
     }
-    
+
     /** Merges a vehicle collection into this unit collection.
      *  @param vehicles vehicle collection to merge
      */
@@ -166,10 +117,10 @@ public class UnitCollection extends MspCollection implements Serializable {
         VehicleIterator i = vehicles.iterator();
         while (i.hasNext()) {
             Vehicle vehicle = i.next();
-            if (!elements.contains(vehicle)) add(vehicle);
+            if (!contains(vehicle)) add(vehicle);
         }
     }
-    
+
     /** Gets a subset of this collection of all the vehicles.
      *  @return vehicle collection subset
      */
@@ -182,7 +133,7 @@ public class UnitCollection extends MspCollection implements Serializable {
         }
         return vehicles;
     }
-    
+
     /** Merges a person collection into this unit collection.
      *  @param people person collection to merge
      */
@@ -190,10 +141,10 @@ public class UnitCollection extends MspCollection implements Serializable {
         PersonIterator i = people.iterator();
         while (i.hasNext()) {
             Person person = i.next();
-            if (!elements.contains(person)) add(person);
+            if (!contains(person)) add(person);
         }
     }
-    
+
     /** Gets a subset of this collection of all the people.
      *  @return person collection subset
      */
@@ -214,7 +165,7 @@ public class UnitCollection extends MspCollection implements Serializable {
         EquipmentIterator i = equipment.iterator();
         while (i.hasNext()) {
             Equipment equipmentUnit = i.next();
-            if (!elements.contains(equipmentUnit)) add(equipmentUnit);
+            if (!contains(equipmentUnit)) add(equipmentUnit);
         }
     }
 

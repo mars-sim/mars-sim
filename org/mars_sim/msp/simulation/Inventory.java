@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 2.74 2002-03-12
+ * @version 2.75 2002-05-24
  * @author Scott Davis 
  */
 
@@ -179,19 +179,24 @@ public class Inventory implements Serializable {
     public double getTotalMass() {
         double totalMass = 0D;
 	
-	// Add resources in inventory.
-	Iterator i = containedResources.values().iterator();
-	while (i.hasNext()) {
-	    totalMass += ((Double) i.next()).doubleValue();
-	}
+	    // Add resources in inventory.
+        Collection resources = containedResources.values();
+        if (!resources.isEmpty()) {
+	        Iterator i = resources.iterator();
+	        while (i.hasNext()) {
+	            totalMass += ((Double) i.next()).doubleValue();
+	        }
+	    }
 
-	// Add mass of units in inventory.
-        UnitIterator unitIt = containedUnits.iterator();
-	while (unitIt.hasNext()) {
-	    totalMass += unitIt.next().getMass();
-	}
-
-	return totalMass;
+	    // Add mass of units in inventory.
+        if (!containedUnits.isEmpty()) {
+            UnitIterator unitIt = containedUnits.iterator();
+	        while (unitIt.hasNext()) {
+	            totalMass += unitIt.next().getMass();
+	        }
+        }
+        
+	    return totalMass;
     }
 
     /** 

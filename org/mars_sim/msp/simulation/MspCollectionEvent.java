@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MspCollectionEvent.java
- * @version 2.74 2002-02-26
+ * @version 2.75 2002-05-24
  * @author Scott Davis
  */
 
@@ -16,20 +16,23 @@ import java.util.*;
 public class MspCollectionEvent extends EventObject {
 
     // Data members
-    private String type; // Type of event.
+    private String  type; // Type of event.
+    private Unit    trigger;
 
     /**
      * Constructs a MspCollectionEvent object.
      * @param source the MspCollection source of the event.
      * @param type the type of the event.
+     * @param trigger Unit triggering this event.
      */
-    public MspCollectionEvent(MspCollection source, String type) {
+    public MspCollectionEvent(MspCollection source, String type, Unit trigger) {
 
         // User EventObject's constructor.
-	super(source);
+	    super(source);
 
-	// Initialize type.
-	this.type = type;
+	    // Initialize type.
+	    this.type = type;
+        this.trigger = trigger;
     }
 
     /**
@@ -38,5 +41,13 @@ public class MspCollectionEvent extends EventObject {
      */
     public String getType() {
         return type;
+    }
+
+    /**
+     * Get the Unit that has triggered the event.
+     * @return Unit trigger, this value maybe null for certian event types.
+     */
+    public Unit getTrigger() {
+        return trigger;
     }
 }
