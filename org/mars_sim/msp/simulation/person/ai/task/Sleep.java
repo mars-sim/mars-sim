@@ -26,6 +26,7 @@ class Sleep extends Task implements Serializable {
 
     // Data members
     private double duration; // The duration of task in millisols
+    private LivingAccommodations accommodations; // The living accommodations if any.
 
     /** Constructs a Sleep object
      *  @param person the person to perform the task
@@ -36,25 +37,18 @@ class Sleep extends Task implements Serializable {
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-            Building sleepingBuilding = null;
-        
-            // Try to find an available living accommodations building.
-            List accommodations = buildingManager.getBuildings(LivingAccommodations.NAME);
-			int rand = RandomUtil.getRandomInt(accommodations.size() - 1);
-			
-			try {
-				Building building = (Building) accommodations.get(rand);
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-				if (!lifeSupport.containsPerson(person)) {
-					if (lifeSupport.getAvailableOccupancy() > 0) lifeSupport.addPerson(person);
-					else endTask();
-				}
-			}
-			catch (Exception e) {
-				System.err.println("Relax.constructor(): " + e.getMessage());
-				endTask();
-			}
+        	try {
+        		Building quarters = getAvailableLivingQuartersBuilding(person);
+        		if (quarters != null) {
+					BuildingManager.addPersonToBuilding(person, quarters); 
+        			accommodations = (LivingAccommodations) quarters.getFunction(LivingAccommodations.NAME);
+        			accommodations.addSleeper();
+        		}
+        	}
+        	catch (BuildingException e){
+        		System.err.println("Sleep.constructor(): " + e.getMessage());
+        		endTask();
+        	}
         }
         
         duration = 250D + RandomUtil.getRandomInt(100);
@@ -70,12 +64,23 @@ class Sleep extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
+		// Fatigue modifier.
 		double fatigue = person.getPhysicalCondition().getFatigue();
-
-        if (fatigue > 500D) {
-            result = (fatigue - 500D) / 10D;
-            if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0)
-                result *= 2D;
+        if (fatigue > 500D) result = (fatigue - 500D) / 10D;
+        
+        // Dark outside modifier.
+		if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0)
+			result *= 2D;
+        
+        // Crowding modifier.
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        	try {
+        		Building building = getAvailableLivingQuartersBuilding(person);
+        		Task.getCrowdingProbabilityModifier(person, building);
+        	}
+        	catch (BuildingException e) {
+        		System.err.println("Sleep.getProbability(): " + e.getMessage());
+        	}
         }
 
         return result;
@@ -101,4 +106,65 @@ class Sleep extends Task implements Serializable {
         }
         else return 0;
     }
+    
+	/**
+	 * Ends the task and performs any final actions.
+	 */
+	public void endTask() {
+		super.endTask();
+		
+		// Remove person from living accommodations bed so others can use it.
+		try {
+			if (accommodations != null) accommodations.removeSleeper();
+		}
+		catch(BuildingException e) {}
+	}
+    
+	/**
+	 * Gets an available living accommodations building that the person can use.
+	 * Returns null if no living accommodations building is currently available.
+	 *
+	 * @param person the person
+	 * @return available living accommodations building
+	 * @throws BuildingException if error finding living accommodations building.
+	 */
+	private static Building getAvailableLivingQuartersBuilding(Person person) throws BuildingException {
+     
+		Building result = null;
+        
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			BuildingManager manager = person.getSettlement().getBuildingManager();
+			List quartersBuildings = manager.getBuildings(LivingAccommodations.NAME);
+			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
+			quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings);
+			quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
+        	
+			if (quartersBuildings.size() > 0) {
+				// Pick random recreation building from list.
+				int rand = RandomUtil.getRandomInt(quartersBuildings.size() - 1);
+				result = (Building) quartersBuildings.get(rand);
+			}
+		}
+        
+		return result;
+	}
+	
+	/**
+	 * Gets living accommodations with empty beds from a list of buildings with the living accommodations function.
+	 * @param buildingList list of buildings with the living accommodations function.
+	 * @return list of buildings with empty beds.
+	 * @throws BuildingException if any buildings in list don't have the living accommodations function.
+	 */
+	private static List getQuartersWithEmptyBeds(List buildingList) throws BuildingException {
+		List result = new ArrayList();
+		
+		Iterator i = buildingList.iterator();
+		while (i.hasNext()) {
+			Building building = (Building) i.next();
+			LivingAccommodations quarters = (LivingAccommodations) building.getFunction(LivingAccommodations.NAME);
+			if (quarters.getSleepers() < quarters.getBeds()) result.add(building);
+		}
+		
+		return result;
+	}
 }

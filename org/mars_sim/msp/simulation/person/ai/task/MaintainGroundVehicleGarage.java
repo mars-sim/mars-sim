@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-10
  * @author Scott Davis
  */
 
@@ -49,6 +49,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         if (building != null) {
         	try {
         		garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+        		BuildingManager.addPersonToBuilding(person, building);
         	}
         	catch (Exception e) {
         		System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.76 2004-05-04
+ * @version 2.76 2004-05-11
  * @author Scott Davis
  */
 
@@ -37,17 +37,10 @@ class Relax extends Task implements Serializable {
 
         // If person is in a settlement, try to find a place to relax.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-        	List recreationBuildings = buildingManager.getBuildings(Recreation.NAME);
-			int rand = RandomUtil.getRandomInt(recreationBuildings.size() - 1);
-			
+        	
         	try {
-        		Building building = (Building) recreationBuildings.get(rand);
-        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-        		if (!lifeSupport.containsPerson(person)) {
-        			lifeSupport.addPerson(person);
-        			setStressModifier(STRESS_MODIFIER * 2D);
-        		}
+        	Building recBuilding = getAvailableRecreationBuilding(person);
+        	if (recBuilding != null) BuildingManager.addPersonToBuilding(person, recBuilding);
         	}
         	catch (Exception e) {
         		System.err.println("Relax.constructor(): " + e.getMessage());
@@ -65,7 +58,23 @@ class Relax extends Task implements Serializable {
      *  @return the weighted probability that a person might perform this task
      */
     public static double getProbability(Person person, Mars mars) {
-        return 10D + person.getPhysicalCondition().getStress();
+    	double result = 10D;
+    	
+    	// Stress modifier
+    	result += person.getPhysicalCondition().getStress();
+    	
+    	// Crowding modifier
+    	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+    		try {
+    			Building recBuilding = getAvailableRecreationBuilding(person);
+    			result *= Task.getCrowdingProbabilityModifier(person, recBuilding);
+    		}
+    		catch (Exception e) {
+    			System.err.println("Relax.getProbability(): " + e.getMessage());
+    		}
+    	}
+        
+        return result;
     }
 
     /** 
@@ -85,4 +94,32 @@ class Relax extends Task implements Serializable {
         }
         else return 0;
     }
+    
+	/**
+	 * Gets an available recreation building that the person can use.
+	 * Returns null if no recreation building is currently available.
+	 *
+	 * @param person the person
+	 * @return available recreation building
+	 * @throws BuildingException if error finding recreation building.
+	 */
+	private static Building getAvailableRecreationBuilding(Person person) throws BuildingException {
+     
+		Building result = null;
+        
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			BuildingManager manager = person.getSettlement().getBuildingManager();
+			List recreationBuildings = manager.getBuildings(Recreation.NAME);
+			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
+			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
+        	
+			if (recreationBuildings.size() > 0) {
+				// Pick random recreation building from list.
+				int rand = RandomUtil.getRandomInt(recreationBuildings.size() - 1);
+				result = (Building) recreationBuildings.get(rand);
+			}
+		}
+        
+		return result;
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-10
  * @author Scott Davis
  */
 
@@ -39,56 +39,14 @@ public class Maintenance extends Task implements Serializable {
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
 
-        entity = null;
-	
-        // Determine entity to maintain.
-        double totalProbabilityWeight = 0D;
-
-        // Total probabilities for all malfunctionable entities in person's local.
-        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            Malfunctionable e = (Malfunctionable) i.next();
-            if (!(e instanceof Vehicle)) {
-                MalfunctionManager manager = e.getMalfunctionManager();
-                double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
-                totalProbabilityWeight += entityWeight;
-            }
-        }
-	
-        // Randomly determine a malfunctionable entity.
-        double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);
-
-        // Get the malfunctionable entity chosen.
-        i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            Malfunctionable malfunctionable = (Malfunctionable) i.next();
-            MalfunctionManager manager = malfunctionable.getMalfunctionManager();
-            double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
-            if ((chance < entityWeight) && !(malfunctionable instanceof Vehicle)) {
-                entity = malfunctionable;
-                description = "Performing maintenance on " + entity.getName();
-                if (entity instanceof Building) {
-                	Building building = (Building) entity;
-                	if (building.hasFunction(LifeSupport.NAME)) {
-                    	try { 
-                    		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-                    		if (!lifeSupport.containsPerson(person)) {
-                    			if (lifeSupport.getAvailableOccupancy() > 0) lifeSupport.addPerson(person);
-                    			else endTask();
-                    		}
-                    	}
-                    	catch (Exception e) {
-                    		System.err.println("Maintenance.constructor: " + e.getMessage());
-                    	}
-                	}
-                }
-                // System.out.println(person.getName() + " " + description + " - " + lastMaint);
-                break;
-            }
-            else chance -= entityWeight;
-        }
-	
-        if (entity == null) endTask();
+		try {
+        	entity = getMaintenanceMalfunctionable();
+        	if (entity == null) endTask();
+		}
+		catch (Exception e) {
+			System.err.println("Maintenance.constructor(): " + e.getMessage());
+			endTask();
+		}
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -107,7 +65,7 @@ public class Maintenance extends Task implements Serializable {
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (!manager.hasMalfunction() && !(entity instanceof Vehicle)) {
                 double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
-                if (entityProb > 50D) entityProb = 50D;
+                // if (entityProb > 50D) entityProb = 50D;
                 result += entityProb;
             }   
         }
@@ -197,5 +155,62 @@ public class Maintenance extends Task implements Serializable {
      */
     public Malfunctionable getEntity() {
         return entity;
+    }
+    
+    /**
+     * Gets a random malfunctionable to perform maintenance on.
+     * @return malfunctionable or null.
+     * @throws Exception if error finding malfunctionable.
+     */
+    private Malfunctionable getMaintenanceMalfunctionable() throws Exception {
+    	Malfunctionable result = null;
+    	
+		// Determine entity to maintain.
+		double totalProbabilityWeight = 0D;
+		
+		// Total probabilities for all malfunctionable entities in person's local.
+		Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		while (i.hasNext()) {
+			Malfunctionable e = (Malfunctionable) i.next();
+			if (!(e instanceof Vehicle)) {
+				MalfunctionManager manager = e.getMalfunctionManager();
+				double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
+				if (e instanceof Building) {
+					Building building = (Building) e;
+					if (building.hasFunction(LifeSupport.NAME)) 
+						entityWeight *= Task.getCrowdingProbabilityModifier(person, building);
+				}
+				totalProbabilityWeight += entityWeight;
+			}
+		}
+		
+		// Randomly determine a malfunctionable entity.
+		double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);
+		
+		// Get the malfunctionable entity chosen.
+		i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		while (i.hasNext()) {
+			Malfunctionable malfunctionable = (Malfunctionable) i.next();
+			MalfunctionManager manager = malfunctionable.getMalfunctionManager();
+			double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
+			boolean inhabitableBuilding = false;
+			if (malfunctionable instanceof Building) {
+				Building building = (Building) malfunctionable;
+				if (building.hasFunction(LifeSupport.NAME)) {
+					inhabitableBuilding = true; 
+					entityWeight *= Task.getCrowdingProbabilityModifier(person, building);
+				}
+			}
+			
+			if ((chance < entityWeight) && !(malfunctionable instanceof Vehicle)) {
+				result = malfunctionable;
+				description = "Performing maintenance on " + result.getName();
+				if (inhabitableBuilding) BuildingManager.addPersonToBuilding(person, (Building) result); 
+				break;
+			}
+			else chance -= entityWeight;
+		}
+    	
+    	return result;
     }
 }

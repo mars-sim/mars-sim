@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.75 2004-04-08
+ * @version 2.76 2004-05-10
  * @author Scott Davis
  */
  
@@ -120,27 +120,20 @@ public class BuildingManager implements Serializable {
     public static void addToRandomBuilding(Person person, Settlement settlement) throws BuildingException {
         
         List habs = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
+        List goodHabs = getLeastCrowdedBuildings(habs);
         
-        int rand = RandomUtil.getRandomInt(habs.size() - 1);
+        int rand = RandomUtil.getRandomInt(goodHabs.size() - 1);
         
         Building building = null;
         int count = 0;
-        Iterator i = habs.iterator();
+        Iterator i = goodHabs.iterator();
         while (i.hasNext()) {
             Building hab = (Building) i.next();
             if (count == rand) building = hab;
             count++;
         }
         
-        if (building != null) {
-        	try {
-        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-        		lifeSupport.addPerson(person); 
-        	}
-        	catch (Exception e) {
-        		throw new BuildingException("Could not add person to building: " + e.getMessage());
-        	}
-        }
+        if (building != null) addPersonToBuilding(person, building);
         else throw new BuildingException("No inhabitable buildings available for " + person.getName());
     }
     
@@ -222,5 +215,104 @@ public class BuildingManager implements Serializable {
         }
         
         return result;
+    }
+    
+    /**
+     * Gets a list of uncrowded buildings from a given list of buildings with life support.
+     * @param buildingList list of buildings with the life support function.
+     * @return list of buildings that are not at or above maximum occupant capacity.
+     * @throws BuildingException if building in list does not have the life support function.
+     */
+    public static List getUncrowdedBuildings(List buildingList) throws BuildingException {
+    	List result = new ArrayList();
+    	
+    	try {
+    		Iterator i = buildingList.iterator();
+    		while (i.hasNext()) {
+    			Building building = (Building) i.next();
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				if (lifeSupport.getAvailableOccupancy() > 0) result.add(building);
+    		}
+    	}
+    	catch (ClassCastException e) {
+    		throw new BuildingException("BuildingManager.getUncrowdedBuildings(): building isn't a life support building.");
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets a list of the least crowded buildings from a given list of buildings with life support.
+     * @param buildingList list of buildings with the life support function.
+     * @return list of least crowded buildings.
+     * @throws BuildingException if building in list does not have the life support function.
+     */
+    public static List getLeastCrowdedBuildings(List buildingList) throws BuildingException {
+    	List result = new ArrayList();
+    	
+    	try {
+    		// Find least crowded population.
+    		int leastCrowded = Integer.MAX_VALUE;
+    		Iterator i = buildingList.iterator();
+    		while (i.hasNext()) {
+    			Building building = (Building) i.next();
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
+				if (crowded < 0) crowded = 0;
+				if (crowded < leastCrowded) leastCrowded = crowded;
+			}
+			
+			// Add least crowded buildings to list.
+			Iterator j = buildingList.iterator();
+			while (j.hasNext()) {
+				Building building = (Building) j.next();
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
+				if (crowded < 0) crowded = 0;
+				if (crowded == leastCrowded) result.add(building);
+			}
+		}
+		catch (ClassCastException e) {
+			throw new BuildingException("BuildingManager.getUncrowdedBuildings(): building isn't a life support building.");
+		}
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets a list of buildings that don't have any malfunctions from a list of buildings.
+     * @param buildingList the list of buildings.
+     * @return list of buildings without malfunctions.
+     */
+    public static List getNonMalfunctioningBuildings(List buildingList) {
+    	List result = new ArrayList();
+    	
+    	Iterator i = buildingList.iterator();
+    	while (i.hasNext()) {
+    		Building building = (Building) i.next();
+			boolean malfunction = building.getMalfunctionManager().hasMalfunction();
+			if (!malfunction) result.add(building);
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Adds the person to the building if possible.
+     * @param person the person to add.
+     * @param building the building to add the person to.
+     * @throws BuildingException if person could not be added to the building.
+     */
+    public static void addPersonToBuilding(Person person, Building building) throws BuildingException {
+		if (building != null) {
+			try {
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				if (!lifeSupport.containsPerson(person)) lifeSupport.addPerson(person); 
+			}
+			catch (Exception e) {
+				throw new BuildingException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
+			}
+		}
+		else throw new BuildingException("Building is null");
     }
 }

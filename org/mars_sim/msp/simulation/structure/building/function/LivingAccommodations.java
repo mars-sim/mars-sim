@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 2.75 2004-03-29
+ * @version 2.76 2004-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -22,6 +22,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	public static final String NAME = "Living Accommodations";
     
  	private int beds;
+ 	private int sleepers;
  
  	/**
  	 * Constructor
@@ -48,6 +49,38 @@ public class LivingAccommodations extends Function implements Serializable {
  	 */
  	public int getBeds() {
  		return beds;
+ 	}
+ 	
+ 	/**
+ 	 * Gets the number of people sleeping in the beds.
+ 	 * @return number of people
+ 	 */
+ 	public int getSleepers() {
+ 		return sleepers;
+ 	}
+ 	
+ 	/**
+ 	 * Adds a sleeper to a bed.
+ 	 * @throws BuildingException if beds are already in use.
+ 	 */
+ 	public void addSleeper() throws BuildingException {
+ 		sleepers++;
+ 		if (sleepers > beds) {
+ 			sleepers = beds;
+ 			throw new BuildingException("All beds are full.");
+ 		}
+ 	}
+ 	
+ 	/**
+ 	 * Removes a sleeper from a bed.
+ 	 * @throws BuildingException if no sleepers to remove.
+ 	 */
+ 	public void removeSleeper() throws BuildingException {
+ 		sleepers --;
+ 		if (sleepers < 0) {
+ 			sleepers = 0;
+ 			throw new BuildingException("Beds are empty.");
+ 		}
  	}
  
     /** 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.76 2004-05-5
+ * @version 2.76 2004-05-10
  * @author Scott Davis
  */
 
@@ -302,27 +302,26 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     
     /**
      * Gets an available airlock for the settlement.
-     *
      * @return airlock or null if none available.
      */
     public Airlock getAvailableAirlock() {
         Airlock result = null;
-        List airlocks = new ArrayList();
         
-        Iterator i = buildingManager.getBuildings(EVA.NAME).iterator();
-        while (i.hasNext()) {
-        	try {
-        		Building building = (Building) i.next();
-        		EVA eva = (EVA) building.getFunction(EVA.NAME);
-        		airlocks.add(eva.getAirlock());
-        	}
-        	catch (BuildingException e) {}
+        try {
+			BuildingManager manager = getBuildingManager();
+			List evaBuildings = manager.getBuildings(EVA.NAME);
+			evaBuildings = BuildingManager.getLeastCrowdedBuildings(evaBuildings);
+        	
+			if (evaBuildings.size() > 0) {
+				// Pick random dining building from list.
+				int rand = RandomUtil.getRandomInt(evaBuildings.size() - 1);
+				Building building = (Building) evaBuildings.get(rand);
+				EVA eva = (EVA) building.getFunction(EVA.NAME);
+				result = eva.getAirlock();
+			}
         }
-        
-        if (airlocks.size() > 0) {
-            // Pick random airlock from list.
-            int rand = RandomUtil.getRandomInt(airlocks.size() - 1);
-            result = (Airlock) airlocks.get(rand);
+        catch (BuildingException e) {
+        	System.err.println("Settlement.getAvailableAirlock(): " + e.getMessage());
         }
         
         return result;

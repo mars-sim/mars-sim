@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 2.75 2004-03-30
+ * @version 2.76 2004-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -9,8 +9,6 @@ package org.mars_sim.msp.simulation.structure.building.function;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Lab;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.task.StudyRockSamples;
 import org.mars_sim.msp.simulation.structure.building.*;
  
 /**
@@ -23,6 +21,7 @@ public class Research extends Function implements Lab, Serializable {
 	private int techLevel;
 	private int researcherCapacity;
 	private List researchSpecialities;
+	private int researcherNum;
 	
 	/**
 	 * Constructor
@@ -91,19 +90,6 @@ public class Research extends Function implements Lab, Serializable {
 	 * @return number of researchers
 	 */
 	public int getResearcherNum() {
-		int researcherNum = 0;
-		if (getBuilding().hasFunction(LifeSupport.NAME)) {
-			try {
-				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
-				PersonIterator i = lifeSupport.getOccupants().iterator();
-				while (i.hasNext()) {
-					// Todo: Check for more general research task.
-					if (i.next().getMind().getTaskManager().getTask() 
-						instanceof StudyRockSamples) researcherNum++;
-				}
-			}
-			catch (BuildingException e) {}
-		}
 		return researcherNum;
 	}
 
@@ -112,8 +98,11 @@ public class Research extends Function implements Lab, Serializable {
 	 * @throws Exception if person cannot be added.
 	 */
 	public void addResearcher() throws Exception {
-		if (getResearcherNum() == getLaboratorySize()) 
+		researcherNum ++;
+		if (researcherNum > researcherCapacity) {
+			researcherNum = researcherCapacity;
 			throw new Exception("Lab already full of researchers.");
+		}
 	}
 
 	/**
@@ -121,8 +110,11 @@ public class Research extends Function implements Lab, Serializable {
 	 * @throws Exception if person cannot be removed.
 	 */
 	public void removeResearcher() throws Exception {
-		if (getResearcherNum() == 0) 
+		researcherNum --;
+		if (getResearcherNum() < 0) {
+			researcherNum = 0; 
 			throw new Exception("Lab is already empty of researchers.");
+		}
 	}
 	
 	/**

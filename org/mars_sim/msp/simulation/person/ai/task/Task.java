@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.76 2004-05-02
+ * @version 2.76 2004-05-10
  * @author Scott Davis
  */
 
@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 
 /** The Task class is an abstract parent class for tasks that allow people to do various things.
  *  A person's TaskManager keeps track of one current task for the person, but a task may use other
@@ -173,7 +175,6 @@ public abstract class Task implements Serializable, Comparable {
         createEvents = create;
     }
 
-
     /**
      * Get a string representation of this Task. It's content will consist
      * of the description.
@@ -214,4 +215,32 @@ public abstract class Task implements Serializable, Comparable {
     protected void setStressModifier(double newStressModifier) {
     	this.stressModifier = newStressModifier;
     }
+    
+    /**
+     * Gets the probability modifier for a task if person needs to go to a new building.
+     * @param person the person to perform the task.
+     * @param newBuilding the building the person is to go to.
+     * @return probability modifier
+     * @throws BuildingException if current or new building doesn't have life support function.
+     */
+	protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) 
+			throws BuildingException {
+		double modifier = 1D;
+		
+		Building currentBuilding = BuildingManager.getBuilding(person);
+		if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
+			
+			// Increase probability if current building is overcrowded.
+			LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(LifeSupport.NAME);
+			int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
+			if (currentOverCrowding > 0) modifier *= ((double) currentOverCrowding + 1);
+			
+			// Decrease probability if new building is overcrowded.
+			LifeSupport newLS = (LifeSupport) newBuilding.getFunction(LifeSupport.NAME);
+			int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
+			if (newOverCrowding > 0) modifier /= ((double) newOverCrowding + 1);
+		}
+		
+		return modifier;
+	}
 }

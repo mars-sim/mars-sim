@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 2.75 2004-03-30
+ * @version 2.76 2004-05-10
  * @author Scott Davis
  */
 
@@ -10,8 +10,7 @@ package org.mars_sim.msp.simulation.structure.building.function;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
-import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.*;
 
 /** 
  * The BuildingAirlock class represents an airlock for a building.
@@ -50,8 +49,7 @@ public class BuildingAirlock extends Airlock {
     
         if (result && inside) {
             try { 
-            	LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-            	lifeSupport.addPerson(person);
+				BuildingManager.addPersonToBuilding(person, building);
             }
             catch (BuildingException e) {}
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-10
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.building.*;
 
 /**
  * The RepairEmergencyMalfunction class is a task to repair an emergency malfunction.
@@ -35,6 +36,16 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         claimMalfunction();
 
+		// Add person to malfunctioning building if necessary.
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			if (entity instanceof Building) {
+				try {
+					BuildingManager.addPersonToBuilding(person, (Building) entity);
+				}
+				catch (BuildingException e) {}
+			}
+		}
+
 		// Create starting task event if needed.
 		if (getCreateEvents()) {
 			TaskEvent startingEvent = new TaskEvent(person, this, TaskEvent.START, "");
@@ -54,7 +65,6 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
-            // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
             Malfunctionable entity = (Malfunctionable) i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (manager.hasEmergencyMalfunction()) result = true;
@@ -73,9 +83,6 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
-
         // Check if there emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
              malfunction.getCompletedEmergencyWorkTime();
@@ -90,7 +97,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         double workTime = timeLeft;
         int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
-        if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
+        if (mechanicSkill > 1) workTime += (workTime * (.2D * mechanicSkill));
 
         // Add work to emergency malfunction.
         // System.out.println(person.getName() + " contributing " + workTime + " millisols of work time to emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
@@ -111,8 +118,10 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         return (timeLeft * (remainingWorkTime / workTime));
     }
 
+	/**
+	 * Gets a local emergency malfunction.
+	 */
     private void claimMalfunction() {
-        // Get a local emergency malfunction.
         malfunction = null;
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext() && (malfunction == null)) {

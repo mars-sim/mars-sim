@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.76 2004-05-06
+ * @version 2.76 2004-05-12
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.building.*;
 
 /**
  * The RepairMalfunction class is a task to repair a malfunction.
@@ -114,6 +115,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
                 malfunction = manager.getMostSeriousNormalMalfunction();
             	description = "Repairing " + malfunction.getName() + " on " + e;
             	entity = e;
+            	// Add person to building if malfunctionable is a building with life support.
+            	addPersonToMalfunctionableBuilding(e);
+            	break;
             }
         }
 
@@ -168,5 +172,21 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      */
     public Malfunctionable getEntity() {
         return entity;
+    }
+    
+    /**
+     * Adds the person to building if malfunctionable is a building with life support.
+     * Otherwise does nothing.
+     * @param malfunctionable the malfunctionable the person is repairing.
+     */
+    private void addPersonToMalfunctionableBuilding(Malfunctionable malfunctionable) {
+    	
+    	if (malfunctionable instanceof Building) {
+    		Building building = (Building) malfunctionable;
+    		try {
+    			BuildingManager.addPersonToBuilding(person, building);
+    		}
+    		catch (BuildingException e) {}
+    	}
     }
 }

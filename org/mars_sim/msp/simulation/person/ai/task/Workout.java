@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -111,9 +111,7 @@ public class Workout extends Task implements Serializable {
 		try {
 			gym.removeExerciser();
 		}
-		catch(BuildingException e) {
-			System.err.println("Workout.endTask(): " + e.getMessage());
-		}
+		catch(BuildingException e) {}
 	}
 	
 	/**

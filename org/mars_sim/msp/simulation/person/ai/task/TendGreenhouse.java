@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -38,19 +38,18 @@ public class TendGreenhouse extends Task implements Serializable {
         description = "Tending Greenhouse at " + person.getSettlement().getName();
         
         // Get available greenhouse if any.
-        greenhouse = getAvailableGreenhouse(person);
-        
-        if (greenhouse != null) {
-        	try {
-            	LifeSupport lifeSupport = (LifeSupport) greenhouse.getBuilding().getFunction(LifeSupport.NAME);
-            	if (!lifeSupport.containsPerson(person)) lifeSupport.addPerson(person);
-            }
-            catch (BuildingException e) {
-                System.err.println("TendGreenhouse: " + e.getMessage());
-                endTask();
-            }
+        try {
+        	Building farmBuilding = getAvailableGreenhouse(person);
+        	if (farmBuilding != null) {
+        		greenhouse = (Farming) farmBuilding.getFunction(Farming.NAME);
+        		BuildingManager.addPersonToBuilding(person, farmBuilding);
+        	}
+        	else endTask();
         }
-        else endTask();
+        catch (BuildingException e) {
+			System.err.println("TendGreenhouse: " + e.getMessage());
+			endTask();
+        }
         
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
@@ -62,9 +61,20 @@ public class TendGreenhouse extends Task implements Serializable {
      */
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
-	    
-        // See if there is an available greenhouse.
-        if (getAvailableGreenhouse(person) != null) result = 50D;
+        
+        try {
+			// See if there is an available greenhouse.
+        	Building farmingBuilding = getAvailableGreenhouse(person);
+        	if (farmingBuilding != null) {
+        		result = 50D;
+        		
+        		// Crowding modifier.
+        		result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
+        	}
+        }
+        catch (BuildingException e) {
+        	System.err.println("TendGreenhouse.getProbability(): " + e.getMessage());
+        }
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -160,34 +170,46 @@ public class TendGreenhouse extends Task implements Serializable {
      *
      * @param person the person
      * @return available greenhouse
+     * @throws BuildingException if error finding farm building.
      */
-    private static Farming getAvailableGreenhouse(Person person) {
+    private static Building getAvailableGreenhouse(Person person) throws BuildingException {
      
-        Farming result = null;
+        Building result = null;
      
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
-            Settlement settlement = person.getSettlement();
-            List farmlist = new ArrayList();
-            Iterator i = settlement.getBuildingManager().getBuildings(Farming.NAME).iterator();
-            while (i.hasNext()) {
-            	Building building = (Building) i.next();
-            	try {
-                	Farming farm = (Farming) building.getFunction(Farming.NAME);
-                	boolean requiresWork = farm.requiresWork();
-                	boolean malfunction = farm.getBuilding().getMalfunctionManager().hasMalfunction();   
-                	if (requiresWork && !malfunction) farmlist.add(farm);
-            	}
-            	catch (BuildingException e) {}
-            }
-            
-            if (farmlist.size() > 0) {
-                // Pick random farm from list.
-                int rand = RandomUtil.getRandomInt(farmlist.size() - 1);
-                result = (Farming) farmlist.get(rand);
-            }
+        	BuildingManager manager = person.getSettlement().getBuildingManager();
+            List farmBuildings = manager.getBuildings(Farming.NAME);
+			farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
+			farmBuildings = getFarmsNeedingWork(farmBuildings);
+			farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings); 
+			
+			if (farmBuildings.size() > 0) {
+				// Pick random farm from list.
+				int rand = RandomUtil.getRandomInt(farmBuildings.size() - 1);
+				result = (Building) farmBuildings.get(rand);
+			}
         }
         
         return result;
+    }
+    
+    /**
+     * Gets a list of farm buildings needing work from a list of buildings with the farming function.
+     * @param buildingList list of buildings with the farming function.
+     * @return list of farming buildings needing work.
+     * @throws BuildingException if any buildings in building list don't have the farming function.
+     */
+    private static List getFarmsNeedingWork(List buildingList) throws BuildingException {
+    	List result = new ArrayList();
+    	
+    	Iterator i = buildingList.iterator();
+    	while (i.hasNext()) {
+    		Building building = (Building) i.next();
+    		Farming farm = (Farming) building.getFunction(Farming.NAME);
+    		if (farm.requiresWork()) result.add(building);
+    	}
+    	
+    	return result;
     }
 }

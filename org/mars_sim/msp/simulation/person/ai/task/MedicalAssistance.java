@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-11
  * @author Barry Evans
  */
 
@@ -17,7 +17,7 @@ import org.mars_sim.msp.simulation.person.medical.HealthProblem;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
 import org.mars_sim.msp.simulation.person.medical.Treatment;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.vehicle.Medical;
 import org.mars_sim.msp.simulation.vehicle.SickBay;
@@ -70,6 +70,13 @@ public class MedicalAssistance extends Task implements Serializable {
                 medical.startTreatment(problem, duration);
 				// System.out.println(person.getName() + " treating " + problem.getIllness().getName());
                 
+                // Add person to medical care building if necessary.
+				if (medical instanceof MedicalCare) {
+        			MedicalCare medicalCare = (MedicalCare) medical;
+        			Building building = medicalCare.getBuilding();
+					BuildingManager.addPersonToBuilding(person, building);
+				}
+                
 				// Create starting task event if needed.
 			    if (getCreateEvents()) {
 					TaskEvent startingEvent = new TaskEvent(person, this, TaskEvent.START, "");
@@ -96,6 +103,17 @@ public class MedicalAssistance extends Task implements Serializable {
         // Get the local medical aids to use.
         if (getNeedyMedicalAids(person).size() > 0) result = 50D;
         
+        // Crowding task modifier.
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        	try {
+				Building building = getMedicalAidBuilding(person);
+				if (building != null) result *= Task.getCrowdingProbabilityModifier(person, building);
+        	}
+        	catch (Exception e) {
+        		System.err.println("MedicalAssistance.getProbability(): " + e.getMessage());
+        	}
+        }
+        
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
 
@@ -112,21 +130,15 @@ public class MedicalAssistance extends Task implements Serializable {
         
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
-            Settlement settlement = person.getSettlement();
-            List infirmaries = settlement.getBuildingManager().getBuildings(MedicalCare.NAME);
-            Iterator i = infirmaries.iterator();
-            while (i.hasNext()) {
-            	Building medicalBuilding = (Building) i.next();
-            	try {
-            		MedicalAid aid = (MedicalAid) medicalBuilding.getFunction(MedicalCare.NAME);
-                	if (isNeedyMedicalAid(aid)) result.add(aid);
-            	}
-            	catch (Exception e) {
-            		System.err.println("MedicalAssistance.getNeedyMedicalAids(): " + e.getMessage());
-            	}
-            }
+        	try {
+        		Building building = getMedicalAidBuilding(person);
+        		if (building != null) result.add((MedicalCare) building.getFunction(MedicalCare.NAME));
+        	}
+        	catch (Exception e) {
+        		System.err.println("MedicalAssistance.getNeedyMedicalAids(): " + e.getMessage());
+        	}
         }
-        if (location.equals(Person.INVEHICLE)) {
+        else if (location.equals(Person.INVEHICLE)) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle instanceof Medical) {
                 MedicalAid aid = ((Medical) vehicle).getSickBay();
@@ -251,5 +263,40 @@ public class MedicalAssistance extends Task implements Serializable {
      */
     public MedicalAid getMedicalAid() {
         return medical;
+    }
+    
+    /**
+     * Gets the least crowded medical care building with a patient that needs treatment.
+     * @param person the person looking for a medical care building.
+     * @return medical care building or null if none found.
+     * @throws Exception if person is not in a settlement.
+     */
+    private static Building getMedicalAidBuilding(Person person) throws Exception {
+    	Building result = null;
+    	
+    	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			Settlement settlement = person.getSettlement();
+			BuildingManager manager = settlement.getBuildingManager();
+			List medicalBuildings = manager.getBuildings(MedicalCare.NAME);
+			
+			List needyMedicalBuildings = new ArrayList();
+			Iterator i = medicalBuildings.iterator();
+			while (i.hasNext()) {
+				Building building = (Building) i.next();
+				MedicalCare medical = (MedicalCare) building.getFunction(MedicalCare.NAME);
+				if (isNeedyMedicalAid(medical)) needyMedicalBuildings.add(building);
+			}
+			
+			List bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(needyMedicalBuildings);
+		
+			if (bestMedicalBuildings.size() > 0) {
+				// Pick random dining building from list.
+				int rand = RandomUtil.getRandomInt(bestMedicalBuildings.size() - 1);
+				result = (Building) bestMedicalBuildings.get(rand);
+			}
+    	}
+    	else throw new Exception("MedicalAssistance.getMedicalAidBuilding(): Person is not in settlement.");
+    	
+    	return result;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MobileLaboratory.java
- * @version 2.75 2004-03-23
+ * @version 2.76 2004-10-12
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.vehicle;
 
 import java.io.Serializable;
 import java.util.*;
-
 import org.mars_sim.msp.simulation.Lab;
 
 /** 
@@ -99,9 +98,11 @@ public class MobileLaboratory implements Lab, Serializable {
      * @throws Exception if person cannot be added.
      */
     public void addResearcher() throws Exception {
-        if (getResearcherNum() == getLaboratorySize()) 
+    	researcherNum ++;
+        if (researcherNum > laboratorySize) {
+        	 researcherNum = laboratorySize;
             throw new Exception("Lab already full of researchers.");
-        researcherNum++;
+        }
     }
 
     /**
@@ -109,8 +110,10 @@ public class MobileLaboratory implements Lab, Serializable {
      * @throws Exception if person cannot be removed.
      */
     public void removeResearcher() throws Exception {
-        if (getResearcherNum() == 0) 
+    	researcherNum --;
+        if (researcherNum < 0) { 
+        	researcherNum = 0;
             throw new Exception("Lab is already empty of researchers.");
-        researcherNum--;
+        }
     }
 }
