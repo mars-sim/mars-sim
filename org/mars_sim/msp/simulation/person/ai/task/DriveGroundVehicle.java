@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.75 2004-04-06
+ * @version 2.75 2004-04-09
  * @author Scott Davis
  */
 
@@ -9,16 +9,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.Direction;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.MarsClock;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.SimulationProperties;
-import org.mars_sim.msp.simulation.TerrainElevation;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
  *  The Drive Ground Vehicle class is a task for driving a ground vehicle to a destination.
@@ -311,9 +304,14 @@ public class DriveGroundVehicle extends Task implements Serializable {
         double distanceTraveled = secondsTime * ((vehicle.getSpeed() / 60D) / 60D);
 
         // Consume fuel for distance traveled.
-        SimulationProperties properties = mars.getSimulationProperties();
-        double fuelConsumed = distanceTraveled / properties.getRoverFuelEfficiency();
-        vehicle.getInventory().removeResource(Resource.METHANE, fuelConsumed);
+        try {
+        	VehicleConfig config = mars.getSimulationConfiguration().getVehicleConfiguration();
+        	double fuelConsumed = distanceTraveled / config.getFuelEfficiency(vehicle.getDescription());
+        	vehicle.getInventory().removeResource(Resource.METHANE, fuelConsumed);
+        }
+        catch (Exception e) {
+        	System.err.println("DriveGroundVehicle.drive(): Rover fuel efficiency not found. " + e.getMessage());
+        }
 	
         // Add distance traveled to vehicle's odometer.
         vehicle.addTotalDistanceTraveled(distanceTraveled);

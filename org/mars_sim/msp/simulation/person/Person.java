@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2004-04-06
+ * @version 2.75 2004-04-09
  * @author Scott Davis
  */
 
@@ -297,6 +297,6 @@ public class Person extends Unit implements Serializable {
      *  @param amount amount of food to consume (in kg)
      */
     public void consumeFood(double amount) {
-        health.consumeFood(amount, getContainerUnit(), mars.getSimulationProperties());
+        health.consumeFood(amount, getContainerUnit());
     }
 }

@@ -1,34 +1,13 @@
 <?xml version="1.0" ?>
 
+<!-- Landmarks to be displayed in the UI. -->
+<!-- Note: Landmarks are not used in version 2.75 but will be in later versions. -->
+<landmark-list>
 
-<LANDMARKS_LIST>
+	<!-- Landmark 1 -->
+    <landmark name="Landmark 1" latitude="10.0 N" longitude="10.0 E" />
 
-    <LANDMARK>
+	<!-- Landmark 2 -->
+    <landmark name="Landmark 2" latitude="10.0 S" longitude="10.0 W" />
 
-        <!-- Name of the landmark (required) -->
-        <NAME>Landmark 1</NAME>
-
-        <!-- Location of the landmark (required) -->
-        <!-- Requires valid longitude and latitude -->
-        <LOCATION>
-            <LATITUDE>10.0 N</LATITUDE>
-            <LONGITUDE>10.0 E</LONGITUDE>
-        </LOCATION>
-
-    </LANDMARK>
-
-
-    <LANDMARK>
-
-        <NAME>Landmark 2</NAME>
-
-        <LOCATION>
-            <LATITUDE>10.0 N</LATITUDE>
-            <LONGITUDE>15.0 E</LONGITUDE>
-        </LOCATION>
-
-    </LANDMARK>
-
-
-</LANDMARKS_LIST>
-
+</landmark-list>

@@ -1,31 +1,18 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.75 2003-07-28
+ * @version 2.75 2004-04-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.ProgressMonitor;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.SimulationProperties;
-import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.*;
 
 /** 
  * The MainWindow class is the primary UI frame for the project. It
@@ -160,28 +147,19 @@ public class MainWindow extends JFrame implements WindowListener {
      */
     public void newSimulation() {
 
-        SimulationProperties p = mars.getSimulationProperties();
-	    NewDialog newDialog = new NewDialog(p, this);
-	    if(newDialog.getResult() == JOptionPane.OK_OPTION) {
-		    // Note: this should be shifted into a separate thread.
-		    ProgressMonitor pm = new ProgressMonitor(this,
-					"Starting New Simulation...", "",
-					0, 100);
-		    pm.setMillisToPopup(0);
-		    pm.setMillisToDecideToPopup(0);
-		    try {
-		    	Mars newmars = new Mars(p);
-		    	pm.setProgress(50);
-		    	setMars(newmars);
-		    	newmars.start();
-		    	pm.close();
-            	desktop.resetDesktop();
-		    }
-		    catch (Exception e) {
-		    	System.err.println("Problem creating new simulation " + e);
-		    	pm.setNote("Problem creating new simulation");
-		    }
-        }
+	    // Note: this should be shifted into a separate thread.
+	    
+	    try {
+			// NewDialog newDialog = new NewDialog(this);
+	    	Mars newmars = new Mars();
+	    	setMars(newmars);
+	    	newmars.start();
+	    	// newDialog.dispose();
+           	desktop.resetDesktop();
+	    }
+	    catch (Exception e) {
+	    	System.err.println("Problem creating new simulation: " + e);
+	    }
     }
 
     /**

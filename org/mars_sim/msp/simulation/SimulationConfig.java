@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.75 2004-04-08
+ * @version 2.75 2004-04-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -26,15 +26,15 @@ import org.xml.sax.SAXException;
 public class SimulationConfig {
 
 	// Configuration files to load.
-	private static final String SIMULATION_FILE = "simulation2";
-	private static final String PEOPLE_FILE = "people2";
-	private static final String VEHICLE_FILE = "vehicles2";
-	private static final String SETTLEMENT_FILE = "settlements2";
-	private static final String MEDICAL_FILE = "medical2";
-	private static final String MALFUNCTION_FILE = "malfunctions2";
-	private static final String CROP_FILE = "crops2";
-	private static final String LANDMARK_FILE = "landmarks2";
-	private static final String BUILDING_FILE = "buildings2";
+	private static final String SIMULATION_FILE = "simulation";
+	private static final String PEOPLE_FILE = "people";
+	private static final String VEHICLE_FILE = "vehicles";
+	private static final String SETTLEMENT_FILE = "settlements";
+	private static final String MEDICAL_FILE = "medical";
+	private static final String MALFUNCTION_FILE = "malfunctions";
+	private static final String CROP_FILE = "crops";
+	private static final String LANDMARK_FILE = "landmarks";
+	private static final String BUILDING_FILE = "buildings";
 	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";

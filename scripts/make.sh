@@ -1,4 +1,4 @@
-export CLASSPATH='.:jars/jfreechart.jar:jars/jcommon.jar:jars/aelfred.jar:jars/junit.jar'
+export CLASSPATH='.:jars/jfreechart.jar:jars/jcommon.jar:jars/junit.jar'
 
 cd ../
 

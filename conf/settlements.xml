@@ -1,80 +1,126 @@
 <?xml version="1.0" ?>
 
-<SETTLEMENT_PROPERTIES>
+<settlement-configuration>
 
-    <SETTLEMENT_TEMPLATE_LIST>
-        <SETTLEMENT_TEMPLATE NAME="Mars Direct Base">
-            <BUILDING TYPE="Lander Hab" />
-            <BUILDING TYPE="Inflatable Greenhouse" />
-            <BUILDING TYPE="Nuclear Reactor" NUMBER="2" />
-            <BUILDING TYPE="Starting ERV Base" />
-            <BUILDING TYPE="ERV Base" />
-            <VEHICLE TYPE="Explorer Rover" />
-        </SETTLEMENT_TEMPLATE>
-    </SETTLEMENT_TEMPLATE_LIST>
+	<!-- List of templates for settlements -->
+	<settlement-template-list>
+	
+		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->
+		<!-- See http://www.nw.net/mars/ for more info. -->
+		<template name="Mars Direct Base">
+		
+			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
+			<building type="Lander Hab" number="1" />
+			
+			<!-- Inflatable greenhouse can be used to grow crops. -->
+			<building type="Inflatable Greenhouse" number="1" />
+			
+			<!-- Small nuclear reactor power generator. -->
+			<building type="Nuclear Reactor" number="2" />
+			
+			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
+			     hydrogen and carbon dioxide into methane, water and oxygen. 
+			     The starting ERV base has a full load of hydrogen and has not reacted yet. -->
+			<building type="Starting ERV Base" number="1" />
+			
+			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
+			     hydrogen and carbon dioxide into methane, water and oxygen.  -->
+			<building type="ERV Base" number="1" />
+			
+			<!-- A rover for collecting rock samples from remote sites
+			     and ice prospecting. -->
+			<vehicle type="Explorer Rover" number="1" />
+		</template>
+	
+	</settlement-template-list>
+	
+	<!-- List of initial settlements in the simulation -->
+	<initial-settlement-list>
+	
+		<settlement name="Port Zubrin" template="Mars Direct Base">
+			<location longitude="0.0 W" latitude="0.0 N" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>	
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>	
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>
+		
+		<settlement name="random" template="Mars Direct Base">
+			<location longitude="random" latitude="random" />
+		</settlement>					
+	
+	</initial-settlement-list>
+	
+	<!-- List of settlement names -->
+	<settlement-name-list>
+	
+		<settlement-name value="Port Zubrin" />
+		<settlement-name value="Lowell Station" />
+		<settlement-name value="Sagan Station" />
+		<settlement-name value="Goddard Settlement" />
+		<settlement-name value="Port Braun" />
+		<settlement-name value="Burroughstown" />
+		<settlement-name value="McKay Base" />
+		<settlement-name value="Asimov Base" />
+		<settlement-name value="Clarketown" />
+		<settlement-name value="Sojourner Station" />
+		<settlement-name value="Viking Base" />
+		<settlement-name value="Mariner Settlement" />
+		<settlement-name value="Camp Bradbury" />
+		<settlement-name value="Heinlein Station" />
+		<settlement-name value="Port Kokh" />
+		<settlement-name value="Red Colony" />
+		<settlement-name value="Robinson Camp" />
+		<settlement-name value="Hartmann Base" />
+																
+	</settlement-name-list>
 
-    <INITIAL_SETTLEMENT_LIST>
-
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-    
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-    
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-        
-        <SETTLEMENT NAME="random" TEMPLATE="Mars Direct Base">
-            <LOCATION LATITUDE="random" LONGITUDE="random" />
-        </SETTLEMENT>
-    
-    </INITIAL_SETTLEMENT_LIST>
-
-</SETTLEMENT_PROPERTIES>
+</settlement-configuration>

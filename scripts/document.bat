@@ -12,8 +12,6 @@ set PACKAGES=%PACKAGES% org.mars_sim.msp.simulation.person.ai.task
 set PACKAGES=%PACKAGES% org.mars_sim.msp.simulation.structure
 set PACKAGES=%PACKAGES% org.mars_sim.msp.simulation.structure.building
 set PACKAGES=%PACKAGES% org.mars_sim.msp.simulation.structure.building.function
-set PACKAGES=%PACKAGES% org.mars_sim.msp.simulation.structure.building.function.impl
-set PACKAGES=%PACKAGES% org.mars_sim.msp.simulation.structure.template
 set PACKAGES=%PACKAGES% org.mars_sim.msp.simulation.vehicle
 set PACKAGES=%PACKAGES% org.mars_sim.msp.ui.standard
 set PACKAGES=%PACKAGES% org.mars_sim.msp.ui.standard.tool
@@ -32,4 +30,4 @@ set PACKAGES=%PACKAGES% org.mars_sim.msp.ui.standard.unit_display_info
 echo on
 
 cd ../
-javadoc -classpath .;jars\jfreechart.jar;jars\jcommon.jar;jars\aelfred.jar -d docs/javadoc -overview overview.html -use -author -windowtitle "Mars Simulation Project v 2.75 API Specification" -doctitle "Mars Simulation Project v 2.75<BR>API Specification" -header "<b>Mars Simulation Project</b><br><font size=\"-1\">v2.75</font>" %PACKAGES%
+javadoc -classpath .;jars\jfreechart.jar;jars\jcommon.jar -d docs/javadoc -overview overview.html -use -author -windowtitle "Mars Simulation Project v 2.75 API Specification" -doctitle "Mars Simulation Project v 2.75<BR>API Specification" -header "<b>Mars Simulation Project</b><br><font size=\"-1\">v2.75</font>" %PACKAGES%

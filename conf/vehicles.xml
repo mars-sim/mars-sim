@@ -1,1 +1,136 @@
 <?xml version="1.0" ?>
+
+<vehicle-configuration>
+
+	<!-- Explorer rover -->
+	<!-- A rover for collecting rock samples from remote sites
+		 and ice prospecting. -->
+	<rover type="Explorer Rover">
+
+		<!-- The range of the rover (km) (required) -->
+		<!-- Default: 3000.0 -->
+		<range value="3000.0" />
+
+		<!-- The fuel efficiency of the rover (km/kg) (required) -->
+		<!-- Default: 2.0 -->
+		<fuel-efficiency value="2.0" />
+
+		<!-- Base speed of rover (km/hr) (required) -->
+		<!-- Default: 30.0 -->
+		<base-speed value="30.0" />
+
+		<!-- Empty mass of rover (kg) (required) -->
+		<!-- Default: 10000.0 -->
+		<empty-mass value="10000.0" />
+
+		<!-- The crew size of an rover -->
+		<!-- Default: 4 -->
+		<crew-size value="4" />
+
+		<!-- Cargo capacity list -->
+		<!-- total-capacity: total cargo capacity of rover. (kg) -->
+		<!-- Default: 5500.0 -->
+		<cargo total-capacity="5500.0">
+ 
+			<!-- The methane cargo capacity of the rover (kg) -->
+			<!-- Default: 1600.0 -->
+			<capacity resource="Methane" value="1600.0" />
+
+			<!-- The oxygen cargo capacity of the rover (kg) -->
+			<!-- Default: 140.0 -->
+			<capacity resource="Oxygen" value="140.0" />
+
+			<!-- The water cargo capacity of the rover (kg) -->
+			<!-- Default: 560.0 -->
+			<capacity resource="Water" value="560.0" />
+
+			<!-- The food cargo capacity of the rover (kg) -->
+			<!-- Default: 210.0 -->
+			<capacity resource="Food" value="210.0" />
+
+			<!-- The rock samples cargo capacity of the rover (kg) -->
+			<!-- Default: 2000.0 -->
+			<capacity resource="Rock Samples" value="2000.0" />
+
+			<!-- The ice cargo capacity of the rover (kg) -->
+			<!-- Default: 2000.0 -->
+			<capacity resource="Ice" value="2000.0" />
+
+		</cargo>
+
+		<!-- Number of EVA (Extra Vehicular Activity) suits in the rover -->
+		<!-- Default: 4 -->
+		<eva-suits value="4" />
+
+		<!-- Sickbay -->
+		<!-- Medical tech level of sickbay - default: 1 -->
+		<!-- Number of beds in sickbay - default: 1 -->
+		<sickbay tech-level="1" beds="1" />
+
+		<!-- Lab -->
+		<!-- Science tech level of lab - default: 1 -->
+		<lab tech-level="1">
+			<!-- Science tech speciality -->
+			<tech-speciality value="Aerology" />	
+		</lab>
+
+	</rover>
+
+	<!-- Transport rover -->
+	<!-- A rover for transporting people from one settlement to another. -->
+	<!-- Note: This rover type is not available in version 2.75. -->
+	<rover type="Transport Rover">
+		<range value="4000.0" />
+		<fuel-efficiency value="2.0" />
+		<base-speed value="30.0" />
+		<empty-mass value="10000.0" />
+		<crew-size value="8" />
+		<cargo total-capacity="12000.0">
+			<capacity resource="Methane" value="3750.0" />
+			<capacity resource="Oxygen" value="1000.0" />
+			<capacity resource="Water" value="4000.0" />
+			<capacity resource="Food" value="787.5" />            
+		</cargo>
+		<eva-suits value="8" />
+		<sickbay tech-level="3" beds="2" />
+	</rover>
+	
+	<!-- List of rover names -->
+	<rover-name-list>		
+
+		<rover-name value="Dune Drifter" />
+		<rover-name value="Oasis" />
+		<rover-name value="Sun Dancer" />
+		<rover-name value="Desert Fox" />
+		<rover-name value="Serenity" />
+		<rover-name value="Gypsea" />
+		<rover-name value="Martian Cloud" />	
+		<rover-name value="Sand Spirit" />
+		<rover-name value="Dust Sprite" />
+		<rover-name value="Phobos Drifter" />
+		<rover-name value="Osprey" />
+		<rover-name value="Dune Runner" />
+		<rover-name value="Wind Runner" />
+		<rover-name value="Sand Dancer" />	
+		<rover-name value="Nomad" />
+		<rover-name value="Spice Trader" />
+		<rover-name value="Solitude" />
+		<rover-name value="Dust Storm" />
+		<rover-name value="Martian Escape" />
+		<rover-name value="Odyssey" />
+		<rover-name value="Deimos Tide" />	
+		<rover-name value="Red Mariner" />
+		<rover-name value="Shooting Star" />
+		<rover-name value="Dust Devil" />
+		<rover-name value="Desert Star" />
+		<rover-name value="Windstorm" />
+		<rover-name value="Drift Wood" />
+		<rover-name value="Desertfarer" />
+		<rover-name value="Dream Chaser" />	
+		<rover-name value="Bedouin" />	
+		<rover-name value="Fremen Wanderer" />
+		<rover-name value="Beagle IV" />																					
+
+	</rover-name-list>
+
+</vehicle-configuration>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2004-04-08
+ * @version 2.75 2004-04-09
  * @author Scott Davis
  */
 
@@ -38,7 +38,7 @@ public class UnitManager implements Serializable {
     /** Constructs a UnitManager object
      *  @param mars the virtual Mars
      */
-    UnitManager(SimulationProperties p, Mars mars) {
+    UnitManager(Mars mars) {
         // Initialize virtual mars to parameter
         this.mars = mars;
    

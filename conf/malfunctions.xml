@@ -1,324 +1,258 @@
 <?xml version="1.0" ?>
 
-<MALFUNCTION_LIST>
+<malfunction-list>
 
-    <MALFUNCTION>
-        <!-- Full name of the malfunction (requried) -->
-        <NAME>Air Leak</NAME>
-        <!-- Relative severity of the malfunction (required) -->
-        <!-- Range 1 - 100 -->
-        <SEVERITY>100</SEVERITY>
-        <!-- Relative probability of the malfunction (required) -->
-        <PROBABILITY>10.0</PROBABILITY>
-        <!-- Emergency work time required to fix malfunction (optional) -->
-        <!-- Units of millisols -->
-        <!-- Default: 0.0 millisols -->
-        <EMERGENCY_WORK_TIME>10.0</EMERGENCY_WORK_TIME>
-        <!-- Normal work time required to fix malfunction (optional) -->
-        <!-- Units of millisols -->
-        <!-- Default: 0.0 millisols -->
-        <WORK_TIME>100.0</WORK_TIME>
-        <!-- Extra Vehicular Activity) work time required to fix malfunction (optional) -->
-        <!-- Units of millisols -->
-        <!-- Default: 0.0 millisols -->
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <!-- Entities that can have this malfunction (min 1 required) -->
-        <SCOPE>
-            <ENTITY>LifeSupport</ENTITY>
-            <ENTITY>Inhabitable Building</ENTITY>
-        </SCOPE>
-        <!-- Effects of the malfunction (optional) -->
-        <EFFECTS>
-            <!-- Resource Effect (optional) -->
-            <RESOURCE>
-                <!-- Resource name (requried) -->
-                <NAME>Oxygen</NAME>
-                <!-- Rate of resource loss from inventory (required) -->
-                <!-- Rate is in kg/millisol -->
-                <CHANGE_RATE>-.01</CHANGE_RATE>
-            </RESOURCE>
-            <!-- Life Support effect (optional) -->
-            <LIFE_SUPPORT>
-                <!-- Life support name (required) -->
-                <NAME>Oxygen</NAME>
-                <!-- Life support modifier (required) -->
-                <!-- Units in rate depending on life support type. -->
-                <!-- Oxygen and water are kg/millisol -->
-                <!-- Air Pressure is in atm/millisol -->
-                <!-- Temperature is in celsius/millisol -->
-                <CHANGE_RATE>-.01</CHANGE_RATE>
-            </LIFE_SUPPORT>
-            <LIFE_SUPPORT>
-                <NAME>Air Pressure</NAME>
-                <CHANGE_RATE>-.01</CHANGE_RATE>
-            </LIFE_SUPPORT>
-        </EFFECTS>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Minor Fire</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>15.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>10.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>100.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>InhabitableBuilding</ENTITY>
-            <ENTITY>Vehicle</ENTITY>
-            <ENTITY>EVASuit</ENTITY>
-        </SCOPE>
-        <!-- Medical complaint started by malfunction (optional) -->
-        <MEDICAL_COMPLAINT>
-            <!-- Name of medical complaint (see medical.xml) (required) -->
-            <NAME>Minor Burns</NAME>
-            <!-- Probability complaint will occur for each affected person (required) -->
-            <PROBABILITY>5.0</PROBABILITY>
-        </MEDICAL_COMPLAINT>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Fire</NAME>
-        <SEVERITY>70</SEVERITY>
-        <PROBABILITY>7.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>20.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>200.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>InhabitableBuilding</ENTITY>
-            <ENTITY>Vehicle</ENTITY>
-        </SCOPE>
-        <EFFECTS>
-            <LIFE_SUPPORT>
-                <NAME>Oxygen</NAME>
-                <CHANGE_RATE>-.01</CHANGE_RATE>
-            </LIFE_SUPPORT>
-            <LIFE_SUPPORT>
-                <NAME>Temperature</NAME>
-                <CHANGE_RATE>+.01</CHANGE_RATE>
-            </LIFE_SUPPORT>
-        </EFFECTS>
-        <MEDICAL_COMPLAINT>
-            <NAME>Minor Burns</NAME>
-            <PROBABILITY>15.0</PROBABILITY>
-        </MEDICAL_COMPLAINT>
-        <MEDICAL_COMPLAINT>
-            <NAME>Burns</NAME>
-            <PROBABILITY>5.0</PROBABILITY>
-        </MEDICAL_COMPLAINT>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Major Fire</NAME>
-        <SEVERITY>90</SEVERITY>
-        <PROBABILITY>2.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>30.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>300.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>InhabitableBuilding</ENTITY>
-            <ENTITY>Vehicle</ENTITY>
-        </SCOPE>
-        <EFFECTS>
-            <LIFE_SUPPORT>
-                <NAME>Oxygen</NAME>
-                <CHANGE_RATE>-.02</CHANGE_RATE>
-            </LIFE_SUPPORT>
-            <LIFE_SUPPORT>
-                <NAME>Temperature</NAME>
-                <CHANGE_RATE>+.02</CHANGE_RATE>
-            </LIFE_SUPPORT>
-        </EFFECTS>
-        <MEDICAL_COMPLAINT>
-            <NAME>Minor Burns</NAME>
-            <PROBABILITY>30.0</PROBABILITY>
-        </MEDICAL_COMPLAINT>
-        <MEDICAL_COMPLAINT>
-            <NAME>Burns</NAME>
-            <PROBABILITY>15.0</PROBABILITY>
-        </MEDICAL_COMPLAINT>
-        <MEDICAL_COMPLAINT>
-            <NAME>Major Burns</NAME>
-            <PROBABILITY>5.0</PROBABILITY>
-        </MEDICAL_COMPLAINT>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Flat Tire</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>30.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>0.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>0.0</WORK_TIME>
-        <EVA_WORK_TIME>50.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Rover</ENTITY>
-        </SCOPE>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Fuel Leak</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>30.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>100.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>0.0</WORK_TIME>
-        <EVA_WORK_TIME>50.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Rover</ENTITY>
-            <ENTITY>ERV Base</ENTITY>
-        </SCOPE>
-        <EFFECTS>
-            <RESOURCE>
-                <NAME>Methane</NAME>
-                <CHANGE_RATE>-.1</CHANGE_RATE>
-            </RESOURCE>
-        </EFFECTS>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Engine Problems</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>30.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>0.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>50.0</WORK_TIME>
-        <EVA_WORK_TIME>50.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Rover</ENTITY>
-        </SCOPE>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Battery Failure</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>10.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>0.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>50.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Vehicle</ENTITY>
-        </SCOPE>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Communication System Failure</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>10.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>0.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>50.0</WORK_TIME>
-        <EVA_WORK_TIME>50.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Vehicle</ENTITY>
-            <ENTITY>Communication</ENTITY>
-        </SCOPE>
-    </MALFUNCTION>
-
-    <MALFUNCTION>
-        <NAME>Navigation System Failure</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>10.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>0.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>50.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Vehicle</ENTITY>
-        </SCOPE>
-    </MALFUNCTION>
+	<!-- Small air leak -->
+	<malfunction name="Air Leak">
+		
+		<!-- Relative severity of the malfunction. (required) -->
+		<!-- Values: 1 to 100 (100 = most severe) -->
+		<severity value="100" />
+		
+		<!-- Relative probability of this malfunction occurring. (required) -->
+		<!-- Values: 0.0 to 100.0 (100.0 = most likely) -->
+		<probability value="10.0" />
+		
+		<!-- Normal (non-EVA) repair time to fix. (millisols) (optional) -->
+		<repair-time value="100.0" />
+		
+		<!-- Emergency repair time to fix. (millisols) (optional) -->
+		<emergency-repair-time value="10.0" />
+		
+		<!-- EVA repair time to fix. (millisols) (optional) -->
+		<eva-repair-time value="0.0" />
+		
+		<!-- List of entities that are susceptible to this malfunction. (min 1 entity required) -->
+		<entity-list>
+			<entity name="Life Support" />
+			<entity name="Inhabitable Building" />
+		</entity-list>
+		
+		<!-- List of effects this malfunction can produce. (optional) -->
+		<effect-list>
+		
+			<!-- Resource effects have a change rate for a given resource in inventory. -->
+			<!-- Values: Change rate of resource in inventory. (kg/second) -->
+			<effect type="resource" name="Oxygen" change-rate="-.1" />
+			
+			<!-- Life support effects have a change rate in life support provided. -->
+			<!-- Values: Change rate of life support. (kg/second) -->
+			<effect type="life support" name="Oxygen" change-rate="-.01" />
+			
+			<!-- Life support effects have a change rate in life support provided. -->
+			<!-- Values: Change rate of life support. (kg/second) -->
+			<effect type="life support" name="Air Pressure" change-rate=".01" />
+		</effect-list>
+		
+		<!-- List of medical injuries that can be immediately caused by this malfunction. (optional) -->
+		<!-- See medical complaint list in medical.xml. -->
+		<medical-complaint-list>
+		</medical-complaint-list>
+		
+	</malfunction>
 	
-    <MALFUNCTION>
-        <NAME>Water Leak</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>20.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>100.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>0.0</WORK_TIME>
-        <EVA_WORK_TIME>50.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Rover</ENTITY>
-            <ENTITY>Living Accommodations</ENTITY>
-            <ENTITY>Farming</ENTITY>
-            <ENTITY>ERVBase</ENTITY>
-            <ENTITY>EVASuit</ENTITY>
-        </SCOPE>
-        <EFFECTS>
-            <RESOURCE>
-                <NAME>Water</NAME>
-                <CHANGE_RATE>-.1</CHANGE_RATE>
-            </RESOURCE>
-        </EFFECTS>
-    </MALFUNCTION>
+	<!-- Small electrical or chemical fire. -->
+	<malfunction name="Minor Fire">
+		<severity value="60" />
+		<probability value="15.0" />
+		<repair-time value="100.0" />
+		<emergency-repair-time value="10.0" />
+		<entity-list>
+			<entity name="Inhabitable Building" />
+			<entity name="Vehicle" />
+			<entity name="EVA Suit" />
+		</entity-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="5.0" />
+		</medical-complaint-list>
+	</malfunction>
+	
+	<!-- Medium electrical or chemical fire. -->
+	<malfunction name="Fire">
+		<severity value="80" />
+		<probability value="5" />
+		<repair-time value="200.0" />
+		<emergency-repair-time value="20.0" />
+		<entity-list>
+			<entity name="Inhabitable Building" />
+			<entity name="Vehicle" />
+		</entity-list>
+		<effect-list>
+			<effect type="life support" name="Oxygen" change-rate="-.01" />
+			<effect type="life support" name="Temperature" change-rate="+.01" />
+		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="15.0" />
+			<medical-complaint name="Burns" probability="5.0" />
+		</medical-complaint-list>
+	</malfunction>
+	
+	<!-- Large electrical or chemical fire. -->
+	<malfunction name="Major Fire">
+		<severity value="100" />
+		<probability value="1" />
+		<repair-time value="400.0" />
+		<emergency-repair-time value="40.0" />
+		<entity-list>
+			<entity name="Inhabitable Building" />
+		</entity-list>
+		<effect-list>
+			<effect type="life support" name="Oxygen" change-rate="-.02" />
+			<effect type="life support" name="Temperature" change-rate="+.02" />
+		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="30.0" />
+			<medical-complaint name="Burns" probability="15.0" />
+			<medical-complaint name="Major Burns" probability="5.0" />
+		</medical-complaint-list>
+	</malfunction>
+	
+	<!-- Flat tire on rover. -->
+	<malfunction name="Flat Tire">
+		<severity value="20" />
+		<probability value="30.0" />
+		<eva-repair-time value="50.0" />
+		<entity-list>
+			<entity name="Rover" />
+		</entity-list>
+	</malfunction>
 
-    <MALFUNCTION>
-        <NAME>Heating Unit Failure</NAME>
-        <SEVERITY>70</SEVERITY>
-        <PROBABILITY>10.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>20.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>100.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>EVASuit</ENTITY>
-        </SCOPE>
-        <EFFECTS>
-            <LIFE_SUPPORT>
-                <NAME>Temperature</NAME>
-                <CHANGE_RATE>-.1</CHANGE_RATE>
-            </LIFE_SUPPORT>
-        </EFFECTS>
-    </MALFUNCTION>
+	<!-- Methane fuel leak. -->
+	<malfunction name="Fuel Leak">
+		<severity value="50" />
+		<probability value="30.0" />
+		<emergency-repair-time value="100.0" />
+		<eva-repair-time value="50.0" />
+		<entity-list>
+			<entity name="Rover" />
+			<entity name="ERV Base" />
+		</entity-list>
+		<effect-list>
+			<effect type="resource" name="Methane" change-rate="-.1" />
+		</effect-list>
+	</malfunction>
 
-    <MALFUNCTION>
-        <NAME>Water Contamination</NAME>
-        <SEVERITY>60</SEVERITY>
-        <PROBABILITY>10.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>100.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>500.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Living Accommodations</ENTITY>
-            <ENTITY>Farming</ENTITY>
-            <ENTITY>ERVBase</ENTITY>
-            <ENTITY>Rover</ENTITY>
-        </SCOPE>
-        <EFFECTS>
-            <RESOURCE>
-                <NAME>Water</NAME>
-                <CHANGE_RATE>-1.0</CHANGE_RATE>
-            </RESOURCE>
-        </EFFECTS>
-    </MALFUNCTION>
-	    
-    <MALFUNCTION>
-        <NAME>Food Contamination</NAME>
-        <SEVERITY>60</SEVERITY>
-        <PROBABILITY>10.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>100.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>500.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Dining</ENTITY>
-            <ENTITY>Rover</ENTITY>
-        </SCOPE>
-        <EFFECTS>
-            <RESOURCE>
-                <NAME>Food</NAME>
-                <CHANGE_RATE>-1.0</CHANGE_RATE>
-            </RESOURCE>
-        </EFFECTS>
-    </MALFUNCTION>
+	<!-- Problems with the rover's engine. -->
+	<malfunction name="Engine Problems">
+		<severity value="50" />
+		<probability value="40.0" />
+		<repair-time value="50.0" />
+		<emergency-repair-time value="50.0" />
+		<entity-list>
+			<entity name="Rover" />
+		</entity-list>
+	</malfunction>
+	
+	<!-- Battery failure. -->
+	<malfunction name="Battery Failure">
+		<severity value="40" />
+		<probability value="25.0" />
+		<repair-time value="50.0" />
+		<entity-list>
+			<entity name="Vehicle" />
+		</entity-list>
+	</malfunction>
+	
+	<!-- Communication system failure. -->
+	<malfunction name="Communication System Failure">
+		<severity value="20" />
+		<probability value="10.0" />
+		<repair-time value="50.0" />
+		<eva-repair-time value="50.0" />
+		<entity-list>
+			<entity name="Vehicle" />
+			<entity name="Communication" />
+		</entity-list>
+	</malfunction>
+	
+	<!-- Navigation system failure. -->
+	<malfunction name="Navigation System Failure">
+		<severity value="15" />
+		<probability value="7.0" />
+		<repair-time value="50.0" />
+		<eva-repair-time value="20.0" />
+		<entity-list>
+			<entity name="Vehicle" />
+		</entity-list>
+	</malfunction>
+	
+	<!-- Leak in the water reserves. -->
+	<malfunction name="Water Leak">
+		<severity value="50" />
+		<probability value="10.0" />
+		<emergency-repair-time value="100.0" />
+		<eva-repair-time value="50.0" />
+		<entity-list>
+			<entity name="Rover" />
+			<entity name="Living Accomodations" />
+			<entity name="Farming" />
+			<entity name="ERV Base" />
+			<entity name="EVA Suit" />
+		</entity-list>
+		<effects-list>
+			<effect type="resource" name="Water" change-rate="-.1" />
+		</effects-list>
+	</malfunction>
+	
+	<!-- Failure of life support heating unit.  -->
+	<malfunction name="Heating Unit Failure">
+		<severity value="70" />
+		<probability value="10.0" />
+		<emergency-repair-time value="20.0" />
+		<repair-time value="100.0" />
+		<entity-list>
+			<entity name="EVA Suit" />
+		</entity-list>
+		<effects-list>
+			<effect type="life-support" name="Temperature" change-rate="-.1" />
+		</effects-list>
+	</malfunction>
+	
+	<!-- Contamination of the water supply. -->
+	<malfunction name="Water Contamination">
+		<severity value="60" />
+		<probability value="10.0" />
+		<emergency-repair-time value="100.0" />
+		<repair-time value="500.0" />
+		<entity-list>
+			<entity name="Living Accommodations" />
+			<entity name="Farming" />
+			<entity name="ERV Base" />
+			<entity name="Rover" />
+		</entity-list>
+		<effects-list>
+			<effect type="resource" name="Water" change-rate="-1.0" />
+		</effects-list>
+	</malfunction>
+	
+	<!-- Contamination of the food supply. -->
+	<malfunction name="Food Contamination">
+		<severity value="60" />
+		<probability value="10.0" />
+		<emergency-repair-time value="100.0" />
+		<repair-time value="500.0" />
+		<entity-list>
+			<entity name="Dining" />
+			<entity name="Rover" />
+		</entity-list>
+		<effects-list>
+			<effect type="resource" name="Food" change-rate="-1.0" />
+		</effects-list>
+	</malfunction>
 
-    <MALFUNCTION>
-        <NAME>Chemical Spill</NAME>
-        <SEVERITY>50</SEVERITY>
-        <PROBABILITY>10.0</PROBABILITY>
-        <EMERGENCY_WORK_TIME>100.0</EMERGENCY_WORK_TIME>
-        <WORK_TIME>300.0</WORK_TIME>
-        <EVA_WORK_TIME>0.0</EVA_WORK_TIME>
-        <SCOPE>
-            <ENTITY>Farming</ENTITY>
-            <ENTITY>Research</ENTITY>
-        </SCOPE>
-        <EFFECTS>
-            <LIFE_SUPPORT>
-                <NAME>Oxygen</NAME>
-                <CHANGE_RATE>-.01</CHANGE_RATE>
-            </LIFE_SUPPORT>
-        </EFFECTS>
-    </MALFUNCTION>
+	<!-- Dangerous chemical spill. -->
+	<malfunction name="Chemical Spill">
+		<severity value="50" />
+		<probability value="10.0" />
+		<emergency-repair-time value="100.0" />
+		<repair-time value="500.0" />
+		<entity-list>
+			<entity name="Farming" />
+			<entity name="Research" />
+		</entity-list>
+		<effects-list>
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
+		</effects-list>
+	</malfunction>
 
-</MALFUNCTION_LIST>
+</malfunction-list>

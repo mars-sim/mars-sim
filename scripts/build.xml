@@ -44,7 +44,6 @@
                 <fileset dir="${mars.baseDir}" />
                 <fileset dir="${mars.jars}">
                     <include name="junit.jar" />
-                    <include name="aelfred.jar" />
                 </fileset>
             </classpath>
         </javac>

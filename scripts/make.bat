@@ -1,8 +1,7 @@
 echo off
 
-set CLASSPATH=../;../jars/jfreechart.jar;../jars/jcommon.jar;../jars/aelfred.jar;../jars/junit.jar
+set CLASSPATH=../;../jars/jfreechart.jar;../jars/jcommon.jar;../jars/junit.jar
 
-set SOURCE=..\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\equipment\*.java
@@ -16,8 +15,6 @@ set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\person\medical\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\structure\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\structure\building\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\structure\building\function\*.java
-set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\structure\building\function\impl\*.java
-set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\structure\template\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\simulation\vehicle\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\ui\standard\*.java
 set SOURCE=%SOURCE% ..\org\mars_sim\msp\ui\standard\tool\*.java
@@ -55,8 +52,6 @@ set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\person\medical\*.class
 set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\structure\*.class
 set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\structure\building\*.class
 set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\structure\building\function\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\structure\building\function\impl\*.class
-set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\structure\template\*.class
 set CLASSES=%CLASSES% ..\org\mars_sim\msp\simulation\vehicle\*.class
 
 echo on

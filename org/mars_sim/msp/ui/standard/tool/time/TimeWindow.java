@@ -1,31 +1,17 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.75 2004-03-08
+ * @version 2.75 2004-04-11
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.time;
  
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import org.mars_sim.msp.simulation.EarthClock;
-import org.mars_sim.msp.simulation.MarsClock;
-import org.mars_sim.msp.simulation.MasterClock;
-import org.mars_sim.msp.simulation.SimulationProperties;
-import org.mars_sim.msp.simulation.UpTimer;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
@@ -39,7 +25,6 @@ public class TimeWindow extends ToolWindow {
 
     // Data members
     private MasterClock master;      // Master Clock
-    private SimulationProperties properties;  // The simulation properties
     private MarsClock marsTime;      // Martian Clock
     private EarthClock earthTime;    // Earth Clock
     private UpTimer uptimer;         // Uptime Timer
@@ -62,7 +47,6 @@ public class TimeWindow extends ToolWindow {
 
         // Initialize data members
         master = desktop.getMainWindow().getMars().getMasterClock();
-        properties = desktop.getMainWindow().getMars().getSimulationProperties();
         marsTime = master.getMarsClock();
         earthTime = master.getEarthClock();
         uptimer = master.getUpTimer(); 

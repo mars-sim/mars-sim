@@ -1,7 +1,7 @@
 #
 # Mars Simulation Project
 # Java makefile by jpatokal
-# $Id: Makefile,v 1.1 2004-02-10 06:03:23 scud1 Exp $
+# $Id: Makefile,v 1.2 2004-04-13 01:48:18 scud1 Exp $
 #
 
 VERSION = 2.73
@@ -14,7 +14,6 @@ JARS = ./jars
 CLASSPATH = .
 CLASSPATH := $(CLASSPATH):$(JARS)/jfreechart.jar
 CLASSPATH := $(CLASSPATH):$(JARS)/jcommon.jar
-CLASSPATH := $(CLASSPATH):$(JARS)/aelfred.jar
 CLASSPATH := $(CLASSPATH):$(JARS)/junit.jar
 
 JAVA_OPTIONS = -classpath $(CLASSPATH)

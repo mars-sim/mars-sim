@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.75 2004-03-10
+ * @version 2.75 2004-04-09
  * @author Barry Evans
  */
 
@@ -183,10 +183,8 @@ public class PhysicalCondition implements Serializable {
     /** Person consumes given amount of food
      *  @param amount amount of food to consume (in kg).
      *  @param holder unit to get food from
-     *  @param props Simulation proerties.
      */
-    public void consumeFood(double amount, Unit container,
-                            SimulationProperties props) {
+    public void consumeFood(double amount, Unit container) {
         double amountRecieved =
                 container.getInventory().removeResource(Resource.FOOD, amount);
 

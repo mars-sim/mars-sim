@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.75 2004-03-16
+ * @version 2.75 2004-04-11
  * @author Scott Davis
  */
 
@@ -32,11 +32,10 @@ public class Mars implements Serializable {
 
     // Transient Data members
     private transient SurfaceFeatures surfaceFeatures; // Surface features
-    private transient SimulationProperties properties; // The user-defined simulation properties
     private transient MalfunctionFactory malfunctionFactory; // The malfunction factory
     private transient HistoricalEventManager eventManager; // All historical info.
     private transient Thread clockThread;
-    private transient SimulationConfig configuration; // The simulation configuration.
+    private transient SimulationConfig simConfig; // The simulation configuration.
 
     // Persistent Data members
     private String stateFile; // Name of file to load/store this simulation.
@@ -51,20 +50,20 @@ public class Mars implements Serializable {
      * Constructor
      * @throws Exception if Mars could not be constructed.
      */
-    public Mars(SimulationProperties initProps) throws Exception {
+    public Mars() throws Exception {
 
 		// Initialize transient properties
-		initializeTransients(initProps);
+		initializeTransients(simConfig);
 
         // Initialize the Medical conditions
-        medicalManager = new MedicalManager(configuration.getPersonConfiguration(), 
-        	configuration.getMedicalConfiguration());
+        medicalManager = new MedicalManager(simConfig.getPersonConfiguration(), 
+        	simConfig.getMedicalConfiguration());
 
         // Initialize mission manager
         missionManager = new MissionManager(this);
 
         // Initialize all units
-        units = new UnitManager(properties, this);
+        units = new UnitManager(this);
         units.constructInitialUnits();
 
         // Initialize orbit info
@@ -81,22 +80,20 @@ public class Mars implements Serializable {
 
     /**
      * Initialize transient simulation properties.
-     * @param initProps simulation properties if any or null.
+     * @param simConfig the simulation configuration.
      * @throws Exception when error in initializing transient properties.
      */
-    private void initializeTransients(SimulationProperties initProps) throws Exception {
+    private void initializeTransients(SimulationConfig simConfig) throws Exception {
 
         // Initialize simulation properties
-	    if (initProps != null) properties = initProps;
-	    else properties = new SimulationProperties();
-
-		configuration = new SimulationConfig();
+	    if (simConfig != null) this.simConfig = simConfig;
+	    else this.simConfig = new SimulationConfig();
 
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
 
         // Initialize malfunction factory
-	    malfunctionFactory = new MalfunctionFactory(configuration.getMalfunctionConfiguration());
+	    malfunctionFactory = new MalfunctionFactory(this.simConfig.getMalfunctionConfiguration());
 
 	    // Set state file
 	    setStateFile(DEFAULT_DIR + '/' + DEFAULT_FILE);
@@ -197,20 +194,13 @@ public class Mars implements Serializable {
     		System.err.println("Mars.clockPulse(): " + e.getMessage());
     	}
     }
-
-    /** Returns the simulation properties
-     *  @return simulation properties
-     */
-    public SimulationProperties getSimulationProperties() {
-        return properties;
-    }
     
     /** 
      * Gets the simulation configuration.
      * @return configuration
      */
     public SimulationConfig getSimulationConfiguration() {
-    	return configuration;
+    	return simConfig;
     }
 
     /** Returns the orbital information

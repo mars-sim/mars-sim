@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.75 2004-03-08
+ * @version 2.75 2004-04-11
  * @author Scott Davis
  */
 
@@ -34,7 +34,7 @@ public class MarsProject {
         if (args.length == 1) {
             if (args[0].equals("-new")) {
             	try {
-            		mars = new Mars(null);
+            		mars = new Mars();
             	}
             	catch (Exception e) {
             		System.err.println("Problem creating new simulation " + e);
@@ -81,7 +81,7 @@ public class MarsProject {
             // If no default, then create a new one
             if (mars == null) {
 				try {
-					mars = new Mars(null);
+					mars = new Mars();
 				}
 				catch (Exception e) {
 					System.err.println("Problem creating new simulation " + e);
