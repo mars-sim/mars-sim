@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.75 2004-04-13
+ * @version 2.76 2004-05-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -626,6 +626,19 @@ public class BuildingConfig {
 		NodeList exerciseNodes = functionsElement.getElementsByTagName(EXERCISE);
 		if (exerciseNodes.getLength() > 0) result = true;
 		return result;
+	}
+	
+	/**
+	 * Gets the capacity of the exercise facility in the building.
+	 * @param buildingName the name of the building.
+	 * @return capacity for exercise
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getExerciseCapacity(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element exerciseElement = (Element) buildingElement.getElementsByTagName(EXERCISE).item(0);
+		return Integer.parseInt(exerciseElement.getAttribute(CAPACITY));
 	}
 	
 	/**
