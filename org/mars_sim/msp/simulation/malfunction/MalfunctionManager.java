@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.74 2002-04-22
+ * @version 2.74 2002-04-25
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.malfunction;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.medical.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -104,6 +106,7 @@ public class MalfunctionManager implements Serializable {
        if (malfunction != null) {
            malfunctions.add(malfunction);
 	   System.out.println(entity.getName() + " has new malfunction: " + malfunction.getName());
+	   issueMedicalComplaints(malfunction);
        }
     }
 
@@ -184,6 +187,32 @@ public class MalfunctionManager implements Serializable {
 	if (maintenanceTimeCompleted >= maintenanceWorkTime) {
             maintenanceTimeCompleted = 0D;
 	    timeSinceLastMaintenance = 0D;
+	}
+    }
+
+    /**
+     * Issues any necessary medical complaints.
+     * @param malfunction the new malfunction
+     */
+    public void issueMedicalComplaints(Malfunction malfunction) {
+        
+        PersonCollection people = entity.getAffectedPeople();
+
+	Iterator i1 = malfunction.getMedicalComplaints().keySet().iterator();
+	while (i1.hasNext()) {
+	    String complaintName = (String) i1.next();
+	    double probability = ((Double) malfunction.getMedicalComplaints().get(complaintName)).doubleValue();
+	    MedicalManager medic = mars.getMedicalManager();
+            Complaint complaint = medic.getComplaintByName(complaintName);
+            if (complaint != null) {
+	    
+	        PersonIterator i2 = people.iterator();
+	        while (i2.hasNext()) {
+	            Person person = i2.next();
+		    if (RandomUtil.lessThanRandPercent(probability)) 
+                        person.getPhysicalCondition().addMedicalComplaint(complaint);
+		}
+	    }
 	}
     }
 }

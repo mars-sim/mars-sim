@@ -166,6 +166,16 @@
             <CURE>Dressing</CURE>
             <NEXT>Gangrene</NEXT>
         </COMPLAINT>
+
+        <COMPLAINT>
+            <NAME>Burns</NAME>
+	    <SERIOUS>25</SERIOUS>
+	    <RECOVERY>10</RECOVERY>
+	    <PROBABILITY>10</PROBABILITY>
+	    <PERFORMANCE>65</PERFORMANCE>
+	    <CURE>Dressing</CURE>
+        </COMPLAINT>
+    
     </COMPLAINT_LIST>
 </MEDICAL>
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.74 2002-04-21
+ * @version 2.74 2002-04-25
  * @author Scott Davis
  */
 
@@ -134,5 +134,17 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         Unit container = getContainerUnit();
 	if (container instanceof Person) 
 	    malfunctionManager.activeTimePassing(time);
+    }
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        PersonCollection people = new PersonCollection();
+	if (containerUnit instanceof Person) 
+	    people.add((Person) containerUnit);
+
+	return people;
     }
 }

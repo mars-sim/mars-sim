@@ -255,4 +255,12 @@ public class Settlement extends Structure implements LifeSupport {
 	airlock.timePassing(time);
 	malfunctionManager.activeTimePassing(time);
     }
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        return getInhabitants();
+    }
 }

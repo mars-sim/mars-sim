@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-04-25
  * @author Barry Evans
  */
 
@@ -136,8 +136,8 @@ public class PhysicalCondition implements Serializable {
         // Consume necessary oxygen and water.
         recalculate |= consumeOxygen(support, props.getPersonOxygenConsumption() * (time / 1000D));
         recalculate |= consumeWater(support, props.getPersonWaterConsumption() * (time / 1000D));
-	    recalculate |= requireAirPressure(support, props.getPersonMinAirPressure());
-	    recalculate |= requireTemperature(support, props.getPersonMinTemperature());
+        recalculate |= requireAirPressure(support, props.getPersonMinAirPressure());
+        recalculate |= requireTemperature(support, props.getPersonMinTemperature());
 
         // Build up fatigue & hunger for given time passing.
         fatigue += time;
@@ -147,6 +147,19 @@ public class PhysicalCondition implements Serializable {
             recalculate();
         }
         return isAlive;
+    }
+
+    /** Adds a new medical complaint to the person.
+     *  @param complaint the new medical complaint
+     */
+    public void addMedicalComplaint(Complaint complaint) {
+    
+        if ((complaint != null) && !problems.containsKey(complaint)) {
+	    System.out.println(person.getName() + " has new health problem: " + complaint.getName());
+	    HealthProblem problem = new HealthProblem(complaint, person, person.getAccessibleAid());
+	    problems.put(complaint, problem);
+	    recalculate();
+	}
     }
 
     /** Person consumes given amount of food

@@ -64,6 +64,14 @@ class CollectRockSamples extends Task implements Serializable {
 	    else if (phase.equals(COLLECT_ROCKS)) timeLeft = collectRocks(timeLeft);
 	    else if (phase.equals(ENTER_ROVER)) timeLeft = enterRover(timeLeft);
 	}
+
+        // Add experience to "EVA Operations" skill.
+        // (1 base experience point per 100 millisols of time spent)
+	// Experience points adjusted by person's "Experience Aptitude" attribute.
+        double experience = timeLeft / 100D;
+	NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
+        person.getSkillManager().addExperience("EVA Operations", experience);
 	
         return timeLeft;
     }

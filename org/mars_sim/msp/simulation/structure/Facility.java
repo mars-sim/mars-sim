@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * Facility.java
- * @version 2.74 2002-04-21
+ * @version 2.74 2002-04-25
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure;
 
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
 
@@ -57,8 +58,16 @@ public abstract class Facility implements Malfunctionable, Serializable {
     }
     
     /** Called every clock pulse for time events in facilities.
-      *  Override in children to use this. 
-      *  @param time the amount of time passing (in millisols) 
-      */
+     *  Override in children to use this. 
+     *  @param time the amount of time passing (in millisols) 
+     */
     void timePassing(double time) {}
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        return getFacilityManager().getSettlement().getInhabitants();
+    }
 }

@@ -51,7 +51,7 @@ class MaintainSettlement extends Task implements Serializable {
 	if (chance < lastMaint) {
             entity = settlement;
 	    description = "Performing maintenance on " + settlement.getName();
-	    System.out.println(person.getName() + " " + description + " - " + lastMaint);
+	    // System.out.println(person.getName() + " " + description + " - " + lastMaint);
 	}
 	else {
             chance -= lastMaint; 
@@ -62,7 +62,7 @@ class MaintainSettlement extends Task implements Serializable {
 		if (chance < lastMaint) {
 		    entity = facility;
 		    description = "Performing maintenance on " + settlement.getName() + " " + facility.getName();
-		    System.out.println(person.getName() + " " + description + " - " + lastMaint);
+		    // System.out.println(person.getName() + " " + description + " - " + lastMaint);
 		    break;
 		}
 		else chance -= lastMaint;

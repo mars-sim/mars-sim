@@ -143,7 +143,7 @@ class StudyRockSamples extends Task implements Serializable {
         double chance = .01D;
 
 	// Areology skill modification.
-	int skill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
+	int skill = person.getSkillManager().getEffectiveSkillLevel("Areology");
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 

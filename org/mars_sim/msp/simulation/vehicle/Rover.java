@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.74 2002-04-13
+ * @version 2.74 2002-04-25
  * @author Scott Davis
  */
 
@@ -202,5 +202,13 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      */
     public void timePassing(double time) {
         airlock.timePassing(time);
+    }
+
+    /**
+     * Gets a collection of people affected by this entity.
+     * @return person collection
+     */
+    public PersonCollection getAffectedPeople() {
+        return getCrew();
     }
 }
