@@ -98,20 +98,23 @@ public class Inventory implements Serializable {
      */
     public double addResource(String resource, double mass) {
         if (containedResources.containsKey(resource)) {
-	    double remainingResourceCap = getResourceCapacity(resource) - getResourceMass(resource); 
+	    double remainingResourceCap = getResourceRemainingCapacity(resource);
 	    double remainingTotalCap = getTotalCapacity() - getTotalMass();
 	    
 	    double massLimit = Double.MAX_VALUE;
 	    if (remainingResourceCap < massLimit) massLimit = remainingResourceCap;
 	    if (remainingTotalCap < massLimit) massLimit = remainingTotalCap;
-	    
-	    if (mass > massLimit) {
-	        containedResources.put(resource, new Double(massLimit));
-		return mass - massLimit;
+	   
+	    double finalResourceMass = getResourceMass(resource);
+	    if (mass < massLimit) {
+		finalResourceMass += mass;
+	        containedResources.put(resource, new Double(finalResourceMass));
+		return mass;
             }
 	    else {
-                containedResources.put(resource, new Double(mass));
-		return 0D;
+		finalResourceMass += massLimit;
+                containedResources.put(resource, new Double(finalResourceMass));
+		return massLimit;
             }
         }
 	else return 0D;
