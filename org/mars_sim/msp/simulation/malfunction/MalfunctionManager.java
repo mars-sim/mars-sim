@@ -8,22 +8,23 @@
 package org.mars_sim.msp.simulation.malfunction;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 import java.io.Serializable;
 import java.util.*;
 
-/** 
+/**
  * The MalfunctionManager class manages the current malfunctions in a unit.
  */
 public class MalfunctionManager implements Serializable {
 
     // Data members
     private Malfunctionable entity;          // The owning entity.
-    private double timeSinceLastMaintenance; // Time passing (in millisols) since 
+    private double timeSinceLastMaintenance; // Time passing (in millisols) since
                                              // last maintenance on entity.
     private double maintenanceWorkTime;      // The required work time for maintenance on entity.
-    private double maintenanceTimeCompleted; // The completed 
+    private double maintenanceTimeCompleted; // The completed
     private Collection scope;                // The scope strings of the unit.
     private Collection malfunctions;         // The current malfunctions in the unit.
     private Mars mars;                       // The virtual Mars.
@@ -33,7 +34,7 @@ public class MalfunctionManager implements Serializable {
     private double waterFlowModifier = 100D;
     private double airPressureModifier = 100D;
     private double temperatureModifier = 100D;
-    
+
     /**
      * Constructs a MalfunctionManager object.
      */
@@ -64,7 +65,7 @@ public class MalfunctionManager implements Serializable {
     public boolean hasMalfunction() {
         return (malfunctions.size() > 0);
     }
-   
+
     /**
      * Checks if the entity has a given malfunction.
      * @return true if entity has malfunction
@@ -84,7 +85,7 @@ public class MalfunctionManager implements Serializable {
 	    Iterator i = malfunctions.iterator();
 	    while (i.hasNext()) {
 	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getEmergencyWorkTime() - 
+	        if ((malfunction.getEmergencyWorkTime() -
                         malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
 	    }
 	}
@@ -103,14 +104,14 @@ public class MalfunctionManager implements Serializable {
 	    Iterator i = malfunctions.iterator();
 	    while (i.hasNext()) {
 	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getWorkTime() - 
+	        if ((malfunction.getWorkTime() -
                         malfunction.getCompletedWorkTime()) > 0D) result = true;
 	    }
 	}
 
 	return result;
     }
-    
+
     /**
      * Checks if entity has any EVA malfunctions.
      * @return true if EVA malfunction
@@ -122,17 +123,17 @@ public class MalfunctionManager implements Serializable {
 	    Iterator i = malfunctions.iterator();
 	    while (i.hasNext()) {
 	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getEVAWorkTime() - 
+	        if ((malfunction.getEVAWorkTime() -
                         malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
 	    }
 	}
 
 	return result;
     }
-    
+
     /**
      * Gets a collection of the unit's current malfunctions.
-     * @return malfunction collection 
+     * @return malfunction collection
      */
     public Collection getMalfunctions() {
         return malfunctions;
@@ -143,7 +144,7 @@ public class MalfunctionManager implements Serializable {
      * @return malfunction
      */
     public Malfunction getMostSeriousMalfunction() {
-	    
+
         Malfunction result = null;
 	double highestSeverity = 0;
 
@@ -160,7 +161,7 @@ public class MalfunctionManager implements Serializable {
 
 	return result;
     }
-    
+
     /**
      * Gets the most serious emergency malfunction the entity has.
      * @return malfunction
@@ -243,9 +244,14 @@ public class MalfunctionManager implements Serializable {
        MalfunctionFactory factory = mars.getMalfunctionFactory();
        Malfunction malfunction = factory.getMalfunction(scope);
        if (malfunction != null) {
-           malfunctions.add(malfunction);
-	   // System.out.println(entity.getName() + " has new malfunction: " + malfunction.getName());
-	   issueMedicalComplaints(malfunction);
+            malfunctions.add(malfunction);
+            HistoricalEvent newEvent = new HistoricalEvent("Malfunction",
+                                                      entity,
+                                                      malfunction.getName());
+            mars.getEventManager().registerNewEvent(newEvent);
+
+	        issueMedicalComplaints(malfunction);
+
        }
     }
 
@@ -261,7 +267,7 @@ public class MalfunctionManager implements Serializable {
         double chance = time * .000001D * timeSinceLastMaintenance;
 
 	if (RandomUtil.lessThanRandPercent(chance)) {
-	    // System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + timeSinceLastMaintenance);	
+	    // System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + timeSinceLastMaintenance);
 	    addMalfunction();
 	}
     }
@@ -273,14 +279,14 @@ public class MalfunctionManager implements Serializable {
     public void timePassing(double time) {
 
         Collection fixedMalfunctions = new ArrayList();
-	    
+
         // Check if any malfunctions are fixed.
 	if (hasMalfunction()) {
 	    Iterator i = malfunctions.iterator();
 	    while (i.hasNext()) {
 	        Malfunction malfunction = (Malfunction) i.next();
 	        if (malfunction.isFixed()) {
-		    // System.out.println(malfunction.getName() + " at " + entity.getName() + " is fully fixed.");    
+		    // System.out.println(malfunction.getName() + " at " + entity.getName() + " is fully fixed.");
 		    fixedMalfunctions.add(malfunction);
 	        }
 	    }
@@ -288,9 +294,15 @@ public class MalfunctionManager implements Serializable {
 
 	if (fixedMalfunctions.size() > 0) {
 	    Iterator i = fixedMalfunctions.iterator();
-	    while (i.hasNext()) malfunctions.remove(i.next());
+	    while (i.hasNext()) {
+            Malfunction item = (Malfunction)i.next();
+            malfunctions.remove(item);
+            HistoricalEvent newEvent = new HistoricalEvent("Repaired",
+                                                      entity, item.getName());
+            mars.getEventManager().registerNewEvent(newEvent);
+        }
 	}
-	    
+
         // Determine life support modifiers.
 	setLifeSupportModifiers(time);
 
@@ -303,12 +315,12 @@ public class MalfunctionManager implements Serializable {
      * @param time amount of time passing (in millisols)
      */
     public void setLifeSupportModifiers(double time) {
-	    
+
 	double tempOxygenFlowModifier = 0D;
 	double tempWaterFlowModifier = 0D;
 	double tempAirPressureModifier = 0D;
 	double tempTemperatureModifier = 0D;
-	    
+
         // Make any life support modifications.
 	if (hasMalfunction()) {
 	    Iterator i = malfunctions.iterator();
@@ -363,14 +375,14 @@ public class MalfunctionManager implements Serializable {
 	    }
 	}
     }
-	
+
     /**
      * Called when the unit has an accident.
      */
     public void accident() {
 
         // System.out.println(entity.getName() + " accident()");
-	    
+
         // Multiple malfunctions may have occured.
 	// 50% one malfunction, 25% two etc.
 	boolean done = false;
@@ -433,7 +445,7 @@ public class MalfunctionManager implements Serializable {
      * @param malfunction the new malfunction
      */
     public void issueMedicalComplaints(Malfunction malfunction) {
-       
+
 	// Get people who can be affected by this malfunction.
         PersonCollection people = entity.getAffectedPeople();
 
@@ -448,7 +460,7 @@ public class MalfunctionManager implements Serializable {
 	        PersonIterator i2 = people.iterator();
 	        while (i2.hasNext()) {
 	            Person person = i2.next();
-		    if (RandomUtil.lessThanRandPercent(probability)) 
+		    if (RandomUtil.lessThanRandPercent(probability))
                         person.getPhysicalCondition().addMedicalComplaint(complaint);
 		}
 	    }
@@ -468,7 +480,7 @@ public class MalfunctionManager implements Serializable {
      * @return modifier
      */
     public double getWaterFlowModifier() {
-        return waterFlowModifier; 
+        return waterFlowModifier;
     }
 
     /**
