@@ -1,5 +1,5 @@
 //************************** Abstract Basic Vehicle Unit **************************
-// Last Modified: 5/6/00
+// Last Modified: 7/10/00
 
 // The Vehicle class represents a generic vehicle.  It keeps track of generic information about the vehicle.
 // This class needs to be subclassed to represent a specific type of vehicle.
@@ -19,6 +19,8 @@ public abstract class Vehicle extends Unit {
 	protected Settlement settlement;       // The settlement which the vehicle is parked at
 	protected Vector passengers;           // List of people who are passengers in vehicle
 	protected Person driver;               // Driver of the vehicle
+	protected double distanceTraveled;     // Total distance traveled by vehicle
+	protected double distanceMaint;        // Distance traveled by vehicle since last maintenance
 	
 	protected Coordinates destinationCoords;    // Coordinates of the destination
 	protected Settlement destinationSettlement; // Destination settlement (it applicable)
@@ -41,6 +43,8 @@ public abstract class Vehicle extends Unit {
 		speed = 0D;
 		baseSpeed = 30D;  // Child vehicles should change this as appropriate
 		status = new String("Parked");
+		distanceTraveled = 0D;
+		distanceMaint = 0D;
 
 		settlement = null;
 		passengers = new Vector();
@@ -81,6 +85,22 @@ public abstract class Vehicle extends Unit {
 	// Returns base speed of vehicle
 	
 	public double getBaseSpeed() { return baseSpeed; }
+	
+	// Returns total distance traveled by vehicle (in km.)
+	
+	public double getTotalDistanceTraveled() { return distanceTraveled; }
+	
+	// Adds a distance (in km.) to the vehicle's total distance traveled
+	
+	public void addTotalDistanceTraveled(double distance) { distanceTraveled += distance; }
+	
+	// Returns distance traveled by vehicle since last maintenance (in km.)
+	
+	public double getDistanceLastMaintenance() { return distanceMaint; }
+
+	// Adds a distance (in km.) to the vehicle's distance since last maintenance
+	
+	public void addDistanceLastMaintenance(double distance) { distanceMaint += distance; }
 
 	// Returns direction of vehicle (0 = north, clockwise in radians)
 

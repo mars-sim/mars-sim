@@ -1,5 +1,5 @@
 //************************** TaskDrive **************************
-// Last Modified: 6/21/00
+// Last Modified: 7/10/00
 
 // The TaskDrive class is a task for driving a ground vehicle.  It has the phases, "Embarking", "Driving" and "Disembarking".
 // If the task is called as part of a larger task, embarking and/or disembarking may be ignored by setting the proper constructor parameters.
@@ -373,6 +373,11 @@ class TaskDrive extends Task {
 		// Determine distance traveled in time given
 
 		double distanceTraveled = seconds * ((speed / 60D) / 60D);
+		
+		// Add distance traveled to vehicle's odometer
+		
+		vehicle.addTotalDistanceTraveled(distanceTraveled);
+		vehicle.addDistanceLastMaintenance(distanceTraveled);
 		
 		// If backing up, stop backing up if over 10km.
 		
