@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclesXmlReader.java
- * @version 2.73 2001-11-22
+ * @version 2.73 2001-12-14
  * @author Scott Davis
  */
 
@@ -17,10 +17,10 @@ import com.microstar.xml.*;
 class VehiclesXmlReader extends MspXmlReader {
 
     // XML element types
-    private static int VEHICLES_LIST = 0;
-    private static int ROVER = 1;
-    private static int NAME = 2;
-    private static int SETTLEMENT = 3;
+    private static final int VEHICLES_LIST = 0;
+    private static final int ROVER = 1;
+    private static final int NAME = 2;
+    private static final int SETTLEMENT = 3;
 
     // Data members
     private int elementType; // The current element type being parsed
@@ -78,20 +78,17 @@ class VehiclesXmlReader extends MspXmlReader {
      */
     public void endElement(String name) throws Exception {
         super.endElement(name);
-      
-        if (elementType == NAME) {
-            elementType = vehicleType;
-            return;
-        }
-        if (elementType == SETTLEMENT) {
-            elementType = vehicleType;
-            return;
-        }
-        if (elementType == ROVER) {
-            Rover rover = createRover();
-            if (rover != null) vehicles.add(rover);
-            elementType = VEHICLES_LIST;
-            return;
+     
+        switch (elementType) {
+            case NAME:
+            case SETTLEMENT:
+                elementType = vehicleType;
+                break;
+            case ROVER:
+                Rover rover = createRover();
+                if (rover != null) vehicles.add(rover);
+                elementType = VEHICLES_LIST;
+                break;
         }
     }
 
@@ -103,8 +100,14 @@ class VehiclesXmlReader extends MspXmlReader {
 
         String data = new String(ch, start, length).trim();
 
-        if (elementType == NAME) currentName = data;
-        if (elementType == SETTLEMENT) currentSettlement = manager.getSettlements().getSettlement(data);
+        switch (elementType) {
+            case NAME:
+                currentName = data;
+                break;
+            case SETTLEMENT:
+                currentSettlement = manager.getSettlements().getSettlement(data);
+                break;
+        }
     }
     
     /** Creates a rover object 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PropertiesXmlReader.java
- * @version 2.73 2001-12-09
+ * @version 2.73 2001-12-14
  * @author Scott Davis
  */
 
@@ -17,22 +17,22 @@ import com.microstar.xml.*;
 class PropertiesXmlReader extends MspXmlReader {
 
     // XML element types
-    private static int PROPERTY_LIST = 0;
-    private static int TIME_RATIO = 1;
-    private static int PERSON_PROPERTIES = 2;
-    private static int OXYGEN_CONSUMPTION = 3;
-    private static int WATER_CONSUMPTION = 4;
-    private static int FOOD_CONSUMPTION = 5;
-    private static int ROVER_PROPERTIES = 6;
-    private static int OXYGEN_STORAGE_CAPACITY = 7;
-    private static int WATER_STORAGE_CAPACITY = 8;
-    private static int FOOD_STORAGE_CAPACITY = 9;
-    private static int FUEL_STORAGE_CAPACITY = 10;
-    private static int FUEL_EFFICIENCY = 11;
-    private static int SETTLEMENT_PROPERTIES = 12;
-    private static int RANGE = 13;
-    private static int GREENHOUSE_FULL_HARVEST = 14;
-    private static int GREENHOUSE_GROWING_CYCLE = 15;
+    private static final int PROPERTY_LIST = 0;
+    private static final int TIME_RATIO = 1;
+    private static final int PERSON_PROPERTIES = 2;
+    private static final int OXYGEN_CONSUMPTION = 3;
+    private static final int WATER_CONSUMPTION = 4;
+    private static final int FOOD_CONSUMPTION = 5;
+    private static final int ROVER_PROPERTIES = 6;
+    private static final int OXYGEN_STORAGE_CAPACITY = 7;
+    private static final int WATER_STORAGE_CAPACITY = 8;
+    private static final int FOOD_STORAGE_CAPACITY = 9;
+    private static final int FUEL_STORAGE_CAPACITY = 10;
+    private static final int FUEL_EFFICIENCY = 11;
+    private static final int SETTLEMENT_PROPERTIES = 12;
+    private static final int RANGE = 13;
+    private static final int GREENHOUSE_FULL_HARVEST = 14;
+    private static final int GREENHOUSE_GROWING_CYCLE = 15;
 
     // Data members
     private int elementType; // The current element type being parsed
@@ -127,69 +127,36 @@ class PropertiesXmlReader extends MspXmlReader {
      */
     public void endElement(String name) throws Exception {
         super.endElement(name);
-      
-        if (elementType == TIME_RATIO) {
-            elementType = PROPERTY_LIST;
-            return;
-        }
-        if (elementType == PERSON_PROPERTIES) {
-            elementType = PROPERTY_LIST;
-            propertyCatagory = -1;
-            return;
-        }        
-        if (elementType == OXYGEN_CONSUMPTION) {
-            elementType = PERSON_PROPERTIES;
-            return;
-        }
-        if (elementType == WATER_CONSUMPTION) {
-            elementType = PERSON_PROPERTIES;
-            return;
-        }
-        if (elementType == FOOD_CONSUMPTION) {
-            elementType = PERSON_PROPERTIES;
-            return;
-        }
-        if (elementType == ROVER_PROPERTIES) {
-            elementType = PROPERTY_LIST;
-            propertyCatagory = -1;
-            return;
-        }
-        if (elementType == OXYGEN_STORAGE_CAPACITY) {
-            elementType = propertyCatagory;
-            return;
-        }
-        if (elementType == WATER_STORAGE_CAPACITY) {
-            elementType = propertyCatagory;
-            return;
-        }
-        if (elementType == FOOD_STORAGE_CAPACITY) {
-            elementType = propertyCatagory;
-            return;
-        }
-        if (elementType == FUEL_STORAGE_CAPACITY) {
-            elementType = propertyCatagory;
-            return;
-        }
-        if (elementType == FUEL_EFFICIENCY) {
-            elementType = ROVER_PROPERTIES;
-            return;
-        }
-        if (elementType == RANGE) {
-            elementType = ROVER_PROPERTIES;
-            return;
-        }
-        if (elementType == SETTLEMENT_PROPERTIES) {
-            elementType = PROPERTY_LIST;
-            propertyCatagory = -1;
-            return;
-        }
-        if (elementType == GREENHOUSE_FULL_HARVEST) {
-            elementType = SETTLEMENT_PROPERTIES;
-            return;
-        }
-        if (elementType == GREENHOUSE_GROWING_CYCLE) {
-            elementType = SETTLEMENT_PROPERTIES;
-            return;
+
+        switch (elementType) {
+            case TIME_RATIO:
+                elementType = PROPERTY_LIST;
+                break;
+            case PERSON_PROPERTIES:
+            case ROVER_PROPERTIES:
+            case SETTLEMENT_PROPERTIES:
+                elementType = PROPERTY_LIST;
+                propertyCatagory = -1;
+                break;
+            case OXYGEN_CONSUMPTION:       
+            case WATER_CONSUMPTION:
+            case FOOD_CONSUMPTION:
+                elementType = PERSON_PROPERTIES;
+                break;
+            case FUEL_EFFICIENCY:
+            case RANGE:
+                elementType = ROVER_PROPERTIES;
+                break;
+            case GREENHOUSE_FULL_HARVEST:
+            case GREENHOUSE_GROWING_CYCLE:
+                elementType = SETTLEMENT_PROPERTIES;
+                break;
+            case OXYGEN_STORAGE_CAPACITY:
+            case WATER_STORAGE_CAPACITY:
+            case FOOD_STORAGE_CAPACITY:
+            case FUEL_STORAGE_CAPACITY:
+                elementType = propertyCatagory;
+                break;
         }
     }
 
@@ -201,49 +168,51 @@ class PropertiesXmlReader extends MspXmlReader {
 
         String data = new String(ch, start, length).trim();
 
-        if (elementType == TIME_RATIO) {
-            timeRatio = Double.parseDouble(data);
-        }
-        if (elementType == OXYGEN_CONSUMPTION) {
-            personOxygenConsumption = Double.parseDouble(data);
-        }
-        if (elementType == WATER_CONSUMPTION) {
-            personWaterConsumption = Double.parseDouble(data);
-        }
-        if (elementType == FOOD_CONSUMPTION) {
-            personFoodConsumption = Double.parseDouble(data);
-        }
-        if (elementType == OXYGEN_STORAGE_CAPACITY) {
-            double value = Double.parseDouble(data);
-            if (propertyCatagory == ROVER_PROPERTIES) roverOxygenStorageCapacity = value;
-            if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementOxygenStorageCapacity = value;
-        }
-        if (elementType == WATER_STORAGE_CAPACITY) {
-            double value = Double.parseDouble(data);
-            if (propertyCatagory == ROVER_PROPERTIES) roverWaterStorageCapacity = value;
-            if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementWaterStorageCapacity = value;
-        }
-        if (elementType == FOOD_STORAGE_CAPACITY) {
-            double value = Double.parseDouble(data);
-            if (propertyCatagory == ROVER_PROPERTIES) roverFoodStorageCapacity = value;
-            if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementFoodStorageCapacity = value;
-        }
-        if (elementType == FUEL_STORAGE_CAPACITY) {
-            double value = Double.parseDouble(data);
-            if (propertyCatagory == ROVER_PROPERTIES) roverFuelStorageCapacity = value;
-            if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementFuelStorageCapacity = value;
-        }
-        if (elementType == FUEL_EFFICIENCY) {
-            roverFuelEfficiency = Double.parseDouble(data);
-        }
-        if (elementType == RANGE) {
-            roverRange = Double.parseDouble(data);
-        }
-        if (elementType == GREENHOUSE_FULL_HARVEST) {
-            greenhouseFullHarvest = Double.parseDouble(data);
-        }
-        if (elementType == GREENHOUSE_GROWING_CYCLE) {
-            greenhouseGrowingCycle = Double.parseDouble(data);
+        switch (elementType) {
+            case TIME_RATIO:
+                timeRatio = Double.parseDouble(data);
+                break;
+            case OXYGEN_CONSUMPTION:
+                personOxygenConsumption = Double.parseDouble(data);
+                break;
+            case WATER_CONSUMPTION:
+                personWaterConsumption = Double.parseDouble(data);  
+                break;
+            case FOOD_CONSUMPTION:
+                personFoodConsumption = Double.parseDouble(data);
+                break;
+            case OXYGEN_STORAGE_CAPACITY:
+                double oxygen = Double.parseDouble(data);
+                if (propertyCatagory == ROVER_PROPERTIES) roverOxygenStorageCapacity = oxygen;
+                if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementOxygenStorageCapacity = oxygen;
+                break;
+            case WATER_STORAGE_CAPACITY:
+                double water = Double.parseDouble(data);
+                if (propertyCatagory == ROVER_PROPERTIES) roverWaterStorageCapacity = water;
+                if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementWaterStorageCapacity = water;
+                break;
+            case FOOD_STORAGE_CAPACITY:
+                double food = Double.parseDouble(data);
+                if (propertyCatagory == ROVER_PROPERTIES) roverFoodStorageCapacity = food;
+                if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementFoodStorageCapacity = food;
+                break;
+            case FUEL_STORAGE_CAPACITY:
+                double fuel = Double.parseDouble(data);
+                if (propertyCatagory == ROVER_PROPERTIES) roverFuelStorageCapacity = fuel;
+                if (propertyCatagory == SETTLEMENT_PROPERTIES) settlementFuelStorageCapacity = fuel;
+                break;
+            case FUEL_EFFICIENCY:
+                roverFuelEfficiency = Double.parseDouble(data);
+                break;
+            case RANGE:
+                roverRange = Double.parseDouble(data);
+                break;
+            case GREENHOUSE_FULL_HARVEST:
+                greenhouseFullHarvest = Double.parseDouble(data);
+                break;
+            case GREENHOUSE_GROWING_CYCLE:
+                greenhouseGrowingCycle = Double.parseDouble(data);
+                break;
         }
     }
 

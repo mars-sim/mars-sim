@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeopleXmlReader.java
- * @version 2.73 2001-11-22
+ * @version 2.73 2001-12-14
  * @author Scott Davis
  */
 
@@ -17,16 +17,16 @@ import com.microstar.xml.*;
 class PeopleXmlReader extends MspXmlReader {
 
     // XML element types
-    private static int PEOPLE_LIST = 0;
-    private static int PERSON = 1;
-    private static int NAME = 2;
-    private static int SETTLEMENT = 3;
-    private static int SKILL = 4;
-    private static int SKILL_NAME = 5;
-    private static int SKILL_LEVEL = 6;
-    private static int ATTRIBUTE = 7;
-    private static int ATTRIBUTE_NAME = 8;
-    private static int ATTRIBUTE_LEVEL = 9;
+    private static final int PEOPLE_LIST = 0;
+    private static final int PERSON = 1;
+    private static final int NAME = 2;
+    private static final int SETTLEMENT = 3;
+    private static final int SKILL = 4;
+    private static final int SKILL_NAME = 5;
+    private static final int SKILL_LEVEL = 6;
+    private static final int ATTRIBUTE = 7;
+    private static final int ATTRIBUTE_NAME = 8;
+    private static final int ATTRIBUTE_LEVEL = 9;
 
     // Data members
     private int elementType; // The current element type being parsed
@@ -108,48 +108,35 @@ class PeopleXmlReader extends MspXmlReader {
      */
     public void endElement(String name) throws Exception {
         super.endElement(name);
-      
-        if (elementType == NAME) {
-            elementType = PERSON;
-            return;
-        }
-        if (elementType == SETTLEMENT) {
-            elementType = PERSON;
-            return;
-        }
-        if (elementType == SKILL) {
-            Skill skill = new Skill(currentSkillName);
-            skill.setLevel(currentSkillLevel);
-            skills.addElement(skill);
-            elementType = PERSON;
-            return;
-        }
-        if (elementType == SKILL_NAME) {
-            elementType = SKILL;
-            return;
-        }
-        if (elementType == SKILL_LEVEL) {
-            elementType = SKILL;
-            return;
-        }
-        if (elementType == ATTRIBUTE) {
-            attributes.put(currentAttributeName, new Integer(currentAttributeLevel));
-            elementType = PERSON;
-            return;
-        } 
-        if (elementType == ATTRIBUTE_NAME) {
-            elementType = ATTRIBUTE;
-            return;
-        } 
-        if (elementType == ATTRIBUTE_LEVEL) {
-            elementType = ATTRIBUTE;
-            return;
-        }
-        if (elementType == PERSON) {
-            Person person = createPerson();
-            if (person != null) people.add(person);
-            elementType = PEOPLE_LIST;
-            return;
+     
+        switch (elementType) {
+            case NAME:
+            case SETTLEMENT:
+                elementType = PERSON;
+                break;
+            case SKILL:
+                Skill skill = new Skill(currentSkillName);
+                skill.setLevel(currentSkillLevel);
+                skills.addElement(skill);
+                elementType = PERSON;
+                break;
+            case SKILL_NAME:
+            case SKILL_LEVEL:
+                elementType = SKILL;
+                break;
+            case ATTRIBUTE:
+                attributes.put(currentAttributeName, new Integer(currentAttributeLevel));
+                elementType = PERSON;
+                break;
+            case ATTRIBUTE_NAME:
+            case ATTRIBUTE_LEVEL: 
+                elementType = ATTRIBUTE;
+                break;
+            case PERSON:
+                Person person = createPerson();
+                if (person != null) people.add(person);
+                elementType = PEOPLE_LIST;
+                break;
         }
     }
 
@@ -161,19 +148,35 @@ class PeopleXmlReader extends MspXmlReader {
 
         String data = new String(ch, start, length).trim();
 
-        if (elementType == NAME) currentName = data;
-        if (elementType == SETTLEMENT) currentSettlement = manager.getSettlements().getSettlement(data);
-        if (elementType == SKILL_NAME) currentSkillName = data;
-        if (elementType == SKILL_LEVEL) currentSkillLevel = Integer.parseInt(data);
-        if (elementType == ATTRIBUTE_NAME) currentAttributeName = data;
-        if (elementType == ATTRIBUTE_LEVEL) currentAttributeLevel = Integer.parseInt(data);
+        switch (elementType) {
+            case NAME:
+                currentName = data;
+                break;
+            case SETTLEMENT:
+                currentSettlement = manager.getSettlements().getSettlement(data);
+                break;
+            case SKILL_NAME:
+                currentSkillName = data;
+                break;
+            case SKILL_LEVEL:
+                currentSkillLevel = Integer.parseInt(data);
+                break;
+            case ATTRIBUTE_NAME:
+                currentAttributeName = data;
+                break;
+            case ATTRIBUTE_LEVEL:
+                currentAttributeLevel = Integer.parseInt(data);
+                break;
+        }
     }
 
     /** Creates a person object.
      *  @return a person or null if person could not be constructed.
      */
     private Person createPerson() {
+
         Person person = null;
+
         if (currentSettlement != null) {
             person = new Person(currentName, currentSettlement, mars);
         }

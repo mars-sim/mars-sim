@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementsXmlReader.java
- * @version 2.73 2001-11-22
+ * @version 2.73 2001-12-14
  * @author Scott Davis
  */
 
@@ -17,13 +17,13 @@ import com.microstar.xml.*;
 class SettlementsXmlReader extends MspXmlReader {
 
     // XML element types
-    private static int SETTLEMENTS_LIST = 0;
-    private static int SETTLEMENT = 1;
-    private static int NAME = 2;
-    private static int LOCATION = 4;
-    private static int LATITUDE = 5;
-    private static int LONGITUDE = 6;
-    private static int POP_CAPACITY = 7;
+    private static final int SETTLEMENTS_LIST = 0;
+    private static final int SETTLEMENT = 1;
+    private static final int NAME = 2;
+    private static final int LOCATION = 4;
+    private static final int LATITUDE = 5;
+    private static final int LONGITUDE = 6;
+    private static final int POP_CAPACITY = 7;
 
     // Data members
     private int elementType; // The current element type being parsed
@@ -85,32 +85,21 @@ class SettlementsXmlReader extends MspXmlReader {
      */
     public void endElement(String name) throws Exception {
         super.endElement(name);
-      
-        if (elementType == NAME) {
-            elementType = SETTLEMENT;
-            return;
-        }
-        if (elementType == LOCATION) {
-            currentLocation = createLocation();
-            elementType = SETTLEMENT;
-            return;
-        }
-        if (elementType == LATITUDE) {
-            elementType = LOCATION;
-            return;
-        }
-        if (elementType == LONGITUDE) {
-            elementType = LOCATION;
-            return;
-        }
-        if (elementType == POP_CAPACITY) {
-            elementType = SETTLEMENT;
-            return;
-        }
-        if (elementType == SETTLEMENT) {
-            settlements.add(createSettlement());    
-            elementType = SETTLEMENTS_LIST;
-            return;
+     
+        switch (elementType) {
+            case NAME:
+            case LOCATION:
+            case POP_CAPACITY:
+                elementType = SETTLEMENT;
+                break;
+            case LATITUDE:
+            case LONGITUDE:
+                elementType = LOCATION;
+                break;
+            case SETTLEMENT: 
+                settlements.add(createSettlement());    
+                elementType = SETTLEMENTS_LIST;
+                break;
         }
     }
 
@@ -122,15 +111,23 @@ class SettlementsXmlReader extends MspXmlReader {
 
         String data = new String(ch, start, length).trim();
 
-        if (elementType == NAME) currentName = data;
-        if (elementType == LATITUDE) currentLatitude = data;
-        if (elementType == LONGITUDE) currentLongitude = data;
-        if (elementType == POP_CAPACITY) {
-            try {
-                currentPopulationCapacity = Integer.parseInt(data);
-            }
-            catch(NumberFormatException e) {}
-            if (currentPopulationCapacity < 0) currentPopulationCapacity = 0;
+        switch (elementType) {
+            case NAME:
+                currentName = data;
+                break;
+            case LATITUDE:
+                currentLatitude = data;
+                break;
+            case LONGITUDE:
+                currentLongitude = data;
+                break;
+            case POP_CAPACITY:
+                try {
+                    currentPopulationCapacity = Integer.parseInt(data);
+                }
+                catch(NumberFormatException e) {}
+                if (currentPopulationCapacity < 0) currentPopulationCapacity = 0;
+                break;
         }
     }
 
