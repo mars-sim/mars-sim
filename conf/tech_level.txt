@@ -1,0 +1,35 @@
+Tech Levels
+-----------
+
+Tech levels are used to measure the capability of laboratories and 
+medical facilities in the configuration files.
+
+Research Laboratories
+---------------------
+
+tech level 1: Field laboratory capable of basic research but 
+              doesn't have advanced instruments.
+
+tech level 2: Clinical laboratory with advanced instruments.
+
+tech level 3: Advanced laboratory with state of the art equipment.
+
+
+Medical Facilities
+------------------
+
+tech level 1: Medical pack for field dressing wounds and applying 
+              antibiotics.
+
+tech level 2: Simple medical station with capacity for the treatment
+              of broken limbs with plaster casts.
+              
+tech level 3: Basic medical facility with a operating table.  Minor
+              operations can be performed here as well as extended
+              treatment of illnesses.
+              
+tech level 4: Medical facility with capacity for advanced surgery.
+              Major operations can be performed here.
+              
+tech level 5: Medical facility capable of advanced treatment, such
+              as treating severe burn patients with skin grafts.
