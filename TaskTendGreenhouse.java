@@ -51,14 +51,32 @@ class TaskTendGreenhouse extends Task {
 		
 		phase = greenhouse.getPhase();
 		
+		// Determine seconds of effective work based on "Greenhouse Farming" skill.
+		
+		int workSeconds = seconds;
+		int greenhouseSkill = person.getSkillManager().getSkillLevel("Greenhouse Farming");
+		if (greenhouseSkill == 0) workSeconds /= 2;
+		if (greenhouseSkill > 1) workSeconds += workSeconds * (.1 * greenhouseSkill);
+		
 		// Add this work to the greenhouse.
 		
-		greenhouse.addWorkToGrowthCycle(seconds);
+		greenhouse.addWorkToGrowthCycle(workSeconds);
 		
 		// Keep track of the duration of the task.
 		
 		timeCompleted += seconds;
 		if (timeCompleted >= duration) isDone = true;
+		
+		// Add experience to "Greenhouse Farming" skill
+		// (1 base experience point per hour of work)
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+		
+		double experience = ((double) seconds / 60D) / 60D;
+		experience += experience * (((double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude") - 50D) / 100D);
+		person.getSkillManager().addExperience("Greenhouse Farming", experience);
+		
+		int newLevel = person.getSkillManager().getSkillLevel("Greenhouse Farming");
+		if (newLevel > greenhouseSkill) System.out.println(person.getName() + " achieves skill level " + newLevel + " in Greenhouse Farming.");
 	}
 	
 	
