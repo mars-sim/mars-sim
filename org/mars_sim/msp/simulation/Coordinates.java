@@ -416,6 +416,7 @@ public class Coordinates implements Serializable {
      *  @param angle raw angle (in radians)
      *  @return cleaned angle
      */
+    /*
     public static double cleanAngle(double angle) {
         if ((angle < 0.0) || (angle > TWO_PI)) {
             angle = Math.IEEEremainder(angle, TWO_PI);
@@ -424,5 +425,6 @@ public class Coordinates implements Serializable {
         //while (angle < 0D) angle += (2D * Math.PI);
         return angle;
     }
+    */
 }
 

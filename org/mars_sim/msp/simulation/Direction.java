@@ -51,8 +51,8 @@ public class Direction implements Cloneable, Serializable {
      *  0 = North, clockwise
      *  @return direction in radians
      */
-    public double getDirection() { 
-        return direction; 
+    public double getDirection() {
+        return direction;
     }
     
     /** Sets the direction

@@ -226,7 +226,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
                     lastDriver = person;
                 }   
             }
-        }     
+        }
     }
 
     /** Performs the collecting phase of the mission.
@@ -311,7 +311,15 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // Determine remaining sites
         double remainingRange = (vehicleRange / 2D) - siteDistance;
         for (int x=1; x < numSites; x++) {
-            double startDistanceToSettlement = startingLocation.getDistance(startingSettlement.getCoordinates()); 
+		
+            double startDistanceToSettlement = startingLocation.getDistance(startingSettlement.getCoordinates());
+	
+	    // Don't add collection site if greater than remaining vehicle range.
+	    if (remainingRange < startDistanceToSettlement) {
+                numSites = x;
+		break;
+            }
+	    
             direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
             double tempLimit1 = (remainingRange * remainingRange) - (startDistanceToSettlement * startDistanceToSettlement);
             double tempLimit2 = (2D * remainingRange) - (2D * startDistanceToSettlement * direction.getCosDirection());

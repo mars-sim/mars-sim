@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-15
  * @author Scott Davis
  */
 
@@ -168,7 +168,10 @@ public class MissionManager implements Serializable {
      */
     double getTotalActiveMissionProbability(Person person) {
         double result = 0D;
-        
+       
+        // Remove missions that are already completed.
+	cleanMissions();
+	
         for (int x=0; x < missions.size(); x++) {
             Mission tempMission = (Mission) missions.elementAt(x);
             result += tempMission.getJoiningProbability(person);
@@ -212,7 +215,7 @@ public class MissionManager implements Serializable {
         int index = 0;
         while (index < missions.size()) {
             Mission tempMission = (Mission) missions.elementAt(index);
-            if (tempMission.isDone()) removeMission(tempMission);
+            if ((tempMission == null) || tempMission.isDone()) removeMission(tempMission);
             else index++;
         }
     }
