@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.72 2002-03-11
+ * @version 2.75 2003-12-20
  * @author Scott Davis
  */
  
@@ -21,8 +21,7 @@ public class SurfaceFeatures {
     public SurfaceFeatures(Mars mars) {
         
         this.mars = mars;
-        surfaceTerrain = new TerrainElevation("map_data/TopoMarsMap.dat", "map_data/TopoMarsMap.index",
-                "map_data/TopoMarsMap.sum");
+        surfaceTerrain = new TerrainElevation();
 
         landmarksReader = new LandmarksXmlReader();
         landmarksReader.parse();

@@ -8,6 +8,7 @@
 
 package org.mars_sim.msp.ui.standard.tool.navigator;
 
+import org.mars_sim.msp.simulation.Mars;
 import javax.swing.JComponent;
 
 /**
@@ -16,13 +17,11 @@ import javax.swing.JComponent;
  */
 public class TopoMarsMap extends CannedMarsMap {
 
-	private static final String INDEX_FILE = "TopoMarsMap.index";
-	private static final String MAP_FILE = "TopoMarsMap.dat";
-
     /** Constructs a TopoMarsMap object
      *  @param displayArea the display component
+     *  @param mars the Mars instance.
      */
-    public TopoMarsMap(JComponent displayArea) {
-        super(displayArea, MAP_FILE, INDEX_FILE);
+    public TopoMarsMap(JComponent displayArea, Mars mars) {
+    	super(displayArea, mars.getSurfaceFeatures().getSurfaceTerrain().getTopoColors());
     }
 }

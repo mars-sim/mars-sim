@@ -1,15 +1,15 @@
 /**
  * Mars Simulation Project
  * TerrainElevation.java
- * @version 2.71 2000-10-30
+ * @version 2.75 2003-12-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
 import java.awt.*;
-import java.net.URL;
 import java.io.*;
+import java.util.*;
 
 /** The TerrainElevation class represents the surface terrain of the
  *  virtual Mars. It can provide information about elevation and
@@ -17,80 +17,124 @@ import java.io.*;
  */
 public class TerrainElevation {
 
-    // Data members
-    private RandomAccessFile map; // File containing elevation data for virtual Mars.
-    private int[] index; // An cached array for row count indexing of the elevation data.
-    private long[] sum; // An cached array to help find rows of the elevation data.
+	private static final String INDEX_FILE = "TopoMarsMap.index";
+	private static final String MAP_FILE = "TopoMarsMap.dat";
+	private static final int MAP_HEIGHT = 1440; // Source map height in pixels.
+	private static final int MAP_WIDTH = 2880; // Source map width in pixels.
+	private static final double TWO_PI = Math.PI * 2D;
 
-    // constants
-    private final static int MAP_HEIGHT = 1440; // Height of source map in pixels.
+	//	Data members
+	private ArrayList topoColors = null;
 
-    /** Constructs a TerrainElevation object
-     *  @param topoData the file URL for the topographical map data
-     *  @param topoIndex the file URL for the topographical map index
-     *  @param topoSum the file URL for the topographical map sum
+    /** 
+     * Constructor
      */
-    TerrainElevation(String topoData, String topoIndex, String topoSum) {
+    TerrainElevation() {
+    	
+		// Load data files
 		try {
-			URL found = getClass().getClassLoader().getResource(topoData);
-			map = new RandomAccessFile(found.getFile(), "r");
+			int[] index = loadIndexData(INDEX_FILE);
+			topoColors = loadMapData(MAP_FILE, index);
 		}
-		catch (Exception e) {
-			System.out.println("Could not open " + topoData);
-			System.out.println("  You can find it at: http://mars-sim.sourceforge.net/TopoDat.zip");
-			System.out.println("  Download and then unzip in the directory mars-sim/map_data");
-			System.exit(0);
+		catch (IOException e) {
+			System.out.println("Could not find map data files.");
+			System.out.println(e.toString());
 		}
-        loadArrays(topoIndex, topoSum);
     }
+    
+	/**
+	 * Loads the index data from a file.
+	 *
+	 * @param file name
+	 * @return array of index data
+	 * @throws IOException if file cannot be loaded.
+	 */
+	private int[] loadIndexData(String filename) throws IOException {
+    
+		// Load index data from map_data jar file.
+		ClassLoader loader = getClass().getClassLoader();
+		InputStream indexStream = loader.getResourceAsStream(filename);
+		if (indexStream == null) throw new IOException("Can not load " + filename);
 
-    /** note that this functionality is duplicated in TopoMarsMap.java
-     *  @param indexFile the file URL for the topographical map index
-     *  @param sumFile the file URL for the topographical map sum
-     */
-    private void loadArrays(String indexFile, String sumFile) {
-        ClassLoader loader = getClass().getClassLoader();
-        try {
-            // Load index array
-            InputStream indexStream = loader.getResourceAsStream(indexFile);
-            if (indexStream == null) {
-                System.err.println("Can not load " + indexFile);
-            }
-            else
-            {
-                BufferedInputStream indexBuff = new BufferedInputStream(indexStream);
-                DataInputStream indexReader = new DataInputStream(indexBuff);
-                index = new int[MAP_HEIGHT];
-                for (int x = 0; x < MAP_HEIGHT; x++)
-                    index[x] = indexReader.readInt();
-                indexReader.close();
-                indexBuff.close();
-            }
-
-            // Load sum array
-            InputStream sumStream = loader.getResourceAsStream(sumFile);
-            if (sumStream == null) {
-                System.err.println("Can not load " + sumFile);
-            }
-            else {
-                BufferedInputStream sumBuff = new BufferedInputStream(sumStream);
-                DataInputStream sumReader = new DataInputStream(sumBuff);
-                sum = new long[MAP_HEIGHT];
-                for (int x = 0; x < MAP_HEIGHT; x++)
-                    sum[x] = sumReader.readLong();
-                sumReader.close();
-                sumBuff.close();
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-            System.exit(0);
-        }
-    }
-
-    protected void finalize() throws Throwable {
-        // close large file
-        map.close();
-    }
+		// Read stream into an array.
+		BufferedInputStream indexBuff = new BufferedInputStream(indexStream);
+		DataInputStream indexReader = new DataInputStream(indexBuff);
+		int index[] = new int[MAP_HEIGHT];
+		for (int x = 0; x < index.length; x++) index[x] = indexReader.readInt();
+		indexReader.close();
+		indexBuff.close();
+       
+		return index;
+	}
+	
+	/** 
+	 * Loads the map data from a file.
+	 *
+	 * @param filename the map data file
+	 * @param index the index array
+	 * @return array list of map data
+	 * @throws IOException if map data cannot be loaded.
+	 */
+	private ArrayList loadMapData(String filename, int[] index) throws IOException {
+     
+		// Load map data from map_data jar file.
+		ClassLoader loader = getClass().getClassLoader();
+		InputStream mapStream = loader.getResourceAsStream(filename);
+		if (mapStream == null) throw new IOException("Can not load " + filename);
+        
+		// Read stream into an array.
+		BufferedInputStream mapBuff = new BufferedInputStream(mapStream);
+		DataInputStream mapReader = new DataInputStream(mapBuff);
+        
+		// Create map colors array list.
+		ArrayList mapColors = new ArrayList(MAP_HEIGHT);
+        
+		// Create an array of colors for each pixel in map height.
+		for (int x=0; x < MAP_HEIGHT; x++) {
+			int[] colors = new int[index[x]];
+			for (int y=0; y < colors.length; y++) {
+				int red = mapReader.readByte();
+				red <<= 16;
+				red &= 0x00FF0000;
+				int green = mapReader.readByte();
+				green <<= 8;
+				green &= 0x0000FF00;
+				int blue = mapReader.readByte();
+				blue &= 0x000000FF;
+				int totalColor = 0xFF000000 | red | green | blue;
+				colors[y] = (new Color(totalColor)).getRGB();
+			}
+			mapColors.add(colors);
+		}
+       
+		return mapColors;
+	}
+	
+	/**
+	 * Gets an RGB color for a given location on the map.
+	 * @param phi the phi value of the location.
+	 * @param theta the theta value of the location.
+	 * @return the RGB color encoded as an int value. 
+	 */
+	private int getRGBColor(double phi, double theta) {
+       
+		// Make sure phi is between 0 and PI.
+		while (phi > Math.PI) phi-= Math.PI;
+		while (phi < 0) phi+= Math.PI;
+        
+		// Make sure theta is between 0 and 2 PI.
+		while (theta > TWO_PI) theta-= TWO_PI;
+		while (theta < 0) theta+= TWO_PI;
+        
+		int row = (int) Math.round(phi * (MAP_HEIGHT / Math.PI));
+		if (row == topoColors.size()) row--;
+        
+		int[] colorRow = (int[]) topoColors.get(row);
+		int column = (int) Math.round(theta * ((double) colorRow.length / TWO_PI));
+		if (column == colorRow.length) column--;
+        
+		return colorRow[column];
+	}
 
     /** Returns terrain steepness angle from location by sampling 11.1
       *  km in given direction
@@ -113,48 +157,27 @@ public class TerrainElevation {
      *  @return the elevation at the location (in km)
      */
     public double getElevation(Coordinates location) {
-        int red = 0;
-        int green = 0;
-        int blue = 0;
-        double tempPhi = location.getPhi();
-        double tempTheta = location.getTheta();
-
-        try {
-            int row = (int) Math.round((tempPhi / Math.PI) * 1439D);
-            int rowLength = index[row];
-            long summer = sum[row];
-
-            tempTheta += Math.PI;
-            if (tempTheta >= (2D * Math.PI))
-                tempTheta -= (2D * Math.PI);
-            int col = (int) Math.round((tempTheta / (2D * Math.PI)) * rowLength);
-
-            map.seek((long)((summer + col) * 3));
-
-            red = (int) map.readByte();
-            red &= 0x000000FF;
-            green = (int) map.readByte();
-            green &= 0x000000FF;
-            blue = (int) map.readByte();
-            blue &= 0x000000FF;
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-
-        float[] hsb = new float[3];
-        hsb = Color.RGBtoHSB(red, green, blue, null);
+    	
+    	// Find hue and saturation color components at location.
+    	int colorRGB = getRGBColor(location.getPhi(), location.getTheta());
+    	Color color = new Color(getRGBColor(location.getPhi(), location.getTheta()));
+        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
         float hue = hsb[0];
         float saturation = hsb[1];
 
+		// Determine elevation in meters.
+		// Note: This code needs updating.
         double elevation = 0D;
-        // holy magic numbers batman
-        if ((hue < .792F) && (hue > .033F)) {
-            elevation = (-13801.99D * hue) + 2500D;
-        } else {
-            elevation = (-21527.78D * saturation) + 19375D + 2500D;
-        }
+        if ((hue < .792F) && (hue > .033F)) elevation = (-13801.99D * hue) + 2500D;
+        else elevation = (-21527.78D * saturation) + 19375D + 2500D;
+        
+        // Determine elevation in kilometers.
         elevation = elevation / 1000D;
 
         return elevation;
+    }
+    
+    public ArrayList getTopoColors() {
+    	return topoColors;
     }
 }

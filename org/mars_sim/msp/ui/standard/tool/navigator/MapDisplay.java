@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.75 2003-12-15
+ * @version 2.75 2003-12-20
  * @author Scott Davis
  */
 
@@ -110,7 +110,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         addMouseListener(this);
 
         // Create surface objects for both real, USGS and topographical modes
-        topoMap = new TopoMarsMap(this);
+        topoMap = new TopoMarsMap(this, mars);
         surfMap = new SurfMarsMap(this);
         usgsMap = new USGSMarsMap(this);
         useUSGSMap = false;

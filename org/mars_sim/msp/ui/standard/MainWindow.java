@@ -7,13 +7,25 @@
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.*;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
-import javax.swing.*;
-import javax.swing.plaf.metal.*;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.ProgressMonitor;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.SimulationProperties;
+import org.mars_sim.msp.simulation.Unit;
 
 /** 
  * The MainWindow class is the primary UI frame for the project. It
@@ -151,7 +163,7 @@ public class MainWindow extends JFrame implements WindowListener {
         SimulationProperties p = mars.getSimulationProperties();
 	    NewDialog newDialog = new NewDialog(p, this);
 	    if(newDialog.getResult() == JOptionPane.OK_OPTION) {
-		    // ##TODO## this should be shifted into a separate thread
+		    // Note: this should be shifted into a separate thread.
 		    ProgressMonitor pm = new ProgressMonitor(this,
 					"Starting New Simulation...", "",
 					0, 100);
