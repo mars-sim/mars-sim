@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -93,7 +93,7 @@ public class UnitManager {
         for (int x = 0; x < roverNames.length; x++) {
             // Create a rover
             // Place rover initially at random settlement
-            int randSettlement = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
+            int randSettlement = RandomUtil.getRandomInt(settlementsVector.size() - 1);
             createVehicle(roverNames[x], new Coordinates(0D, 0D),
                     (Settlement) settlementsVector.elementAt(randSettlement));
         }
@@ -122,7 +122,7 @@ public class UnitManager {
         for (int x = 0; x < peopleNames.length; x++) {
 
             // Place person initially in random settlement
-            int randSettlement = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
+            int randSettlement = RandomUtil.getRandomInt(settlementsVector.size() - 1);
             createPerson(peopleNames[x], new Coordinates(0D, 0D),
                     (Settlement) settlementsVector.elementAt(randSettlement));
         }
@@ -145,11 +145,11 @@ public class UnitManager {
 
     /** Notify all the units that time has passed. Times they are a
      *  changing.
-     *  @param seconds the time passing (in seconds)  
+     *  @param time the amount time passing (in millisols)  
      */
-    void takeAction(double seconds) {
+    void timePassing(double time) {
         for (int x = 0; x < unitVector.size(); x++) {
-            ((Unit) unitVector.elementAt(x)).timePasses(seconds);
+            ((Unit) unitVector.elementAt(x)).timePassing(time);
         }
     }
 
@@ -178,7 +178,7 @@ public class UnitManager {
      *  @return a random settlement
      */
     public Settlement getRandomSettlement() {
-        int r = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
+        int r = RandomUtil.getRandomInt(settlementsVector.size() - 1);
         return (Settlement) settlementsVector.elementAt(r);
     }
 
@@ -224,7 +224,7 @@ public class UnitManager {
             tempVector.removeElement(nearestSettlement);
         }
 
-        int r = RandomUtil.getRandomInteger(2);
+        int r = RandomUtil.getRandomInt(2);
         return (Settlement) resultVector.elementAt(r);
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-07-08
  * @author Scott Davis
  */
 
@@ -92,17 +92,17 @@ public class Person extends Unit {
         settlement = null;
     }
 
-    /** Action taken by person during unit turn 
-     *  @param seconds for action
+    /** Person can take action with time passing 
+     *  @param time amount of time passing (in millisols)
      */
-    void timePasses(double seconds) {
-        consumeOxygen(1D / 24D / 60D / 60D * seconds);
-        consumeWater(1D / 24D / 60D / 60D * seconds);
+    void timePassing(double time) {
+        consumeOxygen(time / 1000D);
+        consumeWater(time / 1000D);
         
         // Later to be replaced with a eat meal task.
-        consumeFood(1D / 24D / 60D / 60D * seconds);
-        
-        tasks.takeAction(seconds);
+        consumeFood(time / 1000D);
+
+        tasks.takeAction(time);
     }
 
     /** Returns a reference to the Person's natural attribute manager 

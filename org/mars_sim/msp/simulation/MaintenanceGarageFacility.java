@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarageFacility.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -35,10 +35,10 @@ public class MaintenanceGarageFacility extends Facility {
         vehicles = new Vector();
 
         // Initialize random maxVehicleSize from 2 to 5.
-        maxVehicleSize = 2 + RandomUtil.getRandomInteger(3);
+        maxVehicleSize = 2 + RandomUtil.getRandomInt(3);
 
         // Initialize random maxSizeCapacity from maxVehicleSize to 5x maxVehicleSize.
-        maxSizeCapacity = maxVehicleSize + (RandomUtil.getRandomInteger(4 * maxVehicleSize));
+        maxSizeCapacity = maxVehicleSize + (RandomUtil.getRandomInt(4 * maxVehicleSize));
     }
 
     /** Constructor for set values (used later when facilities can be built or upgraded.) 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.72 2001-05-10
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -38,11 +38,11 @@ public class VirtualMars {
     }
 
     /** Clock pulse from master clock 
-     *  @param seconds amount of time passing (in seconds)
+     *  @param time amount of time passing (in millisols)
      */
-    void clockPulse(double seconds) {
-        orbitInfo.addTime(seconds);
-        units.takeAction(seconds);
+    void clockPulse(double time) {
+        orbitInfo.addTime(MarsClock.convertMillisolsToSeconds(time));
+        units.timePassing(time);
     }
 
     /** Returns the orbital information

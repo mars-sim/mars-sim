@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-07-10
  * @author Scott Davis
  */
 
@@ -499,9 +499,9 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         failurePane.add(repairProgressBar);
         repairProgress = 0;
         if ((failure != null) && !failure.isFixed()) {
-            double totalHours = failure.getTotalWorkHours();
-            double remainingHours = failure.getRemainingWorkHours();
-            repairProgress = (int)(100F * (totalHours - remainingHours) / totalHours);
+            double totalTime = failure.getTotalWorkTime();
+            double remainingTime = failure.getRemainingWorkTime();
+            repairProgress = (int)(100D * (totalTime - remainingTime) / totalTime);
         }
         repairProgressBar.setValue(repairProgress);
 
@@ -768,10 +768,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         // Update repair progress bar
         int repairProgressTemp = 0;
         if ((failure != null) && !failure.isFixed()) {
-            double totalHours = failure.getTotalWorkHours();
-            double remainingHours = failure.getRemainingWorkHours();
+            double totalTime = failure.getTotalWorkTime();
+            double remainingTime = failure.getRemainingWorkTime();
             repairProgressTemp =
-                    (int)(100F * (totalHours - remainingHours) / totalHours);
+                    (int)(100F * (totalTime - remainingTime) / totalTime);
         }
         if (repairProgress != repairProgressTemp) {
             repairProgress = repairProgressTemp;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -61,10 +61,10 @@ public abstract class Unit {
         location.setCoords(newLocation);
     }
 
-    // perhaps this should be moved into a seperate Time interface
-    /** the opportunity for a unit to handle time passing 
-     *  @param seconds for action
+    /** Time passing for unit.
+     *  Unit should take action or be modified by time as appropriate.
+     *  @param time the amount of time passing (in millisols)
      */
-    void timePasses(double seconds) {
+    void timePassing(double time) {
     }
 }

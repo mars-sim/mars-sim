@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.72 2001-04-09
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -64,6 +64,14 @@ public class MarsClock {
      */
     public static double convertSecondsToMillisols(double seconds) {
         return seconds / SECONDS_IN_MILLISOL;
+    }
+
+    /** Converts millisols to seconds 
+     *  @param millisols decimal number of millisols 
+     *  @return equivalent number of seconds 
+     */
+    public static double convertMillisolsToSeconds(double millisols) {
+        return millisols * SECONDS_IN_MILLISOL;
     }
 
     /** Returns the number of sols in a month for

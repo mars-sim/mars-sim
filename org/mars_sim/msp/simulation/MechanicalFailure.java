@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MechanicalFailure.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -14,8 +14,8 @@ public class MechanicalFailure {
 
     // Data members
     private String name; // The name of the failure.
-    private double totalWorkHours; // The total number of work hours required to fix the failure. (1 - 50).
-    private double remainingWorkHours; // The remaining work hours required to fix the failure. (1 - 50).
+    private double totalWorkTime; // The total amount of work time required to fix the failure. (40 - 2000 millisols).
+    private double remainingWorkTime; // The remaining work time left to fix the failure. (40 - 2000 millisols).
     private boolean fixed; // True when mechanical failure is fixed.
 
     /** Constructs a MechanicalFailure object
@@ -27,9 +27,9 @@ public class MechanicalFailure {
         this.name = name;
         fixed = false;
 
-        // workHours random from 1 to 50 hours.
-        totalWorkHours = (Math.random() * (50D - 1D)) + 1D;
-        remainingWorkHours = totalWorkHours;
+        // Work time random from 40 to 2000 millisols.
+        totalWorkTime = RandomUtil.getRandomInt(40, 2000);
+        remainingWorkTime = totalWorkTime;
     }
 
     /** Returns the name of the failure. 
@@ -46,29 +46,26 @@ public class MechanicalFailure {
         return fixed;
     }
 
-    /** Returns the total work hours required to fix the failure. 
-     *  @return the total work hours required to fix the failure
+    /** Returns the total work time required to fix the failure. 
+     *  @return the total work time (in millisols)
      */
-    public double getTotalWorkHours() {
-        return totalWorkHours;
+    public double getTotalWorkTime() {
+        return totalWorkTime;
     }
 
-    /** Returns the remaining work hours required to fix the failure. 
-     *  @return the remaining work hours required to fix the failure 
+    /** Returns the remaining work time required to fix the failure. 
+     *  @return the remaining work time (in millisols)
      */
-    public double getRemainingWorkHours() {
-        return remainingWorkHours;
+    public double getRemainingWorkTime() {
+        return remainingWorkTime;
     }
 
-    /** Adds some work time (in seconds) to the failure. 
-     *  @param seconds work time (in seconds)
+    /** Adds some work time to the failure. 
+     *  @param time work time (in millisols)
      */
-    public void addWorkTime(double seconds) {
-
-        // Convert seconds to work hours.
-        double hours = (seconds / 60) / 60;
-        remainingWorkHours -= hours;
-        if (remainingWorkHours <= 0F)
+    public void addWorkTime(double time) {
+        remainingWorkTime -= time;
+        if (remainingWorkTime <= 0F)
             fixed = true;
     }
 }

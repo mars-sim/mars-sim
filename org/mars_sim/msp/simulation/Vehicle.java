@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-07-10
  * @author Scott Davis
  */
 
@@ -34,6 +34,7 @@ public abstract class Vehicle extends Unit {
     private double waterCapacity = 0; // Maximum amount of water the vehicle can carry.
     private double food = 0; // Curent amount of food in the vehicle.
     private double foodCapacity = 0; // Maximum amount of food the vehicle can carry.
+    protected double range; // Maximum range of vehicle.
 
     private Coordinates destinationCoords; // Coordinates of the destination
     private Settlement destinationSettlement; // Destination settlement (it applicable)
@@ -41,8 +42,8 @@ public abstract class Vehicle extends Unit {
     private double distanceToDestination = 0; // Distance in meters to the destination
     private boolean isReserved = false; // True if vehicle is currently reserved for a driver and cannot be taken by another
     private int vehicleSize = 1; // Size of vehicle in arbitrary units.(Value of size units will be established later.)
-    private int maintenanceWork = 0; // Work done for vehicle maintenance.
-    private int totalMaintenanceWork; // Total amount of work necessary for vehicle maintenance.
+    private double maintenanceWork = 0; // Work done for vehicle maintenance.
+    private double totalMaintenanceWork; // Total amount of work necessary for vehicle maintenance.
 
     private HashMap potentialFailures; // A table of potential failures in the vehicle. (populated by child classes)
     private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
@@ -63,7 +64,7 @@ public abstract class Vehicle extends Unit {
         setDestinationType("None");
         passengers = new Vector();
         potentialFailures = new HashMap();
-        totalMaintenanceWork = 24 * 60 * 60; // (24 hours)
+        totalMaintenanceWork = 1000D; // (1 sol) 
         direction = new Direction(0);
     }
 
@@ -121,6 +122,13 @@ public abstract class Vehicle extends Unit {
      */
     public void setBaseSpeed(double speed) {
         baseSpeed = speed;
+    }
+
+    /** Gets the range of the vehicle
+     *  @return the range of the vehicle (in km)
+     */
+    public double getRange() {
+        return range;
     }
 
     /** Returns the current amount of fuel in the vehicle. 
@@ -578,16 +586,16 @@ public abstract class Vehicle extends Unit {
     }
 
     /** Add work to periodic vehicle maintenance. 
-     *  @param seconds amount of work time added to vehicle maintenance (in seconds)
+     *  @param time amount of work time added to vehicle maintenance (in millisols)
      */
-    public void addWorkToMaintenance(double seconds) {
+    public void addWorkToMaintenance(double time) {
         // If vehicle has already been maintained, return.
         if (distanceMaint == 0D) {
             return;
         }
 
         // Add work to maintenance work done.
-        maintenanceWork += seconds;
+        maintenanceWork += time;
 
         // If maintenance work is complete, vehicle good for 5,000 km.
         if (maintenanceWork >= totalMaintenanceWork) {
@@ -599,14 +607,14 @@ public abstract class Vehicle extends Unit {
     /** Returns the current amount of work towards maintenance. 
      *  @return the current amount of work towards maintenance
      */
-    public int getCurrentMaintenanceWork() {
+    public double getCurrentMaintenanceWork() {
         return maintenanceWork;
     }
 
     /** Returns the total amount of work needed for maintenance. 
      *  @return the total amount of work needed for maintenance
      */
-    public int getTotalMaintenanceWork() {
+    public double getTotalMaintenanceWork() {
         return totalMaintenanceWork;
     }
 }

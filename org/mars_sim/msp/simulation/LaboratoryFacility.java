@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LaboratoryFacility.java
- * @version 2.71 2000-10-12
+ * @version 2.72 2000-06-24
  * @author Scott Davis
  */
 
@@ -28,10 +28,10 @@ public class LaboratoryFacility extends Facility {
         super(manager, "Research Laboratories");
 
         // Initialize random laboratorySize from 1 to 5.
-        laboratorySize = 1 + RandomUtil.getRandomInteger(4);
+        laboratorySize = 1 + RandomUtil.getRandomInt(4);
 
         // Initialize random technologyLevel from 1 to 5.
-        technologyLevel = 1 + RandomUtil.getRandomInteger(4);
+        technologyLevel = 1 + RandomUtil.getRandomInt(4);
 
         // Initialize techSpecialities from 1 to 5 technologies.
         techSpecialities = new Vector();

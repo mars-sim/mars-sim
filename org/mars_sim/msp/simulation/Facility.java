@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Facility.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -36,7 +36,7 @@ public abstract class Facility {
 
     /** Called every clock pulse for time events in facilities.
       *  Override in children to use this. 
-      *  @param seconds number of seconds of time passing
+      *  @param time the amount of time passing (in millisols) 
       */
-    void timePasses(double seconds) {}
+    void timePassing(double time) {}
 }

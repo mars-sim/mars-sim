@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.71 2000-10-17
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -32,7 +32,7 @@ public class NaturalAttributeManager {
         for (int x = 0; x < attributeKeys.length; x++) {
             int attributeValue = 0;
             for (int y = 0; y < 10; y++)
-                attributeValue += RandomUtil.getRandomInteger(10);
+                attributeValue += RandomUtil.getRandomInt(10);
             attributeList.put(attributeKeys[x], new Integer(attributeValue));
         }
 
@@ -49,7 +49,7 @@ public class NaturalAttributeManager {
      *  @param bonus the settler bonus to be added to the attribute
      */
     private void addSettlerBonus(String attributeName, int bonus) {
-        int newValue = getAttribute(attributeName) + RandomUtil.getRandomInteger(bonus);
+        int newValue = getAttribute(attributeName) + RandomUtil.getRandomInt(bonus);
         if (newValue > 100)
             newValue = 100;
         if (newValue < 0)

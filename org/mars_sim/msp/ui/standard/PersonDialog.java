@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDialog.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-07-08
  * @author Scott Davis
  */
 
@@ -28,7 +28,6 @@ public class PersonDialog extends UnitDialog {
 	private JPanel skillListPane;   // Panel containing list of person's skills and their levels.
 	private JLabel taskDescription; // Current task description label
 	private JLabel taskPhase;       // Current task phase label
-	private JLabel taskSubPhase;    // Current task sub-phase label
 
 	// Cached person data
 	private Coordinates unitCoords;
@@ -161,14 +160,6 @@ public class PersonDialog extends UnitDialog {
 			if ((phase != null) && !phase.equals("")) cachePhase = "Phase: " + phase;
 		}
 		if (!cachePhase.equals(taskPhase.getText())) taskPhase.setText(cachePhase);
-		
-		// Update task sub-phase
-		String cacheSubPhase = "";
-		if (taskManager.hasCurrentTask()) {
-			String subPhase = taskManager.getCurrentSubPhase();
-			if ((subPhase != null) && !subPhase.equals("")) cacheSubPhase = "Sub-Phase: " + subPhase;
-		}
-		if (!cacheSubPhase.equals(taskSubPhase.getText())) taskSubPhase.setText(cacheSubPhase);
 	}
 	
 	/** ActionListener method overriden */
@@ -254,17 +245,6 @@ public class PersonDialog extends UnitDialog {
 		taskPhase.setForeground(Color.black);
 		taskDescriptionPane.add(taskPhase);
 		
-		// Display name of current sub-phase.
-		// Display nothing if current task has no current sub-phase.
-		// Display nothing if person is currently doing nothing.
-		taskSubPhase = new JLabel("", JLabel.LEFT);
-		if (taskManager.hasCurrentTask()) {
-			String subPhase = taskManager.getCurrentSubPhase();
-			if ((subPhase != null) && !subPhase.equals("")) taskSubPhase.setText("Sub-Phase: " + subPhase);
-		}
-		taskSubPhase.setForeground(Color.black);
-		taskDescriptionPane.add(taskSubPhase);
-	
 		// Return skill panel
 		return taskPane;
 	}

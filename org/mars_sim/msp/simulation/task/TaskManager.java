@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.72 2001-05-31
+ * @version 2.72 2001-07-08
  * @author Scott Davis
  */
 
@@ -38,8 +38,7 @@ public class TaskManager {
         // Create an array of general task classes.
         // (Add additional general tasks as they are created)
         try {
-            generalTasks = new Class[]{ TaskRelax.class, TaskDrive.class, TaskTendGreenhouse.class,
-            TaskMechanic.class };
+            generalTasks = new Class[]{ TravelToSettlement.class, Relax.class, TendGreenhouse.class };
         } catch (Exception e) {
             System.out.println("TaskManager.constructor(): " + e.toString());
         }
@@ -78,24 +77,26 @@ public class TaskManager {
             return null;
     }
 
-    /** Returns the name of current task sub-phase if there is one.
-      *  Returns black string if current task has no sub-phase.
-      *  Returns null if there is no current task.
-      *  @return the name of the current task sub-phase
-      */
-    public String getCurrentSubPhase() {
-        if (currentTask != null)
-            return currentTask.getSubPhase();
-        else
-            return null;
-    }
-
     /** Returns the current task.
      *  Return null if there is no current task.
      *  @return the current task
      */
     public Task getCurrentTask() {
         return currentTask;
+    }
+
+    /** Sets a new task for the person, stopping any current tasks.
+     * 
+     */
+    public void setCurrentTask(Task newTask) {
+        currentTask = newTask;
+    }
+   
+    /** Sets the current task to null.
+     *
+     */
+    public void clearCurrentTask() {
+        currentTask = null;
     }
 
     /** Adds a sub-task to the stack of tasks. 
@@ -108,15 +109,15 @@ public class TaskManager {
             currentTask = subTask;
     }
 
-    /** Perform a task for a given number of seconds.
+    /** Perform a task for a given amount of time.
      *  If person has no task or the current task is done, assign a new task to him/her.
-     *  @param seconds the amount of time to perform a task (in seconds)
+     *  @param time amount of time to perform the action
      */
-    public void takeAction(double seconds) {
+    public void takeAction(double time) {
         if ((currentTask == null) || currentTask.isDone()) {
             getNewTask();
         }
-        currentTask.doTask(seconds);
+        currentTask.doTask(time);
     }
 
     /** Assigns a new task to a person based on general tasks available.
@@ -134,11 +135,11 @@ public class TaskManager {
             try {
                 Method probability =
                         generalTasks[x].getMethod("getProbability", parametersForFindingMethod);
-                int weight = ((Integer) probability.invoke(null, parametersForInvokingMethod)).intValue();
+                double weight = ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
 
-                if (weight > 0) {
+                if (weight > 0D) {
                     probableTasks.addElement(generalTasks[x]);
-                    weights.addElement(new Integer(weight));
+                    weights.addElement(new Double(weight));
                 }
             } catch (Exception e) {
                 System.out.println("TaskManager.getNewTask() (1): " + e.toString());
@@ -146,19 +147,19 @@ public class TaskManager {
         }
         
         // Total up the weights
-        int totalWeight = 0;
+        double totalWeight = 0;
         for (int x = 0; x < weights.size(); x++)
-            totalWeight += ((Integer) weights.elementAt(x)).intValue();
+            totalWeight += ((Double) weights.elementAt(x)).doubleValue();
 
         // Get a random number from 0 to the total weight
-        int r = (int) Math.round(Math.random() * (double) totalWeight);
+        double r = RandomUtil.getRandomDouble(totalWeight);
         
         // Determine which task is selected
-        int tempWeight = ((Integer) weights.elementAt(0)).intValue();
+        double tempWeight = ((Double) weights.elementAt(0)).doubleValue();
         int taskNum = 0;
         while (tempWeight < r) {
             taskNum++;
-            tempWeight += ((Integer) weights.elementAt(taskNum)).intValue();
+            tempWeight += ((Double) weights.elementAt(taskNum)).doubleValue();
         }
         
         // Create an instance of that task and set it as the current task

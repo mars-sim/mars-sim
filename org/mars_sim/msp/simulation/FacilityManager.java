@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-06-24
  * @author Scott Davis
  */
 
@@ -81,12 +81,11 @@ public class FacilityManager {
         return null;
     }
 
-    /** Sends facilities a time pulse. 
-     *  @param seconds number of seconds of time passing
+    /** Time passing for all the facilities 
+     *  @param time the amount of time passing (in millisols) 
      */
-    void timePasses(double seconds) {
-        for (int x = 0; x < facilityList.size(); x++) {
-            ((Facility) facilityList.elementAt(x)).timePasses(seconds);
-        }
+    void timePassing(double time) {
+        for (int x = 0; x < facilityList.size(); x++) 
+            ((Facility) facilityList.elementAt(x)).timePassing(time);
     }
 }
