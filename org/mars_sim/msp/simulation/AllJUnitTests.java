@@ -1,10 +1,8 @@
-import junit.framework.Test; 	 
-import junit.framework.TestCase; 	 
-import junit.framework.TestSuite; 	 
-  	 
-// include any ONE of the following... 	 
-//import junit.textui.TestRunner; 	 
-//import junit.awtui.TestRunner; 	 
+package org.mars_sim.msp.simulation;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import junit.swingui.TestRunner;
 
 /**
