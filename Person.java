@@ -1,5 +1,5 @@
 //************************** Person Unit **************************
-// Last Modified: 3/2/00
+// Last Modified: 5/8/00
 
 // The Person class represents a person on the virtual Mars.  
 // It keeps track of everything related to that person and provides information about him/her.
@@ -70,7 +70,6 @@ public class Person extends Unit {
 		settlement = null;	
 	}
 
-	// Override Unit action method
 	// Action taken by person during unit turn
 
 	public void takeAction(int seconds) { tasks.takeAction(seconds); }
