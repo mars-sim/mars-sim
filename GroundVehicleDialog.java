@@ -1,5 +1,5 @@
 //******************** Ground Vehicle Detail Window ********************
-// Last Modified: 2/27/00
+// Last Modified: 8/27/00
 
 // The GroundVehicleDialog class is the detail window for a ground vehicle.
 // It is abstract and an appropriate detail window needs to be derived for 
@@ -94,7 +94,7 @@ public abstract class GroundVehicleDialog extends VehicleDialog {
 		
 		// Prepare direction display
 		
-		directionDisplay = new VehicleDirectionDisplay(groundVehicle.getDirection(), vehicle.getStatus().equals("Parked"));
+		directionDisplay = new VehicleDirectionDisplay(groundVehicle.getDirection(), (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")));
 		JPanel directionDisplayPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		directionDisplayPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.green)));
 		directionDisplayPane.setMaximumSize(new Dimension(56, 56));
@@ -118,9 +118,11 @@ public abstract class GroundVehicleDialog extends VehicleDialog {
 	// Update terrain display
 
 	protected void updateAveGrade() {
-		if (vehicle.getStatus().equals("Parked") && (terrainGrade != 0D)) {
-			terrainDisplay.updateTerrainAngle(0D);
-			terrainGrade = 0D;
+		if (vehicle.getStatus().equals("Parked") || vehicle.getStatus().equals("Periodic Maintenance")) {
+			if (terrainGrade != 0D) {
+				terrainDisplay.updateTerrainAngle(0D);
+				terrainGrade = 0D;
+			}
 		}
 		else {
 			double tempGrade = groundVehicle.getTerrainGrade();
@@ -136,7 +138,7 @@ public abstract class GroundVehicleDialog extends VehicleDialog {
 	protected void updateDirection() {
 		double tempDirection = groundVehicle.getDirection();
 		if (direction != tempDirection) {
-			directionDisplay.updateDirection(tempDirection, groundVehicle.getStatus().equals("Parked"));
+			directionDisplay.updateDirection(tempDirection, (groundVehicle.getStatus().equals("Parked") || groundVehicle.getStatus().equals("Periodic Maintenance")));
 			direction = tempDirection;
 		}
 	}
@@ -144,7 +146,7 @@ public abstract class GroundVehicleDialog extends VehicleDialog {
 	// Update elevation label
 
 	protected void updateElevation() {
-		double tempElevation = Math.round(groundVehicle.elevation * 100D) / 100D;
+		double tempElevation = Math.round(groundVehicle.getElevation() * 100D) / 100D;
 		if (elevation != tempElevation) {
 			elevationLabel.setText("Elevation: " + tempElevation + " km.");
 			elevation = tempElevation;
