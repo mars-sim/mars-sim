@@ -26,7 +26,7 @@ public class FacilityManager implements Serializable {
      */
     FacilityManager(Settlement settlement, VirtualMars mars) {
 
-        // Initialize data members 
+        // Initialize data members
         this.settlement = settlement;
         this.mars = mars;
 
@@ -38,9 +38,10 @@ public class FacilityManager implements Serializable {
         facilityList.addElement(new MaintenanceGarageFacility(this));
         facilityList.addElement(new LaboratoryFacility(this));
         facilityList.addElement(new InsituResourceProcessorFacility(this));
+        facilityList.addElement(new Infirmary(this));
     }
 
-    /** Returns the settlement the owns this facility manager. 
+    /** Returns the settlement the owns this facility manager.
      *  @return parent settlement
      */
     public Settlement getSettlement() {
@@ -54,7 +55,7 @@ public class FacilityManager implements Serializable {
         return mars;
     }
 
-    /** Returns the number of facilities in the manager. 
+    /** Returns the number of facilities in the manager.
      *  @return number of facilities the manager controls
      */
     public int getFacilityNum() {
@@ -62,7 +63,7 @@ public class FacilityManager implements Serializable {
     }
 
     /** Returns a facility given an index number. If there is no
-     *  facility at that index number, return null. 
+     *  facility at that index number, return null.
      *  @param index index number of the requested facility
      *  @return requested facility
      */
@@ -75,7 +76,7 @@ public class FacilityManager implements Serializable {
     }
 
     /** Returns a facility given its name. If there is no facility of
-     *  the given name, return null. 
+     *  the given name, return null.
      *  @param name name of the requested facility
      *  @return requested facility
      */
@@ -89,11 +90,11 @@ public class FacilityManager implements Serializable {
         return null;
     }
 
-    /** Time passing for all the facilities 
-     *  @param time the amount of time passing (in millisols) 
+    /** Time passing for all the facilities
+     *  @param time the amount of time passing (in millisols)
      */
     void timePassing(double time) {
-        for (int x = 0; x < facilityList.size(); x++) 
+        for (int x = 0; x < facilityList.size(); x++)
             ((Facility) facilityList.elementAt(x)).timePassing(time);
     }
 }
