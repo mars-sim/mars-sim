@@ -227,7 +227,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             }
             else {
                 phase = COLLECTSAMPLES + " from Site " + (siteIndex + 1);
-		System.out.println("CollectRockSamplesMission: Collecting phase started.");
+		// System.out.println("CollectRockSamplesMission: Collecting phase started.");
 		collectedSamples = 0D;
 		collectingStart = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
 		startCollectingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
@@ -271,12 +271,12 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	if (everyoneInRover) {
 	    // If collected samples are sufficient for this site, end the collecting phase.
 	    if (collectedSamples >= SITE_SAMPLE_AMOUNT) {
-		System.out.println("CollectRockSamplesMission: collecting phase ended.");
-		System.out.println("CollectRockSamplesMission: collectedSamples: " + collectedSamples);
-		System.out.println("CollectRockSamplesMission: SITE_SAMPLE_AMOUNT: " + SITE_SAMPLE_AMOUNT);
+		// System.out.println("CollectRockSamplesMission: collecting phase ended.");
+		// System.out.println("CollectRockSamplesMission: collectedSamples: " + collectedSamples);
+		// System.out.println("CollectRockSamplesMission: SITE_SAMPLE_AMOUNT: " + SITE_SAMPLE_AMOUNT);
 		MarsClock currentTime = mars.getMasterClock().getMarsClock();
 		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
-		System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
+		// System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
 		endPhase = true;
 	    }
 
@@ -291,11 +291,11 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	    // night time, end the collecting phase.
 	    int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
 	    if (nobodyCollect && (sunlight > 0)) {
-		System.out.println("CollectRockSamplesMission: collecting phase ended.");
-		System.out.println("CollectRockSamplesMission: nobody can collect and not nighttime.");
+		// System.out.println("CollectRockSamplesMission: collecting phase ended.");
+		// System.out.println("CollectRockSamplesMission: nobody can collect and not nighttime.");
 		MarsClock currentTime = mars.getMasterClock().getMarsClock();
 		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
-		System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
+		// System.out.println("CollectRockSamplesMission: collecting phase time: " + collectionTime);
 		endPhase = true;
 	    }
 	}

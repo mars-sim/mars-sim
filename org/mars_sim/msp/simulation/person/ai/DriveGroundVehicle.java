@@ -72,7 +72,6 @@ class DriveGroundVehicle extends Task implements Serializable {
         obstacleTimeCount = 0D;
         backingUpDistance = 0D;
         phase = DRIVING;
-        vehicle.setDriver(person);
         backingUp = false;
         startTime = startTripTime;
         startDistance = startTripDistance;
@@ -92,6 +91,9 @@ class DriveGroundVehicle extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+        // Set person as driver.
+	vehicle.setDriver(person);
+	
         // If person is incompacitated, end task.
 	if (person.getPerformanceRating() == 0D) done = true;
 	
@@ -113,7 +115,7 @@ class DriveGroundVehicle extends Task implements Serializable {
 
         // Keep track of the duration of the task.
         timeCompleted += time;
-        if (timeCompleted >= duration) {
+        if (done || (timeCompleted >= duration)) {
 	    // System.out.println(person.getName() + " finished driving " + vehicle.getName());
 	    vehicle.setSpeed(0D);
             vehicle.setDriver(null);

@@ -37,7 +37,7 @@ class EnterRoverEVA extends Task implements Serializable {
 	description = "Entering " + rover.getName() + " from EVA";
         this.rover = rover;
 
-	System.out.println(person.getName() + " is starting to enter " + rover.getName());
+	// System.out.println(person.getName() + " is starting to enter " + rover.getName());
     }
 
     /** 
@@ -53,12 +53,12 @@ class EnterRoverEVA extends Task implements Serializable {
 	// or wait if it's not.
 	if (!inAirlock) {
             if (!rover.isAirlockOccupied()) {
-		System.out.println(person.getName() + " entering " + rover.getName() + " airlock.");
+		// System.out.println(person.getName() + " entering " + rover.getName() + " airlock.");
                 inAirlock = true;
                 rover.setAirlockOccupied(true);
 		airlockStartTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
             }
-	    else System.out.println(person.getName() + " waiting for " + rover.getName() + " airlock to become available.");
+	    // else System.out.println(person.getName() + " waiting for " + rover.getName() + " airlock to become available.");
         }
 
 	// If person is in the rover's airlock, wait required period of time
@@ -67,15 +67,15 @@ class EnterRoverEVA extends Task implements Serializable {
 	    MarsClock currentTime = mars.getMasterClock().getMarsClock();
 	    double currentAirlockTime = MarsClock.getTimeDiff(currentTime, airlockStartTime) + timeLeft;
 	    if (currentAirlockTime >= Rover.AIRLOCK_TIME) {
-		System.out.println(person.getName() + " exiting " + rover.getName() + " airlock.");
-		System.out.println(person.getName() + " is inside " + rover.getName());
+		// System.out.println(person.getName() + " exiting " + rover.getName() + " airlock.");
+		// System.out.println(person.getName() + " is inside " + rover.getName());
 	        rover.setAirlockOccupied(false);
 		rover.getInventory().addUnit(person);
 		putAwayEVASuit();
 		done = true;
 	       	return currentAirlockTime - Rover.AIRLOCK_TIME;
 	    }
-	    else System.out.println(person.getName() + " waiting inside " + rover.getName() + " airlock.");
+	    // else System.out.println(person.getName() + " waiting inside " + rover.getName() + " airlock.");
 	}
 
 	return 0D;
@@ -95,17 +95,17 @@ class EnterRoverEVA extends Task implements Serializable {
 	// Refill oxygen in suit from rover's inventory. 
 	double neededOxygen = suitInv.getResourceRemainingCapacity(Inventory.OXYGEN);
 	double takenOxygen = roverInv.removeResource(Inventory.OXYGEN, neededOxygen);
-	System.out.println(person.getName() + " refilling EVA suit with " + takenOxygen + " oxygen.");
+	// System.out.println(person.getName() + " refilling EVA suit with " + takenOxygen + " oxygen.");
 	suitInv.addResource(Inventory.OXYGEN, takenOxygen);
 
 	// Refill water in suit from rover's inventory.
 	double neededWater = suitInv.getResourceRemainingCapacity(Inventory.WATER);
 	double takenWater = roverInv.removeResource(Inventory.WATER, neededWater);
-	System.out.println(person.getName() + " refilling EVA suit with " + takenWater + " water.");
+	// System.out.println(person.getName() + " refilling EVA suit with " + takenWater + " water.");
 	suitInv.addResource(Inventory.WATER, takenWater);
 
 	// Return suit to rover's inventory.
-	System.out.println(person.getName() + " putting away EVA suit into " + rover.getName());
+	// System.out.println(person.getName() + " putting away EVA suit into " + rover.getName());
 	personInv.takeUnit(suit, rover);
     }
 }

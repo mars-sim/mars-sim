@@ -37,7 +37,7 @@ class ExitRoverEVA extends Task implements Serializable {
 	description = "Exiting " + rover.getName() + " for EVA";
         this.rover = rover;
 
-	System.out.println(person.getName() + " is starting to exit " + rover.getName());
+	// System.out.println(person.getName() + " is starting to exit " + rover.getName());
     }
 
     /** 
@@ -58,7 +58,7 @@ class ExitRoverEVA extends Task implements Serializable {
 	        while (i.hasNext() && !hasSuit) {
 	            EVASuit suit = (EVASuit) i.next();
 		    if (suit.isFullyLoaded() && suit.lifeSupportCheck()) {
-		        System.out.println(person.getName() + " taking EVA suit from " + rover.getName());
+		        // System.out.println(person.getName() + " taking EVA suit from " + rover.getName());
 		        if (inv.takeUnit(suit, person)) hasSuit = true;
 		    }
 	        }
@@ -67,7 +67,7 @@ class ExitRoverEVA extends Task implements Serializable {
 
 	// If person still doesn't have an EVA suit, end task.
 	if (!hasSuit) {
-            System.out.println(person.getName() + " does not have an EVA suit, ExitRoverEVA ended");
+            // System.out.println(person.getName() + " does not have an EVA suit, ExitRoverEVA ended");
 	    done = true;
 	    return timeLeft;
 	}
@@ -76,12 +76,12 @@ class ExitRoverEVA extends Task implements Serializable {
 	// or wait if it's not.
         if (!inAirlock) {
 	    if (!rover.isAirlockOccupied()) {
-		System.out.println(person.getName() + " entering " + rover.getName() + " airlock.");
+		// System.out.println(person.getName() + " entering " + rover.getName() + " airlock.");
 		inAirlock = true;
 	        rover.setAirlockOccupied(true);
 		airlockStartTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
 	    }
-	    else System.out.println(person.getName() + " waiting for " + rover.getName() + " airlock to become available.");
+	    // else System.out.println(person.getName() + " waiting for " + rover.getName() + " airlock to become available.");
 	}
 
 	// If person is in the rover's airlock, wait required period of time
@@ -90,14 +90,14 @@ class ExitRoverEVA extends Task implements Serializable {
 	    MarsClock currentTime = mars.getMasterClock().getMarsClock();
 	    double currentAirlockTime = MarsClock.getTimeDiff(currentTime, airlockStartTime) + timeLeft;
 	    if (currentAirlockTime >= Rover.AIRLOCK_TIME) {
-		System.out.println(person.getName() + " exiting " + rover.getName() + " airlock.");
-		System.out.println(person.getName() + " going outside.");
+		// System.out.println(person.getName() + " exiting " + rover.getName() + " airlock.");
+		// System.out.println(person.getName() + " going outside.");
 		rover.setAirlockOccupied(false);
 	        rover.getInventory().dropUnitOutside(person);
 		done = true;
 		return currentAirlockTime - Rover.AIRLOCK_TIME;
 	    }
-	    else System.out.println(person.getName() + " waiting inside " + rover.getName() + " airlock");
+	    // else System.out.println(person.getName() + " waiting inside " + rover.getName() + " airlock");
 	}
 
 	return 0D;

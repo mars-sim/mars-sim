@@ -48,7 +48,7 @@ class CollectRockSamples extends Task implements Serializable {
 	
         phase = EXIT_ROVER;
 	
-        System.out.println(person.getName() + " has started collecting rock samples task.");
+        // System.out.println(person.getName() + " has started collecting rock samples task.");
     }
 
     /** 
@@ -81,13 +81,13 @@ class CollectRockSamples extends Task implements Serializable {
 	        return 0D;
 	    }
 	    else {
-		System.out.println(person.getName() + " unable to exit " + rover.getName());
+		// System.out.println(person.getName() + " unable to exit " + rover.getName());
 	        done = true;
 		return time;
 	    }
 	}
 	else {
-	    System.out.println(person.getName() + " collecting rock samples.");
+	    // System.out.println(person.getName() + " collecting rock samples.");
 	    phase = COLLECT_ROCKS;
 	    return time;
         }
@@ -129,8 +129,8 @@ class CollectRockSamples extends Task implements Serializable {
 	}
 	else {
 	    // System.out.println(person.getName() + " collected " + sampleLimit + " kg of rock samples.");
-	    System.out.println(person.getName() + " finished collecting rock samples.");
-	    System.out.println(person.getName() + " starting to enter rover.");
+	    // System.out.println(person.getName() + " finished collecting rock samples.");
+	    // System.out.println(person.getName() + " starting to enter rover.");
 	    if (sampleLimit >= 0D) 
                 person.getInventory().addResource(Inventory.ROCK_SAMPLES, sampleLimit);
 	    phase = ENTER_ROVER;
@@ -155,12 +155,12 @@ class CollectRockSamples extends Task implements Serializable {
 	    // Load rock samples into rover.
 	    if (rockSamples > 0D) {
 	        rockSamples = person.getInventory().removeResource(Inventory.ROCK_SAMPLES, rockSamples);
-	        System.out.println(person.getName() + " unloading " + rockSamples + " kg. of rock samples into " + rover.getName());
+	        // System.out.println(person.getName() + " unloading " + rockSamples + " kg. of rock samples into " + rover.getName());
 	        rover.getInventory().addResource(Inventory.ROCK_SAMPLES, rockSamples);
 	        return 0D;
 	    }
 	    else {
-	        System.out.println(person.getName() + " ending collect rock samples task.");
+	        // System.out.println(person.getName() + " ending collect rock samples task.");
 		done = true;
 		return time;
 	    }
@@ -200,7 +200,7 @@ class CollectRockSamples extends Task implements Serializable {
         
 	// Check if it is night time. 
 	if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) == 0) {
-	    System.out.println(person.getName() + " should end collection phase: night time.");
+	    // System.out.println(person.getName() + " should end collection phase: night time.");
 	    result = true;
 	}
 
@@ -211,7 +211,7 @@ class CollectRockSamples extends Task implements Serializable {
 	double oxygenCap = suitInv.getResourceCapacity(Inventory.OXYGEN);
 	double oxygen = suitInv.getResourceMass(Inventory.OXYGEN);
 	if (oxygen <= (oxygenCap * .1D)) {
-	    System.out.println(person.getName() + " should end collection phase: EVA suit oxygen level less than 10%");	
+	    // System.out.println(person.getName() + " should end collection phase: EVA suit oxygen level less than 10%");	
 	    result = true;
 	}
 
@@ -219,19 +219,19 @@ class CollectRockSamples extends Task implements Serializable {
 	double waterCap = suitInv.getResourceCapacity(Inventory.WATER);
 	double water = suitInv.getResourceMass(Inventory.WATER);
 	if (water <= (waterCap * .1D)) {
-	    System.out.println(person.getName() + " should end collection phase: EVA suit water level less than 10%");	
+	    // System.out.println(person.getName() + " should end collection phase: EVA suit water level less than 10%");	
             result = true;
 	}
 
 	// Check if life support system in suit is working properly.
 	if (!suit.lifeSupportCheck()) {
-	    System.out.println(person.getName() + " should end collection phase: EVA suit failed life support check.");	
+	    // System.out.println(person.getName() + " should end collection phase: EVA suit failed life support check.");	
 	    result = true;
 	}
 
 	// Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() < .5D) {
-	    System.out.println(person.getName() + " should end collection phase: medical problems.");	
+	    // System.out.println(person.getName() + " should end collection phase: medical problems.");	
 	    result = true;
 	}
 	
