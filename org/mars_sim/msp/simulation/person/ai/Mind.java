@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-06-08
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.person.ai;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.job.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 
@@ -21,9 +22,9 @@ public class Mind implements Serializable {
 
     // Data members
     private Person person; // The person owning this mind.
-    private MissionManager missionManager; // The simulation's mission manager.
     private TaskManager taskManager; // The person's task manager.
     private Mission mission; // The person's current mission (if any).
+    private Job job; // The person's job.
 
     /** 
      * Constructor
@@ -33,8 +34,8 @@ public class Mind implements Serializable {
 
         // Initialize data members
         this.person = person;
-        missionManager = Simulation.instance().getMissionManager();
         mission = null;
+        job = null;
 
         // Construct a task manager
         taskManager = new TaskManager(this);
@@ -87,6 +88,14 @@ public class Mind implements Serializable {
     public Mission getMission() {
         return mission;
     }
+    
+    /**
+     * Gets the person's job
+     * @return job or null if none.
+     */
+    public Job getJob() {
+    	return job;
+    }
 
     /** Returns true if person has an active mission.
      *  @return true for active mission
@@ -119,6 +128,16 @@ public class Mind implements Serializable {
         mission = newMission;
         newMission.addPerson(person);
     }
+    
+    /**
+     * Checks to see if the person should change his/her job.
+     * (Note: more work here needed)
+     * @return true if change job.
+     */
+    private boolean shouldChangeJob() {
+    	boolean result = false;
+    	return result;
+    }
 
     /** 
      * Determines a new action for the person based on
@@ -129,6 +148,15 @@ public class Mind implements Serializable {
      * @throws Exception if new action cannot be found.
      */
     public void getNewAction(boolean tasks, boolean missions, boolean activeMissions) throws Exception {
+
+		MissionManager missionManager = Simulation.instance().getMissionManager();
+		JobManager jobManager = Simulation.instance().getJobManager();
+		
+		// Check if this person needs to get a new job or change jobs.
+		if ((job == null) || shouldChangeJob()) {
+			job = jobManager.getNewJob(person);
+			// System.out.println(person.getName() + " job is " + job.getName());
+		} 
 
         // If this Person is too weak then they can not do Missions
         if (person.getPerformanceRating() < 0.5D) {

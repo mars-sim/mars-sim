@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -10,6 +10,7 @@ import java.io.*;
 import org.mars_sim.msp.simulation.events.HistoricalEventManager;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.simulation.mars.*;
+import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.medical.MedicalManager;
 import org.mars_sim.msp.simulation.time.*;
@@ -40,6 +41,7 @@ public class Simulation implements Serializable {
 	private UnitManager unitManager; // Manager for all units in simulation.
 	private MissionManager missionManager; // Mission controller
 	private MedicalManager medicalManager; // Medical complaints
+	private JobManager jobManager; // Job manager
 	private MasterClock masterClock; // Master clock for the simulation.
 
 	/**
@@ -92,6 +94,7 @@ public class Simulation implements Serializable {
 		mars = new Mars();
 		missionManager = new MissionManager();
 		medicalManager = new MedicalManager();
+		jobManager = new JobManager();
 		unitManager = new UnitManager();
 		unitManager.constructInitialUnits();
 		masterClock = new MasterClock();
@@ -117,6 +120,7 @@ public class Simulation implements Serializable {
 			mars.initializeTransientData();
 			missionManager = (MissionManager) p.readObject();
 			medicalManager = (MedicalManager) p.readObject();
+			jobManager = (JobManager) p.readObject();
 			unitManager = (UnitManager) p.readObject();
 			masterClock = (MasterClock) p.readObject();
 			p.close();
@@ -146,6 +150,7 @@ public class Simulation implements Serializable {
 		p.writeObject(mars);
 		p.writeObject(missionManager);
 		p.writeObject(medicalManager);
+		p.writeObject(jobManager);
 		p.writeObject(unitManager);
 		p.writeObject(masterClock);
 			
@@ -241,6 +246,14 @@ public class Simulation implements Serializable {
 	 */
 	public MedicalManager getMedicalManager() {
 		return medicalManager;
+	}
+	
+	/**
+	 * Get the job manager.
+	 * @return job manager
+	 */
+	public JobManager getJobManager() {
+		return jobManager;
 	}
 	
 	/**

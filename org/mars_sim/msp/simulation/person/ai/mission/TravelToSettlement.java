@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-07-08
  * @author Scott Davis
  */
 
@@ -26,7 +26,7 @@ import org.mars_sim.msp.simulation.vehicle.*;
  *
  *  May also be constructed with predetermined destination. 
  */
-class TravelToSettlement extends Mission implements Serializable {
+public class TravelToSettlement extends Mission implements Serializable {
 
     // Constant for phases
     private final static String DISEMBARK = "Disembarking";
