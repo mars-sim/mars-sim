@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.75 2004-02-15
+ * @version 2.75 2004-03-19
  * @author Scott Davis
  */
 
@@ -173,7 +173,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 	private void drivingPhase(Person person) {
 
 		// If someone has a dangerous medical problem, drive home.
-		if (hasDangerousMedicalProblems() && !phase.equals(DRIVE_HOME)) {
+		if ((hasDangerousMedicalProblems() || hasDangerousMedicalProblemAtHome()) && !phase.equals(DRIVE_HOME)) {
 			phase = DRIVE_HOME;
 			destination = startingSettlement.getCoordinates();
 			rover.setDestinationSettlement(startingSettlement);
@@ -256,6 +256,9 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			// night time, end the collecting phase.
 			double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
 			if (nobodyCollect && (sunlight > 0D)) endPhase = true;
+			
+			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
+			if (hasDangerousMedicalProblems() || hasDangerousMedicalProblemAtHome()) endPhase = true;
 		}
 
 		if (!endPhase) {
@@ -276,6 +279,9 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
             
 			// If any of the crew has a dangerous medical problem, head home.
 			if (hasDangerousMedicalProblems()) driveHome = true;
+			
+			// If only one person is at the home settlement and has a serious medical problem, head home.
+			if (hasDangerousMedicalProblemAtHome()) driveHome = true;
             
 			// If the rover is full of resources, head home.
 			if (siteCollectedResources >= resourcesCapacity) driveHome = true;
@@ -360,8 +366,27 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			Iterator meds = person.getPhysicalCondition().getProblems().iterator();
 			while (meds.hasNext()) {
 				HealthProblem prob = (HealthProblem) meds.next();
-				if ((prob.getIllness().getRecoveryTreatment() != null) ||
-					prob.isEnvironmentalProblem()) result = true;
+				if (prob.getIllness().getSeriousness() >= 50) result = true;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Checks if there is only one person at the home settlement and has a serious medical problem.
+	 * @return true if serious medical problem
+	 */
+	private boolean hasDangerousMedicalProblemAtHome() {
+		boolean result = false;
+		if (startingSettlement.getCurrentPopulationNum() == 1) {
+			PersonIterator i = startingSettlement.getInhabitants().iterator();
+			while (i.hasNext()) {
+				Person person = i.next();
+				Iterator meds = person.getPhysicalCondition().getProblems().iterator();
+				while (meds.hasNext()) {
+					HealthProblem prob = (HealthProblem) meds.next();
+					if (prob.getIllness().getSeriousness() >= 50) result = true; 
+				}
 			}
 		}
 		return result;

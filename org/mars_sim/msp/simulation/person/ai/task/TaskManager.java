@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-03-19
  * @author Scott Davis
  */
 
@@ -129,6 +129,7 @@ public class TaskManager implements Serializable {
     public void performTask(double time, double efficiency) {
         if (currentTask != null) {
             // For effort driven task, reduce the effective time
+            if (efficiency < .1D) efficiency = .1D; 
             if (currentTask.isEffortDriven()) time *= efficiency;
             checkForEmergency();
             currentTask.performTask(time);

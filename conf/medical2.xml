@@ -114,7 +114,7 @@
 			<recovery-time value="2.0" />
 			<probability value="10.0" />
 			<performance-percent value="60.0" />
-			<treatement value="Dressing" />
+			<treatment value="Dressing" />
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>
 		
@@ -126,7 +126,7 @@
 			<recovery-time value="15.0" />
 			<probability value="0.0" />
 			<performance-percent value="10.0" />
-			<treatement value="Antibiotics" />
+			<treatment value="Antibiotics" />
 		</medical-complaint>
 
 		<!-- Minor burns are painful but not serious and will heal in time. -->
@@ -211,7 +211,7 @@
 		<treatment name="Major Operation">
 			<skill value="4" />
 			<medical-tech-level value="4" />
-			<treatement-time value="160.0" />
+			<treatment-time value="160.0" />
 			<retainaid value="true" />
 		</treatment>
 		

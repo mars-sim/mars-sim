@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-03-19
  * @author Scott Davis
  */
 
@@ -422,7 +422,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         // Determine light condition modifier based on available sunlight.
         // 30% speed at night.
         double lightModifier = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
-        lightModifier = ((lightModifier / 127D) * .7D) + .3D;
+        lightModifier = (lightModifier * .7D) + .3D;
 
         double speed = (vehicle.getBaseSpeed() + speedSkillModifier) * Math.cos(tempAngle) * lightModifier;
         if (speed < 0D) speed = 0D;
@@ -454,13 +454,13 @@ public class DriveGroundVehicle extends Task implements Serializable {
         chance /= (1D + vehicle.getTerrainHandlingCapability());
 
         // Light condition modification.
-        double lightModifier = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
-        chance *= ((5D * (127D - lightModifier) / 127D) + 1D);
+        double lightConditions = mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates());
+        chance *= (5D * (1D - lightConditions)) + 1D;
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // System.out.println(person.getName() + " has accident driving " + vehicle.getName());
-	    vehicle.getMalfunctionManager().accident();
-	}
+	    	vehicle.getMalfunctionManager().accident();
+		}
     }
     
     /** Determines the ETA (Estimated Time of Arrival) to the destination.

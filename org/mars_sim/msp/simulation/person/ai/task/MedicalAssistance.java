@@ -70,6 +70,7 @@ public class MedicalAssistance extends Task implements Serializable {
             // Start the treatment
             try {
                 medical.startTreatment(problem, duration);
+				// System.out.println(person.getName() + " treating " + problem.getIllness().getName());
                 
 				// Create starting task event if needed.
 			    if (getCreateEvents()) {
@@ -78,7 +79,7 @@ public class MedicalAssistance extends Task implements Serializable {
 				}
             }
             catch (Exception e) {
-                System.out.println("MedicalAssistance: " + e.getMessage());
+                System.err.println("MedicalAssistance: " + e.getMessage());
                 endTask();
             }
         }

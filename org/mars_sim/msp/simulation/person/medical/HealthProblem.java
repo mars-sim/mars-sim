@@ -67,7 +67,7 @@ public class HealthProblem implements Serializable {
                     usedAid.requestTreatment(this);
                 }
                 catch (Exception e) {
-                    // System.out.println("HeathProblem: " + e.getMessage());
+                    System.out.println("HeathProblem: " + e.getMessage());
                 }
             }
         }

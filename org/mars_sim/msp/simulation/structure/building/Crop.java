@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.75 2004-03-18
+ * @version 2.75 2004-03-19
  * @author Scott Davis
  */
  
@@ -209,7 +209,7 @@ public class Crop implements Serializable {
                 double harvestModifier = 1D;
                 
                 // Determine harvest modifier by amount of sunlight.
-                double sunlight = (double) mars.getSurfaceFeatures().getSurfaceSunlight(settlement.getCoordinates()) / 127D;
+                double sunlight = (double) mars.getSurfaceFeatures().getSurfaceSunlight(settlement.getCoordinates());
                 harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
                     
                 // Determine harvest modifier by amount of waste water available.

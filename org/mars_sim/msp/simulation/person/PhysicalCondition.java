@@ -104,12 +104,10 @@ public class PhysicalCondition implements Serializable {
      */
     boolean timePassing(double time, LifeSupport support,
                         PersonConfig config) {
-                        	
-        boolean recalculate = false;
         
         // Check the existing problems
         if (!problems.isEmpty()) {
-            ArrayList newProblems = new ArrayList();
+            List newProblems = new ArrayList();
 
             Iterator iter = problems.values().iterator();
             while(!isDead() && iter.hasNext()) {
@@ -120,16 +118,10 @@ public class PhysicalCondition implements Serializable {
                 // remove this one.
                 Complaint next = problem.timePassing(time, this);
 
-                if (problem.getCured() || (next != null)) {
-                    iter.remove();
-                    recalculate = true;
-                }
+                if (problem.getCured() || (next != null)) iter.remove();
 
                 // If a new problem, check it doesn't exist already
-                if (next != null) {
-                    newProblems.add(next);
-                    recalculate = true;
-                }
+                if (next != null) newProblems.add(next);
             }
 
             // Add the new problems
@@ -146,26 +138,21 @@ public class PhysicalCondition implements Serializable {
         // Has the person died ?
         if (isDead()) return false;
 
-        // See if a random illness catches this Person out if nothing new
-        if (!recalculate) {
-            Complaint randomComplaint = medic.getProbableComplaint(person);
+        // See if a random illness happens.
+        Complaint randomComplaint = medic.getProbableComplaint(person);
 
-            // New complaint must not exist already
-            if ((randomComplaint != null) &&
-                        !problems.containsKey(randomComplaint)) {
-                problems.put(randomComplaint,
-                                new HealthProblem(randomComplaint, person,
-                                                  person.getAccessibleAid()));
-                recalculate = true;
-            }
+        // New complaint must not exist already
+        if ((randomComplaint != null) && !problems.containsKey(randomComplaint)) {
+            problems.put(randomComplaint, new HealthProblem(randomComplaint, person,
+            	person.getAccessibleAid()));
         }
 
         // Consume necessary oxygen and water.
         try {
-        	recalculate |= consumeOxygen(support, config.getOxygenConsumptionRate() * (time / 1000D));
-        	recalculate |= consumeWater(support, config.getWaterConsumptionRate() * (time / 1000D));
-        	recalculate |= requireAirPressure(support, config.getMinAirPressure());
-        	recalculate |= requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature());
+        	consumeOxygen(support, config.getOxygenConsumptionRate() * (time / 1000D));
+        	consumeWater(support, config.getWaterConsumptionRate() * (time / 1000D));
+        	requireAirPressure(support, config.getMinAirPressure());
+        	requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature());
         }
         catch (Exception e) {
         	System.err.println(person.getName() + " - Error in lifesupport needs: " + e.getMessage());
@@ -175,9 +162,8 @@ public class PhysicalCondition implements Serializable {
         fatigue += time;
         hunger += time;
 
-        if (recalculate) {
-            recalculate();
-        }
+		// Calculate performance and most serious illness.
+        recalculate();
 
         return (!isDead());
     }
@@ -358,6 +344,7 @@ public class PhysicalCondition implements Serializable {
 
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, illness, MedicalEvent.DEATH);
+		person.getMars().getEventManager().registerNewEvent(event);
     }
     
     /**
@@ -424,5 +411,13 @@ public class PhysicalCondition implements Serializable {
                 serious = problem;
             }
         }
+        
+        // High fatigue reduces performance.
+        if (fatigue > 1000D) performance -= (fatigue - 1000D) * .0003D;
+        
+        // High hunger reduces performance.
+        if (hunger > 1000D) performance -= (hunger - 1000D) * .0003D;
+        
+        if (performance < 0D) performance = 0D;
     }
 }
