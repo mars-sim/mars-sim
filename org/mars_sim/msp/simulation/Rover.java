@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.71 2000-11-15
+ * @version 2.71 2000-12-03
  * @author Scott Davis
  */
 
@@ -33,15 +33,15 @@ public class Rover extends GroundVehicle {
         setMaxPassengers(8);
 
         // Set default fuel capacity for a rover.
-        setFuelCapacity(10D);
+        setFuelCapacity(100D);
         
         // Set default oxygen capacity for a rover.
-        setOxygenCapacity(10D);
+        setOxygenCapacity(100D);
         
         // Set default water capacity for a rover.
-        setWaterCapacity(10D);
+        setWaterCapacity(100D);
         
         // Set default food capacity for a rover.
-        setFoodCapacity(10D);
+        setFoodCapacity(100D);
     }
 }

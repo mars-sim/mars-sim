@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskDrive.java
- * @version 2.71 2000-10-30
+ * @version 2.71 2000-12-03
  * @author Scott Davis
  */
 
@@ -495,7 +495,7 @@ class TaskDrive extends Task {
         double distanceTraveled = seconds * ((speed / 60D) / 60D);
 
         // Consume fuel for distance traveled.
-        vehicle.consumeFuel(distanceTraveled / 1000D);
+        vehicle.consumeFuel(distanceTraveled / 100D);
 
         // Add distance traveled to vehicle's odometer
         vehicle.addTotalDistanceTraveled(distanceTraveled);

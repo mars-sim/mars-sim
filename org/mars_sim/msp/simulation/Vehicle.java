@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.71 2000-11-15
+ * @version 2.71 2000-12-03
  * @author Scott Davis
  */
 
@@ -144,9 +144,11 @@ public abstract class Vehicle extends Unit {
      *  @param consumedFuel the amount of fuel consumed (in units)
      */
     void consumeFuel(double consumedFuel) {
+        boolean noFuel = (fuel == 0D);
         fuel -= consumedFuel;
         if (fuel < 0D) {
             fuel = 0D;
+            if (!noFuel) System.out.println(getName() + " has run out of fuel.");
         }
     }
 
@@ -175,7 +177,7 @@ public abstract class Vehicle extends Unit {
      *  @param addedOxygen the amount of oxygen to be added (in units)
      */
     void addOxygen(double addedOxygen) {
-        fuel += addedOxygen;
+        oxygen += addedOxygen;
         if (oxygen > oxygenCapacity) {
             oxygen = oxygenCapacity;
         }
@@ -185,9 +187,11 @@ public abstract class Vehicle extends Unit {
      *  @param consumedOxygen the amount of oxygen consumed (in units)
      */
     void consumeOxygen(double consumedOxygen) {
+        boolean noOxygen = (oxygen == 0D);
         oxygen -= consumedOxygen;
         if (oxygen < 0D) {
             oxygen = 0D;
+            if (!noOxygen) System.out.println(getName() + " has run out of oxygen.");
         }
     }
 
@@ -226,9 +230,11 @@ public abstract class Vehicle extends Unit {
      *  @param consumedWater the amount of water consumed (in units)
      */
     void consumeWater(double consumedWater) {
+        boolean noWater = (water == 0D);
         water -= consumedWater;
         if (water < 0D) {
             water = 0D;
+            if (!noWater) System.out.println(getName() + " has run out of water.");
         }
     }
 
@@ -267,9 +273,11 @@ public abstract class Vehicle extends Unit {
      *  @param consumedFood the amount of food consumed (in units)
      */
     void consumeFood(double consumedFood) {
+        boolean noFood = (food == 0D);
         food -= consumedFood;
         if (food < 0D) {
             food = 0D;
+            if (!noFood) System.out.println(getName() + " has run out of food.");
         }
     }
     
