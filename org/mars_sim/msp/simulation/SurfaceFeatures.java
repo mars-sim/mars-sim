@@ -14,6 +14,8 @@ public class SurfaceFeatures {
     private TerrainElevation surfaceTerrain;
     private Mars mars;
     // We can add landmarks here later - Scott
+    Landmark[] landmarks;
+    LandmarksXmlReader landmarksReader;
     
     /** Constructs a SurfaceFeatures object */
     public SurfaceFeatures(Mars mars) {
@@ -21,6 +23,10 @@ public class SurfaceFeatures {
         this.mars = mars;
         surfaceTerrain = new TerrainElevation("map_data/TopoMarsMap.dat", "map_data/TopoMarsMap.index",
                 "map_data/TopoMarsMap.sum");
+
+        landmarksReader = new LandmarksXmlReader();
+        landmarksReader.parse();
+        landmarks = landmarksReader.getLandmarks();
     }
     
     /** Returns the surface terrain
