@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 2.74 2002-02-24
+ * @version 2.74 2002-02-09
  * @author Scott Davis 
  */
 
@@ -236,7 +236,7 @@ public class Inventory implements Serializable {
      * @return if unit can be added to inventory
      */
     public boolean canAddUnit(Unit unit) {
-        if (!containsUnitAll(unit)) {
+        if (!containsUnit(unit)) {
 	    if ((unit.getMass() + getTotalMass()) <= getTotalCapacity()) {
 	        return true;
 	    }

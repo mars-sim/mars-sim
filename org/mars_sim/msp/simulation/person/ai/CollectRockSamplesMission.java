@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-09
  * @author Scott Davis
  */
 
@@ -204,10 +204,6 @@ class CollectRockSamplesMission extends Mission implements Serializable {
      */
     private void drivingPhase(Person person) {
 
-        if (vehicle.getName().equals("Sandstorm")) {
-	    System.out.println(person.getName() + " drivingPhase()");
-	}
-	    
         // Record starting time and distance to destination.
         if ((startingTime == null) || (startingDistance == 0D)) {
             startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
@@ -232,12 +228,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
                 lastDriver = null;
             }
             else {
-		if (vehicle.getDriver() == null) {
-		    System.out.println(vehicle.getName() + " driver is null");
-		    System.out.println(vehicle.getName() + " status: " + vehicle.getStatus());
-		}
                 if ((vehicle.getDriver() == null) && (vehicle.getStatus() == Vehicle.PARKED)) {
-		    System.out.println(vehicle.getName() + " new driver: " + person.getName());
                     DriveGroundVehicle driveTask = new DriveGroundVehicle(person, mars, (GroundVehicle) vehicle, destination, startingTime, startingDistance);
                     person.getMind().getTaskManager().addTask(driveTask);
                     lastDriver = person;

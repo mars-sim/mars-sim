@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-09
  * @author Scott Davis
  */
 
@@ -32,7 +32,6 @@ public abstract class Vehicle extends Unit implements Serializable {
     private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
     private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
-    // private String status; // Current status of vehicle ("Moving", "Parked") (other child-specific status allowed)
     private Person driver; // Driver of the vehicle
     private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
@@ -270,7 +269,7 @@ public abstract class Vehicle extends Unit implements Serializable {
      *  @param driver the driver
      */
     public void setDriver(Person driver) {
-	if (!inventory.containsUnit(driver)) driver = null;
+	if (!inventory.containsUnit(driver)) this.driver = null;
 	else this.driver = driver;
     }
 

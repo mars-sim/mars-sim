@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-09
  * @author Scott Davis
  */
 
@@ -61,7 +61,7 @@ class DriveGroundVehicle extends Task implements Serializable {
      */
     public DriveGroundVehicle(Person person, VirtualMars mars, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
-        super(DRIVING + vehicle.getName(), person, true, mars);
+        super(DRIVING + " " + vehicle.getName(), person, true, mars);
 
         // Set initial parameters
         this.vehicle = vehicle;
@@ -110,7 +110,7 @@ class DriveGroundVehicle extends Task implements Serializable {
         // Keep track of the duration of the task.
         timeCompleted += time;
         if (timeCompleted >= duration) {
-            // System.out.println(person.getName() + " stopped driving " + vehicle.getName());
+	    // System.out.println(person.getName() + " finished driving " + vehicle.getName());
 	    vehicle.setSpeed(0D);
             vehicle.setDriver(null);
             done = true;

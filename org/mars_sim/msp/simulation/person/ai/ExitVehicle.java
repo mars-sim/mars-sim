@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitVehicle.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-09
  * @author Scott Davis
  */
 
@@ -47,7 +47,6 @@ class ExitVehicle extends Task implements Serializable {
         timeCompleted += time;
         if (timeCompleted > duration) {
 	    vehicle.getInventory().takeUnit(person, destinationSettlement);
-
             done = true;
             return timeCompleted - duration;
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.74 2002-02-07
+ * @version 2.74 2002-02-09
  * @author Scott Davis
  */
 
@@ -115,7 +115,7 @@ public class Person extends Unit implements Serializable {
     public String getLocationSituation() {
         String location = null;
 
-	if (isBuried) location = "BURIED";
+	if (isBuried) location = BURIED;
 	else {
 	    Unit container = getContainerUnit();
 	    if (container == null) location = OUTSIDE;
