@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -15,14 +15,7 @@ import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.VehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -44,7 +37,7 @@ public class LoadVehicle extends Task implements Serializable {
      *  @param vehicle the vehicle to be loaded
      */
     public LoadVehicle(Person person, Mars mars, Vehicle vehicle) {
-        super("Loading vehicle", person, true, mars);
+        super("Loading vehicle", person, true, false, mars);
 
         description = "Loading " + vehicle.getName();
         this.vehicle = vehicle;

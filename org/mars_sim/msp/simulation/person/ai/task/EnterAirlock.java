@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.75 2003-04-20
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -39,7 +39,7 @@ class EnterAirlock extends Task implements Serializable {
      * @param airlock to be used.
      */
     public EnterAirlock(Person person, Mars mars, Airlock airlock) {
-        super("Entering airlock from EVA", person, false, mars);
+        super("Entering airlock from EVA", person, false, false, mars);
 
         // Initialize data members
         description = "Entering " + airlock.getEntityName() + " from EVA";
@@ -55,7 +55,7 @@ class EnterAirlock extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public EnterAirlock(Person person, Mars mars) {
-        super("Entering airlock from EVA", person, false, mars);
+        super("Entering airlock from EVA", person, false, false, mars);
 
         // System.out.println("Enter Airlock due to strange situation.");
         // System.out.println("Illness: " + person.getPhysicalCondition().getHealthSituation());

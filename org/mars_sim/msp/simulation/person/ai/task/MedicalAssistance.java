@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.75 2003-11-27
+ * @version 2.75 2004-01-15
  * @author Barry Evans
  */
 
@@ -45,7 +45,7 @@ public class MedicalAssistance extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public MedicalAssistance(Person person, Mars mars) {
-        super("Medical Assistance", person, true, mars);
+        super("Medical Assistance", person, true, true, mars);
         
         // Sets this task to create historical events.
         setCreateEvents(true);
@@ -70,6 +70,12 @@ public class MedicalAssistance extends Task implements Serializable {
             // Start the treatment
             try {
                 medical.startTreatment(problem, duration);
+                
+				// Create starting task event if needed.
+			    if (getCreateEvents()) {
+					TaskEvent startingEvent = new TaskEvent(person, this, TaskEvent.START, "");
+					mars.getEventManager().registerNewEvent(startingEvent);
+				}
             }
             catch (Exception e) {
                 System.out.println("MedicalAssistance: " + e.getMessage());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.75 2004-06-01
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -36,7 +36,7 @@ public class ReserveRover extends Task implements Serializable {
      *  @param destination the destination of the trip
      */
     public ReserveRover(Class roverType, Person person, Mars mars, Coordinates destination) {
-        super("Reserving a rover", person, false, mars);
+        super("Reserving a rover", person, false, false, mars);
 
         this.roverType = roverType;
         this.destination = destination;
@@ -49,7 +49,7 @@ public class ReserveRover extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public ReserveRover(Class roverType, Person person, Mars mars) {
-        super("Reserving a rover", person, false, mars);
+        super("Reserving a rover", person, false, false, mars);
 
         this.roverType = roverType;
         destination = null;

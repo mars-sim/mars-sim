@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 2.75 2004-01-06
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -32,7 +32,7 @@ class ExitAirlock extends Task implements Serializable {
      * @param airlock the airlock to use.
      */
     public ExitAirlock(Person person, Mars mars, Airlock airlock) {
-        super("Exiting airlock for EVA", person, true, mars);
+        super("Exiting airlock for EVA", person, true, false, mars);
 
         // Initialize data members
         description = "Exiting " + airlock.getEntityName() + " for EVA";

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -52,6 +52,10 @@ public abstract class Mission implements Serializable {
         phase = "";
         missionCapacity = Integer.MAX_VALUE;
 
+		// Created mission starting event.
+		HistoricalEvent newEvent = new MissionEvent(startingPerson, this, MissionEvent.START);
+		mars.getEventManager().registerNewEvent(newEvent);
+
         // Add starting person to mission.
         addPerson(startingPerson);
     }
@@ -63,9 +67,8 @@ public abstract class Mission implements Serializable {
         if (!people.contains(person)) {
             people.add(person);
 
-            HistoricalEvent newEvent = new HistoricalEvent(START_MISSION + getName(),
-                                                       person,
-                                                       getDescription());
+			// Creating mission joining event.
+            HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.JOINING);
             mars.getEventManager().registerNewEvent(newEvent);
             // System.out.println(person.getName() + " added to mission: " + name);
         }
@@ -78,9 +81,8 @@ public abstract class Mission implements Serializable {
         if (people.contains(person)) {
             people.remove(person);
 
-            HistoricalEvent newEvent = new HistoricalEvent(END_MISSION + getName(),
-                                                       person,
-                                                       getDescription());
+			// Creating missing finishing event.
+			HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.FINISH);
             mars.getEventManager().registerNewEvent(newEvent);
 
             if (people.size() == 0) done = true;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -34,9 +34,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @param mars the virtual Mars
      */
     public RepairMalfunction(Person person, Mars mars) {
-        super("Repairing Malfunction", person, true, mars);
-
-        setCreateEvents(true);
+        super("Repairing Malfunction", person, true, false, mars);
 
         // Randomly determine duration, from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);

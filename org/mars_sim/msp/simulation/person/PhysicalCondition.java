@@ -1,20 +1,25 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2004-01-15
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.events.HistoricalEvent;
-import org.mars_sim.msp.simulation.person.medical.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import org.mars_sim.msp.simulation.LifeSupport;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.SimulationProperties;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.medical.*;
 
 /**
  * This class represents the Physical Condition of a Person. It is models the
@@ -120,12 +125,6 @@ public class PhysicalCondition implements Serializable {
                 // If the current is completed or a new problem exists then
                 // remove this one.
                 Complaint next = problem.timePassing(time, this);
-                if (problem.getCured()) {
-                    HistoricalEvent newEvent = new HistoricalEvent(STOP_MEDICAL,
-                                                       person,
-                                                       problem.getIllness().getName());
-                    person.getMars().getEventManager().registerNewEvent(newEvent);
-                }
 
                 if (problem.getCured() || (next != null)) {
                     iter.remove();
@@ -194,11 +193,6 @@ public class PhysicalCondition implements Serializable {
 	        HealthProblem problem = new HealthProblem(complaint, person, person.getAccessibleAid());
 	        problems.put(complaint, problem);
 	        recalculate();
-
-            HistoricalEvent newEvent = new HistoricalEvent(START_MEDICAL,
-                                                       person,
-                                                       complaint.getName());
-            person.getMars().getEventManager().registerNewEvent(newEvent);
 	    }
     }
 
@@ -357,12 +351,15 @@ public class PhysicalCondition implements Serializable {
      * This Person is now dead.
      * @param illness THe Compliant that makes person dead.
      */
-    public void setDead(Complaint illness) {
+    public void setDead(HealthProblem illness) {
         fatigue = 0;
         hunger = 0;
         alive = false;
 
         deathDetails = new DeathInfo(person);
+
+		// Create medical event for death.
+		MedicalEvent event = new MedicalEvent(person, illness, MedicalEvent.DEATH);
     }
     
     /**

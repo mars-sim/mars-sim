@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthProblem.java
- * @version 2.75 2004-01-06
+ * @version 2.75 2004-01-15
  * @author Barry Evans
  */
 
@@ -50,6 +50,10 @@ public class HealthProblem implements Serializable {
         duration = illness.getDegradePeriod();
         usedAid = null;
         Treatment treatment = illness.getRecoveryTreatment();
+        
+        // Create medical event for health problem.
+		MedicalEvent newEvent = new MedicalEvent(sufferer, this, MedicalEvent.STARTS);
+		sufferer.getMars().getEventManager().registerNewEvent(newEvent);
         
         // If no degrade period & no treatment, then can do self heel
         if ((duration == 0D) && (treatment == null)) {
@@ -176,6 +180,10 @@ public class HealthProblem implements Serializable {
         duration = treatmentLength;
         timePassed = 0;
         state = TREATMENT;
+        
+        // Create medical event for treatment.
+		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, MedicalEvent.TREATED);
+		sufferer.getMars().getEventManager().registerNewEvent(treatedEvent);
     }
     
     /**
@@ -183,9 +191,17 @@ public class HealthProblem implements Serializable {
      */
     public void stopTreatment() {
         if (state == TREATMENT) {
-            if (duration > timePassed) state = DEGRADING;
+            if (duration > timePassed) startDegrading();
             else startRecovery();
         }
+    }
+    
+    private void startDegrading() {
+    	state = DEGRADING;
+    	
+    	// Create medical event for degrading.
+		MedicalEvent degradingEvent = new MedicalEvent(sufferer, this, MedicalEvent.DEGRADES);
+		sufferer.getMars().getEventManager().registerNewEvent(degradingEvent);
     }
 
     /**
@@ -197,9 +213,23 @@ public class HealthProblem implements Serializable {
             // If no recovery period, then it's done.
             duration = illness.getRecoveryPeriod();
             timePassed = 0;
-            if (duration != 0D) state = RECOVERING;
-            else state = CURED;
+            if (duration != 0D) {
+            	state = RECOVERING;
+            	
+            	// Create medical event for recovering.
+				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, MedicalEvent.RECOVERY);
+				sufferer.getMars().getEventManager().registerNewEvent(recoveringEvent);
+            } 
+            else setCured();
         }
+    }
+    
+    private void setCured() {
+    	state = CURED;
+    	
+    	// Create medical event for cured.
+		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, MedicalEvent.CURED);
+		sufferer.getMars().getEventManager().registerNewEvent(curedEvent);
     }
 
     /**
@@ -216,9 +246,9 @@ public class HealthProblem implements Serializable {
 
         if (timePassed > duration) {
 
-            // Recoving so has the recovery period expired
+            // Recovering so has the recovery period expired
             if (state == RECOVERING) {
-                state = CURED;
+                setCured();
 
                 // If person is cured or treatment person has expired, then
                 // release the aid.
@@ -247,7 +277,7 @@ public class HealthProblem implements Serializable {
 
                     if (nextPhase == null) {
                         state = DEAD;
-                        condition.setDead(illness);
+                        condition.setDead(this);
                     }
                     else result = nextPhase;
                 }

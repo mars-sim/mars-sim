@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.75 2003-11-25
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -49,7 +49,7 @@ public class StudyRockSamples extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public StudyRockSamples(Person person, Mars mars) {
-        super("Studying Rock Samples", person, true, mars);
+        super("Studying Rock Samples", person, true, false, mars);
         
         // Find available lab for person.
         lab = getAvailableLab(person);

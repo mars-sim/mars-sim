@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -35,7 +35,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
     public TendGreenhouse(Person person, Mars mars) {
         // Use Task constructor
-        super("Tending Greenhouse", person, true, mars);
+        super("Tending Greenhouse", person, true, false, mars);
         
         // Initialize data members
         description = "Tending Greenhouse at " + person.getSettlement().getName();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -16,14 +16,7 @@ import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.LivingAccommodations;
+import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
 
 /** The Sleep class is a task for sleeping.
  *  The duration of the task is by default chosen randomly, between 250 - 350 millisols.
@@ -40,7 +33,7 @@ class Sleep extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public Sleep(Person person, Mars mars) {
-        super("Sleeping", person, false, mars);
+        super("Sleeping", person, false, false, mars);
 
         // If person is in a settlement, try to find a living accomodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {

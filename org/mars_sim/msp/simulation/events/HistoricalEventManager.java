@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 2.75 27-05-2002
+ * @version 2.75 2004-01-14
  * @author Barry Evans
  */
 
@@ -31,6 +31,12 @@ public class HistoricalEventManager {
      *  It should be a standard property.
      */
     private final static int TRANSIENT_EVENTS = 200;
+
+	// Event categories
+	public final static String MEDICAL = "Medical";
+	public final static String MALFUNCTION = "Malfunction";
+	public final static String MISSION = "Mission";
+	public final static String TASK = "Task";
 
     private List listeners = new ArrayList();
     private List events = new LinkedList();

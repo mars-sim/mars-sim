@@ -1,10 +1,9 @@
 package org.mars_sim.msp.simulation.malfunction;
 
-import org.mars_sim.msp.simulation.events.HistoricalEvent;
-import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.events.*;
 
 /**
- * This class represents the historical action of a Malfunciton occuring or
+ * This class represents the historical action of a Malfunction occuring or
  * being resolved.
  */
 public class MalfunctionEvent extends HistoricalEvent {
@@ -15,11 +14,12 @@ public class MalfunctionEvent extends HistoricalEvent {
     /**
      * Create an event associated to a Malfunction.
      *
-     * @param unit Unit with the malfunction.
+     * @param entity Malfunctionable entity with problem.
      * @param malfunction Problem that has occured.
      * @param fixed Is the malfunction resolved.
      */
-    public MalfunctionEvent(Unit unit, Malfunction malfunction, boolean fixed) {
-        super((fixed ? FIXED_TYPE : UNFIXED_TYPE), unit, malfunction.getName());
+    public MalfunctionEvent(Malfunctionable entity, Malfunction malfunction, boolean fixed) {
+        super(HistoricalEventManager.MALFUNCTION, (fixed ? FIXED_TYPE : UNFIXED_TYPE), 
+        	entity, malfunction.getName() + (fixed? " fixed" : " occurred"));
     }
 }

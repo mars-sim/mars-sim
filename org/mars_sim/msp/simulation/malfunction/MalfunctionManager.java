@@ -1,18 +1,26 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2004-01-14
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.malfunction;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.events.HistoricalEvent;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.medical.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.events.HistoricalEvent;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.medical.Complaint;
+import org.mars_sim.msp.simulation.person.medical.MedicalManager;
 
 /**
  * The MalfunctionManager class manages the current malfunctions in a unit.
@@ -247,8 +255,7 @@ public class MalfunctionManager implements Serializable {
         Malfunction malfunction = factory.getMalfunction(scope);
         if (malfunction != null) {
             malfunctions.add(malfunction);
-            HistoricalEvent newEvent = new HistoricalEvent("Malfunction",
-                entity, malfunction.getName());
+            HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
             mars.getEventManager().registerNewEvent(newEvent);
 
             issueMedicalComplaints(malfunction);
@@ -294,8 +301,7 @@ public class MalfunctionManager implements Serializable {
             while (i.hasNext()) {
                 Malfunction item = (Malfunction)i.next();
                 malfunctions.remove(item);
-                HistoricalEvent newEvent = new HistoricalEvent("Repaired",
-                    entity, item.getName());
+                HistoricalEvent newEvent = new MalfunctionEvent(entity, item, true);
                 mars.getEventManager().registerNewEvent(newEvent);
             }
         }

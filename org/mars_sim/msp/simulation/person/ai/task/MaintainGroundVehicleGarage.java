@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.75 2003-04-24
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -19,22 +19,8 @@ import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.GroundVehicleMaintenance;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.VehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
@@ -58,7 +44,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public MaintainGroundVehicleGarage(Person person, Mars mars) {
-        super("Performing Vehicle Maintenance", person, true, mars);
+        super("Performing Vehicle Maintenance", person, true, false, mars);
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
@@ -74,7 +60,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
         
-        System.out.println(person.getName() + " starting MaintainGroundVehicleGarage task.");
+        // System.out.println(person.getName() + " starting MaintainGroundVehicleGarage task.");
     }
 
     /** 

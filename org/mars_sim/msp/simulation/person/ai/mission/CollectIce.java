@@ -19,10 +19,10 @@ import org.mars_sim.msp.simulation.vehicle.ExplorerRover;
 public class CollectIce extends CollectResourcesMission {
 
 	//	Amount of ice to be gathered at a given site (kg). 
-	private static final double SITE_GOAL = 200D;
+	private static final double SITE_GOAL = 500D;
 	
 	// Collection rate of ice during EVA (kg/millisol).
-	private static final double COLLECTION_RATE = .5D;
+	private static final double COLLECTION_RATE = 1D;
 
 	public CollectIce(MissionManager missionManager, Person startingPerson) {
 		
@@ -55,7 +55,7 @@ public class CollectIce extends CollectResourcesMission {
 	    
 			if (!darkArea && reservableRover && !minSettlementPop) {
 				if (enoughWater) result = .5D;
-				else result = 50D;
+				else result = 100D;
 			} 
 		}
         

@@ -172,7 +172,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             time = exitAirlock(time, airlock);
         }
         catch (Exception e) { 
-            System.out.println(e.getMessage()); 
+            // System.out.println(e.getMessage()); 
         }
         
         if (exitedAirlock) phase = REPAIR_MALFUNCTION;
@@ -244,7 +244,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             time = enterAirlock(time, airlock);
         }
         catch (Exception e) { 
-            System.out.println(e.getMessage()); 
+            // System.out.println(e.getMessage()); 
         }
         
         if (enteredAirlock) endTask();

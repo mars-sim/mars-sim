@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.75 2003-05-30
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -35,7 +35,7 @@ public class Maintenance extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public Maintenance(Person person, Mars mars) {
-        super("Performing Maintenance", person, true, mars);
+        super("Performing Maintenance", person, true, false, mars);
 
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);

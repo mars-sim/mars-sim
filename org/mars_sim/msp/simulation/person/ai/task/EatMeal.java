@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -37,7 +37,7 @@ class EatMeal extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public EatMeal(Person person, Mars mars) {
-        super("Eating a meal", person, false, mars);
+        super("Eating a meal", person, false, false, mars);
         
         String location = person.getLocationSituation();
         

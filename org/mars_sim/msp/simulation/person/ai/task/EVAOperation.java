@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -40,7 +40,7 @@ abstract class EVAOperation extends Task implements Serializable {
      * @param mars the virtual Mars
      */
     public EVAOperation(String name, Person person, Mars mars) { 
-        super(name, person, true, mars);
+        super(name, person, true, false, mars);
     }
 
     /**

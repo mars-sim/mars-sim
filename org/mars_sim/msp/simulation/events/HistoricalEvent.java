@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MSPEvent.java
- * @version 2.75 27-05-2002
+ * @version 2.75 2004-01-14
  * @author Barry Evans
  */
 
@@ -17,8 +17,9 @@ import org.mars_sim.msp.simulation.MarsClock;
  * optional Unit that is the source of the event and an optional Object that has
  * triggered the event.
  */
-public class HistoricalEvent {
+public abstract class HistoricalEvent {
 
+	private String		category;       // Category of event (see HistoricalEventManager)
     private String      type;           // Type of event
     private String      description;    // Long description
     private MarsClock   timestamp;      // Time event occuried
@@ -28,6 +29,7 @@ public class HistoricalEvent {
      * Construct an event with the appropriate information. The time is not
      * defined until the evnet is registered with the Event Manager.
      *
+     * @param category Category of event.
      * @param type Type of event.
      * @param source The object that has produced the event, if this is null
      * then it is a global simulation event. It could be a Unit or a Facility.
@@ -35,7 +37,8 @@ public class HistoricalEvent {
      *
      * @see org.mars_sim.msp.simulation.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
      */
-    public HistoricalEvent(String type, Object source, String description) {
+    public HistoricalEvent(String category, String type, Object source, String description) {
+    	this.category = category;
         this.type = type;
         this.source = source;
         this.description = description;
@@ -79,5 +82,13 @@ public class HistoricalEvent {
      */
     public String getType() {
         return type;
+    }
+    
+    /*
+     * Gets the category of the event.
+     * @return event category (see HistoricalEventManager)
+     */
+    public String getCategory() {
+    	return category;
     }
 }

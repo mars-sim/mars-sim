@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -33,10 +33,15 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
      * @param mars the virtual Mars
      */
     public RepairEmergencyMalfunction(Person person, Mars mars) {
-        super("Repairing Emergency Malfunction", person, true, mars);
-        setCreateEvents(true);
+        super("Repairing Emergency Malfunction", person, true, true, mars);
 
         claimMalfunction();
+
+		// Create starting task event if needed.
+		if (getCreateEvents()) {
+			TaskEvent startingEvent = new TaskEvent(person, this, TaskEvent.START, "");
+			mars.getEventManager().registerNewEvent(startingEvent);
+		}
 
         // if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
     }

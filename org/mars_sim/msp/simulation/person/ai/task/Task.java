@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.75 2003-05-07
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 
 import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
 
 /** The Task class is an abstract parent class for tasks that allow people to do various things.
@@ -33,19 +32,22 @@ public abstract class Task implements Serializable, Comparable {
     protected boolean effortDriven;     // Is this task effort driven
     private boolean createEvents;       // Task should create Historical events
 
-    /** Constructs a Task object. This is an effort driven task by default.
-     *  @param name the name of the task
-     *  @param person the person performing the task
-     *  @param effort Does this task require physical effort
-     *  @param mars the virtual Mars
+    /** 
+     * Constructs a Task object.
+     * @param name the name of the task
+     * @param person the person performing the task
+     * @param effort Does this task require physical effort
+     * @param createEvents Does this task create events?
+     * @param mars the virtual Mars
      */
-    public Task(String name, Person person, boolean effort, Mars mars) {
+    public Task(String name, Person person, boolean effort, boolean createEvents, Mars mars) {
         this.name = name;
         this.person = person;
         this.mars = mars;
+		this.createEvents = createEvents;
 
         done = false;
-        createEvents = false;
+        
         timeCompleted = 0D;
         description = name;
         subTask = null;
@@ -58,6 +60,12 @@ public abstract class Task implements Serializable, Comparable {
      */
     public void endTask() {
         done = true;
+        
+        // Create ending task event if needed.
+        if (getCreateEvents()) {
+        	TaskEvent endingEvent = new TaskEvent(person, this, TaskEvent.FINISH, "");
+			mars.getEventManager().registerNewEvent(endingEvent);
+        }
     }
 
     /**
@@ -142,15 +150,7 @@ public abstract class Task implements Serializable, Comparable {
     double performTask(double time) {
         double timeLeft = time;
         if (subTask != null) {
-            if (subTask.isDone()) {
-                // Create finished historical event if necessary.
-                if (subTask.getCreateEvents()) {
-                    HistoricalEvent newEvent = new HistoricalEvent("Finished " + 
-                        subTask.getName(), person, subTask.getDescription());
-                    mars.getEventManager().registerNewEvent(newEvent);
-                }
-                subTask = null;
-            }
+            if (subTask.isDone()) subTask = null;
             else timeLeft = subTask.performTask(timeLeft);
         }
         

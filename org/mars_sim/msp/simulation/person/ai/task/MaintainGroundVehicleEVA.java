@@ -134,7 +134,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
             time = exitAirlock(time, airlock);
         }
         catch (Exception e) { 
-            System.out.println(e.getMessage()); 
+            // System.out.println(e.getMessage()); 
         }
         
         if (exitedAirlock) phase = MAINTAIN_VEHICLE;
@@ -197,7 +197,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
             time = enterAirlock(time, airlock);
         }
         catch (Exception e) { 
-            System.out.println(e.getMessage()); 
+            // System.out.println(e.getMessage()); 
         }
         
         if (enteredAirlock) endTask();

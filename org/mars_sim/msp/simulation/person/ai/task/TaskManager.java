@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.75 2003-04-21
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 
@@ -121,14 +120,6 @@ public class TaskManager implements Serializable {
     public void addTask(Task newTask) {
         if (hasActiveTask()) currentTask.addSubTask(newTask);
         else currentTask = newTask;
-
-        // Log if a significant event
-        if (newTask.getCreateEvents()) {
-            HistoricalEvent newEvent = new HistoricalEvent("Start " + newTask.getName(),
-                                                       mind.getPerson(),
-                                                       newTask.getDescription());
-            mars.getEventManager().registerNewEvent(newEvent);
-        }
     }
 
     /** Perform the current task for a given amount of time.
@@ -141,13 +132,6 @@ public class TaskManager implements Serializable {
             if (currentTask.isEffortDriven()) time *= efficiency;
             checkForEmergency();
             currentTask.performTask(time);
-            // Log if a significant event
-            if (currentTask.isDone() && currentTask.getCreateEvents()) {
-                HistoricalEvent newEvent = new HistoricalEvent("Finished " + currentTask.getName(),
-                                                       mind.getPerson(),
-                                                       currentTask.getDescription());
-                mars.getEventManager().registerNewEvent(newEvent);
-            }
         }
     }
 

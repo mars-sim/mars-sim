@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-01-15
  * @author Scott Davis
  */
 
@@ -33,7 +33,7 @@ class Relax extends Task implements Serializable {
      *  @param mars the virtual Mars
      */
     public Relax(Person person, Mars mars) {
-        super("Relaxing", person, false, mars);
+        super("Relaxing", person, false, false, mars);
 
         // If person is in a settlement, try to find a place to relax.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
