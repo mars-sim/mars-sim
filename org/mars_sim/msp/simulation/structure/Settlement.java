@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.structure;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.equipment.*;
 import java.util.*;
 
 /** The Settlement class represents a settlement unit on virtual Mars.
@@ -101,6 +102,10 @@ public class Settlement extends Structure implements LifeSupport {
 
 	// Create airlock for settlement.
 	airlock = new Airlock(this, mars, 4);
+
+	// Adds enough EVA suits for inhabitant capacity.
+	for (int x=0; x < getPopulationCapacity(); x++) 
+	    inventory.addUnit(new EVASuit(location, mars));
     }
 	
     /** Returns the facility manager for the settlement

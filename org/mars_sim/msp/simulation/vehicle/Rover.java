@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -83,10 +83,8 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
      * Adds enough EVA suits to inventory to match crew capacity.
      */
     protected void addEVASuits() {
-        for (int x=0; x < getCrewCapacity(); x++) {
-	    EVASuit suit = new EVASuit(location, mars);
-	    inventory.addUnit(suit);
-	}
+        for (int x=0; x < getCrewCapacity(); x++) 
+	    inventory.addUnit(new EVASuit(location, mars));
     }
 
     /** Gets the range of the rover
