@@ -1,5 +1,5 @@
 //************************** Skill Manager **************************
-// Last Modified: 5/25/00
+// Last Modified: 7/27/00
 
 // The SkillManager class manages skills for a given person.
 // Each person has one skill manager.
@@ -10,7 +10,7 @@ public class SkillManager {
 	
 	// Data members
 
-	private Hashtable skills;      // A list of the person's skills keyed by name.
+	private Hashtable skills; // A list of the person's skills keyed by name.
 
 	// Constructor
 
@@ -19,7 +19,7 @@ public class SkillManager {
 		
 		// Add starting skills randomly for person.
 		
-		String[] startingSkills = {"Driving", "Greenhouse Farming"};
+		String[] startingSkills = {"Driving", "Greenhouse Farming", "Vehicle Mechanic"};
 		
 		for (int x=0; x < startingSkills.length; x++) {
 			int skillLevel = getInitialSkillLevel(0, 50);
