@@ -113,6 +113,12 @@ public class Mind implements Serializable {
      */
     public void getNewAction(boolean tasks, boolean missions, boolean activeMissions) {
 
+        // If this Person is too weak then they can not do Missions
+        if (person.getPerformanceRating() < 0.5D) {
+            missions = false;
+            activeMissions = false;
+        }
+
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = taskManager.getTotalTaskProbability();
         double missionWeights = missionManager.getTotalMissionProbability(person);
