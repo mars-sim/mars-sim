@@ -16,6 +16,8 @@ import javax.swing.event.TableModelEvent;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import com.jrefinery.data.DefaultPieDataset;
 import com.jrefinery.data.PieDataset;
 import com.jrefinery.chart.JFreeChart;
@@ -178,7 +180,7 @@ class PieChartTab extends MonitorTab {
      * @param model Data source.
      * @param column Index of the column to collate.
      */
-    public PieChartTab(UnitTableModel model, int column) {
+    public PieChartTab(MonitorModel model, int column) {
         super(model, false, PIEICON);
 
         String title = model.getName() + " - " + model.getColumnName(column);
@@ -216,10 +218,8 @@ class PieChartTab extends MonitorTab {
 
     }
 
-    protected int[] getSelection() {
-        int empty[] = {};
-
-        return empty;
+    protected List getSelection() {
+        return new ArrayList();
     }
 
     /**

@@ -187,7 +187,7 @@ implements Runnable {
      * window.
      */
     private void createBarChart() {
-        UnitTableModel model = getSelected().getModel();
+        MonitorModel model = getSelected().getModel();
 
         // Show modal column selector
         int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow(),
@@ -198,7 +198,7 @@ implements Runnable {
     }
 
     private void createPieChart() {
-        UnitTableModel model = getSelected().getModel();
+        MonitorModel model = getSelected().getModel();
 
         // Show modal column selector
         int column = ColumnSelector.createPieSelector(desktop.getMainWindow(),
@@ -224,6 +224,7 @@ implements Runnable {
     private void tabChanged() {
         MonitorTab selected = getSelected();
         if (selected != null) {
+            selected.update();
             rowCount.setText("  " + selected.getModel().getRowCount() +
                              ROWSUFFIX);
         }

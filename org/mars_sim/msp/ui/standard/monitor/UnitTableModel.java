@@ -17,7 +17,8 @@ import javax.swing.table.AbstractTableModel;
  * The UnitTableModel that maintains a table model of Units objects.
  * It is only a partial implementation of the TableModel interface.
  */
-abstract public class UnitTableModel extends AbstractTableModel {
+abstract public class UnitTableModel extends AbstractTableModel
+            implements MonitorModel {
 
     // Data members
     private ArrayList units;        // Collection of units
@@ -114,16 +115,12 @@ abstract public class UnitTableModel extends AbstractTableModel {
     }
 
     /**
-     * Get the units at the specified rows
-     * @param rows Indexes of Unit to retrieve.
-     * @return Units at specified position.
+     * Get the unit at the specified row.
+     * @param row Indexes of Unit to retrieve.
+     * @return Unit at specified position.
      */
-    public ArrayList getUnits(int rows[]) {
-        ArrayList unitRows = new ArrayList();
-        for(int i = 0; i < rows.length; i++) {
-            unitRows.add(units.get(rows[i]));
-        }
-        return unitRows;
+    public Object getObject(int row) {
+        return units.get(row);
     }
 
     /**
@@ -141,12 +138,14 @@ abstract public class UnitTableModel extends AbstractTableModel {
      *
      * It also check whether the contents have changed
      */
-    void update() {
+    public void update() {
         // Check the contents first
         checkContents(units);
 
         // Just signal that all the cells have changed, this will refresh
         // displated cells.
-        fireTableRowsUpdated(0, units.size());
+        if (units.size() > 0) {
+            fireTableRowsUpdated(0, units.size() - 1);
+        }
     }
 }

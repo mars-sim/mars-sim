@@ -11,12 +11,13 @@ import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.UnitUIProxy;
 import org.mars_sim.msp.ui.standard.UIProxyManager;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
+
 
 /**
  * This class represents an absraction of a view displayed in the Monitor Window.
@@ -25,19 +26,18 @@ import java.awt.BorderLayout;
  */
 abstract class MonitorTab extends JPanel
 {
-
-    private UnitTableModel model;    // Mode providing the data
+    private MonitorModel model;    // Mode providing the data
     private String name;
     private Icon icon;
     private boolean mandatory;
 
     /**
      * Create a view within a tab displaying the specified model.
-     * @param model The model of Units to display.
+     * @param model The model of entities to display.
      * @param mandatory This view is a mandatory view can can not be removed.
      * @param icon Iconic representation.
      */
-    public MonitorTab(UnitTableModel model, boolean mandatory, Icon icon)
+    public MonitorTab(MonitorModel model, boolean mandatory, Icon icon)
     {
         this.model = model;
         this.icon = icon;
@@ -61,8 +61,8 @@ abstract class MonitorTab extends JPanel
     public void displayDetails(MainDesktopPane desktop)
     {
         UIProxyManager proxyManager = desktop.getProxyManager();
-        ArrayList units = model.getUnits(getSelection());
-        Iterator it = units.iterator();
+        List rows = getSelection();
+        Iterator it = rows.iterator();
         while(it.hasNext())
         {
             UnitUIProxy proxy = proxyManager.getUnitUIProxy((Unit)it.next());
@@ -76,8 +76,8 @@ abstract class MonitorTab extends JPanel
      */
     public void centerMap(MainDesktopPane desktop)
     {
-        ArrayList units = model.getUnits(getSelection());
-        Iterator it = units.iterator();
+        List rows = getSelection();
+        Iterator it = rows.iterator();
         if (it.hasNext())
         {
             Unit unit = (Unit) it.next();
@@ -91,18 +91,17 @@ abstract class MonitorTab extends JPanel
     abstract public void displayProps(MainDesktopPane desktop);
 
     /**
-     * This return the selected rows in the model that are current
-     * selected in this view.
+     * This return the selected objects that are current
+     * selected in this tab.
      *
-     * @return array of row indexes.
+     * @return List of objects selected in this tab.
      */
-    abstract protected int[] getSelection();
+    abstract protected List getSelection();
 
     /**
      * Update the selected table
      */
-    public void update()
-    {
+    public void update() {
         model.update();
     }
 
@@ -110,16 +109,15 @@ abstract class MonitorTab extends JPanel
      * Get the icon associated with this view.
      * @return Icon for this view
      */
-    public Icon getIcon()
-    {
+    public Icon getIcon() {
         return icon;
     }
 
     /**
      * Get the associated model.
-     * @return UnitTableModel associated to the tab.
+     * @return Monitored model associated to the tab.
      */
-    public UnitTableModel getModel() {
+    public MonitorModel getModel() {
         return model;
     }
 

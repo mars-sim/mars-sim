@@ -185,7 +185,7 @@ class BarChartTab extends MonitorTab {
      * @param model Data source.
      * @param columns Indexes of columns to display.
      */
-    public BarChartTab(UnitTableModel model, int []columns) {
+    public BarChartTab(MonitorModel model, int []columns) {
         super(model, false, BARICON);
 
         String title = model.getName();
@@ -243,10 +243,8 @@ class BarChartTab extends MonitorTab {
         }
     }
 
-    protected int[] getSelection() {
-        int empty[] = {};
-
-        return empty;
+    protected List getSelection() {
+        return new ArrayList();
     }
 
     /**

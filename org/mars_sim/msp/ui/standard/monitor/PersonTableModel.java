@@ -57,7 +57,7 @@ public class PersonTableModel extends UnitTableModel {
         columnNames[TASK] = "Task";
         columnTypes[TASK] = String.class;
         columnNames[HEALTH] = "Health";
-        columnTypes[HEALTH] = Complaint.class;
+        columnTypes[HEALTH] = String.class;
     }
 
     // Data members
@@ -176,7 +176,7 @@ public class PersonTableModel extends UnitTableModel {
                     Person person = iter.next();
                     if (!contents.contains(person)) {
                         contents.add(person);
-                        fireTableRowsDeleted(contents.size(), contents.size());
+                        fireTableRowsInserted(contents.size(), contents.size());
                     }
                 }
             }

@@ -41,7 +41,7 @@ public class ColumnSelector extends JDialog {
      * @param model Model driving the columns.
      * @param bar Display selection for a Bar chart.
      */
-    public ColumnSelector(Frame owner, UnitTableModel model, boolean bar) {
+    public ColumnSelector(Frame owner, MonitorModel model, boolean bar) {
         super(owner, model.getName(), true);
 
         // Add all valid columns into the list
@@ -104,15 +104,29 @@ public class ColumnSelector extends JDialog {
         pack();
     }
 
+    /**
+     * Create a column selector popup for use with a Bar chart.
+     *
+     * @param frame Parent frame.
+     * @param model Model containign columns.
+     * @return Array of column indexes to display.
+     */
     public static int[] createBarSelector(Frame window,
-                                          UnitTableModel model) {
+                                          MonitorModel model) {
         ColumnSelector select = new ColumnSelector(window, model, true);
         select.show();
         return select.getSelectedColumns();
     }
 
+    /**
+     * Create a column selector popup for a Pie chart.
+     *
+     * @param frame Parent frame.
+     * @param model Model containign columns.
+     * @return Column index to use as category.
+     */
     public static int createPieSelector(Frame window,
-                                          UnitTableModel model) {
+                                        MonitorModel model) {
         ColumnSelector select = new ColumnSelector(window, model, false);
         select.show();
         int [] columns = select.getSelectedColumns();
