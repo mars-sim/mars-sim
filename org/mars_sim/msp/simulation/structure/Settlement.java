@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.76 2004-07-02
+ * @version 2.76 2004-09-10
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.structure;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
@@ -355,5 +356,27 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public String getTemplate() {
     	return template;
+    }
+    
+    /**
+     * Gets all people associated with this settlement, even if they are out on missions.
+     * @return collection of associated people.
+     */
+    public PersonCollection getAllAssociatedPeople() {
+		PersonCollection result = new PersonCollection(getInhabitants());
+    	
+		// Check all missions for the settlement.
+		List missions = Simulation.instance().getMissionManager().getMissionsForSettlement(this);
+		Iterator j = missions.iterator();
+		while (j.hasNext()) {
+			Mission mission = (Mission) j.next();
+			PersonIterator k = mission.getPeople().iterator();
+			while (k.hasNext()) {
+				Person person = k.next();
+				if (!result.contains(person)) result.add(person);
+			}
+		}
+    	
+    	return result;
     }
 }

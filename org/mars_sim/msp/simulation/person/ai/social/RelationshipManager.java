@@ -35,16 +35,16 @@ public class RelationshipManager implements Serializable {
 	private static final double BASE_STRESS_MODIFIER = .1D;
 	
 	// The base opinion modifier per millisol for relationship change.
-	private static final double BASE_OPINION_MODIFIER = .1D;
+	private static final double BASE_OPINION_MODIFIER = .2D;
 	
 	// The base conversation modifier per millisol for relationship change.
-	private static final double BASE_CONVERSATION_MODIFIER = .1D;
+	private static final double BASE_CONVERSATION_MODIFIER = .2D;
 	
 	// The base attractiveness modifier per millisol for relationship change.
-	private static final double BASE_ATTRACTIVENESS_MODIFIER = .05D;
+	private static final double BASE_ATTRACTIVENESS_MODIFIER = .1D;
 	
 	// The base gender bonding modifier per millisol for relationship change.
-	private static final double BASE_GENDER_BONDING_MODIFIER = .01D;
+	private static final double BASE_GENDER_BONDING_MODIFIER = .02D;
 	
 	private Graph relationshipGraph; // The relationship graph
 	int count = 0;
@@ -240,13 +240,13 @@ public class RelationshipManager implements Serializable {
 				// Modify based on difference in other person's opinion.
 				double otherOpinionModifier = (getOpinionOfPerson(localPerson, person) - getOpinionOfPerson(person, localPerson)) / 100D;
 				otherOpinionModifier*= BASE_OPINION_MODIFIER * time;
-				changeAmount+= otherOpinionModifier;
+				changeAmount+= RandomUtil.getRandomDouble(otherOpinionModifier);
 				
 				// Modify based on the conversation attribute of other person.
 				double conversation = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.CONVERSATION);
 				double conversationModifier = (conversation - 50D) / 50D;
 				conversationModifier*= BASE_CONVERSATION_MODIFIER * time;
-				changeAmount+= conversationModifier;
+				changeAmount+= RandomUtil.getRandomDouble(conversationModifier);
 				
 				// Modify based on attractiveness attribute if people are of opposite genders.
 				// Note: We may add sexual orientation later that will add further complexity to this.
@@ -254,11 +254,11 @@ public class RelationshipManager implements Serializable {
 				double attractivenessModifier = (attractiveness - 50D) / 50D;
 				attractivenessModifier*= BASE_ATTRACTIVENESS_MODIFIER * time;
 				boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));
-				if (oppositeGenders) changeAmount+= attractivenessModifier;
+				if (oppositeGenders) RandomUtil.getRandomDouble(changeAmount+= attractivenessModifier);
 				
 				// Modify based on same-gender bonding.
 				double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
-				if (!oppositeGenders) changeAmount+= genderBondingModifier;
+				if (!oppositeGenders) RandomUtil.getRandomDouble(changeAmount+= genderBondingModifier);
 				
 				// TODO: add additional modifiers here to deal with personality when we add that.
 				

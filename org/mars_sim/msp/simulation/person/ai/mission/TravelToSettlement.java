@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.77 2004-09-09
+ * @version 2.77 2004-09-10
  * @author Scott Davis
  */
 
@@ -163,7 +163,7 @@ public class TravelToSettlement extends Mission implements Serializable {
 				
 				// Relationship modifier for inhabitants of destination settlement.
 				RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-				PersonIterator j = destinationSettlement.getInhabitants().iterator();
+				PersonIterator j = destinationSettlement.getAllAssociatedPeople().iterator();
 				double totalOpinion = 0D;
 				while (j.hasNext()) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, j.next()) - 50D) / 50D);
 				if (totalOpinion >= 0D) result*= (1D + totalOpinion);

@@ -119,7 +119,7 @@ public class SocialTabPanel extends TabPanel {
 			if (opinion < 5) result = "Hate";
 			else if (opinion < 20) result = "Strong Dislike";
 			else if (opinion < 35) result = "Dislike";
-			else if (opinion < 45) result = "Annoyed";
+			else if (opinion < 45) result = "Annoying";
 			else if (opinion < 55) result = "Indifferent";
 			else if (opinion < 65) result = "Cordial";
 			else if (opinion < 80) result = "Like";

@@ -1,16 +1,14 @@
 /**
  * Mars Simulation Project
  * JobManager.java
- * @version 2.76 2004-06-12
+ * @version 2.77 2004-09-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
@@ -53,25 +51,11 @@ public class JobManager implements Serializable {
 	public double getRemainingSettlementNeed(Settlement settlement, Job job) {
 		double result = job.getSettlementNeed(settlement);
 		
-		// Check all inhabitants of settlement.
-		PersonIterator i = settlement.getInhabitants().iterator();
+		// Check all people associated with the settlement.
+		PersonIterator i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (person.getMind().getJob() == job) result-= job.getCapability(person);
-		}
-		
-		// Check all missions for the settlement.
-		List missions = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement);
-		Iterator j = missions.iterator();
-		while (j.hasNext()) {
-			Mission mission = (Mission) j.next();
-			PersonIterator k = mission.getPeople().iterator();
-			while (k.hasNext()) {
-				Person person = k.next();
-				if (!person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-					if (person.getMind().getJob() == job) result-= job.getCapability(person);
-				}
-			}
 		}
 		
 		return result;
