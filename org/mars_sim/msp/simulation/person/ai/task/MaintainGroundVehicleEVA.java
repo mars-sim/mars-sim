@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2004-02-11
  * @author Scott Davis
  */
 
@@ -9,27 +9,12 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
-import org.mars_sim.msp.simulation.Airlock;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org
-	.mars_sim
-	.msp
-	.simulation
-	.structure
-	.building
-	.function
-	.GroundVehicleMaintenance;
-import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
+import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
@@ -79,7 +64,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
             VehicleIterator i = getAllVehicleCandidates(person).iterator();
             while (i.hasNext()) {
                 MalfunctionManager manager = i.next().getMalfunctionManager();
-                double entityProb = (manager.getTimeSinceLastMaintenance() / 200D);
+                double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
                 if (entityProb > 50D) entityProb = 50D;
                 result += entityProb;
             }
@@ -151,7 +136,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
-        boolean finishedMaintenance = (manager.getTimeSinceLastMaintenance() == 0D);
+        boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
         if (finishedMaintenance) vehicle.setReservedForMaintenance(false);
         
         if (finishedMaintenance || malfunction || shouldEndEVAOperation()) {
@@ -298,7 +283,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         VehicleIterator i = availableVehicles.iterator();
         while (i.hasNext()) {
             MalfunctionManager manager = i.next().getMalfunctionManager();
-            totalProbWeight = manager.getTimeSinceLastMaintenance();
+            totalProbWeight = manager.getEffectiveTimeSinceLastMaintenance();
         }
         
         // Get random value
@@ -310,7 +295,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
             Vehicle vehicle = i2.next();
             if (result == null) {
                 MalfunctionManager manager = vehicle.getMalfunctionManager();
-                double probWeight = manager.getTimeSinceLastMaintenance();
+                double probWeight = manager.getEffectiveTimeSinceLastMaintenance();
                 if (rand < probWeight) result = (GroundVehicle) vehicle;
                 else rand -= probWeight;
             }

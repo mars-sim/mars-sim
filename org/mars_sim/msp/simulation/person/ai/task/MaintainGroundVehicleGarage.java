@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-02-11
  * @author Scott Davis
  */
 
@@ -76,7 +76,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         VehicleIterator i = getAllVehicleCandidates(person).iterator();
         while (i.hasNext()) {
             MalfunctionManager manager = i.next().getMalfunctionManager();
-            double entityProb = (manager.getTimeSinceLastMaintenance() / 200D);
+            double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
             if (entityProb > 50D) entityProb = 50D;
             result += entityProb;
         }
@@ -102,7 +102,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         if (person.getPerformanceRating() == 0D) endTask();
 
         // Check if maintenance has already been completed.
-        if (manager.getTimeSinceLastMaintenance() == 0D) endTask();
+        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
 
         // If vehicle has malfunction, end task.
         if (manager.hasMalfunction()) endTask();
@@ -127,7 +127,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         person.getSkillManager().addExperience("Mechanic", experience);
 
         // If maintenance is complete, task is done.
-        if (manager.getTimeSinceLastMaintenance() == 0D) {
+        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
             // System.out.println(person.getName() + " finished " + description);
             vehicle.setReservedForMaintenance(false);
             endTask();
@@ -218,7 +218,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         VehicleIterator i = availableVehicles.iterator();
         while (i.hasNext()) {
             MalfunctionManager manager = i.next().getMalfunctionManager();
-            totalProbWeight = manager.getTimeSinceLastMaintenance();
+            totalProbWeight = manager.getEffectiveTimeSinceLastMaintenance();
         }
         
         // Get random value
@@ -229,7 +229,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         while (i2.hasNext() && (result == null)) {
             Vehicle vehicle = i.next();
             MalfunctionManager manager = vehicle.getMalfunctionManager();
-            double probWeight = manager.getTimeSinceLastMaintenance();
+            double probWeight = manager.getEffectiveTimeSinceLastMaintenance();
             if (rand < probWeight) result = (GroundVehicle) vehicle;
             else rand -= probWeight;
         }

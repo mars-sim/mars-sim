@@ -1,29 +1,18 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.75 2003-07-08
+ * @version 2.75 2004-02-11
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.vehicle;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.Direction;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.MarsClock;
-import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
-import org.mars_sim.msp.simulation.person.ai.task.Repair;
-import org.mars_sim.msp.simulation.person.ai.task.Task;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
@@ -357,7 +346,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         
         // Make sure reservedForMaintenance is false if vehicle needs no maintenance.
         if (getStatus().equals(MAINTENANCE)) {
-            if (malfunctionManager.getTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
+            if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
         }
     }
 

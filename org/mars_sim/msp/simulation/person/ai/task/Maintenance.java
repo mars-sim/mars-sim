@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-02-11
  * @author Scott Davis
  */
 
@@ -9,16 +9,10 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.structure.building.BuildingException;
-import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** The Maintenance class is a task for performing
@@ -51,7 +45,7 @@ public class Maintenance extends Task implements Serializable {
             Malfunctionable e = (Malfunctionable) i.next();
             if (!(e instanceof Vehicle)) {
                 MalfunctionManager manager = e.getMalfunctionManager();
-                double entityWeight = manager.getTimeSinceLastMaintenance();
+                double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
                 totalProbabilityWeight += entityWeight;
             }
         }
@@ -64,7 +58,7 @@ public class Maintenance extends Task implements Serializable {
         while (i.hasNext()) {
             Malfunctionable e = (Malfunctionable) i.next();
             MalfunctionManager manager = e.getMalfunctionManager();
-            double entityWeight = manager.getTimeSinceLastMaintenance();
+            double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
             if ((chance < entityWeight) && !(e instanceof Vehicle)) {
                 entity = e;
                 description = "Performing maintenance on " + entity.getName();
@@ -96,7 +90,7 @@ public class Maintenance extends Task implements Serializable {
             Malfunctionable entity = (Malfunctionable) i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (!manager.hasMalfunction() && !(entity instanceof Vehicle)) {
-                double entityProb = manager.getTimeSinceLastMaintenance() / 1000D;
+                double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
                 if (entityProb > 50D) entityProb = 50D;
                 result += entityProb;
             }   
@@ -122,7 +116,7 @@ public class Maintenance extends Task implements Serializable {
         if (person.getPerformanceRating() == 0D) endTask();
 
         // Check if maintenance has already been completed.
-        if (manager.getTimeSinceLastMaintenance() == 0D) endTask();
+        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
 
         // If equipment has malfunction, end task.
         if (manager.hasMalfunction()) endTask();
@@ -147,7 +141,7 @@ public class Maintenance extends Task implements Serializable {
         person.getSkillManager().addExperience("Mechanic", experience);
 
         // If maintenance is complete, task is done.
-        if (manager.getTimeSinceLastMaintenance() == 0D) endTask();
+        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
 
         // Keep track of the duration of the task.
         timeCompleted += time;

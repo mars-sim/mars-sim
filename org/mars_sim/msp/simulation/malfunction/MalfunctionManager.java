@@ -1,26 +1,18 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.75 2004-01-14
+ * @version 2.75 2004-02-11
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.malfunction;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.medical.Complaint;
-import org.mars_sim.msp.simulation.person.medical.MedicalManager;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.medical.*;
 
 /**
  * The MalfunctionManager class manages the current malfunctions in a unit.
@@ -33,6 +25,8 @@ public class MalfunctionManager implements Serializable {
     private Malfunctionable entity;          // The owning entity.
     private double timeSinceLastMaintenance; // Time passing (in millisols) since
                                              // last maintenance on entity.
+    private double effectiveTimeSinceLastMaintenance; // Time (millisols) that entity has been 
+                                                      // actively used since last maintenance.
     private double maintenanceWorkTime;      // The required work time for maintenance on entity.
     private double maintenanceTimeCompleted; // The completed
     private Collection scope;                // The scope strings of the unit.
@@ -53,6 +47,7 @@ public class MalfunctionManager implements Serializable {
         // Initialize data members
         this.entity = entity;
         timeSinceLastMaintenance = 0D;
+        effectiveTimeSinceLastMaintenance = 0D;
         this.mars = mars;
         scope = new ArrayList();
         malfunctions = new ArrayList();
@@ -268,13 +263,13 @@ public class MalfunctionManager implements Serializable {
      */
     public void activeTimePassing(double time) {
 
-        timeSinceLastMaintenance += time;
+        effectiveTimeSinceLastMaintenance += time;
 
         // Check for malfunction due to lack of maintenance.
-        double chance = time * .0000001D * timeSinceLastMaintenance;
+        double chance = time * .0000001D * effectiveTimeSinceLastMaintenance;
 
         if (RandomUtil.lessThanRandPercent(chance)) {
-            // System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + timeSinceLastMaintenance);
+            // System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + effectiveTimeSinceLastMaintenance);
             addMalfunction();
         }
     }
@@ -311,6 +306,9 @@ public class MalfunctionManager implements Serializable {
 
         // Deplete resources.
         depleteResources(time);
+        
+        // Add time passing.
+		timeSinceLastMaintenance += time;
     }
 
     /**
@@ -406,6 +404,15 @@ public class MalfunctionManager implements Serializable {
     public double getTimeSinceLastMaintenance() {
         return timeSinceLastMaintenance;
     }
+    
+    /**
+     * Gets the time the entity has been actively used
+     * since its last maintenance.
+     * @return time (in millisols)
+     */
+    public double getEffectiveTimeSinceLastMaintenance() {
+    	return effectiveTimeSinceLastMaintenance;
+    }
 
     /**
      * Gets the required work time for maintenance for the entity.
@@ -440,6 +447,7 @@ public class MalfunctionManager implements Serializable {
         if (maintenanceTimeCompleted >= maintenanceWorkTime) {
             maintenanceTimeCompleted = 0D;
             timeSinceLastMaintenance = 0D;
+            effectiveTimeSinceLastMaintenance = 0D;
         }
     }
 
