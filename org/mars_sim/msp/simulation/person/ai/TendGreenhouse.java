@@ -8,7 +8,7 @@
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.Person;
@@ -30,36 +30,26 @@ public class TendGreenhouse extends Task implements Serializable {
     public TendGreenhouse(Person person, Mars mars) {
         // Use Task constructor
         super("Tending Greenhouse", person, true, mars);
-
+        
         // Initialize data members
         description = "Tending Greenhouse at " + person.getSettlement().getName();
-        this.settlement = person.getSettlement();
-        Iterator i = settlement.getBuildingManager().getBuildings(InhabitableBuilding.class).iterator();
-        while (i.hasNext()) {
-            InhabitableBuilding farm = (InhabitableBuilding) i.next();
-            if (farm instanceof Farming) {
-                boolean thisFarmWorkable = true;
-                if (!((Farming) farm).requiresWork()) thisFarmWorkable = false;
-                if (farm.getMalfunctionManager().hasMalfunction()) thisFarmWorkable = false;
-                if (farm.getOccupantNumber() >= farm.getOccupantCapacity()) thisFarmWorkable = false;
-                
-                if (thisFarmWorkable) greenhouse = (Farming) farm;
-            }
-        }
-
-        if (greenhouse == null) done = true;
-        else {
-            if (greenhouse instanceof InhabitableBuilding) {
+        
+        // Get available greenhouse if any.
+        greenhouse = getAvailableGreenhouse(person);
+        
+        if (greenhouse != null) {
+            InhabitableBuilding building = (InhabitableBuilding) greenhouse;
+            if (!building.containsPerson(person)) {
                 try {
-                    InhabitableBuilding inhabGreenhouse = (InhabitableBuilding) greenhouse;
-                    if (!inhabGreenhouse.containsPerson(person)) inhabGreenhouse.addPerson(person);
+                    building.addPerson(person);
                 }
                 catch (BuildingException e) {
-                    System.out.println("Trying to add " + person.getName() + " to " + 
-                        ((Building) greenhouse).getName() + " and person is already an occupant.");
+                    System.out.println("TendGreenhouse: " + e.getMessage());
+                    done = true;
                 }
             }
         }
+        else done = true;
         
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
@@ -72,23 +62,8 @@ public class TendGreenhouse extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 	    
-        boolean workableFarm = false;
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Iterator i = person.getSettlement().getBuildingManager().getBuildings(InhabitableBuilding.class).iterator();
-            while (i.hasNext()) {
-                InhabitableBuilding farm = (InhabitableBuilding) i.next();
-                if (farm instanceof Farming) {
-                    boolean thisFarmWorkable = true;
-                    if (!((Farming) farm).requiresWork()) thisFarmWorkable = false;
-                    if (farm.getMalfunctionManager().hasMalfunction()) thisFarmWorkable = false;
-                    if (farm.getOccupantNumber() >= farm.getOccupantCapacity()) thisFarmWorkable = false;
-                
-                    if (thisFarmWorkable) workableFarm = true;
-                }
-            }
-        }
-
-        if (workableFarm) result = 25D;
+        // See if there is an available greenhouse.
+        if (getAvailableGreenhouse(person) != null) result = 25D;
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -111,12 +86,11 @@ public class TendGreenhouse extends Task implements Serializable {
             return timeLeft;
         }
         
-        // Add later
         // Check if greenhouse has malfunction.
-        // if (greenhouse.getMalfunctionManager().hasMalfunction()) {
-        //    done = true;
-        //    return timeLeft;
-        // }
+        if (((Building) greenhouse).getMalfunctionManager().hasMalfunction()) {
+            done = true;
+            return timeLeft;
+        }
         
         // Determine amount of effective work time based on "Greenhouse Farming" skill.
         double workTime = timeLeft;
@@ -171,5 +145,41 @@ public class TendGreenhouse extends Task implements Serializable {
      */
     public Farming getGreenhouse() {
         return greenhouse;
+    }
+    
+    /**
+     * Gets an available greenhouse that the person can use.
+     * Returns null if no greenhouse is currently available.
+     *
+     * @param person the person
+     * @return available greenhouse
+     */
+    private static Farming getAvailableGreenhouse(Person person) {
+     
+        Farming result = null;
+     
+        String location = person.getLocationSituation();
+        if (location.equals(Person.INSETTLEMENT)) {
+            Settlement settlement = person.getSettlement();
+            ArrayList farmlist = new ArrayList();
+            Iterator i = settlement.getBuildingManager().getBuildings(Farming.class).iterator();
+            while (i.hasNext()) {
+                Farming farm = (Farming) i.next();
+                InhabitableBuilding building = (InhabitableBuilding) farm;
+                boolean requiresWork = farm.requiresWork();
+                boolean occupancy = (building.containsPerson(person) || (building.getAvailableOccupancy() > 0));
+                boolean malfunction = building.getMalfunctionManager().hasMalfunction();
+                
+                if (requiresWork && occupancy && !malfunction) farmlist.add(farm);
+            }
+            
+            if (farmlist.size() > 0) {
+                // Pick random farm from list.
+                int rand = RandomUtil.getRandomInt(farmlist.size() - 1);
+                result = (Farming) farmlist.get(rand);
+            }
+        }
+        
+        return result;
     }
 }

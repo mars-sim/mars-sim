@@ -7,7 +7,8 @@
  
 package org.mars_sim.msp.simulation.structure.building.function;
  
-public interface Research extends Function {
+import org.mars_sim.msp.simulation.Lab;
+ 
+public interface Research extends Function, Lab {
         
-    
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Lab.java
- * @version 2.74 2002-03-13
+ * @version 2.74 2003-04-14
  * @author Scott Davis
  */
 
@@ -48,11 +48,13 @@ public interface Lab {
 
     /**
      * Adds a researcher to the laboratory.
+     * @throws Exception if person cannot be added.
      */
-    public void addResearcher(); 
+    public void addResearcher() throws Exception; 
 
     /**
      * Removes a researcher from the laboratory.
+     * @throws Exception if person cannot be removed.
      */
-    public void removeResearcher(); 
+    public void removeResearcher() throws Exception; 
 }

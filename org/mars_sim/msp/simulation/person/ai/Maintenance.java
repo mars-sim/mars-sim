@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
 import java.io.Serializable;
 import java.util.*;
 
@@ -44,7 +45,11 @@ public class Maintenance extends Task implements Serializable {
             Malfunctionable e = (Malfunctionable) i.next();
             if (!(e instanceof Vehicle)) {
                 MalfunctionManager manager = e.getMalfunctionManager();
-                totalProbabilityWeight += manager.getTimeSinceLastMaintenance();
+                double entityWeight = manager.getTimeSinceLastMaintenance();
+                if (entity instanceof InhabitableBuilding) {
+                    if (((InhabitableBuilding) entity).getAvailableOccupancy() == 0) entityWeight = 0D;
+                }
+                totalProbabilityWeight += entityWeight;
             }
         }
 	
@@ -55,14 +60,18 @@ public class Maintenance extends Task implements Serializable {
         i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
             Malfunctionable e = (Malfunctionable) i.next();
-            double lastMaint = e.getMalfunctionManager().getTimeSinceLastMaintenance();
-            if ((chance < lastMaint) && !(e instanceof Vehicle)) {
+            MalfunctionManager manager = e.getMalfunctionManager();
+            double entityWeight = manager.getTimeSinceLastMaintenance();
+            if (entity instanceof InhabitableBuilding) {
+                if (((InhabitableBuilding) entity).getAvailableOccupancy() == 0) entityWeight = 0D;
+            }
+            if ((chance < entityWeight) && !(e instanceof Vehicle)) {
                 entity = e;
                 description = "Performing maintenance on " + entity.getName();
                 // System.out.println(person.getName() + " " + description + " - " + lastMaint);
                 break;
             }
-            else chance -= lastMaint;
+            else chance -= entityWeight;
         }
 	
         if (entity == null) done = true;
@@ -82,8 +91,13 @@ public class Maintenance extends Task implements Serializable {
         while (i.hasNext()) {
             Malfunctionable entity = (Malfunctionable) i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
-            if (!manager.hasMalfunction() && !(entity instanceof Vehicle))
-                result += (manager.getTimeSinceLastMaintenance() / 200D);
+            if (!manager.hasMalfunction() && !(entity instanceof Vehicle)) {
+                double entityProb = manager.getTimeSinceLastMaintenance() / 200D;
+                if (entity instanceof InhabitableBuilding) {
+                    if (((InhabitableBuilding) entity).getAvailableOccupancy() == 0) entityProb = 0D;
+                }
+                result += entityProb;
+            }   
         }
 	
         // Effort-driven task modifier.

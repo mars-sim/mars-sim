@@ -50,8 +50,7 @@ class Relax extends Task implements Serializable {
                     if (!relaxBuilding.containsPerson(person)) relaxBuilding.addPerson(person);
                 }
                 catch (BuildingException e) {
-                    System.out.println("Trying to add " + person.getName() + " to " + 
-                        relaxBuilding.getName() + " and person is already an occupant.");
+                    System.out.println(e.getMessage());
                 }
             }
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.75 2003-02-05
+ * @version 2.75 2003-04-14
  * @author Scott Davis
  */
 
@@ -10,8 +10,11 @@ package org.mars_sim.msp.simulation.person.ai;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.Research;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.malfunction.*;
+import java.util.*;
 import java.io.Serializable;
 
 /** 
@@ -38,22 +41,42 @@ public class StudyRockSamples extends Task implements Serializable {
     public StudyRockSamples(Person person, Mars mars) {
         super("Studying Rock Samples", person, true, mars);
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Settlement settlement = person.getSettlement();
-            inv = settlement.getInventory();
-            malfunctions = settlement.getMalfunctionManager();
-            lab = (Laboratory) settlement.getFacilityManager().getFacility(Laboratory.NAME);
-            lab.addResearcher();
-        }
-        else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-            if (person.getVehicle() instanceof ExplorerRover) {
-                ExplorerRover rover = (ExplorerRover) person.getVehicle();
-            	inv = rover.getInventory();
-            	malfunctions = rover.getMalfunctionManager();
-            	lab = rover.getLab();
-        	    lab.addResearcher();
+        System.out.println(person.getName() + " StudyRockSamples");
+        
+        // Find available lab for person.
+        Lab lab = getAvailableLab(person);
+        
+        if (lab != null) {
+            String location = person.getLocationSituation();
+            if (location.equals(Person.INSETTLEMENT)) {
+                InhabitableBuilding building = (InhabitableBuilding) lab;
+                malfunctions = building.getMalfunctionManager();
+                try {     
+                    if (!building.containsPerson(person)) building.addPerson(person);
+                    lab.addResearcher();
+                }
+                catch (BuildingException e) {
+                    System.out.println("StudyRockSamples: person is already in building.");
+                    done = true;
+                }
+                catch (Exception e) { 
+                    System.out.println("StudyRockSamples: lab building is already full.");
+                    done = true;
+                }
+            }
+            else if (location.equals(Person.INVEHICLE)) {
+                Vehicle vehicle = person.getVehicle();
+                malfunctions = vehicle.getMalfunctionManager();
+                try {
+                    lab.addResearcher();
+                }
+                catch (Exception e) {
+                    System.out.println("StudyRockSamples: rover lab is already full.");
+                    done = true;
+                }
             }
         }
+        else done = true;
 
         // Randomly determine duration from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);
@@ -67,26 +90,9 @@ public class StudyRockSamples extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Settlement settlement = person.getSettlement();
-            Inventory inv = settlement.getInventory();
-            Laboratory lab = (Laboratory) settlement.getFacilityManager().getFacility(Laboratory.NAME);
-            if (inv.getResourceMass(Resource.ROCK_SAMPLES) > 0D) {
-                if (lab.getResearcherNum() < lab.getLaboratorySize()) result = 25D;
-            }
-            if (lab.getMalfunctionManager().hasMalfunction()) result = 0D;
-        }
-        else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-            if (person.getVehicle() instanceof ExplorerRover) {
-                ExplorerRover rover = (ExplorerRover) person.getVehicle();
-            	Inventory inv = rover.getInventory();
-            	Lab lab = rover.getLab();
-                if (inv.getResourceMass(Resource.ROCK_SAMPLES) > 0D) {
-               	    if (lab.getResearcherNum() < lab.getLaboratorySize()) result = 25D;
-                }
-               	if (rover.getMalfunctionManager().hasMalfunction()) result = 0D;
-            }
-        }
+        // Find available lab for person.
+        Lab lab = getAvailableLab(person);
+        if (lab != null) result = 25D;
 	    
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -109,7 +115,12 @@ public class StudyRockSamples extends Task implements Serializable {
         if (malfunctions.hasMalfunction()) done = true;
 
         if (done) {
-            lab.removeResearcher();
+            try {
+                lab.removeResearcher();
+            }
+            catch (Exception e) {
+                System.out.println("StudyRockSamples.performTask(): lab is empty of researchers.");
+            }
             return timeLeft;
         }
 	
@@ -135,7 +146,12 @@ public class StudyRockSamples extends Task implements Serializable {
         timeCompleted += time;
         if (timeCompleted >= duration) {
             done = true;
-            lab.removeResearcher();
+            try {
+                lab.removeResearcher();
+            }
+            catch (Exception e) {
+                System.out.println("StudyRockSamples.performTask(): lab is empty of researchers.");
+            }
         }
 
         // Check for lab accident.
@@ -169,5 +185,85 @@ public class StudyRockSamples extends Task implements Serializable {
                 person.getVehicle().getMalfunctionManager().accident(); 
             }
         }
+    }
+    
+    /**
+     * Gets an available lab that the person can use.
+     * Returns null if no lab is currently available.
+     *
+     * @param person the person
+     * @return available lab
+     */
+    private static Lab getAvailableLab(Person person) {
+     
+        Lab result = null;
+     
+        String location = person.getLocationSituation();
+        if (location.equals(Person.INSETTLEMENT)) result = getSettlementLab(person, person.getSettlement());
+        if (location.equals(Person.INVEHICLE)) result = getVehicleLab(person.getVehicle());
+        
+        return result;
+    }
+    
+    /**
+     * Gets an available lab in a settlement.
+     * Returns null if no lab is currently available.
+     *
+     * @param person the person
+     * @param settlement the settlement
+     * @return available lab
+     */
+    private static Lab getSettlementLab(Person person, Settlement settlement) {
+        
+        Lab result = null;
+        
+        Inventory inv = settlement.getInventory();
+        if (inv.getResourceMass(Resource.ROCK_SAMPLES) <= 0D) return null;
+        
+        ArrayList lablist = new ArrayList();
+        Iterator i = settlement.getBuildingManager().getBuildings(Research.class).iterator();
+        while (i.hasNext()) {
+            Research lab = (Research) i.next();
+            InhabitableBuilding building = (InhabitableBuilding) lab;
+            boolean malfunction = building.getMalfunctionManager().hasMalfunction();
+            boolean availableBuildingSpace = (building.containsPerson(person) || (building.getAvailableOccupancy() > 0));
+            boolean labSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
+            if (!malfunction && availableBuildingSpace && labSpace) lablist.add(lab);
+        }
+        
+        if (lablist.size() > 0) {
+            // Pick random lab from list.
+            int rand = RandomUtil.getRandomInt(lablist.size() - 1);
+            result = (Lab) lablist.get(rand);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets an available lab in a vehicle.
+     * Returns null if no lab is currently available.
+     *
+     * @param vehicle the vehicle
+     * @return available lab
+     */
+    private static Lab getVehicleLab(Vehicle vehicle) {
+        
+        Lab result = null;
+        
+        if (vehicle instanceof ExplorerRover) {
+            ExplorerRover rover = (ExplorerRover) vehicle;
+            Inventory inv = rover.getInventory();
+            if (inv.getResourceMass(Resource.ROCK_SAMPLES) <= 0D) return null;
+            
+            Lab lab = rover.getLab();
+            if (lab.getResearcherNum() == lab.getLaboratorySize()) {
+                if (rover.getMalfunctionManager().hasMalfunction()) {
+                    result = lab;
+                }
+            }
+        }
+        
+        return result;
     }
 }

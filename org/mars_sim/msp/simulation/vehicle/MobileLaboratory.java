@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MobileLaboratory.java
- * @version 2.74 2002-03-13
+ * @version 2.75 2003-04-14
  * @author Scott Davis
  */
 
@@ -65,12 +65,12 @@ public class MobileLaboratory implements Lab, Serializable {
      */
     public String[] getTechSpecialities() {
         String[] result = new String[techSpecialities.size()];
-	Iterator i = techSpecialities.iterator();
-	int count = 0;
-	while (i.hasNext()) {
+        Iterator i = techSpecialities.iterator();
+        int count = 0;
+        while (i.hasNext()) {
             result[count] = (String) i.next();
-	    count ++;
-	}
+            count ++;
+        }
         
         return result;
     }
@@ -81,12 +81,12 @@ public class MobileLaboratory implements Lab, Serializable {
      */
     public boolean hasSpeciality(String speciality) {
         boolean result = false;
-	Iterator i = techSpecialities.iterator();
-	while (i.hasNext()) {
-	    if (speciality.equals((String) i.next())) result = true;
+        Iterator i = techSpecialities.iterator();
+        while (i.hasNext()) {
+            if (speciality.equals((String) i.next())) result = true;
         }
 
-	return result;
+        return result;
     }
 
     /**
@@ -99,17 +99,21 @@ public class MobileLaboratory implements Lab, Serializable {
 
     /**
      * Adds a researcher to the laboratory.
+     * @throws Exception if person cannot be added.
      */
-    public void addResearcher() {
+    public void addResearcher() throws Exception {
+        if (getResearcherNum() == getLaboratorySize()) 
+            throw new Exception("Lab already full of researchers.");
         researcherNum++;
-	if (researcherNum > laboratorySize) researcherNum = laboratorySize;
     }
 
     /**
      * Removes a researcher from the laboratory.
+     * @throws Exception if person cannot be removed.
      */
-    public void removeResearcher() {
+    public void removeResearcher() throws Exception {
+        if (getResearcherNum() == 0) 
+            throw new Exception("Lab is already empty of researchers.");
         researcherNum--;
-	if (researcherNum < 0) researcherNum = 0;
     }
 }

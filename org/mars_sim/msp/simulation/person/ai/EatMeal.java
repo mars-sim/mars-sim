@@ -50,8 +50,7 @@ class EatMeal extends Task implements Serializable {
                     if (!diningBuilding.containsPerson(person))diningBuilding.addPerson(person);
                 }
                 catch (BuildingException e) {
-                    System.out.println("Trying to add " + person.getName() + " to " + 
-                        diningBuilding.getName() + " and person is already an occupant.");
+                    System.out.println(e.getMessage());
                 }
             }
         }

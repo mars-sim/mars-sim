@@ -1,15 +1,18 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2003-03-17
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
+import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /** The Sleep class is a task for sleeping.
  *  The duration of the task is by default chosen randomly, between 250 - 350 millisols.
@@ -28,9 +31,31 @@ class Sleep extends Task implements Serializable {
     public Sleep(Person person, Mars mars) {
         super("Sleeping", person, false, mars);
 
+        // If person is in a settlement, try to find a living accomodations building.
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+            InhabitableBuilding sleepingBuilding = null;
+        
+            // Try to find an available living accommodations building.
+            Iterator i = buildingManager.getBuildings(InhabitableBuilding.class).iterator();
+            while (i.hasNext()) {
+                InhabitableBuilding building = (InhabitableBuilding) i.next();
+                if (building instanceof LivingAccommodations) {
+                    if (building.getAvailableOccupancy() > 0) sleepingBuilding = building;
+                }
+            }
+            
+            if (sleepingBuilding != null) {
+                try {
+                    if (!sleepingBuilding.containsPerson(person)) sleepingBuilding.addPerson(person);
+                }
+                catch (BuildingException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        
         duration = 250D + RandomUtil.getRandomInt(100);
-
-        // System.out.println(person.getName() + " sleeping with " + person.getFatigue() + " fatigue and visibility: " + mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()));
     }
 
     /** Returns the weighted probability that a person might perform this task.
