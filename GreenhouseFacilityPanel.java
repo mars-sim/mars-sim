@@ -1,5 +1,5 @@
 //************************** Greenhouse Facility Panel **************************
-// Last Modified: 5/22/00
+// Last Modified: 5/24/00
 
 // The GreenhouseFacilityPanel class displays information about a settlement's greenhouse facility in the user interface.
 
@@ -13,14 +13,14 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
 	
 	private GreenhouseFacility greenhouse;  // The greenhouse facility this panel displays.
 	private JLabel growingCycleLabel;       // A label to display if growing cycle is active.
-	private JProgressBar harvestProgress;   // A progress bar for the growing cycle.
+	private JProgressBar growthProgress;    // A progress bar for the growing cycle.
 	private JProgressBar tendingProgress;   // A progress bar for the tending work completed.
 	
 	// Update data cache
 	
-	private boolean harvestPeriodStarted;   // True if harvest cycle has been started.
-	private float harvestPeriodCompleted;   // Number of days completed of current harvest period.
-	private float workCompleted;            // Number of work-hours tending greenhouse completed for current harvest.
+	private String phase;                   // The phase of the growing cycle that the greenhouse is in.
+	private float growthPeriodCompleted;    // Number of days completed of current growth period.
+	private float growingWork;              // Number of work-hours tending greenhouse completed for current growth period.
 	
 	// Constructor
 	
@@ -63,15 +63,14 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
 		
 		// Prepare max harvest label
 		
-		JLabel maxHarvestLabel = new JLabel("Full Harvest: " + greenhouse.getHarvestAmount() + " Food", JLabel.CENTER);
+		JLabel maxHarvestLabel = new JLabel("Full Harvest: " + greenhouse.getFullHarvestAmount() + " Food", JLabel.CENTER);
 		maxHarvestLabel.setForeground(Color.black);
 		labelPane.add(maxHarvestLabel);
 		
 		// Prepare growing cycle label
 		
-		harvestPeriodStarted = greenhouse.getHarvestPeriodStarted();
-		growingCycleLabel = new JLabel("Growing Cycle Inactive", JLabel.CENTER);
-		if (harvestPeriodStarted) growingCycleLabel.setText("Growing Cycle Active");
+		phase = greenhouse.getPhase();
+		growingCycleLabel = new JLabel("Growing Cycle Phase: " + phase, JLabel.CENTER);
 		growingCycleLabel.setForeground(Color.black);
 		labelPane.add(growingCycleLabel);
 		
@@ -80,26 +79,26 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
 		JPanel listsPane = new JPanel(new GridLayout(2, 1, 0, 5));
 		infoPane.add(listsPane, "Center");
 		
-		// Prepare harvest completion pane
+		// Prepare growth completion pane
 		
-		JPanel harvestCompletionPane = new JPanel(new BorderLayout());
-		harvestCompletionPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		listsPane.add(harvestCompletionPane);
+		JPanel growthCompletionPane = new JPanel(new BorderLayout());
+		growthCompletionPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+		listsPane.add(growthCompletionPane);
 		
-		// Prepare harvest status label
+		// Prepare growth status label
 		
-		JLabel harvestStatusLabel = new JLabel("Greenhouse Harvest Status", JLabel.CENTER);
-		harvestStatusLabel.setForeground(Color.black);
-		harvestCompletionPane.add(harvestStatusLabel, "North");
+		JLabel growthStatusLabel = new JLabel("Greenhouse Growth Cycle Status", JLabel.CENTER);
+		growthStatusLabel.setForeground(Color.black);
+		growthCompletionPane.add(growthStatusLabel, "North");
 		
-		// Prepare harvest progress bar
+		// Prepare growth progress bar
 		
-		harvestPeriodCompleted = greenhouse.getTimeCompleted();
-		int percentHarvestCompleted = (int) (100F * (harvestPeriodCompleted / greenhouse.getHarvestPeriod()));
-		harvestProgress = new JProgressBar();
-		harvestProgress.setValue(percentHarvestCompleted);
-		harvestProgress.setStringPainted(true);
-		harvestCompletionPane.add(harvestProgress, "Center");
+		growthPeriodCompleted = greenhouse.getTimeCompleted();
+		int percentGrowthCompleted = (int) (100F * (growthPeriodCompleted / greenhouse.getGrowthPeriod()));
+		growthProgress = new JProgressBar();
+		growthProgress.setValue(percentGrowthCompleted);
+		growthProgress.setStringPainted(true);
+		growthCompletionPane.add(growthProgress, "Center");
 		
 		// Prepare tending pane
 		
@@ -109,14 +108,14 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
 		
 		// Prepare tending work label
 		
-		JLabel tendingWorkLabel = new JLabel("Greenhouse Tending Work Status", JLabel.CENTER);
+		JLabel tendingWorkLabel = new JLabel("Greenhouse Tending Status", JLabel.CENTER);
 		tendingWorkLabel.setForeground(Color.black);
 		tendingPane.add(tendingWorkLabel, "North");
 		
 		// Prepare tending progress bar
 		
-		workCompleted = greenhouse.getWorkCompleted();
-		int percentTendingCompleted = (int) (100F * (workCompleted / greenhouse.getWorkLoad()));
+		growingWork = greenhouse.getGrowingWork();
+		int percentTendingCompleted = (int) (100F * (growingWork / greenhouse.getWorkLoad()));
 		tendingProgress = new JProgressBar();
 		tendingProgress.setValue(percentTendingCompleted);
 		tendingProgress.setStringPainted(true);
@@ -129,25 +128,24 @@ public class GreenhouseFacilityPanel extends FacilityPanel {
 	
 		// Update growingCycleLabel
 		
-		if (harvestPeriodStarted != greenhouse.getHarvestPeriodStarted()) {
-			harvestPeriodStarted = greenhouse.getHarvestPeriodStarted();
-			if (harvestPeriodStarted) growingCycleLabel.setText("Growing Cycle Active");
-			else growingCycleLabel.setText("Growing Cycle Inactive");
+		if (!phase.equals(greenhouse.getPhase())) {
+			phase = greenhouse.getPhase();
+			growingCycleLabel.setText("Growing Cycle Phase: " + phase);
 		}
 		
-		// Update harvestProgress
+		// Update growthProgress
 		
-		if (harvestPeriodCompleted != greenhouse.getTimeCompleted()) {
-			harvestPeriodCompleted = greenhouse.getTimeCompleted();
-			int percentCompleted = (int) (100F * (harvestPeriodCompleted / greenhouse.getHarvestPeriod()));
-			harvestProgress.setValue(percentCompleted);
+		if (growthPeriodCompleted != greenhouse.getTimeCompleted()) {
+			growthPeriodCompleted = greenhouse.getTimeCompleted();
+			int percentCompleted = (int) (100F * (growthPeriodCompleted / greenhouse.getGrowthPeriod()));
+			growthProgress.setValue(percentCompleted);
 		}
 		
 		// Update tendingProgress
 		
-		if (workCompleted != greenhouse.getWorkCompleted()) {
-			workCompleted = greenhouse.getWorkCompleted();
-			int percentCompleted = (int) (100F * (workCompleted / greenhouse.getWorkLoad()));
+		if (growingWork != greenhouse.getGrowingWork()) {
+			growingWork = greenhouse.getGrowingWork();
+			int percentCompleted = (int) (100F * (growingWork / greenhouse.getWorkLoad()));
 			tendingProgress.setValue(percentCompleted);
 		}
 	}
