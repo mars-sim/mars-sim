@@ -69,7 +69,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
             // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
             Malfunctionable entity = (Malfunctionable) i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
-            if (manager.hasNormalMalfunction()) result = 50D;
+            if (manager.hasNormalMalfunction()) result = 100D;
         }
 
         // Effort-driven task modifier.

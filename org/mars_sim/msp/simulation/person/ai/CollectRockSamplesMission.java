@@ -114,10 +114,12 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         double result = 0D;
 
         if ((phase.equals(EMBARK)) && !hasPerson(person)) {
-            if (person.getSettlement() == startingSettlement) {
-                if (people.size() < missionCapacity) {
-            	    if (people.size() < person.getSettlement().getCurrentPopulationNum()) 	
-            		result = 50D;
+            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+                if (person.getSettlement() == startingSettlement) {
+                    if (people.size() < missionCapacity) {
+            	        if (people.size() < person.getSettlement().getCurrentPopulationNum() - 1) 	
+            		        result = 50D;
+                    }
             	}
             }
         }
@@ -190,7 +192,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // Have person get in the rover 
         // When every person in mission is in rover, go to Driving phase.
         if (!person.getLocationSituation().equals(Person.INVEHICLE)) 
-	    person.getSettlement().getInventory().takeUnit(person, rover);
+	        person.getSettlement().getInventory().takeUnit(person, rover);
 
         // If any people in mission haven't entered the rover, return.
         PersonIterator i = people.iterator();
@@ -400,7 +402,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
                 else BuildingManager.addToRandomBuilding(rover, startingSettlement);
             }
             catch (BuildingException e) { 
-                System.out.println("CollectRockSamplesMission.disembarkingPhase(): " + e.getMessage()); 
+                // System.out.println("CollectRockSamplesMission.disembarkingPhase(): " + e.getMessage()); 
             }
         }
 

@@ -41,12 +41,12 @@ public class MalfunctionManager implements Serializable {
     public MalfunctionManager(Malfunctionable entity, Mars mars) {
 
         // Initialize data members
-	this.entity = entity;
-	timeSinceLastMaintenance = 0D;
-	this.mars = mars;
-	scope = new ArrayList();
-	malfunctions = new ArrayList();
-	maintenanceWorkTime = 2000D;
+        this.entity = entity;
+        timeSinceLastMaintenance = 0D;
+        this.mars = mars;
+        scope = new ArrayList();
+        malfunctions = new ArrayList();
+        maintenanceWorkTime = 2000D;
     }
 
     /**
@@ -55,7 +55,7 @@ public class MalfunctionManager implements Serializable {
      */
     public void addScopeString(String scopeString) {
         if ((scopeString != null) && !scope.contains(scopeString))
-	    scope.add(scopeString);
+        scope.add(scopeString);
     }
 
     /**
@@ -81,16 +81,16 @@ public class MalfunctionManager implements Serializable {
     public boolean hasEmergencyMalfunction() {
         boolean result = false;
 
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getEmergencyWorkTime() -
-                        malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
-	    }
-	}
+    if (hasMalfunction()) {
+        Iterator i = malfunctions.iterator();
+        while (i.hasNext()) {
+            Malfunction malfunction = (Malfunction) i.next();
+            if ((malfunction.getEmergencyWorkTime() -
+                malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
+        }
+    }
 
-	return result;
+    return result;
     }
 
     /**
@@ -100,16 +100,16 @@ public class MalfunctionManager implements Serializable {
     public boolean hasNormalMalfunction() {
         boolean result = false;
 
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getWorkTime() -
-                        malfunction.getCompletedWorkTime()) > 0D) result = true;
-	    }
-	}
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if ((malfunction.getWorkTime() -
+                    malfunction.getCompletedWorkTime()) > 0D) result = true;
+            }
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -119,16 +119,16 @@ public class MalfunctionManager implements Serializable {
     public boolean hasEVAMalfunction() {
         boolean result = false;
 
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getEVAWorkTime() -
-                        malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
-	    }
-	}
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if ((malfunction.getEVAWorkTime() -
+                    malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
+            }
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -146,20 +146,20 @@ public class MalfunctionManager implements Serializable {
     public Malfunction getMostSeriousMalfunction() {
 
         Malfunction result = null;
-	double highestSeverity = 0;
+        double highestSeverity = 0;
 
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
                 if ((malfunction.getSeverity() > highestSeverity) && !malfunction.isFixed()) {
-	            highestSeverity = malfunction.getSeverity();
-	            result = malfunction;
-	        }
-	    }
-	}
+                    highestSeverity = malfunction.getSeverity();
+                    result = malfunction;
+                }
+            }
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -169,22 +169,22 @@ public class MalfunctionManager implements Serializable {
     public Malfunction getMostSeriousEmergencyMalfunction() {
 
         Malfunction result = null;
-	double highestSeverity = 0;
+        double highestSeverity = 0;
 
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D) {
-	            if (malfunction.getSeverity() > highestSeverity) {
-	                highestSeverity = malfunction.getSeverity();
-	                result = malfunction;
-		    }
-	        }
-	    }
-	}
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D) {
+                    if (malfunction.getSeverity() > highestSeverity) {
+                        highestSeverity = malfunction.getSeverity();
+                        result = malfunction;
+                    }
+                }
+            }
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -194,22 +194,22 @@ public class MalfunctionManager implements Serializable {
     public Malfunction getMostSeriousNormalMalfunction() {
 
         Malfunction result = null;
-	double highestSeverity = 0;
+        double highestSeverity = 0;
 
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) {
-	            if (malfunction.getSeverity() > highestSeverity) {
-	                highestSeverity = malfunction.getSeverity();
-	                result = malfunction;
-		    }
-	        }
-	    }
-	}
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) {
+                    if (malfunction.getSeverity() > highestSeverity) {
+                        highestSeverity = malfunction.getSeverity();
+                        result = malfunction;
+                    }
+                }
+            }
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -219,39 +219,37 @@ public class MalfunctionManager implements Serializable {
     public Malfunction getMostSeriousEVAMalfunction() {
 
         Malfunction result = null;
-	double highestSeverity = 0;
+        double highestSeverity = 0;
 
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
-	            if (malfunction.getSeverity() > highestSeverity) {
-	                highestSeverity = malfunction.getSeverity();
-	                result = malfunction;
-		    }
-	        }
-	    }
-	}
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
+                    if (malfunction.getSeverity() > highestSeverity) {
+                        highestSeverity = malfunction.getSeverity();
+                        result = malfunction;
+                    }
+                }
+            }
+        }
 
-	return result;
+        return result;
     }
 
     /**
      * Adds a randomly selected malfunction to the unit (if possible).
      */
     private void addMalfunction() {
-       MalfunctionFactory factory = mars.getMalfunctionFactory();
-       Malfunction malfunction = factory.getMalfunction(scope);
-       if (malfunction != null) {
+        MalfunctionFactory factory = mars.getMalfunctionFactory();
+        Malfunction malfunction = factory.getMalfunction(scope);
+        if (malfunction != null) {
             malfunctions.add(malfunction);
             HistoricalEvent newEvent = new HistoricalEvent("Malfunction",
-                                                      entity,
-                                                      malfunction.getName());
+                entity, malfunction.getName());
             mars.getEventManager().registerNewEvent(newEvent);
 
-	        issueMedicalComplaints(malfunction);
-
+            issueMedicalComplaints(malfunction);
        }
     }
 
@@ -263,13 +261,13 @@ public class MalfunctionManager implements Serializable {
 
         timeSinceLastMaintenance += time;
 
-	// Check for malfunction due to lack of maintenance.
-        double chance = time * .000001D * timeSinceLastMaintenance;
+        // Check for malfunction due to lack of maintenance.
+        double chance = time * .0000001D * timeSinceLastMaintenance;
 
-	if (RandomUtil.lessThanRandPercent(chance)) {
-	    // System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + timeSinceLastMaintenance);
-	    addMalfunction();
-	}
+        if (RandomUtil.lessThanRandPercent(chance)) {
+            // System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + timeSinceLastMaintenance);
+            addMalfunction();
+        }
     }
 
     /**
@@ -295,7 +293,7 @@ public class MalfunctionManager implements Serializable {
                 Malfunction item = (Malfunction)i.next();
                 malfunctions.remove(item);
                 HistoricalEvent newEvent = new HistoricalEvent("Repaired",
-                                                      entity, item.getName());
+                    entity, item.getName());
                 mars.getEventManager().registerNewEvent(newEvent);
             }
         }
@@ -313,40 +311,40 @@ public class MalfunctionManager implements Serializable {
      */
     public void setLifeSupportModifiers(double time) {
 
-	double tempOxygenFlowModifier = 0D;
-	double tempWaterFlowModifier = 0D;
-	double tempAirPressureModifier = 0D;
-	double tempTemperatureModifier = 0D;
+        double tempOxygenFlowModifier = 0D;
+        double tempWaterFlowModifier = 0D;
+        double tempAirPressureModifier = 0D;
+        double tempTemperatureModifier = 0D;
 
         // Make any life support modifications.
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
-	            Map effects = malfunction.getLifeSupportEffects();
-		    if (effects.get("Oxygen") != null)
-	                tempOxygenFlowModifier += ((Double) effects.get("Oxygen")).doubleValue();
-		    if (effects.get("Water") != null)
-	                tempWaterFlowModifier += ((Double) effects.get("Water")).doubleValue();
-		    if (effects.get("Air Pressure") != null)
-	                tempAirPressureModifier += ((Double) effects.get("Air Pressure")).doubleValue();
-		    if (effects.get("Temperature") != null)
-	                tempTemperatureModifier += ((Double) effects.get("Temperature")).doubleValue();
-	        }
-	    }
-	}
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+                    Map effects = malfunction.getLifeSupportEffects();
+                    if (effects.get("Oxygen") != null)
+                        tempOxygenFlowModifier += ((Double) effects.get("Oxygen")).doubleValue();
+                    if (effects.get("Water") != null)
+                        tempWaterFlowModifier += ((Double) effects.get("Water")).doubleValue();
+                    if (effects.get("Air Pressure") != null)
+                        tempAirPressureModifier += ((Double) effects.get("Air Pressure")).doubleValue();
+                    if (effects.get("Temperature") != null)
+                        tempTemperatureModifier += ((Double) effects.get("Temperature")).doubleValue();
+                }
+            }
+        }
 
-	if (tempOxygenFlowModifier < 0D) oxygenFlowModifier += tempOxygenFlowModifier * time;
-	else oxygenFlowModifier = 100D;
+        if (tempOxygenFlowModifier < 0D) oxygenFlowModifier += tempOxygenFlowModifier * time;
+        else oxygenFlowModifier = 100D;
 
-	if (tempWaterFlowModifier < 0D) waterFlowModifier += tempWaterFlowModifier * time;
-	else waterFlowModifier = 100D;
+        if (tempWaterFlowModifier < 0D) waterFlowModifier += tempWaterFlowModifier * time;
+        else waterFlowModifier = 100D;
 
-	if (tempAirPressureModifier < 0D) airPressureModifier += tempAirPressureModifier * time;
-	else airPressureModifier = 100D;
+        if (tempAirPressureModifier < 0D) airPressureModifier += tempAirPressureModifier * time;
+        else airPressureModifier = 100D;
 
-	if (tempTemperatureModifier != 0D) temperatureModifier += tempTemperatureModifier * time;
+        if (tempTemperatureModifier != 0D) temperatureModifier += tempTemperatureModifier * time;
         else temperatureModifier = 100D;
     }
 
@@ -356,21 +354,21 @@ public class MalfunctionManager implements Serializable {
      */
     public void depleteResources(double time) {
 
-	if (hasMalfunction()) {
+        if (hasMalfunction()) {
             Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
-	            Map effects = malfunction.getResourceEffects();
-	            Iterator i2 = effects.keySet().iterator();
-	            while (i2.hasNext()) {
-	                String key = (String) i2.next();
-		        double amount = ((Double) effects.get(key)).doubleValue();
-		        entity.getInventory().removeResource(key, amount * time);
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+                    Map effects = malfunction.getResourceEffects();
+                    Iterator i2 = effects.keySet().iterator();
+                    while (i2.hasNext()) {
+                        String key = (String) i2.next();
+                        double amount = ((Double) effects.get(key)).doubleValue();
+                        entity.getInventory().removeResource(key, amount * time);
                     }
-	        }
-	    }
-	}
+                }
+            }
+        }
     }
 
     /**
@@ -381,16 +379,16 @@ public class MalfunctionManager implements Serializable {
         // System.out.println(entity.getName() + " accident()");
 
         // Multiple malfunctions may have occured.
-	// 50% one malfunction, 25% two etc.
-	boolean done = false;
-	double chance = 100D;
-	while (!done) {
+        // 50% one malfunction, 25% two etc.
+        boolean done = false;
+        double chance = 100D;
+        while (!done) {
             if (RandomUtil.lessThanRandPercent(chance)) {
-	        addMalfunction();
-		chance /= 2D;
-	    }
-	    else done = true;
-	}
+                addMalfunction();
+                chance /= 2D;
+            }
+            else done = true;
+        }
     }
 
     /**
@@ -431,10 +429,10 @@ public class MalfunctionManager implements Serializable {
      */
     public void addMaintenanceWorkTime(double time) {
         maintenanceTimeCompleted += time;
-	if (maintenanceTimeCompleted >= maintenanceWorkTime) {
+        if (maintenanceTimeCompleted >= maintenanceWorkTime) {
             maintenanceTimeCompleted = 0D;
-	    timeSinceLastMaintenance = 0D;
-	}
+            timeSinceLastMaintenance = 0D;
+        }
     }
 
     /**
@@ -443,25 +441,25 @@ public class MalfunctionManager implements Serializable {
      */
     public void issueMedicalComplaints(Malfunction malfunction) {
 
-	// Get people who can be affected by this malfunction.
+        // Get people who can be affected by this malfunction.
         PersonCollection people = entity.getAffectedPeople();
 
-	// Determine medical complaints for each malfunction.
-	Iterator i1 = malfunction.getMedicalComplaints().keySet().iterator();
-	while (i1.hasNext()) {
-	    String complaintName = (String) i1.next();
-	    double probability = ((Double) malfunction.getMedicalComplaints().get(complaintName)).doubleValue();
-	    MedicalManager medic = mars.getMedicalManager();
+        // Determine medical complaints for each malfunction.
+        Iterator i1 = malfunction.getMedicalComplaints().keySet().iterator();
+        while (i1.hasNext()) {
+            String complaintName = (String) i1.next();
+            double probability = ((Double) malfunction.getMedicalComplaints().get(complaintName)).doubleValue();
+            MedicalManager medic = mars.getMedicalManager();
             Complaint complaint = medic.getComplaintByName(complaintName);
             if (complaint != null) {
-	        PersonIterator i2 = people.iterator();
-	        while (i2.hasNext()) {
-	            Person person = i2.next();
-		    if (RandomUtil.lessThanRandPercent(probability))
-                        person.getPhysicalCondition().addMedicalComplaint(complaint);
-		}
-	    }
-	}
+                PersonIterator i2 = people.iterator();
+                while (i2.hasNext()) {
+                    Person person = i2.next();
+                    if (RandomUtil.lessThanRandPercent(probability))
+                    person.getPhysicalCondition().addMedicalComplaint(complaint);
+                }
+            }
+        }
     }
 
     /**

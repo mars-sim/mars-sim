@@ -114,7 +114,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
             MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-            if (manager.hasEVAMalfunction()) result = 50D;
+            if (manager.hasEVAMalfunction()) result = 100D;
         }
 
         // Check if an airlock is available

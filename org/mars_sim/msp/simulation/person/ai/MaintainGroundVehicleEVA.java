@@ -48,7 +48,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         // Set initial phase.
         phase = EXIT_AIRLOCK;
         
-        System.out.println(person.getName() + " starting MaintainGroundVehicleEVA task.");
+        // System.out.println(person.getName() + " starting MaintainGroundVehicleEVA task.");
     }
     
     /** 
@@ -65,7 +65,9 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
             VehicleIterator i = getAllVehicleCandidates(person).iterator();
             while (i.hasNext()) {
                 MalfunctionManager manager = i.next().getMalfunctionManager();
-                result += (manager.getTimeSinceLastMaintenance() / 200D);
+                double entityProb = (manager.getTimeSinceLastMaintenance() / 200D);
+                if (entityProb > 50D) entityProb = 50D;
+                result += entityProb;
             }
         }
 

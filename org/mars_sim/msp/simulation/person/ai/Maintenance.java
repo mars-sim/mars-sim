@@ -91,6 +91,7 @@ public class Maintenance extends Task implements Serializable {
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (!manager.hasMalfunction() && !(entity instanceof Vehicle)) {
                 double entityProb = manager.getTimeSinceLastMaintenance() / 200D;
+                if (entityProb > 50D) entityProb = 50D;
                 result += entityProb;
             }   
         }

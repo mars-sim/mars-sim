@@ -47,7 +47,6 @@ public class Settlement extends Structure implements LifeSupport {
        
         // Add scope string to malfunction manager.
         malfunctionManager.addScopeString("Settlement");
-        malfunctionManager.addScopeString("LifeSupport");
         
         // Set inventory total mass capacity.
         inventory.setTotalCapacity(Double.MAX_VALUE);

@@ -67,7 +67,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         VehicleIterator i = getAllVehicleCandidates(person).iterator();
         while (i.hasNext()) {
             MalfunctionManager manager = i.next().getMalfunctionManager();
-            result += (manager.getTimeSinceLastMaintenance() / 200D);
+            double entityProb = (manager.getTimeSinceLastMaintenance() / 200D);
+            if (entityProb > 50D) entityProb = 50D;
+            result += entityProb;
         }
 
         // Effort-driven task modifier.
