@@ -131,53 +131,61 @@ public class TravelToSettlement extends Mission implements Serializable {
 				Settlement settlement = person.getSettlement();
 				
 				// Person is at mission starting settlement.
-				boolean inStartingSettlement = (person.getSettlement() == startingSettlement);
+				if (person.getSettlement() == startingSettlement) {
 				
-				// Mission still has room for another person.
-				boolean withinMissionCapacity = (people.size() < missionCapacity);
+					// Mission still has room for another person.
+					boolean withinMissionCapacity = (people.size() < missionCapacity);
 				
-				// At least one person left to hold down the fort.
-				boolean remainingInhabitant = false;
-				PersonIterator i = settlement.getInhabitants().iterator();
-				while (i.hasNext()) {
-					Person inhabitant = i.next();
-					if (!inhabitant.getMind().hasActiveMission() && (inhabitant != person)) 
-						remainingInhabitant = true;
-				}
+					// At least one person left to hold down the fort.
+					boolean remainingInhabitant = false;
+					PersonIterator i = settlement.getInhabitants().iterator();
+					while (i.hasNext()) {
+						Person inhabitant = i.next();
+						if (!inhabitant.getMind().hasActiveMission() && (inhabitant != person)) 
+							remainingInhabitant = true;
+					}
 				
-				// Better job prospect at destination settlement.
-				JobManager jobManager = Simulation.instance().getJobManager();
-				Job currentJob = person.getMind().getJob();
-				double currentJobProspect = jobManager.getJobProspect(person, currentJob, startingSettlement, true);
-				double destinationJobProspect = 0D;
-				if (person.getMind().getJobLock()) 
-					destinationJobProspect = jobManager.getJobProspect(person, currentJob, destinationSettlement, false);
-				else destinationJobProspect = jobManager.getBestJobProspect(person, destinationSettlement, false);
-				boolean betterJobProspect = (destinationJobProspect > currentJobProspect);
+					// Better job prospect at destination settlement.
+					// Also modified by number of associated people in settlement vs. settlement capacity.
+					JobManager jobManager = Simulation.instance().getJobManager();
+					Job currentJob = person.getMind().getJob();
+					double currentJobProspect = jobManager.getJobProspect(person, currentJob, startingSettlement, true);
+					double currentPopulationModifier = (double) startingSettlement.getPopulationCapacity() / 
+						((double) startingSettlement.getAllAssociatedPeople().size() + 1D);
+					currentJobProspect*= currentPopulationModifier;
 				
-				// Does person have a driver job?
-				boolean isDriver = (currentJob instanceof Driver);
+					double destinationJobProspect = 0D;
+					if (person.getMind().getJobLock()) 
+						destinationJobProspect = jobManager.getJobProspect(person, currentJob, destinationSettlement, false);
+					else destinationJobProspect = jobManager.getBestJobProspect(person, destinationSettlement, false);
+					double destinationPopulationModifier = (double) destinationSettlement.getPopulationCapacity() / 
+						((double) destinationSettlement.getAllAssociatedPeople().size() + 1D);
+					destinationJobProspect*= destinationPopulationModifier;
+					boolean betterJobProspect = (destinationJobProspect > currentJobProspect);
 				
-				if (inStartingSettlement && withinMissionCapacity && remainingInhabitant && (betterJobProspect || isDriver)) 
-					result = 50D;
+					// Does person have a driver job?
+					boolean isDriver = (currentJob instanceof Driver);
 				
-				// Relationship modifier for inhabitants of destination settlement.
-				RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-				PersonIterator j = destinationSettlement.getAllAssociatedPeople().iterator();
-				double totalOpinion = 0D;
-				while (j.hasNext()) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, j.next()) - 50D) / 50D);
-				if (totalOpinion >= 0D) result*= (1D + totalOpinion);
-				else result/= (1D - totalOpinion);
+					if (withinMissionCapacity && remainingInhabitant && (betterJobProspect || isDriver)) result = 50D;
 				
-				// Crowding modifier.
-				int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-				if (crowding > 0) result *= (crowding + 1);
+					// Relationship modifier for inhabitants of destination settlement.
+					RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+					PersonIterator j = destinationSettlement.getAllAssociatedPeople().iterator();
+					double totalOpinion = 0D;
+					while (j.hasNext()) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, j.next()) - 50D) / 50D);
+					if (totalOpinion >= 0D) result*= (1D + totalOpinion);
+					else result/= (1D - totalOpinion);
 				
-				// Relationship modifier.
-				result *= getRelationshipProbabilityModifier(person);
+					// Crowding modifier.
+					int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+					if (crowding > 0) result *= (crowding + 1);
 				
-				// Job modifier.
-				result *= person.getMind().getJob().getJoinMissionProbabilityModifier(TravelToSettlement.class);					
+					// Relationship modifier.
+					result *= getRelationshipProbabilityModifier(person);
+				
+					// Job modifier.
+					result *= person.getMind().getJob().getJoinMissionProbabilityModifier(TravelToSettlement.class);
+				}					
 			}
 		}
 
@@ -414,9 +422,14 @@ public class TravelToSettlement extends Mission implements Serializable {
         SettlementCollection settlements = new SettlementCollection(unitManager.getSettlements());
 
 		// Create collection of destination settlements that have better job prospects.
+		// Also modified by number of associated people in settlement vs. settlement capacity.
 		JobManager jobManager = Simulation.instance().getJobManager();
 		Job currentJob = person.getMind().getJob();
 		double currentJobProspect = jobManager.getJobProspect(person, currentJob, startingSettlement, true);
+		double currentPopulationModifier = (double) startingSettlement.getPopulationCapacity() / 
+			((double) startingSettlement.getAllAssociatedPeople().size() + 1D);
+		currentJobProspect*= currentPopulationModifier;
+		
 		SettlementIterator iterator = settlements.iterator();
 		while (iterator.hasNext()) {
 			Settlement tempSettlement = iterator.next();
@@ -425,6 +438,10 @@ public class TravelToSettlement extends Mission implements Serializable {
 				double jobProspect = 0D;
 				if (person.getMind().getJobLock()) jobProspect = jobManager.getJobProspect(person, currentJob, tempSettlement, false);
 				else jobProspect = jobManager.getBestJobProspect(person, tempSettlement, false);
+				double populationModifier = (double) tempSettlement.getPopulationCapacity() / 
+					((double) tempSettlement.getAllAssociatedPeople().size() + 1D);
+				jobProspect*= populationModifier;
+				
 				if (jobProspect <= currentJobProspect) iterator.remove(); 
 			}
 		}
@@ -460,12 +477,7 @@ public class TravelToSettlement extends Mission implements Serializable {
     protected void endMission() {
 
         if (rover != null) rover.setReserved(false);
-        else {
-            if ((reserveRover != null) && reserveRover.isDone()) {
-                rover = reserveRover.getReservedRover();
-                if (rover != null) rover.setReserved(false); 
-            }
-        }
+		else if (reserveRover != null) reserveRover.unreserveRover();
 
         super.endMission();
     }
