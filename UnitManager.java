@@ -35,7 +35,7 @@ public class UnitManager {
         peopleVector = new Vector();
         
         createSettlements();
-        createVehicles(); // create 20 rovers
+        createVehicles();
         createPeople();
     }
 

@@ -7,9 +7,8 @@
 
 import java.util.*;
 
-/** The VirtualMars class represents virtual Mars in the simulation.
- *  It contains all the units, a master clock, and access to the
- *  topography data.
+/** VirtualMars represents Mars in the simulation. It contains all the
+ *  units, a master clock, and access to the topography data.
  */
 public class VirtualMars {
 

@@ -12,12 +12,11 @@ import javax.swing.*;
 
 /** The MapDisplay class is a display component for the surface map of
  *  Mars in the UI. It can show either the surface or topographical
- *  maps at a given point. It uses two SurfaceMap objects to display
- *  the maps.
+ *  maps at a given point. It uses two Map objects to display the
+ *  maps.
  *
- *  It will recenter the map on the location of a mouse click, or will
- *  alternatively open a vehicle or settlement window if one of their
- *  icons is clicked.
+ *  It will recenter the map on the location of a mouse click, or open
+ *  a vehicle/settlement window if one of their icons is clicked.
  */
 public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
