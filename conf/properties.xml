@@ -6,6 +6,10 @@
     <!-- Default: 1000 -->
     <TIME_RATIO>1000</TIME_RATIO>
 
+    <!-- Airlock pressurization/depressurization time (millisols) -->
+    <!-- Default: 10.0 millisols -->
+    <AIRLOCK_CYCLE_TIME>10.0</AIRLOCK_CYCLE_TIME>
+
     <PERSON_PROPERTIES>
 
         <!-- The average amount of oxygen (kg) breathed by a person each Martian Sol -->

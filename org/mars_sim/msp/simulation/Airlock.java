@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 2.74 2002-03-07
+ * @version 2.74 2002-03-10
  * @author Scott Davis
  */
 
@@ -14,10 +14,6 @@ import java.io.Serializable;
  * The Airlock class represents an airlock to a vehicle or structure.
  */
 public class Airlock implements Serializable {
-
-    // The default amount of time required for the airlock to 
-    // pressurize/depressurize. (in millisols)
-    private static final double DEFAULT_AIRLOCK_TIME = 20D;
 
     // Data members
     private double airlockTime;    // The amount of time required for the airlock to 
@@ -44,24 +40,12 @@ public class Airlock implements Serializable {
 	this.unit = unit;
 	this.mars = mars;
 	this.capacity = capacity;
-	airlockTime = DEFAULT_AIRLOCK_TIME;
 	pressurized = true;
 	innerDoorOpen = true;
 	occupants = new PersonCollection();
-    }
 
-    /**
-     * Constructs an airlock object for a unit with a given 
-     * pressurization/depressurization time.
-     * @param unit the unit the airlock is attached to
-     * @param mars the Mars instance
-     * @param capacity number of people airlock can hold
-     * @param airlockTime time required for pressurization/depressurization (in millisols)
-     */
-    public Airlock(Unit unit, VirtualMars mars, int capacity, double airlockTime) {
-        this(unit, mars, capacity);
-	 
-	this.airlockTime = airlockTime;
+	// Initialize airlock time to system property.
+	airlockTime = mars.getSimulationProperties().getAirlockCycleTime();
     }
 
     /**

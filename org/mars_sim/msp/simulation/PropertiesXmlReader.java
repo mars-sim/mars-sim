@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PropertiesXmlReader.java
- * @version 2.74 2002-03-03
+ * @version 2.74 2002-03-10
  * @author Scott Davis
  */
 
@@ -40,11 +40,13 @@ class PropertiesXmlReader extends MspXmlReader {
     private static final int DECOMPRESSION = 20;
     private static final int MIN_TEMPERATURE = 21;
     private static final int FREEZING_TIME = 22;
+    private static final int AIRLOCK_CYCLE_TIME = 23;
     
     // Data members
     private int elementType; // The current element type being parsed
     private int propertyCatagory; // The property catagory
     private double timeRatio; // The time ratio property
+    private double airlockCycleTime; // The time required for airlock cycling
     private double personOxygenConsumption; // The person oxygen consumption property
     private double personLackOfOxygen; // The period a persion surives without Oxygen
     private double personWaterConsumption; // The person water consumption property
@@ -83,6 +85,9 @@ class PropertiesXmlReader extends MspXmlReader {
         if (name.equals("TIME_RATIO")) {
             elementType = TIME_RATIO;
         }
+	if (name.equals("AIRLOCK_CYCLE_TIME")) {
+	    elementType = AIRLOCK_CYCLE_TIME;
+	}
         if (name.equals("PERSON_PROPERTIES")) {
             elementType = PERSON_PROPERTIES;
             propertyCatagory = PERSON_PROPERTIES;
@@ -163,6 +168,9 @@ class PropertiesXmlReader extends MspXmlReader {
             case TIME_RATIO:
                 elementType = PROPERTY_LIST;
                 break;
+	    case AIRLOCK_CYCLE_TIME:
+		elementType = PROPERTY_LIST;
+		break;
             case PERSON_PROPERTIES:
             case ROVER_PROPERTIES:
             case SETTLEMENT_PROPERTIES:
@@ -210,6 +218,9 @@ class PropertiesXmlReader extends MspXmlReader {
             case TIME_RATIO:
                 timeRatio = Double.parseDouble(data);
                 break;
+	    case AIRLOCK_CYCLE_TIME:
+		airlockCycleTime = Double.parseDouble(data);
+		break;
             case OXYGEN_CONSUMPTION:
                 personOxygenConsumption = Double.parseDouble(data);
                 break;
@@ -269,6 +280,17 @@ class PropertiesXmlReader extends MspXmlReader {
         return timeRatio;
     }
 
+    /** 
+     * Gets the airlock pressurization/depressurization time. 
+     * Value must be > 0.
+     * Default value is 10 millisols.
+     * @return airlock cycle time in millisols
+     */
+    public double getAirlockCycleTime() {
+        if (airlockCycleTime <= 0D) airlockCycleTime = 10D;
+	return airlockCycleTime;
+    }
+    
     /** Gets the number of Earth minutes a person can survive without oxygen.
      *  Value must be > 0.
      *  Default value is 5 Earth minutes

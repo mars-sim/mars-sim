@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationProperties.java
- * @version 2.74 2002-03-03
+ * @version 2.74 2002-03-10
  * @author Scott Davis
  */
 
@@ -41,6 +41,16 @@ public class SimulationProperties {
      */
     public void setTimeRatio(double newTimeRatio) {
         if (newTimeRatio > 0) timeRatio = newTimeRatio;
+    }
+
+    /** 
+     * Gets the airlock pressurization/depressurization time.
+     * Value must be > 0.
+     * Default value is 10 millisols.
+     * @return airlock cycle time in millisols.
+     */
+    public double getAirlockCycleTime() {
+        return propertiesReader.getAirlockCycleTime();
     }
 
     /** Gets the how long a Person can survive without oxygen in sol.
