@@ -186,8 +186,9 @@ public class Coordinates {
      */
     public String getFormattedString() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append(getFormattedLongitudeString());
         buffer.append(getFormattedLatitudeString());
+        buffer.append(' ');
+        buffer.append(getFormattedLongitudeString());
         return buffer.toString();
     }
 
