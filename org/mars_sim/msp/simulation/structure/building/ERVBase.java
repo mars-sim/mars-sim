@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ERVBase.java
- * @version 2.75 2003-04-16
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
  
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.structure.building.function.impl.*;
 
@@ -97,6 +98,7 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
         inv.addResource(Resource.HYDROGEN, 6000D);
         
         // Add scope string to malfunction manager.
+        MalfunctionManager malfunctionManager = getMalfunctionManager();
         malfunctionManager.addScopeString("Resource Processing");
         malfunctionManager.addScopeString("Storage");
         malfunctionManager.addScopeString("Power Generation");
@@ -160,8 +162,8 @@ public class ERVBase extends Building implements ResourceProcessing, Storage, Po
         
         // Determine resource processing production level.
         double productionLevel = 0D;
-        if (powerMode.equals(FULL_POWER)) productionLevel = 1D;
-        else if (powerMode.equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
+        if (getPowerMode().equals(FULL_POWER)) productionLevel = 1D;
+        else if (getPowerMode().equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
         
         // Process resources
         processor.getResourceProcessManager().processResources(time, productionLevel);

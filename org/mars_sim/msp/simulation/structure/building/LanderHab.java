@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-05-01
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.structure.building;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.person.medical.*;
@@ -115,6 +116,7 @@ public class LanderHab extends InhabitableBuilding
         inv.addResource(Resource.FOOD, 500D);
         
         // Add scope string to malfunction manager.
+        MalfunctionManager malfunctionManager = getMalfunctionManager();
         malfunctionManager.addScopeString("Living Accommodations");
         malfunctionManager.addScopeString("Research");
         malfunctionManager.addScopeString("Communication");
@@ -193,8 +195,8 @@ public class LanderHab extends InhabitableBuilding
         
         // Determine resource processing production level.
         double productionLevel = 0D;
-        if (powerMode.equals(FULL_POWER)) productionLevel = 1D;
-        else if (powerMode.equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
+        if (getPowerMode().equals(FULL_POWER)) productionLevel = 1D;
+        else if (getPowerMode().equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
         
         // Process resources
         processor.getResourceProcessManager().processResources(time, productionLevel);

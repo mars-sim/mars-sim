@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.75 2003-04-27
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
 
@@ -90,7 +90,7 @@ public class Maintenance extends Task implements Serializable {
             Malfunctionable entity = (Malfunctionable) i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (!manager.hasMalfunction() && !(entity instanceof Vehicle)) {
-                double entityProb = manager.getTimeSinceLastMaintenance() / 200D;
+                double entityProb = manager.getTimeSinceLastMaintenance() / 1000D;
                 if (entityProb > 50D) entityProb = 50D;
                 result += entityProb;
             }   

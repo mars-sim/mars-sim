@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InhabitableBuildingPanel.java
- * @version 2.75 2003-05-27
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
 

@@ -58,6 +58,15 @@ public class MalfunctionPanel extends JPanel {
         repairBarModel = repairBar.getModel();
         repairBar.setStringPainted(true);
         repairPane.add(repairBar);
+        
+        // Set initial value for repair progress bar.
+        double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime() 
+            + malfunction.getEVAWorkTime();
+        double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + 
+            malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
+        int percentComplete = 0;
+        if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
+        repairBarModel.setValue(percentComplete);
     }
 
     /**
@@ -80,7 +89,6 @@ public class MalfunctionPanel extends JPanel {
             + malfunction.getEVAWorkTime();
         double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + 
             malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
-            
         int percentComplete = 0;
         if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
         repairBarModel.setValue(percentComplete);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingsTabPanel.java
- * @version 2.75 2003-05-19
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
 
@@ -65,7 +65,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         buildingLayout = new CardLayout();
         buildingDisplayPanel.setLayout(buildingLayout);
         buildingDisplayPanel.setBorder(new MarsPanelBorder());
-        centerContentPanel.add(new JScrollPane(buildingDisplayPanel));
+        centerContentPanel.add(buildingDisplayPanel);
         
         // Create building panels
         buildingPanels = new ArrayList();

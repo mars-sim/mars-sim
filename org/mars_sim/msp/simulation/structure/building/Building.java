@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2003-04-25
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
  
@@ -25,10 +25,10 @@ public abstract class Building implements Malfunctionable, Serializable {
     public static final String NO_POWER = "No Power";
     
     // Data members
-    protected BuildingManager manager; 
-    protected String name;
-    protected String powerMode;
-    protected MalfunctionManager malfunctionManager;
+    private BuildingManager manager; 
+    private String name;
+    private String powerMode;
+    private MalfunctionManager malfunctionManager;
     
     /**
      * Constructs a Building object.
@@ -78,6 +78,9 @@ public abstract class Building implements Malfunctionable, Serializable {
         
         // Update malfunction manager.
         malfunctionManager.timePassing(time);
+        
+        // If powered up, active time passing.
+        if (getPowerMode().equals(FULL_POWER)) malfunctionManager.activeTimePassing(time);
     }   
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-04-25
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
  
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.structure.building.function.impl.*;
@@ -23,7 +24,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
     private final static double POWER_DOWN_LEVEL = .5D;
     
     // Power required for growing crops per kg of crop.
-    private static final double POWER_GROWING_CROP = .1D;
+    private static final double POWER_GROWING_CROP = .05D;
     
     // Power required for sustaining crops per kg of crop.
     private static final double POWER_SUSTAINING_CROP = .05D;
@@ -88,6 +89,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         }
         
         // Add scope string to malfunction manager.
+        MalfunctionManager malfunctionManager = getMalfunctionManager();
         malfunctionManager.addScopeString("Farming");
         malfunctionManager.addScopeString("Storage");
         malfunctionManager.addScopeString("Resource Processing");
@@ -175,8 +177,8 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         
         // Determine resource processing production level.
         double productionLevel = 0D;
-        if (powerMode.equals(FULL_POWER)) productionLevel = 1D;
-        else if (powerMode.equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
+        if (getPowerMode().equals(FULL_POWER)) productionLevel = 1D;
+        else if (getPowerMode().equals(POWER_DOWN)) productionLevel = POWER_DOWN_LEVEL;
         
         // Process resources
         processor.getResourceProcessManager().processResources(time, productionLevel);
@@ -196,7 +198,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
         }
         
         // Add any new crops.
-        Settlement settlement = manager.getSettlement();
+        Settlement settlement = getBuildingManager().getSettlement();
         for (int x=0; x < newCrops; x++) {
             crops.add(new Crop(Crop.getRandomCropType(), (maxHarvest / (double) numCrops), 
                 this, settlement.getMars(), settlement));
@@ -208,7 +210,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
      * @return power in kW.
      */
     public double getFullPowerRequired() {
-        
+
         // Power (kW) required for normal operations.
         double powerRequired = getPoweredDownPowerRequired();
         

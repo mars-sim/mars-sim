@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InhabitableBuilding.java
- * @version 2.75 2003-04-28
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
  
@@ -100,7 +100,7 @@ public abstract class InhabitableBuilding extends Building {
     public void addPerson(Person person) throws BuildingException {
         if (!occupants.contains(person)) {
             // Remove person from any other inhabitable building in the settlement.
-            Iterator i = manager.getBuildings(InhabitableBuilding.class).iterator();
+            Iterator i = getBuildingManager().getBuildings(InhabitableBuilding.class).iterator();
             while (i.hasNext()) {
                 InhabitableBuilding building = (InhabitableBuilding) i.next();
                 if (building.containsPerson(person)) building.removePerson(person);
@@ -169,7 +169,7 @@ public abstract class InhabitableBuilding extends Building {
         
         // Make sure all occupants are actually in settlement.
         // If not, remove them as occupants.
-        Inventory inv = manager.getSettlement().getInventory();
+        Inventory inv = getBuildingManager().getSettlement().getInventory();
         PersonIterator i = occupants.iterator();
         while (i.hasNext()) {
             if (!inv.containsUnit(i.next())) i.remove();

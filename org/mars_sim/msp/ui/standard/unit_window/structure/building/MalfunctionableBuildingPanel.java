@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionableBuildingPanel.java
- * @version 2.75 2003-05-27
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
 
@@ -59,6 +59,7 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
         
         // Create malfunction panels
         malfunctionCache = malfunctionable.getMalfunctionManager().getMalfunctions();
+        malfunctionPanels = new ArrayList();
         Iterator i = malfunctionCache.iterator();
         while (i.hasNext()) {
             MalfunctionPanel panel = new MalfunctionPanel((Malfunction) i.next());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.75 2003-05-29
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
 
@@ -19,6 +19,8 @@ import java.util.*;
  */
 public class MalfunctionManager implements Serializable {
 
+    private static double DEFAULT_MAINTENANCE_WORK_TIME = 1000D;
+    
     // Data members
     private Malfunctionable entity;          // The owning entity.
     private double timeSinceLastMaintenance; // Time passing (in millisols) since
@@ -46,7 +48,7 @@ public class MalfunctionManager implements Serializable {
         this.mars = mars;
         scope = new ArrayList();
         malfunctions = new ArrayList();
-        maintenanceWorkTime = 2000D;
+        maintenanceWorkTime = DEFAULT_MAINTENANCE_WORK_TIME;
     }
 
     /**

@@ -6,7 +6,7 @@
         <SETTLEMENT_TEMPLATE NAME="Mars Direct Base">
             <BUILDING TYPE="Lander Hab" />
             <BUILDING TYPE="Inflatable Greenhouse" />
-            <BUILDING TYPE="Nuclear Reactor" />
+            <BUILDING TYPE="Nuclear Reactor" NUMBER="2" />
             <BUILDING TYPE="ERV Base" NUMBER="2" />
             <VEHICLE TYPE="Explorer Rover" />
         </SETTLEMENT_TEMPLATE>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 2.75 2003-05-21
+ * @version 2.75 2003-05-30
  * @author Scott Davis
  */
 
@@ -42,10 +42,15 @@ public class BuildingPanel extends JPanel {
         // Set layout
         setLayout(new BorderLayout(0, 0));
         
-        // Prepare function list panel
+        // Prepare function scroll panel.
+        JScrollPane functionScrollPanel = new JScrollPane();
+        functionScrollPanel.setPreferredSize(new Dimension(200, 220));
+        add(functionScrollPanel, BorderLayout.NORTH);
+        
+        // Prepare function list panel.
         JPanel functionListPanel = new JPanel();
         functionListPanel.setLayout(new BoxLayout(functionListPanel, BoxLayout.Y_AXIS));
-        add(functionListPanel, BorderLayout.NORTH);
+        functionScrollPanel.setViewportView(functionListPanel);
         
         // Prepare inhabitable panel if building is inhabitable.
         if (building instanceof InhabitableBuilding) {
@@ -58,6 +63,11 @@ public class BuildingPanel extends JPanel {
         BuildingFunctionPanel malfunctionPanel = new MalfunctionableBuildingPanel((Malfunctionable) building, desktop);
         functionPanels.add(malfunctionPanel);
         functionListPanel.add(malfunctionPanel);
+        
+        // Prepare maintenance panel.
+        BuildingFunctionPanel maintenancePanel = new MaintenanceBuildingPanel((Malfunctionable) building, desktop);
+        functionPanels.add(maintenancePanel);
+        functionListPanel.add(maintenancePanel);
     }
     
     /**
