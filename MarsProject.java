@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.71 2001-1-7
+ * @version 2.73 2001-12-04
  * @author Scott Davis
  */
 

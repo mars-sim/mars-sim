@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.73 2001-11-29
+ * @version 2.73 2001-12-04
  * @author Scott Davis
  */
 
@@ -22,8 +22,6 @@ public class MasterClock implements Runnable, Serializable {
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
-    private boolean timeRatioSet; // Time ratio set flag
-    private double timeRatio;     // Time compression ratio
 
     // Sleep duration in milliseconds 
     private final static int SLEEP_DURATION = 1000;
@@ -36,10 +34,6 @@ public class MasterClock implements Runnable, Serializable {
     public MasterClock(VirtualMars mars) {
         // Initialize data members
         this.mars = mars;
-
-        // Initialize data members
-        timeRatioSet = false;
-        timeRatio = 1D;
 
         // Create a Martian clock
         marsTime = new MarsClock();
@@ -72,30 +66,17 @@ public class MasterClock implements Runnable, Serializable {
         return uptimer;
     }
 
-    /** Sets the simulation's time compression
-     *  ratio.
-     *  @param timeRatio the time compression ratio
-     */
-    public void setRatio(double timeRatio) {
-        if (timeRatio > 0D) {
-            timeRatioSet = true;
-            this.timeRatio = timeRatio;
-        }
-    }
-
     /** Gets the time pulse length
      *  @return time pulse length in millisols
      */
     public double getTimePulse() {
 
         // Get time ratio from simulation properties.
-        double ratio;
-        if (timeRatioSet) ratio = timeRatio;
-        else ratio = mars.getSimulationProperties().getTimeRatio();
+        double timeRatio = mars.getSimulationProperties().getTimeRatio();
 
         double timePulse;
-        if (ratio > 0D) {
-            double timePulseSeconds = ratio * (SLEEP_DURATION / 1000D);
+        if (timeRatio > 0D) {
+            double timePulseSeconds = timeRatio * (SLEEP_DURATION / 1000D);
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
         }
         else timePulse = 1D;

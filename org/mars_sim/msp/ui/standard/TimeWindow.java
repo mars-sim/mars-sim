@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.72 2001-07-22
+ * @version 2.73 2001-12-04
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ public class TimeWindow extends ToolWindow implements Runnable {
     // Data members
     private MainDesktopPane desktop; // Desktop pane
     private MasterClock master;      // Master Clock
+    private SimulationProperties properties;  // The simulation properties
     private MarsClock marsTime;      // Martian Clock
     private EarthClock earthTime;    // Earth Clock
     private UpTimer uptimer;         // Uptime Timer
@@ -51,6 +52,7 @@ public class TimeWindow extends ToolWindow implements Runnable {
         // Initialize data members
         this.desktop = desktop;
         master = desktop.getMainWindow().getVirtualMars().getMasterClock();
+        properties = desktop.getMainWindow().getVirtualMars().getSimulationProperties();
         marsTime = master.getMarsClock();
         earthTime = master.getEarthClock();
         uptimer = master.getUpTimer(); 
@@ -163,18 +165,19 @@ public class TimeWindow extends ToolWindow implements Runnable {
         pulsePane.add(pulseHeaderLabel, "North");
 
         // Create pulse slider
-        int existingRatio = (int)
-        desktop.getMainWindow().getVirtualMars().getSimulationProperties().getTimeRatio();
-
-        pulseSlider = new JSlider(0, 10, existingRatio / RATIO_SCALE);
+        int existingRatio = (int) properties.getTimeRatio();
+        int currentPosition = existingRatio / RATIO_SCALE;
+        if (currentPosition > 10) currentPosition = 10;
+        pulseSlider = new JSlider(0, 10, currentPosition);
         pulseSlider.setMajorTickSpacing(1);
         pulseSlider.setPaintTicks(true);
         pulseSlider.addChangeListener(new ChangeListener() {
-                            public void stateChanged(ChangeEvent e) {
-                                double ratio = (double)(pulseSlider.getValue() * RATIO_SCALE);
-                                master.setRatio(ratio);
-                            }
-                        });
+                public void stateChanged(ChangeEvent e) {
+                    double ratio = (double)(pulseSlider.getValue() * RATIO_SCALE);
+                    if (ratio == 0D) ratio = 1;
+                    properties.setTimeRatio(ratio);
+                }
+        });
         pulsePane.add(pulseSlider, "South");
 
         // Pack window
