@@ -1,16 +1,21 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.75 2003-02-26
+ * @version 2.75 2004-03-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.vehicle;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.equipment.*;
+import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.LifeSupport;
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** The Rover class represents the rover type of ground vehicle.  It
  *  contains information about the rover.
@@ -18,8 +23,6 @@ import org.mars_sim.msp.simulation.equipment.*;
 public abstract class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable {
 
     // Static data members
-    private static final double BASE_SPEED = 30D; // Base speed of rover in kph.
-    private static final double BASE_MASS = 10000D; // Base mass of rover in kg.
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private double NORMAL_TEMP = 25D; // Normal temperature (celsius)
     
@@ -28,20 +31,25 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     protected Airlock airlock; // The rover's airlock.
     protected double range; // Operating range of rover in km.
 	
-    /** Constructs a Rover object at a given settlement
-     *  @param name the name of the rover
-     *  @param settlement the settlement the rover is parked at
-     *  @param mars the virtual Mars
+    /** 
+     * Constructs a Rover object at a given settlement
+     * @param name the name of the rover
+     * @param settlement the settlement the rover is parked at
+     * @param mars the virtual Mars
+     * @throws Exception if rover could not be constructed.
      */
-    Rover(String name, Settlement settlement, Mars mars) {
+    Rover(String name, Settlement settlement, Mars mars) throws Exception {
         // Use GroundVehicle constructor
         super(name, settlement, mars);
 
         initRoverData();
     }
     
-    /** Initialize rover data */
-    private void initRoverData() {
+    /** 
+     * Initialize rover data 
+     * @throws Exception if rover data cannot be initialized.
+     */
+    private void initRoverData() throws Exception {
 
         // Add scope to malfunction manager.
         malfunctionManager.addScopeString("Rover");
@@ -51,12 +59,6 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
         // Set rover terrain modifier
         setTerrainHandlingCapability(0D);
 
-        // Set base speed to 30kph.
-        setBaseSpeed(BASE_SPEED);
-
-        // Set the empty mass of the rover.
-        baseMass = BASE_MASS;
-
         // Create the rover's airlock.
         try { airlock = new VehicleAirlock(this, 2); }
         catch (Exception e) { System.out.println(e.getMessage()); }
@@ -65,9 +67,15 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
     /** 
      * Adds enough EVA suits to inventory to match crew capacity.
      */
-    protected void addEVASuits() {
-        for (int x=0; x < getCrewCapacity(); x++) 
-	    inventory.addUnit(new EVASuit(location, mars));
+    protected void addEVASuits() throws Exception {
+    	try {
+    		int suitNum = mars.getSimulationConfiguration().getVehicleConfiguration().getEvaSuits(description);
+        	for (int x=0; x < suitNum; x++) 
+	    	inventory.addUnit(new EVASuit(location, mars));
+    	}
+    	catch (Exception e) {
+    		throw new Exception("Could not add EVA suits.: " + e.getMessage());
+    	}
     }
 
     /** Gets the range of the rover

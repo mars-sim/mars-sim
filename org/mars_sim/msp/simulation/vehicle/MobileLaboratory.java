@@ -1,15 +1,16 @@
 /**
  * Mars Simulation Project
  * MobileLaboratory.java
- * @version 2.75 2003-04-14
+ * @version 2.75 2004-03-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.vehicle;
 
-import org.mars_sim.msp.simulation.*;
 import java.io.Serializable;
 import java.util.*;
+
+import org.mars_sim.msp.simulation.Lab;
 
 /** 
  * The MobileLaboratory class represents the research laboratory in a vehicle.
@@ -19,7 +20,7 @@ public class MobileLaboratory implements Lab, Serializable {
     // Data members
     private int laboratorySize; // Number of researchers supportable at any given time. 
     private int technologyLevel; // How advanced the laboratories are (units defined later)
-    private Collection techSpecialities; // What fields of science the laboratories specialize in.
+    private List techSpecialities; // What fields of science the laboratories specialize in.
     private int researcherNum; // The number of people currently doing research in laboratory.
 
     /** 
@@ -28,16 +29,12 @@ public class MobileLaboratory implements Lab, Serializable {
      * @param techlevel how advanced the laboratories are (units defined later)
      * @param techFocus the names of the technologies the labs are focused on
      */
-    MobileLaboratory(int size, int techLevel, String[] techFocus) {
+    MobileLaboratory(int size, int techLevel, List techSpecialities) {
 
         // Initialize data members.
-        laboratorySize = size;
-        technologyLevel = techLevel;
-
-        techSpecialities = new ArrayList();
-        for (int x = 0; x < techFocus.length; x++) {
-            techSpecialities.add(techFocus[x]);
-        }
+        this.laboratorySize = size;
+        this.technologyLevel = techLevel;
+        this.techSpecialities = techSpecialities;
     }
 
     /** 

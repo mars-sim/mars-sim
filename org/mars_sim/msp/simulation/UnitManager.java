@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.75 2004-03-16
+ * @version 2.75 2004-03-23
  * @author Scott Davis
  */
 
@@ -31,8 +31,8 @@ public class UnitManager implements Serializable {
     // Data members
     private Mars mars; // Virtual Mars
     private UnitCollection units; // Collection of all units
-    private ArrayList settlementNames; // List of possible settlement names
-    private ArrayList vehicleNames; // List of possible vehicle names
+    private List settlementNames; // List of possible settlement names
+    private List vehicleNames; // List of possible vehicle names
     private List personNames; // List of possible person names
 
     /** Constructs a UnitManager object
@@ -76,11 +76,15 @@ public class UnitManager implements Serializable {
     
     /**
      * Initializes the list of possible vehicle names.
+     * @throws Exception if unable to load rover names.
      */
-    private void initializeVehicleNames() {
-        VehicleNamesXmlReader vehicleNamesReader = new VehicleNamesXmlReader();
-        vehicleNamesReader.parse();
-        vehicleNames = vehicleNamesReader.getVehicleNames();
+    private void initializeVehicleNames() throws Exception {
+        try {
+        	vehicleNames = mars.getSimulationConfiguration().getVehicleConfiguration().getRoverNameList();
+        }
+        catch (Exception e) {
+        	throw new Exception("rover names could not be loaded: " + e.getMessage());
+        }
     }
     
     /**
@@ -115,21 +119,25 @@ public class UnitManager implements Serializable {
         
         Collection initialNameList = null;
         ArrayList usedNames = new ArrayList();
+        String unitName = "";
         
         if (unitType.equals(SETTLEMENT)) {
             initialNameList = settlementNames;
             SettlementIterator si = getSettlements().iterator();
             while (si.hasNext()) usedNames.add(si.next().getName());
+            unitName = "Settlement";
         }
         else if (unitType.equals(VEHICLE)) {
             initialNameList = vehicleNames;
             VehicleIterator vi = getVehicles().iterator();
             while (vi.hasNext()) usedNames.add(vi.next().getName());
+            unitName = "Vehicle";
         }
         else if (unitType.equals(PERSON)) {
             initialNameList = personNames;
             PersonIterator pi = getPeople().iterator();
             while (pi.hasNext()) usedNames.add(pi.next().getName());
+            unitName = "Person";
         }
         else throw new IllegalArgumentException("Inproper unitType");
  
@@ -143,8 +151,7 @@ public class UnitManager implements Serializable {
         String result = "";
         if (remainingNames.size() > 0) result = (String) remainingNames.get(
                 RandomUtil.getRandomInt(remainingNames.size() - 1));
-        else if (usedNames.size() > 0) result = (String) usedNames.get(
-                RandomUtil.getRandomInt(usedNames.size() - 1));      
+        else result = unitName + " " + (usedNames.size() + 1);  
                 
         return result;
     }       

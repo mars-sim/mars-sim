@@ -7,55 +7,58 @@
 		 and ice prospecting. -->
 	<rover type="Explorer Rover">
 
-		<!-- The range of the explorer rover (km) -->
+		<!-- The range of the rover (km) (required) -->
 		<!-- Default: 3000.0 -->
 		<range value="3000.0" />
 
-		<!-- The fuel efficiency of the explorer rover (km/kg) -->
+		<!-- The fuel efficiency of the rover (km/kg) (required) -->
 		<!-- Default: 2.0 -->
 		<fuel-efficiency value="2.0" />
 
-		<!-- Base speed of explorer rover (km/hr) -->
+		<!-- Base speed of rover (km/hr) (required) -->
 		<!-- Default: 30.0 -->
 		<base-speed value="30.0" />
 
-		<!-- Empty mass of explorer rover (kg) -->
+		<!-- Empty mass of rover (kg) (required) -->
 		<!-- Default: 10000.0 -->
 		<empty-mass value="10000.0" />
 
-		<!-- The crew size of an explorer rover -->
+		<!-- The crew size of an rover -->
 		<!-- Default: 4 -->
 		<crew-size value="4" />
 
-		<!-- The total cargo capacity of the explorer rover (kg) -->
+		<!-- Cargo capacity list -->
+		<!-- total-capacity: total cargo capacity of rover. (kg) -->
 		<!-- Default: 5500.0 -->
-		<total-cargo-capacity value="5500.0" />
+		<cargo total-capacity="5500.0">
  
-		<!-- The methane cargo capacity of the explorer rover (kg) -->
-		<!-- Default: 1600.0 -->
-		<methane-cargo-capacity value="1600.0" />
+			<!-- The methane cargo capacity of the rover (kg) -->
+			<!-- Default: 1600.0 -->
+			<capacity resource="Methane" value="1600.0" />
 
-		<!-- The oxygen cargo capacity of the explorer rover (kg) -->
-		<!-- Default: 140.0 -->
-		<oxygen-cargo-capacity value="140.0" />
+			<!-- The oxygen cargo capacity of the rover (kg) -->
+			<!-- Default: 140.0 -->
+			<capacity resource="Oxygen" value="140.0" />
 
-		<!-- The water cargo capacity of the explorer rover (kg) -->
-		<!-- Default: 560.0 -->
-		<water-cargo-capacity value="560.0" />
+			<!-- The water cargo capacity of the rover (kg) -->
+			<!-- Default: 560.0 -->
+			<capacity resource="Water" value="560.0" />
 
-		<!-- The food cargo capacity of the explorer rover (kg) -->
-		<!-- Default: 210.0 -->
-		<food-cargo-capacity value="210.0" />
+			<!-- The food cargo capacity of the rover (kg) -->
+			<!-- Default: 210.0 -->
+			<capacity resource="Food" value="210.0" />
 
-		<!-- The rock samples cargo capacity of the explorer rover (kg) -->
-		<!-- Default: 2000.0 -->
-		<rock-samples-cargo-capacity value="2000.0" />
+			<!-- The rock samples cargo capacity of the rover (kg) -->
+			<!-- Default: 2000.0 -->
+			<capacity resource="Rock Samples" value="2000.0" />
 
-		<!-- The ice cargo capacity of the explorer rover (kg) -->
-		<!-- Default: 2000.0 -->
-		<ice-cargo-capacity value="2000.0" />
+			<!-- The ice cargo capacity of the rover (kg) -->
+			<!-- Default: 2000.0 -->
+			<capacity resource="Ice" value="2000.0" />
 
-		<!-- Number of EVA (Extra Vehicular Activity) suits in explorer rover -->
+		</cargo>
+
+		<!-- Number of EVA (Extra Vehicular Activity) suits in the rover -->
 		<!-- Default: 4 -->
 		<eva-suits value="4" />
 
@@ -77,56 +80,19 @@
 	<!-- A rover for transporting people from one settlement to another. -->
 	<!-- Note: This rover type is not available in version 2.75. -->
 	<rover type="Transport Rover">
-
-		<!-- The range of the transport rover (km) -->
-		<!-- Default: 4000.0 -->
 		<range value="4000.0" />
-
-		<!-- The fuel efficiency of the transport rover (km/kg) -->
-		<!-- Default: 2.0 -->
 		<fuel-efficiency value="2.0" />
-
-		<!-- Base speed of transport rover (km/hr) -->
-		<!-- Default: 30.0 -->
 		<base-speed value="30.0" />
-
-		<!-- Empty mass of transport rover (kg) -->
-		<!-- Default: 10000.0 -->
 		<empty-mass value="10000.0" />
-
-		<!-- The crew size of an transport rover -->
-		<!-- Default: 8 -->
 		<crew-size value="8" />
-
-		<!-- The total cargo capacity of the transport rover (kg) -->
-		<!-- Default: 12000.0 -->
-		<total-cargo-capacity value="12000.0" />
- 
-		<!-- The methane cargo capacity of the transport rover (kg) -->
-		<!-- Default: 3750.0 -->
-		<methane-cargo-capacity value="3750.0" />
-
-		<!-- The oxygen cargo capacity of the transport rover (kg) -->
-		<!-- Default: 1000.0 -->
-		<oxygen-cargo-capacity value="1000.0" />
-
-		<!-- The water cargo capacity of the transport rover (kg) -->
-		<!-- Default: 4000.0 -->
-		<water-cargo-capacity value="4000.0" />
-
-		<!-- The food cargo capacity of the transport rover (kg) -->
-		<!-- Default: 787.5 -->
-		<food-cargo-capacity value="787.5" />            
-
-		<!-- Number of EVA (Extra Vehicular Activity) suits in transport rover -->
-		<!-- Default: 8 -->
+		<cargo total-capacity="12000.0">
+			<capacity resource="Methane" value="3750.0" />
+			<capacity resource="Oxygen" value="1000.0" />
+			<capacity resource="Water" value="4000.0" />
+			<capacity resource="Food" value="787.5" />            
+		</cargo>
 		<eva-suits value="8" />
-
-		<!-- Sickbay -->
-		<!-- Medical tech level of sickbay - default: 3 -->
-		<!-- Number of beds in sickbay - default: 2 -->
 		<sickbay tech-level="3" beds="2" />
-
 	</rover>
 	
 	<!-- List of rover names -->

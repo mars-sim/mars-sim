@@ -1,14 +1,16 @@
 /**
  * Mars Simulation Project
  * TransportRover.java
- * @version 2.75 2003-11-27
+ * @version 2.75 2004-03-23
  */
 
 package org.mars_sim.msp.simulation.vehicle;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
 import java.io.Serializable;
+
+import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.Resource;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /**
  * The TransportRover class is a rover designed for transporting people
@@ -16,16 +18,6 @@ import java.io.Serializable;
  */
 public class TransportRover extends Rover implements Medical, Serializable {
 
-    // Static data members
-    private static final double RANGE = 4000D; // Operating range of rover in km.
-    private static final int CREW_CAPACITY = 8; // Max number of crewmembers.
-    private static final double CARGO_CAPACITY = 12000D; // Cargo capacity of rover in kg.
-    private static final double METHANE_CAPACITY = 3750D; // Methane capacity of rover in kg.
-    private static final double OXYGEN_CAPACITY = 1000D; // Oxygen capacity of rover in kg.
-    private static final double WATER_CAPACITY = 4000D; // Water capacity of rover in kg.
-    private static final double FOOD_CAPACITY = 787.5D; // Food capacity of rover in kg.
-    private static final int SICKBAY_LEVEL = 3; // Treatment level of sickbay.
-    private static final int SICKBAY_BEDS = 2; // Number of beds in sickbay.
     private SickBay sickBay = null;
 
     /**
@@ -33,8 +25,9 @@ public class TransportRover extends Rover implements Medical, Serializable {
      * @param name the name of the rover
      * @param settlement the settlementt he rover is parked at
      * @param mars the mars instance
+     * @throws Exception if rover could not be constructed.
      */
-    public TransportRover(String name, Settlement settlement, Mars mars) {
+    public TransportRover(String name, Settlement settlement, Mars mars) throws Exception {
         // Use the Rover constructor
         super(name, settlement, mars);
 
@@ -46,8 +39,11 @@ public class TransportRover extends Rover implements Medical, Serializable {
 
     /**
      * Initialize rover data
+     * @throws Exception if rover data can not be initialized.
      */
-    private void initTransportRoverData() {
+    private void initTransportRoverData() throws Exception {
+
+		VehicleConfig config = mars.getSimulationConfiguration().getVehicleConfiguration();
 
         // Set the description.
         description = "Transport Rover";
@@ -55,22 +51,28 @@ public class TransportRover extends Rover implements Medical, Serializable {
         // Add scope to malfunction manager.
 	    malfunctionManager.addScopeString("TransportRover");
 	    
+		// Set base speed to 30kph.
+		setBaseSpeed(config.getBaseSpeed(description));
+
+		// Set the empty mass of the rover.
+		baseMass = config.getEmptyMass(description);
+	    
         // Set operating range of rover.
-        range = RANGE;
+		range = config.getRange(description);
         
         // Set crew capacity
-	    crewCapacity = CREW_CAPACITY;
+		crewCapacity = config.getCrewSize(description);
 
         // Set the cargo capacity of rover.
-	    inventory.setTotalCapacity(CARGO_CAPACITY);
+		inventory.setTotalCapacity(config.getTotalCapacity(description));
 	
 	    // Set resource capacities of rover
-	    inventory.setResourceCapacity(Resource.METHANE, METHANE_CAPACITY);
-	    inventory.setResourceCapacity(Resource.OXYGEN, OXYGEN_CAPACITY);
-	    inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
-	    inventory.setResourceCapacity(Resource.FOOD, FOOD_CAPACITY);
+		inventory.setResourceCapacity(Resource.METHANE, config.getCargoCapacity(description, Resource.METHANE));
+		inventory.setResourceCapacity(Resource.OXYGEN, config.getCargoCapacity(description, Resource.OXYGEN));
+		inventory.setResourceCapacity(Resource.WATER, config.getCargoCapacity(description, Resource.WATER));
+		inventory.setResourceCapacity(Resource.FOOD, config.getCargoCapacity(description, Resource.FOOD));
 
-        sickBay = new SickBay(this, SICKBAY_LEVEL, SICKBAY_BEDS);
+		sickBay = new SickBay(this, config.getSickbayTechLevel(description), config.getSickbayBeds(description));
     }
 
 	/**
