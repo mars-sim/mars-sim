@@ -1,5 +1,5 @@
 //*********************** Main Desktop Pane ***********************
-// Last Modified: 4/30/00
+// Last Modified: 5/14/00
 
 // The MainDesktopPane class is the desktop part of the project's UI.
 // It contains all tool and unit windows, and is itself contained, along
@@ -158,7 +158,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	
 	public boolean isToolWindowOpen(String toolName) {
 		ToolWindow tempWindow = getToolWindow(toolName);
-		if (tempWindow != null) return !tempWindow.isClosed();
+		if (tempWindow != null) { return !tempWindow.isClosed(); }
 		else return false;
 	}
 	
@@ -173,6 +173,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 					tempWindow.setOpened();
 				}
 				add(tempWindow, 0);
+				try { tempWindow.setClosed(false); }
+				catch (Exception e) { System.out.println(e.toString()); }
 			}
 			tempWindow.show();
 		}
@@ -274,15 +276,13 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 }
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

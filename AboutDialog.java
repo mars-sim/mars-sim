@@ -1,5 +1,5 @@
 //******************* About Mars Simulation Project Window ****************
-// Last Modified: 4/10/00
+// Last Modified: 5/14/00
 
 // The AboutDialog is an information window that is called from the "About The Mars Simulation Project"
 // item in the MainWindowMenu.  It provides information about the project, credit to contributors and the GPL license.
@@ -8,12 +8,14 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.text.*;
 
-public class AboutDialog extends JDialog implements ActionListener {
+public class AboutDialog extends JDialog implements ActionListener, ComponentListener {
 
 	// Data Members
 	
 	private JButton closeButton;  // The close button
+	private JViewport viewPort;   // The view port for the text pane
 	
 	// Constructor
 	
@@ -28,36 +30,44 @@ public class AboutDialog extends JDialog implements ActionListener {
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(mainPane);
-	
-		// Create the content string
-	
-		StringBuffer content = new StringBuffer();
 		
-		content.append("The Mars Simulation Project v2.7\n\n");
+		// Create the text panel
 		
-		content.append("Web Site: http://mars-sim.sourceforge.net\n\n");
+		JTextPane textPane = new JTextPane();
+		DefaultStyledDocument document = new DefaultStyledDocument();
+		textPane.setStyledDocument(document);
+		textPane.setBackground(Color.lightGray);
+		textPane.setBorder(new EmptyBorder(2, 2, 2, 2));
+		textPane.setEditable(false);
 		
-		content.append("Developers:\n");
-		content.append("  Scott Davis - Java programming, graphics\n");
-		content.append("  James Barnard - 3D graphics\n\n");
+		// Create the document
 		
-		content.append("Special thanks to Mike Jones and Dan Sepanski for testing and recommendations.\n\n");
+		try {
+			document.insertString(0, "The Mars Simulation Project v2.7\n\n", null);
+			document.insertString(document.getLength(), "Web Site: http://mars-sim.sourceforge.net\n\n", null);
+			
+			document.insertString(document.getLength(), "Developers:\n", null);
+			document.insertString(document.getLength(), "  Scott Davis - Java programming, graphics\n", null);
+			document.insertString(document.getLength(), "  James Barnard - 3D graphics, sound\n\n", null);
+			
+			document.insertString(document.getLength(), "Testing and recommendations:\n", null);
+			document.insertString(document.getLength(), "Mike Jones\n", null);
+			document.insertString(document.getLength(), "Dan Sepanski\n", null);
+			document.insertString(document.getLength(), "Joe Wagner\n\n", null);
+			
+			document.insertString(document.getLength(), "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License ", null);
+			document.insertString(document.getLength(), "as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n", null);
+			document.insertString(document.getLength(), "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty ", null);
+			document.insertString(document.getLength(), "of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.", null);
+		}
+		catch (BadLocationException e) { System.out.println(e.toString()); }
 		
-		content.append("This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License ");
-		content.append("as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n");
+		JScrollPane scrollPane = new JScrollPane(textPane);
+		viewPort = scrollPane.getViewport();
+		viewPort.addComponentListener(this);
+		viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		
-		content.append("This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty ");
-		content.append("of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.");
-		
-		// Create content text area
-		
-		JTextArea contentArea = new JTextArea(new String(content));
-		contentArea.setBackground(Color.lightGray);
-		contentArea.setBorder(new EmptyBorder(2, 2, 2, 2));
-		contentArea.setLineWrap(true);
-		contentArea.setWrapStyleWord(true);
-		contentArea.setEditable(false);
-		mainPane.add(new JScrollPane(contentArea), "Center");
+		mainPane.add(scrollPane);
 		
 		// Create close button panel
 		
@@ -73,37 +83,44 @@ public class AboutDialog extends JDialog implements ActionListener {
 		
 		// Set the size of the window
 		
-		setSize(300, 400);
+		setSize(350, 400);
 		
 		// Center the window on the parent window.
 		
 		Point parentLocation = mainWindow.getLocation();
-		int Xloc = (int) parentLocation.getX() + ((mainWindow.getWidth() - 300) / 2);
+		int Xloc = (int) parentLocation.getX() + ((mainWindow.getWidth() - 350) / 2);
 		int Yloc = (int) parentLocation.getY() + ((mainWindow.getHeight() - 400) / 2);
 		setLocation(Xloc, Yloc);
+	
+		// Prevent the window from being resized by the user.
+	
+		setResizable(false);
 		
-		// Display window
+		// Show the window
 		
 		setVisible(true);
 	}
 	
 	// Implementing ActionListener method
 	
-	public void actionPerformed(ActionEvent event) {
-		dispose();	
-	}
+	public void actionPerformed(ActionEvent event) { dispose(); }
+	
+	// Implement ComponentListener interface.
+	
+	public void componentResized(ComponentEvent e) { viewPort.setViewPosition(new Point(0, 0)); }
+	public void componentMoved(ComponentEvent e) {}
+	public void componentShown(ComponentEvent e) {}
+	public void componentHidden(ComponentEvent e) {}
 }
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
