@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.72 2001-05-16
+ * @version 2.72 2001-05-20
  * @author Scott Davis
  */
 
@@ -190,21 +190,22 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         super.paintComponent(g);
 
         if (wait) {
-            // If in waiting mode, display "Preparing Map..."
+            // If in waiting mode, display wait string 
             if (mapImage != null)
                 g.drawImage(mapImage, 0, 0, this);
                 
             if (topo) g.setColor(Color.black);
             else g.setColor(Color.green);
             
-            String message = "Preparing Map...";
-            Font alertFont = new Font("TimesRoman", Font.BOLD, 30);
-            FontMetrics alertMetrics = getFontMetrics(alertFont);
-            int msgHeight = alertMetrics.getHeight();
-            int msgWidth = alertMetrics.stringWidth(message);
+            String message = "Generating Map";
+            if (useUSGSMap) message = "Downloading Map";
+            Font messageFont = new Font("SansSerif", Font.BOLD, 25);
+            FontMetrics messageMetrics = getFontMetrics(messageFont);
+            int msgHeight = messageMetrics.getHeight();
+            int msgWidth = messageMetrics.stringWidth(message);
             int x = (width - msgWidth) / 2;
             int y = (height + msgHeight) / 2;
-            g.setFont(alertFont);
+            g.setFont(messageFont);
             g.drawString(message, x, y);
             wait = false;
         } else {
