@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.75 2003-04-21
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -140,7 +140,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        while ((timeLeft > 0D) && !done) {
+        while ((timeLeft > 0D) && !isDone()) {
             if (phase.equals(EXIT_AIRLOCK)) timeLeft = exitEVA(timeLeft);
             else if (phase.equals(REPAIR_MALFUNCTION)) timeLeft = repairMalfunction(timeLeft);
             else if (phase.equals(ENTER_AIRLOCK)) timeLeft = enterEVA(timeLeft);

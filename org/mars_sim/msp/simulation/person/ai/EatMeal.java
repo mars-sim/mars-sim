@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.75 2003-04-15
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -51,7 +51,7 @@ class EatMeal extends Task implements Serializable {
                 // Add stress increase later.
             }
         }
-        else if (location.equals(Person.OUTSIDE)) done = true;
+        else if (location.equals(Person.OUTSIDE)) endTask();
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -83,7 +83,7 @@ class EatMeal extends Task implements Serializable {
         if (timeCompleted > duration) {
             SimulationProperties properties = mars.getSimulationProperties();
             person.consumeFood(properties.getPersonFoodConsumption() * (1D / 3D));
-            done = true;
+            endTask();
             return timeCompleted - duration;
         }
         else return 0D;

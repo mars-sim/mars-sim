@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -48,7 +48,7 @@ class LoadVehicle extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 	
         double amountLoading = LOAD_RATE * time;
 
@@ -82,9 +82,9 @@ class LoadVehicle extends Task implements Serializable {
 	        vehicle.getInventory().addResource(Resource.FOOD, foodAmount);
             amountLoading -= foodAmount;
         }
-        else done = true;
+        else endTask();
 
-        if (isFullyLoaded(vehicle)) done = true;
+        if (isFullyLoaded(vehicle)) endTask();
 
         return 0;
     }

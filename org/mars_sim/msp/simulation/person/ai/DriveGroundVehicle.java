@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -112,7 +112,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         vehicle.setDriver(person);
 	
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 	
         // If night time, end task.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(vehicle.getCoordinates()) == 0D) {
@@ -120,15 +120,15 @@ public class DriveGroundVehicle extends Task implements Serializable {
             vehicle.setSpeed(0D);
             vehicle.setDriver(null);
             vehicle.setStuck(false);
-            done = true;
+            endTask();
             return 0D;
         }
 
         // If vehicle has malfunction, end task.
-        if (vehicle.getMalfunctionManager().hasMalfunction()) done = true;
+        if (vehicle.getMalfunctionManager().hasMalfunction()) endTask();
 	
         // Perform phases of task until time is up or task is done.
-        while ((timeLeft > 0D) && !done) {
+        while ((timeLeft > 0D) && !isDone()) {
             if (phase.equals(DRIVING)) timeLeft = drivingPhase(timeLeft);
             else if (phase.equals(AVOID_OBSTACLE)) timeLeft = obstaclePhase(timeLeft);
             else if (phase.equals(WINCH_VEHICLE)) timeLeft = winchingPhase(timeLeft);
@@ -137,12 +137,12 @@ public class DriveGroundVehicle extends Task implements Serializable {
 
         // Keep track of the duration of the task.
         timeCompleted += time;
-        if (done || (timeCompleted >= duration)) {
+        if (isDone() || (timeCompleted >= duration)) {
             // System.out.println(person.getName() + " finished driving " + vehicle.getName());
             vehicle.setSpeed(0D);
             vehicle.setDriver(null);
             vehicle.setStuck(false);
-            done = true;
+            endTask();
         }
 
         return timeLeft;
@@ -184,7 +184,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         person.getSkillManager().addExperience("Driving", newPoints);
 
         // Check for accident.
-        if (!done) checkForAccident(timeUsed);
+        if (!isDone()) checkForAccident(timeUsed);
 
         return time - timeUsed;
     }
@@ -248,7 +248,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         person.getSkillManager().addExperience("Driving", newPoints);
 
         // Check for accident.
-        if (!done) checkForAccident(timeUsed);
+        if (!isDone()) checkForAccident(timeUsed);
 
         return time - timeUsed;
     }
@@ -287,7 +287,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
         person.getSkillManager().addExperience("Driving", newPoints);
 
         // Check for accident.
-        if (!done) checkForAccident(timeUsed);
+        if (!isDone()) checkForAccident(timeUsed);
 
         return time - timeUsed;
     }
@@ -329,7 +329,7 @@ public class DriveGroundVehicle extends Task implements Serializable {
             vehicle.setCoordinates(destination);
             vehicle.setSpeed(0D);
             vehicle.setDriver(null);
-            done = true;
+            endTask();
             result = time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
         }
         else {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.75 2003-03-16
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -78,7 +78,7 @@ class Relax extends Task implements Serializable {
 
         timeCompleted += time;
         if (timeCompleted > duration) {
-            done = true;
+            endTask();
             return timeCompleted - duration;
         }
         else return 0;

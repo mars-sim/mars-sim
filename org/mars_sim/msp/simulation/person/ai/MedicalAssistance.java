@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.74 2002-05-01
+ * @version 2.75 2003-04-27
  * @author Barry Evans
  */
 
@@ -102,19 +102,18 @@ public class MedicalAssistance extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 
         // If sickbay owner has malfunction, end task.
-        if (getSickbay(person).getOwner().getMalfunctionManager().hasMalfunction()) done = true;
+        if (getSickbay(person).getOwner().getMalfunctionManager().hasMalfunction()) endTask();
 
-	if (done) return timeLeft;
+        if (isDone()) return timeLeft;
 
         // Check for accident in infirmary.
-	checkForAccident(time);
+        checkForAccident(time);
 
         timeCompleted += time;
         if (timeCompleted > duration) {
-            done = true;
             // Add experience points for 'Medical' skill.
             // Add one point for every 100 millisols.
             double newPoints = duration / 100D;
@@ -122,11 +121,10 @@ public class MedicalAssistance extends Task implements Serializable {
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             person.getSkillManager().addExperience(MEDICAL, newPoints);
 
+            endTask();
             return timeCompleted - duration;
         }
-        else {
-            return 0;
-        }
+        else return 0;
     }
 
     /**
@@ -142,9 +140,9 @@ public class MedicalAssistance extends Task implements Serializable {
         // Medical skill modification.
         int skill = person.getSkillManager().getEffectiveSkillLevel("Medical");
         if (skill <= 3) chance *= (4 - skill);
-	else chance /= (skill - 2);
+        else chance /= (skill - 2);
 
-	if (RandomUtil.lessThanRandPercent(chance * time)) {
+        if (RandomUtil.lessThanRandPercent(chance * time)) {
 	    // System.out.println(person.getName() + " has accident during medical assistance.");
             entity.getMalfunctionManager().accident();
         }

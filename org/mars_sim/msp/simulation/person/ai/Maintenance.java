@@ -72,7 +72,7 @@ public class Maintenance extends Task implements Serializable {
             else chance -= entityWeight;
         }
 	
-        if (entity == null) done = true;
+        if (entity == null) endTask();
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -112,15 +112,15 @@ public class Maintenance extends Task implements Serializable {
         MalfunctionManager manager = entity.getMalfunctionManager();
 	
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 
         // Check if maintenance has already been completed.
-        if (manager.getTimeSinceLastMaintenance() == 0D) done = true;
+        if (manager.getTimeSinceLastMaintenance() == 0D) endTask();
 
         // If equipment has malfunction, end task.
-        if (manager.hasMalfunction()) done = true;
+        if (manager.hasMalfunction()) endTask();
 
-        if (done) return timeLeft;
+        if (isDone()) return timeLeft;
 	
         // Determine effective work time based on "Mechanic" skill.
         double workTime = timeLeft;
@@ -140,11 +140,11 @@ public class Maintenance extends Task implements Serializable {
         person.getSkillManager().addExperience("Mechanic", experience);
 
         // If maintenance is complete, task is done.
-        if (manager.getTimeSinceLastMaintenance() == 0D) done = true;
+        if (manager.getTimeSinceLastMaintenance() == 0D) endTask();
 
         // Keep track of the duration of the task.
         timeCompleted += time;
-        if (timeCompleted >= duration) done = true;
+        if (timeCompleted >= duration) endTask();
 
         // Check if an accident happens during maintenance.
         checkForAccident(timeLeft);

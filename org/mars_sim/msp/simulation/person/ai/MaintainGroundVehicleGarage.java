@@ -96,7 +96,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         // If vehicle has malfunction, end task.
         if (manager.hasMalfunction()) endTask();
 
-        if (done) return timeLeft;
+        if (isDone()) return timeLeft;
 	
         // Determine effective work time based on "Mechanic" skill.
         double workTime = timeLeft;
@@ -130,13 +130,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         checkForAccident(timeLeft);
 	
         return 0D;
-    }
-    
-    /**
-     * Ends the task and performs any final actions.
-     */
-    public void endTask() {
-        done = true;
     }
 
     /**

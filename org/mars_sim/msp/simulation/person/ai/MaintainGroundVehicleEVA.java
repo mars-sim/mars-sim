@@ -196,8 +196,8 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * Ends the task and performs any final actions.
      */
     public void endTask() {
+        super.endTask();
         if (vehicle != null) vehicle.setReserved(false);
-        done = true;
     }
     
     /**

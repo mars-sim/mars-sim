@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.75 2003-01-20
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -75,7 +75,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
             endTask();
         }
 
-        if (done) return timeLeft;
+        if (isDone()) return timeLeft;
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = timeLeft;

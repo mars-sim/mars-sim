@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.75 2003-02-10
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -50,7 +50,7 @@ class UnloadVehicle extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 	
         double amountUnloading = UNLOAD_RATE * time;
 
@@ -89,7 +89,7 @@ class UnloadVehicle extends Task implements Serializable {
         settlement.getInventory().addResource(Resource.ROCK_SAMPLES, rockAmount);
         amountUnloading -= rockAmount;
 
-        if (isFullyUnloaded(vehicle)) done = true;
+        if (isFullyUnloaded(vehicle)) endTask();
 
         return 0;
     }

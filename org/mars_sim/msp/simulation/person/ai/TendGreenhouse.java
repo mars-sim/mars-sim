@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.75 2003-04-25
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -45,11 +45,11 @@ public class TendGreenhouse extends Task implements Serializable {
                 }
                 catch (BuildingException e) {
                     System.out.println("TendGreenhouse: " + e.getMessage());
-                    done = true;
+                    endTask();
                 }
             }
         }
-        else done = true;
+        else endTask();
         
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
@@ -82,13 +82,13 @@ public class TendGreenhouse extends Task implements Serializable {
         
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) {
-            done = true;
+            endTask();
             return timeLeft;
         }
         
         // Check if greenhouse has malfunction.
         if (((Building) greenhouse).getMalfunctionManager().hasMalfunction()) {
-            done = true;
+            endTask();
             return timeLeft;
         }
         
@@ -103,7 +103,7 @@ public class TendGreenhouse extends Task implements Serializable {
         
         // Keep track of the duration of the task.
         timeCompleted += time;
-        if (timeCompleted >= duration) done = true;
+        if (timeCompleted >= duration) endTask();
 
         // Add experience to "Greenhouse Farming" skill
         // (1 base experience point per 100 millisols of work)

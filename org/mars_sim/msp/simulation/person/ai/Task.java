@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.75 2003-04-18
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -22,7 +22,7 @@ public abstract class Task implements Serializable, Comparable {
     protected String name;            // The name of the task
     protected Person person;          // The person performing the task.
     protected Mars mars;              // The virtual Mars
-    protected boolean done;           // True if task is finished
+    private boolean done;             // True if task is finished
     protected double timeCompleted;   // The current amount of time spent on the task (in microsols)
     protected String description;     // Description of the task
     protected Task subTask;           // Sub-task of the current task

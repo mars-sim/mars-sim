@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.75 2002-06-08
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -93,7 +93,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         // Check if there are no more malfunctions.
         if (!hasMalfunction(person)) endTask();
 
-        if (done) return timeLeft;
+        if (isDone()) return timeLeft;
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = timeLeft;

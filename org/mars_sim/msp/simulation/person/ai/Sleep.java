@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.75 2003-03-17
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -88,7 +88,7 @@ class Sleep extends Task implements Serializable {
         person.setFatigue(0D);
         timeCompleted += time;
         if (timeCompleted > duration) {
-            done = true;
+            endTask();
             return timeCompleted - duration;
         }
         else return 0;

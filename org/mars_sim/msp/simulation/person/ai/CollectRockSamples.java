@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.75 2003-04-20
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -58,7 +58,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 	
-        while ((timeLeft > 0D) && !done) {
+        while ((timeLeft > 0D) && !isDone()) {
             if (phase.equals(EXIT_ROVER)) timeLeft = exitRover(timeLeft);
             else if (phase.equals(COLLECT_ROCKS)) timeLeft = collectRocks(timeLeft);
             else if (phase.equals(ENTER_ROVER)) timeLeft = enterRover(timeLeft);
@@ -171,7 +171,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
             }
             else {
                 // System.out.println(person.getName() + " ending collect rock samples task.");
-               	done = true;
+               	endTask();
                 return time;
             }
         }
