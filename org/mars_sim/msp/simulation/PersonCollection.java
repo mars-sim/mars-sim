@@ -1,35 +1,35 @@
 /**
  * Mars Simulation Project
- * UnitCollection.java
+ * PersonCollection.java
  * @version 2.73 2001-10-24
- * @author Scott Davis 
+ * @author Edgar Crisostomo 
  */
 
 package org.mars_sim.msp.simulation;
 
 import java.util.*; // ArrayList
 
-/** The UnitCollection class is a homogenous collection of Unit objects
+/** The PersonCollection class is a homogenous collection of Person objects
  *  with useful methods for accessing and sorting them. 
  */
-public class UnitCollection {
+public class PersonCollection {
 
     // We can replace this with another type of collection if we need to.
     private ArrayList elements;  // Used internally to hold elements.
 
     // inner class to implement our type-safe iterator
-    private class Iterator implements UnitIterator {
+    private class Iterator implements PersonIterator {
         private Iterator iterator;
 
         /**
          *  Constructor
          */
-        Iterator(UnitCollection collection) {
+        Iterator(PersonCollection collection) {
             iterator = collection.iterator();
         } 
 
-        public Unit next() {
-            return (Unit) iterator.next();
+        public Person next() {
+            return (Person) iterator.next();
         }
   
         /**
@@ -50,17 +50,17 @@ public class UnitCollection {
     }
 
     /** 
-     *  Constructs a UnitCollection object
+     *  Constructs a PersonCollection object
      */
-    public UnitCollection() {
+    public PersonCollection() {
         elements = new ArrayList();
     }
 
     /** 
-     *  Constructs a UnitCollection object
+     *  Constructs a PersonCollection object
      *  @param collection collection of elements to copy
      */
-    public UnitCollection(UnitCollection collection) {
+    public PersonCollection(PersonCollection collection) {
         elements = new ArrayList();
         Iterator iterator = collection.iterator();
         while(iterator.hasNext()) elements.add(iterator.next());
@@ -88,7 +88,7 @@ public class UnitCollection {
      *  @param o element whose presence in this collection is to be tested.
      *  @return true if this collection contains the specified element
      */
-    public boolean contains(Unit o) {
+    public boolean contains(Person o) {
         return elements.contains(o);
     }
 
@@ -106,7 +106,7 @@ public class UnitCollection {
      *  @param o element whose presence in this collection is to be ensured.
      *  @return true if this collection changed as a result of the call
      */
-    public boolean add(Unit o) {
+    public boolean add(Person o) {
         return elements.add(o);
     }
 
@@ -116,7 +116,7 @@ public class UnitCollection {
      *  @param o element to be removed from this collection, if present.
      *  @return true if this collection changed as a result of the call
      */
-    public boolean remove(Unit o) {
+    public boolean remove(Person o) {
         return elements.remove(o);
     }
 

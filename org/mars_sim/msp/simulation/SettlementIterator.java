@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * UnitIterator.java
+ * SettlementIterator.java
  * @version 2.73 2001-10-24
  * @author Scott Davis 
  */
@@ -8,15 +8,15 @@
 package org.mars_sim.msp.simulation;
 
 /** 
- *  The UnitIterator class is an iterator over a UnitCollection. 
+ *  The SettlementIterator class is an iterator over a SettlementCollection. 
  */
-public interface UnitIterator {
+public interface SettlementIterator {
  
     /**
      *  Returns the next element in the iteration.
      *  @return the next element in the iteration.
      */
-    public Unit next();
+    public Settlement next();
 
     /**
      *  Returns true if the iteration has more elements.
