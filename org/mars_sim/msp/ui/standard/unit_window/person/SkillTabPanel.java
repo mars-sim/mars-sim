@@ -7,14 +7,14 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
 /** 
  * The SkillTabPanel is a tab panel for the skills of a person.

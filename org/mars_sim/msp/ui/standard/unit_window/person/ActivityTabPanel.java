@@ -7,16 +7,16 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
+import java.awt.*;
+import javax.swing.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
-import java.awt.*;
-import javax.swing.*;
 
 /** 
- * The ActivityTabPanel is a tab panel for a person't current activities.
+ * The ActivityTabPanel is a tab panel for a person's current activities.
  */
 public class ActivityTabPanel extends TabPanel {
     

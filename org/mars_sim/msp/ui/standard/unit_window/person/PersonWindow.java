@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonWindow.java
- * @version 2.75 2003-06-12
+ * @version 2.75 2003-06-15
  * @author Scott Davis
  */
 
@@ -32,5 +32,6 @@ public class PersonWindow extends UnitWindow {
         addTabPanel(new AttributeTabPanel(proxy, desktop));
         addTabPanel(new SkillTabPanel(proxy, desktop));
         addTabPanel(new ActivityTabPanel(proxy, desktop));
+        addTabPanel(new HealthTabPanel(proxy, desktop));
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthProblem.java
- * @version 2.75 2003-05-07
+ * @version 2.75 2003-06-16
  * @author Barry Evans
  */
 
@@ -140,6 +140,28 @@ public class HealthProblem implements Serializable {
         }
         else {
             return illness.getName();
+        }
+    }
+    
+    /**
+     * Gets a string representing this illness's current state.
+     *
+     * @return illness state as string
+     */
+    public String getStateString() {
+        switch(state) {
+            case DEGRADING: 
+                return "degrading";
+            case TREATMENT:
+                return "treatment";
+            case RECOVERING:
+                return "recovering";
+            case CURED:
+                return "cured";
+            case DEAD:
+                return "dead";
+            default:
+                return "";
         }
     }
 
