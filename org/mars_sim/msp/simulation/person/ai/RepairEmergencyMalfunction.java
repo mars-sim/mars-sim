@@ -33,7 +33,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         claimMalfunction();
 
-        if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        // if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
     }
 
     /**
@@ -65,14 +65,14 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 
         // Check if there emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
              malfunction.getCompletedEmergencyWorkTime();
         if (workTimeLeft == 0) {
 	        // System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
-            done = true;
+            endTask();
         }
 
         if (done) return timeLeft;
@@ -88,7 +88,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
         if (remainingWorkTime > 0D) {
 	        // System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
-            done = true;
+            endTask();
         }
 
         // Add experience to "Mechanic" skill.

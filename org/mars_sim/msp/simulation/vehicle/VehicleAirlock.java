@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 2.75 2003-04-20
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -43,11 +43,12 @@ public class VehicleAirlock extends Airlock {
      */
     protected void exitAirlock(Person person) throws Exception {
         Inventory inv = vehicle.getInventory();
-        if (!inv.containsUnit(person)) throw new Exception("person not in airlock.");
-        else {
+        
+        if (inAirlock(person)) {
             if (pressurized) inv.addUnit(person);
             else inv.dropUnitOutside(person);
         }
+        else throw new Exception(person.getName() + " not in airlock of " + getEntityName());
     }
     
     /**

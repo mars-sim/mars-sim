@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveRover.java
- * @version 2.75 2003-04-24
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -74,8 +74,9 @@ class ReserveRover extends Task implements Serializable {
                 boolean inRange = false;
                 if (destination != null) {
                     double distance = person.getCoordinates().getDistance(destination);
-                    inRange = vehicle.getRange() < distance;
+                    inRange = vehicle.getRange() > distance;
                 }
+                else inRange = true;
                 
                 boolean supplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle);
                 
@@ -121,5 +122,11 @@ class ReserveRover extends Task implements Serializable {
     public Rover getReservedRover() {
         return reservedRover;
     }
+    
+    /**
+     * Unreserves the reserved rover if the task is done and successful.
+     */
+    public void unreserveRover() {
+        if (reservedRover != null) reservedRover.setReserved(false);
+    }
 }
-

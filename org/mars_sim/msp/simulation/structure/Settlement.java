@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-04-20
+ * @version 2.75 2003-04-25
  * @author Scott Davis
  */
 
@@ -58,13 +58,6 @@ public class Settlement extends Structure implements LifeSupport {
      */
     public FacilityManager getFacilityManager() {
         return facilityManager;
-    }
-
-    /** Returns the malfunction manager for the settlement.
-     *  @return the malfunction manager
-     */
-    public MalfunctionManager getMalfunctionManager() {
-        return malfunctionManager;
     }
     
     /** Gets the population capacity of the settlement

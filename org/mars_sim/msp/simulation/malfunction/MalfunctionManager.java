@@ -281,33 +281,30 @@ public class MalfunctionManager implements Serializable {
         Collection fixedMalfunctions = new ArrayList();
 
         // Check if any malfunctions are fixed.
-	if (hasMalfunction()) {
-	    Iterator i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-	        if (malfunction.isFixed()) {
-		    // System.out.println(malfunction.getName() + " at " + entity.getName() + " is fully fixed.");
-		    fixedMalfunctions.add(malfunction);
-	        }
-	    }
-	}
-
-	if (fixedMalfunctions.size() > 0) {
-	    Iterator i = fixedMalfunctions.iterator();
-	    while (i.hasNext()) {
-            Malfunction item = (Malfunction)i.next();
-            malfunctions.remove(item);
-            HistoricalEvent newEvent = new HistoricalEvent("Repaired",
-                                                      entity, item.getName());
-            mars.getEventManager().registerNewEvent(newEvent);
+        if (hasMalfunction()) {
+            Iterator i = malfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction malfunction = (Malfunction) i.next();
+                if (malfunction.isFixed()) fixedMalfunctions.add(malfunction);
+            }
         }
-	}
+
+        if (fixedMalfunctions.size() > 0) {
+            Iterator i = fixedMalfunctions.iterator();
+            while (i.hasNext()) {
+                Malfunction item = (Malfunction)i.next();
+                malfunctions.remove(item);
+                HistoricalEvent newEvent = new HistoricalEvent("Repaired",
+                                                      entity, item.getName());
+                mars.getEventManager().registerNewEvent(newEvent);
+            }
+        }
 
         // Determine life support modifiers.
-	setLifeSupportModifiers(time);
+        setLifeSupportModifiers(time);
 
-	// Deplete resources.
-	depleteResources(time);
+        // Deplete resources.
+        depleteResources(time);
     }
 
     /**

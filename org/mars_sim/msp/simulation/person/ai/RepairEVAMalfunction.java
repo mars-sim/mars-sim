@@ -46,7 +46,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
         phase = EXIT_AIRLOCK;
 
-        System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
+        // System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
         
         // Randomly determine duration, from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);

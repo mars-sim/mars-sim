@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.75 2003-03-04
+ * @version 2.75 2003-04-25
  * @author Scott Davis
  */
  
@@ -75,6 +75,9 @@ public abstract class Building implements Malfunctionable, Serializable {
         
         // Check for valid argument.
         if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
+        
+        // Update malfunction manager.
+        malfunctionManager.timePassing(time);
     }   
     
     /**
@@ -149,5 +152,13 @@ public abstract class Building implements Malfunctionable, Serializable {
      */
     public Inventory getInventory() {
         return manager.getSettlement().getInventory();
+    }
+    
+    /**
+     * String representation of this building.
+     * @return The settlement and building name.
+     */
+    public String toString() {
+        return manager.getSettlement().getName() + " " + getName();
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InflatableGreenhouse.java
- * @version 2.75 2003-04-16
+ * @version 2.75 2003-04-25
  * @author Scott Davis
  */
  
@@ -171,6 +171,7 @@ public class InflatableGreenhouse extends InhabitableBuilding implements Farming
      * @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
+        super.timePassing(time);
         
         // Determine resource processing production level.
         double productionLevel = 0D;

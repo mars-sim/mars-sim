@@ -35,7 +35,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         // Randomly determine duration, from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);
         
-        System.out.println(person.getName() + " repairing malfunction.");
+        // System.out.println(person.getName() + " repairing malfunction.");
     }
 
     /**
@@ -46,13 +46,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
         boolean result = false;
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	while (i.hasNext()) {
-	    MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-	    if (manager.hasNormalMalfunction()) result = true;
-	}
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        while (i.hasNext()) {
+            MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
+            if (manager.hasNormalMalfunction()) result = true;
+        }
 
-	return result;
+        return result;
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -67,8 +67,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
             // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-	    Malfunctionable entity = (Malfunctionable) i.next();
-	    MalfunctionManager manager = entity.getMalfunctionManager();
+            Malfunctionable entity = (Malfunctionable) i.next();
+            MalfunctionManager manager = entity.getMalfunctionManager();
             if (manager.hasNormalMalfunction()) result = 50D;
         }
 
@@ -88,55 +88,55 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 
-	// Check if there are no more malfunctions.
-        if (!hasMalfunction(person)) done = true;
+        // Check if there are no more malfunctions.
+        if (!hasMalfunction(person)) endTask();
 
-	if (done) return timeLeft;
+        if (done) return timeLeft;
 
         // Determine effective work time based on "Mechanic" skill.
-	double workTime = timeLeft;
+        double workTime = timeLeft;
         int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
-	// Get a local malfunction.
-	Malfunction malfunction = null;
+        // Get a local malfunction.
+        Malfunction malfunction = null;
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	while (i.hasNext()) {
-	    Malfunctionable e = (Malfunctionable) i.next();
-	    MalfunctionManager manager = e.getMalfunctionManager();
-	    if (manager.hasNormalMalfunction()) {
+        while (i.hasNext()) {
+            Malfunctionable e = (Malfunctionable) i.next();
+            MalfunctionManager manager = e.getMalfunctionManager();
+            if (manager.hasNormalMalfunction()) {
                 malfunction = manager.getMostSeriousNormalMalfunction();
-		description = "Repairing " + malfunction.getName() + " on " + e;
-		entity = e;
-	    }
-	}
+            	description = "Repairing " + malfunction.getName() + " on " + e;
+            	entity = e;
+            }
+        }
 
-	// Add work to malfunction.
+        // Add work to malfunction.
         // System.out.println(description);
         double workTimeLeft = malfunction.addWorkTime(workTime);
 
         // Add experience to "Mechanic" skill.
         // (1 base experience point per 20 millisols of time spent)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-	double experience = timeLeft / 50D;
+        double experience = timeLeft / 50D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("Mechanic", experience);
 
-	// Check if there are no more malfunctions.
-        if (!hasMalfunction(person)) done = true;
+        // Check if there are no more malfunctions.
+        if (!hasMalfunction(person)) endTask();
 
         // Keep track of the duration of the task.
         timeCompleted += time;
-        if (timeCompleted >= duration) done = true;
+        if (timeCompleted >= duration) endTask();
 
         // Check if an accident happens during maintenance.
         checkForAccident(timeLeft);
 
-	return (workTimeLeft / workTime) / timeLeft;
+        return (workTimeLeft / workTime) / timeLeft;
     }
 
     /**
@@ -154,7 +154,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // System.out.println(person.getName() + " has accident while " + description);
-	    if (entity != null) entity.getMalfunctionManager().accident();
+            if (entity != null) entity.getMalfunctionManager().accident();
         }
     }
 

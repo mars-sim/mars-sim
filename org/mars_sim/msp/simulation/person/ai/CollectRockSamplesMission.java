@@ -40,7 +40,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private Person lastDriver; // The last driver in a driving phase.
     private boolean roverLoaded; // True if the rover is fully loaded with supplies.
     private boolean roverUnloaded; // True if the rover is fully unloaded of supplies.
-    private Vector collectionSites; // The collection sites the mission will go to.
+    private List collectionSites; // The collection sites the mission will go to.
     private int siteIndex; // The index of the current collection site.
     private double collectedSamples; // The amount of samples (kg) collected in a collection phase.
     private double collectingStart; // The starting amount of samples in a rover during a collection phase.
@@ -48,7 +48,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     
     // Tasks tracked
     private DriveGroundVehicle driveTask; // The current driving task.
-    ReserveRover reserveRover;
+    ReserveRover reserveRoverTask;  // Mission task to reserve a rover.
 
     /** Constructs a CollectRockSamplesMission object.
      *  @param missionManager the mission manager
@@ -65,12 +65,12 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         lastDriver = null;
         roverLoaded = false;
         roverUnloaded = false;
-        collectionSites = new Vector();
+        collectionSites = null;
         siteIndex = 0;
         collectedSamples = 0D;
 
         // Initialize tracked tasks to null;
-        reserveRover = null;
+        reserveRoverTask = null;
 
         // Set initial phase
         phase = EMBARK;
@@ -86,22 +86,20 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Settlement currentSettlement = person.getSettlement();
-            boolean possible = true;
+            Settlement settlement = person.getSettlement();
+            
+            boolean darkArea = mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates());
 	    
-            if (mars.getSurfaceFeatures().inDarkPolarRegion(currentSettlement.getCoordinates())) 
-	        possible = false;
-	    
-            if (!ReserveRover.availableRovers(ExplorerRover.class, currentSettlement)) possible = false;
+            boolean reservableRover = ReserveRover.availableRovers(ExplorerRover.class, settlement);
 
-            double rocks = currentSettlement.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
-            if (rocks >= 500D) possible = false;
+            double rocks = settlement.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
+            boolean enoughRockSamples = (rocks >= 500D);
 
-            if (currentSettlement.getCurrentPopulationNum() <= 1) possible = false;
+            boolean minSettlementPop = (settlement.getCurrentPopulationNum() == 1);
 	    
-            if (possible) result = 5D;
+            if (!darkArea && reservableRover && !enoughRockSamples && !minSettlementPop) result = 5D;
         }
-
+        
         return result;
     }
 
@@ -154,33 +152,25 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         // Reserve a rover.
         // If a rover cannot be reserved, end mission.
-        if (rover == null) {
-            if (reserveRover == null) {
-                reserveRover = new ReserveRover(ExplorerRover.class, person, mars, 
-                startingSettlement.getCoordinates());
-               	assignTask(person, reserveRover);
-                return;
-            }
-            else {
-                if (reserveRover.isDone()) {
-                    rover = (ExplorerRover) reserveRover.getReservedRover();
-                    if (rover == null) {
-                        endMission();
-                        return;
-                    }
-                    else {
-                        if (rover.getCrewCapacity() < missionCapacity)
-                            setMissionCapacity(rover.getCrewCapacity());
-                    }
-                }
-                else return;
-            }
+        try {
+            rover = getReservedRover(person);
+            if (rover == null) return;
         }
+        catch (Exception e) {
+            System.out.println("CollectRockSamplesMission.embarkingPhase(): " + e.getMessage());
+            endMission();
+            return;
+        }
+        
+        // Make sure mission capacity is limited to the rover's crew capacity.
+        if (rover.getCrewCapacity() < missionCapacity) setMissionCapacity(rover.getCrewCapacity());
 
         // Determine collection sites.
-        if (collectionSites.size() == 0) {
-            determineCollectionSites(rover.getRange());
-            if (done) {
+        if (collectionSites == null) {
+            try {
+                collectionSites = determineCollectionSites(rover.getRange());
+            }
+            catch (Exception e) {
                 endMission();
                 return;
             }
@@ -194,7 +184,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), rover)) endMission();
             return;
         }
-
+        
         // Have person get in the rover 
         // When every person in mission is in rover, go to Driving phase.
         if (!person.getLocationSituation().equals(Person.INVEHICLE)) 
@@ -209,7 +199,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 
         // Make final preperations on rover.
         startingSettlement.getInventory().dropUnit(rover);
-        destination = (Coordinates) collectionSites.elementAt(0);
+        destination = (Coordinates) collectionSites.get(0);
         rover.setDestination(destination);
         rover.setDestinationType("Coordinates");
 
@@ -339,7 +329,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             }
             else {
                 phase = DRIVING + " to site " + (siteIndex + 1);
-                destination = (Coordinates) collectionSites.elementAt(siteIndex);
+                destination = (Coordinates) collectionSites.get(siteIndex);
             }
             collectedSamples = 0D;
             startingTime = null;
@@ -414,72 +404,105 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         if (allDisembarked && UnloadVehicle.isFullyUnloaded(rover)) endMission();
     }
 
-    /** Determine the locations of the sample collection sites.
-     *  @param roverRange the rover's driving range
+    /** 
+     * Determine the locations of the sample collection sites.
+     *
+     * @param roverRange the rover's driving range
+     * @return List of collection sites (as Coordinates objects)
+     * @throws Exception of collection sites can not be determined.
      */
-    private void determineCollectionSites(double roverRange) {
+    private List determineCollectionSites(double roverRange) throws Exception {
 
-        Vector tempVector = new Vector();
+        List result = new ArrayList();
+        List unorderedSites = new ArrayList();
+        
+        // Determine number of collection sites (1 to 8).
         int numSites = RandomUtil.getRandomInt(1, 8);
+        
+        // Get the current location.
         Coordinates startingLocation = startingSettlement.getCoordinates();
-
-        // Determine first site
+        
+        // Get Mars surface features.
+        SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
+        
+        // Determine the first collection site.
         Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
         double limit = roverRange / 4D;
         double siteDistance = RandomUtil.getRandomDouble(limit);
-        startingLocation = startingLocation.getNewLocation(direction, siteDistance);
-        if (mars.getSurfaceFeatures().inDarkPolarRegion(startingLocation)) endMission();
-        tempVector.addElement(startingLocation);
-
-        // Determine remaining sites
+        Coordinates newLocation = startingLocation.getNewLocation(direction, siteDistance);
+        if (surfaceFeatures.inDarkPolarRegion(newLocation)) 
+            throw new Exception("First location found in dark polar region.");
+        unorderedSites.add(newLocation);
+        Coordinates currentLocation = newLocation;
+        
+        // Determine remaining collection sites.
         double remainingRange = (roverRange / 2D) - siteDistance;
         for (int x=1; x < numSites; x++) {
-
-            double startDistanceToSettlement = startingLocation.getDistance(startingSettlement.getCoordinates());
-
-            // Don't add collection site if greater than remaining rover range.
-            if (remainingRange < startDistanceToSettlement) {
-                numSites = x;
-                break;
+            double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
+            if (remainingRange > currentDistanceToSettlement) {
+                direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+                double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
+                double tempLimit2 = (2D * remainingRange) - (2D * currentDistanceToSettlement * direction.getCosDirection());
+                limit = tempLimit1 / tempLimit2;
+                siteDistance = RandomUtil.getRandomDouble(limit);
+                newLocation = currentLocation.getNewLocation(direction, siteDistance);
+                if (!surfaceFeatures.inDarkPolarRegion(startingLocation)) {
+                    unorderedSites.add(newLocation);
+                    currentLocation = newLocation;
+                    remainingRange -= siteDistance;
+                }
             }
-
-            direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-            double tempLimit1 = (remainingRange * remainingRange) - (startDistanceToSettlement * startDistanceToSettlement);
-            double tempLimit2 = (2D * remainingRange) - (2D * startDistanceToSettlement * direction.getCosDirection());
-            limit = tempLimit1 / tempLimit2;
-            siteDistance = RandomUtil.getRandomDouble(limit);
-            startingLocation = startingLocation.getNewLocation(direction, siteDistance);
-            if (mars.getSurfaceFeatures().inDarkPolarRegion(startingLocation)) endMission();
-            tempVector.addElement(startingLocation);
-            remainingRange -= siteDistance;
         }
 
         // Reorder sites for shortest distance.
-        startingLocation = startingSettlement.getCoordinates();
-        for (int x=0; x < numSites; x++) {
-            Coordinates shortest = (Coordinates) tempVector.elementAt(0);
-            for (int y=1; y < tempVector.size(); y++) {
-                Coordinates tempCoordinates = (Coordinates) tempVector.elementAt(y);
-                if (startingLocation.getDistance(tempCoordinates) < startingLocation.getDistance(shortest))
-                    shortest = tempCoordinates;
+        currentLocation = startingLocation;
+        while (unorderedSites.size() > 0) {
+            Coordinates shortest = (Coordinates) unorderedSites.get(0);
+            Iterator i = unorderedSites.iterator();
+            while (i.hasNext()) {
+                Coordinates site = (Coordinates) i.next();
+                if (currentLocation.getDistance(site) < currentLocation.getDistance(shortest)) 
+                    shortest = site;
             }
-            startingLocation = shortest;
-            collectionSites.addElement(shortest);
-            tempVector.removeElement(shortest);
+            result.add(shortest);
+            unorderedSites.remove(shortest);
         }
+        
+        return result;
     }
 
     /** Finalizes the mission */
     protected void endMission() {
 
         if (rover != null) rover.setReserved(false);
-        else {
-            if ((reserveRover != null) && reserveRover.isDone()) {
-                rover = (ExplorerRover) reserveRover.getReservedRover();
-                if (rover != null) rover.setReserved(false);
-            }
-        }
+        else if (reserveRoverTask != null) reserveRoverTask.unreserveRover();
 
         super.endMission();
+    }
+    
+    /**
+     * Gets the reserved explorer rover.
+     *
+     * @param person the person to reserve rover if needed.
+     * @return reserved rover or null if still in the process of reserving one.
+     * @throws Exception if a rover could not be reserved.
+     */
+    private ExplorerRover getReservedRover(Person person) throws Exception {
+        
+        ExplorerRover result = null;
+        
+        // If reserve rover task is currently underway, check status.
+        if (reserveRoverTask != null) {
+            if (reserveRoverTask.isDone()) {
+                result = (ExplorerRover) reserveRoverTask.getReservedRover();
+                if (result == null) throw new Exception("Explorer rover could not be reserved.");
+            }
+        }
+        else {
+            reserveRoverTask = new ReserveRover(ExplorerRover.class, person, mars);
+            assignTask(person, reserveRoverTask);
+        }
+        
+        return result;
     }
 }

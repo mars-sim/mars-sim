@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.75 2003-04-14
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -42,7 +42,7 @@ public class StudyRockSamples extends Task implements Serializable {
         super("Studying Rock Samples", person, true, mars);
         
         // Find available lab for person.
-        Lab lab = getAvailableLab(person);
+        lab = getAvailableLab(person);
         
         if (lab != null) {
             String location = person.getLocationSituation();
@@ -56,11 +56,11 @@ public class StudyRockSamples extends Task implements Serializable {
                 }
                 catch (BuildingException e) {
                     System.out.println("StudyRockSamples: person is already in building.");
-                    done = true;
+                    endTask();
                 }
                 catch (Exception e) { 
                     System.out.println("StudyRockSamples: lab building is already full.");
-                    done = true;
+                    endTask();
                 }
             }
             else if (location.equals(Person.INVEHICLE)) {
@@ -72,11 +72,11 @@ public class StudyRockSamples extends Task implements Serializable {
                 }
                 catch (Exception e) {
                     System.out.println("StudyRockSamples: rover lab is already full.");
-                    done = true;
+                    endTask();
                 }
             }
         }
-        else done = true;
+        else endTask();
 
         // Randomly determine duration from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);
@@ -109,17 +109,17 @@ public class StudyRockSamples extends Task implements Serializable {
         if (subTask != null) return timeLeft;
 
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 
         // Check for laboratory malfunction.
-        if (malfunctions.hasMalfunction()) done = true;
+        if (malfunctions.hasMalfunction()) endTask();
 
-        if (done) {
+        if (isDone()) {
             try {
                 lab.removeResearcher();
             }
             catch (Exception e) {
-                System.out.println("StudyRockSamples.performTask(): lab is empty of researchers.");
+                System.out.println("StudyRockSamples.performTask(): " + e.getMessage());
             }
             return timeLeft;
         }
@@ -145,12 +145,12 @@ public class StudyRockSamples extends Task implements Serializable {
         // Keep track of the duration of this task.
         timeCompleted += time;
         if (timeCompleted >= duration) {
-            done = true;
+            endTask();
             try {
                 lab.removeResearcher();
             }
             catch (Exception e) {
-                System.out.println("StudyRockSamples.performTask(): lab is empty of researchers.");
+                System.out.println("StudyRockSamples.performTask(): " + e.getMessage());
             }
         }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.75 2002-06-08
+ * @version 2.75 2003-04-27
  * @author Scott Davis
  */
 
@@ -11,7 +11,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
+import org.mars_sim.msp.simulation.structure.building.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -46,9 +46,6 @@ public class Maintenance extends Task implements Serializable {
             if (!(e instanceof Vehicle)) {
                 MalfunctionManager manager = e.getMalfunctionManager();
                 double entityWeight = manager.getTimeSinceLastMaintenance();
-                if (entity instanceof InhabitableBuilding) {
-                    if (((InhabitableBuilding) entity).getAvailableOccupancy() == 0) entityWeight = 0D;
-                }
                 totalProbabilityWeight += entityWeight;
             }
         }
@@ -62,12 +59,13 @@ public class Maintenance extends Task implements Serializable {
             Malfunctionable e = (Malfunctionable) i.next();
             MalfunctionManager manager = e.getMalfunctionManager();
             double entityWeight = manager.getTimeSinceLastMaintenance();
-            if (entity instanceof InhabitableBuilding) {
-                if (((InhabitableBuilding) entity).getAvailableOccupancy() == 0) entityWeight = 0D;
-            }
             if ((chance < entityWeight) && !(e instanceof Vehicle)) {
                 entity = e;
                 description = "Performing maintenance on " + entity.getName();
+                if (e instanceof InhabitableBuilding) {
+                    try { ((InhabitableBuilding) e).addPerson(person); }
+                    catch (BuildingException be) {}
+                }
                 // System.out.println(person.getName() + " " + description + " - " + lastMaint);
                 break;
             }
@@ -93,9 +91,6 @@ public class Maintenance extends Task implements Serializable {
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (!manager.hasMalfunction() && !(entity instanceof Vehicle)) {
                 double entityProb = manager.getTimeSinceLastMaintenance() / 200D;
-                if (entity instanceof InhabitableBuilding) {
-                    if (((InhabitableBuilding) entity).getAvailableOccupancy() == 0) entityProb = 0D;
-                }
                 result += entityProb;
             }   
         }

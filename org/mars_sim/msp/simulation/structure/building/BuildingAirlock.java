@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 2.75 2003-04-20
+ * @version 2.75 2003-04-25
  * @author Scott Davis
  */
 
@@ -35,6 +35,25 @@ public class BuildingAirlock extends Airlock {
     }
     
     /**
+     * Enters a person into the airlock from either the inside or the outside.
+     * Inner or outer door (respectively) must be open for person to enter.
+     * @param person the person to enter the airlock
+     * @param inside true if person is entering from inside
+     *               false if person is entering from outside
+     * @return true if person entered the airlock successfully
+     */
+    public boolean enterAirlock(Person person, boolean inside) {
+        boolean result = super.enterAirlock(person, inside);
+    
+        if (result && inside) {
+            try { building.addPerson(person); }
+            catch (BuildingException e) {}
+        }
+        
+        return result;
+    }           
+    
+    /**
      * Causes a person within the airlock to exit either inside or outside.
      *
      * @param person the person to exit.
@@ -43,8 +62,7 @@ public class BuildingAirlock extends Airlock {
     protected void exitAirlock(Person person) throws Exception {
         Inventory inv = building.getInventory();
         
-        if (!building.containsPerson(person)) throw new Exception("person not in airlock.");
-        else {
+        if (inAirlock(person)) {
             if (pressurized) {
                 building.addPerson(person);
                 inv.addUnit(person);
@@ -54,6 +72,7 @@ public class BuildingAirlock extends Airlock {
                 inv.dropUnitOutside(person);
             }
         }
+        else throw new Exception(person.getName() + " not in airlock of " + getEntityName());
     }
     
     /**

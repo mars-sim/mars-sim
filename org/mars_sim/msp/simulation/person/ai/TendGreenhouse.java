@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.75 2003-03-04
+ * @version 2.75 2003-04-25
  * @author Scott Davis
  */
 
@@ -166,7 +166,7 @@ public class TendGreenhouse extends Task implements Serializable {
             while (i.hasNext()) {
                 Farming farm = (Farming) i.next();
                 boolean requiresWork = farm.requiresWork();
-                boolean malfunction = ((Building) farm).getMalfunctionManager().hasMalfunction();  
+                boolean malfunction = ((Building) farm).getMalfunctionManager().hasMalfunction();   
                 if (requiresWork && !malfunction) farmlist.add(farm);
             }
             

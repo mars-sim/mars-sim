@@ -47,6 +47,9 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
         
+        // Set initial phase.
+        phase = EXIT_AIRLOCK;
+        
         System.out.println(person.getName() + " starting MaintainGroundVehicleEVA task.");
     }
     
@@ -89,11 +92,11 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        while ((timeLeft > 0D) && !done) {
+        while ((timeLeft > 0D) && !isDone()) {
             if (phase.equals(EXIT_AIRLOCK)) timeLeft = exitEVA(timeLeft);
             else if (phase.equals(MAINTAIN_VEHICLE)) timeLeft = maintainVehicle(timeLeft);
             else if (phase.equals(ENTER_AIRLOCK)) timeLeft = enterEVA(timeLeft);
-        }					            
+        }			            
 	
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 20 millisols of time spent)
@@ -102,7 +105,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("EVA Operations", experience);
-
+        
         return timeLeft;
     }
     
@@ -289,12 +292,14 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         
         // Determine which vehicle was picked.
         VehicleIterator i2 = availableVehicles.iterator();
-        while (i2.hasNext() && (result == null)) {
-            Vehicle vehicle = i.next();
-            MalfunctionManager manager = vehicle.getMalfunctionManager();
-            double probWeight = manager.getTimeSinceLastMaintenance();
-            if (rand < probWeight) result = (GroundVehicle) vehicle;
-            else rand -= probWeight;
+        while (i2.hasNext()) {
+            Vehicle vehicle = i2.next();
+            if (result == null) {
+                MalfunctionManager manager = vehicle.getMalfunctionManager();
+                double probWeight = manager.getTimeSinceLastMaintenance();
+                if (rand < probWeight) result = (GroundVehicle) vehicle;
+                else rand -= probWeight;
+            }
         }
         
         return result;
