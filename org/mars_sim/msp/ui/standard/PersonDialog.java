@@ -36,9 +36,8 @@ public class PersonDialog extends UnitDialog {
     private JLabel taskPhase;       // Current task phase label
     private JLabel fatigueLabel;    // Fatigue label
     private JLabel hungerLabel;     // Hunger labele
-    private JLabel healthLabel;     // Health state label
     private JLabel performanceLabel;   // Performance rating
-    private JProgressBar healthStatus; // Health state in current phase
+    private JList  illnessList;      // Health state in current phase
     private InventoryPanel inventoryPane; // The inventory panel
 
     // Cached person data
@@ -197,14 +196,6 @@ public class PersonDialog extends UnitDialog {
 
         PhysicalCondition condition = person.getPhysicalCondition();
 
-        // Update health status
-        healthLabel.setText(condition.getHealthSituation());
-        int newHealthRating = condition.getHealthRating();
-        if (newHealthRating != healthRating) {
-            healthRating = newHealthRating;
-            healthStatus.setValue(healthRating);
-        }
-
         // Update fatigue label
         if (fatigue != roundOneDecimal(condition.getFatigue())) {
             fatigue = roundOneDecimal(condition.getFatigue());
@@ -292,7 +283,7 @@ public class PersonDialog extends UnitDialog {
 
         JPanel missionNamePanel = new JPanel(new BorderLayout());
 	taskDescriptionPane.add(missionNamePanel);
-		
+
         // Display current mission.
         // Display "Mission: None" if person currently has no task.
         missionLabel = new JLabel("Mission: None", JLabel.LEFT);
@@ -430,16 +421,6 @@ public class PersonDialog extends UnitDialog {
         JPanel conditionListPane = new JPanel(new GridLayout(4, 2));
         conditionContentPane.add(conditionListPane, "North");
 
-        // Prepare health state name label
-        JLabel healthNameLabel = new JLabel("Health", JLabel.LEFT);
-        healthNameLabel.setForeground(Color.black);
-        conditionListPane.add(healthNameLabel);
-
-        // Prepare health state label
-        healthLabel = new JLabel(condition.getHealthSituation(), JLabel.RIGHT);
-        healthLabel.setForeground(Color.black);
-        conditionListPane.add(healthLabel);
-
         // Prepare fatigue name label
         JLabel fatigueNameLabel = new JLabel("Fatigue", JLabel.LEFT);
         fatigueNameLabel.setForeground(Color.black);
@@ -471,21 +452,30 @@ public class PersonDialog extends UnitDialog {
         performanceLabel.setForeground(Color.black);
         conditionListPane.add(performanceLabel);
 
-        // Prepare health rating pane
-	    JPanel healthStatusPane = new JPanel(new BorderLayout());
-	    healthStatusPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-	    conditionPane.add(healthStatusPane, "South");
+        // Prepare problem list
+        DefaultListModel problemListModel = new DefaultListModel();
 
-	    // Prepare health rating label
-	    JLabel healthStatusLabel = new JLabel("Health Phase Status", JLabel.CENTER);
-	    healthStatusLabel.setForeground(Color.black);
-	    healthStatusPane.add(healthStatusLabel, "North");
+	    Iterator i = condition.getProblems().iterator();
+	    while (i.hasNext()) {
+            problemListModel.addElement(i.next());
+        }
 
-	    // Prepare growth progress bar
-	    healthStatus = new JProgressBar();
-	    healthStatus.setValue(condition.getHealthRating());
-	    healthStatus.setStringPainted(true);
-	    healthStatusPane.add(healthStatus, "Center");
+        // This prevents the list from sizing strange due to having no contents
+        if (condition.getProblems().size() == 0) problemListModel.addElement(" ");
+
+        illnessList = new JList(problemListModel);
+        illnessList.setVisibleRowCount(4);
+        illnessList.setPreferredSize(
+                new Dimension(250, (int) illnessList.getPreferredSize().getHeight()));
+        JScrollPane problemScroll = new JScrollPane(illnessList);
+        JPanel illnessPane = new JPanel(new BorderLayout());
+        illnessPane.setBorder(new EtchedBorder());
+        illnessPane.add(problemScroll, "Center");
+        JLabel illnessLabel = new JLabel("Illnesses", JLabel.CENTER);
+        illnessLabel.setForeground(Color.black);
+        illnessPane.add(illnessLabel, "North");
+
+	    conditionPane.add(illnessPane, "South");
 
         // Return condition panel
         return conditionPane;
