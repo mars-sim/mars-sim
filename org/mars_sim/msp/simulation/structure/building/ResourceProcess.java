@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2003-02-10
  * @author Scott Davis
  */
  
@@ -19,7 +19,9 @@ public class ResourceProcess implements Serializable {
     
     private String name;
     private Map maxInputResourceRates;
+    private Map maxAmbientInputResourceRates;
     private Map maxOutputResourceRates;
+    private Map maxWasteOutputResourceRates;
     private Inventory inventory;
     private boolean runningProcess;
     private double currentProductionLevel;
@@ -33,7 +35,9 @@ public class ResourceProcess implements Serializable {
         this.name = name;
         this.inventory = inventory;
         maxInputResourceRates = new HashMap();
+        maxAmbientInputResourceRates = new HashMap();
         maxOutputResourceRates = new HashMap();
+        maxWasteOutputResourceRates = new HashMap();
         runningProcess = true;
         currentProductionLevel = 1D;
     }
@@ -50,27 +54,41 @@ public class ResourceProcess implements Serializable {
      * Adds a maximum input resource rate if it doesn't already exist.
      * @param resource name
      * @param rate max input resource rate (kg/sec)
+     * @param ambient is resource from available from surroundings? (air)
      */
-    public void addMaxInputResourceRate(String name, double rate) {
-        if (!maxInputResourceRates.containsKey(name)) 
-            maxInputResourceRates.put(name, new Double(rate));
+    public void addMaxInputResourceRate(String name, double rate, boolean ambient) {
+        if (ambient) {
+            if (!maxAmbientInputResourceRates.containsKey(name)) 
+                maxAmbientInputResourceRates.put(name, new Double(rate));
+        }
+        else {
+            if (!maxInputResourceRates.containsKey(name)) 
+                maxInputResourceRates.put(name, new Double(rate));
+        }
     }
     
     /**
      * Adds a maximum output resource rate if it doesn't already exist.
      * @param resource name
      * @param rate max output resource rate (kg/sec)
+     * @param waste is resource waste material not to be stored?
      */
-    public void addMaxOutputResourceRate(String name, double rate) {
-        if (!maxOutputResourceRates.containsKey(name)) 
-            maxOutputResourceRates.put(name, new Double(rate));
+    public void addMaxOutputResourceRate(String name, double rate, boolean waste) {
+        if (waste) {
+            if (!maxWasteOutputResourceRates.containsKey(name))
+                maxWasteOutputResourceRates.put(name, new Double(rate));
+        }
+        else {
+            if (!maxOutputResourceRates.containsKey(name)) 
+                maxOutputResourceRates.put(name, new Double(rate));
+        }
     }
     
     /**
      * Gets the current production level of the process.
      * @return propertion of full production (0D - 1D)
      */
-    public double getCurrentProcutionLevel() {
+    public double getCurrentProductionLevel() {
         return currentProductionLevel;
     }
     
@@ -94,11 +112,11 @@ public class ResourceProcess implements Serializable {
      * Gets the set of input resource names.
      * @return set of resource names.
      */
-    public Set getInputResourceNames() {
-        if (maxInputResourceRates != null) {
-            return maxInputResourceRates.keySet();
-        }
-        else return new HashSet();
+    public Set getInputResourceNames() {   
+        Set results = new HashSet();
+        results.addAll(maxInputResourceRates.keySet());
+        results.addAll(maxAmbientInputResourceRates.keySet());
+        return results;
     }
     
     /**
@@ -106,9 +124,12 @@ public class ResourceProcess implements Serializable {
      * @return rate in kg/sec.
      */
     public double getMaxInputResourceRate(String resourceName) {
+        double result = 0D;
         if (maxInputResourceRates.containsKey(resourceName))
-            return ((Double) maxInputResourceRates.get(resourceName)).doubleValue();
-        else return 0D;
+            result = ((Double) maxInputResourceRates.get(resourceName)).doubleValue();
+        else if (maxAmbientInputResourceRates.containsKey(resourceName))
+            result = ((Double) maxAmbientInputResourceRates.get(resourceName)).doubleValue();
+        return result;
     }
     
     /**
@@ -116,10 +137,10 @@ public class ResourceProcess implements Serializable {
      * @return set of resource names.
      */
     public Set getOutputResourceNames() {
-        if (maxOutputResourceRates != null) {
-            return maxOutputResourceRates.keySet();
-        }
-        else return new HashSet();
+        Set results = new HashSet();
+        results.addAll(maxOutputResourceRates.keySet());
+        results.addAll(maxWasteOutputResourceRates.keySet());
+        return results;
     }
     
     /**
@@ -127,9 +148,12 @@ public class ResourceProcess implements Serializable {
      * @return rate in kg/sec.
      */
     public double getMaxOutputResourceRate(String resourceName) {
+        double result = 0D;
         if (maxOutputResourceRates.containsKey(resourceName))
-            return ((Double) maxOutputResourceRates.get(resourceName)).doubleValue();
-        else return 0D;
+            result = ((Double) maxOutputResourceRates.get(resourceName)).doubleValue();
+        else if (maxWasteOutputResourceRates.containsKey(resourceName))
+            result = ((Double) maxWasteOutputResourceRates.get(resourceName)).doubleValue();
+        return result;
     }
     
     /**
@@ -154,7 +178,7 @@ public class ResourceProcess implements Serializable {
             // System.out.println(name + " production level: " + productionLevel);
             
             // Input resources from inventory.
-            Iterator inputI = getInputResourceNames().iterator();
+            Iterator inputI = maxInputResourceRates.keySet().iterator();
             while (inputI.hasNext()) {
                 String resourceName = (String) inputI.next();
                 double maxRate = ((Double) maxInputResourceRates.get(resourceName)).doubleValue();
@@ -165,7 +189,7 @@ public class ResourceProcess implements Serializable {
             }
             
             // Output resources to inventory.
-            Iterator outputI = getOutputResourceNames().iterator();
+            Iterator outputI = maxOutputResourceRates.keySet().iterator();
             while (outputI.hasNext()) {
                 String resourceName = (String) outputI.next();
                 double maxRate = ((Double) maxOutputResourceRates.get(resourceName)).doubleValue();
@@ -196,7 +220,7 @@ public class ResourceProcess implements Serializable {
         // Convert time from millisols to seconds.
         double timeSec = MarsClock.convertMillisolsToSeconds(time);
         
-        Iterator inputI = getInputResourceNames().iterator();
+        Iterator inputI = maxInputResourceRates.keySet().iterator();
         while (inputI.hasNext()) {
             String resourceName = (String) inputI.next();
             double maxRate = ((Double) maxInputResourceRates.get(resourceName)).doubleValue();

@@ -40,17 +40,18 @@ public class ERVBase extends Building implements ResourceProcessing {
         // CO2 + 4H2 = CH4 + 2H2O
         // Carbon Dioxide is pumped in from outside air.
         ResourceProcess sabatier = new ResourceProcess("Sebatier", inv);
-        sabatier.addMaxInputResourceRate(Resource.HYDROGEN, .0001D);
-        sabatier.addMaxOutputResourceRate(Resource.METHANE, .0002D);
-        sabatier.addMaxOutputResourceRate(Resource.WATER, .00045D);
+        sabatier.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .00055D, true);
+        sabatier.addMaxInputResourceRate(Resource.HYDROGEN, .0001D, false);
+        sabatier.addMaxOutputResourceRate(Resource.METHANE, .0002D, false);
+        sabatier.addMaxOutputResourceRate(Resource.WATER, .00045D, false);
         processManager.addResourceProcess(sabatier);
         
         // Create electrolysis resource process.
         // 2H2O = 2H2 + O2
         ResourceProcess electrolysis = new ResourceProcess("Electrolysis", inv);
-        electrolysis.addMaxInputResourceRate(Resource.WATER, .0001D);
-        electrolysis.addMaxOutputResourceRate(Resource.HYDROGEN, .000011D);
-        electrolysis.addMaxOutputResourceRate(Resource.OXYGEN, .000089D);
+        electrolysis.addMaxInputResourceRate(Resource.WATER, .0001D, false);
+        electrolysis.addMaxOutputResourceRate(Resource.HYDROGEN, .000011D, false);
+        electrolysis.addMaxOutputResourceRate(Resource.OXYGEN, .000089D, false);
         processManager.addResourceProcess(electrolysis);
         
         // Create CO2 reduction resource process.
@@ -58,7 +59,9 @@ public class ERVBase extends Building implements ResourceProcessing {
         // Carbon Dioxide is pumped in from outside air.
         // Carbon Monoxide is pumped out to outside air.
         ResourceProcess co2Reduction = new ResourceProcess("CO2 Reduction", inv);
-        co2Reduction.addMaxOutputResourceRate(Resource.OXYGEN, .0003D);
+        co2Reduction.addMaxInputResourceRate(Resource.CARBON_DIOXIDE, .000825D, true);
+        co2Reduction.addMaxOutputResourceRate(Resource.OXYGEN, .0003D, false);
+        co2Reduction.addMaxOutputResourceRate(Resource.CARBON_MONOXIDE, .000525D, true);
         processManager.addResourceProcess(co2Reduction);
         
         // ERVBase starts with 6 tonnes of hydrogen.
