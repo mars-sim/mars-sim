@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.77 2004-08-21
+ * @version 2.77 2004-09-14
  * @author Barry Evans
  */
 
@@ -25,15 +25,16 @@ public class PersonTableModel extends UnitTableModel {
     private final static int  NAME = 0;           // Person name column
     private final static int  GENDER = 1;         // Gender column
     private final static int  LOCATION = 2;       // Location column
-    private final static int  HUNGER = 3;         // Hunger column
-    private final static int  FATIGUE = 4;        // Fatigue column
-	private final static int  STRESS = 5;         // Stress column
-    private final static int  PERFORMANCE = 6;    // Performance conlumn
-    private final static int  JOB = 7;            // Job column
-    private final static int  TASK = 8;           // Task column
-    private final static int  MISSION = 9;        // Mission column
-    private final static int  HEALTH = 10;         // Health column
-    private final static int  COLUMNCOUNT = 11;   // The number of Columns
+    private final static int  PERSONALITY = 3;    // Personality column
+    private final static int  HUNGER = 4;         // Hunger column
+    private final static int  FATIGUE = 5;        // Fatigue column
+	private final static int  STRESS = 6;         // Stress column
+    private final static int  PERFORMANCE = 7;    // Performance conlumn
+    private final static int  JOB = 8;            // Job column
+    private final static int  TASK = 9;           // Task column
+    private final static int  MISSION = 10;        // Mission column
+    private final static int  HEALTH = 11;         // Health column
+    private final static int  COLUMNCOUNT = 12;   // The number of Columns
     private static String columnNames[];          // Names of Columns
     private static Class columnTypes[];           // Types of Columns
     
@@ -47,6 +48,8 @@ public class PersonTableModel extends UnitTableModel {
         columnTypes[NAME] = String.class;
         columnNames[GENDER] = "Gender";
         columnTypes[GENDER] = String.class;
+        columnNames[PERSONALITY] = "Personality";
+        columnTypes[PERSONALITY] = String.class; 
         columnNames[HUNGER] = "Hunger";
         columnTypes[HUNGER] = Integer.class;
         columnNames[FATIGUE] = "Fatigue";
@@ -71,6 +74,7 @@ public class PersonTableModel extends UnitTableModel {
     private static final String ALL_PEOPLE = "All People";
     private static final String VEHICLE_CREW = "Vehicle Crew";
     private static final String SETTLEMENT_INHABITANTS = "Settlement Inhabitants";
+    private static final String SETTLEMENT_ALL_ASSOCIATED_PEOPLE = "All People Associated with Settlement";
     private static final String MISSION_PEOPLE = "Mission People";
     
     private String sourceType; // The type of source for the people table.
@@ -106,19 +110,26 @@ public class PersonTableModel extends UnitTableModel {
 		this.vehicle = vehicle;
         setSource(vehicle.getCrew());
     }
-
+    
     /**
-     * Constructs a PersonTableModel object that displays all Person from the
-     * specified settlement.
-     * @param settlement Monitored settlement Person objects.
+     * Constructs a PersonTableModel that displays residents are all associated people with 
+     * a specified settlement.
+     * @param settlement the settlement to check.
+     * @param allAssociated Are all people associated with this settlement to be displayed?
      */
-    public PersonTableModel(Settlement settlement) {
-        super(settlement.getName() + " - People", " residents",
-              columnNames, columnTypes);
-
-		sourceType = SETTLEMENT_INHABITANTS;
-		this.settlement = settlement;
-        setSource(settlement.getInhabitants());
+    public PersonTableModel(Settlement settlement, boolean allAssociated) {
+    	super(settlement.getName() + (allAssociated ? " - All Associated People" : "-People"), 
+				(allAssociated ? "associated people" : "residents"), columnNames, columnTypes);
+    			
+    	this.settlement = settlement;
+    	if (allAssociated) {
+    		sourceType = SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
+    		setSource(settlement.getAllAssociatedPeople());
+    	}
+    	else {
+			sourceType = SETTLEMENT_INHABITANTS;
+			setSource(settlement.getInhabitants());
+    	}
     }
 
     /**
@@ -156,6 +167,7 @@ public class PersonTableModel extends UnitTableModel {
 		if (sourceType.equals(ALL_PEOPLE)) statusString = update(unitManager.getPeople());
 		else if (sourceType.equals(VEHICLE_CREW)) statusString = update(vehicle.getCrew());
 		else if (sourceType.equals(SETTLEMENT_INHABITANTS)) statusString = update(settlement.getInhabitants());
+		else if (sourceType.equals(SETTLEMENT_ALL_ASSOCIATED_PEOPLE)) statusString = update(settlement.getAllAssociatedPeople());
 		else if (sourceType.equals(MISSION_PEOPLE)) {
 			if (mission != null) statusString = update(mission.getPeople());
 			else statusString = update(null);
@@ -184,6 +196,10 @@ public class PersonTableModel extends UnitTableModel {
 				String genderStr = person.getGender().substring(0, 1).toUpperCase() +
 					person.getGender().substring(1);
 				result = genderStr;
+			} break;
+			
+			case PERSONALITY : {
+				result = person.getMind().getPersonalityType().getTypeString();
 			} break;
 
             case HUNGER : {
