@@ -8,6 +8,7 @@ package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -30,7 +31,9 @@ public class Engineer extends Job implements Serializable {
 		jobTasks.add(RepairMalfunction.class);
 		jobTasks.add(RepairEVAMalfunction.class);
 		
-		// No mission start or mission joins for doctors.
+		// Add engineer-related missions.
+		jobMissionStarts.add(TravelToSettlement.class);
+		jobMissionJoins.add(TravelToSettlement.class);	
 	}
 
 	/**

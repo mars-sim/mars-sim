@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.Hashtable;
+import org.mars_sim.msp.simulation.RandomUtil;
 
 /** The SkillManager class manages skills for a given person.
  *  Each person has one skill manager.
@@ -24,19 +25,17 @@ public class SkillManager implements Serializable {
         this.person = person;
         skills = new Hashtable();
 
-		/*
         // Add starting skills randomly for person.
         String[] startingSkills = { Skill.DRIVING, Skill.BOTANY, Skill.MECHANICS,
                                     Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL };
 
         for (int x = 0; x < startingSkills.length; x++) {
-            // int skillLevel = getInitialSkillLevel(0, 50);
-            int skillLevel = 1;
+            int skillLevel = getInitialSkillLevel(0, 50);
+            // int skillLevel = 1;
             Skill newSkill = new Skill(startingSkills[x]);
             newSkill.setLevel(skillLevel);
             addNewSkill(newSkill);
         }
-        */
     }
 
     /** Returns an initial skill level.
@@ -44,13 +43,11 @@ public class SkillManager implements Serializable {
      *  @param chance the chance that the skill will be greater
      *  @return the initial skill level
      */
-    /*
     private int getInitialSkillLevel(int level, int chance) {
         if (RandomUtil.lessThanRandPercent(chance))
             return getInitialSkillLevel(level + 1, chance / 2);
         else return level;
     }
-    */
 
     /** Returns the number of skills.
      *  @return the number of skills

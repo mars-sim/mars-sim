@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.76 2004-06-01
+ * @version 2.76 2004-06-10
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** The Mission class represents a large multi-person task
  *
@@ -210,4 +211,10 @@ public abstract class Mission implements Serializable {
 
         if (canPerformTask) person.getMind().getTaskManager().addTask(task);
     }
+    
+    /**
+     * Gets the home settlement for the mission. 
+     * @return home settlement or null if none.
+     */
+    public abstract Settlement getHomeSettlement();
 }

@@ -413,4 +413,12 @@ public class TravelToSettlement extends Mission implements Serializable {
 
         super.endMission();
     }
+    
+	/**
+	 * Gets the home settlement for the mission. 
+	 * @return home settlement or null if none.
+	 */
+	public Settlement getHomeSettlement() {
+		return destinationSettlement;
+	}
 }

@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
  * The MissionManager class keeps track of ongoing missions
@@ -221,5 +222,22 @@ public class MissionManager implements Serializable {
             if ((tempMission == null) || tempMission.isDone()) removeMission(tempMission);
             else index++;
         }
+    }
+    
+    /**
+     * Gets a list of missions associated with a settlment.
+     * @param settlement the settlement
+     * @return list of missions
+     */
+    public List getMissionsForSettlement(Settlement settlement) {
+    	List result = new ArrayList();
+    	
+    	Iterator i = missions.iterator();
+    	while (i.hasNext()) {
+    		Mission mission = (Mission) i.next();
+    		if (settlement == mission.getHomeSettlement()) result.add(mission);
+    	}
+    	
+    	return result;
     }
 }

@@ -28,6 +28,7 @@ public class Driver extends Job implements Serializable {
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);
 		jobMissionJoins.add(CollectIce.class);
+		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 	}
 
@@ -60,7 +61,7 @@ public class Driver extends Job implements Serializable {
 		double result = 0D;
 		
 		// Add vehicles parked at settlement.
-		result+= settlement.getParkedVehicleNum();
+		result+= settlement.getParkedVehicleNum() * 3D;
 		
 		return result;	
 	}
