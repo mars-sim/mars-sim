@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorPanel.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -53,7 +53,6 @@ public class InsituResourceProcessorPanel extends FacilityPanel {
 
         // Prepare processor label
         JLabel nameLabel = new JLabel("INSITU Resource Processor", JLabel.CENTER);
-        nameLabel.setForeground(Color.black);
         contentPane.add(nameLabel, "North");
 
         // Prepare info pane
@@ -63,7 +62,6 @@ public class InsituResourceProcessorPanel extends FacilityPanel {
 
         // Prepare resources label
         JLabel resourcesLabel = new JLabel("Resources Generated:", JLabel.CENTER);
-        resourcesLabel.setForeground(Color.black);
         infoPane.add(resourcesLabel, "North");
 
         // Prepare rsources pane
@@ -76,35 +74,29 @@ public class InsituResourceProcessorPanel extends FacilityPanel {
 
         // Prepare fuel label
         JLabel fuelLabel = new JLabel("Fuel:");
-        fuelLabel.setForeground(Color.black);
         labelPane.add(fuelLabel);
 
         // Prepare fuel value label
         fuel = processor.getFuelRate();
 	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel * 1000D) + " kg/sol", JLabel.RIGHT);
-        fuelValueLabel.setForeground(Color.black);
         labelPane.add(fuelValueLabel);
 
         // Prepare oxygen label
         JLabel oxygenLabel = new JLabel("Oxygen:");
-        oxygenLabel.setForeground(Color.black);
         labelPane.add(oxygenLabel);
 
         // Prepare oxygen value label
         oxygen = processor.getOxygenRate();
 	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen * 1000D) + " kg/sol", JLabel.RIGHT);
-        oxygenValueLabel.setForeground(Color.black);
         labelPane.add(oxygenValueLabel);
 
         // Prepare water label
         JLabel waterLabel = new JLabel("Water:");
-        waterLabel.setForeground(Color.black);
         labelPane.add(waterLabel);
 
         // Prepare water value label
         water = processor.getWaterRate();
 	waterValueLabel = new JLabel("" + roundOneDecimal(water * 1000D) + " kg/sol", JLabel.RIGHT);
-        waterValueLabel.setForeground(Color.black);
         labelPane.add(waterValueLabel);
     }
 

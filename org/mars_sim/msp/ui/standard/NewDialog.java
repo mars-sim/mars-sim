@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * $Id: NewDialog.java,v 1.2 2002-03-14 11:08:48 jpatokal Exp $
+ * $Id: NewDialog.java,v 1.3 2002-03-18 02:34:52 scud1 Exp $
  * @version 2.74
  * @author Jani Patokallio
  */
@@ -48,7 +48,6 @@ public class NewDialog extends JDialog implements ActionListener {
 	JLabel instructionLabel =
 	    new JLabel("Configure the parameters of the new simulation:",
 		       JLabel.CENTER);
-	instructionLabel.setForeground(Color.black);
         instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 	mainPane.add(instructionLabel);
 	mainPane.add(Box.createRigidArea(new Dimension(0,15)));

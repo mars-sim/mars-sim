@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -152,7 +152,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
         // Prepare latitude entry components
         JLabel latLabel = new JLabel("Latitude: ");
-        latLabel.setForeground(Color.black);
         latLabel.setAlignmentY(.5F);
         positionPane.add(latLabel);
 
@@ -170,7 +169,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener,
 
         // Prepare longitude entry components
         JLabel longLabel = new JLabel("Longitude: ");
-        longLabel.setForeground(Color.black);
         longLabel.setAlignmentY(.5F);
         positionPane.add(longLabel);
 

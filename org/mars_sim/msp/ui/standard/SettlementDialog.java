@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementDialog.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -183,7 +183,6 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 
         // Prepare vehicle label
         JLabel vehicleLabel = new JLabel("Parked Vehicles:", JLabel.CENTER);
-        vehicleLabel.setForeground(Color.black);
         innerVehiclesPane.add(vehicleLabel, "North");
 
         // Prepare vehicle list pane
@@ -234,7 +233,6 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 
         // Prepare location label
         JLabel locationLabel = new JLabel("Location:", JLabel.CENTER);
-        locationLabel.setForeground(Color.black);
         locationLabelPane.add(locationLabel);
 
         // Prepare location coordinates pane
@@ -245,7 +243,6 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         JLabel latitudeLabel = new JLabel("Latitude: " +
                 settlement.getCoordinates().getFormattedLatitudeString(),
                 JLabel.LEFT);
-        latitudeLabel.setForeground(Color.black);
         locationCoordsPane.add(latitudeLabel);
 
         // Prepare longitude label
@@ -253,7 +250,6 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         JLabel longitudeLabel = new JLabel("Longitude: " +
                 settlement.getCoordinates().getFormattedLongitudeString(),
                 JLabel.LEFT);
-        longitudeLabel.setForeground(Color.black);
         locationCoordsPane.add(longitudeLabel);
 
         // Return location pane

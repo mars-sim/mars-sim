@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * $Id: SearchWindow.java,v 1.6 2002-03-12 17:53:32 jpatokal Exp $
- * @version 2.73 2001-11-25
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -72,7 +71,6 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Create search for label
         JLabel searchForLabel = new JLabel("Search for: ");
-        searchForLabel.setForeground(Color.black);
         searchForPane.add(searchForLabel);
 
         // Create search for select
@@ -123,7 +121,6 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         // Create status label
         statusLabel = new JLabel(" ", JLabel.CENTER);
         statusLabel.setBorder(new EtchedBorder());
-        statusLabel.setForeground(Color.red);
         bottomPane.add(statusLabel, "Center");
 
         // Create search button panel

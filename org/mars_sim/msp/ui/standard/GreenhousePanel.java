@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GreenhousePanel.java
- * @version 2.74 2001-03-11
+ * @version 2.74 2001-03-17
  * @author Scott Davis
  */
 
@@ -53,7 +53,6 @@ public class GreenhousePanel extends FacilityPanel {
 		
 	// Prepare greenhouse label
 	JLabel nameLabel = new JLabel("Greenhouse", JLabel.CENTER);
-	nameLabel.setForeground(Color.black);
 	contentPane.add(nameLabel, "North");
 		
 	// Prepare info panel
@@ -68,13 +67,11 @@ public class GreenhousePanel extends FacilityPanel {
 	// Prepare max harvest label
         fullHarvest = greenhouse.getFullHarvestAmount();
 	maxHarvestLabel = new JLabel("Full Harvest: " + fullHarvest + " kg Food", JLabel.CENTER);
-	maxHarvestLabel.setForeground(Color.black);
 	labelPane.add(maxHarvestLabel);
 		
 	// Prepare growing cycle label
 	phase = greenhouse.getPhase();
 	growingCycleLabel = new JLabel("Growing Cycle Phase: " + phase, JLabel.CENTER);
-	growingCycleLabel.setForeground(Color.black);
 	labelPane.add(growingCycleLabel);
 		
 	// Prepare lists pane
@@ -88,7 +85,6 @@ public class GreenhousePanel extends FacilityPanel {
 		
 	// Prepare growth status label
 	JLabel growthStatusLabel = new JLabel("Greenhouse Growth Cycle Status", JLabel.CENTER);
-	growthStatusLabel.setForeground(Color.black);
 	growthCompletionPane.add(growthStatusLabel, "North");
 		
 	// Prepare growth progress bar
@@ -106,7 +102,6 @@ public class GreenhousePanel extends FacilityPanel {
 		
 	// Prepare tending work label
 	JLabel tendingWorkLabel = new JLabel("Greenhouse Tending Status", JLabel.CENTER);
-	tendingWorkLabel.setForeground(Color.black);
 	tendingPane.add(tendingWorkLabel, "North");
 	
 	// Prepare tending progress bar

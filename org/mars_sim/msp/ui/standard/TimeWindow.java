@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -69,12 +69,10 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
         // Create Martian time header label
         JLabel martianTimeHeaderLabel = new JLabel("Martian Time", JLabel.CENTER);
-        martianTimeHeaderLabel.setForeground(Color.black);
         martianTimePane.add(martianTimeHeaderLabel, "North");
 
         // Create Martian time label
         martianTimeLabel = new JLabel(marsTime.getTimeStamp(), JLabel.CENTER);
-        martianTimeLabel.setForeground(Color.black);
         martianTimePane.add(martianTimeLabel, "South");
 
         // Create Martian calendar panel
@@ -88,7 +86,6 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
         // Create martian month label
         martianMonthLabel = new JLabel(marsTime.getMonthName(), JLabel.CENTER);
-        martianMonthLabel.setForeground(Color.black);
         calendarMonthPane.add(martianMonthLabel, "North");
 
         // Create Martian calendar display
@@ -111,17 +108,14 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
         // Create Martian season label
         JLabel marsSeasonLabel = new JLabel("Martian Seasons", JLabel.CENTER);
-        marsSeasonLabel.setForeground(Color.black);
         marsSeasonPane.add(marsSeasonLabel, "North");
 
         // Create Northern season label
         northernSeasonLabel = new JLabel("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE), JLabel.CENTER);
-        northernSeasonLabel.setForeground(Color.black);
         marsSeasonPane.add(northernSeasonLabel, "Center");
  
         // Create Southern season label
         southernSeasonLabel = new JLabel("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE), JLabel.CENTER);
-        southernSeasonLabel.setForeground(Color.black);
         marsSeasonPane.add(southernSeasonLabel, "South");
 
         // Create Earth time panel
@@ -131,12 +125,10 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
         // Create Earth time header label
         JLabel earthTimeHeaderLabel = new JLabel("Earth Time", JLabel.CENTER);
-        earthTimeHeaderLabel.setForeground(Color.black);
         earthTimePane.add(earthTimeHeaderLabel, "North");
 
         // Create Earth time label
         earthTimeLabel = new JLabel(earthTime.getTimeStamp(), JLabel.CENTER);
-        earthTimeLabel.setForeground(Color.black);
         earthTimePane.add(earthTimeLabel, "South");
 
         // Create uptime panel
@@ -146,12 +138,10 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
         // Create uptime header label
         JLabel uptimeHeaderLabel = new JLabel("Simulation Uptime", JLabel.CENTER);
-        uptimeHeaderLabel.setForeground(Color.black);
         uptimePane.add(uptimeHeaderLabel, "North");
 
         // Create uptime label
         uptimeLabel = new JLabel(uptimer.getUptime(), JLabel.CENTER);
-        uptimeLabel.setForeground(Color.black);
         uptimePane.add(uptimeLabel, "Center");
 
         // Create uptime panel
@@ -161,7 +151,6 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
         // Create pulse header label
         JLabel pulseHeaderLabel = new JLabel("Simulation Speed", JLabel.CENTER);
-        pulseHeaderLabel.setForeground(Color.black);
         pulsePane.add(pulseHeaderLabel, "North");
 
         // Create pulse slider

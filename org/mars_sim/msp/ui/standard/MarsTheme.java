@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsTheme.java
- * @version 2.71 2001-1-7
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -26,9 +26,9 @@ public class MarsTheme extends DefaultMetalTheme {
     protected ColorUIResource getPrimary3() { return primary3; }
 
     // Set default fonts for theme
-    private FontUIResource defaultFont = new FontUIResource("SansSerif", Font.PLAIN, 11);
-    private FontUIResource defaultBoldFont = new FontUIResource("SansSerif", Font.BOLD, 12);
-    private FontUIResource defaultSmallFont = new FontUIResource("SansSerif", Font.PLAIN, 10);
+    private final FontUIResource defaultFont = new FontUIResource("SansSerif", Font.PLAIN, 11);
+    private final FontUIResource defaultBoldFont = new FontUIResource("SansSerif", Font.BOLD, 12);
+    private final FontUIResource defaultSmallFont = new FontUIResource("SansSerif", Font.PLAIN, 10);
 
     public FontUIResource getControlTextFont() { return defaultFont; }
     public FontUIResource getSystemTextFont() { return defaultFont; }
@@ -37,6 +37,11 @@ public class MarsTheme extends DefaultMetalTheme {
     public FontUIResource getWindowTitleFont() { return defaultBoldFont; }
     public FontUIResource getSubTextFont() { return defaultFont; }
 
+    // Set default text color for theme
+    private final ColorUIResource defaultTextColor = new ColorUIResource(Color.black);
+    
+    public ColorUIResource getSystemTextColor() { return defaultTextColor; }
+    
     /** Returns the theme's name 
      *  @return name of theme
      */

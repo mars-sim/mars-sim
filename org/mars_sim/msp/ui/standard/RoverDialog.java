@@ -109,7 +109,6 @@ public abstract class RoverDialog extends GroundVehicleDialog implements MouseLi
         // Prepare maximum crew capacity label
         int maxCrew = ((Crewable) vehicle).getCrewCapacity();
         JLabel maxCrewLabel = new JLabel("Maximum Crew Capacity: " + maxCrew, JLabel.CENTER);
-        maxCrewLabel.setForeground(Color.black);
         maxCrewPane.add(maxCrewLabel, "Center");
 
         // Prepare driver pane
@@ -120,7 +119,6 @@ public abstract class RoverDialog extends GroundVehicleDialog implements MouseLi
 
         // Prepare driver label
         JLabel driverLabel = new JLabel("Driver", JLabel.CENTER);
-        driverLabel.setForeground(Color.black);
         driverPane.add(driverLabel, "North");
 
         // Prepare driver button pane
@@ -145,7 +143,6 @@ public abstract class RoverDialog extends GroundVehicleDialog implements MouseLi
 
         // Prepare crew label
         JLabel peopleLabel = new JLabel("Crew", JLabel.CENTER);
-        peopleLabel.setForeground(Color.black);
         crewListPane.add(peopleLabel, "North");
 
         // Add monitor button
@@ -178,7 +175,7 @@ public abstract class RoverDialog extends GroundVehicleDialog implements MouseLi
         crewList.setVisibleRowCount(7);
         crewList.addMouseListener(this);
         crewList.setPreferredSize(
-                new Dimension(200, (int) crewList.getPreferredSize().getHeight()));
+                new Dimension(175, (int) crewList.getPreferredSize().getHeight()));
         JScrollPane crewScroll = new JScrollPane(crewList);
         JPanel crewScrollPane = new JPanel();
         crewScrollPane.add(crewScroll);

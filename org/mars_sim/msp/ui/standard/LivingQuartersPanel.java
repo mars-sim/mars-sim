@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingQuartersPanel.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -54,7 +54,6 @@ public class LivingQuartersPanel extends FacilityPanel implements MouseListener 
 
 	// Prepare name label
 	JLabel nameLabel = new JLabel("Living Quarters", JLabel.CENTER);
-	nameLabel.setForeground(Color.black);
 	contentPane.add(nameLabel, "North");
 
 	// Prepare info pane
@@ -68,12 +67,10 @@ public class LivingQuartersPanel extends FacilityPanel implements MouseListener 
 
 	// Prepare population capacity label
 	JLabel populationCapacityLabel = new JLabel("Population Capacity: " + settlement.getPopulationCapacity(), JLabel.CENTER);
-	populationCapacityLabel.setForeground(Color.black);
 	labelPane.add(populationCapacityLabel);
 
 	// Prepare current population label
 	currentPopulationLabel = new JLabel("Current Population: " + currentPopulation, JLabel.CENTER);
-	currentPopulationLabel.setForeground(Color.black);
 	labelPane.add(currentPopulationLabel);
 
 	// Prepare inhabitant panel
@@ -83,7 +80,7 @@ public class LivingQuartersPanel extends FacilityPanel implements MouseListener 
 
 	// Prepare inner inhabitant panel
 	JPanel innerInhabitantPane = new JPanel(new BorderLayout());
-	innerInhabitantPane.setPreferredSize(new Dimension(150, 100));
+	innerInhabitantPane.setPreferredSize(new Dimension(175, 100));
 	inhabitantPane.add(innerInhabitantPane);
 
 	// Prepare inhabitant list

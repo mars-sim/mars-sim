@@ -50,120 +50,119 @@ public class PersonDialog extends UnitDialog {
     private double hunger;
     private int healthRating;
 
-	/** Constructs a PersonDialog object
-  	 *  @param parentDesktop the desktop pane
-   	 *  @param personUIProxy the person's UI proxy
+    /** 
+     * Constructs a PersonDialog object
+     * @param parentDesktop the desktop pane
+     * @param personUIProxy the person's UI proxy
      */
-	public PersonDialog(MainDesktopPane parentDesktop, PersonUIProxy personUIProxy) {
+    public PersonDialog(MainDesktopPane parentDesktop, PersonUIProxy personUIProxy) {
 
-		// Use UnitDialog constructor
-		super(parentDesktop, personUIProxy);
-	}
+        // Use UnitDialog constructor
+        super(parentDesktop, personUIProxy);
+    }
 
-	/** Initialize cached data members */
-	protected void initCachedData() {
+    /** Initialize cached data members */
+    protected void initCachedData() {
 
-		unitCoords = new Coordinates(0D, 0D);
-		settlementName = "";
-		vehicleName = "";
-		skillList = new Hashtable();
+        unitCoords = new Coordinates(0D, 0D);
+        settlementName = "";
+        vehicleName = "";
+        skillList = new Hashtable();
         fatigue = 0D;
         hunger = 0D;
-	}
+    }
 
-	/** Complete update (overridden) */
-	protected void generalUpdate() {
-		updatePosition();
-		updateSettlement();
-		updateVehicle();
-		updateSkills();
-		updateTask();
+    /** Complete update (overridden) */
+    protected void generalUpdate() {
+	updatePosition();
+	updateSettlement();
+	updateVehicle();
+	updateSkills();
+	updateTask();
         updateCondition();
 	inventoryPane.updateInfo();
-	}
+    }
 
-	/** Update position */
-	private void updatePosition() {
-		if (!unitCoords.equals(person.getCoordinates())) {
-			unitCoords = new Coordinates(person.getCoordinates());
-			latitudeLabel.setText("Latitude: " + unitCoords.getFormattedLatitudeString());
-			longitudeLabel.setText("Longitude: " + unitCoords.getFormattedLongitudeString());
-		}
-	}
+    /** Update position */
+    private void updatePosition() {
+	if (!unitCoords.equals(person.getCoordinates())) {
+            unitCoords = new Coordinates(person.getCoordinates());
+            latitudeLabel.setText("Latitude: " + unitCoords.getFormattedLatitudeString());
+            longitudeLabel.setText("Longitude: " + unitCoords.getFormattedLongitudeString());
+        }
+    }
 
-	/** Update settlement */
-	private void updateSettlement() {
-		Settlement tempSettlement = person.getSettlement();
-		if (tempSettlement != null) {
-			if (!settlementName.equals(tempSettlement.getName())) {
-				settlementName = tempSettlement.getName();
-				locationButton.setText(settlementName);
-			}
-		}
-	}
+    /** Update settlement */
+    private void updateSettlement() {
+        Settlement tempSettlement = person.getSettlement();
+        if (tempSettlement != null) {
+            if (!settlementName.equals(tempSettlement.getName())) {
+                settlementName = tempSettlement.getName();
+                locationButton.setText(settlementName);
+            }
+        }
+    }
 
-	/** Update vehicle */
-	private void updateVehicle() {
-		Vehicle tempVehicle = person.getVehicle();
-		if (tempVehicle != null) {
-			if (!vehicleName.equals(tempVehicle.getName())) {
-				vehicleName = tempVehicle.getName();
-				locationButton.setText(vehicleName);
-			}
-		}
-	}
+    /** Update vehicle */
+    private void updateVehicle() {
+        Vehicle tempVehicle = person.getVehicle();
+        if (tempVehicle != null) {
+            if (!vehicleName.equals(tempVehicle.getName())) {
+                vehicleName = tempVehicle.getName();
+                locationButton.setText(vehicleName);
+            }
+        }
+    }
 
-	/** Update skill list */
-	private void updateSkills() {
+    /** Update skill list */
+    private void updateSkills() {
 
-		boolean change = false;
-		SkillManager skillManager = person.getSkillManager();
+        boolean change = false;
+        SkillManager skillManager = person.getSkillManager();
 
-		String[] keyNames = skillManager.getKeys();
-		for (int x=0; x < keyNames.length; x++) {
-			int skillLevel = skillManager.getSkillLevel(keyNames[x]);
-			if (skillLevel > 0) {
-				if (skillList.containsKey(keyNames[x])) {
-					int cacheSkillLevel = ((Integer) skillList.get(keyNames[x])).intValue();
-					if (skillLevel != cacheSkillLevel) {
-						skillList.put(keyNames[x], new Integer(skillLevel));
-						change = true;
-					}
-				}
-				else {
-					skillList.put(keyNames[x], new Integer(skillLevel));
-					change = true;
-				}
-			}
-		}
+        String[] keyNames = skillManager.getKeys();
+        for (int x=0; x < keyNames.length; x++) {
+            int skillLevel = skillManager.getSkillLevel(keyNames[x]);
+            if (skillLevel > 0) {
+                if (skillList.containsKey(keyNames[x])) {
+                    int cacheSkillLevel = ((Integer) skillList.get(keyNames[x])).intValue();
+                    if (skillLevel != cacheSkillLevel) {
+                        skillList.put(keyNames[x], new Integer(skillLevel));
+                        change = true;
+                    }
+                }
+                else {
+                    skillList.put(keyNames[x], new Integer(skillLevel));
+                    change = true;
+                }
+            }
+        }
 
-		if (change) {
-			skillListPane.removeAll();
-			skillListPane.setLayout(new GridLayout(skillList.size(), 2));
+        if (change) {
+            skillListPane.removeAll();
+            skillListPane.setLayout(new GridLayout(skillList.size(), 2));
 
-			for (int x=0; x < keyNames.length; x++) {
-				int skillLevel = skillManager.getSkillLevel(keyNames[x]);
-				if (skillLevel > 0) {
+            for (int x=0; x < keyNames.length; x++) {
+                int skillLevel = skillManager.getSkillLevel(keyNames[x]);
+                if (skillLevel > 0) {
 
-					// Display skill name
-					JLabel skillName = new JLabel(keyNames[x] + ":", JLabel.LEFT);
-					skillName.setForeground(Color.black);
-					skillName.setVerticalAlignment(JLabel.TOP);
-					skillListPane.add(skillName);
+                    // Display skill name
+                    JLabel skillName = new JLabel(keyNames[x] + ":", JLabel.LEFT);
+                    skillName.setVerticalAlignment(JLabel.TOP);
+                    skillListPane.add(skillName);
 
-					// Display skill value
-					JLabel skillValue = new JLabel("" + skillLevel, JLabel.RIGHT);
-					skillValue.setForeground(Color.black);
-					skillValue.setVerticalAlignment(JLabel.TOP);
-					skillListPane.add(skillValue);
-				}
-			}
-			validate();
-		}
-	}
+                    // Display skill value
+                    JLabel skillValue = new JLabel("" + skillLevel, JLabel.RIGHT);
+                    skillValue.setVerticalAlignment(JLabel.TOP);
+                    skillListPane.add(skillValue);
+                }
+            }
+            validate();
+        }
+    }
 
-	/** Update task info */
-	private void updateTask() {
+    /** Update task info */
+    private void updateTask() {
 
         TaskManager taskManager = person.getMind().getTaskManager();
         Mind mind = person.getMind();
@@ -180,7 +179,7 @@ public class PersonDialog extends UnitDialog {
         String cacheDescription = "None";
         if ((taskManager != null) && taskManager.hasTask()) {
             cacheDescription = taskManager.getTaskDescription();
-	    }
+        }
         if (!cacheDescription.equals(taskDescription.getText())) taskDescription.setText("Task: " + cacheDescription);
 
         // Update task phase
@@ -190,7 +189,7 @@ public class PersonDialog extends UnitDialog {
             if ((phase != null) && !phase.equals("")) cachePhase = phase;
         }
         if (!cachePhase.equals(taskPhase.getText())) taskPhase.setText("Task Phase: " + cachePhase);
-	}
+    }
 
     /** Update condition info */
     private void updateCondition() {
@@ -241,74 +240,73 @@ public class PersonDialog extends UnitDialog {
         illnessList.validate();
     }
 
-	/** ActionListener method overriden */
-	public void actionPerformed(ActionEvent event) {
-		super.actionPerformed(event);
+    /** ActionListener method overriden */
+    public void actionPerformed(ActionEvent event) {
+        super.actionPerformed(event);
 
-		Object button = event.getSource();
+        Object button = event.getSource();
 
-		// If location button, open window for selected unit
-		if (button == locationButton) {
-			if (person.getSettlement() != null)
-                parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(person.getSettlement()));
-			else if (person.getVehicle() != null)
-                parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(person.getVehicle()));
-		}
-	}
+        // If location button, open window for selected unit
+        if (button == locationButton) {
+        if (person.getSettlement() != null)
+            parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(person.getSettlement()));
+        else if (person.getVehicle() != null)
+            parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(person.getVehicle()));
+        }
+    }
 
-	/** Set window size
+    /** Set window size
      *  @return the window's size
      */
-	protected Dimension setWindowSize() { return new Dimension(300, 375); }
+    protected Dimension setWindowSize() { return new Dimension(300, 375); }
 
-	/** Prepare components */
-	protected void setupComponents() {
+    /** Prepare components */
+    protected void setupComponents() {
 
-		super.setupComponents();
+        super.setupComponents();
 
-		// Initialize person
-		person = (Person) parentUnit;
+        // Initialize person
+        person = (Person) parentUnit;
 
-		// Prepare tab pane
-		JTabbedPane tabPane = new JTabbedPane();
-		tabPane.addTab("Task", setupTaskPane());
-		tabPane.addTab("Location", setupLocationPane());
+        // Prepare tab pane
+        JTabbedPane tabPane = new JTabbedPane();
+        tabPane.addTab("Task", setupTaskPane());
+        tabPane.addTab("Location", setupLocationPane());
         tabPane.addTab("Condition", setupConditionPane());
-		tabPane.addTab("Attributes", setupAttributePane());
-		tabPane.addTab("Skills", setupSkillPane());
-		inventoryPane = new InventoryPanel(person.getInventory());
-		tabPane.addTab("Inventory", inventoryPane);
-		mainPane.add(tabPane, "Center");
-	}
+        tabPane.addTab("Attributes", setupAttributePane());
+        tabPane.addTab("Skills", setupSkillPane());
+        inventoryPane = new InventoryPanel(person.getInventory());
+        tabPane.addTab("Inventory", inventoryPane);
+        mainPane.add(tabPane, "Center");
+    }
 
-	/** Set up task panel
+    /** Set up task panel
      *  @return the task pane
      */
-	protected JPanel setupTaskPane() {
+    protected JPanel setupTaskPane() {
 
-		// Prepare Task pane
-		JPanel taskPane = new JPanel(new BorderLayout());
-		taskPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        // Prepare Task pane
+        JPanel taskPane = new JPanel(new BorderLayout());
+        taskPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 
-		// Prepare task label pane
-		JPanel taskLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		taskPane.add(taskLabelPane, "North");
+        // Prepare task label pane
+        JPanel taskLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        taskPane.add(taskLabelPane, "North");
 
-		// Prepare task label
-		JLabel taskLabel = new JLabel("Task", JLabel.CENTER);
-		taskLabel.setForeground(Color.black);
-		taskLabelPane.add(taskLabel);
+        // Prepare task label
+        JLabel taskLabel = new JLabel("Task", JLabel.CENTER);
+        taskLabelPane.add(taskLabel);
 
-		// Use person's task manager.
-		TaskManager taskManager = person.getMind().getTaskManager();
+        // Use person's task manager.
+        TaskManager taskManager = person.getMind().getTaskManager();
         Mind mind = person.getMind();
 
-		// Prepare task description pane
-		JPanel taskDescriptionPane = new JPanel(new GridLayout(5, 1));
-		JPanel taskDescriptionTopPane = new JPanel(new BorderLayout());
-		taskDescriptionTopPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		taskDescriptionTopPane.add(taskDescriptionPane, "North");
-		taskPane.add(new JScrollPane(taskDescriptionTopPane), "Center");
+        // Prepare task description pane
+        JPanel taskDescriptionPane = new JPanel(new GridLayout(5, 1));
+        JPanel taskDescriptionTopPane = new JPanel(new BorderLayout());
+        taskDescriptionTopPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        taskDescriptionTopPane.add(taskDescriptionPane, "North");
+        taskPane.add(new JScrollPane(taskDescriptionTopPane), "Center");
 
         JPanel missionNamePanel = new JPanel(new BorderLayout());
 	taskDescriptionPane.add(missionNamePanel);
@@ -317,7 +315,6 @@ public class PersonDialog extends UnitDialog {
         // Display "Mission: None" if person currently has no task.
         missionLabel = new JLabel("Mission: None", JLabel.LEFT);
         if (mind.hasActiveMission()) missionLabel.setText("Mission: " + mind.getMission().getName());
-        missionLabel.setForeground(Color.black);
         missionNamePanel.add(missionLabel, "West");
 
 	// Add monitor button.
@@ -338,88 +335,82 @@ public class PersonDialog extends UnitDialog {
         // Display "Mission Phase:" if person doesn't have an active mission phase.
         missionPhaseLabel = new JLabel("Mission Phase:", JLabel.LEFT);
         if (mind.hasActiveMission()) missionPhaseLabel.setText("Mission Phase: " + mind.getMission().getPhase());
-        missionPhaseLabel.setForeground(Color.black);
         taskDescriptionPane.add(missionPhaseLabel);
 
         // Add spacer label
         JLabel spacerLabel = new JLabel("  ", JLabel.LEFT);
         taskDescriptionPane.add(spacerLabel);
 
-		// Display description of current task.
-		// Display 'None' if person is currently doing nothing.
-		taskDescription = new JLabel("Task: None", JLabel.LEFT);
-		if ((taskManager != null) && taskManager.hasTask()) {
+        // Display description of current task.
+        // Display 'None' if person is currently doing nothing.
+        taskDescription = new JLabel("Task: None", JLabel.LEFT);
+        if ((taskManager != null) && taskManager.hasTask()) {
             taskDescription.setText("Task: " + taskManager.getTaskDescription());
-		}
-        taskDescription.setForeground(Color.black);
-		taskDescriptionPane.add(taskDescription);
+        }
+        taskDescriptionPane.add(taskDescription);
 
-		// Display name of current phase.
-		// Display "Task Phase:" if current task has no current phase.
-		taskPhase = new JLabel("Task Phase:", JLabel.LEFT);
-		if ((taskManager != null) && taskManager.hasTask()) {
+        // Display name of current phase.
+        // Display "Task Phase:" if current task has no current phase.
+	taskPhase = new JLabel("Task Phase:", JLabel.LEFT);
+	if ((taskManager != null) && taskManager.hasTask()) {
             taskPhase.setText("Task Phase: " + taskManager.getPhase());
-		}
-        taskPhase.setForeground(Color.black);
-		taskDescriptionPane.add(taskPhase);
-
-		// Return skill panel
-		return taskPane;
 	}
+	taskDescriptionPane.add(taskPhase);
 
-	/** Set up location panel
+	// Return skill panel
+	return taskPane;
+    }
+
+    /** Set up location panel
      *  @return location pane
      */
-	protected JPanel setupLocationPane() {
+    protected JPanel setupLocationPane() {
 
-		// Prepare location pane
-		JPanel locationPane = new JPanel(new BorderLayout());
-		locationPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+	// Prepare location pane
+	JPanel locationPane = new JPanel(new BorderLayout());
+	locationPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 
-		// Prepare location sub pane
-		JPanel locationSubPane = new JPanel(new GridLayout(2, 1));
-		locationPane.add(locationSubPane, "North");
+	// Prepare location sub pane
+	JPanel locationSubPane = new JPanel(new GridLayout(2, 1));
+	locationPane.add(locationSubPane, "North");
 
-		// Prepare location label pane
-		JPanel locationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		locationSubPane.add(locationLabelPane);
+        // Prepare location label pane
+	JPanel locationLabelPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	locationSubPane.add(locationLabelPane);
 
-		// Prepare center map button
-		centerMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
-		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
-		centerMapButton.addActionListener(this);
-		locationLabelPane.add(centerMapButton);
+	// Prepare center map button
+	centerMapButton = new JButton(new ImageIcon("images/CenterMap.gif"));
+	centerMapButton.setMargin(new Insets(1, 1, 1, 1));
+	centerMapButton.addActionListener(this);
+	locationLabelPane.add(centerMapButton);
 
-		// Prepare location label
-		JLabel locationLabel = new JLabel("Location: ", JLabel.LEFT);
-		locationLabel.setForeground(Color.black);
-		locationLabelPane.add(locationLabel);
+	// Prepare location label
+	JLabel locationLabel = new JLabel("Location: ", JLabel.LEFT);
+	locationLabelPane.add(locationLabel);
 
-		// Prepare location button
-		locationButton = new JButton();
-		locationButton.setMargin(new Insets(1, 1, 1, 1));
-		if (person.getSettlement() != null) locationButton.setText(person.getSettlement().getName());
-		else if (person.getVehicle() != null) locationButton.setText(person.getVehicle().getName());
-		locationButton.addActionListener(this);
-		locationLabelPane.add(locationButton);
+	// Prepare location button
+	locationButton = new JButton();
+	locationButton.setMargin(new Insets(1, 1, 1, 1));
+	if (person.getSettlement() != null) locationButton.setText(person.getSettlement().getName());
+	else if (person.getVehicle() != null) locationButton.setText(person.getVehicle().getName());
+	locationButton.addActionListener(this);
+	locationLabelPane.add(locationButton);
 
-		// Prepare location coordinates pane
-		JPanel locationCoordsPane = new JPanel(new GridLayout(1, 2,  0, 0));
-		locationSubPane.add(locationCoordsPane);
+	// Prepare location coordinates pane
+	JPanel locationCoordsPane = new JPanel(new GridLayout(1, 2,  0, 0));
+	locationSubPane.add(locationCoordsPane);
 
-		// Prepare latitude label
-		latitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
-		latitudeLabel.setForeground(Color.black);
-		locationCoordsPane.add(latitudeLabel);
+	// Prepare latitude label
+	latitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
+	locationCoordsPane.add(latitudeLabel);
 
-		// Prepare longitude label
-		longitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
-		longitudeLabel.setForeground(Color.black);
-		locationCoordsPane.add(longitudeLabel);
+	// Prepare longitude label
+	longitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
+	locationCoordsPane.add(longitudeLabel);
 
-		// Return location panel
-		return locationPane;
-	}
+	// Return location panel
+	return locationPane;
+    }
 
     /** Set up condition panel
      *  @return condition pane
@@ -438,7 +429,6 @@ public class PersonDialog extends UnitDialog {
 
         // Prepare condition label
         JLabel conditionLabel = new JLabel("Condition", JLabel.CENTER);
-        conditionLabel.setForeground(Color.black);
         conditionLabelPane.add(conditionLabel);
 
         // Prepare condition content pane
@@ -452,33 +442,27 @@ public class PersonDialog extends UnitDialog {
 
         // Prepare fatigue name label
         JLabel fatigueNameLabel = new JLabel("Fatigue", JLabel.LEFT);
-        fatigueNameLabel.setForeground(Color.black);
         conditionListPane.add(fatigueNameLabel);
 
         // Prepare fatigue label
         fatigueLabel = new JLabel("" + roundOneDecimal(condition.getFatigue()) + " millisols", JLabel.RIGHT);
-        fatigueLabel.setForeground(Color.black);
         conditionListPane.add(fatigueLabel);
 
         // Prepare hunger name label
         JLabel hungerNameLabel = new JLabel("Hunger", JLabel.LEFT);
-        hungerNameLabel.setForeground(Color.black);
         conditionListPane.add(hungerNameLabel);
 
         // Prepare hunger label
         hungerLabel = new JLabel("" + roundOneDecimal(condition.getHunger()) + " millisols", JLabel.RIGHT);
-        hungerLabel.setForeground(Color.black);
         conditionListPane.add(hungerLabel);
 
         // Prepare performance rating label
         JLabel performanceNameLabel = new JLabel("Performance", JLabel.LEFT);
-        performanceNameLabel.setForeground(Color.black);
         conditionListPane.add(performanceNameLabel);
 
         // Performance rating value
         double performance = roundOneDecimal(person.getPerformanceRating() * 100D);
         performanceLabel = new JLabel("" + performance + " %", JLabel.RIGHT);
-        performanceLabel.setForeground(Color.black);
         conditionListPane.add(performanceLabel);
 
         // Prepare problem list
@@ -501,113 +485,106 @@ public class PersonDialog extends UnitDialog {
         illnessPane.setBorder(new EtchedBorder());
         illnessPane.add(problemScroll, "Center");
         JLabel illnessLabel = new JLabel("Illnesses", JLabel.CENTER);
-        illnessLabel.setForeground(Color.black);
         illnessPane.add(illnessLabel, "North");
 
-	    conditionPane.add(illnessPane, "South");
+	conditionPane.add(illnessPane, "South");
 
         // Return condition panel
         return conditionPane;
     }
 
-	/** Set up attribute panel
+    /** Set up attribute panel
      *  @return attribute pane
      */
-	protected JPanel setupAttributePane() {
+    protected JPanel setupAttributePane() {
 
-		// Prepare attribute pane
-		JPanel attributePane = new JPanel(new BorderLayout());
-		attributePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        // Prepare attribute pane
+	JPanel attributePane = new JPanel(new BorderLayout());
+	attributePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 
-		// Prepare attribute label pane
-		JPanel attributeLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		attributePane.add(attributeLabelPane, "North");
+	// Prepare attribute label pane
+	JPanel attributeLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	attributePane.add(attributeLabelPane, "North");
 
-		// Prepare attribute label
-		JLabel attributeLabel = new JLabel("Natural Attributes", JLabel.CENTER);
-		attributeLabel.setForeground(Color.black);
-		attributeLabelPane.add(attributeLabel);
+	// Prepare attribute label
+	JLabel attributeLabel = new JLabel("Natural Attributes", JLabel.CENTER);
+	attributeLabelPane.add(attributeLabel);
 
-		// Use person's natural attribute manager.
-		NaturalAttributeManager attributeManager = person.getNaturalAttributeManager();
+	// Use person's natural attribute manager.
+	NaturalAttributeManager attributeManager = person.getNaturalAttributeManager();
 
-		// Prepare attribute list pane
-		JPanel attributeListPane = new JPanel(new GridLayout(attributeManager.getAttributeNum(), 2));
-		attributeListPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		attributePane.add(new JScrollPane(attributeListPane), "Center");
+	// Prepare attribute list pane
+	JPanel attributeListPane = new JPanel(new GridLayout(attributeManager.getAttributeNum(), 2));
+	attributeListPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+	attributePane.add(new JScrollPane(attributeListPane), "Center");
 
-		// For each natural attribute, display the name and its value.
-		String[] keyNames = attributeManager.getKeys();
-		for (int x=0; x < keyNames.length; x++) {
+	// For each natural attribute, display the name and its value.
+	String[] keyNames = attributeManager.getKeys();
+	for (int x=0; x < keyNames.length; x++) {
 
-			// Display attribute name
-			JLabel attributeName = new JLabel(keyNames[x] + ":", JLabel.LEFT);
-			attributeName.setForeground(Color.black);
-			attributeListPane.add(attributeName);
+	    // Display attribute name
+	    JLabel attributeName = new JLabel(keyNames[x] + ":", JLabel.LEFT);
+	    attributeListPane.add(attributeName);
 
-			// Display attribute value
-			JLabel attributeValue = new JLabel("" + attributeManager.getAttribute(keyNames[x]), JLabel.RIGHT);
-			attributeValue.setForeground(Color.black);
-			attributeListPane.add(attributeValue);
-		}
-
-		// Return attribute panel
-		return attributePane;
+	    // Display attribute value
+    	    JLabel attributeValue = new JLabel("" + attributeManager.getAttribute(keyNames[x]), JLabel.RIGHT);
+	    attributeListPane.add(attributeValue);
 	}
 
-	/** Set up skill panel
+	// Return attribute panel
+	return attributePane;
+    }
+
+    /** Set up skill panel
      *  @return the skill pane
      */
-	protected JPanel setupSkillPane() {
+    protected JPanel setupSkillPane() {
 
-		// Prepare skill pane
-		JPanel skillPane = new JPanel(new BorderLayout());
-		skillPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+	// Prepare skill pane
+	JPanel skillPane = new JPanel(new BorderLayout());
+	skillPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
 
-		// Prepare skill label pane
-		JPanel skillLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		skillPane.add(skillLabelPane, "North");
+	// Prepare skill label pane
+	JPanel skillLabelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	skillPane.add(skillLabelPane, "North");
 
-		// Prepare skill label
-		JLabel skillLabel = new JLabel("Skills", JLabel.CENTER);
-		skillLabel.setForeground(Color.black);
-		skillLabelPane.add(skillLabel);
+	// Prepare skill label
+	JLabel skillLabel = new JLabel("Skills", JLabel.CENTER);
+	skillLabelPane.add(skillLabel);
 
-		// Populate skill list
-		SkillManager skillManager = person.getSkillManager();
-		String[] keyNames = skillManager.getKeys();
-		skillList = new Hashtable();
-		for (int x=0; x < keyNames.length; x++) {
-			int skillLevel = skillManager.getSkillLevel(keyNames[x]);
-			if (skillLevel > 0) skillList.put(keyNames[x], new Integer(skillLevel));
-		}
-
-		// Prepare skill list pane
-		JPanel skillListTopPane = new JPanel(new BorderLayout());
-		skillListTopPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-		skillPane.add(new JScrollPane(skillListTopPane), "Center");
-		skillListPane = new JPanel(new GridLayout(skillList.size(), 2));
-		skillListTopPane.add(skillListPane, "North");
-
-		// For each skill, display the name and its value.
-		for (int x=0; x < keyNames.length; x++) {
-			if (skillList.containsKey(keyNames[x])) {
-
-				// Display skill name
-				JLabel skillName = new JLabel(keyNames[x] + ":", JLabel.LEFT);
-				skillName.setForeground(Color.black);
-				skillName.setVerticalAlignment(JLabel.TOP);
-				skillListPane.add(skillName);
-
-				// Display skill value
-				JLabel skillValue = new JLabel("" + skillList.get(keyNames[x]), JLabel.RIGHT);
-				skillValue.setForeground(Color.black);
-				skillValue.setVerticalAlignment(JLabel.TOP);
-				skillListPane.add(skillValue);
-			}
-		}
-
-		// Return skill panel
-		return skillPane;
+	// Populate skill list
+	SkillManager skillManager = person.getSkillManager();
+	String[] keyNames = skillManager.getKeys();
+	skillList = new Hashtable();
+	for (int x=0; x < keyNames.length; x++) {
+	    int skillLevel = skillManager.getSkillLevel(keyNames[x]);
+	    if (skillLevel > 0) skillList.put(keyNames[x], new Integer(skillLevel));
 	}
+
+	// Prepare skill list pane
+	JPanel skillListTopPane = new JPanel(new BorderLayout());
+	skillListTopPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+	skillPane.add(new JScrollPane(skillListTopPane), "Center");
+	skillListPane = new JPanel(new GridLayout(skillList.size(), 2));
+	skillListTopPane.add(skillListPane, "North");
+
+	// For each skill, display the name and its value.
+	for (int x=0; x < keyNames.length; x++) {
+	    if (skillList.containsKey(keyNames[x])) {
+
+	        // Display skill name
+		JLabel skillName = new JLabel(keyNames[x] + ":", JLabel.LEFT);
+		skillName.setVerticalAlignment(JLabel.TOP);
+		skillListPane.add(skillName);
+
+		// Display skill value
+		JLabel skillValue = new JLabel("" + skillList.get(keyNames[x]), JLabel.RIGHT);
+		skillValue.setVerticalAlignment(JLabel.TOP);
+		skillListPane.add(skillValue);
+	    }
+	}
+
+	// Return skill panel
+	return skillPane;
+    }
 }

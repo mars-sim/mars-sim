@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryPanel.java
- * @version 2.74 2002-02-21
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -53,7 +53,6 @@ public class InventoryPanel extends JPanel {
 
 	// Prepare name label.
 	JLabel nameLabel = new JLabel("Inventory", JLabel.CENTER);
-	nameLabel.setForeground(Color.black);
 	add(nameLabel, "North");
 
 	// Prepare content pane.
@@ -80,7 +79,6 @@ public class InventoryPanel extends JPanel {
 	
         // Prepare resource label.
 	JLabel resourceLabel = new JLabel("Resources:", JLabel.CENTER);
-	resourceLabel.setForeground(Color.black);
 	resourcePane.add(resourceLabel, "North");
 	   
         // Prepare resource amounts pane.
@@ -91,57 +89,47 @@ public class InventoryPanel extends JPanel {
 
         // Prepare oxygen name label.
 	JLabel oxygenNameLabel = new JLabel("Oxygen:");
-	oxygenNameLabel.setForeground(Color.black);
 	resourceAmountPane.add(oxygenNameLabel);
 
 	// Prepare oxygen label.
 	double oxygen = inventory.getResourceMass(Inventory.OXYGEN);
 	oxygenLabel = new JLabel("" + roundOneDecimal(oxygen) + " kg", JLabel.RIGHT);
-	oxygenLabel.setForeground(Color.black);
 	resourceAmountPane.add(oxygenLabel);
 
         // Prepare water name label.
 	JLabel waterNameLabel = new JLabel("Water:");
-	waterNameLabel.setForeground(Color.black);
 	resourceAmountPane.add(waterNameLabel);
 
 	// Prepare water label.
 	double water = inventory.getResourceMass(Inventory.WATER);
 	waterLabel = new JLabel("" + roundOneDecimal(water) + " kg", JLabel.RIGHT);
-	waterLabel.setForeground(Color.black);
 	resourceAmountPane.add(waterLabel);
 
         // Prepare food name label.
 	JLabel foodNameLabel = new JLabel("Food:");
-	foodNameLabel.setForeground(Color.black);
 	resourceAmountPane.add(foodNameLabel);
 	
 	// Prepare food label.
 	double food = inventory.getResourceMass(Inventory.FOOD);
 	foodLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
-	foodLabel.setForeground(Color.black);
 	resourceAmountPane.add(foodLabel);
 
 	// Prepare fuel name label.
 	JLabel fuelNameLabel = new JLabel("Fuel:");
-	fuelNameLabel.setForeground(Color.black);
 	resourceAmountPane.add(fuelNameLabel);
 
 	// Prepare fuel label.
 	double fuel = inventory.getResourceMass(Inventory.FUEL);
 	fuelLabel = new JLabel("" + roundOneDecimal(fuel) + " kg", JLabel.RIGHT);
-	fuelLabel.setForeground(Color.black);
 	resourceAmountPane.add(fuelLabel);
 
 	// Prepare rock samples name label.
 	JLabel rockSamplesNameLabel = new JLabel("Rock Samples:");
-	rockSamplesNameLabel.setForeground(Color.black);
 	resourceAmountPane.add(rockSamplesNameLabel);
 
 	// Prepare rock samples label.
 	double rockSamples = inventory.getResourceMass(Inventory.ROCK_SAMPLES);
 	rockSamplesLabel = new JLabel("" + roundOneDecimal(rockSamples) + " kg", JLabel.RIGHT);
-	rockSamplesLabel.setForeground(Color.black);
 	resourceAmountPane.add(rockSamplesLabel);
 
 	// Return resource pane.
@@ -162,7 +150,6 @@ public class InventoryPanel extends JPanel {
 
 	// Prepare equipment label.
 	JLabel equipmentLabel = new JLabel("Equipment:", JLabel.CENTER);
-	equipmentLabel.setForeground(Color.black);
 	equipmentPane.add(equipmentLabel, "North");
 
         // Prepare equipment listing pane.
@@ -224,12 +211,10 @@ public class InventoryPanel extends JPanel {
         
         // Prepare equipment name label.
 	JLabel equipmentNameLabel = new JLabel(equipment.getName() + ":");
-	equipmentNameLabel.setForeground(Color.black);
 	equipmentListingPane.add(equipmentNameLabel);
 	                                                             
 	// Prepare equipment quantity label.
 	JLabel equipmentQuantityLabel = new JLabel("" + quantity, JLabel.RIGHT);
-	equipmentQuantityLabel.setForeground(Color.black);
 	equipmentListingPane.add(equipmentQuantityLabel);
     }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitDialog.java
- * @version 2.72 2001-07-28
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -151,11 +151,7 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
                 unitUIProxy.getButtonIcon(), JLabel.CENTER);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
-        // nameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        nameLabel.setForeground(Color.black);
         namePanel.add(nameLabel);
-	// System.out.println("nameLabel font: " + nameLabel.getFont().getName());
-	// System.out.println("nameLabel size: " + nameLabel.getFont().getSize());
     }
 
     // --- Abstract methods ---

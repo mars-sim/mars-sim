@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LaboratoryPanel.java
- * @version 2.74 2002-03-14
+ * @version 2.74 2002-03-17
  * @author Scott Davis
  */
 
@@ -42,7 +42,6 @@ public class LaboratoryPanel extends FacilityPanel {
 
         // Prepare name label
         JLabel nameLabel = new JLabel("Laboratory", JLabel.CENTER);
-        nameLabel.setForeground(Color.black);
         contentPane.add(nameLabel, "North");
 
         // Prepare info pane
@@ -59,13 +58,11 @@ public class LaboratoryPanel extends FacilityPanel {
         JLabel labSizeLabel =
                 new JLabel("Researcher Capacity: " + laboratory.getLaboratorySize(),
                 JLabel.CENTER);
-        labSizeLabel.setForeground(Color.black);
         labelPane.add(labSizeLabel);
 
         // Prepare lab tech label
         JLabel labTechLabel = new JLabel("Technology Level: " +
                 laboratory.getTechnologyLevel(), JLabel.CENTER);
-        labTechLabel.setForeground(Color.black);
         labelPane.add(labTechLabel);
 
         // Prepare tech pane
@@ -81,7 +78,6 @@ public class LaboratoryPanel extends FacilityPanel {
         // Prepare tech label
         JLabel techLabel = new JLabel("Research Specialities:", JLabel.CENTER);
         techLabel.setBorder(new EmptyBorder(0, 0, 5, 0));
-        techLabel.setForeground(Color.black);
         innerTechPane.add(techLabel, "North");
 
         // Get specialities info
@@ -95,7 +91,6 @@ public class LaboratoryPanel extends FacilityPanel {
         JLabel[] specialityLabels = new JLabel[specialities.length];
         for (int x = 0; x < specialities.length; x++) {
             specialityLabels[x] = new JLabel(specialities[x], JLabel.CENTER);
-            specialityLabels[x].setForeground(Color.black);
             specialityPane.add(specialityLabels[x]);
         }
     }

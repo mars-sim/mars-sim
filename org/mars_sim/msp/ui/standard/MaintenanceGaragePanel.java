@@ -55,7 +55,6 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 		
 	// Prepare name label
 	JLabel nameLabel = new JLabel("Maintenance Garage", JLabel.CENTER);
-	nameLabel.setForeground(Color.black);
 	contentPane.add(nameLabel, "North");
 		
 	// Prepare info pane
@@ -70,13 +69,11 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 	// Prepare vehicle capacity label
 	int vehicleCapacity = (int) maintenanceGarage.getVehicleCapacity();
 	JLabel vehicleCapacityLabel = new JLabel("Vehicle Mass Capacity: " + vehicleCapacity + " kg.", JLabel.CENTER);
-	vehicleCapacityLabel.setForeground(Color.black);
 	labelPane.add(vehicleCapacityLabel);
 		
 	// Prepare current total mass label
 	currentTotalMass = (int) maintenanceGarage.getCurrentVehicleMass();
 	massTotalLabel = new JLabel("Current Vehicle Mass: " + currentTotalMass + " kg.", JLabel.CENTER);
-	massTotalLabel.setForeground(Color.black);
 	labelPane.add(massTotalLabel);
 		
 	// Prepare parked vehicles pane
@@ -86,7 +83,6 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 		
 	// Prepare parked name label
 	JLabel parkedVehiclesLabel = new JLabel("Vehicles Undergoing Maintenance:", JLabel.CENTER);
-	parkedVehiclesLabel.setForeground(Color.black);
 	parkedVehiclesPane.add(parkedVehiclesLabel, "North");
 		
 	// Prepare vehicle list pane
@@ -118,7 +114,6 @@ public class MaintenanceGaragePanel extends FacilityPanel implements ActionListe
 	    vehicleButtons.addElement(vehicleButton);
 			
 	    JLabel vehicleSize = new JLabel(" Mass: " + (int) vehicle.getMass(), JLabel.LEFT);
-	    vehicleSize.setForeground(Color.black);
 	    vehiclePane.add(vehicleSize, "Center");
 
 	    JProgressBar vehicleProgressBar = new JProgressBar();

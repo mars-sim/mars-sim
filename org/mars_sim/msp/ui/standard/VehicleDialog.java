@@ -136,7 +136,6 @@ public abstract class VehicleDialog extends UnitDialog {
 
 	// Prepare description label
 	JLabel descriptionLabel = new JLabel(vehicle.getDescription(), JLabel.CENTER);
-	descriptionLabel.setForeground(Color.black);
 	innerPane.add(descriptionLabel, "North");
 	
         // Prepare tab pane
@@ -162,7 +161,6 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare status label
         statusLabel = new JLabel("Status: " + vehicle.getStatus(), JLabel.CENTER);
-        statusLabel.setForeground(Color.black);
         JPanel statusLabelPanel = new JPanel();
         statusLabelPanel.add(statusLabel);
         navigationPane.add(statusLabelPanel);
@@ -185,7 +183,6 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare location label
         JLabel locationLabel = new JLabel("Location: ", JLabel.CENTER);
-        locationLabel.setForeground(Color.black);
         locationLabelPane.add(locationLabel);
 
         // Prepare location button
@@ -203,12 +200,10 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare latitude label
         latitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
-        latitudeLabel.setForeground(Color.black);
         locationCoordsPane.add(latitudeLabel);
 
         // Prepare longitude label
         longitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
-        longitudeLabel.setForeground(Color.black);
         locationCoordsPane.add(longitudeLabel);
 
         // Prepare destination pane
@@ -229,7 +224,6 @@ public abstract class VehicleDialog extends UnitDialog {
         // Prepare destination label
         destinationLabel = new JLabel("Destination: ", JLabel.LEFT);
         if (vehicle.getDestinationType().equals("Coordinates")) destinationLabel.setText("Destination: Coordinates");
-        destinationLabel.setForeground(Color.black);
         destinationLabelPane.add(destinationLabel);
 
         // Prepare destination button
@@ -251,13 +245,11 @@ public abstract class VehicleDialog extends UnitDialog {
         // Prepare destination latitude label
         destinationLatitudeLabel = new JLabel("Latitude: ", JLabel.LEFT);
         if (vehicle.getDestination() != null) destinationLatitudeLabel.setText("Latitude: ");
-        destinationLatitudeLabel.setForeground(Color.black);
         destinationCoordsPane.add(destinationLatitudeLabel);
 
         // Prepare destination longitude label
         destinationLongitudeLabel = new JLabel("Longitude: ", JLabel.LEFT);
         if (vehicle.getDestination() != null) destinationLongitudeLabel.setText("Longitude: ");
-        destinationLongitudeLabel.setForeground(Color.black);
         destinationCoordsPane.add(destinationLongitudeLabel);
 
         // Prepare destination info pane
@@ -266,7 +258,6 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare ETA to destination label
         etaDestinationLabel = new JLabel("ETA: " + vehicle.getETA(), JLabel.LEFT);
-        etaDestinationLabel.setForeground(Color.black);
         destinationInfoPane.add(etaDestinationLabel);
 
         // Prepare distance to destination label
@@ -275,7 +266,6 @@ public abstract class VehicleDialog extends UnitDialog {
             int tempDistance = (int) Math.round(vehicle.getDistanceToDestination());
             distanceDestinationLabel.setText("Distance: " + tempDistance + " km.");
         }
-        distanceDestinationLabel.setForeground(Color.black);
         destinationInfoPane.add(distanceDestinationLabel);
 
         // Prepare navigation info pane
@@ -293,7 +283,6 @@ public abstract class VehicleDialog extends UnitDialog {
         // Prepare speed label
         int tempSpeed = (int) Math.round(vehicle.getSpeed());
         speedLabel = new JLabel("Speed: " + tempSpeed + " kph.", JLabel.LEFT);
-        speedLabel.setForeground(Color.black);
         speedPane.add(speedLabel);
 
         // Return navigation pane
@@ -319,7 +308,6 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare driver label
         JLabel driverLabel = new JLabel("Driver", JLabel.CENTER);
-        driverLabel.setForeground(Color.black);
         innerDriverPane.add(driverLabel, "North");
 
         // Prepare driver button pane
@@ -352,7 +340,6 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare name label
         JLabel nameLabel = new JLabel("Vehicle Condition", JLabel.CENTER);
-        nameLabel.setForeground(Color.black);
         damagePane.add(nameLabel, "North");
 
         // Prepare content pane
@@ -374,12 +361,10 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare odometer label
         JLabel odometerTitleLabel = new JLabel("Total Distance Traveled:");
-        odometerTitleLabel.setForeground(Color.black);
         titlePane.add(odometerTitleLabel);
 
         // Prepare distance since last maintenance label
         JLabel lastMaintTitleLabel = new JLabel("Since Last Maintenance:");
-        lastMaintTitleLabel.setForeground(Color.black);
         titlePane.add(lastMaintTitleLabel);
 
         // Prepare value pane
@@ -389,14 +374,12 @@ public abstract class VehicleDialog extends UnitDialog {
         // Prepare odometer value label
         odometerLabel = new JLabel((int) vehicle.getTotalDistanceTraveled() + " km.",
                 JLabel.RIGHT);
-        odometerLabel.setForeground(Color.black);
         valuePane.add(odometerLabel);
 
         // Prepare distance since last maintenance label
         lastMaintLabel =
                 new JLabel((int) vehicle.getDistanceLastMaintenance() + " km.",
                 JLabel.RIGHT);
-        lastMaintLabel.setForeground(Color.black);
         valuePane.add(lastMaintLabel);
 
         // Prepare maintenance pane
@@ -407,7 +390,6 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare maintenance label
         JLabel maintenanceLabel = new JLabel("Periodic Maintenance:", JLabel.CENTER);
-        maintenanceLabel.setForeground(Color.black);
         maintenancePane.add(maintenanceLabel, "North");
 
         // Prepare maintenance progress bar
@@ -429,12 +411,10 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare failure label
         JLabel failureLabel = new JLabel("Mechanical Failure:", JLabel.CENTER);
-        failureLabel.setForeground(Color.black);
         failurePane.add(failureLabel);
 
         // Prepare failure detail label
         failureDetailLabel = new JLabel("None", JLabel.CENTER);
-        failureDetailLabel.setForeground(Color.black);
         failurePane.add(failureDetailLabel);
         MechanicalFailure failure = vehicle.getMechanicalFailure();
         if ((failure != null) && !failure.isFixed()) {
@@ -445,7 +425,6 @@ public abstract class VehicleDialog extends UnitDialog {
 
         // Prepare repair label
         JLabel repairLabel = new JLabel("Repair Progress:", JLabel.CENTER);
-        repairLabel.setForeground(Color.black);
         failurePane.add(repairLabel);
 
         // Prepare repair progress bar
