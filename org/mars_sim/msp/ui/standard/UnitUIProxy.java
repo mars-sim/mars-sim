@@ -1,15 +1,16 @@
 /**
  * Mars Simulation Project
  * UnitUIProxy.java
- * @version 2.75 2003-05-08
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;  
  
-import org.mars_sim.msp.simulation.*;  
 import java.awt.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 
 /**
  * Abstract user proxy for a unit.  Individual
@@ -86,11 +87,13 @@ public abstract class UnitUIProxy {
      */
     public abstract ImageIcon getButtonIcon();
     
-    /** Returns dialog window for unit. 
-     *  @param desktop the desktop pane
-     *  @return unit dialog window
+    /** 
+     * Gets a window for unit. 
+     * 
+     * @param desktop the desktop pane
+     * @return unit window
      */
-    public abstract UnitDialog getUnitDialog(MainDesktopPane desktop);
+    public abstract UnitWindow getUnitWindow(MainDesktopPane desktop);
     
     /** Returns unit. 
      *  @return unit

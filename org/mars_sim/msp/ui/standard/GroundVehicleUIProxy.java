@@ -1,15 +1,15 @@
 /**
  * Mars Simulation Project
  * GroundVehicleUIProxy.java
- * @version 2.74 2002-03-15
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.vehicle.*;
 import java.awt.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
  * Standard user interface proxy for a ground vehicle.
@@ -22,7 +22,6 @@ public abstract class GroundVehicleUIProxy extends VehicleUIProxy {
     protected static ImageIcon topoMapIcon = ImageLoader.getIcon("VehicleSymbolBlack");
     protected static Font mapLabelFont = new Font("SansSerif", Font.PLAIN, 9);
     protected ImageIcon buttonIcon;
-    protected UnitDialog unitDialog;
 
     /** Constructs a GroundVehicleUIProxy object
      *  @param groundVehicle the ground vehicle

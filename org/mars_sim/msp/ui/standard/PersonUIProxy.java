@@ -1,15 +1,17 @@
 /**
  * Mars Simulation Project
  * PersonUIProxy.java
- * @version 2.74 2002-01-13
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.person.*;
 import java.awt.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.standard.unit_window.person.PersonWindow;
 
 /**
  * Standard user interface proxy for a person.
@@ -18,7 +20,7 @@ public class PersonUIProxy extends UnitUIProxy {
 
     // Data members
     private static ImageIcon buttonIcon = ImageLoader.getIcon("PersonIcon");
-    private UnitDialog unitDialog;
+    private UnitWindow unitWindow;
 
     /** Constructs a PersonUIProxy object
      *  @param person the person
@@ -26,8 +28,6 @@ public class PersonUIProxy extends UnitUIProxy {
      */
     public PersonUIProxy(Person person, UIProxyManager proxyManager) {
         super(person, proxyManager);
-
-        unitDialog = null;
     }
 
     /** Returns true if this person is to be displayed on navigator map.
@@ -85,12 +85,14 @@ public class PersonUIProxy extends UnitUIProxy {
      */
     public ImageIcon getButtonIcon() { return buttonIcon; }
 
-    /** Returns dialog window for person.
-     *  @return dialog window for person
+    /** 
+     * Gets a window for unit. 
+     * 
+     * @param desktop the desktop pane
+     * @return unit window
      */
-    public UnitDialog getUnitDialog(MainDesktopPane desktop) {
-        if (unitDialog == null)
-            unitDialog = new PersonDialog(desktop, this);
-        return unitDialog;
+    public UnitWindow getUnitWindow(MainDesktopPane desktop) {
+        if (unitWindow == null) unitWindow = new PersonWindow(desktop, this);
+        return unitWindow;
     }
 }

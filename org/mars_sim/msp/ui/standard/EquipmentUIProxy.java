@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.standard;
 import java.awt.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.equipment.Equipment;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.standard.unit_window.equipment.EquipmentWindow;
 
 /**
  * Standard user interface proxy for equipment.
@@ -18,7 +20,7 @@ public class EquipmentUIProxy extends UnitUIProxy {
 
     // Data members
     private static ImageIcon buttonIcon = ImageLoader.getIcon("EquipmentIcon");
-    private UnitDialog unitDialog;
+    private UnitWindow unitWindow;
 
     /** Constructs a EquipmentUIProxy object
      *  @param equipment the equipment
@@ -26,8 +28,6 @@ public class EquipmentUIProxy extends UnitUIProxy {
      */
     public EquipmentUIProxy(Equipment equipment, UIProxyManager proxyManager) {
         super(equipment, proxyManager);
-
-        unitDialog = null;
     }
 
     /** Returns true if this equipment is to be displayed on navigator map.
@@ -85,10 +85,14 @@ public class EquipmentUIProxy extends UnitUIProxy {
      */
     public ImageIcon getButtonIcon() { return buttonIcon; }
 
-    /** Returns dialog window for equipment.
-     *  @return dialog window for equipment
+    /** 
+     * Gets a window for unit. 
+     * 
+     * @param desktop the desktop pane
+     * @return unit window
      */
-    public UnitDialog getUnitDialog(MainDesktopPane desktop) {
-        return null;
+    public UnitWindow getUnitWindow(MainDesktopPane desktop) {
+        if (unitWindow == null) unitWindow = new EquipmentWindow(desktop, this);
+        return unitWindow;
     }
 }

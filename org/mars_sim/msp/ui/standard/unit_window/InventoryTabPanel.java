@@ -98,7 +98,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      * @param e the event that characterizes the change.
      */
     public void valueChanged(ListSelectionEvent e) {
-        System.out.println("ListSelectionListener.valueChanged()");
         int index = equipmentTable.getSelectedRow();
         Equipment selectedEquipment = (Equipment) equipmentTable.getValueAt(index, 0);
         if (selectedEquipment != null) {

@@ -7,6 +7,10 @@
 
 package org.mars_sim.msp.ui.standard;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.ui.standard.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.monitor.UnitTableModel;
@@ -15,10 +19,6 @@ import org.mars_sim.msp.ui.standard.unit_window.equipment.EquipmentWindow;
 import org.mars_sim.msp.ui.standard.unit_window.person.PersonWindow;
 import org.mars_sim.msp.ui.standard.unit_window.vehicle.VehicleWindow;
 import org.mars_sim.msp.ui.standard.unit_window.structure.SettlementWindow;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
 
 /** The MainDesktopPane class is the desktop part of the project's UI.
  *  It contains all tool and unit windows, and is itself contained,
@@ -27,8 +27,8 @@ import javax.swing.*;
 public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
     // Data members
-    private Vector unitWindows; // List of open or buttoned unit windows.
-    private Vector toolWindows; // List of tool windows.
+    private Collection unitWindows; // List of open or buttoned unit windows.
+    private Collection toolWindows; // List of tool windows.
     private MainWindow mainWindow; // The main window frame.
     private UIProxyManager proxyManager;  // The unit UI proxy manager.
     private ImageIcon backgroundImageIcon; // ImageIcon that contains the tiled background.
@@ -43,8 +43,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Initialize data members
         this.mainWindow = mainWindow;
-        unitWindows = new Vector();
-        toolWindows = new Vector();
+        unitWindows = new ArrayList();
+        toolWindows = new ArrayList();
 
         // Set background color to black
         setBackground(Color.black);
@@ -139,48 +139,47 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         NavigatorWindow navWindow = new NavigatorWindow(this);
         try { navWindow.setClosed(true); }
         catch (java.beans.PropertyVetoException e) { }
-        toolWindows.addElement(navWindow);
+        toolWindows.add(navWindow);
 
         // Prepare search tool window
         SearchWindow searchWindow = new SearchWindow(this);
         try { searchWindow.setClosed(true); }
         catch (java.beans.PropertyVetoException e) { }
-        toolWindows.addElement(searchWindow);
+        toolWindows.add(searchWindow);
 
         // Prepare time tool window
         TimeWindow timeWindow = new TimeWindow(this);
         try { timeWindow.setClosed(true); }
         catch (java.beans.PropertyVetoException e) { }
-        toolWindows.addElement(timeWindow);
+        toolWindows.add(timeWindow);
 
         // Prepare monitor tool window
         MonitorWindow monitorWindow = new MonitorWindow(this);
         try { monitorWindow.setClosed(true); }
         catch (java.beans.PropertyVetoException e) { }
-        toolWindows.addElement(monitorWindow);
+        toolWindows.add(monitorWindow);
     }
 
     /** Returns a tool window for a given tool name
      *  @param toolName the name of the tool window
      *  @return the tool window
      */
-    ToolWindow getToolWindow(String toolName) {
-        ToolWindow resultWindow = null;
-        for (int x = 0; x < toolWindows.size(); x++) {
-            ToolWindow tempWindow = (ToolWindow) toolWindows.elementAt(x);
-            if (tempWindow.getToolName().equals(toolName)) {
-                resultWindow = tempWindow;
-            }
+    public ToolWindow getToolWindow(String toolName) {
+        ToolWindow result = null;
+        Iterator i = toolWindows.iterator();
+        while (i.hasNext()) {
+            ToolWindow window = (ToolWindow) i.next();
+            if (toolName.equals(window.getToolName())) result = window;
         }
-        return resultWindow;
+        
+        return result;
     }
 
     /** Displays a new Unit model in the monitor window
      *  @param model the new model to display
      */
     public void addModel(UnitTableModel model) {
-        ((MonitorWindow) getToolWindow("Monitor Tool")).
-                displayModel(model);
+        ((MonitorWindow) getToolWindow("Monitor Tool")).displayModel(model);
     }
 
     /** Centers the map and the globe on given coordinates
@@ -188,7 +187,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      */
     public void centerMapGlobe(Coordinates targetLocation) {
         ((NavigatorWindow) getToolWindow("Mars Navigator")).
-                updateCoords(targetLocation);
+            updateCoords(targetLocation);
     }
 
     /** Return true if tool window is open
@@ -231,20 +230,22 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         }
     }
 
-    /** Creates and opens a window for a unit if it isn't already in existance and open
-     *  @param unitUIProxy the unit UI proxy
+    /** 
+     * Creates and opens a window for a unit if it isn't 
+     * already in existance and open.
+     *
+     * @param unitUIProxy the unit UI proxy
      */
     public void openUnitWindow(UnitUIProxy unitUIProxy) {
 
-        UnitDialog tempWindow = null;
+        UnitWindow tempWindow = null;
 
-        for (int x = 0; x < unitWindows.size(); x++) {
-            if (((UnitDialog) unitWindows.elementAt(x)).getUnit() ==
-                    unitUIProxy.getUnit()) {
-                tempWindow = (UnitDialog) unitWindows.elementAt(x);
-            }
+        Iterator i = unitWindows.iterator();
+        while (i.hasNext()) {
+            UnitWindow window = (UnitWindow) i.next();
+            if (unitUIProxy.getUnit() == window.getProxy().getUnit()) tempWindow = window;
         }
-
+        
         if (tempWindow != null) {
             if (tempWindow.isClosed()) add(tempWindow, 0);
 
@@ -256,84 +257,54 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             }
         }
         else {
-            tempWindow = unitUIProxy.getUnitDialog(this);
-            if (tempWindow != null) {
-                add(tempWindow, 0);
+            tempWindow = unitUIProxy.getUnitWindow(this);
+    
+            add(tempWindow, 0);
+            tempWindow.pack();
 
-                // Set internal frame listener
-                tempWindow.addInternalFrameListener(new UnitWindowListener(this));
+            // Set internal frame listener
+            tempWindow.addInternalFrameListener(new UnitWindowListener(this));
 
-                // Put window in random position on desktop
-                tempWindow.setLocation(getRandomLocation(tempWindow));
+            // Put window in random position on desktop
+            tempWindow.setLocation(getRandomLocation(tempWindow));
 
-                // Add unit window to unitWindows vector
-                unitWindows.addElement(tempWindow);
+            // Add unit window to unit windows
+            unitWindows.add(tempWindow);
 
-                // Create new unit button in tool bar if necessary
-                mainWindow.createUnitButton(unitUIProxy);
-            }
+            // Create new unit button in tool bar if necessary
+            mainWindow.createUnitButton(unitUIProxy);
         }
-        
-        if (tempWindow != null) {
-            tempWindow.setVisible(true);
 
-            // Correct window becomes selected
-            try {
-                tempWindow.setSelected(true);
-                tempWindow.moveToFront();
-            }
-            catch (java.beans.PropertyVetoException e) {}
+        tempWindow.setVisible(true);
+
+        // Correct window becomes selected
+        try {
+            tempWindow.setSelected(true);
+            tempWindow.moveToFront();
         }
-        
-        // Open a settlement unit window (remove later)
-        if (unitUIProxy instanceof SettlementUIProxy) {
-            UnitWindow window = new SettlementWindow(this, unitUIProxy);
-            add(window, 0);
-            window.pack();
-            window.setVisible(true);
-        }
-        
-        // Open a person unit window (remove later)
-        if (unitUIProxy instanceof PersonUIProxy) {
-            UnitWindow window = new PersonWindow(this, unitUIProxy);
-            add(window, 0);
-            window.pack();
-            window.setVisible(true);
-        }
-        
-        // Open a vehicle unit window (remove later)
-        if (unitUIProxy instanceof VehicleUIProxy) {
-            UnitWindow window = new VehicleWindow(this, unitUIProxy);
-            add(window, 0);
-            window.pack();
-            window.setVisible(true);
-        }
-        
-        // Open an equipment unit window (remove later)
-        if (unitUIProxy instanceof EquipmentUIProxy) {
-            UnitWindow window = new EquipmentWindow(this, unitUIProxy);
-            add(window, 0);
-            window.pack();
-            window.setVisible(true);
-        }
+        catch (java.beans.PropertyVetoException e) {}
     }
 
     /** Disposes a unit window and button
      *  @param unitUIProxy the unit UI proxy
      */
-    public void disposeUnitWindow(UnitUIProxy unitUIProxy) {
+    public void disposeUnitWindow(UnitUIProxy proxy) {
 
         // Dispose unit window
-        for (int x = 0; x < unitWindows.size(); x++) {
-            UnitDialog tempWindow = (UnitDialog) unitWindows.elementAt(x);
-            if (tempWindow.getUnit() == unitUIProxy.getUnit()) {
-                unitWindows.removeElement(tempWindow);
-                tempWindow.dispose();
-            }
+        UnitWindow deadWindow = null;
+        Iterator i = unitWindows.iterator();
+        while (i.hasNext()) {
+            UnitWindow window = (UnitWindow) i.next();
+            if (proxy.getUnit() == window.getProxy().getUnit()) 
+                deadWindow = window;
         }
+        
+        unitWindows.remove(deadWindow);
+        
+        if (deadWindow != null) deadWindow.dispose();
 
         // Have main window dispose of unit button
-        mainWindow.disposeUnitButton(unitUIProxy);
+        mainWindow.disposeUnitButton(proxy);
     }
 
     /** Returns the unit UI proxy manager.
@@ -341,24 +312,28 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      */
     public UIProxyManager getProxyManager() { return proxyManager; }
 
-    /** set the unit UI proxy manager.
-     *  @param manager The unit UI proxy manager
+    /** 
+     * Set the unit UI proxy manager.
+     *
+     * @param manager The unit UI proxy manager
      */
     public void setProxyManager(UIProxyManager manager) {
         proxyManager = manager;
 
         // Dispose unit windows
-        for (int x = 0; x < unitWindows.size(); x++) {
-            UnitDialog tempWindow = (UnitDialog) unitWindows.elementAt(x);
-            tempWindow.dispose();
-            mainWindow.disposeUnitButton(tempWindow.getUnitProxy());
+        Iterator i1 = unitWindows.iterator();
+        while (i1.hasNext()) {
+            UnitWindow window = (UnitWindow) i1.next();
+            window.dispose();
+            mainWindow.disposeUnitButton(window.getProxy());
         }
         unitWindows.clear();
 
         // Dispose tool windows
-        for (int x = 0; x < toolWindows.size(); x++) {
-            ToolWindow tempWindow = (ToolWindow) toolWindows.elementAt(x);
-            tempWindow.dispose();
+        Iterator i2 = toolWindows.iterator();
+        while (i2.hasNext()) {
+            ToolWindow window = (ToolWindow) i2.next();
+            window.dispose();
         }
 
         // Prepare tool windows

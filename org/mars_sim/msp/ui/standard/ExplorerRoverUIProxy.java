@@ -1,14 +1,15 @@
 /**
  * Mars Simulation Project
  * ExplorerRoverUIProxy.java
- * @version 2.74 2002-03-15
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.vehicle.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 
 /**
  * User interface proxy for an explorer rover.
@@ -31,13 +32,5 @@ public class ExplorerRoverUIProxy extends GroundVehicleUIProxy {
 
         this.rover = rover;
         buttonIcon = BUTTON_ICON;
-    }
-
-    /** Returns dialog window for explorer rover.
-     *  @return dialog window for explorer rover
-     */
-    public UnitDialog getUnitDialog(MainDesktopPane desktop) {
-        if (unitDialog == null) unitDialog = new ExplorerRoverDialog(desktop, this);
-        return unitDialog;
     }
 }

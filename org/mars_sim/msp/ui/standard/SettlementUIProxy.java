@@ -1,15 +1,17 @@
 /**
  * Mars Simulation Project
  * SettlementUIProxy.java
- * @version 2.74 2002-01-13
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.structure.*;
 import java.awt.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.standard.unit_window.structure.SettlementWindow;
 
 /** Standard user interface proxy for a settlement.
  */
@@ -20,7 +22,7 @@ public class SettlementUIProxy extends UnitUIProxy {
     private static ImageIcon topoMapIcon = ImageLoader.getIcon("SettlementSymbolBlack");
     private static Font mapLabelFont = new Font("SansSerif", Font.PLAIN, 12);
     private static ImageIcon buttonIcon = ImageLoader.getIcon("SettlementIcon");
-    private UnitDialog unitDialog;
+    private UnitWindow unitWindow;
 
     /** Constructs a SettlementUIProxy object
      *  @param settlement the settlement
@@ -28,8 +30,6 @@ public class SettlementUIProxy extends UnitUIProxy {
      */
     public SettlementUIProxy(Settlement settlement, UIProxyManager proxyManager) {
         super(settlement, proxyManager);
-
-        unitDialog = null;
     }
 
     /** Returns true if this settlement is to be displayed on navigator map.
@@ -87,13 +87,14 @@ public class SettlementUIProxy extends UnitUIProxy {
      */
     public ImageIcon getButtonIcon() { return buttonIcon; }
 
-    /** Returns dialog window for person.
-     *  @param desktop the desktop pane
-     *  @return person dialog window
+    /** 
+     * Gets a window for unit. 
+     * 
+     * @param desktop the desktop pane
+     * @return unit window
      */
-    public UnitDialog getUnitDialog(MainDesktopPane desktop) {
-        if (unitDialog == null)
-            unitDialog = new SettlementDialog(desktop, this);
-        return unitDialog;
+    public UnitWindow getUnitWindow(MainDesktopPane desktop) {
+        if (unitWindow == null) unitWindow = new SettlementWindow(desktop, this);
+        return unitWindow;
     }
 }

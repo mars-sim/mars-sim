@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportRoverUIProxy.java
- * @version 2.74 2002-03-15
+ * @version 2.75 2003-07-10
  * @author Scott Davis
  */
 
@@ -21,19 +21,10 @@ public class TransportRoverUIProxy extends GroundVehicleUIProxy {
      *  @param TransportRover the transport rover
      *  @param proxyManager the unit UI proxy manager
      */
-    public TransportRoverUIProxy(TransportRover rover,
-            UIProxyManager proxyManager) {
+    public TransportRoverUIProxy(TransportRover rover, UIProxyManager proxyManager) {
         super(rover, proxyManager);
 
         this.rover = rover;
         buttonIcon = ImageLoader.getIcon("TransportRoverIcon");
-    }
-
-    /** Returns dialog window for transport rover.
-     *  @return dialog window for transport rover
-     */
-    public UnitDialog getUnitDialog(MainDesktopPane desktop) {
-        if (unitDialog == null) unitDialog = new TransportRoverDialog(desktop, this);
-        return unitDialog;
     }
 }
