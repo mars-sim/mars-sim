@@ -3,6 +3,7 @@ echo off
 set CLASSPATH=.;jars\jfreechart.jar;jars\jcommon.jar;jars\aelfred.jar;jars\junit.jar
 
 set SOURCE=*.java
+set SOURCE=%SOURCE% org\mars_sim\msp\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\simulation\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\simulation\equipment\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\simulation\malfunction\*.java
@@ -29,5 +30,9 @@ set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\structure\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\structure\building\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_display_info\*.java
 
+echo on
+
 javac -deprecation -classpath %CLASSPATH% %SOURCE%
+
+pause
 
