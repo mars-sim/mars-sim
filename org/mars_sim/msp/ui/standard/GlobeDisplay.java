@@ -159,7 +159,7 @@ class GlobeDisplay extends JComponent implements Runnable {
                 int yDiff = y - centerY;
                 if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 48) {
                     Coordinates location = centerCoords.convertRectToSpherical(xDiff, yDiff, 47.74648293D);
-                    if (sunDirection.getAngle(location) < (Math.PI / 2D))  { 
+                    if (sunDirection.getAngle(location) > (Math.PI / 2D))  { 
                         g.fillRect(x, y, 1, 1);
                     }
                 }
