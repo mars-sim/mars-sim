@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard; 
+package org.mars_sim.msp.ui.standard;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,65 +21,99 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	// Data members
 	private Vector toolButtons;          // List of tool buttons
 	private MainWindow parentMainWindow; // Main window that contains this toolbar.
-	
-	/** Constructs a ToolToolBar object 
+
+	/** Constructs a ToolToolBar object
      *  @param parentMainWindow the main window pane
      */
 	public ToolToolBar(MainWindow parentMainWindow) {
-	
+
 		// Use JToolBar constructor
-		super(JToolBar.VERTICAL);
-		
+		super(JToolBar.HORIZONTAL);
+
 		// Initialize data members
 		toolButtons = new Vector();
 		this.parentMainWindow = parentMainWindow;
-		
+
 		// Set name
 		setName("Tool Toolbar");
-		
+
 		// Fix tool bar
 		setFloatable(false);
-	
+
 		// Prepare tool buttons
 		prepareToolButtons();
-		
+
 		// Set border around toolbar
 		setBorder(new BevelBorder(BevelBorder.RAISED));
 	}
-	
+
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
-		
+
+        // Add utilise buttons
+ 		ToolButton newButton = new ToolButton("New", "images/New.gif");
+		newButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        parentMainWindow.newSimulation();
+                    };
+                } );
+		add(newButton);
+
+        ToolButton openButton = new ToolButton("Open", "images/Open.gif");
+		openButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        parentMainWindow.loadSimulation();
+                    };
+                } );
+		add(openButton);
+
+ 		ToolButton saveButton = new ToolButton("Save", "images/Save.gif");
+		saveButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        parentMainWindow.saveSimulation(true);
+                    };
+                } );
+		add(saveButton);
+
+        ToolButton saveAsButton = new ToolButton("Save As", "images/SaveAs.gif");
+		saveAsButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        parentMainWindow.saveSimulation(false);
+                    };
+                } );
+		add(saveAsButton);
+        addSeparator();
+
 		// Add Mars navigator button
-		ToolButton navButton = new ToolButton("Mars Navigator", "images/NavigatorIcon.gif");
+		ToolButton navButton = new ToolButton("Mars Navigator", "images/Planet.gif");
 		navButton.addActionListener(this);
 		add(navButton);
 		toolButtons.addElement(navButton);
-		
+
 		// Add search tool button
-		ToolButton searchButton = new ToolButton("Search Tool", "images/SearchIcon.gif");
+		ToolButton searchButton = new ToolButton("Search Tool", "images/Find.gif");
 		searchButton.addActionListener(this);
 		add(searchButton);
 		toolButtons.addElement(searchButton);
 
-                
+
 		// Add time tool button
-		ToolButton timeButton = new ToolButton("Time Tool", "images/TimeIcon.gif");
+		ToolButton timeButton = new ToolButton("Time Tool", "images/Time.gif");
 		timeButton.addActionListener(this);
 		add(timeButton);
 		toolButtons.addElement(timeButton);
-                
+
 		// Add monitor tool button
-		ToolButton monitorButton = new ToolButton("Monitor Tool", "images/MonitorIcon.gif");
+		ToolButton monitorButton = new ToolButton("Monitor Tool", "images/Monitor.gif");
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);
 	}
-	
+
 	/** ActionListener method overriden */
 	public void actionPerformed(ActionEvent event) {
-	
+
 		// show tool window on desktop
-		parentMainWindow.openToolWindow(((ToolButton) event.getSource()).getToolName()); 
+		parentMainWindow.openToolWindow(((ToolButton) event.getSource()).getToolName());
 	}
 }
