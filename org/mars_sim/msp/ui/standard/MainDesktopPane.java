@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.75 2003-07-20
+ * @version 2.75 2003-07-25
  * @author Scott Davis
  */
 
@@ -35,6 +35,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private JLabel backgroundLabel; // Label that contains the tiled background.
     private JLabel logoLabel; // Label that has the centered logo for the project.
     private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
+    private UpdateThread updateThread; // The desktop update thread.
 
     /** 
      * Constructor
@@ -74,6 +75,11 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         
         // Prepare tool windows.
         prepareToolWindows();
+        
+        // Create update thread.
+        updateThread = new UpdateThread(this);
+        updateThread.setRun(true);
+        updateThread.start();
     }
 
     /** Returns the MainWindow instance
@@ -331,10 +337,26 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     }
 
     /**
+     * Update the desktop and all of its windows.
+     */
+    private void update() {
+     
+        // Update all unit windows.
+        Iterator i = unitWindows.iterator();
+        while (i.hasNext()) {
+            UnitWindow window = (UnitWindow) i.next();
+            window.update();
+        }
+    }
+    
+    /**
      * Resets all windows on the desktop.  Disposes of all unit windows
      * and tool windows, and reconstructs the tool windows.
      */
     void resetDesktop() {
+        
+        // Stop update thread.
+        updateThread.setRun(false);
         
         // Dispose unit windows
         Iterator i1 = unitWindows.iterator();
@@ -353,6 +375,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Prepare tool windows
         prepareToolWindows();
+        
+        // Restart update thread.
+        updateThread.setRun(true);
     }
 
     /** 
@@ -372,5 +397,35 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 (desktop_size.height - window_size.height));
 
         return new Point(rX, rY);
+    }
+    
+    /** 
+     * Internal class thread for update.
+     */
+    private class UpdateThread extends Thread {
+        
+        public static final long SLEEP_TIME = 1000; // 1 second.
+        MainDesktopPane desktop;
+        boolean run = false;
+        
+        private UpdateThread(MainDesktopPane desktop) {
+            super("Desktop update thread");
+            
+            this.desktop = desktop;
+        }
+        
+        private void setRun(boolean run) {
+            this.run = run;
+        }
+        
+        public void run() {
+            while (true) {
+                if (run) desktop.update();   
+                try {
+                    Thread.sleep(SLEEP_TIME);
+                } 
+                catch (InterruptedException e) {}
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonWindow.java
- * @version 2.75 2003-07-22
+ * @version 2.75 2003-07-25
  * @author Scott Davis
  */
 
@@ -47,7 +47,7 @@ public class PersonWindow extends UnitWindow {
     /**
      * Updates this window.
      */
-    protected void update() {
+    public void update() {
         super.update();
         
         Person person = (Person) unit;

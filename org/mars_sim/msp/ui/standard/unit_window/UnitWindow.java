@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 2.75 2003-07-22
+ * @version 2.75 2003-07-25
  * @author Scott Davis
  */
 
@@ -18,15 +18,13 @@ import org.mars_sim.msp.ui.standard.unit_display_info.*;
 /**
  * The UnitWindow is the base window for displaying units.
  */
-public abstract class UnitWindow extends JInternalFrame implements Runnable {
+public abstract class UnitWindow extends JInternalFrame {
     
     // Data members
     protected MainDesktopPane desktop; // Main window
     protected Unit unit;               // Unit for this window
     private Collection tabPanels;      // The tab panels
     private JTabbedPane centerPanel;   // The center panel
-    private Thread updateThread;       // temp update thread
-    private boolean keepUpdated;       // temp
     
     /**
      * Constructor
@@ -70,9 +68,6 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
         // Create center panel
         centerPanel = new JTabbedPane();
         mainPane.add(centerPanel, BorderLayout.CENTER);
-        
-        // Remove later
-        start();
     }
     
     /**
@@ -100,7 +95,7 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
     /**
      * Updates this window.
      */
-    protected void update() {
+    public void update() {
         
         // Update each of the tab panels.
         Iterator i = tabPanels.iterator();
@@ -108,38 +103,5 @@ public abstract class UnitWindow extends JInternalFrame implements Runnable {
             TabPanel panel = (TabPanel) i.next();
             panel.update();
         }
-    }
-    
-    // Remove later
-    private void start() {
-
-        keepUpdated = true;
-        if ((updateThread == null) || !updateThread.isAlive()) {
-            updateThread = new Thread(this, "unit window : " + unit.getName());
-            updateThread.start();
-        }
-        else {
-            updateThread.interrupt();
-        }
-    }
-    
-    public void run() {
-
-        // Endless refresh loop
-        while (keepUpdated) {
-            
-            // Pause for 2 seconds between display refresh if visible
-            // otherwise just wait a long time
-            try {
-                // long sleeptime = (isVisible() ? 2000 : 60000);
-                long sleeptime = 2000;
-                Thread.sleep(sleeptime);
-            } catch (InterruptedException e) {}
-
-            // Update display
-            update();
-        }
-        
-        updateThread = null;
     }
 }
