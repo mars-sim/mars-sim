@@ -106,12 +106,14 @@ public class SickBay implements MedicalAid, Serializable {
      * @return Problems are awaiting help.
      */
     public boolean hasWaitingPatients() {
-        Iterator iter = patients.iterator();
-        while (iter.hasNext()) {
-            HealthProblem problem = (HealthProblem)iter.next();
-            if (!problem.getRecovering() &&
-                !problem.getIllness().getRecoveryTreatment().getSelfAdminister()) {
-                return true;
+        if (!patients.isEmpty()) {
+            Iterator iter = patients.iterator();
+            while (iter.hasNext()) {
+                HealthProblem problem = (HealthProblem)iter.next();
+                if (!problem.getRecovering() &&
+                    !problem.getIllness().getRecoveryTreatment().getSelfAdminister()) {
+                    return true;
+                }
             }
         }
         return false;
