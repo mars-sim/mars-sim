@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 2.76 2004-05-10
+ * @version 2.77 2004-10-01
  * @author Scott Davis
  */
 
@@ -74,7 +74,7 @@ public class BuildingAirlock extends Airlock {
                 inv.addUnit(person);
             }
             else {
-                lifeSupport.removePerson(person);
+            	if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person);
                 inv.dropUnitOutside(person);
             }
         }

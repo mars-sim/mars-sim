@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 2.75 2003-04-20
+ * @version 2.77 2004-10-01
  * @author Scott Davis
  */
 
@@ -108,10 +108,8 @@ public abstract class Airlock implements Serializable {
                     exitAirlock(i.next());
                 }
                 catch (Exception e) { 
-                    System.out.println(e.getMessage()); 
+                    System.err.println(e.getMessage()); 
                 }
-    	        // if (pressurized) unit.getInventory().addUnit(person);
-                // else unit.getInventory().dropUnitOutside(person);
             }
             occupants.clear();
         }

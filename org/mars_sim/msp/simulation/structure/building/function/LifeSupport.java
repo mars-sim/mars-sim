@@ -118,7 +118,9 @@ public class LifeSupport extends Function implements Serializable {
 			// Add person to this building.            
 			occupants.add(person);
 		}
-		else {throw new BuildingException("Person already occupying building.");} 
+		else {
+			throw new BuildingException("Person already occupying building.");
+		} 
 	}
 	
 	/**
@@ -128,7 +130,9 @@ public class LifeSupport extends Function implements Serializable {
 	 */
 	public void removePerson(Person occupant) throws BuildingException {
 		if (occupants.contains(occupant)) occupants.remove(occupant);
-		else throw new BuildingException("Person does not occupy building.");
+		else {
+			throw new BuildingException("Person does not occupy building.");
+		} 
 	}
 
 	/**
