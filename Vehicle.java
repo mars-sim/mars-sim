@@ -1,5 +1,5 @@
 //************************** Abstract Basic Vehicle Unit **************************
-// Last Modified: 8/29/00
+// Last Modified: 8/30/00
 
 // The Vehicle class represents a generic vehicle.  It keeps track of generic information about the vehicle.
 // This class needs to be subclassed to represent a specific type of vehicle.
@@ -21,6 +21,9 @@ public abstract class Vehicle extends Unit {
 	protected Person driver;               // Driver of the vehicle
 	protected double distanceTraveled;     // Total distance traveled by vehicle
 	protected double distanceMaint;        // Distance traveled by vehicle since last maintenance
+	protected int maxPassengers;           // Maximum number of passengers the vehicle can carry.
+	protected double fuel;                 // Current amount of fuel in the vehicle.
+	protected double fuelCapacity;         // Maximum amount of fuel the vehicle can carry.
 	
 	protected Coordinates destinationCoords;    // Coordinates of the destination
 	protected Settlement destinationSettlement; // Destination settlement (it applicable)
@@ -56,6 +59,9 @@ public abstract class Vehicle extends Unit {
 		settlement = null;
 		passengers = new Vector();
 		driver = null;
+		maxPassengers = 0;  // Child vehicles should change this as appropriate.
+		fuel = 0D;
+		fuelCapacity = 0D;  // Child vehicles should change this as appropriate.
 		
 		destinationCoords = null;
 		destinationSettlement = null;
@@ -101,6 +107,28 @@ public abstract class Vehicle extends Unit {
 	
 	public double getBaseSpeed() { return baseSpeed; }
 	
+	// Returns the current amount of fuel in the vehicle.
+	
+	public double getFuel() { return fuel; }
+	
+	// Adds fuel to the vehicle.
+	
+	public void addFuel(double addedFuel) {
+		fuel += addedFuel;
+		if (fuel > fuelCapacity) fuel = fuelCapacity;
+	}
+	
+	// Consumes a portion of the vehicle's fuel.
+	
+	public void consumeFuel(double consumedFuel) {
+		fuel -= consumedFuel;
+		if (fuel < 0D) fuel = 0D;
+	}
+	
+	// Returns the fuel capacity of the vehicle.
+	
+	public double getFuelCapacity() { return fuelCapacity; }
+	
 	// Returns total distance traveled by vehicle (in km.)
 	
 	public double getTotalDistanceTraveled() { return distanceTraveled; }
@@ -132,6 +160,10 @@ public abstract class Vehicle extends Unit {
 	
 	public void setDirection(double direction) { this.direction = direction; }
 
+	// Returns the maximum passenger capacity of the vehicle (including the driver).
+	
+	public int getMaxPassengers() { return maxPassengers; }
+
 	// Returns number of passengers in vehicle
 
 	public int getPassengerNum() { return passengers.size(); }
@@ -155,10 +187,10 @@ public abstract class Vehicle extends Unit {
 		return found;
 	} 
 
-	// Add a new passenger to the vehicle
+	// Add a new passenger to the vehicle if enough capacity and person is not alreay aboard.
 
 	public void addPassenger(Person passenger) { 
-		if (!isPassenger(passenger)) passengers.addElement(passenger); 
+		if (!isPassenger(passenger) && (passengers.size() <= maxPassengers)) passengers.addElement(passenger);
 	}
 	
 	// Removes a passenger from a vehicle
