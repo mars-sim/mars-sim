@@ -1,5 +1,5 @@
 //*********************** Main UI Window ***********************
-// Last Modified: 5/24/00
+// Last Modified: 6/25/00
 
 // The MainWindow class is the primary UI frame for the project.
 // It contains the tool bars and main desktop pane.
@@ -23,7 +23,7 @@ public class MainWindow extends JFrame implements WindowListener {
 		
 		// Use JFrame constructor
 		
-		super("Mars Simulation Project (version 2.65)");
+		super("Mars Simulation Project (version 2.7)");
 
 		// Initialize data member to parameter.
 		
