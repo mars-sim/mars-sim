@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.standard;
 import org.mars_sim.msp.simulation.Coordinates;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
 
 /** The NavButtonDisplay class is a component that displays and

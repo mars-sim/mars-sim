@@ -79,12 +79,12 @@ public class MedicalAssistance extends Task implements Serializable {
      */
     static private SickBay getSickbay(Person person) {
 	String location = person.getLocationSituation();
-	if (location.equals(person.INSETTLEMENT)) {
+	if (location.equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
             FacilityManager mgr = settlement.getFacilityManager();
             return ((Infirmary)mgr.getFacility(Infirmary.NAME)).getSickBay();
 	}
-	if (location.equals(person.INVEHICLE)) {
+	if (location.equals(Person.INVEHICLE)) {
 	    Vehicle vehicle = person.getVehicle();
 	    if (vehicle instanceof TransportRover)
 	        return (SickBay) ((TransportRover) vehicle).getMedicalFacility();

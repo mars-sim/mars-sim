@@ -8,9 +8,6 @@
 package org.mars_sim.msp.simulation.person.medical;
 
 import org.mars_sim.msp.simulation.MspXmlReader;
-import java.io.*;
-import java.util.*;
-import com.microstar.xml.*;
 
 /**
  * This class reads an XML file that defines the Medical Complaints used by

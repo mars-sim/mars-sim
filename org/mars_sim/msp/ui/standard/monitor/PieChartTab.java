@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.standard.monitor;
 
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
-import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.table.TableModel;
 import javax.swing.event.TableModelListener;
@@ -20,12 +19,10 @@ import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
 import com.jrefinery.data.DefaultPieDataset;
-import com.jrefinery.data.PieDataset;
 import com.jrefinery.chart.JFreeChart;
 import com.jrefinery.chart.JFreeChartPanel;
 import com.jrefinery.chart.ChartFactory;
 import com.jrefinery.chart.PiePlot;
-import com.jrefinery.chart.TextTitle;
 
 /**
  * This class presents a Pie chart as a Monitor tab. The data for the Pie

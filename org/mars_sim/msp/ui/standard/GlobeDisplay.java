@@ -122,7 +122,7 @@ class GlobeDisplay extends JComponent implements Runnable {
             } else {
                 // Pause for 2 seconds between display refreshs
                 try {
-                    showThread.sleep(2000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {}
                 repaint();
             }

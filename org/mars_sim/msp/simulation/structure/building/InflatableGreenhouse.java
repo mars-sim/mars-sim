@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 
 /**

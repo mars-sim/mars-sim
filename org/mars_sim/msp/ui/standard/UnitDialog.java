@@ -108,7 +108,7 @@ public abstract class UnitDialog extends JInternalFrame implements Runnable,
             // otherwise just wait a long time
             try {
                 long sleeptime = (isVisible() ? 2000 : 60000);
-                updateThread.sleep(sleeptime);
+                Thread.sleep(sleeptime);
             } catch (InterruptedException e) {}
 
             // Update display

@@ -11,7 +11,6 @@ import org.mars_sim.msp.simulation.Coordinates;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-import java.util.*;
 import javax.swing.*;
 
 /** The CannedMarsMap class reads in data from files on the local

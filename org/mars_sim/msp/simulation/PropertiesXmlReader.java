@@ -7,10 +7,6 @@
 
 package org.mars_sim.msp.simulation;
 
-import java.io.*;
-import java.util.*;
-import com.microstar.xml.*;
-
 /** The PropertiesXmlReader class parses the properties.xml XML file and
  *  reads simulation properties.
  */

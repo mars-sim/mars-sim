@@ -7,9 +7,7 @@
 
 package org.mars_sim.msp.ui.standard.monitor;
 
-import org.mars_sim.msp.ui.standard.UIProxyManager;
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.vehicle.*;

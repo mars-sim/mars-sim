@@ -8,7 +8,7 @@
 package org.mars_sim.msp.ui.standard.monitor;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.ui.standard.UnitUIProxy;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
@@ -78,14 +78,14 @@ abstract public class UnitTableModel extends AbstractTableModel
      */
     public void collectionModified(MspCollectionEvent event) {
 
-        if (event.getType().equals(event.CLEAR)) {
+        if (event.getType().equals(MspCollectionEvent.CLEAR)) {
             units.clear();
             fireTableDataChanged();
         }
-        else if (event.getType().equals(event.ADD)) {
+        else if (event.getType().equals(MspCollectionEvent.ADD)) {
             add(event.getTrigger());
         }
-        else if (event.getType().equals(event.REMOVE)) {
+        else if (event.getType().equals(MspCollectionEvent.REMOVE)) {
             remove(event.getTrigger());
         }
     }

@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.simulation.structure.template;
 
-import java.util.*;
-import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 
 /** 

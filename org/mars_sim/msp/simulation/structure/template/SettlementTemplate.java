@@ -11,7 +11,6 @@ import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 
@@ -73,7 +72,7 @@ public class SettlementTemplate {
         UnitManager unitManager = mars.getUnitManager();
         
         // If name is "random", get a new name.
-        if (name.equals("random")) name = unitManager.getNewName(unitManager.SETTLEMENT);
+        if (name.equals("random")) name = unitManager.getNewName(UnitManager.SETTLEMENT);
         
         // Construct settlement
         Settlement settlement = new Settlement(name, location, mars);
@@ -94,14 +93,14 @@ public class SettlementTemplate {
         // Add people to settlement.
         int popNum = settlement.getPopulationCapacity();
         for (int x=0; x < popNum; x++) 
-            unitManager.addUnit(new Person(unitManager.getNewName(unitManager.PERSON), settlement, mars));
+            unitManager.addUnit(new Person(unitManager.getNewName(UnitManager.PERSON), settlement, mars));
         
         // Add vehicles to settlement.
         Iterator vehicleIter = vehicles.iterator();
         while (vehicleIter.hasNext()) {
             VehicleTemplate vehicleTemplate = (VehicleTemplate) vehicleIter.next();
             try {
-                unitManager.addUnit(vehicleTemplate.constructVehicle(unitManager.getNewName(unitManager.VEHICLE), settlement, mars));
+                unitManager.addUnit(vehicleTemplate.constructVehicle(unitManager.getNewName(UnitManager.VEHICLE), settlement, mars));
             }
             catch (Exception e) {
                 System.out.println("Error while constructing vehicle: " + vehicleTemplate.getName() + ": " + e.getMessage());

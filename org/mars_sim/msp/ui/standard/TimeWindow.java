@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.standard;
  
 import org.mars_sim.msp.simulation.*;  
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
@@ -196,7 +195,7 @@ public class TimeWindow extends ToolWindow implements Runnable {
 
             // Pause for 1 second between display refreshes
             try {
-                updateThread.sleep(1000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {}
 
             // Update window

@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.simulation.person;
 
-import java.util.*;
 import java.io.Serializable;
 
 import org.mars_sim.msp.simulation.*;
@@ -15,7 +14,6 @@ import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.person.medical.*;
-import org.mars_sim.msp.simulation.malfunction.*;
 
 /** The Person class represents a person on the virtual Mars. It keeps
  *  track of everything related to that person and provides

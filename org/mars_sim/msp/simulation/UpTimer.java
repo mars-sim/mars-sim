@@ -8,7 +8,6 @@
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
-import java.util.*;
 
 /** The UpTimer class keeps track of how long a instance of the simulation 
  *  has been running in real time.

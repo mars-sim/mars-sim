@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import java.awt.*;
 import javax.swing.*;

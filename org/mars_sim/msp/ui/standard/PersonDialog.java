@@ -11,8 +11,6 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.person.medical.DeathInfo;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.ui.standard.monitor.*;
 import java.awt.*;
 import java.awt.event.*;

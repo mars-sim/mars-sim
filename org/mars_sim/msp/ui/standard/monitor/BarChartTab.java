@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.standard.monitor;
 
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.ImageLoader;
-import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
 import javax.swing.JComponent;
@@ -25,9 +24,7 @@ import com.jrefinery.chart.JFreeChart;
 import com.jrefinery.chart.JFreeChartPanel;
 import com.jrefinery.chart.ChartFactory;
 import com.jrefinery.chart.HorizontalCategoryAxis;
-import com.jrefinery.chart.VerticalCategoryAxis;
 import com.jrefinery.chart.Plot;
-import com.jrefinery.chart.TextTitle;
 
 /**
  */

@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.standard;
 
-import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;

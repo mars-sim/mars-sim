@@ -7,9 +7,7 @@
 
 package org.mars_sim.msp.simulation;
 
-import java.text.*;
 import java.io.Serializable;
-import java.util.*;
 
 /** The MarsClock class keeps track of Martian time.
  *  This uses Shaun Moss's Mars Calendar, which is

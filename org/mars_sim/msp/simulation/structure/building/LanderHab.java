@@ -7,7 +7,6 @@
  
 package org.mars_sim.msp.simulation.structure.building;
 
-import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /**

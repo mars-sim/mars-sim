@@ -178,7 +178,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             } else {
                 // Pause for 2000 milliseconds between display refreshs
                 try {
-                    showThread.sleep(2000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {}
                 repaint();
             }

@@ -10,7 +10,6 @@ package org.mars_sim.msp.simulation.person.ai;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
-import java.util.Vector;
 import java.io.Serializable;
 
 /** The Mission class represents a large multi-person task

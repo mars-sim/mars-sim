@@ -1,6 +1,5 @@
 package org.mars_sim.msp.ui.standard.monitor;
 
-import java.util.ArrayList;
 import javax.swing.table.TableModel;
 
 /**

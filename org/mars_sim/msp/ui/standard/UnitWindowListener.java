@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.*;
-import javax.swing.*;
 import javax.swing.event.*;
 
 /** The UnitWindowListener class is a custom window listener for unit

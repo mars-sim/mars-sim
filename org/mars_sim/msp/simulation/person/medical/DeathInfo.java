@@ -46,7 +46,7 @@ public class DeathInfo implements java.io.Serializable {
 	Complaint serious = person.getPhysicalCondition().getMostSerious();
 	if (serious != null) illness = serious.getName();
 
-	if (person.getLocationSituation().equals(person.OUTSIDE)) placeOfDeath = "Outside";
+	if (person.getLocationSituation().equals(Person.OUTSIDE)) placeOfDeath = "Outside";
 	else {
 	    containerUnit = person.getContainerUnit();	
 	    placeOfDeath = containerUnit.getName();

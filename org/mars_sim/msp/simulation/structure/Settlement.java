@@ -11,7 +11,6 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;

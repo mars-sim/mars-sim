@@ -9,8 +9,6 @@ package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.vehicle.TransportRover;
 import org.mars_sim.msp.simulation.person.medical.SickBay;
-import java.awt.*;
-import javax.swing.*;
 
 /**
  * The TransportRoverDialog class is the detail window for a transport rover.

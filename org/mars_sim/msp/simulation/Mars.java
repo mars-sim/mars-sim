@@ -11,7 +11,6 @@ import org.mars_sim.msp.simulation.person.ai.MissionManager;
 import org.mars_sim.msp.simulation.person.medical.MedicalManager;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.simulation.events.HistoricalEventManager;
-import java.util.*;
 import java.io.*;
 
 /** Mars represents the planet Mars in the simulation. It contains all the

@@ -10,7 +10,6 @@ package org.mars_sim.msp.simulation.person;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.medical.*;
-import org.mars_sim.msp.simulation.structure.Settlement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;

@@ -8,9 +8,6 @@
 package org.mars_sim.msp.simulation.vehicle;
 
 import org.mars_sim.msp.simulation.*;
-import java.io.*;
-import java.util.*;
-import com.microstar.xml.*;
 
 /** The VehiclesXmlReader class parses the vehicles.xml XML file and
  *  creates vehicle-related properties.

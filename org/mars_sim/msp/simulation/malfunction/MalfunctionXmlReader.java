@@ -8,9 +8,7 @@
 package org.mars_sim.msp.simulation.malfunction;
 
 import org.mars_sim.msp.simulation.*;
-import java.io.*;
 import java.util.*;
-import com.microstar.xml.*;
 
 /**
  * This class reads an XML file that defines the malfunctions used by

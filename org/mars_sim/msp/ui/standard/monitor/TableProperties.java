@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.standard.monitor;
 
-import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import java.util.ArrayList;
 import java.util.Enumeration;

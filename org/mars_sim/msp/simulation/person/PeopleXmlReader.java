@@ -8,9 +8,6 @@
 package org.mars_sim.msp.simulation.person;
 
 import org.mars_sim.msp.simulation.*;
-import java.io.*;
-import java.util.*;
-import com.microstar.xml.*;
 
 /** The PeopleXmlReader class parses the people.xml XML file and
  *  reads person-related properties.

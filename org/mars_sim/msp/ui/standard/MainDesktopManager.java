@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.standard; 
 
-import java.awt.*;
 import javax.swing.*;
 
 /** The MainDesktopManager class is a custom desktop manager for the

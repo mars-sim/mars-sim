@@ -7,7 +7,5 @@
  
 package org.mars_sim.msp.simulation.structure.building.function;
 
-import org.mars_sim.msp.simulation.structure.building.Building;
- 
 public interface Function {
 }

@@ -9,9 +9,7 @@ package org.mars_sim.msp.simulation.structure;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.template.*;
-import java.io.*;
 import java.util.*;
-import com.microstar.xml.*;
 
 /** The SettlementsXmlReader class parses the settlements.xml XML file and
  *  creates settlement unit objects.

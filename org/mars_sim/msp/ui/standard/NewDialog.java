@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * $Id: NewDialog.java,v 1.4 2002-03-18 07:26:16 scud1 Exp $
+ * $Id: NewDialog.java,v 1.5 2003-01-20 17:36:04 krose Exp $
  * @version 2.74
  * @author Jani Patokallio
  */
@@ -11,12 +11,8 @@ import org.mars_sim.msp.simulation.SimulationProperties;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Properties;
-
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
 
 /** The NewDialog is an information window that is called from the
  *  "New The Mars Simulation Project" item in the MainWindowMenu.

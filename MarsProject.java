@@ -8,9 +8,6 @@
 import org.mars_sim.msp.simulation.Mars;
 import org.mars_sim.msp.ui.standard.*;
 import java.io.*;
-import javax.swing.plaf.metal.*;
-import javax.swing.*;
-import java.awt.*;
 
 /** MarsProject is the main class for the application. It creates both
  *  Mars and the user interface.

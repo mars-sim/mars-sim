@@ -9,11 +9,9 @@ package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.person.medical.SickBay;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
-import org.mars_sim.msp.simulation.person.Person;
 import java.util.Iterator;
 import java.util.List;
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.*;

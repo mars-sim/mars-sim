@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.simulation;
 
-import java.awt.Point;
 import java.io.Serializable;
 
 /** Spherical Coordinates. Represents a location on virtual Mars in
@@ -383,7 +382,7 @@ public class Coordinates implements Serializable {
             }
         } else {
             if (pos.getY() < 0) {
-                result = result;
+//              result = result;
             } else {
                 result = Math.PI - result;
             }

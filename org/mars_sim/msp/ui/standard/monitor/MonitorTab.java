@@ -12,7 +12,6 @@ import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.UnitUIProxy;
 import org.mars_sim.msp.ui.standard.UIProxyManager;
 import java.util.List;
-import java.util.Collection;
 import java.util.Iterator;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

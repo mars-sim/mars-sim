@@ -7,12 +7,9 @@
 
 package org.mars_sim.msp.ui.standard;
 
-import java.awt.*;
 import java.awt.event.*;
-import java.util.Properties;
 import javax.swing.*;
 import javax.swing.event.*;
-import org.mars_sim.msp.simulation.*;
 
 /** The MainWindowMenu class is the menu for the main window.
  */

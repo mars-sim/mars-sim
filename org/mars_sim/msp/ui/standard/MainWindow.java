@@ -8,11 +8,10 @@
 package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.*;
+
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.*;
 import javax.swing.plaf.metal.*;
 
@@ -192,7 +191,7 @@ public class MainWindow extends JFrame implements WindowListener {
         File fileLocn = null;
 
         if (!useDefault) {
-            JFileChooser chooser = new JFileChooser(mars.DEFAULT_DIR);
+            JFileChooser chooser = new JFileChooser(Mars.DEFAULT_DIR);
             chooser.setDialogTitle("Selected storage location");
             int returnVal = chooser.showSaveDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {

@@ -81,7 +81,7 @@ public class MalfunctionFactory {
         Collection entities = new ArrayList();
         String location = person.getLocationSituation();
 	
-	if (location.equals(person.INSETTLEMENT)) {
+	if (location.equals(Person.INSETTLEMENT)) {
 	    Settlement settlement = person.getSettlement();
 	    entities.add(settlement);
 
@@ -89,9 +89,9 @@ public class MalfunctionFactory {
 	    while (i.hasNext()) entities.add(i.next());
 	}
 
-	if (location.equals(person.INVEHICLE)) entities.add(person.getVehicle());
+	if (location.equals(Person.INVEHICLE)) entities.add(person.getVehicle());
 
-	if (!location.equals(person.OUTSIDE)) {
+	if (!location.equals(Person.OUTSIDE)) {
 	    UnitIterator i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
 	    while (i.hasNext()) {
                 Unit unit = i.next();

@@ -13,7 +13,6 @@ import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import java.io.Serializable;
-import java.util.*;
 
 /** 
  * The StudyRockSamples class is a task for scientific research on 

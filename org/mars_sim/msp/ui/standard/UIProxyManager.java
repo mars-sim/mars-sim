@@ -12,7 +12,6 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.util.*;
-import javax.swing.*;
 
 /** Creates and manages a collection of unit UI proxies. */
 public class UIProxyManager {

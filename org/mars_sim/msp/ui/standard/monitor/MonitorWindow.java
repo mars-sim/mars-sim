@@ -10,14 +10,11 @@ package org.mars_sim.msp.ui.standard.monitor;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.ToolWindow;
-import org.mars_sim.msp.ui.standard.UIProxyManager;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.ViewFrameListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collection;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
@@ -282,7 +279,7 @@ implements Runnable {
 
             // Pause for 1 second between display refreshes
             try {
-                updateThread.sleep(REFRESH_PERIOD);
+                Thread.sleep(REFRESH_PERIOD);
             }
             catch (InterruptedException e) {
             }

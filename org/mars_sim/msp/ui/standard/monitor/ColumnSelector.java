@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.standard.monitor;
 import org.mars_sim.msp.simulation.*;
 import java.util.Vector;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

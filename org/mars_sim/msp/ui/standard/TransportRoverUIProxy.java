@@ -7,10 +7,7 @@
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.vehicle.*;
-import java.awt.*;
-import javax.swing.*;
 
 /**
  * User interface proxy for an transport rover.

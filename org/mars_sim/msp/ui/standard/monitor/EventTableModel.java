@@ -8,8 +8,6 @@
 package org.mars_sim.msp.ui.standard.monitor;
 
 import org.mars_sim.msp.simulation.events.*;
-import org.mars_sim.msp.simulation.MarsClock;
-import org.mars_sim.msp.simulation.Unit;
 import javax.swing.table.AbstractTableModel;
 
 /**

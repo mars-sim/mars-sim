@@ -8,7 +8,6 @@
 package org.mars_sim.msp.simulation.events;
 
 import org.mars_sim.msp.simulation.MarsClock;
-import org.mars_sim.msp.simulation.Unit;
 
 /**
  * This class represents a time based event that has occuried in the simulation.

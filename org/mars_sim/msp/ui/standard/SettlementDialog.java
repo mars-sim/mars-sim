@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.standard;
 
-import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.person.medical.SickBay;

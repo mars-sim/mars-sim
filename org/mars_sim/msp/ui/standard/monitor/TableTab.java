@@ -17,7 +17,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.border.EtchedBorder;
-import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTable;

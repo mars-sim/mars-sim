@@ -11,7 +11,6 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.events.*;
 import java.io.Serializable;
-import java.util.Vector;
 import java.lang.reflect.*;
 
 /** The TaskManager class keeps track of a person's current task and can randomly

@@ -92,7 +92,7 @@ public class MasterClock implements Runnable, Serializable {
         // Keep running until told not to
         while (keepRunning) {
             try {
-                Thread.currentThread().sleep(SLEEP_DURATION);
+                Thread.sleep(SLEEP_DURATION);
             } catch (InterruptedException e) {}
 
             //Increment the uptimer

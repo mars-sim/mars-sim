@@ -8,9 +8,9 @@
 package org.mars_sim.msp.ui.standard;
  
 import org.mars_sim.msp.simulation.*;  
+
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
 
 /** The Mars Calendar Display class shows the current month 
  *  in a panel for the TimeWindow class 
@@ -57,7 +57,7 @@ class MarsCalendarDisplay extends JComponent {
         g.setColor(new Color(0, 127, 0));
         g.fillRect(0, 0, 140, 10);
 
-        int solsInMonth = marsTime.getSolsInMonth(marsTime.getMonth(),  marsTime.getOrbit());
+        int solsInMonth = MarsClock.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
 
         // If sols in month are 27, black out lower left square
         if (solsInMonth == 27) {

@@ -8,9 +8,7 @@
 package org.mars_sim.msp.simulation.structure.building;
 
 import org.mars_sim.msp.simulation.*;
-import java.io.*;
 import java.util.*;
-import com.microstar.xml.*;
 
 /** 
  * The SettlementNamesXmlReader class parses the settlement_names.xml XML file and

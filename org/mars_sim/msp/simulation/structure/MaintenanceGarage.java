@@ -7,12 +7,10 @@
 
 package org.mars_sim.msp.simulation.structure;
 
-import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.io.Serializable;
-import java.util.Vector;
 
 /**
  * The MaintenanceGarage class represents the pressurized maintenance garage in a settlement.

@@ -8,7 +8,6 @@
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
-import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;

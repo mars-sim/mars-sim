@@ -6,7 +6,6 @@
 
 package org.mars_sim.msp.simulation.person.medical;
 
-import java.util.HashMap;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.MarsClock;
 

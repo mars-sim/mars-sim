@@ -7,8 +7,6 @@
  
 package org.mars_sim.msp.simulation.structure.building;
 
-import org.mars_sim.msp.simulation.structure.Settlement;
-
 /**
  * The ERVBase class represents the base structure of an Earth Return Vehicle (ERV).
  * It has a Sebateur reactor to generate oxygen, water and methane from Martian air.
