@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.72 2001-03-26
+ * @version 2.72 2001-04-07
  * @author Scott Davis
  */
 
@@ -27,6 +27,8 @@ public class MarsClock {
     private static final int SOLS_IN_WEEK_SHORT = 6;
     private static final int SOLS_IN_WEEK_LONG = 7;
     private static final int MILLISOLS_IN_SOL = 1000;
+    public static final int NORTHERN_HEMISPHERE = 1;
+    public static final int SOUTHERN_HEMISPHERE = 2;
     
     // Martian/Gregorian calendar conversion
     private static final double SECONDS_IN_MILLISOL = 88.775244;
@@ -246,5 +248,34 @@ public class MarsClock {
                 result = SOLS_IN_WEEK_SHORT;
         }
         return result;
-    }    
+    }
+
+    /** Returns the current season for the given hemisphere
+     *  @param hemisphere the hemisphere 
+     *  NORTHERN_HEMISPHERE or SOUTHERN_HEMISPHERE valid parameters
+     *  @return season as String ("Spring", "Summer", "Autumn" or "Winter")
+     */
+    public String getSeason(int hemisphere) {
+
+        String season = null;
+
+        if (month < 8) {
+            if (hemisphere == NORTHERN_HEMISPHERE) season = "Spring";
+            if (hemisphere == SOUTHERN_HEMISPHERE) season = "Autumn";
+        }
+        else if (month < 14) {
+            if (hemisphere == NORTHERN_HEMISPHERE) season = "Summer";
+            if (hemisphere == SOUTHERN_HEMISPHERE) season = "Winter";
+        }
+        else if (month < 19) {
+            if (hemisphere == NORTHERN_HEMISPHERE) season = "Autumn";
+            if (hemisphere == SOUTHERN_HEMISPHERE) season = "Spring";
+        }
+        else if (month < 14) {
+            if (hemisphere == NORTHERN_HEMISPHERE) season = "Winter";
+            if (hemisphere == SOUTHERN_HEMISPHERE) season = "Summer";
+        }
+        
+        return season;
+    }
 }

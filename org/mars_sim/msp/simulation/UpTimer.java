@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UpTimer.java
- * @version 2.72 2001-02-21
+ * @version 2.72 2001-04-07
  * @author Scott Davis
  */
 
@@ -33,7 +33,6 @@ public class UpTimer {
         long uptime = currentTime.getTime() - startTime.getTime();
 
         int hoursInt = (int) ((double) uptime / 1000D / 60D / 60D);
-        String hours = "" + hoursInt;
         
         int minutesInt = (int) ((double) uptime / 1000D / 60D) - (hoursInt * 60);
         String minutes = "" + minutesInt;
@@ -43,6 +42,13 @@ public class UpTimer {
         String seconds = "" + secondsInt;
         if (secondsInt < 10) seconds = "0" + secondsInt;
 
-        return hours + ":" + minutes + ":" + seconds;
+        int daysInt = (hoursInt / 24);
+        String days = "";
+        if (daysInt == 1) days = "" + daysInt + " day ";
+        else if (daysInt > 1) days = "" + daysInt + " days ";
+
+        String hours = "" + (hoursInt - (24 * daysInt));
+
+        return days + hours + ":" + minutes + ":" + seconds;
     }
 }

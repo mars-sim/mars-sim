@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.72 2001-04-03
+ * @version 2.72 2001-04-07
  * @author Scott Davis
  */
 
@@ -26,6 +26,9 @@ public class TimeWindow extends ToolWindow implements Runnable {
     private UpTimer uptimer;         // Uptime Timer
     private MarsCalendarDisplay calendarDisplay;  // Martian calendar panel
     private JLabel martianTimeLabel; // JLabel for Martian time
+    private JLabel martianMonthLabel; // JLabel for Martian month
+    private JLabel northernSeasonLabel; // JLabel for Northern hemisphere season
+    private JLabel southernSeasonLabel; // JLabel for Southern hemisphere season
     private JLabel earthTimeLabel;   // JLabel for Earth time
     private JLabel uptimeLabel;      // JLabel for uptimer
     private Thread updateThread;     // Window update thread
@@ -73,20 +76,49 @@ public class TimeWindow extends ToolWindow implements Runnable {
         martianCalendarPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         mainPane.add(martianCalendarPane, "Center");
 
+        // Create Martian calendar month panel
+        JPanel calendarMonthPane = new JPanel(new BorderLayout());
+        martianCalendarPane.add(calendarMonthPane);
+
+        // Create martian month label
+        martianMonthLabel = new JLabel(marsTime.getMonthName(), JLabel.CENTER);
+        martianMonthLabel.setForeground(Color.black);
+        calendarMonthPane.add(martianMonthLabel, "North");
+
         // Create Martian calendar display
         calendarDisplay = new MarsCalendarDisplay(marsTime);
         JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
         innerCalendarPane.add(calendarDisplay);
-        martianCalendarPane.add(innerCalendarPane);        
+        calendarMonthPane.add(innerCalendarPane, "Center");        
 
         JPanel southPane = new JPanel(new BorderLayout());
         mainPane.add(southPane, "South");
 
+        // Create Martian season panel
+        JPanel marsSeasonPane = new JPanel(new BorderLayout());
+        marsSeasonPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        southPane.add(marsSeasonPane, "North");
+
+        // Create Martian season label
+        JLabel marsSeasonLabel = new JLabel("Martian Seasons", JLabel.CENTER);
+        marsSeasonLabel.setForeground(Color.black);
+        marsSeasonPane.add(marsSeasonLabel, "North");
+
+        // Create Northern season label
+        northernSeasonLabel = new JLabel("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE), JLabel.CENTER);
+        northernSeasonLabel.setForeground(Color.black);
+        marsSeasonPane.add(northernSeasonLabel, "Center");
+ 
+        // Create Southern season label
+        southernSeasonLabel = new JLabel("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE), JLabel.CENTER);
+        southernSeasonLabel.setForeground(Color.black);
+        marsSeasonPane.add(southernSeasonLabel, "South");
+
         // Create Earth time panel
         JPanel earthTimePane = new JPanel(new BorderLayout());
         earthTimePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
-        southPane.add(earthTimePane, "North");
+        southPane.add(earthTimePane, "Center");
 
         // Create Earth time header label
         JLabel earthTimeHeaderLabel = new JLabel("Earth Time", JLabel.CENTER);
@@ -148,6 +180,10 @@ public class TimeWindow extends ToolWindow implements Runnable {
     private void update() {
        martianTimeLabel.setText(marsTime.getTimeStamp());
        earthTimeLabel.setText(earthTime.getTimeStamp());
-       uptimeLabel.setText(uptimer.getUptime()); 
+       uptimeLabel.setText(uptimer.getUptime());
+       martianMonthLabel.setText(marsTime.getMonthName());
+       northernSeasonLabel.setText("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE));
+       southernSeasonLabel.setText("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)); 
+       calendarDisplay.update();
     }
 }

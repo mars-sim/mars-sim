@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDirectionDisplay.java
- * @version 2.71 2000-10-30
+ * @version 2.72 2001-04-05
  * @author Scott Davis
  */
 
@@ -74,7 +74,7 @@ public class VehicleDirectionDisplay extends JComponent {
 		g.drawRect(25, 25, 1, 1);
 
 		// Prepare letter font
-		Font tempFont = new Font("Helvetica", Font.PLAIN, 9);
+		Font tempFont = new Font("SansSerif", Font.PLAIN, 9);
 		g.setFont(tempFont);
 		FontMetrics tempMetrics = getFontMetrics(tempFont);
 		int fontHeight = tempMetrics.getAscent();
