@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.76 2004-05-01
+ * @version 2.76 2004-05-19
  * @author Barry Evans
  */
 
@@ -24,6 +24,9 @@ public class PhysicalCondition implements Serializable {
     
     private static final String START_MEDICAL = "Has Illness";
     private static final String STOP_MEDICAL = "Cured";
+    
+    // Stress jump resulting from being in an accident.
+    public static final double ACCIDENT_STRESS = 40D;
 
     // Data members
     private DeathInfo deathDetails;     // Details of persons death

@@ -244,7 +244,7 @@ class TravelToSettlement extends Mission implements Serializable {
 			// Transition phase to Disembarking.
 			rover.setDestinationSettlement(startingSettlement);
 			phase = DISEMBARK;
-			System.out.println("TravelToSettlementMission does not have required " + MIN_PEOPLE + " people.");
+			// System.out.println("TravelToSettlementMission does not have required " + MIN_PEOPLE + " people.");
 		}
     }
 

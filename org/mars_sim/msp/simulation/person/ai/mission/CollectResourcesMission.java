@@ -178,7 +178,7 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			// Transition phase to Disembarking.
 			rover.setDestinationSettlement(startingSettlement);
 			phase = DISEMBARK;
-			System.out.println("CollectResourcesMission does not have required " + minPeople + " people.");
+			// System.out.println("CollectResourcesMission does not have required " + minPeople + " people.");
 		}
 	}
 	

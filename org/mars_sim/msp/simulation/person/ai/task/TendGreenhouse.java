@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.76 2004-05-12
+ * @version 2.76 2004-05-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -105,9 +105,9 @@ public class TendGreenhouse extends Task implements Serializable {
             return timeLeft;
         }
         
-        // Determine amount of effective work time based on "Greenhouse Farming" skill.
+        // Determine amount of effective work time based on "Botany" skill.
         double workTime = timeLeft;
-        int greenhouseSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.FARMING);
+        int greenhouseSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.BOTANY);
         if (greenhouseSkill == 0) workTime /= 2;
         else workTime += workTime * (.2D * (double) greenhouseSkill);
         
@@ -123,13 +123,13 @@ public class TendGreenhouse extends Task implements Serializable {
         timeCompleted += time;
         if (timeCompleted >= duration) endTask();
 
-        // Add experience to "Greenhouse Farming" skill
+        // Add experience to "Botany" skill
         // (1 base experience point per 100 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double experience = timeLeft / 100D;
         double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude");
         experience += experience * ((experienceAptitude - 50D) / 100D);
-        person.getSkillManager().addExperience(Skill.FARMING, experience);
+        person.getSkillManager().addExperience(Skill.BOTANY, experience);
         
         // Check for accident in greenhouse.
         checkForAccident(time);
@@ -146,7 +146,7 @@ public class TendGreenhouse extends Task implements Serializable {
         double chance = .001D;
 
         // Greenhouse farming skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.FARMING);
+        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.BOTANY);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 

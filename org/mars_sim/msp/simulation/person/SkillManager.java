@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-21
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person;
 
-import org.mars_sim.msp.simulation.*;
 import java.io.Serializable;
 import java.util.Hashtable;
 
@@ -25,8 +24,9 @@ public class SkillManager implements Serializable {
         this.person = person;
         skills = new Hashtable();
 
+		/*
         // Add starting skills randomly for person.
-        String[] startingSkills = { Skill.DRIVING, Skill.FARMING, Skill.MECHANICS,
+        String[] startingSkills = { Skill.DRIVING, Skill.BOTANY, Skill.MECHANICS,
                                     Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL };
 
         for (int x = 0; x < startingSkills.length; x++) {
@@ -36,6 +36,7 @@ public class SkillManager implements Serializable {
             newSkill.setLevel(skillLevel);
             addNewSkill(newSkill);
         }
+        */
     }
 
     /** Returns an initial skill level.
@@ -43,11 +44,13 @@ public class SkillManager implements Serializable {
      *  @param chance the chance that the skill will be greater
      *  @return the initial skill level
      */
+    /*
     private int getInitialSkillLevel(int level, int chance) {
         if (RandomUtil.lessThanRandPercent(chance))
             return getInitialSkillLevel(level + 1, chance / 2);
         else return level;
     }
+    */
 
     /** Returns the number of skills.
      *  @return the number of skills
