@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-17
  * @author Scott Davis
  */
 
@@ -75,7 +75,10 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         if (getAvailableAirlock(person) == null) result = 0D;
 
         // Check if it is night time.
-        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) result = 0D; 
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
+        	if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+        		result = 0D;
+        } 
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();

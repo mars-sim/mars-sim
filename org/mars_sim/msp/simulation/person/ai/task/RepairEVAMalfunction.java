@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.75 2004-04-06
+ * @version 2.76 2004-05-17
  * @author Scott Davis
  */
 
@@ -123,7 +123,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         if (getAvailableAirlock(person) == null) result = 0D;
 
         // Check if it is night time.
-        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) result = 0D; 
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
+			if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+        		result = 0D;
+        } 
 	
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();

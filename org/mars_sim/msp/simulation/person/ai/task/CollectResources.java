@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-17
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.Mars;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
@@ -119,6 +119,12 @@ public class CollectResources extends EVAOperation implements Serializable {
 		if (areologySkill == 0) samplesCollected /= 2D;
 		if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
 
+		// Modify collection rate by polar region if ice collecting.
+		if (resourceType.equals(Resource.ICE)) {
+			if (mars.getSurfaceFeatures().inPolarRegion(person.getCoordinates()))
+				samplesCollected *= 3D;
+		}
+
 		// Add experience to "Areology" skill.
 		// 1 base experience point per 10 millisols of collection time spent.
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
@@ -179,17 +185,19 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @return true if person can perform the task.
 	 */
 	public static boolean canCollectResources(Person person, Rover rover, Mars mars) {
-		boolean result = true;
 
 		// Check if person can exit the rover.
-		if (!ExitAirlock.canExitAirlock(person, rover.getAirlock())) result = false;
+		boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
 		// Check if it is night time outside.
-		if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) == 0) result = false;
+		boolean sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) > 0;
+		
+		// Check if in dark polar region.
+		boolean darkRegion = mars.getSurfaceFeatures().inDarkPolarRegion(rover.getCoordinates());
 
 		// Check if person's medical condition will not allow task.
-		if (person.getPerformanceRating() < .5D) result = false;
+		boolean medical = person.getPerformanceRating() < .5D;
 	
-		return result;
+		return (exitable && (sunlight || darkRegion) && !medical);
 	}
 }

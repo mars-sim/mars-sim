@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 2.76 2004-05-05
+ * @version 2.76 2004-05-17
  * @author Scott Davis
  */
 
@@ -112,7 +112,8 @@ abstract class EVAOperation extends Task implements Serializable {
         // Check if it is night time. 
         if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
             // System.out.println(person.getName() + " should end EVA: night time.");
-            result = true;
+            if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+            	result = true;
         }
 
         EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
