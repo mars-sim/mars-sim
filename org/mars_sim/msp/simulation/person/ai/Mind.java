@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.77 2004-09-08
+ * @version 2.77 2004-09-14
  * @author Scott Davis
  */
 
@@ -26,18 +26,23 @@ public class Mind implements Serializable {
     private Mission mission; // The person's current mission (if any).
     private Job job; // The person's job.
     private boolean jobLock; // Is the job locked so another can't be chosen?
+    private PersonalityType personality; // The person's personality.
 
     /** 
      * Constructor
      * @param person the person owning this mind
+     * @throws Exception if mind could not be created.
      */
-    public Mind(Person person) {
+    public Mind(Person person) throws Exception {
 
         // Initialize data members
         this.person = person;
         mission = null;
         job = null;
         jobLock = false;
+        
+        // Set the MBTI personality type.
+        personality = new PersonalityType();
 
         // Construct a task manager
         taskManager = new TaskManager(this);
@@ -171,6 +176,8 @@ public class Mind implements Serializable {
             activeMissions = false;
         }
 
+		Person person = getPerson();
+
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = taskManager.getTotalTaskProbability();
         double missionWeights = missionManager.getTotalMissionProbability(person);
@@ -216,5 +223,13 @@ public class Mind implements Serializable {
             }
             else rand -= activeMissionWeights;
         }
+    }
+    
+    /**
+     * Gets the person's personality type.
+     * @return personality type.
+     */
+    public PersonalityType getPersonalityType() {
+    	return personality;
     }
 }
