@@ -159,6 +159,6 @@ public abstract class Building implements Malfunctionable, Serializable {
      * @return The settlement and building name.
      */
     public String toString() {
-        return manager.getSettlement().getName() + " " + getName();
+        return getName();
     }
 }

@@ -19,6 +19,7 @@ set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\monitor\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\*.java
 set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\structure\*.java
+set SOURCE=%SOURCE% org\mars_sim\msp\ui\standard\unit_window\structure\building\*.java
 
 javac -classpath %CLASSPATH% %SOURCE%
 
