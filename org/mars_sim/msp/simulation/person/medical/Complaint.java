@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * @author Barry Evans
- * @version 2.75 2003-11-27
+ * @version 2.75 2004-03-10
  */
 
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.MarsClock;
 
 /**
  * This class represents the definition of a specific Medical Complaint that can
@@ -60,8 +59,8 @@ public class Complaint implements Serializable {
         this.name = name;
         this.seriousness = seriousness;
         // Convert from minutes into Millisols
-        this.degradePeriod = MarsClock.convertSecondsToMillisols(degrade * 60D);
-        this.recoveryPeriod = MarsClock.convertSecondsToMillisols(recovery * 60D);
+        // this.degradePeriod = MarsClock.convertSecondsToMillisols(degrade * 60D);
+        // this.recoveryPeriod = MarsClock.convertSecondsToMillisols(recovery * 60D);
         this.performanceFactor = (performance / 100D);
         this.nextPhase = next;
         this.probability = probability;

@@ -14,25 +14,27 @@
 	<!-- Default: 1.5 -->
 	<food-consumption-rate value="1.5" />
 
-	<!-- Number of Earth minutes a person can survive without oxygen -->
-	<!-- Default: 5.0 -->
-	<oxygen-deprivation-time value="5.0" />
+	<!-- Number of millisols a person can survive without oxygen -->
+	<!-- Note: 1 millisol = 88.77 seconds -->
+	<!-- Default: 3.38 -->
+	<oxygen-deprivation-time value="3.38" />
 
-	<!-- Number of Earth minutes a person can survive without water -->
-	<!-- Default: 8640, 6 days -->
-	<water-deprivation-time value="8640.0" />
+	<!-- Number of sols a person can survive without water -->
+	<!-- Default: 6.0 -->
+	<water-deprivation-time value="6.0" />
 
-	<!-- Number of Earth minutes a person can survive without food -->
-	<!-- Default: 30240.0, 21 days -->
-	<food-deprivation-time value="30240.0" />
+	<!-- Number of sols a person can survive without food -->
+	<!-- Default: 21.0 -->
+	<food-deprivation-time value="21.0" />
 
 	<!-- Minimum air pressure (atm) a person can withstand without harm -->
-	<!-- Default: .25 atm -->
+	<!-- Default: .25 -->
 	<min-air-pressure value=".25" />
 
-	<!-- Number of Earth seconds a person can survive in decompression -->
-	<!-- Default: 90.0 seconds -->
-	<decompression-time value="90.0" />
+	<!-- Number of millisols a person can survive in decompression -->
+	<!-- Note: 1 millisol = 88.77 seconds -->
+	<!-- Default: 1.0 -->
+	<decompression-time value="1.0" />
 
 	<!-- Minimum temperature (degrees celsius) a person can withstand without harm -->
 	<!-- Default: 0 degrees celsius -->
@@ -42,9 +44,10 @@
 	<!-- Default: 48 degrees celsius -->
 	<max-temperature value="48.0" />
 	
-	<!-- Number of Earth minutes a person can survive below minimum temperature -->
-	<!-- Default: 240 minutes (4 hours) -->
-	<freezing-time value="240.0" />
+	<!-- Number of millisols a person can survive below minimum temperature -->
+	<!-- Note: 1 millisol = 88.77 seconds -->
+	<!-- Default: 160.0 -->
+	<freezing-time value="160.0" />
 
 	<!-- List of person names -->
 	<person-name-list>		
@@ -192,7 +195,7 @@
 		<person-name value="Keyur Thadeshwar" />
 		<person-name value="Jani Patokallio" />
 		<person-name value="Mihaly Gyulai" />
-																																																																		
+		
 	</person-name-list>
 
 </people-configuration>

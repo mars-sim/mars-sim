@@ -1,21 +1,13 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.75 2004-03-08
+ * @version 2.75 2004-03-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-
+import java.io.*;
 import org.mars_sim.msp.simulation.events.HistoricalEventManager;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
@@ -65,7 +57,7 @@ public class Mars implements Serializable {
 		initializeTransients(initProps);
 
         // Initialize the Medical conditions
-        medicalManager = new MedicalManager(properties);
+        medicalManager = new MedicalManager(configuration.getPersonConfiguration());
 
         // Initialize mission manager
         missionManager = new MissionManager(this);

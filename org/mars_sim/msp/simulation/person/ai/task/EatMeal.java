@@ -1,25 +1,18 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-03-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.SimulationProperties;
-import org.mars_sim.msp.simulation.person.Person;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
-import org.mars_sim.msp.simulation.structure.building.BuildingException;
-import org.mars_sim.msp.simulation.structure.building.InhabitableBuilding;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Dining;
 
 /** The EatMeal class is a task for eating a meal.
@@ -88,8 +81,13 @@ class EatMeal extends Task implements Serializable {
         person.setHunger(0D);
         timeCompleted += time;
         if (timeCompleted > duration) {
-            SimulationProperties properties = mars.getSimulationProperties();
-            person.consumeFood(properties.getPersonFoodConsumption() * (1D / 3D));
+        	try {
+            	PersonConfig config = mars.getSimulationConfiguration().getPersonConfiguration();
+            	person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D));
+        	}
+        	catch (Exception e) {
+        		System.err.println(person.getName() + " unable to eat meal: " + e.getMessage());
+        	}
             endTask();
             return timeCompleted - duration;
         }

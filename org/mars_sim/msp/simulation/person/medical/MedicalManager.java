@@ -1,26 +1,19 @@
 /**
  * Mars Simulation Project
  * MedicalManager.java
- * @version 2.74 2002-04-29
+ * @version 2.75 2004-03-10
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import org.mars_sim.msp.simulation.SimulationProperties;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.person.Person;
+import java.util.*;
+import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.*;
 
 /**
- * This class provides a Factory for the Complaint class. It is
- * constructed with a set of Simulation Properties. Some of the Medical
+ * This class provides a Factory for the Complaint class. Some of the Medical
  * Complaints are pre-defined.
  * Instances are accessed via a factory method since the properties of the
  * individual complaints are loaded from the XML.
@@ -75,55 +68,63 @@ public class MedicalManager implements Serializable {
      * pre-defined Complaints and the user-defined ones in the XML
      * propery file.
      *
-     * @param props Simulation properties.
+     * @param config person configuration.
+     * @throws Exception if unable to construct.
      */
-    public MedicalManager(SimulationProperties props) {
+    public MedicalManager(PersonConfig config) throws Exception {
 
-        initMedical(props);
+        initMedical(config);
     }
 
     /**
-     * Initialise the Medical Complaints from the properties and XML file.
+     * Initialise the Medical Complaints from the configuration.
      *
      * @param props Global properties.
+     * @throws exception if not able to initialize complaints.
      */
-    public void initMedical(SimulationProperties props) {
+    public void initMedical(PersonConfig config) throws Exception{
         // Create the pre-defined complaints, using properties.
 
-        // Quite serious, 70, and has a 80% performance factor.
-        // Zero recovery as death will result if unchecked.
-        starvation = createEnvironmentComplaint(STARVATION, 70,
-                props.getPersonLackOfFoodPeriod(), 80);
+		try {
+			
+        	// Quite serious, 70, and has a 80% performance factor.
+        	// Zero recovery as death will result if unchecked.
+        	starvation = createEnvironmentComplaint(STARVATION, 70,
+                	config.getFoodDeprivationTime() * 1000D, 80);
 
-        // Most serious complaint, 100, and has a 25% performance factor, i.e.
-        // Person can be nothing.
-        suffocation = createEnvironmentComplaint(SUFFOCATION, 100,
-                props.getPersonLackOfOxygenPeriod(), 25);
+        	// Most serious complaint, 100, and has a 25% performance factor, i.e.
+        	// Person can be nothing.
+        	suffocation = createEnvironmentComplaint(SUFFOCATION, 100,
+                	config.getOxygenDeprivationTime(), 25);
 
-        // Very serious complaint, 70, and a 70% performance effect. Zero
-        // recovery as death will result
-        dehydration = createEnvironmentComplaint(DEHYDRATION, 60,
-                props.getPersonLackOfWaterPeriod(), 70);
+        	// Very serious complaint, 70, and a 70% performance effect. Zero
+        	// recovery as death will result
+        	dehydration = createEnvironmentComplaint(DEHYDRATION, 60,
+                	config.getWaterDeprivationTime() * 1000D, 70);
 
-        // Very serious complaint, 100, and has a 10% performance factor. Zero
-        // recovery as death will result
-        decompression = createEnvironmentComplaint(DECOMPRESSION, 100,
-                props.getPersonDecompressionTime() / 60D, 10);
+        	// Very serious complaint, 100, and has a 10% performance factor. Zero
+        	// recovery as death will result
+        	decompression = createEnvironmentComplaint(DECOMPRESSION, 100,
+                	config.getDecompressionTime(), 10);
 
-        // Somewhat serious complaint, 80, and a 40% performance factor. Zero
-        // recovery as death will result
-        freezing = createEnvironmentComplaint(FREEZING, 80,
-                props.getPersonFreezingTime(), 40);
+        	// Somewhat serious complaint, 80, and a 40% performance factor. Zero
+        	// recovery as death will result
+        	freezing = createEnvironmentComplaint(FREEZING, 80,
+                	config.getFreezingTime(), 40);
 
-        // Somewhat serious complaint, 80, and a 40% performance factor. Zero
-        // recovery as death will result
-        heatStroke = createEnvironmentComplaint(HEAT_STROKE, 80,
-                100D, 40);
+        	// Somewhat serious complaint, 80, and a 40% performance factor. Zero
+        	// recovery as death will result
+        	heatStroke = createEnvironmentComplaint(HEAT_STROKE, 80,
+                	100D, 40);
 
-        /** Creates initial complaints from XML config file */
-        XmlReader medicalReader = new XmlReader(this);
+        	/** Creates initial complaints from XML config file */
+        	XmlReader medicalReader = new XmlReader(this);
 
-        medicalReader.parse();
+        	medicalReader.parse();
+		}
+		catch (Exception e) {
+			throw new Exception("Medical manager cannot be initialized: " + e.getMessage());
+		}
     }
 
     /**

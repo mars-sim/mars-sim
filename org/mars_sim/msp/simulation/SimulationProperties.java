@@ -78,18 +78,22 @@ public class SimulationProperties {
      *  Default value is 1000.0.
      *  @return the ration between simulation and real time
      */
+    /*
     public double getTimeRatio() {
         if (timeRatio > 0D) return timeRatio;
         else return propertiesReader.getTimeRatio();
     }
+    */
 
     /** Sets the time ratio property.
      *  Value must be > 0.
      *  @param timeRatio simulation time / real time
      */
+    /*
     public void setTimeRatio(double newTimeRatio) {
         if (newTimeRatio > 0) timeRatio = newTimeRatio;
     }
+    */
 
     /** 
      * Gets the airlock pressurization/depressurization time.
@@ -106,62 +110,76 @@ public class SimulationProperties {
      *
      *  @return the time period a person survies property
      */
+    /*
     public double getPersonLackOfOxygenPeriod() {
         return propertiesReader.getPersonLackOfOxygenPeriod();
     }
+    */
 
     /** Gets the person oxygen consumption property.
      *  Value must be >= 0.
      *  Default value is 1.0 kg/sol.
      *  @return the person oxygen consumption property
      */
+    /*
     public double getPersonOxygenConsumption() {
         return propertiesReader.getPersonOxygenConsumption();
     }
+    */
 
     /** Gets the  time a Person can survive without Water in sols.
      *  Value must be >= 0.
      *
      *  @return the persion a person can survive.
      */
+    /*
     public double getPersonLackOfWaterPeriod() {
         return propertiesReader.getPersonLackOfWaterPeriod();
     }
+    */
 
     /** Gets the person water consumption property.
      *  Value must be >= 0.
      *  Default value is 4.0 kg/sol.
      *  @return the person water consumption property
      */
+    /*
     public double getPersonWaterConsumption() {
         return propertiesReader.getPersonWaterConsumption();
     }
+    */
 
     /** Gets the period a person can survive without food in sols
      *  Value must be >= 0.
      *  @return the person food period property
      */
+    /*
     public double getPersonLackOfFoodPeriod() {
         return propertiesReader.getPersonLackOfFoodPeriod();
     }
+    */
 
     /** Gets the person food consumption property.
      *  Value must be >= 0.
      *  Default value is 1.5 kg/sol.
      *  @return the person food consumption property
      */
+    /*
     public double getPersonFoodConsumption() {
         return propertiesReader.getPersonFoodConsumption();
     }
+    */
 
     /**
      * Gets the person minimum air pressure property.
      * Default value is .25 atm.
      * @return the person minimum air pressure property
      */
+    /*
     public double getPersonMinAirPressure() {
         return propertiesReader.getPersonMinAirPressure();
     }
+    */
 
     /**
      * Gets the person decompression time property.
@@ -169,27 +187,33 @@ public class SimulationProperties {
      * Default value is 90.0 seconds.
      * @return person decompression time property
      */
+    /*
     public double getPersonDecompressionTime() {
         return propertiesReader.getPersonDecompressionTime();
     }
+    */
 
     /**
      * Gets the person minimum temperature property.
      * Default value is 0 degrees Celsius.
      * @return person minimum temperature property
      */
+    /*
     public double getPersonMinTemperature() {
         return propertiesReader.getPersonMinTemperature();
     }
+    */
 
     /**
      * Gets the person maximum temperature property.
      * Default value is 48 degrees Celsius.
      * @return person maximum temperature property
      */
+    /*
     public double getPersonMaxTemperature() {
         return propertiesReader.getPersonMaxTemperature();
     }
+    */
 
     /**
      * Gets the person freezing time property.
@@ -197,9 +221,11 @@ public class SimulationProperties {
      * Default value is 240.0 minutes.
      * @return person freezing time property
      */
+    /*
     public double getPersonFreezingTime() {
         return propertiesReader.getPersonFreezingTime();
     }
+    */
     
     /** Gets the rover fuel efficiency property.
      *  Value must be > 0.

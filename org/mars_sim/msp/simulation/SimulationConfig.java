@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * SimulationProperties.java
- * @version 2.75 2004-03-08
+ * @version 2.75 2004-03-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
 
 import java.io.*;
 import javax.xml.parsers.*;
+import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -45,6 +46,9 @@ public class SimulationConfig {
 	private Document cropDoc;
 	private Document landmarksDoc;
 	private Document buildingsDoc;
+	
+	// Subset configuration
+	private PersonConfig personConfig;
 
 	/**
 	 * Constructor
@@ -54,9 +58,8 @@ public class SimulationConfig {
 		// Load configurations files into DOM documents.
 		loadConfigFiles();
 		
-		// System.out.println("timeRatio: " + getSimulationTimeRatio());
-		// System.out.println("earthStartDateTime: " + getEarthStartDateTime());
-		// System.out.println("marsStartDateTime: " + getMarsStartDateTime());
+		// Create subset configuration files.
+		personConfig = new PersonConfig(peopleDoc);
 	}
 	
 	/**
@@ -157,5 +160,13 @@ public class SimulationConfig {
 			throw new Exception("Mars start date time must not be blank.");
 		
 		return startDate;
+	}
+	
+	/**
+	 * Gets the person config subset.
+	 * @return person config
+	 */	
+	public PersonConfig getPersonConfiguration() {
+		return personConfig;
 	}
 }

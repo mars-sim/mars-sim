@@ -1,24 +1,16 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.75 2004-01-15
+ * @version 2.75 2004-03-10
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
-import org.mars_sim.msp.simulation.LifeSupport;
-import org.mars_sim.msp.simulation.Mars;
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.Resource;
-import org.mars_sim.msp.simulation.SimulationProperties;
-import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 
 /**
@@ -103,16 +95,18 @@ public class PhysicalCondition implements Serializable {
      * This method has to check the recover or degradation of any current
      * illness. The progression of this time period may result in the illness
      * turning fatal.
-     * It also updated the hunder and fatigue status
+     * It also updated the hunger and fatigue status
      *
      * @param time amount of time passing (in millisols)
-     * @param support Life support system.
-     * @param props Simulation properties.
+     * @param support life support system.
+     * @param config person configuration.
      * @return True still alive.
      */
     boolean timePassing(double time, LifeSupport support,
-                        SimulationProperties props) {
+                        PersonConfig config) {
+                        	
         boolean recalculate = false;
+        
         // Check the existing problems
         if (!problems.isEmpty()) {
             ArrayList newProblems = new ArrayList();
@@ -167,11 +161,15 @@ public class PhysicalCondition implements Serializable {
         }
 
         // Consume necessary oxygen and water.
-        recalculate |= consumeOxygen(support, props.getPersonOxygenConsumption() * (time / 1000D));
-        recalculate |= consumeWater(support, props.getPersonWaterConsumption() * (time / 1000D));
-        recalculate |= requireAirPressure(support, props.getPersonMinAirPressure());
-        recalculate |= requireTemperature(support, props.getPersonMinTemperature(),
-                props.getPersonMaxTemperature());
+        try {
+        	recalculate |= consumeOxygen(support, config.getOxygenConsumptionRate() * (time / 1000D));
+        	recalculate |= consumeWater(support, config.getWaterConsumptionRate() * (time / 1000D));
+        	recalculate |= requireAirPressure(support, config.getMinAirPressure());
+        	recalculate |= requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature());
+        }
+        catch (Exception e) {
+        	System.err.println(person.getName() + " - Error in lifesupport needs: " + e.getMessage());
+        }
 
         // Build up fatigue & hunger for given time passing.
         fatigue += time;

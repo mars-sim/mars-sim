@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.75 2004-01-14
+ * @version 2.75 2004-03-10
  * @author Scott Davis
  */
 
@@ -9,13 +9,14 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.person.ai.Mind;
+import org.mars_sim.msp.simulation.person.medical.MedicalAid;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.simulation.person.ai.*;
-import org.mars_sim.msp.simulation.person.medical.*;
 
 /** The Person class represents a person on the virtual Mars. It keeps
  *  track of everything related to that person and provides
@@ -83,8 +84,8 @@ public class Person extends Unit implements Serializable {
 	    // Set inventory total mass capacity.
 	    inventory.setTotalCapacity(100D);
         inventory.setResourceCapacity(Resource.ROCK_SAMPLES, 100D);
-        inventory.setResourceCapacity(Resource.FOOD, 100D);
         inventory.setResourceCapacity(Resource.ICE, 100D);
+        inventory.setResourceCapacity(Resource.FOOD, 100D);
     }
 
     /** Returns a string for the person's relative location "In
@@ -181,12 +182,12 @@ public class Person extends Unit implements Serializable {
         
         // If Person is dead, then skip
         if (health.getDeathDetails() == null) {
-            SimulationProperties props = mars.getSimulationProperties();
+            PersonConfig config = mars.getSimulationConfiguration().getPersonConfiguration();
             LifeSupport support = getLifeSupport();
             
             // Pass the time in the physical condition first as this may kill
             // Person
-            if (health.timePassing(time, support, props)) {
+            if (health.timePassing(time, support, config)) {
                 // Mins action is descreased according to any illness
                 mind.takeAction(time);
             }
