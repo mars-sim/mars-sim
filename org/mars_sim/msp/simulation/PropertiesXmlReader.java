@@ -253,9 +253,9 @@ class PropertiesXmlReader extends MspXmlReader {
         return timeRatio;
     }
 
-    /** Gets the time persod a person can survive without oxygen.
+    /** Gets the number of Earth minutes a person can survive without oxygen.
      *  Value must be > 0.
-     *  Default value is 5 mars sols.
+     *  Default value is 5 Earth minutes
      *  @return the person locak of oxygen property
      */
     public double getPersonLackOfOxygenPeriod() {
@@ -273,13 +273,13 @@ class PropertiesXmlReader extends MspXmlReader {
         return personOxygenConsumption;
     }
 
-    /** Gets the time persod a person can survive without water
+    /** Gets the number of minutues an person can survive without water
      *  Value must be > 0.
-     *  Default value is 300 mars sols.
+     *  Default value is 6 Earth days
      *  @return the person water consumption property
      */
     public double getPersonLackOfWaterPeriod() {
-        if (personLackOfWater <= 0) personLackOfWater = 300D;
+        if (personLackOfWater <= 0) personLackOfWater = (6 * 24 * 60);
         return personLackOfWater;
     }
 
@@ -293,13 +293,13 @@ class PropertiesXmlReader extends MspXmlReader {
         return personWaterConsumption;
     }
 
-    /** Gets the time persod a person can survive without food.
+    /** Gets the number of minutes an person can survive without food.
      *  Value must be > 0.
-     *  Default value is 1000 mars sols.
+     *  Default value is 21 days.
      *  @return the person lack of food property
      */
     public double getPersonLackOfFoodPeriod() {
-        if (personLackOfFood <= 0) personLackOfFood = 1500D;
+        if (personLackOfFood <= 0) personLackOfFood = (21 * 24 * 60);
         return personLackOfFood;
     }
 
