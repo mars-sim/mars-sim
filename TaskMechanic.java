@@ -1,9 +1,11 @@
 //************************** TaskMechanic **************************
-// Last Modified: 7/27/00
+// Last Modified: 8/23/00
 
 // The TaskMechanic class is a task for repairing or maintaining a vehicle.  
 // It can be used for field repairing a vehicle or performing periodic maintenance
 // on it in a maintenance garage.
+
+import java.util.*;
 
 class TaskMechanic extends Task {
 
@@ -17,24 +19,53 @@ class TaskMechanic extends Task {
 	// Constructor for periodic vehicle maintenance in a garage.
 	
 	public TaskMechanic(Person person, VirtualMars mars) {
-		super("Performing Maintainance on " + person.getVehicle().getName(), person, mars);
+		super("Performing Maintenance on ", person, mars);
 		
 		settlement = person.getSettlement();
 		garage = (MaintenanceGarageFacility) settlement.getFacilityManager().getFacility("Maintenance Garage");
-		// vehicle = garage.getVehicle();
+		
+		// Create vector of vehicles needing maintenance.
+		
+		Vector vehiclesNeedingMaint = new Vector();
+		for (int x=0; x < settlement.getVehicleNum(); x++) {
+			Vehicle tempVehicle = settlement.getVehicle(x);
+			if ((tempVehicle.getDistanceLastMaintenance() > 5000) && !tempVehicle.isReserved()) {
+				if (garage.vehicleInGarage(tempVehicle)) vehiclesNeedingMaint.addElement(tempVehicle);
+				else {
+					if (garage.getMaxVehicleSize() >= tempVehicle.getSize()) {
+						if ((garage.getMaxSizeCapacity() - garage.getTotalSize()) >= tempVehicle.getSize()) 
+							vehiclesNeedingMaint.addElement(tempVehicle);
+					}
+				}
+			}
+		}
+		
+		// Choose one of the vehicles needing maintenance.
+		
+		if (vehiclesNeedingMaint.size() > 0) {
+			int vehicleNum = RandomUtil.getRandomInteger(vehiclesNeedingMaint.size() - 1);
+			vehicle = (Vehicle) vehiclesNeedingMaint.elementAt(vehicleNum);
+			if (!garage.vehicleInGarage(vehicle)) garage.addVehicle(vehicle);
+			name = "Performing Maintenance on " + vehicle.getName();
+			description = name;
+			System.out.println(person.getName() + " performing maintenance on " + vehicle.getName());
+			// System.out.println(getDescription());
+			System.out.println("Distance: " + vehicle.getDistanceLastMaintenance());
+		}
+		else isDone = true;
 	}
 	
 	// Constructor for vehicle field repairs.
 	
 	public TaskMechanic(Person person, VirtualMars mars, MechanicalFailure failure) {
-		super("Repair " + person.getVehicle().getName(), person, mars);
+		super("Repairing " + person.getVehicle().getName(), person, mars);
 		
 		vehicle = person.getVehicle();
 		this.failure = failure;
 		
 		phase = "Repairing " + failure.getName();
 		
-		System.out.println(person.getName() + " starts repairing " + failure.getName() + " on " + vehicle.getName());
+		// System.out.println(person.getName() + " starts repairing " + failure.getName() + " on " + vehicle.getName());
 	}
 	
 	// Returns the weighted probability that a person might perform this task.
@@ -43,6 +74,14 @@ class TaskMechanic extends Task {
 	public static int getProbability(Person person, VirtualMars mars) { 
 		
 		int result = 0;
+		
+		if (person.getLocationSituation().equals("In Settlement")) {
+			Settlement settlement = person.getSettlement();
+			for (int x=0; x < settlement.getVehicleNum(); x++) {
+				Vehicle vehicle = settlement.getVehicle(x);
+				if ((vehicle.getDistanceLastMaintenance() > 5000) && !vehicle.isReserved()) result = 30;
+			}
+		}
 		
 		return result;
 	}
@@ -54,16 +93,16 @@ class TaskMechanic extends Task {
 		super.doTask(seconds);
 		if (subTask != null) return;
 		
-		if (name.startsWith("Repair ")) {
+		// Determine seconds of effective work based on "Vehicle Mechanic" skill.
 			
-			// Determine seconds of effective work based on "Vehicle Mechanic" skill.
+		int workSeconds = seconds;
+		int mechanicSkill = person.getSkillManager().getSkillLevel("Vehicle Mechanic");
+		if (mechanicSkill == 0) workSeconds /= 2;
+		if (mechanicSkill > 1) workSeconds += (int) Math.round((double) workSeconds * (.2D * (double) mechanicSkill));
+		
+		if (name.startsWith("Repairing ")) {
 			
-			int workSeconds = seconds;
-			int mechanicSkill = person.getSkillManager().getSkillLevel("Vehicle Mechanic");
-			if (mechanicSkill == 0) workSeconds /= 2;
-			if (mechanicSkill > 1) workSeconds += (int) Math.round((double) workSeconds * (.2D * (double) mechanicSkill));
-			
-			// Add this work to the mechanical failure.
+			// Add work to the mechanical failure.
 			
 			failure.addWorkTime(workSeconds);
 			
@@ -82,7 +121,32 @@ class TaskMechanic extends Task {
 			// If task is done, return vehicle to moving status.
 			
 			if (isDone) vehicle.setStatus("Moving");
-			if (isDone) System.out.println(person.getName() + " is done repairing " + failure.getName() + " on " + vehicle.getName());
+			// if (isDone) System.out.println(person.getName() + " is done repairing " + failure.getName() + " on " + vehicle.getName());
+		}
+		
+		if (name.startsWith("Performing Maintenance on ")) {
+			
+			// Add work to the vehicle maintenance
+			
+			vehicle.addWorkToMaintenance(workSeconds);
+			
+			// Add experience to "Vehicle Mechanic" skill.
+			// (1 base experience point per hour of work)
+			// Experience points adjusted by person's "Experience Aptitude" attribute.
+		
+			double experience = 1D * (((double) seconds / 60D) / 60D);
+			experience += experience * (((double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude") - 50D) / 100D);
+			person.getSkillManager().addExperience("Vehicle Mechanic", experience);
+			
+			// If vehicle maintenance is complete, task is done.
+			// Move vehicle out of maintenance garage.
+			
+			if (vehicle.getDistanceLastMaintenance() == 0) {
+				garage.removeVehicle(vehicle);
+				isDone = true;
+				System.out.println();
+				System.out.println(person.getName() + " finished performing maintenance on " + vehicle.getName());
+			}
 		}
 	}
 }
