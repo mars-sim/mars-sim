@@ -63,9 +63,6 @@ public class Mind implements Serializable {
             	if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission, !activeMission);
             	takeAction(time);
         	}
-        	
-        	// Update relationships for this person.
-        	Simulation.instance().getRelationshipManager().timePassing(person, time);
         }
         catch (Exception e) {
         	throw new Exception("Mind.takeAction(): " + e.getMessage());

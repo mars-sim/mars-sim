@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.77 2004-09-01
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -180,6 +180,9 @@ public class Person extends Unit implements Serializable {
             	if (health.timePassing(time, support, config)) {
                 	// Mins action is descreased according to any illness
                 	mind.takeAction(time);
+                	
+                	// Update relationships
+					Simulation.instance().getRelationshipManager().timePassing(this, time);
             	}
             	else {
                 	// Person has died as a result of physical condition
