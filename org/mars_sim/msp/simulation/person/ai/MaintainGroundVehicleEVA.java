@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MaintainGroundVehicleGarage.java
- * @version 2.75 2003-04-16
+ * MaintainGroundVehicleEVA.java
+ * @version 2.75 2003-04-18
  * @author Scott Davis
  */
 
@@ -19,40 +19,37 @@ import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
- * preventive maintenance on ground vehicles in a garage.
+ * preventive maintenance on ground vehicles outside a settlement.
  */
-public class MaintainGroundVehicleGarage extends Task implements Serializable {
-
-    // Data members
-    private GroundVehicleMaintenance garage; // The maintenance garage.
+public class MaintainGroundVehicleEVA extends EVAOperation implements Serializable {
+ 
+    // Phase names
+    private static final String EXIT_AIRLOCK = "Exit Airlock";
+    private static final String MAINTAIN_VEHICLE = "Maintain Vehicle";
+    private static final String ENTER_AIRLOCK = "Enter Airlock";
+ 
     private GroundVehicle vehicle; // Vehicle to be maintained.
+    private Airlock airlock; // Airlock to be used for EVA.
     private double duration; // Duration (in millisols) the person will perform this task.
-
-    /** 
-     * Constructor
-     *
-     * @param person the person to perform the task
-     * @param mars the virtual Mars
-     */
-    public MaintainGroundVehicleGarage(Person person, Mars mars) {
-        super("Performing Vehicle Maintenance", person, true, mars);
-
+    
+    public MaintainGroundVehicleEVA(Person person, Mars mars) {
+        super("Performing Vehicle Maintenance", person, mars);
+   
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
         if (vehicle != null) vehicle.setReserved(true);
+        else endTask();
         
-        // Determine the garage it's in.
-        garage = getGarage(vehicle);
-        
-        // End task if vehicle or garage not available.
-        if ((vehicle == null) || (garage == null)) endTask();    
+        // Get an available airlock.
+        airlock = getAvailableAirlock(person);
+        if (airlock == null) endTask();
         
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
         
-        System.out.println(person.getName() + " starting MaintainGroundVehicleGarage task.");
+        System.out.println(person.getName() + " starting MaintainGroundVehicleEVA task.");
     }
-
+    
     /** 
      * Returns the weighted probability that a person might perform this task.
      * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
@@ -63,42 +60,89 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
         double result = 0D;
 
-        VehicleIterator i = getAllVehicleCandidates(person).iterator();
-        while (i.hasNext()) {
-            MalfunctionManager manager = i.next().getMalfunctionManager();
-            result += (manager.getTimeSinceLastMaintenance() / 200D);
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            VehicleIterator i = getAllVehicleCandidates(person).iterator();
+            while (i.hasNext()) {
+                MalfunctionManager manager = i.next().getMalfunctionManager();
+                result += (manager.getTimeSinceLastMaintenance() / 200D);
+            }
         }
+
+        // Check if an airlock is available
+        if (getAvailableAirlock(person) == null) result = 0D;
+
+        // Check if it is night time.
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) result = 0D; 
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
 	
         return result;
     }
-
-    /** 
-     * This task simply waits until the set duration of the task is complete, then ends the task.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
+    
+    /**
+     * Perform the task.
+     * @param time the amount of time (millisols) to perform the task
+     * @return amount of time remaining after performing the task
      */
     double performTask(double time) {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
+        while ((timeLeft > 0D) && !done) {
+            if (phase.equals(EXIT_AIRLOCK)) timeLeft = exitEVA(timeLeft);
+            else if (phase.equals(MAINTAIN_VEHICLE)) timeLeft = maintainVehicle(timeLeft);
+            else if (phase.equals(ENTER_AIRLOCK)) timeLeft = enterEVA(timeLeft);
+        }					            
+	
+        // Add experience to "EVA Operations" skill.
+        // (1 base experience point per 20 millisols of time spent)
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        double experience = time / 50D;
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
+        person.getSkillManager().addExperience("EVA Operations", experience);
+
+        return timeLeft;
+    }
+    
+    /**
+     * Perform the exit airlock phase of the task.
+     *
+     * @param time the time to perform this phase (in millisols)
+     * @return the time remaining after performing this phase (in millisols)
+     */
+    private double exitEVA(double time) {
+        try {
+            time = exitAirlock(time, airlock);
+        }
+        catch (Exception e) { 
+            System.out.println(e.getMessage()); 
+        }
+        
+        if (exitedAirlock) phase = MAINTAIN_VEHICLE;
+        return time;
+    }
+    
+    /**
+     * Perform the maintain vehicle phase of the task.
+     *
+     * @param time the time to perform this phase (in millisols)
+     * @return the time remaining after performing this phase (in millisols)
+     */
+    private double maintainVehicle(double time) {
+        
         MalfunctionManager manager = vehicle.getMalfunctionManager();
-	
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
-
-        // Check if maintenance has already been completed.
-        if (manager.getTimeSinceLastMaintenance() == 0D) endTask();
-
-        // If vehicle has malfunction, end task.
-        if (manager.hasMalfunction()) endTask();
-
-        if (done) return timeLeft;
-	
+        boolean finishedMaintenance = (manager.getTimeSinceLastMaintenance() == 0D);
+        boolean malfunction = manager.hasMalfunction();
+        
+        if (finishedMaintenance || malfunction || shouldEndEVAOperation()) {
+            phase = ENTER_AIRLOCK;
+            return time;
+        }
+        
         // Determine effective work time based on "Mechanic" skill.
-        double workTime = timeLeft;
+        double workTime = time;
         int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
@@ -109,26 +153,40 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         // Add experience to "Mechanic" skill.
         // (1 base experience point per 100 millisols of time spent)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = timeLeft / 100D;
+        double experience = time / 100D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("Mechanic", experience);
 
-        // If maintenance is complete, task is done.
-        if (manager.getTimeSinceLastMaintenance() == 0D) {
-            // System.out.println(person.getName() + " finished " + description);
-            done = true;
-        }
-
         // Keep track of the duration of the task.
         timeCompleted += time;
-        if (timeCompleted >= duration) endTask();
-
-        // Check if an accident happens during maintenance.
-        checkForAccident(timeLeft);
+        if (timeCompleted >= duration) phase = ENTER_AIRLOCK;
 	
+        // Check if an accident happens during maintenance.
+        checkForAccident(time);
+
         return 0D;
-    }
+    }   
+    
+    /**
+     * Perform the enter airlock phase of the task.
+     *
+     * @param time amount of time to perform the phase
+     * @return time remaining after performing the phase
+     */
+    private double enterEVA(double time) {
+        try {
+            time = enterAirlock(time, airlock);
+        }
+        catch (Exception e) { 
+            System.out.println(e.getMessage()); 
+        }
+        
+        if (enteredAirlock) endTask();
+        return time;
+    }	
+    
+    
     
     /**
      * Ends the task and performs any final actions.
@@ -137,13 +195,16 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         if (vehicle != null) vehicle.setReserved(false);
         done = true;
     }
-
+    
     /**
      * Check for accident with entity during maintenance phase.
      * @param time the amount of time (in millisols)
      */
-    private void checkForAccident(double time) {
+    protected void checkForAccident(double time) {
 
+        // Use EVAOperation checkForAccident() method.
+        super.checkForAccident(time);
+        
         double chance = .001D;
 
         // Mechanic skill modification.
@@ -156,7 +217,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
             vehicle.getMalfunctionManager().accident();
         }
     }
-
+    
     /** 
      * Gets the vehicle  the person is maintaining.
      * Returns null if none.
@@ -167,7 +228,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     }
     
     /**
-     * Gets all ground vehicles requiring maintenance in a local garage.
+     * Gets all ground vehicles requiring maintenance that are parked outside the settlement.
      *
      * @param person person checking.
      * @return collection of ground vehicles available for maintenance.
@@ -177,17 +238,23 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
+            VehicleCollection parkedVehicles = settlement.getParkedVehicles();
+            
+            // Remove all ground vehicles in garages.
             Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.class).iterator();
             while (i.hasNext()) {
                 GroundVehicleMaintenance garage = (GroundVehicleMaintenance) i.next();
-                boolean malfunction = ((Building) garage).getMalfunctionManager().hasMalfunction();
-                if (!malfunction) {
-                    VehicleIterator vehicleI = garage.getVehicles().iterator();
-                    while (vehicleI.hasNext()) {
-                        Vehicle vehicle = vehicleI.next();
-                        if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
-                    }
+                VehicleIterator vI = parkedVehicles.iterator();
+                while (vI.hasNext()) {
+                    Vehicle vehicle = vI.next();
+                    if (garage.containsVehicle(vehicle)) vI.remove();
                 }
+            }
+            
+            VehicleIterator vI = parkedVehicles.iterator();
+            while (vI.hasNext()) {
+                Vehicle vehicle = vI.next();
+                if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
             }
         }
         
@@ -195,7 +262,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     }
     
     /**
-     * Gets a ground vehicle that requires maintenance in a local garage.
+     * Gets a ground vehicle that requires maintenance outside the settlement.
      * Returns null if none available.
      *
      * @param person person checking.
@@ -227,29 +294,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
             double probWeight = manager.getTimeSinceLastMaintenance();
             if (rand < probWeight) result = (GroundVehicle) vehicle;
             else rand -= probWeight;
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Gets the maintenance garage a vehicle is in.
-     * Returns null if vehicle is not in a garage.
-     *
-     * @param vehicle the ground vehicle
-     * @return GroundVehicleMaintenance garage
-     */
-    private GroundVehicleMaintenance getGarage(GroundVehicle vehicle) {
-        
-        GroundVehicleMaintenance result = null;
-        
-        Settlement settlement = vehicle.getSettlement();
-        if (settlement != null) {
-            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.class).iterator();
-            while (i.hasNext()) {
-                GroundVehicleMaintenance garage = (GroundVehicleMaintenance) i.next();
-                if (garage.containsVehicle(vehicle)) result = garage;
-            }
         }
         
         return result;

@@ -33,7 +33,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         claimMalfunction();
 
-        // if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
     }
 
     /**

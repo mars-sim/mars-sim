@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.75 2002-06-08
+ * @version 2.75 2003-04-21
  * @author Scott Davis
  */
 
@@ -46,7 +46,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
         phase = EXIT_AIRLOCK;
 
-        // System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
+        System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
         
         // Randomly determine duration, from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);
@@ -149,7 +149,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 20 millisols of time spent)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = timeLeft / 50D;
+        double experience = time / 50D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("EVA Operations", experience);

@@ -34,6 +34,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
         // Randomly determine duration, from 0 - 500 millisols.
         duration = RandomUtil.getRandomDouble(500D);
+        
+        System.out.println(person.getName() + " repairing malfunction.");
     }
 
     /**
