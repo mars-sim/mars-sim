@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-11-13
+ * @version 2.75 2003-11-25
  * @author Scott Davis
  */
 
@@ -37,7 +37,6 @@ public class Settlement extends Structure implements LifeSupport {
     private static final double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
 
     // Data members
-    private FacilityManager facilityManager; // The facility manager for the settlement.
     private BuildingManager buildingManager; // The settlement's building manager.
     private PowerGrid powerGrid; // The settlement's building power grid.
 
@@ -51,7 +50,6 @@ public class Settlement extends Structure implements LifeSupport {
         super(name, location, mars);
         
         // Initialize data members
-        facilityManager = new FacilityManager(this, mars);
         buildingManager = new BuildingManager(this);
        
         // Initialize power grid
@@ -62,13 +60,6 @@ public class Settlement extends Structure implements LifeSupport {
         
         // Set inventory total mass capacity.
         inventory.setTotalCapacity(Double.MAX_VALUE);
-    }
-    
-    /** Returns the facility manager for the settlement
-     *  @return the settlement's facility manager
-     */
-    public FacilityManager getFacilityManager() {
-        return facilityManager;
     }
     
     /** Gets the population capacity of the settlement
@@ -175,16 +166,7 @@ public class Settlement extends Structure implements LifeSupport {
      * @return oxygen flow modifier
      */
     public double getOxygenFlowModifier() {
-
-        double result = malfunctionManager.getOxygenFlowModifier();
-
-        Iterator i = facilityManager.getFacilities();
-        while (i.hasNext()) {
-            Facility facility = (Facility) i.next();
-            result *= (facility.getMalfunctionManager().getOxygenFlowModifier() / 100D);
-        }
-
-        return result;
+        return malfunctionManager.getOxygenFlowModifier();
     }
     
     /** Gets water from system.
@@ -201,16 +183,7 @@ public class Settlement extends Structure implements LifeSupport {
      * @return water flow modifier
      */
     public double getWaterFlowModifier() {
-
-        double result = malfunctionManager.getWaterFlowModifier();
-
-        Iterator i = facilityManager.getFacilities();
-        while (i.hasNext()) {
-            Facility facility = (Facility) i.next();
-            result *= (facility.getMalfunctionManager().getWaterFlowModifier() / 100D);
-        }
-
-        return result;
+        return malfunctionManager.getWaterFlowModifier();
     }
     
     /** Gets the air pressure of the life support system.
@@ -228,16 +201,7 @@ public class Settlement extends Structure implements LifeSupport {
      * @return air pressure flow modifier
      */
     public double getAirPressureModifier() {
-
-        double result = malfunctionManager.getAirPressureModifier();
-
-        Iterator i = facilityManager.getFacilities();
-        while (i.hasNext()) {
-            Facility facility = (Facility) i.next();
-            result *= (facility.getMalfunctionManager().getAirPressureModifier() / 100D);
-        }
-
-        return result;
+        return malfunctionManager.getAirPressureModifier();
     }
     
     /** Gets the temperature of the life support system.
@@ -255,16 +219,7 @@ public class Settlement extends Structure implements LifeSupport {
      * @return temperature flow modifier
      */
     public double getTemperatureModifier() {
-
-        double result = malfunctionManager.getTemperatureModifier();
-
-        Iterator i = facilityManager.getFacilities();
-        while (i.hasNext()) {
-            Facility facility = (Facility) i.next();
-            result *= (facility.getMalfunctionManager().getTemperatureModifier() / 100D);
-        }
-
-        return result;
+        return malfunctionManager.getTemperatureModifier();
     }
     
     /** 
@@ -274,7 +229,6 @@ public class Settlement extends Structure implements LifeSupport {
     public void timePassing(double time) {
         
         powerGrid.timePassing(time);
-        facilityManager.timePassing(time);
         buildingManager.timePassing(time);
         if (getCurrentPopulationNum() > 0) malfunctionManager.activeTimePassing(time);
         malfunctionManager.timePassing(time);

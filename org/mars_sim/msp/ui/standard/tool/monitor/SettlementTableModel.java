@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.75 2003-11-13
+ * @version 2.75 2003-11-25
  * @author Barry Evans
  */
 
@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import java.util.*;
@@ -136,10 +136,10 @@ public class SettlementTableModel extends UnitTableModel {
                 int severity = 0;
                 Malfunction malfunction = settle.getMalfunctionManager().getMostSeriousMalfunction();
                 if (malfunction != null) severity = malfunction.getSeverity();
-                Iterator i = settle.getFacilityManager().getFacilities();
+                Iterator i = settle.getBuildingManager().getBuildings().iterator();
                 while (i.hasNext()) {
-                    Facility facility = (Facility) i.next();
-                    Malfunction tempMalfunction = facility.getMalfunctionManager().getMostSeriousMalfunction();
+                    Building building = (Building) i.next();
+                    Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
                     if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
                         malfunction = tempMalfunction;
                         severity = tempMalfunction.getSeverity();
