@@ -1,5 +1,5 @@
 //************************** Task **************************
-// Last Modified: 3/2/00
+// Last Modified: 7/27/00
 
 // The Task class is an abstract parent class for tasks that allow people to do various things.
 // A person's TaskManager keeps track of one current task for the person, but a task may use other 
@@ -15,6 +15,7 @@ abstract class Task {
 	protected boolean isDone;         // True if task is finished
 	protected int timeCompleted;      // The current amount of time spent on the task
 	protected String description;     // Description of the task
+	protected Task subTask;           // Sub-task of the current task
 	protected String phase;           // Phase of task completion
 	protected String subPhase;        // Sub-phase of task completion
 	protected int subPhaseCompleted;  // Amount of time completed in current subPhase
@@ -29,28 +30,48 @@ abstract class Task {
 		isDone = false;
 		timeCompleted = 0;
 		description = name;
+		subTask = null;
 		phase = new String("");
 		subPhase = new String("");
 	}
 	
 	// Returns the name of the task.
 	
-	public String getName() { return new String(name); }
+	public String getName() { 
+		if ((subTask != null) && !subTask.isDone()) return subTask.getName();
+		else return name; 
+	}
 	
 	// Returns a string that is a current description of what the task is doing.
 	// This is mainly for user interface purposes.
 	// Derived tasks should extend this if necessary.
 	// Defaults to just the name of the task.
 	
-	public String getDescription() { return description; }
+	public String getDescription() { 
+		if ((subTask != null) && !subTask.isDone()) return subTask.getDescription();
+		else return description; 
+	}
 	
 	// Returns a string of the current phase of the task.
 	
-	public String getPhase() { return phase; }
+	public String getPhase() { 
+		if ((subTask != null) && !subTask.isDone()) return subTask.getPhase();
+		return phase; 
+	}
 	
 	// Returns a string of the current sub-phase of the task.
 	
-	public String getSubPhase() { return subPhase; }
+	public String getSubPhase() { 
+		if ((subTask != null) && !subTask.isDone()) return subTask.getSubPhase();
+		return subPhase; 
+	}
+	
+	// Adds a new sub-task.
+	
+	public void addSubTask(Task newSubTask) {
+		if (subTask != null) subTask.addSubTask(newSubTask);
+		else subTask = newSubTask;
+	}
 	
 	// Returns the weighted probability that a person might perform this task.
 	// It should return a 0 if there is no chance to perform this task given the person and the situation.
@@ -60,7 +81,12 @@ abstract class Task {
 	// Perform the task for the given number of seconds.
 	// Children should override and implement this.
 	
-	public void doTask(int seconds) {}
+	public void doTask(int seconds) {
+		
+		if ((subTask != null) && subTask.isDone()) subTask = null;
+		
+		if (subTask != null) subTask.doTask(seconds);
+	}
 	
 	// Returns true if task is finished, false otherwise.
 	
@@ -81,15 +107,13 @@ abstract class Task {
 }	
 
 // Mars Simulation Project
-// Copyright (C) 1999 Scott Davis
+// Copyright (C) 2000 Scott Davis
 //
-// For questions or comments on this project, contact:
+// For questions or comments on this project, email:
+// mars-sim-users@lists.sourceforge.net
 //
-// Scott Davis
-// 1725 W. Timber Ridge Ln. #6206
-// Oak Creek, WI  53154
-// scud1@execpc.com
-// http://www.execpc.com/~scud1/
+// or visit the project's Web site at:
+// http://mars-sim@sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

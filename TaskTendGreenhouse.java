@@ -1,5 +1,5 @@
 //************************** TaskTendGreenhouse **************************
-// Last Modified: 5/30/00
+// Last Modified: 7/27/00
 
 // The TaskTendGreenhouse class is a task for tending the greenhouse in a settlement.  It has the phases, "Planting", "Tending" and "Harvesting".
 // The duration of the task is chosen randomly at construction.
@@ -47,6 +47,9 @@ class TaskTendGreenhouse extends Task {
 	
 	public void doTask(int seconds) {
 		
+		super.doTask(seconds);
+		if (subTask != null) return;
+		
 		// Get the phase from the greenhouse's phase of operation.
 		
 		phase = greenhouse.getPhase();
@@ -56,7 +59,7 @@ class TaskTendGreenhouse extends Task {
 		int workSeconds = seconds;
 		int greenhouseSkill = person.getSkillManager().getSkillLevel("Greenhouse Farming");
 		if (greenhouseSkill == 0) workSeconds /= 2;
-		if (greenhouseSkill > 1) workSeconds += workSeconds * (.1 * greenhouseSkill);
+		if (greenhouseSkill > 1) workSeconds += (int) Math.round((double) workSeconds * (.2D * (double) greenhouseSkill));
 		
 		// Add this work to the greenhouse.
 		

@@ -1,5 +1,5 @@
 //************************** Task Manager **************************
-// Last Modified: 5/24/00
+// Last Modified: 7/25/00
 
 // The TaskManager class keeps track of a person's current task and can randomly
 // assign a new task to a person based on a list of possible tasks and that person's
@@ -73,6 +73,13 @@ class TaskManager {
 	// Return null if there is no current task.
 	
 	public Task getCurrentTask() { return currentTask; }
+	
+	// Adds a sub-task to the stack of tasks.
+	
+	public void addSubTask(Task subTask) {
+		if (currentTask != null) currentTask.addSubTask(subTask);
+		else currentTask = subTask;
+	}
 	
 	// Perform a task for a given number of seconds.
 	// If person has no task or the current task is done, assign a new task to him/her.
