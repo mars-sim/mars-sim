@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.71 2000-11-16
+ * @version 2.71 2000-12-06
  * @author Scott Davis
  */
 
@@ -47,6 +47,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected JLabel failureDetailLabel; // Mechanical failure name label
     protected JProgressBar repairProgressBar; // Failure repair progress bar
     protected JProgressBar maintenanceProgressBar; // Maintenance progress bar
+   	protected JLabel foodValueLabel; // A label displaying the stores of food.
+	protected JLabel oxygenValueLabel; // A label displaying the stores of oxygen.
+	protected JLabel waterValueLabel; // A label displaying the stores of water.
+	protected JLabel fuelValueLabel; // A label displaying the stores of fuel.
 
     // Cached data members
     protected String status; // Cached status of vehicle
@@ -54,14 +58,17 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected Coordinates destination; // Cached destination of vehicle
     protected int distance; // Cached distance to destination
     protected float speed; // Cached speed of vehicle.
-    protected double fuel; // Cached fuel stores in vehicle
     protected Vector crewInfo; // Cached list of crewmembers.
     protected double distanceTraveled; // Cached total distance traveled by vehicle.
     protected double distanceMaint; // Cached distance traveled by vehicle since last maintenance.
     protected String failureName; // Cached mechanical failure name.
     protected int repairProgress; // Cached repair progress percentage.
     protected int maintenanceProgress; // Cached maintenance progress percentage;
-
+    protected double fuel; // Cached fuel stores in vehicle
+    protected double oxygen; // Cached oxygen stores in vehicle
+    protected double water; // Cached water stores in vehicle
+    protected double food; // Cached food stores in vehicle
+    
     /** Constructs a VehicleDialog object 
      *  @param parentDesktop the desktop pane
      *  @param vehicleUIProxy the vehicle's UI proxy
@@ -87,11 +94,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         updateLocation();
         updateDestination();
         updateSpeed();
-        updateFuel();
         updateCrew();
         updateOdometer();
         updateMechanicalFailure();
         updateMaintenance();
+        updateStorage();
     }
 
     /** Implement MouseListener Methods */
@@ -147,6 +154,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         tabPane.addTab("Navigation", setupNavigationPane());
         tabPane.addTab("Crew", setupCrewPane());
         tabPane.addTab("Damage", setupDamagePane());
+        tabPane.addTab("Storage", setupStoragePane());
         mainPane.add(tabPane, "Center");
     }
 
@@ -276,21 +284,15 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         navigationPane.add(navigationInfoPane);
 
         // Prepare speed/fuel pane
-        JPanel speedFuelPane = new JPanel(new GridLayout(1, 2, 0, 0));
-        navigationInfoPane.add(speedFuelPane);
+        JPanel speedPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        navigationInfoPane.add(speedPane);
 
         // Prepare speed label
         int tempSpeed = (int) Math.round(vehicle.getSpeed());
         speedLabel = new JLabel("Speed: " + tempSpeed + " kph.", JLabel.LEFT);
         speedLabel.setForeground(Color.black);
-        speedFuelPane.add(speedLabel);
-
-        // Prepare fuel label
-        fuel = (double)(Math.round(vehicle.getFuel() * 100D) / 100D);
-        fuelLabel = new JLabel("Fuel: " + fuel, JLabel.LEFT);
-        fuelLabel.setForeground(Color.black);
-        speedFuelPane.add(fuelLabel);
-
+        speedPane.add(speedLabel);
+        
         // Return navigation pane
         return navigationPane;
     }
@@ -510,6 +512,79 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         return damagePane;
     }
 
+    /** Set up storage pane 
+     *  @return storage pane
+     */
+    protected JPanel setupStoragePane() {
+
+        // Prepare damage pane
+        JPanel storagePane = new JPanel(new BorderLayout(0, 5));
+        storagePane.setBorder(
+                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+
+        // Prepare name label
+        JLabel nameLabel = new JLabel("Storage", JLabel.CENTER);
+        nameLabel.setForeground(Color.black);
+        storagePane.add(nameLabel, "North");
+
+        // Prepare content pane
+        JPanel contentPane = new JPanel();
+        contentPane.setBorder(
+                new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        storagePane.add(contentPane, "Center");
+        
+        // Prepare label pane
+		JPanel labelPane = new JPanel(new GridLayout(5, 2, 5, 3));
+		contentPane.add(labelPane);
+        
+        // Prepare fuel label
+		JLabel fuelLabel = new JLabel("Fuel:");
+		fuelLabel.setForeground(Color.black);
+		labelPane.add(fuelLabel);
+		
+		// Prepare fuel value label
+		fuel = vehicle.getFuel();
+		fuelValueLabel = new JLabel("" + roundOneDecimal(fuel), JLabel.RIGHT);
+		fuelValueLabel.setForeground(Color.black);
+		labelPane.add(fuelValueLabel);
+        
+        // Prepare oxygen label		
+		JLabel oxygenLabel = new JLabel("Oxygen:");
+		oxygenLabel.setForeground(Color.black);
+		labelPane.add(oxygenLabel);
+		
+		// Prepare oxygen value label
+		oxygen = vehicle.getOxygen();
+		oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen), JLabel.RIGHT);
+		oxygenValueLabel.setForeground(Color.black);
+		labelPane.add(oxygenValueLabel);
+        
+        // Prepare water label
+		JLabel waterLabel = new JLabel("Water:");
+		waterLabel.setForeground(Color.black);
+		labelPane.add(waterLabel);
+		
+		// Prepare water value label
+		water = vehicle.getWater();
+		waterValueLabel = new JLabel("" + roundOneDecimal(water), JLabel.RIGHT);
+		waterValueLabel.setForeground(Color.black);
+		labelPane.add(waterValueLabel);
+        
+        // Prepare food label
+		JLabel foodLabel = new JLabel("Food:");
+		foodLabel.setForeground(Color.black);
+		labelPane.add(foodLabel);
+		
+		// Prepare food value label
+		food = vehicle.getFood();
+		foodValueLabel = new JLabel("" + roundOneDecimal(food), JLabel.RIGHT);
+		foodValueLabel.setForeground(Color.black);
+		labelPane.add(foodValueLabel);
+        
+        // Return storage pane
+        return storagePane;
+    }
+    
     /** Update status info */
     protected void updateStatus() {
 
@@ -596,16 +671,6 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         if (speed != (float)((int) Math.round(vehicle.getSpeed() * 100D) / 100D)) {
             speed = (float)((int) Math.round(vehicle.getSpeed() * 100D) / 100D);
             speedLabel.setText("Speed: " + speed + " kph.");
-        }
-    }
-
-    /** Update fuel info */
-    protected void updateFuel() {
-
-        // Update fuel label
-        if (fuel != (double)(Math.round(vehicle.getFuel() * 100D) / 100D)) {
-            fuel = (double)(Math.round(vehicle.getFuel() * 100D) / 100D);
-            fuelLabel.setText("Fuel: " + fuel);
         }
     }
 
@@ -728,4 +793,40 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
             maintenanceProgressBar.setValue(maintenanceProgress);
         }
     }
+    
+    /** Update storage */
+    protected void updateStorage() {
+        
+        // Update fuel
+        if (fuel != vehicle.getFuel()) {
+			fuel = vehicle.getFuel();
+			fuelValueLabel.setText("" + roundOneDecimal(fuel));
+		}
+        
+        // Update oxygen
+		if (oxygen != vehicle.getOxygen()) {
+			oxygen = vehicle.getOxygen();
+			oxygenValueLabel.setText("" + roundOneDecimal(oxygen));
+		}
+        
+        // Update water
+		if (water != vehicle.getWater()) {
+			water = vehicle.getWater();
+			waterValueLabel.setText("" + roundOneDecimal(water));
+		}
+        
+        // Update food
+        if (food != vehicle.getFood()) {
+			food = vehicle.getFood();
+			foodValueLabel.setText("" + roundOneDecimal(food));
+		}
+	}
+    
+    /** Returns a double value rounded to one decimal point 
+     *  @param initial the initial double value
+     *  @return the rounded value
+     */
+	public double roundOneDecimal(double initial) {
+		return (double) (Math.round(initial * 10D) / 10D);
+	}
 }
