@@ -1,15 +1,17 @@
 /**
  * Mars Simulation Project
  * OrbitInfo.java
- * @version 2.72 2001-05-10
+ * @version 2.73 2001-12-14
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
+import java.io.Serializable;
+
 /** The OrbitInfo class keeps track of the orbital position of Mars 
  */
-public class OrbitInfo {
+public class OrbitInfo implements Serializable {
 
     // Static data members
     private static final double ORBIT_PERIOD = 59355072D; // Mars orbit period in seconds

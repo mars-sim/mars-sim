@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.73 2001-12-04
+ * @version 2.73 2001-12-14
  * @author Scott Davis
  */
 
@@ -39,14 +39,20 @@ public class MarsProject {
             // Load a previous simulation
             if (args[0].equals("-load")) {
                 File loadFile = new File(args[1]);
-                try {
-                    mars = VirtualMars.load(loadFile);
+                if (loadFile.exists()) {
+                    try {
+                        mars = VirtualMars.load(loadFile);
+                    }
+                    catch (Exception e) {
+                        System.err.println("Problem loading existing simulation " + e);
+                        System.exit(0);
+                    }
                 }
-                catch (Exception e) {
-                    System.err.println("Problem loading existing simulation " +
-                                        e);
-                    return;
-                }
+                else {
+                    System.err.println("Problem loading simulation.");
+                    System.err.println(args[1] + " not found.");
+                    System.exit(0);
+                } 
             }
             else {
                 usage = true;
@@ -60,7 +66,7 @@ public class MarsProject {
             }
             catch (Exception e) {
                 System.err.println("Problem loading default simulation " + e);
-                return;
+                System.err.println("Creating new simulation");
             }
 
             // If no default, then create a new one

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.73 2001-11-29
+ * @version 2.73 2001-12-14
  * @author Scott Davis
  */
 
@@ -29,7 +29,6 @@ public class VirtualMars implements Serializable {
     static final long serialVersionUID = -4771084409109255152L;
 
     // Transient Data members
-    private transient OrbitInfo orbitInfo; // Orbital information
     private transient SurfaceFeatures surfaceFeatures; // Surface features
     private transient SimulationProperties properties; // The user-defined simulation properties
     private transient Thread clockThread;
@@ -39,6 +38,7 @@ public class VirtualMars implements Serializable {
     private UnitManager units; // Unit controller
     private MissionManager missionManager; // Mission controller
     private MasterClock masterClock; // Master clock for virtual world
+    private OrbitInfo orbitInfo; // Orbital information
 
     /** Constructs a VirtualMars object */
     public VirtualMars() {
@@ -52,6 +52,9 @@ public class VirtualMars implements Serializable {
         // Initialize all units
         units = new UnitManager(this);
 
+        // Initialize orbit info
+        orbitInfo = new OrbitInfo();
+
         // Initialize and start master clock
         masterClock = new MasterClock(this);
     }
@@ -60,9 +63,6 @@ public class VirtualMars implements Serializable {
 
         // Initialize simulation properties
         properties = new SimulationProperties();
-
-        // Initialize orbit info
-        orbitInfo = new OrbitInfo();
 
         // Initialize surface features
         surfaceFeatures = new SurfaceFeatures(this);
@@ -203,6 +203,7 @@ public class VirtualMars implements Serializable {
         // Store the persistent values in sequence
         out.writeObject(units);
         out.writeObject(missionManager);
+        out.writeObject(orbitInfo);
         out.writeObject(masterClock);
     }
 
@@ -215,6 +216,7 @@ public class VirtualMars implements Serializable {
         // Load in the persistent values in sequence
         units = (UnitManager)in.readObject();
         missionManager = (MissionManager)in.readObject();
+        orbitInfo = (OrbitInfo)in.readObject();
         masterClock = (MasterClock)in.readObject();
     }
 }
