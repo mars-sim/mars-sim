@@ -140,11 +140,7 @@ class EatMeal extends Task implements Serializable {
         	diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
         	diningBuildings = BuildingManager.getBestRelationshipBuildings(person, diningBuildings);
         	
-			if (diningBuildings.size() > 0) {
-				// Pick random dining building from list.
-				int rand = RandomUtil.getRandomInt(diningBuildings.size() - 1);
-				result = (Building) diningBuildings.get(rand);
-			}
+			if (diningBuildings.size() > 0) result = (Building) diningBuildings.get(0);
 		}
         
         return result;

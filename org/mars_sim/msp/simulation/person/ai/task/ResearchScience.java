@@ -185,9 +185,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 			labBuildings = BuildingManager.getBestRelationshipBuildings(person, labBuildings);
         
 			if (labBuildings.size() > 0) {
-				// Pick random lab from list.
-				int rand = RandomUtil.getRandomInt(labBuildings.size() - 1);
-				Building building = (Building) labBuildings.get(rand);
+				Building building = (Building) labBuildings.get(0);
 				result = (Research) building.getFunction(Research.NAME);
 			}
 		}

@@ -160,11 +160,7 @@ class Sleep extends Task implements Serializable {
 			quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
 			quartersBuildings = BuildingManager.getBestRelationshipBuildings(person, quartersBuildings);
         	
-			if (quartersBuildings.size() > 0) {
-				// Pick random recreation building from list.
-				int rand = RandomUtil.getRandomInt(quartersBuildings.size() - 1);
-				result = (Building) quartersBuildings.get(rand);
-			}
+			if (quartersBuildings.size() > 0) result = (Building) quartersBuildings.get(0);
 		}
         
 		return result;

@@ -115,11 +115,7 @@ class Relax extends Task implements Serializable {
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getBestRelationshipBuildings(person, recreationBuildings);
         	
-			if (recreationBuildings.size() > 0) {
-				// Pick random recreation building from list.
-				int rand = RandomUtil.getRandomInt(recreationBuildings.size() - 1);
-				result = (Building) recreationBuildings.get(rand);
-			}
+			if (recreationBuildings.size() > 0) result = (Building) recreationBuildings.get(0);
 		}
         
 		return result;

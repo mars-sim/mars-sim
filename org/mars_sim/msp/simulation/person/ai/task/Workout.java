@@ -138,11 +138,7 @@ public class Workout extends Task implements Serializable {
 			gyms = BuildingManager.getLeastCrowdedBuildings(gyms);
 			gyms = BuildingManager.getBestRelationshipBuildings(person, gyms);
 			
-			if (gyms.size() > 0) {
-				// Pick random gym from list.
-				int rand = RandomUtil.getRandomInt(gyms.size() - 1);
-				result = (Building) gyms.get(rand);
-			}
+			if (gyms.size() > 0) result = (Building) gyms.get(0);
 		}
 		
 		return result;

@@ -66,7 +66,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			// See if there is an available greenhouse.
         	Building farmingBuilding = getAvailableGreenhouse(person);
         	if (farmingBuilding != null) {
-        		result = 75D;
+        		result = 150D;
         		
         		// Crowding modifier.
         		result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
@@ -190,11 +190,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings); 
 			farmBuildings = BuildingManager.getBestRelationshipBuildings(person, farmBuildings);
 			
-			if (farmBuildings.size() > 0) {
-				// Pick random farm from list.
-				int rand = RandomUtil.getRandomInt(farmBuildings.size() - 1);
-				result = (Building) farmBuildings.get(rand);
-			}
+			if (farmBuildings.size() > 0) result = (Building) farmBuildings.get(0);
         }
         
         return result;

@@ -299,11 +299,7 @@ public class MedicalAssistance extends Task implements Serializable {
 			bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(bestMedicalBuildings);
 			bestMedicalBuildings = BuildingManager.getBestRelationshipBuildings(person, bestMedicalBuildings);
 		
-			if (bestMedicalBuildings.size() > 0) {
-				// Pick random dining building from list.
-				int rand = RandomUtil.getRandomInt(bestMedicalBuildings.size() - 1);
-				result = (Building) bestMedicalBuildings.get(rand);
-			}
+			if (bestMedicalBuildings.size() > 0) result = (Building) bestMedicalBuildings.get(0);
     	}
     	else throw new Exception("MedicalAssistance.getMedicalAidBuilding(): Person is not in settlement.");
     	

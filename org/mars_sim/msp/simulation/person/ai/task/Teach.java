@@ -143,10 +143,12 @@ public class Teach extends Task implements Serializable {
 				while (i.hasNext()) {
 					Person student = i.next();
 					Building building = BuildingManager.getBuilding(student);
-					LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-					if (buildingCrowding < -1) buildingCrowding = -1;
-					if (buildingCrowding < crowding) crowding = buildingCrowding;
+					if (building != null) {
+						LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+						int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
+						if (buildingCrowding < -1) buildingCrowding = -1;
+						if (buildingCrowding < crowding) crowding = buildingCrowding;
+					}
 				}
 				
 				// Add students in least crowded buildings to result.
@@ -154,10 +156,12 @@ public class Teach extends Task implements Serializable {
 				while (j.hasNext()) {
 					Person student = j.next();
 					Building building = BuildingManager.getBuilding(student);
-					LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-					if (buildingCrowding < -1) buildingCrowding = -1;
-					if (buildingCrowding == crowding) leastCrowded.add(student);
+					if (building != null) {
+						LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+						int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
+						if (buildingCrowding < -1) buildingCrowding = -1;
+						if (buildingCrowding == crowding) leastCrowded.add(student);
+					}
 				}
 			}
 			catch (BuildingException e) {}
