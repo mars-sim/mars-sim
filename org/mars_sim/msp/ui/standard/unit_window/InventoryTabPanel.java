@@ -60,6 +60,7 @@ public class InventoryTabPanel extends TabPanel {
         JTable resourcesTable = new JTable(resourceTableModel);
         resourcesTable.setPreferredScrollableViewportSize(new Dimension(100, 100));
         resourcesTable.setCellSelectionEnabled(false);
+        resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
         resourcesPanel.setViewportView(resourcesTable);
         
         // Create equipment panel
@@ -74,6 +75,7 @@ public class InventoryTabPanel extends TabPanel {
         JTable equipmentTable = new JTable(equipmentTableModel);
         equipmentTable.setPreferredScrollableViewportSize(new Dimension(100, 100));
         equipmentTable.setCellSelectionEnabled(false);
+        equipmentTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
         equipmentPanel.setViewportView(equipmentTable);
     }
     
@@ -84,16 +86,6 @@ public class InventoryTabPanel extends TabPanel {
         Inventory inv = proxy.getUnit().getInventory();
         resourceTableModel.update();
         equipmentTableModel.update();
-    }
-    
-    /** 
-     * Gets a formatted string representation of a double value.
-     * 
-     * @return formatted string
-     */
-    private static String formatDouble(double value) {
-        DecimalFormat formatter = new DecimalFormat("0.00");
-        return formatter.format(value);
     }
     
     /** 
@@ -125,6 +117,12 @@ public class InventoryTabPanel extends TabPanel {
             return 2;
         }
         
+        public Class getColumnClass(int columnIndex) {
+            Class dataType = super.getColumnClass(columnIndex);
+            if (columnIndex == 1) dataType = Double.class;
+            return dataType;
+        }
+        
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Resource";
             else if (columnIndex == 1) return "Mass (kg)";
@@ -133,10 +131,7 @@ public class InventoryTabPanel extends TabPanel {
         
         public Object getValueAt(int row, int column) {
             if (column == 0) return keys.get(row);
-            else if (column == 1) {
-                Double mass = (Double) resources.get(keys.get(row));
-                return formatDouble(mass.doubleValue());
-            }
+            else if (column == 1) return resources.get(keys.get(row));
             else return "unknown";
         }
   
@@ -186,6 +181,12 @@ public class InventoryTabPanel extends TabPanel {
         
         public int getColumnCount() {
             return 2;
+        }
+        
+        public Class getColumnClass(int columnIndex) {
+            Class dataType = super.getColumnClass(columnIndex);
+            if (columnIndex == 1) dataType = Integer.class;
+            return dataType;
         }
         
         public String getColumnName(int columnIndex) {
