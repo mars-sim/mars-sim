@@ -46,6 +46,9 @@
 			<!-- The building has facilities for cooking and eating meals. -->
 			<dining />
 			
+			<!-- The building has exercise facilities. -->
+			<exercise capacity="1" />
+			
 			<!-- The building is capable of processing resources. -->
 			<!-- power-down-level: the efficiency of the resource processes -->
 			<!-- when building is in 'power down' mode. -->
