@@ -60,32 +60,36 @@ public class UnitManager {
 	    if (settlementPhi < 0D) settlementPhi = 0D;
 	    double settlementTheta = (double) (Math.random() * (2D * Math.PI));
 	    Coordinates settlementCoords = new Coordinates(settlementPhi, settlementTheta);
-			
-	    // Create settlement at that location
-	    Settlement tempSettlement = new Settlement(settlementNames[x], settlementCoords, mars, this);
-	    
-	    // Add settlement to master unit and settlements vectors
-	    unitVector.addElement(tempSettlement);
-	    settlementsVector.addElement(tempSettlement);
+	    createSettlement(settlementNames[x], settlementCoords);
 	}
     }
+
+    private void createSettlement(String name, Coordinates coords) {
+	Settlement tempSettlement = new Settlement(name, coords, mars, this);
+	// Add settlement to master unit and settlements vectors
+	unitVector.addElement(tempSettlement);
+	settlementsVector.addElement(tempSettlement);
+    }
+
 	
     /** Creates initial vehicles at random settlements */
     private void createVehicles(int numRovers) {
-		
 	for (int x=0; x < numRovers; x++) { 
-			
 	    // Create a rover with the name: "Mars Rover X", where X is the rover number
-	    Rover tempVehicle = new Rover("Mars Rover " + (x+1), new Coordinates(0D, 0D), mars, this);
-
-	    // Add rover to master unit and vehicles vectors
-	    unitVector.addElement(tempVehicle);
-	    vehiclesVector.addElement(tempVehicle);
-			
 	    // Place rover initially at random settlement
 	    int randSettlement = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
-	    tempVehicle.setSettlement((Settlement) settlementsVector.elementAt(randSettlement));
+	    createVehicle("Mars Rover " + (x+1),
+			  new Coordinates(0D, 0D),
+			  (Settlement) settlementsVector.elementAt(randSettlement));
 	}
+    }
+    
+    public void createVehicle(String name, Coordinates coords, Settlement seti) {
+	Rover tempVehicle = new Rover(name, coords, mars, this);
+	// Add rover to master unit and vehicles vectors
+	unitVector.addElement(tempVehicle);
+	vehiclesVector.addElement(tempVehicle);
+	tempVehicle.setSettlement(seti);
     }
 	
     /** Creates initial people at random settlements */
@@ -126,20 +130,24 @@ public class UnitManager {
 	    } else {
 		name = fictionalPeopleNames[x - knownPeopleNames.length];
 	    }
-			
-	    // Create a person with that name
-	    Person tempPerson = new Person(name, new Coordinates(0D, 0D), mars, this);
-			
-	    // Add person to master unit and people vectors
-	    unitVector.addElement(tempPerson);
-	    peopleVector.addElement(tempPerson);
-	    
+
 	    // Place person initially in random settlement
 	    int randSettlement = RandomUtil.getRandomInteger(settlementsVector.size() - 1);
-	    tempPerson.setSettlement((Settlement) settlementsVector.elementAt(randSettlement));
+	    createPerson(name, new Coordinates(0D, 0D),
+			 (Settlement)settlementsVector.elementAt(randSettlement));
 	}
     }
-	
+
+    private void createPerson(String name, Coordinates coord, Settlement seti) {
+	// Create a person with that name
+	Person tempPerson = new Person(name, coord, mars, this);
+	// Add person to master unit and people vectors
+	unitVector.addElement(tempPerson);
+	peopleVector.addElement(tempPerson);
+	tempPerson.setSettlement(seti);
+    }
+	    
+
     /** Make each person take action. Notify each settlement that time
      *  passes for time-related processes (Note: Later automated
      *  processes may be added to vehicles)
@@ -155,13 +163,19 @@ public class UnitManager {
     }
 
     /** Get number of settlements */
-    public int getSettlementNum() { return settlementsVector.size(); }
+    public int getSettlementNum() {
+	return settlementsVector.size();
+    }
 
     /** Get number of vehicles */
-    public int getVehicleNum() { return vehiclesVector.size(); }
+    public int getVehicleNum() {
+	return vehiclesVector.size();
+    }
 
     /** Get population */
-    public int getPeopleNum() { return peopleVector.size(); }
+    public int getPeopleNum() {
+	return peopleVector.size();
+    }
 
     /** Get a random settlement */
     public Settlement getRandomSettlement() {
@@ -258,23 +272,28 @@ public class UnitManager {
     /** Returns an array of unit info for all settlements sorted by
      *  unit name.  Used with the UI.
      */
-    public UnitInfo[] getSettlementInfo() { return sortUnitInfo(settlementsVector);	}
+    public UnitInfo[] getSettlementInfo() {
+	return sortUnitInfo(settlementsVector);
+    }
 	
     /** Returns an array of unit info for all people sorted by unit
      *  name.  Used with the UI.
      */
-    public UnitInfo[] getPeopleInfo() { return sortUnitInfo(peopleVector); }
+    public UnitInfo[] getPeopleInfo() {
+	return sortUnitInfo(peopleVector);
+    }
 	
     /** Returns an array of unit info for all vehicles sorted by unit
      *  name.  Used with the UI.
      */
-    public UnitInfo[] getVehicleInfo() { return sortUnitInfo(vehiclesVector); }
+    public UnitInfo[] getVehicleInfo() {
+	return sortUnitInfo(vehiclesVector);
+    }
 		
     /** Returns an array of unit info for all vehicles not parked at a
      *  settlement. Used with the UI.
      */
     public UnitInfo[] getMovingVehicleInfo() {
-		
 	Vector movingVehicleInfo = new Vector();
 	
 	for (int x=0; x < vehiclesVector.size(); x++) {

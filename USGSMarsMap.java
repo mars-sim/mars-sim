@@ -28,7 +28,10 @@ public class USGSMarsMap implements Map {
     
     private boolean imageDone = false;
     private Component component;
+
     private Image img;
+    private Coordinates currentView; // for future use
+    
 
     public USGSMarsMap() {}
 
@@ -37,10 +40,15 @@ public class USGSMarsMap implements Map {
     }
 
     public void drawMap(Coordinates newCenter) {
-	retrieveImage(3, // pixels per degree
-		      90 - Math.toDegrees(newCenter.getPhi()),
-		      360 - Math.toDegrees(newCenter.getTheta()));
-	waitForMapLoaded();
+	if (imageInCache(newCenter)) {
+	    // simply translate the image
+	} else {
+	    retrieveImage(3, // pixels per degree
+			  90 - Math.toDegrees(newCenter.getPhi()),
+			  360 - Math.toDegrees(newCenter.getTheta()));
+	    currentView = newCenter;
+	    waitForMapLoaded();
+	}
     }
 
     /** determines if a requested map is complete */
@@ -51,6 +59,11 @@ public class USGSMarsMap implements Map {
     /** Returns map image */
     public Image getMapImage() {
 	return img;
+    }
+
+    private boolean imageInCache(Coordinates location) {
+	
+	return false;
     }
 
     /** requests an image from the PDS web server.
@@ -80,6 +93,8 @@ public class USGSMarsMap implements Map {
 		count++;
 		if (count == 6) {
 		    result = line;
+		    in.close();
+		    break;
 		}
 	    }
 	    int startIndex = result.indexOf("IMG SRC=\"") + 9;
