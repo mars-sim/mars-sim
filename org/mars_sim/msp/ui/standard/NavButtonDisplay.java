@@ -30,7 +30,7 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
     private final Image[] lightUpButtons; // Lit button images
     private final Rectangle[] hotSpots; // Regions encompassing images
 
-    /** Constructs a NavButtonDisplay object 
+    /** Constructs a NavButtonDisplay object
      *  @param parentNavigator the navigator window pane
      */
     public NavButtonDisplay(NavigatorWindow parentNavigator) {
@@ -50,17 +50,16 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
         this.parentNavigator = parentNavigator;
 
         // Load Button Images
-        Toolkit myToolkit = Toolkit.getDefaultToolkit();
-        navMain = myToolkit.getImage("images/NavMain.gif");
-        lightUpButtons[0] = myToolkit.getImage("images/NavMainPlus.gif");
-        lightUpButtons[1] = myToolkit.getImage("images/NavNorth.gif");
-        lightUpButtons[2] = myToolkit.getImage("images/NavSouth.gif");
-        lightUpButtons[3] = myToolkit.getImage("images/NavEast.gif");
-        lightUpButtons[4] = myToolkit.getImage("images/NavWest.gif");
-        lightUpButtons[5] = myToolkit.getImage("images/NavNorthPlus.gif");
-        lightUpButtons[6] = myToolkit.getImage("images/NavSouthPlus.gif");
-        lightUpButtons[7] = myToolkit.getImage("images/NavEastPlus.gif");
-        lightUpButtons[8] = myToolkit.getImage("images/NavWestPlus.gif");
+        navMain = ImageLoader.getImage("NavMain.gif");
+        lightUpButtons[0] = ImageLoader.getImage("NavMainPlus.gif");
+        lightUpButtons[1] = ImageLoader.getImage("NavNorth.gif");
+        lightUpButtons[2] = ImageLoader.getImage("NavSouth.gif");
+        lightUpButtons[3] = ImageLoader.getImage("NavEast.gif");
+        lightUpButtons[4] = ImageLoader.getImage("NavWest.gif");
+        lightUpButtons[5] = ImageLoader.getImage("NavNorthPlus.gif");
+        lightUpButtons[6] = ImageLoader.getImage("NavSouthPlus.gif");
+        lightUpButtons[7] = ImageLoader.getImage("NavEastPlus.gif");
+        lightUpButtons[8] = ImageLoader.getImage("NavWestPlus.gif");
 
         MediaTracker mtrack = new MediaTracker(this);
 
@@ -69,7 +68,7 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
             mtrack.addImage(lightUpButtons[x], x + 1);
         }
 
-        try { mtrack.waitForAll(); } 
+        try { mtrack.waitForAll(); }
         catch (InterruptedException e) {
             System.out.println("NavButtonDisplay Media Tracker Error " + e);
         }
@@ -87,14 +86,14 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
         hotSpots[8] = new Rectangle(0, 61, 15, 28);
     }
 
-    /** Update coordinates 
+    /** Update coordinates
      *  @param newCenter the new center position
      */
     public void updateCoords(Coordinates newCenter) {
         centerCoords.setCoords(newCenter);
     }
 
-    /** Override paintComponent method. Paints buttons and lit button 
+    /** Override paintComponent method. Paints buttons and lit button
      *  @param g graphics context
      */
     public void paintComponent(Graphics g) {
@@ -183,7 +182,7 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
     public void mouseEntered(MouseEvent event) {}
     public void mouseExited(MouseEvent event) {}
 
-    /** Light button if mouse is on button 
+    /** Light button if mouse is on button
      *  @param x x-position
      *  @param y y-position
      */

@@ -12,13 +12,13 @@ import java.awt.*;
 import javax.swing.ImageIcon;
 
 /** The SplashWindow class is a splash screen shown when the project
- *  is loading. 
+ *  is loading.
  */
 public class SplashWindow extends Window {
 
     // Constant data member
     private static String[] IMAGE_NAMES = { "SplashImage.jpg", "SplashImage2.jpg" };
-     
+
     private Image splashImage;
     private int width;
     private int height;
@@ -27,13 +27,13 @@ public class SplashWindow extends Window {
         super(new Frame());
 
         String imageName = IMAGE_NAMES[RandomUtil.getRandomInt(IMAGE_NAMES.length - 1)];
-        splashImage = Toolkit.getDefaultToolkit().getImage("images/" + imageName);
-  
+        splashImage = ImageLoader.getImage(imageName);
+
         MediaTracker tracker = new MediaTracker(this);
         tracker.addImage(splashImage, 0);
         try { tracker.waitForAll(); }
         catch (InterruptedException e) { System.out.println(e.toString()); }
-  
+
         ImageIcon splashIcon = new ImageIcon(splashImage);
         width = splashIcon.getIconWidth();
         height = splashIcon.getIconHeight();

@@ -27,9 +27,9 @@ public class LegendDisplay extends JLabel {
 
     /** Constructs a LegendDisplay object */
     public LegendDisplay() {
-        colorImg = Toolkit.getDefaultToolkit().getImage("images/Color_Legend.jpg");
-        distanceImg = Toolkit.getDefaultToolkit().getImage("images/Map_Legend.jpg");
-        usgsDistanceImg = Toolkit.getDefaultToolkit().getImage("images/USGSMap_Legend.gif");
+        colorImg = ImageLoader.getImage("Color_Legend.jpg");
+        distanceImg = ImageLoader.getImage("Map_Legend.jpg");
+        usgsDistanceImg = ImageLoader.getImage("USGSMap_Legend.gif");
         legend = new ImageIcon(distanceImg);
         setIcon(legend);
         useUSGSLegend = false;
@@ -47,8 +47,8 @@ public class LegendDisplay extends JLabel {
         else legend.setImage(distanceImg);
         repaint();
     }
-    
-    /** Set USGS map legend mode 
+
+    /** Set USGS map legend mode
      *  @param useUSGSMap true if using USGS map legend
      */
     public void setUSGSMode(boolean useUSGSLegend) {

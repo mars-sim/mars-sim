@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.standard;
 
 import java.util.HashMap;
 import javax.swing.ImageIcon;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.net.URL;
 
 /**
@@ -20,6 +22,13 @@ import java.net.URL;
 public class ImageLoader {
 
     private static HashMap iconCache = new HashMap();
+    private static HashMap imageCache = new HashMap();
+    private static Toolkit usedToolkit = null;
+
+    /**
+     * Sub-directory/package for the images
+     */
+    public final static String IMAGE_DIR = "images/";
 
     /**
      * Static singleton
@@ -37,15 +46,36 @@ public class ImageLoader {
     public static ImageIcon getIcon(String name) {
         ImageIcon found = (ImageIcon)iconCache.get(name);
         if (found == null) {
-            String fileName = "images/" + name + ".gif";
+            String fileName = IMAGE_DIR + name + ".gif";
             URL resource = ClassLoader.getSystemResource(fileName);
 
-            System.out.println("Found " + name + " @ " + resource);
             found = new ImageIcon(resource);
 
             iconCache.put(name, found);
         }
 
         return found;
+    }
+
+    /**
+     * Get an image with the specified name. The name should include the suffix
+     * identifying the format of the image.
+     *
+     * @param imagename Name of image including suffix.
+     * @return Image found and loaded.
+     */
+    public static Image getImage(String imagename) {
+        Image newImage = (Image)imageCache.get(imagename);
+        if (newImage == null) {
+
+            if (usedToolkit == null) {
+                usedToolkit = Toolkit.getDefaultToolkit();
+            }
+            URL imageURL = ClassLoader.getSystemResource(IMAGE_DIR + imagename);
+
+            newImage = usedToolkit.createImage(imageURL);
+            imageCache.put(imagename, newImage);
+        }
+        return newImage;
     }
 }

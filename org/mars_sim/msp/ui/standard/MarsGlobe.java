@@ -32,7 +32,7 @@ public class MarsGlobe {
     private boolean imageDone; // true when image is done
     private JComponent displayArea; // parent display area
 
-    /** Constructs a MarsGlobe object 
+    /** Constructs a MarsGlobe object
      *  @param globeType the type of globe: "surface" or "topo"
      *  @param displayArea the display component for the globe
      */
@@ -47,13 +47,13 @@ public class MarsGlobe {
         // Load Surface Map Image
         String imageName;
         if (globeType.equals("surface")) {
-            imageName = new String("images/SurfaceMarsMapSmall.jpg");
+            imageName = new String("SurfaceMarsMapSmall.jpg");
         } else {
-            imageName = new String("images/TopoMarsMapSmall.jpg");
+            imageName = new String("TopoMarsMapSmall.jpg");
         }
 
         MediaTracker mtrack = new MediaTracker(displayArea);
-        marsMap = (Toolkit.getDefaultToolkit()).getImage(imageName);
+        marsMap = ImageLoader.getImage(imageName);
         mtrack.addImage(marsMap, 0);
         try {
             mtrack.waitForAll();
@@ -65,7 +65,7 @@ public class MarsGlobe {
         setup_sphere();
     }
 
-    /** Creates a Sphere Image at given center point 
+    /** Creates a Sphere Image at given center point
      *  @param newCenter new center location
      */
     public synchronized void drawSphere(Coordinates newCenter) {
@@ -218,7 +218,7 @@ public class MarsGlobe {
         imageDone = true;
     }
 
-    /** Returns globe image 
+    /** Returns globe image
      *  @return globe image
      */
     public Image getGlobeImage() {
@@ -279,7 +279,7 @@ public class MarsGlobe {
         }
     }
 
-    /** determines if a requested sphere is complete 
+    /** determines if a requested sphere is complete
      *  @return true if image is done
      */
     public boolean isImageDone() {

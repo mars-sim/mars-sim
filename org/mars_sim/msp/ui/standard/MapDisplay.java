@@ -103,7 +103,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     	if (!topo && (this.useUSGSMap != useUSGSMap))
     		recreate = true;
     	this.useUSGSMap = useUSGSMap;
-    } 
+    }
 
     /** Change label display flag
      *  @param labels true if labels are to be displayed
