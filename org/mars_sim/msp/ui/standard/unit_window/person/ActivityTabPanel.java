@@ -1,25 +1,27 @@
 /**
  * Mars Simulation Project
  * ActivityTabPanel.java
- * @version 2.75 2003-06-18
+ * @version 2.75 2003-06-24
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
 import org.mars_sim.msp.simulation.person.medical.DeathInfo;
 import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.monitor.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
 /** 
  * The ActivityTabPanel is a tab panel for a person's current activities.
  */
-public class ActivityTabPanel extends TabPanel {
+public class ActivityTabPanel extends TabPanel implements ActionListener {
     
     private JTextArea taskTextArea;
     private JTextArea taskPhaseTextArea;
@@ -117,6 +119,15 @@ public class ActivityTabPanel extends TabPanel {
         missionTextArea.setLineWrap(true);
         missionPanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
         
+        // Prepare mission monitor button
+        JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
+        monitorButton.setMargin(new Insets(1, 1, 1, 1));
+        monitorButton.setToolTipText("Open Monitor tab for this mission.");
+        monitorButton.addActionListener(this);
+        JPanel monitorButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        monitorButtonPanel.add(monitorButton);
+        missionPanel.add(monitorButtonPanel, BorderLayout.EAST);
+        
         // Prepare mission phase panel
         JPanel missionPhasePanel = new JPanel(new BorderLayout(0, 0));
         missionTopPanel.add(missionPhasePanel);
@@ -173,5 +184,19 @@ public class ActivityTabPanel extends TabPanel {
         else if (mission != null) missionPhaseCache = mission.getPhase();
         if (!missionPhaseCache.equals(missionPhaseTextArea.getText())) 
             missionPhaseTextArea.setText(missionPhaseCache);
+    }
+    
+    /** 
+     * Action event occurs.
+     *
+     * @param event the action event
+     */
+    public void actionPerformed(ActionEvent event) {
+        Person person = (Person) proxy.getUnit();
+        if (!person.getPhysicalCondition().isDead()) {
+            Mind mind = person.getMind();
+            if (mind.hasActiveMission()) 
+                desktop.addModel(new PersonTableModel(mind.getMission()));
+        }
     }
 }       
