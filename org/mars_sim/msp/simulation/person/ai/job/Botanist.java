@@ -80,14 +80,14 @@ public class Botanist extends Job implements Serializable {
 			}
 		}
 		
-		// Add (growing area in greenhouses) / 15
+		// Add (growing area in greenhouses) / 10
 		List greenhouseBuildings = settlement.getBuildingManager().getBuildings(Farming.NAME);
 		Iterator j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = (Building) j.next();
 			try {
 				Farming farm = (Farming) building.getFunction(Farming.NAME);
-				result += (farm.getGrowingArea() / 15D);
+				result += (farm.getGrowingArea() / 10D);
 			}
 			catch (BuildingException e) {
 				System.err.println("Botanist.getSetltementNeed(): " + e.getMessage());
