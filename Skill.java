@@ -1,5 +1,5 @@
 //************************** Skill **************************
-// Last Modified: 2/20/00
+// Last Modified: 3/20/00
 
 // The Skill class represents a single skill that a person has.
 // The skill must have a name unique among the person's collection of skills.
@@ -8,10 +8,10 @@ public class Skill {
 	
 	// Data memebers
 
-	protected int level;                      // The skill level (0 to infinity)
-	protected double experiencePoints;        // The experience points towards the next skill level.
-	protected double neededExperiencePoints;  // The experience points needed to reach the next skill level.
-	protected String name;                    // The unique (for each person) name of the skill.
+	private int level;                      // The skill level (0 to infinity)
+	private double experiencePoints;        // The experience points towards the next skill level.
+	private double neededExperiencePoints;  // The experience points needed to reach the next skill level.
+	private String name;                    // The unique (for each person) name of the skill.
 
 	// Constructor
 
@@ -35,6 +35,7 @@ public class Skill {
 	public void setLevel(int newLevel) {
 		level = newLevel;
 		experiencePoints = 0;
+		neededExperiencePoints = 25D * Math.pow(2D, newLevel);
 	}
 	
 	// Adds to the experience points of the skill
