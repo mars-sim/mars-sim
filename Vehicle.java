@@ -41,8 +41,8 @@ public abstract class Vehicle extends Unit {
     private MechanicalFailure mechanicalFailure; // A list of current failures in the vehicle.
     private boolean distanceMark = false;
 
-    private static Image surfImage;
-    private static Image topoImage;
+    protected static Image surfImage;
+    protected static Image topoImage;
 
 
     // static initializer block
