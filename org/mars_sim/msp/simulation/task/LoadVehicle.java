@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.72 2001-08-07
+ * @version 2.73 2001-10-07
  * @author Scott Davis
  */
 
@@ -25,8 +25,6 @@ class LoadVehicle extends Task {
      */
     public LoadVehicle(Person person, VirtualMars mars, Vehicle vehicle) {
         super("Loading " + vehicle.getName(), person, mars);
-
-        // System.out.println(person.getName() + " is loading " + vehicle.getName()); 
 
         this.vehicle = vehicle;
 
@@ -52,7 +50,6 @@ class LoadVehicle extends Task {
             stores.removeFuel(fuelAmount);
             vehicle.addFuel(fuelAmount);
             unitsLoading -= fuelAmount;
-            // if (fuelAmount > 0D) System.out.println(person.getName() + " loading " + fuelAmount + " fuel into " + vehicle.getName());
 
             // Load oxygen 
             double oxygenAmount = vehicle.getOxygenCapacity() - vehicle.getOxygen();
@@ -60,7 +57,6 @@ class LoadVehicle extends Task {
             stores.removeOxygen(oxygenAmount);
             vehicle.addOxygen(oxygenAmount);
             unitsLoading -= oxygenAmount;
-            // if (oxygenAmount > 0D) System.out.println(person.getName() + " loading " + oxygenAmount + " oxygen into " + vehicle.getName());
 
             // Load water 
             double waterAmount = vehicle.getWaterCapacity() - vehicle.getWater();
@@ -68,7 +64,6 @@ class LoadVehicle extends Task {
             stores.removeWater(waterAmount);
             vehicle.addWater(waterAmount);
             unitsLoading -= waterAmount;
-            // if (waterAmount > 0D) System.out.println(person.getName() + " loading " + waterAmount + " water into " + vehicle.getName());
 
             // Load Food 
             double foodAmount = vehicle.getFoodCapacity() - vehicle.getFood();
@@ -76,17 +71,10 @@ class LoadVehicle extends Task {
             stores.removeFood(foodAmount);
             vehicle.addFood(foodAmount);
             unitsLoading -= foodAmount;
-            // if (foodAmount > 0D) System.out.println(person.getName() + " loading " + foodAmount + " food into " + vehicle.getName());
         }
-        else {
-            done = true;
-            // System.out.println(person.getName() + ": Not enough supplies at " + person.getSettlement().getName() + " to load " + vehicle.getName());
-        }
+        else done = true;
 
-        if (isFullyLoaded()) {
-            done = true;
-            // System.out.println(person.getName() + ": " + vehicle.getName() + " is fully loaded.");
-        }
+        if (isFullyLoaded()) done = true;
 
         return 0;
     }

@@ -647,11 +647,10 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
                 destinationLabelPane.add(destinationButton);
             }
         } else {
-            if (destinationLabelPane.getComponentCount() > 1) {
-                if (destinationType.equals("Coordinates")) 
-                    destinationLabel.setText("Destination: Coordinates");
+            if (destinationLabelPane.getComponentCount() > 1) 
                 destinationLabelPane.remove(destinationButton);
-            }
+            if (destinationType.equals("Coordinates"))
+                destinationLabel.setText("Destination: Coordinates");
         }
 
         // Update destination longitude and latitude labels

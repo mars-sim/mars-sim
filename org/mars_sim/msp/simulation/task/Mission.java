@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.72 2001-08-12
+ * @version 2.73 2001-10-07
  * @author Scott Davis
  */
 
@@ -61,6 +61,7 @@ public abstract class Mission {
     protected void removePerson(Person person) {
         if (people.contains(person)) {
             people.removeElement(person);
+            if (people.size() == 0) done = true;
             // System.out.println(person.getName() + " removed from mission: " + name);
         }
     }
@@ -145,6 +146,12 @@ public abstract class Mission {
      */
     protected void setMissionCapacity(int newCapacity) {
         missionCapacity = newCapacity;
-        // System.out.println(name + " mission capacity: " + missionCapacity);
+    }
+
+    /** Finalizes the mission.
+     *  Mission can override this to perform necessary finalizing operations.
+     */ 
+    protected void endMission() {
+        done = true;
     }
 } 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveGroundVehicle.java
- * @version 2.72 2001-08-07
+ * @version 2.73 2001-10-07
  * @author Scott Davis
  */
 
@@ -30,8 +30,6 @@ class ReserveGroundVehicle extends Task {
        
         this.destination = destination; 
         reservedVehicle = null;
-
-        // System.out.println(person.getName() + " is reserving a vehicle.");
     }
 
     /** Constructs a ReserveGroundVehicle object without a destinatiion.
@@ -43,8 +41,6 @@ class ReserveGroundVehicle extends Task {
 
         destination = null;
         reservedVehicle = null;
-
-        // System.out.println(person.getName() + " is reserving a vehicle.");
     }
 
     /** Perform this task for the given amount of time. 
@@ -77,7 +73,6 @@ class ReserveGroundVehicle extends Task {
                     if (reservable) { 
                         reservedVehicle = (GroundVehicle) tempVehicle;
                         reservedVehicle.setReserved(true);
-                        // System.out.println(person.getName() + " has reserved " + reservedVehicle.getName());
                     }
                 }
             }

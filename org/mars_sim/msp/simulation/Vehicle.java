@@ -94,6 +94,7 @@ public abstract class Vehicle extends Unit {
      *  @param status the vehicle's reserved status
      */
     public void setReserved(boolean status) {
+        // System.out.println(getName() + " reserved: " + status);
         isReserved = status;
     }
 

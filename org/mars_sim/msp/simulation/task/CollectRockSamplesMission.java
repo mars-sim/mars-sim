@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.72 2001-08-12
+ * @version 2.73 2001-10-07
  * @author Scott Davis
  */
 
@@ -55,9 +55,6 @@ class CollectRockSamplesMission extends Mission {
 
         // Set initial phase
         phase = "Embarking";
-        // System.out.println(name + " mission phase: Embarking");
-
-        // System.out.println(name + " started");
     }
 
     /** Gets the weighted probability that a given person would start this mission.
@@ -107,14 +104,12 @@ class CollectRockSamplesMission extends Mission {
      */
     public void performMission(Person person) {
 
-        // System.out.println(person.getName() + " performing mission: " + name);
-
         // If the mission has too many people, remove this person.
         if (people.size() > missionCapacity) {
             removePerson(person);
+            if (people.size() == 0) endMission();
             return;
         }
-        if (missionCapacity == 0) done = true;
 
         // If the mission is not yet completed, perform the mission phase.
         if (!done) {
@@ -142,7 +137,7 @@ class CollectRockSamplesMission extends Mission {
                 if (reserveVehicle.isDone()) {
                     vehicle = reserveVehicle.getReservedVehicle();
                     if (vehicle == null) {
-                        done = true;
+                        endMission();
                         return;
                     }
                     else {
@@ -157,8 +152,10 @@ class CollectRockSamplesMission extends Mission {
         // Determine collection sites.
         if (collectionSites.size() == 0) {
             determineCollectionSites(vehicle.getRange());
-            // System.out.println("Collection sites determined: " + collectionSites.size());
-            if (done) return;
+            if (done) {
+                endMission();
+                return;
+            }
         }
  
         // Load the vehicle with fuel and supplies.
@@ -167,7 +164,7 @@ class CollectRockSamplesMission extends Mission {
         if (!vehicleLoaded) {
             LoadVehicle loadVehicle = new LoadVehicle(person, mars, vehicle);
             person.getMind().getTaskManager().addTask(loadVehicle);
-            if (!loadVehicle.hasEnoughSupplies()) done = true;
+            if (!loadVehicle.hasEnoughSupplies()) endMission(); 
             return;
         }
         
@@ -193,7 +190,6 @@ class CollectRockSamplesMission extends Mission {
 
         // Transition phase to Driving.
         phase = "Driving to Site 1";
-        // System.out.println(name + " mission phase: " + phase);
     }
 
     /** Performs the driving phase of the mission.
@@ -203,22 +199,17 @@ class CollectRockSamplesMission extends Mission {
        
         // Record starting time and distance to destination.
         if ((startingTime == null) || (startingDistance == 0D)) {
-            // System.out.println("Driving to " + destination.getFormattedLatitudeString() + " " + destination.getFormattedLongitudeString());
             startingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
-            // System.out.println(name + ": starting time: " + startingTime.getTimeStamp());
             startingDistance = vehicle.getCoordinates().getDistance(destination);
-            // System.out.println(name + ": distance to destination: " + startingDistance);
         }
 
         // If vehicle has reached destination, transition to Collecting Rock Samples or Disembarking phase.
         if (person.getCoordinates().equals(destination)) {
             if (siteIndex == collectionSites.size()) { 
                 phase = "Disembarking";
-                // System.out.println(name + " mission phase: " + phase);
             }
             else {
                 phase = "Collecting Rock and Soil Samples from Site " + (siteIndex + 1);
-                // System.out.println(name + " mission phase: " + phase);
             }
             return;
         }
@@ -261,7 +252,6 @@ class CollectRockSamplesMission extends Mission {
                 phase = "Driving to Site " + (siteIndex + 1);
                 destination = (Coordinates) collectionSites.elementAt(siteIndex);
             }
-            // System.out.println(getName() + " mission phase: " + phase);
             collectedSamples = 0D;
             startingTime = null;
             startingDistance = 0D;
@@ -299,10 +289,7 @@ class CollectRockSamplesMission extends Mission {
             Person tempPerson = (Person) people.elementAt(x);
             if (tempPerson.getLocationSituation().equals("In Vehicle")) allDisembarked = false;
         }
-        if (allDisembarked && isVehicleUnloaded()) {
-            vehicle.setReserved(false);
-            done = true;
-        }
+        if (allDisembarked && isVehicleUnloaded()) endMission(); 
     }
 
     /** Determine the locations of the sample collection sites.
@@ -313,18 +300,14 @@ class CollectRockSamplesMission extends Mission {
         Vector tempVector = new Vector();
         int numSites = RandomUtil.getRandomInt(1, 5);
         Coordinates startingLocation = startingSettlement.getCoordinates();
-        // System.out.println(vehicle.getName() + "'s range: " + vehicleRange);
-        // System.out.println("Start: " + startingLocation.getFormattedLatitudeString() + " " + startingLocation.getFormattedLongitudeString());
 
         // Determine first site
         Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
         double limit = vehicleRange / 4D;
         double siteDistance = RandomUtil.getRandomDouble(limit);
-        // System.out.println("siteDistance 1: " + siteDistance);
         startingLocation = startingLocation.getNewLocation(direction, siteDistance);
-        if (mars.getSurfaceFeatures().inDarkPolarRegion(startingLocation)) done = true;
+        if (mars.getSurfaceFeatures().inDarkPolarRegion(startingLocation)) endMission(); 
         tempVector.addElement(startingLocation);
-        // System.out.println("Site 1: " + startingLocation.getFormattedLatitudeString() + " " + startingLocation.getFormattedLongitudeString());
 
         // Determine remaining sites
         double remainingRange = (vehicleRange / 2D) - siteDistance;
@@ -336,15 +319,11 @@ class CollectRockSamplesMission extends Mission {
             limit = tempLimit1 / tempLimit2;
             siteDistance = RandomUtil.getRandomDouble(limit);
             startingLocation = startingLocation.getNewLocation(direction, siteDistance);
-            if (mars.getSurfaceFeatures().inDarkPolarRegion(startingLocation)) done = true;
+            if (mars.getSurfaceFeatures().inDarkPolarRegion(startingLocation)) endMission(); 
             tempVector.addElement(startingLocation);
             remainingRange -= siteDistance;
-            // System.out.println("siteDistance " + (x + 1) + ": " + siteDistance);
-            // System.out.println("Site " + (x + 1) + ": " + startingLocation.getFormattedLatitudeString() + " " + startingLocation.getFormattedLongitudeString());
         }
-        // System.out.println("remainingRange: " + remainingRange);
       
-        // System.out.println("Reordering sites"); 
         // Reorder sites for shortest distance.
         startingLocation = startingSettlement.getCoordinates();
         for (int x=0; x < numSites; x++) {
@@ -357,9 +336,7 @@ class CollectRockSamplesMission extends Mission {
             startingLocation = shortest;
             collectionSites.addElement(shortest);
             tempVector.removeElement(shortest);
-            // System.out.println("Site " + (x + 1) + ": " + shortest.getFormattedLatitudeString() + " " + shortest.getFormattedLongitudeString());
         }           
-        // System.out.println("Collection Sites: " + collectionSites.size()); 
     }
 
     /** Determine if a vehicle is fully loaded with fuel and supplies.
@@ -388,5 +365,19 @@ class CollectRockSamplesMission extends Mission {
         if (vehicle.getFood() != 0D) result = false;
 
         return result;
+    }
+
+    /** Finalizes the mission */
+    protected void endMission() {
+    
+        if (vehicle != null) vehicle.setReserved(false);
+        else {
+            if ((reserveVehicle != null) && reserveVehicle.isDone()) {
+                vehicle = reserveVehicle.getReservedVehicle();
+                if (vehicle != null) vehicle.setReserved(false);
+            }
+        }
+
+        done = true;
     }
 }
