@@ -16,8 +16,11 @@ import java.util.*;
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
  *  subclassed to represent a specific type of vehicle.
+ *
+ * It currently also provides a Life Support system for people. This
+ * should be revisited soon since not all Vehicle will have LifeSupport systems.
  */
-public abstract class Vehicle extends Unit implements Serializable {
+public abstract class Vehicle extends Unit implements LifeSupport, Serializable {
 
     // Data members
     private Direction direction; // Direction vehicle is traveling in
@@ -64,7 +67,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         setSettlement(settlement);
         initVehicleData();
     }
-    
+
     /** Constructs a Vehicle object
      *  @param name the vehicle's name
      *  @param mars the virtual Mars
@@ -76,7 +79,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         super(name, new Coordinates(0D, 0D), mars);
 
         if (manager.getSettlementNum() == 0) throw new Exception("No available settlements");
-        
+
         Settlement leastVehicles = null;
         int least = Integer.MAX_VALUE;
         SettlementIterator i = manager.getSettlements().iterator();
@@ -88,44 +91,44 @@ public abstract class Vehicle extends Unit implements Serializable {
             }
         }
         setSettlement(leastVehicles);
-        
+
         initVehicleData();
     }
-    
+
     /** Initializes vehicle data */
     private void initVehicleData() {
         setStatus("Parked");
         setDestinationType("None");
         passengers = new Vector();
         potentialFailures = new HashMap();
-        totalMaintenanceWork = 1000D; // (1 sol) 
+        totalMaintenanceWork = 1000D; // (1 sol)
         direction = new Direction(0);
     }
 
-    /** Returns vehicle's current status 
+    /** Returns vehicle's current status
      *  @return the vehicle's current status
      */
     public String getStatus() {
         return status;
     }
 
-    /** Sets vehicle's current status 
+    /** Sets vehicle's current status
      *  @param status the vehicle's current status
      */
     public void setStatus(String status) {
         this.status = status;
         if (status.equals("Parked") || status.equals("Broken Down"))
-            setSpeed(0D); 
+            setSpeed(0D);
     }
 
-    /** Returns true if vehicle is reserved by someone 
+    /** Returns true if vehicle is reserved by someone
      *  @return true if vehicle is currently reserved by someone
      */
     public boolean isReserved() {
         return isReserved;
     }
 
-    /** Reserves a vehicle or cancels a reservation 
+    /** Reserves a vehicle or cancels a reservation
      *  @param status the vehicle's reserved status
      */
     public void setReserved(boolean status) {
@@ -133,28 +136,28 @@ public abstract class Vehicle extends Unit implements Serializable {
         isReserved = status;
     }
 
-    /** Returns speed of vehicle 
+    /** Returns speed of vehicle
      *  @return the vehicle's speed (in km/hr)
      */
     public double getSpeed() {
         return speed;
     }
 
-    /** Sets the vehicle's current speed 
+    /** Sets the vehicle's current speed
      *  @param speed the vehicle's speed (in km/hr)
      */
     public void setSpeed(double speed) {
         this.speed = speed;
     }
 
-    /** Returns base speed of vehicle 
+    /** Returns base speed of vehicle
      *  @return the vehicle's base speed (in km/hr)
      */
     public double getBaseSpeed() {
         return baseSpeed;
     }
 
-    /** Sets the base speed of vehicle 
+    /** Sets the base speed of vehicle
      * @param speed the vehicle's base speed (in km/hr)
      */
     public void setBaseSpeed(double speed) {
@@ -168,14 +171,14 @@ public abstract class Vehicle extends Unit implements Serializable {
         return range;
     }
 
-    /** Returns the current amount of fuel in the vehicle. 
+    /** Returns the current amount of fuel in the vehicle.
      *  @return the vehicle's fuel stores (kg)
      */
     public double getFuel() {
         return fuel;
     }
 
-    /** Adds fuel to the vehicle. 
+    /** Adds fuel to the vehicle.
      *  @param addedFuel the amount of fuel to be added (kg)
      */
     public void addFuel(double addedFuel) {
@@ -185,7 +188,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         }
     }
 
-    /** Consumes a portion of the vehicle's fuel. 
+    /** Consumes a portion of the vehicle's fuel.
      *  @param consumedFuel the amount of fuel consumed (kg)
      */
     public void consumeFuel(double consumedFuel) {
@@ -194,28 +197,28 @@ public abstract class Vehicle extends Unit implements Serializable {
         if (fuel < 0D) fuel = 0D;
     }
 
-    /** Returns the fuel capacity of the vehicle. 
+    /** Returns the fuel capacity of the vehicle.
      *  @return the vehicle's fuel capacity (kg)
      */
     public double getFuelCapacity() {
         return fuelCapacity;
     }
 
-    /** Sets the fuel capacity of the vehicle. 
+    /** Sets the fuel capacity of the vehicle.
      *  @param capacity the vehicle's fuel capacity (kg)
      */
     void setFuelCapacity(double capacity) {
         fuelCapacity = capacity;
     }
 
-    /** Returns the current amount of oxygen in the vehicle. 
+    /** Returns the current amount of oxygen in the vehicle.
      *  @return the vehicle's oxygen stores (kg)
      */
     public double getOxygen() {
         return oxygen;
     }
 
-    /** Adds oxygen to the vehicle. 
+    /** Adds oxygen to the vehicle.
      *  @param addedOxygen the amount of oxygen to be added (kg)
      */
     public void addOxygen(double addedOxygen) {
@@ -225,7 +228,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         }
     }
 
-    /** Removes a portion of the vehicle's oxygen. 
+    /** Removes a portion of the vehicle's oxygen.
      *  @param amount the amount of oxygen removed (kg)
      *  @return Amount of oxygen actually removed (kg)
      */
@@ -240,28 +243,28 @@ public abstract class Vehicle extends Unit implements Serializable {
         return result;
     }
 
-    /** Returns the oxygen capacity of the vehicle. 
+    /** Returns the oxygen capacity of the vehicle.
      *  @return the vehicle's oxygen capacity (kg)
      */
     public double getOxygenCapacity() {
         return oxygenCapacity;
-    }    
-    
-    /** Sets the oxygen capacity of the vehicle. 
+    }
+
+    /** Sets the oxygen capacity of the vehicle.
      *  @param capacity the vehicle's oxygen capacity (kg)
      */
     void setOxygenCapacity(double capacity) {
         oxygenCapacity = capacity;
     }
-    
-    /** Returns the current amount of water in the vehicle. 
+
+    /** Returns the current amount of water in the vehicle.
      *  @return the vehicle's water stores (kg)
      */
     public double getWater() {
         return water;
     }
 
-    /** Adds water to the vehicle. 
+    /** Adds water to the vehicle.
      *  @param addedWater the amount of water to be added (kg)
      */
     public void addWater(double addedWater) {
@@ -271,7 +274,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         }
     }
 
-    /** Removes water from storage. 
+    /** Removes water from storage.
      *  @param amount the amount of water requested (kg)
      *  @return the amount of water actually received (kg)
      */
@@ -286,28 +289,28 @@ public abstract class Vehicle extends Unit implements Serializable {
         return result;
     }
 
-    /** Returns the water capacity of the vehicle. 
+    /** Returns the water capacity of the vehicle.
      *  @return the vehicle's water capacity (kg)
      */
     public double getWaterCapacity() {
         return waterCapacity;
     }
-    
-    /** Sets the water capacity of the vehicle. 
+
+    /** Sets the water capacity of the vehicle.
      *  @param capacity the vehicle's water capacity (kg)
      */
     void setWaterCapacity(double capacity) {
         waterCapacity = capacity;
     }
-    
-    /** Returns the current amount of food in the vehicle. 
+
+    /** Returns the current amount of food in the vehicle.
      *  @return the vehicle's food stores (kg)
      */
     public double getFood() {
         return food;
     }
 
-    /** Adds food to the vehicle. 
+    /** Adds food to the vehicle.
      *  @param addedFood the amount of food to be added (kg)
      */
     public void addFood(double addedFood) {
@@ -317,7 +320,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         }
     }
 
-    /** Removes food from storage. 
+    /** Removes food from storage.
      *  @param amount the amount of food requested from storage (kg)
      *  @return the amount of food actually received from storage (kg)
      */
@@ -331,36 +334,36 @@ public abstract class Vehicle extends Unit implements Serializable {
 
         return result;
     }
-    
-    /** Returns the food capacity of the vehicle. 
+
+    /** Returns the food capacity of the vehicle.
      *  @return the vehicle's food capacity (kg)
      */
     public double getFoodCapacity() {
         return foodCapacity;
     }
-    
-    /** Sets the food capacity of the vehicle. 
+
+    /** Sets the food capacity of the vehicle.
      *  @param capacity the vehicle's food capacity (kg)
      */
     void setFoodCapacity(double capacity) {
         foodCapacity = capacity;
     }
-    
-    /** Returns total distance traveled by vehicle (in km.) 
+
+    /** Returns total distance traveled by vehicle (in km.)
      *  @return the total distanced traveled by the vehicle (in km)
      */
     public double getTotalDistanceTraveled() {
         return distanceTraveled;
     }
 
-    /** Adds a distance (in km.) to the vehicle's total distance traveled 
+    /** Adds a distance (in km.) to the vehicle's total distance traveled
      *  @param distance distance to add to total distance traveled (in km)
      */
     public void addTotalDistanceTraveled(double distance) {
         distanceTraveled += distance;
     }
 
-    /** Returns distance traveled by vehicle since last maintenance (in km.) 
+    /** Returns distance traveled by vehicle since last maintenance (in km.)
      *  @return distance traveled by vehicle since last maintenance (in km)
      */
     public double getDistanceLastMaintenance() {
@@ -383,42 +386,42 @@ public abstract class Vehicle extends Unit implements Serializable {
         distanceMaint = 0;
     }
 
-    /** Returns direction of vehicle (0 = north, clockwise in radians) 
+    /** Returns direction of vehicle (0 = north, clockwise in radians)
      *  @return the direction the vehicle is traveling (in radians)
      */
     public Direction getDirection() {
         return (Direction) direction.clone();
     }
 
-    /** Sets the vehicle's facing direction (0 = north, clockwise in radians) 
+    /** Sets the vehicle's facing direction (0 = north, clockwise in radians)
      *  @param direction the direction the vehicle is travleling (in radians)
      */
     public void setDirection(Direction direction) {
         this.direction.setDirection(direction.getDirection());
     }
 
-    /** Returns the maximum passenger capacity of the vehicle (including the driver). 
+    /** Returns the maximum passenger capacity of the vehicle (including the driver).
      *  @return the maximum passenger capacity of the vehicle
      */
     public int getMaxPassengers() {
         return maxPassengers;
     }
 
-    /** Returns the maximum passenger capacity of the vehicle (including the driver). 
+    /** Returns the maximum passenger capacity of the vehicle (including the driver).
      *  @param num the maximum passenger capacity of the vehicle
      */
     void setMaxPassengers(int num) {
         maxPassengers = num;
     }
 
-    /** Returns number of passengers in vehicle 
+    /** Returns number of passengers in vehicle
      *  @return the current number of passengers
      */
     public int getPassengerNum() {
         return passengers.size();
     }
 
-    /** Returns a particular passenger by vector index number 
+    /** Returns a particular passenger by vector index number
      *  @param index the passenger's index number
      *  @return the passenger
      */
@@ -430,7 +433,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         return result;
     }
 
-    /** Returns true if a given person is currently in the vehicle 
+    /** Returns true if a given person is currently in the vehicle
      *  @param person the person in question
      *  @return true if person is a passenger in the vehicle
      */
@@ -444,7 +447,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         return false;
     }
 
-    /** Add a new passenger to the vehicle if enough capacity and person is not alreay aboard. 
+    /** Add a new passenger to the vehicle if enough capacity and person is not alreay aboard.
      *  @param passenger a new passenger
      */
     public void addPassenger(Person passenger) {
@@ -453,7 +456,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         }
     }
 
-    /** Removes a passenger from a vehicle 
+    /** Removes a passenger from a vehicle
      *  @param passenger passenger leaving vehicle
      */
     public void removePassenger(Person passenger) {
@@ -465,14 +468,14 @@ public abstract class Vehicle extends Unit implements Serializable {
         }
     }
 
-    /** Returns driver of the vehicle 
+    /** Returns driver of the vehicle
      *  @return the driver
      */
     public Person getDriver() {
         return driver;
     }
 
-    /** Sets the driver of the vehicle 
+    /** Sets the driver of the vehicle
      *  @param driver the driver
      */
     public void setDriver(Person driver) {
@@ -480,7 +483,7 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Returns the current settlement vehicle is parked at.
-     *  Returns null if vehicle is not currently parked at a settlement. 
+     *  Returns null if vehicle is not currently parked at a settlement.
      *  @return the settlement the vehicle is parked at
      */
     public Settlement getSettlement() {
@@ -491,7 +494,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         }
     }
 
-    /** Sets the settlement which the vehicle is parked at 
+    /** Sets the settlement which the vehicle is parked at
      *  @param settlement the settlement the vehicle is parked at
      */
     public void setSettlement(Settlement settlement) {
@@ -503,35 +506,35 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Returns distance to destination in kilometers
-     *  Returns 0 if vehicle is not currently moving toward a destination 
+     *  Returns 0 if vehicle is not currently moving toward a destination
      *  @return the distance to the vehicle's destination
      */
     public double getDistanceToDestination() {
         return distanceToDestination;
     }
 
-    /** Sets the vehicle's distance to its destination 
+    /** Sets the vehicle's distance to its destination
      *  @param distanceToDestination the distance to the vehicle's destination
      */
     public void setDistanceToDestination(double distanceToDestination) {
         this.distanceToDestination = distanceToDestination;
     }
 
-    /** Gets the type of destination for the vehicle 
+    /** Gets the type of destination for the vehicle
      *  @return the vehicle's destination type
      */
     public String getDestinationType() {
         return destinationType;
     }
 
-    /** Sets the type of destination for the vehicle ("Coordinates", "Settlement" or "None") 
+    /** Sets the type of destination for the vehicle ("Coordinates", "Settlement" or "None")
      *  @param the vehicle's destination type
      */
     public void setDestinationType(String destinationType) {
         this.destinationType = destinationType;
     }
 
-    /** Sets the destination coordinates 
+    /** Sets the destination coordinates
      *  @param destinationCoords the vehicle's destination location
      */
     public void setDestination(Coordinates destinationCoords) {
@@ -540,14 +543,14 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Returns the destination coordinates.
-     *  (null if no destination). 
+     *  (null if no destination).
      *  @return the vehicle's destination location
      */
     public Coordinates getDestination() {
         return destinationCoords;
     }
 
-    /** Sets the destination settlement 
+    /** Sets the destination settlement
      *  @param destinationSettlement the vehicle's destination settlement
      */
     public void setDestinationSettlement(Settlement destinationSettlement) {
@@ -559,51 +562,51 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Returns the destination settlement.
-     *  (null if no destination settlement). 
+     *  (null if no destination settlement).
      *  @return the vehicle's destination settlement
      */
     public Settlement getDestinationSettlement() {
         return destinationSettlement;
     }
-    
+
     /** Returns the ETA (Estimated Time of Arrival)
      *  @return ETA as string ("13-Adir-05  056.349")
      */
     public String getETA() {
-        if (estimatedTimeOfArrival != null) 
+        if (estimatedTimeOfArrival != null)
             return estimatedTimeOfArrival.getTimeStamp();
         else return "";
     }
-    
+
     /** Sets the ETA (Estimated Time of Arrival) of the vehicle.
      *  @param newETA new ETA of the vehicle
      */
     public void setETA(MarsClock newETA) {
         this.estimatedTimeOfArrival = newETA;
     }
-            
-    /** Returns the vehicle's size. 
+
+    /** Returns the vehicle's size.
      *  @return the vehicle's size
      */
     public int getSize() {
         return vehicleSize;
     }
 
-    /** Sets the vehicle's size. 
+    /** Sets the vehicle's size.
      *  @param size the vehicle's size
      */
     void setSize(int size) {
         vehicleSize = size;
     }
 
-    /** Adds a potential mechanical failure for the vehicle. 
+    /** Adds a potential mechanical failure for the vehicle.
      *  @param failureName the name of the mechanical failure
      */
     public void addPotentialFailure(String failureName) {
         potentialFailures.put(failureName, new Integer(1));
     }
 
-    /** Returns the vehicle's current mechanical failure. 
+    /** Returns the vehicle's current mechanical failure.
      *  @return the vehicle's current mechanical failure
      */
     public MechanicalFailure getMechanicalFailure() {
@@ -611,7 +614,7 @@ public abstract class Vehicle extends Unit implements Serializable {
     }
 
     /** Creates a new mechanical failure for the vehicle from its list
-     *  of potential failures. 
+     *  of potential failures.
      */
     public void newMechanicalFailure() {
         Object keys[] = potentialFailures.keySet().toArray();
@@ -639,7 +642,7 @@ public abstract class Vehicle extends Unit implements Serializable {
         // System.out.println(name + " has mechanical failure: " + mechanicalFailure.getName());
     }
 
-    /** Add work to periodic vehicle maintenance. 
+    /** Add work to periodic vehicle maintenance.
      *  @param time amount of work time added to vehicle maintenance (in millisols)
      */
     public void addWorkToMaintenance(double time) {
@@ -658,14 +661,14 @@ public abstract class Vehicle extends Unit implements Serializable {
         }
     }
 
-    /** Returns the current amount of work towards maintenance. 
+    /** Returns the current amount of work towards maintenance.
      *  @return the current amount of work towards maintenance
      */
     public double getCurrentMaintenanceWork() {
         return maintenanceWork;
     }
 
-    /** Returns the total amount of work needed for maintenance. 
+    /** Returns the total amount of work needed for maintenance.
      *  @return the total amount of work needed for maintenance
      */
     public double getTotalMaintenanceWork() {
