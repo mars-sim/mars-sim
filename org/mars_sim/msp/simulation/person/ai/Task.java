@@ -28,6 +28,7 @@ abstract class Task implements Serializable {
     protected String phase;           // Phase of task completion
     protected double phaseTimeRequired;  // Amount of time required to complete current phase. (in microsols)
     protected double phaseTimeCompleted; // Amount of time completed on the current phase. (in microsols)
+    protected boolean effortDriven;     // Is this task effort driven
 
     /** Constructs a Task object
      *  @param name the name of the task
@@ -44,6 +45,15 @@ abstract class Task implements Serializable {
         description = name;
         subTask = null;
         phase = "";
+        effortDriven = false;
+    }
+
+    /**
+     * Return the value of the effort driven flag.
+     * @return Effort driven.
+     */
+    public boolean getEffortDriven() {
+        return effortDriven;
     }
 
     /** Returns the name of the task.

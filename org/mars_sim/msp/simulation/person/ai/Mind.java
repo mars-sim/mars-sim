@@ -47,7 +47,7 @@ public class Mind implements Serializable {
         boolean activeMission = (mission != null);
 
         if (taskManager.hasActiveTask()) {
-            taskManager.performTask(time);
+            taskManager.performTask(time, person.getPerformanceRating());
         }
         else {
             if (activeMission) mission.performMission(person);

@@ -212,7 +212,7 @@ public class Person extends Unit implements Serializable {
             // Person
             if (health.timePassing(time, support, props)) {
                 // Mins action is descreased according to any illness
-                mind.takeAction(time * getPerformanceRating());
+                mind.takeAction(time);
             }
             else {
                 // Person has died as a result of physical condition

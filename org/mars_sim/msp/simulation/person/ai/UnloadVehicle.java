@@ -13,18 +13,21 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
-/** The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle. 
+/** The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle.
  */
 class UnloadVehicle extends Task implements Serializable {
 
     // The amount of resources (kg) one person can unload per millisol.
     private static double UNLOAD_RATE = 10D;
 
+    // THe amount of Oxygen that should be left
+    private static double MINIMUMOXYGEN = 50D;
+
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
     private StoreroomFacility stores;  // The settlement's stores.
 
-    /** Constructs a UnloadVehicle object. 
+    /** Constructs a UnloadVehicle object.
      *
      *  @param person the person to perform the task
      *  @param mars the virtual Mars
@@ -39,11 +42,11 @@ class UnloadVehicle extends Task implements Serializable {
         FacilityManager facilities = settlement.getFacilityManager();
         stores = (StoreroomFacility) facilities.getFacility("Storerooms");
 
-        // System.out.println(person.getName() + " is unloading " + vehicle.getName()); 
+        // System.out.println(person.getName() + " is unloading " + vehicle.getName());
     }
 
-    /** Performs this task for a given period of time 
-     *  @param time amount of time to perform task (in millisols) 
+    /** Performs this task for a given period of time
+     *  @param time amount of time to perform task (in millisols)
      */
     double performTask(double time) {
         double timeLeft = super.performTask(time);
@@ -57,31 +60,35 @@ class UnloadVehicle extends Task implements Serializable {
         stores.addFuel(fuelAmount);
         vehicle.consumeFuel(fuelAmount);
         amountUnloading -= fuelAmount;
-        // if (fuelAmount > 0D) System.out.println(person.getName() + " unloading " + fuelAmount + " fuel from " + vehicle.getName());        
+        // if (fuelAmount > 0D) System.out.println(person.getName() + " unloading " + fuelAmount + " fuel from " + vehicle.getName());
 
-        // Unload oxygen 
-        double oxygenAmount = vehicle.getOxygen();
+        // Unload oxygen. Always keep a minimum amount in the tank to allow
+        // for slow people leaving vehicle
+        double oxygenAmount = vehicle.getOxygen() - MINIMUMOXYGEN;
+        if (oxygenAmount < 0) {
+            oxygenAmount = 0;
+        }
         if (oxygenAmount > amountUnloading) oxygenAmount = amountUnloading;
         stores.addOxygen(oxygenAmount);
         vehicle.removeOxygen(oxygenAmount);
         amountUnloading -= oxygenAmount;
-        // if (oxygenAmount > 0D) System.out.println(person.getName() + " unloading " + oxygenAmount + " oxygen from " + vehicle.getName());       
- 
-        // Unload water 
+        // if (oxygenAmount > 0D) System.out.println(person.getName() + " unloading " + oxygenAmount + " oxygen from " + vehicle.getName());
+
+        // Unload water
         double waterAmount = vehicle.getWater();
         if (waterAmount > amountUnloading) waterAmount = amountUnloading;
         stores.addWater(waterAmount);
         vehicle.removeWater(waterAmount);
         amountUnloading -= waterAmount;
-        // if (waterAmount > 0D) System.out.println(person.getName() + " unloading " + waterAmount + " water from " + vehicle.getName());       
+        // if (waterAmount > 0D) System.out.println(person.getName() + " unloading " + waterAmount + " water from " + vehicle.getName());
 
-        // Unload Food 
+        // Unload Food
         double foodAmount = vehicle.getFood();
         if (foodAmount > amountUnloading) foodAmount = amountUnloading;
         stores.addFood(foodAmount);
         vehicle.removeFood(foodAmount);
         amountUnloading -= foodAmount;
-        // if (foodAmount > 0D) System.out.println(person.getName() + " unloading " + foodAmount + " food from " + vehicle.getName());       
+        // if (foodAmount > 0D) System.out.println(person.getName() + " unloading " + foodAmount + " food from " + vehicle.getName());
 
         if (isFullyUnloaded()) done = true;
 
@@ -93,12 +100,12 @@ class UnloadVehicle extends Task implements Serializable {
      */
     public boolean isFullyUnloaded() {
         boolean result = true;
-    
+
         if (vehicle.getFuel() != 0D) result = false;
-        if (vehicle.getOxygen() != 0D) result = false;
+        if (vehicle.getOxygen() >= MINIMUMOXYGEN) result = false;
         if (vehicle.getWater() != 0D) result = false;
         if (vehicle.getFood() != 0D) result = false;
- 
+
         return result;
     }
 }

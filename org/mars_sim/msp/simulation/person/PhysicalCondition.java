@@ -275,6 +275,8 @@ public class PhysicalCondition implements Serializable {
             // If in a settlement, then maybe shelf heel
             canStartRecovery(person.getSettlement());
         }
+
+        System.out.println(person.getName() + " = " + getHealthSituation());
     }
 
     /**
@@ -300,7 +302,7 @@ public class PhysicalCondition implements Serializable {
             illnessDuration = 0;
 
             // If no recovery period, then it's done.
-            isRecovering = (illness.getRecoveryPeriod() == 0);
+            isRecovering = (illness.getRecoveryPeriod() > 0);
             if (!isRecovering) {
                 illness = null;
             }

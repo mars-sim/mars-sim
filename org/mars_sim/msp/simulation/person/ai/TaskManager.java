@@ -27,7 +27,7 @@ public class TaskManager implements Serializable {
     private VirtualMars mars; // The virtual Mars
 
     // Array of available tasks
-    private Class[] availableTasks = { Relax.class, TendGreenhouse.class, MaintainVehicle.class, 
+    private Class[] availableTasks = { Relax.class, TendGreenhouse.class, MaintainVehicle.class,
                                        Sleep.class, EatMeal.class, RepairMechanicalFailure.class,
                                        ReserveGroundVehicle.class, LoadVehicle.class, EnterVehicle.class,
                                        DriveGroundVehicle.class, ExitVehicle.class, UnloadVehicle.class,
@@ -39,12 +39,12 @@ public class TaskManager implements Serializable {
      */
     public TaskManager(Mind mind, VirtualMars mars) {
         // Initialize data members
-        this.mind = mind; 
+        this.mind = mind;
         this.mars = mars;
         currentTask = null;
     }
 
-    /** Returns true if person has an active task. 
+    /** Returns true if person has an active task.
      *  @return true if person has an active task
      */
     public boolean hasActiveTask() {
@@ -94,7 +94,7 @@ public class TaskManager implements Serializable {
         currentTask = null;
     }
 
-    /** Adds a task to the stack of tasks. 
+    /** Adds a task to the stack of tasks.
      *  @param Task the task to be added
      */
     void addTask(Task Task) {
@@ -104,10 +104,16 @@ public class TaskManager implements Serializable {
 
     /** Perform the current task for a given amount of time.
      *  @param time amount of time to perform the action
+     *  @param effciency The performance rating of person performance task.
      */
-    public void performTask(double time) {
-        if (currentTask != null) currentTask.performTask(time);
-        // else System.out.println("TaskManager.performTask(): currentTask is null");
+    public void performTask(double time, double effeciency) {
+        if (currentTask != null) {
+            // For effort driven task, reduce the effective time
+            if (currentTask.getEffortDriven()) {
+                time *= effeciency;
+            }
+            currentTask.performTask(time);
+        }
     }
 
     /** Gets a new task for the person based on tasks available.
@@ -116,10 +122,10 @@ public class TaskManager implements Serializable {
      */
     public Task getNewTask(double totalProbabilityWeight) {
 
-        // Initialize parameters 
+        // Initialize parameters
         Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
         Object[] parametersForInvokingMethod = { mind.getPerson(), mars };
-        
+
         // Get a random number from 0 to the total weight
         double r = RandomUtil.getRandomDouble(totalProbabilityWeight);
 
@@ -134,12 +140,12 @@ public class TaskManager implements Serializable {
                     if (r < weight) task = availableTasks[x];
                     else r -= weight;
                 }
-            } 
+            }
             catch (Exception e) {
                 // System.out.println("TaskManager.getNewTask() (1): " + e.toString());
             }
         }
-        
+
         // Construct the task
         try {
             Constructor construct = (task.getConstructor(parametersForFindingMethod));
@@ -156,10 +162,10 @@ public class TaskManager implements Serializable {
     public double getTotalTaskProbability() {
         double result = 0D;
 
-        // Initialize parameters 
+        // Initialize parameters
         Class[] parametersForFindingMethod = { Person.class, VirtualMars.class };
         Object[] parametersForInvokingMethod = { mind.getPerson(), mars };
-        
+
         // Sum the probable weights of each available task.
         for (int x = 0; x < availableTasks.length; x++) {
             try {
