@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.74 2002-01-24
+ * @version 2.74 2002-01-29
  * @author Scott Davis
  */
 
@@ -69,6 +69,7 @@ public abstract class Unit implements Serializable {
      */
     public void setCoordinates(Coordinates newLocation) {
         location.setCoords(newLocation);
+        getInventory().setCoordinates(newLocation);	
     }
 
     /** Time passing for unit.
@@ -91,6 +92,20 @@ public abstract class Unit implements Serializable {
      */
     public Unit getContainerUnit() {
         return containerUnit;
+    }
+
+    /** Gets the topmost container unit that owns this unit.
+     *  Returns null if unit has no container unit.
+     *  @return the unit's topmost container unit
+     */
+    public Unit getTopContainerUnit() {
+    
+        Unit topUnit = getContainerUnit();
+	while (topUnit != null) {
+	    topUnit = topUnit.getContainerUnit();
+	}
+
+	return topUnit;
     }
 
     /** Sets the unit's container unit.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.73 2001-12-06
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -11,10 +11,7 @@ import java.util.*;
 import java.io.Serializable;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
-import org.mars_sim.msp.simulation.structure.FacilityManager;
-import org.mars_sim.msp.simulation.structure.StoreroomFacility;
+import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.person.ai.*;
 
@@ -41,8 +38,6 @@ public class Person extends Unit implements Serializable {
 
 
     // Data members
-    private Settlement settlement; // Person's current settlement
-    private Vehicle vehicle; // Vehicle person is riding in
     private NaturalAttributeManager attributes; // Manager for Person's natural attributes
     private SkillManager skills; // Manager for Person's skills
     private Mind mind; // Person's mind
@@ -59,7 +54,7 @@ public class Person extends Unit implements Serializable {
         super(name, settlement.getCoordinates(), mars);
 
         initPersonData(mars);
-        setSettlement(settlement);
+	settlement.getInventory().addUnit(this);
     }
 
     /** Constructs a Person object
@@ -80,14 +75,14 @@ public class Person extends Unit implements Serializable {
         while (i.hasNext()) {
             Settlement settlement = i.next();
             if (settlement.getAvailablePopulationCapacity() > 0) {
-                if (settlement.getPeopleNum() < least) {
-                    least = settlement.getPeopleNum();
+                if (settlement.getCurrentPopulationNum() < least) {
+                    least = settlement.getCurrentPopulationNum();
                     leastPeople = settlement;
                 }
             }
         }
 
-        if (leastPeople != null) setSettlement(leastPeople);
+        if (leastPeople != null) leastPeople.getInventory().addUnit(this);
         else throw new Exception("No suitable settlements available");
 
     }
@@ -95,12 +90,17 @@ public class Person extends Unit implements Serializable {
     /** Initialize person data */
     private void initPersonData(VirtualMars mars) {
         // Initialize data members
-        vehicle = null;
         attributes = new NaturalAttributeManager();
         skills = new SkillManager(this);
         mind = new Mind(this, mars);
         locationSituation = INSETTLEMENT;
         health = new PhysicalCondition(this, mars);
+
+	// Set base mass of person.
+        baseMass = 70D;
+
+	// Set inventory total mass capacity.
+	inventory.setTotalCapacity(35D);
     }
 
     /** Returns a string for the person's relative location "In
@@ -124,37 +124,38 @@ public class Person extends Unit implements Serializable {
      *  @return the person's settlement
      */
     public Settlement getSettlement() {
-        return settlement;
+        
+        Unit topUnit = getTopContainerUnit();
+
+	if ((topUnit != null) && (topUnit instanceof Settlement)) {
+	    return (Settlement) topUnit;
+        }
+        else return null;
     }
 
     /** Get vehicle person is in, null if person is not in vehicle
      *  @return the person's vehicle
      */
     public Vehicle getVehicle() {
-        return vehicle;
+        
+        if ((containerUnit != null) && (containerUnit instanceof Vehicle)) {
+	    return (Vehicle) containerUnit;
+	}
+	else return null;
     }
 
-    /** Makes the person an inhabitant of a given settlement.
-     *  This check whether any illness can be recovered.
-     *  @param settlement the person's settlement
+    /** Sets the unit's container unit.
+     *  Overridden from Unit class.
+     *  @param containerUnit the unit to contain this unit.
      */
-    public void setSettlement(Settlement settlement) {
-        this.settlement = settlement;
-        location.setCoords(settlement.getCoordinates());
-        settlement.addPerson(this);
-        vehicle = null;
+    public void setContainerUnit(Unit containerUnit) {
+        super.setContainerUnit(containerUnit);
 
-        health.canStartRecovery(settlement);
+	if (containerUnit instanceof Settlement) {
+	    health.canStartRecovery((Settlement) containerUnit);
+	}
     }
-
-    /** Makes the person a passenger in a vehicle
-     *  @param vehicle the person's vehicle
-     */
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
-        settlement = null;
-    }
-
+    
     /** Sets the person's fatigue level
      *  @param fatigue new fatigue level
      */
@@ -175,16 +176,8 @@ public class Person extends Unit implements Serializable {
      * of the containing unit.
      */
     public void buryBody() {
-        if (vehicle != null) {
-            vehicle.removePassenger(this);
-            setCoordinates(vehicle.getCoordinates());
-            vehicle = null;
-        }
-        else if (settlement != null) {
-            settlement.personLeave(this);
-            setCoordinates(settlement.getCoordinates());
-            settlement = null;
-        }
+	
+        containerUnit.getInventory().dropUnitOutside(this);
         locationSituation = BURIED;
     }
 
@@ -263,7 +256,6 @@ public class Person extends Unit implements Serializable {
         return mind;
     }
 
-
     /**
      * Get the LifeSupport system supporting this Person. This may be from
      * the Settlement, Vehicle or Equipment.
@@ -271,20 +263,24 @@ public class Person extends Unit implements Serializable {
      * @return Life support system.
      */
     private LifeSupport getLifeSupport() {
-        LifeSupport support = null;
-        if (locationSituation.equals(INSETTLEMENT)) {
-            support = settlement.getLifeSupport();
-        }
-        else support = vehicle;
 
-        return support;
+        Unit topUnit = getContainerUnit();
+	while (topUnit != null) {
+	    if (topUnit instanceof LifeSupport) return (LifeSupport) topUnit;
+	}
+
+	if (inventory.containsUnit(LifeSupport.class)) {
+            return (LifeSupport) inventory.findUnit(LifeSupport.class);
+	}
+
+	return null; 
     }
 
     /** Person consumes given amount of food
      *  @param amount amount of food to consume (in kg)
      */
     public void consumeFood(double amount) {
-        health.consumeFood(amount, getLifeSupport(),
+        health.consumeFood(amount, getContainerUnit(),
                            mars.getSimulationProperties());
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -15,15 +15,13 @@ import java.util.*;
 /** The Settlement class represents a settlement unit on virtual Mars.
  *  It contains information related to the state of the settlement.
  */
-public class Settlement extends Structure {
+public class Settlement extends Structure implements LifeSupport {
 
     // Default population capacity for a settlement
     private static int DEFAULT_POPULATION_CAPACITY = 20;
     private static Random rand = new Random();
 
     // Data members
-    Vector people; // List of inhabitants
-    Vector vehicles; // List of parked vehicles
     int populationCapacity; // The population capacity of the settlement
     FacilityManager facilityManager; // The facility manager for the settlement
 
@@ -38,11 +36,10 @@ public class Settlement extends Structure {
         super(name, location, mars);
 
         // Initialize data members
-        people = new Vector();
-        vehicles = new Vector();
         if (populationCapacity == 0) this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
         else this.populationCapacity = populationCapacity;
         facilityManager = new FacilityManager(this, mars);
+	setProperties();
     }
 
     /** Constructs a Settlement object at a random location
@@ -55,22 +52,49 @@ public class Settlement extends Structure {
         // Use Unit constructor
         super(name, new Coordinates(0D, 0D), mars);
 
-        // Determine random location of settlement, adjust so it will be less likely to be near the poles
+        // Determine random location of settlement, 
+	// adjust so it will be less likely to be near the poles.
         double settlementPhi = (rand.nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
-        // double settlementPhi = (new Random().nextGaussian() * (Math.PI / 7D)) + (Math.PI / 2D);
         if (settlementPhi > Math.PI) settlementPhi = Math.PI;
         if (settlementPhi < 0D) settlementPhi = 0D;
         double settlementTheta = (double)(Math.random() * (2D * Math.PI));
         setCoordinates(new Coordinates(settlementPhi, settlementTheta));
 
         // Initialize data members
-        people = new Vector();
-        vehicles = new Vector();
         if (populationCapacity == 0) this.populationCapacity = DEFAULT_POPULATION_CAPACITY;
         else this.populationCapacity = populationCapacity;
         facilityManager = new FacilityManager(this, mars);
+	setProperties();
     }
 
+    /** Initialize settlement properties */
+    public void setProperties() {
+        
+	// Set inventory total mass capacity.
+	inventory.setTotalCapacity(Double.MAX_VALUE);
+	
+        // Set inventory resource capacities.
+        SimulationProperties properties = mars.getSimulationProperties();
+	double fuelCap = properties.getSettlementFuelStorageCapacity();
+        inventory.setResourceCapacity(Inventory.FUEL, fuelCap);
+	double oxygenCap = properties.getSettlementOxygenStorageCapacity();
+        inventory.setResourceCapacity(Inventory.OXYGEN, oxygenCap);
+	double waterCap = properties.getSettlementWaterStorageCapacity();
+        inventory.setResourceCapacity(Inventory.WATER, waterCap);
+	double foodCap = properties.getSettlementFoodStorageCapacity();
+        inventory.setResourceCapacity(Inventory.FOOD, foodCap);
+
+	// Set random initial resources from 1/4 to 1/2 total capacity.
+	double fuel = (fuelCap / 4D) + RandomUtil.getRandomDouble(fuelCap / 4D);
+	inventory.addResource(Inventory.FUEL, fuel); 
+	double oxygen = (oxygenCap / 4D) + RandomUtil.getRandomDouble(oxygenCap / 4D);
+	inventory.addResource(Inventory.OXYGEN, oxygen); 
+	double water = (waterCap / 4D) + RandomUtil.getRandomDouble(waterCap / 4D);
+	inventory.addResource(Inventory.WATER, water); 
+	double food = (foodCap / 4D) + RandomUtil.getRandomDouble(foodCap / 4D);
+	inventory.addResource(Inventory.FOOD, food); 
+    }
+	
     /** Returns the facility manager for the settlement
      *  @return the settlement's facility manager
      */
@@ -85,123 +109,111 @@ public class Settlement extends Structure {
         return populationCapacity;
     }
 
-    /** Gets the current population of the settlement
+    /** Gets the current population number of the settlement
      *  @return the number of inhabitants
      */
-    public int getCurrentPopulation() {
-        return people.size();
+    public int getCurrentPopulationNum() {
+        return getInhabitants().size();
     }
 
+    /** Gets a collection of the inhabitants of the settlement.
+     *  @return PersonCollection of inhabitants
+     */
+    public PersonCollection getInhabitants() {
+	return inventory.getContainedUnits().getPeople();
+    }
+	
     /** Gets the current available population capacity
      *  of the settlement
      *  @return the available population capacity
      */
     public int getAvailablePopulationCapacity() {
-        return populationCapacity - people.size();
+        return getPopulationCapacity() - getCurrentPopulationNum();
     }
 
     /** Gets an array of current inhabitants of the settlement
      *  @return array of inhabitants
      */
     public Person[] getInhabitantArray() {
+	PersonCollection people = getInhabitants();
         Person[] personArray = new Person[people.size()];
-        for (int x=0; x < people.size(); x++)
-            personArray[x] = (Person) people.elementAt(x);
+	PersonIterator i = people.iterator();
+	int count = 0;
+	while (i.hasNext()) {
+	    personArray[count] = i.next();
+	    count++;
+	}
         return personArray;
-    }
+    }    
 
-    /**
-     * Get the Life Support sytsem of this settlement. This is actually the
-     * Storeroom Facility object.
-     *
-     * @return local Life Support system.
+    /** Gets a collection of vehicles parked at the settlement.
+     *  @return VehicleCollection of parked vehicles
      */
-    public LifeSupport getLifeSupport() {
-        StoreroomFacility store =
-                    (StoreroomFacility)facilityManager.getFacility("Storerooms");
-
-        return store;
+    public VehicleCollection getParkedVehicles() {
+        return inventory.getContainedUnits().getVehicles();
     }
 
-    /** Get number of inhabitants in settlement
-     *  @return the number of inhabitants
+    /** Gets the number of vehicles parked at the settlement.
+     *  @return parked vehicles number
      */
-    public int getPeopleNum() {
-        return people.size();
+    public int getParkedVehicleNum() {
+        return getParkedVehicles().size();
     }
-
-    /** Get number of parked vehicles in settlement
-     *  @return the number of parked vehicles
+    
+    /** Returns true if life support is working properly and is not out
+     *  of oxygen or water.
+     *  @return true if life support is OK
      */
-    public int getVehicleNum() {
-        return vehicles.size();
+    public boolean lifeSupportCheck() {
+        boolean result = true;
+
+	if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
+	if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
+
+	// need to also check for temp and air pressure
+	
+	return result;
     }
 
-    /** Get an inhabitant at a given vector index
-     *  @param index the inhabitant's index
-     *  @return the inhabitant
+    /** Gets the number of people the life support can provide for.
+     *  @return the capacity of the life support system
      */
-    public Person getPerson(int index) {
-        if (index < people.size()) {
-            return (Person) people.elementAt(index);
-        } else {
-            return null;
-        }
+    public int getLifeSupportCapacity() {
+        return getPopulationCapacity();
     }
-
-    /** Get a parked vehicle at a given vector index.
-     *  @param the vehicle's index
-     *  @return the vehicle
+    
+    /** Gets oxygen from system.
+     *  @param amountRequested the amount of oxygen requested from system (kg)
+     *  @return the amount of oxgyen actually received from system (kg)
      */
-    public Vehicle getVehicle(int index) {
-        if (index < vehicles.size()) {
-            return (Vehicle) vehicles.elementAt(index);
-        } else {
-            return null;
-        }
+    public double provideOxygen(double amountRequested) {
+         return inventory.removeResource(Inventory.OXYGEN, amountRequested);
     }
-
-    /** Determines if given person is an inhabitant of this settlement.
-     *  @return true if person is an inhabitant of this settlement
+    
+    /** Gets water from system.
+     *  @param amountRequested the amount of water requested from system (kg)
+     *  @return the amount of water actually received from system (kg)
      */
-    public boolean isInhabitant(Person person) {
-        boolean result = false;
-        for (int x=0; x < people.size(); x++) {
-            if (people.contains(person)) result = true;
-        }
-        return result;
+    public double provideWater(double amountRequested) {
+        return inventory.removeResource(Inventory.WATER, amountRequested);
     }
 
-    /** Bring in a new inhabitant
-     *  @param newPerson the new person
+    /** Gets the air pressure of the life support system.
+     *  @return air pressure (atm)
      */
-    public void addPerson(Person newPerson) {
-        if (!isInhabitant(newPerson)) people.addElement(newPerson);
+    public double getAirPressure() {
+        // Return 1 atm for now
+        return 1D;
     }
 
-    /** Make a given inhabitant leave the settlement
-     *  @param person the person leaving
+    /** Gets the temperature of the life support system.
+     *  @return temperature (degrees C)
      */
-    public void personLeave(Person person) {
-        if (people.contains(person)) {
-            people.removeElement(person);
-        }
+    public double getTemperature() {
+        // Return 25 degrees celsius for now
+	return 25D;
     }
-
-    /** Bring in a new vehicle to be parked
-     *  @param newVehicle the new vehicle
-     */
-    public void addVehicle(Vehicle newVehicle) {
-        if (!vehicles.contains(newVehicle)) vehicles.addElement(newVehicle);
-    }
-
-    /** Make a given vehicle leave the settlement
-     *  @param vehicle the vehicle leaving
-     */
-    public void vehicleLeave(Vehicle vehicle) {
-        if (vehicles.contains(vehicle)) vehicles.removeElement(vehicle);
-    }
-
+    
     /** Perform time-related processes
      *  @param time the amount of time passing (in millisols)
      */

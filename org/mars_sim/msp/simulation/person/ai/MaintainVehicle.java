@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainVehicle.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -35,18 +35,19 @@ class MaintainVehicle extends Task implements Serializable {
         settlement = person.getSettlement();
         garage = (MaintenanceGarageFacility) settlement.getFacilityManager().getFacility("Maintenance Garage");
 
-        // Create vector of vehicles needing maintenance.
-        Vector vehiclesNeedingMaint = new Vector();
-        for (int x = 0; x < settlement.getVehicleNum(); x++) {
-            Vehicle tempVehicle = settlement.getVehicle(x);
+        // Create collection of vehicles needing maintenance.
+        VehicleCollection vehiclesNeedingMaint = new VehicleCollection();
+	VehicleIterator i = settlement.getParkedVehicles().iterator();
+	while (i.hasNext()) {
+            Vehicle tempVehicle = i.next(); 
             if ((tempVehicle.getDistanceLastMaintenance() > 5000) && !tempVehicle.isReserved()) {
                 if (garage.vehicleInGarage(tempVehicle))
-                    vehiclesNeedingMaint.addElement(tempVehicle);
+                    vehiclesNeedingMaint.add(tempVehicle);
                 else {
                     if (garage.getMaxVehicleSize() >= tempVehicle.getSize()) {
                         if ((garage.getMaxSizeCapacity() - garage.getTotalSize()) >=
                                 tempVehicle.getSize())
-                            vehiclesNeedingMaint.addElement(tempVehicle);
+                            vehiclesNeedingMaint.add(tempVehicle);
                     }
                 }
             }
@@ -55,14 +56,20 @@ class MaintainVehicle extends Task implements Serializable {
         // Choose one of the vehicles needing maintenance.
         if (vehiclesNeedingMaint.size() > 0) {
             int vehicleNum = RandomUtil.getRandomInt(vehiclesNeedingMaint.size() - 1);
-            vehicle = (Vehicle) vehiclesNeedingMaint.elementAt(vehicleNum);
-            if (!garage.vehicleInGarage(vehicle))
-                garage.addVehicle(vehicle);
+	    Vehicle randVehicle = null;
+	    int count = 0;
+	    VehicleIterator j = settlement.getParkedVehicles().iterator();
+	    while (i.hasNext()) {
+	        Vehicle vehicle = i.next();
+		if (vehicleNum == count) randVehicle = vehicle;
+	    }
+            if (!garage.vehicleInGarage(vehicle)) garage.addVehicle(vehicle);
             name = "Performing Maintenance on " + vehicle.getName();
             description = name;
             vehicle.setStatus("Periodic Maintenance");
             // System.out.println(person.getName() + " " + name);
-        } else done = true;
+        } 
+	else done = true;
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -75,8 +82,9 @@ class MaintainVehicle extends Task implements Serializable {
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            for (int x = 0; x < settlement.getVehicleNum(); x++) {
-                Vehicle vehicle = settlement.getVehicle(x);
+	    VehicleIterator i = settlement.getParkedVehicles().iterator();
+	    while (i.hasNext()) {
+                Vehicle vehicle = i.next();
                 if ((vehicle.getDistanceLastMaintenance() > 5000) && !vehicle.isReserved())
                     result = 25D;
             }

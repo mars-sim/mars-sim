@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -20,12 +20,12 @@ class UnloadVehicle extends Task implements Serializable {
     // The amount of resources (kg) one person can unload per millisol.
     private static double UNLOAD_RATE = 10D;
 
-    // THe amount of Oxygen that should be left
+    // The amount of Oxygen that should be left
     private static double MINIMUMOXYGEN = 50D;
 
     // Data members
-    private Vehicle vehicle;  // The vehicle that needs to be loaded.
-    private StoreroomFacility stores;  // The settlement's stores.
+    private Vehicle vehicle;  // The vehicle that needs to be unloaded.
+    private Settlement settlement; // The settlement the person is unloading to.
 
     /** Constructs a UnloadVehicle object.
      *
@@ -38,9 +38,7 @@ class UnloadVehicle extends Task implements Serializable {
 
         this.vehicle = vehicle;
 
-        Settlement settlement = person.getSettlement();
-        FacilityManager facilities = settlement.getFacilityManager();
-        stores = (StoreroomFacility) facilities.getFacility("Storerooms");
+        settlement = person.getSettlement();
 
         // System.out.println(person.getName() + " is unloading " + vehicle.getName());
     }
@@ -55,40 +53,41 @@ class UnloadVehicle extends Task implements Serializable {
         double amountUnloading = UNLOAD_RATE * time;
 
         // Unload fuel
-        double fuelAmount = vehicle.getFuel();
+	double fuelAmount = vehicle.getInventory().getResourceMass(Inventory.FUEL);
         if (fuelAmount > amountUnloading) fuelAmount = amountUnloading;
-        stores.addFuel(fuelAmount);
-        vehicle.consumeFuel(fuelAmount);
+	vehicle.getInventory().removeResource(Inventory.FUEL, fuelAmount);
+	settlement.getInventory().addResource(Inventory.FUEL, fuelAmount);
         amountUnloading -= fuelAmount;
-        // if (fuelAmount > 0D) System.out.println(person.getName() + " unloading " + fuelAmount + " fuel from " + vehicle.getName());
 
         // Unload oxygen. Always keep a minimum amount in the tank to allow
         // for slow people leaving vehicle
-        double oxygenAmount = vehicle.getOxygen() - MINIMUMOXYGEN;
-        if (oxygenAmount < 0) {
-            oxygenAmount = 0;
-        }
+	double oxygenAmount = vehicle.getInventory().getResourceMass(Inventory.OXYGEN) - MINIMUMOXYGEN;
+        if (oxygenAmount < 0D) oxygenAmount = 0D;
         if (oxygenAmount > amountUnloading) oxygenAmount = amountUnloading;
-        stores.addOxygen(oxygenAmount);
-        vehicle.removeOxygen(oxygenAmount);
+	vehicle.getInventory().removeResource(Inventory.OXYGEN, oxygenAmount);
+	settlement.getInventory().addResource(Inventory.OXYGEN, oxygenAmount);
         amountUnloading -= oxygenAmount;
-        // if (oxygenAmount > 0D) System.out.println(person.getName() + " unloading " + oxygenAmount + " oxygen from " + vehicle.getName());
 
         // Unload water
-        double waterAmount = vehicle.getWater();
+	double waterAmount = vehicle.getInventory().getResourceMass(Inventory.WATER);
         if (waterAmount > amountUnloading) waterAmount = amountUnloading;
-        stores.addWater(waterAmount);
-        vehicle.removeWater(waterAmount);
+	vehicle.getInventory().removeResource(Inventory.WATER, waterAmount);
+	settlement.getInventory().addResource(Inventory.WATER, waterAmount);
         amountUnloading -= waterAmount;
-        // if (waterAmount > 0D) System.out.println(person.getName() + " unloading " + waterAmount + " water from " + vehicle.getName());
 
         // Unload Food
-        double foodAmount = vehicle.getFood();
+	double foodAmount = vehicle.getInventory().getResourceMass(Inventory.FOOD);
         if (foodAmount > amountUnloading) foodAmount = amountUnloading;
-        stores.addFood(foodAmount);
-        vehicle.removeFood(foodAmount);
+	vehicle.getInventory().removeResource(Inventory.FOOD, foodAmount);
+	settlement.getInventory().addResource(Inventory.FOOD, foodAmount);
         amountUnloading -= foodAmount;
-        // if (foodAmount > 0D) System.out.println(person.getName() + " unloading " + foodAmount + " food from " + vehicle.getName());
+
+        // Unload Rock Samples 
+	double rockAmount = vehicle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
+        if (rockAmount > amountUnloading) rockAmount = amountUnloading;
+	vehicle.getInventory().removeResource(Inventory.ROCK_SAMPLES, rockAmount);
+	settlement.getInventory().addResource(Inventory.ROCK_SAMPLES, rockAmount);
+        amountUnloading -= rockAmount;
 
         if (isFullyUnloaded(vehicle)) done = true;
 
@@ -103,10 +102,11 @@ class UnloadVehicle extends Task implements Serializable {
     static public boolean isFullyUnloaded(Vehicle vehicle) {
         boolean result = true;
 
-        if (vehicle.getFuel() != 0D) result = false;
-        if (vehicle.getOxygen() > MINIMUMOXYGEN) result = false;
-        if (vehicle.getWater() != 0D) result = false;
-        if (vehicle.getFood() != 0D) result = false;
+        if (vehicle.getInventory().getResourceMass(Inventory.FUEL) != 0D) result = false;
+        if (vehicle.getInventory().getResourceMass(Inventory.OXYGEN) > MINIMUMOXYGEN) result = false;
+        if (vehicle.getInventory().getResourceMass(Inventory.WATER) != 0D) result = false;
+        if (vehicle.getInventory().getResourceMass(Inventory.FOOD) != 0D) result = false;
+        if (vehicle.getInventory().getResourceMass(Inventory.ROCK_SAMPLES) != 0D) result = false;
 
         return result;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -18,8 +18,6 @@ import java.io.Serializable;
 public class InsituResourceProcessorFacility extends Facility 
                 implements Serializable {
 
-    private StoreroomFacility stores;  // The settlement's storerooms
-
     /** Constructs a InsituResourceProcessorFacility object.
      *  @param manager the manager of the processor facility.
      */
@@ -27,15 +25,13 @@ public class InsituResourceProcessorFacility extends Facility
         
         // User Facility's constructor
         super(manager, "INSITU Resource Processor");
-
-        stores = (StoreroomFacility) manager.getFacility("Storerooms");
     }
     
     /** Returns number of oxygen units that processor is generatng in a millisol.
      *  @return amount of oxygen (kg)
      */
     public double getOxygenRate() {
-        int currentPop = manager.getSettlement().getCurrentPopulation();
+        int currentPop = manager.getSettlement().getCurrentPopulationNum();
         SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
         double result = (currentPop * properties.getPersonOxygenConsumption()) + 6D;
         result /= 1000D;
@@ -46,7 +42,7 @@ public class InsituResourceProcessorFacility extends Facility
      *  @return amount of water (kg)
      */
     public double getWaterRate() {
-        int currentPop = manager.getSettlement().getCurrentPopulation();
+        int currentPop = manager.getSettlement().getCurrentPopulationNum();
         SimulationProperties properties = manager.getVirtualMars().getSimulationProperties();
         double result = (currentPop * properties.getPersonWaterConsumption()) + 6D;
         result /= 1000D;
@@ -57,7 +53,7 @@ public class InsituResourceProcessorFacility extends Facility
      *  @return amount of fuel (kg) 
      */
     public double getFuelRate() {
-        int currentPop = manager.getSettlement().getCurrentPopulation();
+        int currentPop = manager.getSettlement().getCurrentPopulationNum();
         double result = (currentPop * 10D) + 6D;
         result /= 1000D;
         return result;
@@ -67,9 +63,10 @@ public class InsituResourceProcessorFacility extends Facility
      *  @param amount of time passing (in millisols) 
      */
     void timePassing(double time) {
-        stores.addOxygen(getOxygenRate() * time);
-        stores.addWater(getWaterRate() * time);
-        stores.addFuel(getFuelRate() * time);
+        Inventory inv = manager.getSettlement().getInventory();
+        inv.addResource(Inventory.OXYGEN, getOxygenRate() * time);
+        inv.addResource(Inventory.WATER, getWaterRate() * time);
+        inv.addResource(Inventory.FUEL, getFuelRate() * time);
     }
 }
 

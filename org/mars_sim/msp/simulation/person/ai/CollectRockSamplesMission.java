@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -190,8 +190,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         }
 
         // Make final preperations on vehicle.
-        startingSettlement.vehicleLeave(vehicle);
-        vehicle.setSettlement(null);
+	startingSettlement.getInventory().dropUnit(vehicle);
         destination = (Coordinates) collectionSites.elementAt(0);
         vehicle.setDestination(destination);
         vehicle.setDestinationType("Coordinates");
@@ -272,7 +271,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private void disembarkingPhase(Person person) {
 
         // Make sure vehicle is parked at settlement.
-        vehicle.setSettlement(startingSettlement);
+	startingSettlement.getInventory().addUnit(vehicle);
         vehicle.setDestinationSettlement(null);
         vehicle.setDestinationType("None");
         vehicle.setStatus("Parked");
@@ -361,11 +360,13 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private boolean isVehicleLoaded() {
         boolean result = true;
 
-        if (vehicle.getFuel() < vehicle.getFuelCapacity()) result = false;
-        if (vehicle.getOxygen() < vehicle.getOxygenCapacity()) result = false;
-        if (vehicle.getWater() < vehicle.getWaterCapacity()) result = false;
-        if (vehicle.getFood() < vehicle.getFoodCapacity()) result = false;
-
+        Inventory i = vehicle.getInventory();
+	
+	if (i.getResourceRemainingCapacity(Inventory.FUEL) > 0D) result = false;
+	if (i.getResourceRemainingCapacity(Inventory.OXYGEN) > 0D) result = false;
+	if (i.getResourceRemainingCapacity(Inventory.WATER) > 0D) result = false;
+	if (i.getResourceRemainingCapacity(Inventory.FOOD) > 0D) result = false;
+	
         return result;
     }
 

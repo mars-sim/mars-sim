@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Barry Evans
  */
 
@@ -17,18 +17,18 @@ import org.mars_sim.msp.simulation.structure.*;
 public class SettlementTableModel extends UnitTableModel {
 
     // Column indexes
-    private final static int  NAME = 0;           // Person name column
-    private final static int  POPULATION = 1;
-    private final static int  GARAGED = 2;
-    private final static int  PARKED = 3;
-    private final static int  GROWING = 4;
-    private final static int  GREENHOUSE = 5;
-    private final static int  OXYGEN = 6;
-    private final static int  WATER = 7;
-    private final static int  FOOD = 8;
-    private final static int  FUEL = 9;
+    private final static int NAME = 0;           // Person name column
+    private final static int POPULATION = 1;
+    private final static int GARAGED = 2;
+    private final static int PARKED = 3;
+    private final static int GROWING = 4;
+    private final static int GREENHOUSE = 5;
+    private final static int OXYGEN = 6;
+    private final static int WATER = 7;
+    private final static int FOOD = 8;
+    private final static int FUEL = 9;
 
-    private final static int  COLUMNCOUNT = 10;    // The number of Columns
+    private final static int COLUMNCOUNT = 10;    // The number of Columns
 
     // Data members
     private String columnNames[]; // Names of Columns
@@ -91,8 +91,6 @@ public class SettlementTableModel extends UnitTableModel {
         Object result = null;
         Settlement settle = (Settlement)getUnit(rowIndex).getUnit();
         FacilityManager fMgr = settle.getFacilityManager();
-        StoreroomFacility store = (StoreroomFacility)
-                                fMgr.getFacility("Storerooms");
 
         // Invoke the appropriate method, switch is the best solution
         // althought disliked by some
@@ -102,24 +100,28 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-                result = new Integer(new Float(store.getWaterStores()).intValue());
+	        double water = settle.getInventory().getResourceMass(Inventory.WATER);
+                result = new Integer((int) water);
             } break;
 
             case FOOD : {
-                result = new Integer(new Float(store.getFoodStores()).intValue());
+	        double food = settle.getInventory().getResourceMass(Inventory.FOOD);
+                result = new Integer((int) food);
             } break;
 
             case OXYGEN : {
-                result = new Integer(new Float(store.getOxygenStores()).intValue());
+	        double oxygen = settle.getInventory().getResourceMass(Inventory.OXYGEN);
+                result = new Integer((int) oxygen);
             } break;
 
             case FUEL : {
-                result = new Integer(new Float(store.getFuelStores()).intValue());
+	        double fuel = settle.getInventory().getResourceMass(Inventory.FUEL);
+                result = new Integer((int) fuel);
             } break;
 
             case POPULATION : {
                 StringBuffer buffer = new StringBuffer();
-                buffer.append(settle.getCurrentPopulation());
+                buffer.append(settle.getCurrentPopulationNum());
                 buffer.append('/');
                 buffer.append(settle.getPopulationCapacity());
                 result = buffer.toString();
@@ -136,7 +138,7 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case PARKED : {
-                result = new Integer(settle.getVehicleNum());
+                result = new Integer(settle.getParkedVehicleNum());
             } break;
 
             case GROWING : {

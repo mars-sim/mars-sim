@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -22,7 +22,6 @@ class LoadVehicle extends Task implements Serializable {
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
-    private StoreroomFacility stores;  // The settlement's stores.
     private Settlement settlement; // The person's settlement.
 
     /** Constructs a LoadVehicle object.
@@ -37,8 +36,6 @@ class LoadVehicle extends Task implements Serializable {
         this.vehicle = vehicle;
 
         settlement = person.getSettlement();
-        FacilityManager facilities = settlement.getFacilityManager();
-        stores = (StoreroomFacility) facilities.getFacility("Storerooms");
     }
 
     /** Performs this task for a given period of time
@@ -53,31 +50,31 @@ class LoadVehicle extends Task implements Serializable {
         if (hasEnoughSupplies(settlement, vehicle)) {
 
             // Load fuel
-            double fuelAmount = vehicle.getFuelCapacity() - vehicle.getFuel();
+	    double fuelAmount = vehicle.getInventory().getResourceRemainingCapacity(Inventory.FUEL);
             if (fuelAmount > amountLoading) fuelAmount = amountLoading;
-            stores.removeFuel(fuelAmount);
-            vehicle.addFuel(fuelAmount);
+	    settlement.getInventory().removeResource(Inventory.FUEL, fuelAmount);
+	    vehicle.getInventory().addResource(Inventory.FUEL, fuelAmount);
             amountLoading -= fuelAmount;
 
             // Load oxygen
-            double oxygenAmount = vehicle.getOxygenCapacity() - vehicle.getOxygen();
+	    double oxygenAmount = vehicle.getInventory().getResourceRemainingCapacity(Inventory.OXYGEN);
             if (oxygenAmount > amountLoading) oxygenAmount = amountLoading;
-            stores.removeOxygen(oxygenAmount);
-            vehicle.addOxygen(oxygenAmount);
+	    settlement.getInventory().removeResource(Inventory.OXYGEN, oxygenAmount);
+	    vehicle.getInventory().addResource(Inventory.OXYGEN, oxygenAmount);
             amountLoading -= oxygenAmount;
-
+	    
             // Load water
-            double waterAmount = vehicle.getWaterCapacity() - vehicle.getWater();
+	    double waterAmount = vehicle.getInventory().getResourceRemainingCapacity(Inventory.WATER);
             if (waterAmount > amountLoading) waterAmount = amountLoading;
-            stores.removeWater(waterAmount);
-            vehicle.addWater(waterAmount);
+	    settlement.getInventory().removeResource(Inventory.WATER, waterAmount);
+	    vehicle.getInventory().addResource(Inventory.WATER, waterAmount);
             amountLoading -= waterAmount;
 
             // Load Food
-            double foodAmount = vehicle.getFoodCapacity() - vehicle.getFood();
+	    double foodAmount = vehicle.getInventory().getResourceRemainingCapacity(Inventory.FOOD);
             if (foodAmount > amountLoading) foodAmount = amountLoading;
-            stores.removeFood(foodAmount);
-            vehicle.addFood(foodAmount);
+	    settlement.getInventory().removeResource(Inventory.FOOD, foodAmount);
+	    vehicle.getInventory().addResource(Inventory.FOOD, foodAmount);
             amountLoading -= foodAmount;
         }
         else done = true;
@@ -95,20 +92,21 @@ class LoadVehicle extends Task implements Serializable {
     public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle) {
         boolean enoughSupplies = true;
 
-        FacilityManager facilities = settlement.getFacilityManager();
-        StoreroomFacility stores = (StoreroomFacility) facilities.getFacility("Storerooms");
+	double neededFuel = vehicle.getInventory().getResourceRemainingCapacity(Inventory.FUEL);
+	double storedFuel = settlement.getInventory().getResourceMass(Inventory.FUEL);
+        if (neededFuel > storedFuel - 50D) enoughSupplies = false;
 
-        double neededFuel = vehicle.getFuelCapacity() - vehicle.getFuel();
-        if (neededFuel > stores.getFuelStores() - 50D) enoughSupplies = false;
+	double neededOxygen = vehicle.getInventory().getResourceRemainingCapacity(Inventory.OXYGEN);
+	double storedOxygen = settlement.getInventory().getResourceMass(Inventory.OXYGEN);
+        if (neededOxygen > storedOxygen - 50D) enoughSupplies = false;
 
-        double neededOxygen = vehicle.getOxygenCapacity() - vehicle.getOxygen();
-        if (neededOxygen > stores.getOxygenStores() - 50D) enoughSupplies = false;
-
-        double neededWater = vehicle.getWaterCapacity() - vehicle.getWater();
-        if (neededWater > stores.getWaterStores() - 50D) enoughSupplies = false;
-
-        double neededFood = vehicle.getFoodCapacity() - vehicle.getFood();
-        if (neededFood > stores.getFoodStores() - 50D) enoughSupplies = false;
+	double neededWater = vehicle.getInventory().getResourceRemainingCapacity(Inventory.WATER);
+	double storedWater = settlement.getInventory().getResourceMass(Inventory.WATER);
+        if (neededWater > storedWater - 50D) enoughSupplies = false;
+	
+	double neededFood = vehicle.getInventory().getResourceRemainingCapacity(Inventory.FOOD);
+	double storedFood = settlement.getInventory().getResourceMass(Inventory.FOOD);
+        if (neededFood > storedFood - 50D) enoughSupplies = false;
 
         return enoughSupplies;
     }
@@ -120,10 +118,12 @@ class LoadVehicle extends Task implements Serializable {
     public static boolean isFullyLoaded(Vehicle vehicle) {
         boolean result = true;
 
-        if (vehicle.getFuel() != vehicle.getFuelCapacity()) result = false;
-        if (vehicle.getOxygen() != vehicle.getOxygenCapacity()) result = false;
-        if (vehicle.getWater() != vehicle.getWaterCapacity()) result = false;
-        if (vehicle.getFood() != vehicle.getFoodCapacity()) result = false;
+        Inventory i = vehicle.getInventory();
+
+        if (i.getResourceRemainingCapacity(Inventory.FUEL) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(Inventory.OXYGEN) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(Inventory.WATER) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(Inventory.FOOD) > 0D) result = false;
 
         return result;
     }

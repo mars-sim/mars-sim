@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 2.74 2002-01-24
+ * @version 2.74 2002-01-30
  * @author Scott Davis 
  */
 
@@ -44,6 +44,10 @@ public class Inventory implements Serializable {
 	containedResources.put(ROCK_SAMPLES, new Double(0D));
     }
 
+    public void setTotalCapacity(double mass) {
+        if (mass >= 0D) totalCapacity = mass;
+    }
+    
     public double getResourceMass(String resource) {
         if (containedResources.containsKey(resource)) {
             return ((Double) containedResources.get(resource)).doubleValue();
@@ -51,7 +55,7 @@ public class Inventory implements Serializable {
 	else return 0D;
     }
     
-    public double takeResource(String resource, double mass) {
+    public double removeResource(String resource, double mass) {
         if (containedResources.containsKey(resource)) {
 	    double containedMass = ((Double) containedResources.get(resource)).doubleValue();
 	    if (mass > containedMass) {
@@ -94,6 +98,14 @@ public class Inventory implements Serializable {
 	else return Double.MAX_VALUE;
     }
 
+    public void setResourceCapacity(String resource, double mass) {
+        resourceCapacities.put(resource, new Double(mass));
+    }
+
+    public double getResourceRemainingCapacity(String resource) {
+        return getResourceCapacity(resource) - getResourceMass(resource);
+    }
+	    
     public double getTotalCapacity() {
         return totalCapacity;
     }
@@ -116,25 +128,120 @@ public class Inventory implements Serializable {
 	return totalMass;
     }
 
+    public UnitCollection getContainedUnits() {
+        return new UnitCollection(containedUnits);
+    }
+    
     public boolean containsUnit(Unit unit) {
         return containedUnits.contains(unit);
     }
 
-    /*
-    public boolean takeUnit(Unit unit) {
+    public boolean containsUnit(Class unitClass) {
+        UnitIterator i = containedUnits.iterator();
+	while (i.hasNext()) {
+            if (unitClass.isInstance(i.next())) return true;
+	}
+	return false;
+    }
+
+    public boolean containsUnitAll(Unit unit) {
+        boolean result = false;
+	
+	// See if this unit contains the unit in question.
+        if (containedUnits.contains(unit)) result = true;
+
+	// Go though each contained unit and see it contains the unit in question.
+	UnitIterator i = containedUnits.iterator();
+	while (i.hasNext()) {
+	    if (i.next().getInventory().containsUnitAll(unit)) result = true;
+	}
+
+	return result;
+    }
+
+    public boolean canAddUnit(Unit unit) {
+        if (!containsUnitAll(unit)) {
+	    if ((unit.getMass() + getTotalMass()) <= getTotalCapacity()) {
+	        return true;
+	    }
+	}
+        return false;
+    }
+    
+    public boolean addUnit(Unit unit) {
+        if (canAddUnit(unit)) {
+	    containedUnits.add(unit);
+	    unit.setContainerUnit(owningUnit);
+	    unit.setCoordinates(owningUnit.getCoordinates());
+	    return true;
+	}
+	return false;
+    }
+   
+    public boolean takeUnit(Unit unit, Unit newOwner) {
+        if (newOwner.getInventory().canAddUnit(unit)) {
+	    if (containedUnits.contains(unit)) {
+	        containedUnits.remove(unit);
+	        newOwner.getInventory().addUnit(unit);
+	        return true;
+	    }
+	}
+	return false;
+    }
+
+    public Unit findUnit(Class unitClass) {
+        if (containsUnit(unitClass)) {
+	    UnitIterator i = containedUnits.iterator();
+	    while (i.hasNext()) {
+		Unit unit = i.next();
+	        if (unitClass.isInstance(unit)) return unit;
+		else {
+	            if (unit.getInventory().containsUnit(unitClass)) {
+	                return unit.getInventory().findUnit(unitClass);
+		    }
+		}
+	    }
+        }
+	return null;
+    }
+
+    public UnitCollection getUnitsOfClass(Class unitClass) {
+	UnitCollection result = new UnitCollection();
+        if (containsUnit(unitClass)) {
+            UnitIterator i = containedUnits.iterator();
+	    while (i.hasNext()) {
+	        Unit unit = i.next();
+		if (unitClass.isInstance(unit)) result.add(unit);
+	    }
+        }
+	return result;
+    }
+    
+    public boolean dropUnit(Unit unit) {
         if (containedUnits.contains(unit)) {
 	    containedUnits.remove(unit);
-	    
-	    if (owningUnit != null) {
-                if (!owningUnit.getInventory().addUnit(unit)) 
-		    unit.setContainerUnit(null);
-	    }
-	    else owningUnit = null;
+	   
+	    unit.setContainerUnit(null);
+	    if (owningUnit != null) owningUnit.getInventory().addUnit(unit); 
 	    
 	    return true;
 	}
 	else return false;
     }
-    */
 
+    public boolean dropUnitOutside(Unit unit) {
+        if (containedUnits.contains(unit)) {
+	    containedUnits.remove(unit);
+	    unit.setContainerUnit(null);
+	    return true;
+	}
+	else return false;
+    }
+
+    public void setCoordinates(Coordinates newLocation) {
+        UnitIterator i = containedUnits.iterator();
+	while (i.hasNext()) {
+	    i.next().setCoordinates(newLocation);
+	}
+    }
 }

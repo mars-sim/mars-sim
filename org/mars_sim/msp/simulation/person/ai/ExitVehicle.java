@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitVehicle.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-29
  * @author Scott Davis
  */
 
@@ -34,7 +34,6 @@ class ExitVehicle extends Task implements Serializable {
         // Initialize data members
         this.vehicle = vehicle;
         this.destinationSettlement = destinationSettlement;
-        // System.out.println(person.getName() + " is exiting " + vehicle.getName());
     }
 
     /** Performs this task for the given amount of time.
@@ -47,13 +46,8 @@ class ExitVehicle extends Task implements Serializable {
 
         timeCompleted += time;
         if (timeCompleted > duration) {
-
-            vehicle.removePassenger(person);
-            person.setVehicle(null);
             person.setLocationSituation(Person.INSETTLEMENT);
-            person.setSettlement(destinationSettlement);
-            destinationSettlement.addPerson(person);
-
+	    vehicle.getInventory().takeUnit(person, destinationSettlement);
             done = true;
             return timeCompleted - duration;
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementDialog.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -49,29 +50,29 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 
         DefaultListModel model = (DefaultListModel) vehicleList.getModel();
         boolean match = false;
-        int numVehicles = settlement.getVehicleNum();
+        int numVehicles = settlement.getParkedVehicleNum();
 
         // Check if vehicle list matches settlement's parked vehicles
         if (model.getSize() == numVehicles) {
             match = true;
-            for (int x = 0; x < numVehicles; x++) {
-                if (!((String) model.getElementAt(x)).equals(
-                        settlement.getVehicle(x).getName())) {
+	    int count = 0;
+	    VehicleIterator vehicleIt = settlement.getParkedVehicles().iterator();
+	    while (vehicleIt.hasNext()) {
+                if (!((String) model.elementAt(count)).equals(vehicleIt.next().getName())) {
                     match = false;
                     break;
                 }
+	        count++;
             }
         }
 
         // If no match, update vehicle list
         if (!match) {
             model.removeAllElements();
-            for (int x = 0; x < numVehicles; x++) {
-                Vehicle tempVehicle = settlement.getVehicle(x);
-                if (tempVehicle != null) {
-                    model.addElement(tempVehicle.getName());
-                }
-            }
+	    VehicleIterator vehicleIt = settlement.getParkedVehicles().iterator();
+	    while (vehicleIt.hasNext()) {
+	        model.addElement(vehicleIt.next().getName());
+	    }
             validate();
         }
     }
@@ -82,8 +83,14 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
             int index = vehicleList.locationToIndex(event.getPoint());
             if (index > -1) {
                 try {
-                    parentDesktop.openUnitWindow(
-                            proxyManager.getUnitUIProxy(settlement.getVehicle(index)));
+		    VehicleIterator i = settlement.getParkedVehicles().iterator();
+		    int count = 0;
+		    while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+		        if (index == count) {
+                            parentDesktop.openUnitWindow(proxyManager.getUnitUIProxy(vehicle));
+			}
+		    }
                 } catch (NullPointerException e) {}
             }
         }
@@ -136,8 +143,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         facilityPanes[1] = laboratoryPane;
         
         // Prepare living quarters pane
-        LivingQuartersFacility livingQuarters = (LivingQuartersFacility) facilityManager.getFacility("Living Quarters");
-        LivingQuartersFacilityPanel livingQuartersPane = new LivingQuartersFacilityPanel(livingQuarters, parentDesktop);
+        LivingQuartersFacilityPanel livingQuartersPane = new LivingQuartersFacilityPanel(settlement, parentDesktop);
         tabPane.add(livingQuartersPane, livingQuartersPane.getTabName());
         facilityPanes[2] = livingQuartersPane;
         
@@ -148,8 +154,7 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
         facilityPanes[3] = garagePane;
         
         // Prepare storeroom pane
-        StoreroomFacility storeroom = (StoreroomFacility) facilityManager.getFacility("Storerooms");
-        StoreroomFacilityPanel storeroomPane = new StoreroomFacilityPanel(storeroom, parentDesktop);
+        StoreroomFacilityPanel storeroomPane = new StoreroomFacilityPanel(settlement, parentDesktop);
         tabPane.add(storeroomPane, storeroomPane.getTabName());
         facilityPanes[4] = storeroomPane;
 
@@ -190,9 +195,8 @@ public class SettlementDialog extends UnitDialog implements MouseListener {
 
         // Prepare vehicle list
         DefaultListModel vehicleListModel = new DefaultListModel();
-        for (int x = 0; x < settlement.getVehicleNum(); x++) {
-            vehicleListModel.addElement(settlement.getVehicle(x).getName());
-        }
+	VehicleIterator i = settlement.getParkedVehicles().iterator();
+	while (i.hasNext()) vehicleListModel.addElement(i.next().getName());
         vehicleList = new JList(vehicleListModel);
         vehicleList.setVisibleRowCount(6);
         vehicleList.addMouseListener(this);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -20,27 +20,17 @@ import java.util.*;
  * It currently also provides a Life Support system for people. This
  * should be revisited soon since not all Vehicle will have LifeSupport systems.
  */
-public abstract class Vehicle extends Unit implements LifeSupport, Serializable {
+public abstract class Vehicle extends Unit implements Serializable {
 
     // Data members
     private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
     private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
     private String status; // Current status of vehicle ("Moving", "Parked") (other child-specific status allowed)
-    private Settlement settlement; // The settlement which the vehicle is parked at
-    private Vector passengers; // List of people who are passengers in vehicle
     private Person driver; // Driver of the vehicle
     private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
     private int maxPassengers = 0; // Maximum number of passengers the vehicle can carry.
-    private double fuel = 0; // Current amount of fuel in the vehicle. (kg)
-    private double fuelCapacity = 0; // Maximum amount of fuel the vehicle can carry. (kg)
-    private double oxygen = 0; // Curent amount of oxygen in the vehicle. (kg)
-    private double oxygenCapacity = 0; // Maximum amount of oxygen the vehicle can carry. (kg)
-    private double water = 0; // Curent amount of water in the vehicle. (kg)
-    private double waterCapacity = 0; // Maximum amount of water the vehicle can carry. (kg)
-    private double food = 0; // Curent amount of food in the vehicle. (kg)
-    private double foodCapacity = 0; // Maximum amount of food the vehicle can carry. (kg)
     protected double range; // Maximum range of vehicle. (km)
     private Coordinates destinationCoords; // Coordinates of the destination
     private Settlement destinationSettlement; // Destination settlement (it applicable)
@@ -64,7 +54,7 @@ public abstract class Vehicle extends Unit implements LifeSupport, Serializable 
         // use Unit constructor
         super(name, settlement.getCoordinates(), mars);
 
-        setSettlement(settlement);
+        settlement.getInventory().addUnit(this);
         initVehicleData();
     }
 
@@ -85,12 +75,12 @@ public abstract class Vehicle extends Unit implements LifeSupport, Serializable 
         SettlementIterator i = manager.getSettlements().iterator();
         while (i.hasNext()) {
             Settlement settlement = i.next();
-            if (settlement.getVehicleNum() < least) {
-                least = settlement.getVehicleNum();
+            if (settlement.getParkedVehicleNum() < least) {
+                least = settlement.getParkedVehicleNum();
                 leastVehicles = settlement;
             }
         }
-        setSettlement(leastVehicles);
+	leastVehicles.getInventory().addUnit(this);
 
         initVehicleData();
     }
@@ -99,7 +89,6 @@ public abstract class Vehicle extends Unit implements LifeSupport, Serializable 
     private void initVehicleData() {
         setStatus("Parked");
         setDestinationType("None");
-        passengers = new Vector();
         potentialFailures = new HashMap();
         totalMaintenanceWork = 1000D; // (1 sol)
         direction = new Direction(0);
@@ -171,184 +160,6 @@ public abstract class Vehicle extends Unit implements LifeSupport, Serializable 
         return range;
     }
 
-    /** Returns the current amount of fuel in the vehicle.
-     *  @return the vehicle's fuel stores (kg)
-     */
-    public double getFuel() {
-        return fuel;
-    }
-
-    /** Adds fuel to the vehicle.
-     *  @param addedFuel the amount of fuel to be added (kg)
-     */
-    public void addFuel(double addedFuel) {
-        fuel += addedFuel;
-        if (fuel > getFuelCapacity()) {
-            fuel = getFuelCapacity();
-        }
-    }
-
-    /** Consumes a portion of the vehicle's fuel.
-     *  @param consumedFuel the amount of fuel consumed (kg)
-     */
-    public void consumeFuel(double consumedFuel) {
-        boolean noFuel = (fuel == 0D);
-        fuel -= consumedFuel;
-        if (fuel < 0D) fuel = 0D;
-    }
-
-    /** Returns the fuel capacity of the vehicle.
-     *  @return the vehicle's fuel capacity (kg)
-     */
-    public double getFuelCapacity() {
-        return fuelCapacity;
-    }
-
-    /** Sets the fuel capacity of the vehicle.
-     *  @param capacity the vehicle's fuel capacity (kg)
-     */
-    void setFuelCapacity(double capacity) {
-        fuelCapacity = capacity;
-    }
-
-    /** Returns the current amount of oxygen in the vehicle.
-     *  @return the vehicle's oxygen stores (kg)
-     */
-    public double getOxygen() {
-        return oxygen;
-    }
-
-    /** Adds oxygen to the vehicle.
-     *  @param addedOxygen the amount of oxygen to be added (kg)
-     */
-    public void addOxygen(double addedOxygen) {
-        oxygen += addedOxygen;
-        if (oxygen > getOxygenCapacity()) {
-            oxygen = getOxygenCapacity();
-        }
-    }
-
-    /** Removes a portion of the vehicle's oxygen.
-     *  @param amount the amount of oxygen removed (kg)
-     *  @return Amount of oxygen actually removed (kg)
-     */
-    public double removeOxygen(double amount) {
-       double result = amount;
-        if (amount > oxygen) {
-            result = oxygen;
-            oxygen = 0;
-        }
-        else oxygen -= amount;
-
-        return result;
-    }
-
-    /** Returns the oxygen capacity of the vehicle.
-     *  @return the vehicle's oxygen capacity (kg)
-     */
-    public double getOxygenCapacity() {
-        return oxygenCapacity;
-    }
-
-    /** Sets the oxygen capacity of the vehicle.
-     *  @param capacity the vehicle's oxygen capacity (kg)
-     */
-    void setOxygenCapacity(double capacity) {
-        oxygenCapacity = capacity;
-    }
-
-    /** Returns the current amount of water in the vehicle.
-     *  @return the vehicle's water stores (kg)
-     */
-    public double getWater() {
-        return water;
-    }
-
-    /** Adds water to the vehicle.
-     *  @param addedWater the amount of water to be added (kg)
-     */
-    public void addWater(double addedWater) {
-        water += addedWater;
-        if (water > getWaterCapacity()) {
-            water = getWaterCapacity();
-        }
-    }
-
-    /** Removes water from storage.
-     *  @param amount the amount of water requested (kg)
-     *  @return the amount of water actually received (kg)
-     */
-    public double removeWater(double amount) {
-        double result = amount;
-        if (amount > water) {
-            result = water;
-            water = 0;
-        }
-        else water -= amount;
-
-        return result;
-    }
-
-    /** Returns the water capacity of the vehicle.
-     *  @return the vehicle's water capacity (kg)
-     */
-    public double getWaterCapacity() {
-        return waterCapacity;
-    }
-
-    /** Sets the water capacity of the vehicle.
-     *  @param capacity the vehicle's water capacity (kg)
-     */
-    void setWaterCapacity(double capacity) {
-        waterCapacity = capacity;
-    }
-
-    /** Returns the current amount of food in the vehicle.
-     *  @return the vehicle's food stores (kg)
-     */
-    public double getFood() {
-        return food;
-    }
-
-    /** Adds food to the vehicle.
-     *  @param addedFood the amount of food to be added (kg)
-     */
-    public void addFood(double addedFood) {
-        food += addedFood;
-        if (food > getFoodCapacity()) {
-            food = getFoodCapacity();
-        }
-    }
-
-    /** Removes food from storage.
-     *  @param amount the amount of food requested from storage (kg)
-     *  @return the amount of food actually received from storage (kg)
-     */
-    public double removeFood(double amount) {
-        double result = amount;
-        if (amount > food) {
-            result = food;
-            food = 0;
-        }
-        else food -= amount;
-
-        return result;
-    }
-
-    /** Returns the food capacity of the vehicle.
-     *  @return the vehicle's food capacity (kg)
-     */
-    public double getFoodCapacity() {
-        return foodCapacity;
-    }
-
-    /** Sets the food capacity of the vehicle.
-     *  @param capacity the vehicle's food capacity (kg)
-     */
-    void setFoodCapacity(double capacity) {
-        foodCapacity = capacity;
-    }
-
     /** Returns total distance traveled by vehicle (in km.)
      *  @return the total distanced traveled by the vehicle (in km)
      */
@@ -418,60 +229,21 @@ public abstract class Vehicle extends Unit implements LifeSupport, Serializable 
      *  @return the current number of passengers
      */
     public int getPassengerNum() {
-        return passengers.size();
+        return getPassengers().size(); 
     }
 
-    /** Returns a particular passenger by vector index number
-     *  @param index the passenger's index number
-     *  @return the passenger
+    /** Gets a collection of the vehicle's passengers.
+     *  @return PersonCollection of passengers
      */
-    public Person getPassenger(int index) {
-        Person result = null;
-        if (index < passengers.size()) {
-            result = (Person) passengers.elementAt(index);
-        }
-        return result;
+    public PersonCollection getPassengers() {
+        return inventory.getContainedUnits().getPeople();
     }
-
-    /** Returns true if a given person is currently in the vehicle
-     *  @param person the person in question
-     *  @return true if person is a passenger in the vehicle
-     */
-    public boolean isPassenger(Person person) {
-
-        for (int x = 0; x < passengers.size(); x++) {
-            if (person == (Person) passengers.elementAt(x)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** Add a new passenger to the vehicle if enough capacity and person is not alreay aboard.
-     *  @param passenger a new passenger
-     */
-    public void addPassenger(Person passenger) {
-        if ((passengers.size() < maxPassengers) && !isPassenger(passenger)) {
-            passengers.addElement(passenger);
-        }
-    }
-
-    /** Removes a passenger from a vehicle
-     *  @param passenger passenger leaving vehicle
-     */
-    public void removePassenger(Person passenger) {
-        if (isPassenger(passenger)) {
-            passengers.removeElement(passenger);
-            if (passenger == driver) {
-                driver = null;
-            }
-        }
-    }
-
+    
     /** Returns driver of the vehicle
      *  @return the driver
      */
     public Person getDriver() {
+	if (!inventory.containsUnit(driver)) driver = null;
         return driver;
     }
 
@@ -479,7 +251,8 @@ public abstract class Vehicle extends Unit implements LifeSupport, Serializable 
      *  @param driver the driver
      */
     public void setDriver(Person driver) {
-        this.driver = driver;
+	if (!inventory.containsUnit(driver)) driver = null;
+	else this.driver = driver;
     }
 
     /** Returns the current settlement vehicle is parked at.
@@ -487,22 +260,13 @@ public abstract class Vehicle extends Unit implements LifeSupport, Serializable 
      *  @return the settlement the vehicle is parked at
      */
     public Settlement getSettlement() {
-        if ((status.equals("Parked") || status.equals("Periodic Maintenance")) && (settlement != null)) {
-            return settlement;
-        } else {
-            return null;
-        }
-    }
 
-    /** Sets the settlement which the vehicle is parked at
-     *  @param settlement the settlement the vehicle is parked at
-     */
-    public void setSettlement(Settlement settlement) {
-        this.settlement = settlement;
-        if (settlement != null) {
-            location.setCoords(settlement.getCoordinates());
-            settlement.addVehicle(this);
-        }
+	Unit topUnit = getTopContainerUnit();
+
+	if ((topUnit != null) && (topUnit instanceof Settlement)) {
+	    return (Settlement) topUnit;
+	}
+	else return null;
     }
 
     /** Returns distance to destination in kilometers

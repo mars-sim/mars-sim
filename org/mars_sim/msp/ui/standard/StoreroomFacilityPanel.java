@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StoreroomFacilityPanel.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -15,12 +15,12 @@ import javax.swing.border.*;
 
 /**
  *  The StoreroomFacilityPanel class displays information about a settlement's 
- *  storeroom facility in the user interface.
+ *  storeroom in the user interface.
  */
 public class StoreroomFacilityPanel extends FacilityPanel {
 
     // Data members
-    private StoreroomFacility storeroom;  // The storeroom facility this panel displays.
+    private Settlement settlement;        // The settlement
     private JLabel foodValueLabel;        // A label displaying the stores of food.
     private JLabel oxygenValueLabel;      // A label displaying the stores of oxygen.
     private JLabel waterValueLabel;       // A label displaying the stores of water.
@@ -33,16 +33,16 @@ public class StoreroomFacilityPanel extends FacilityPanel {
     private double fuel;                  // Fuel supplies
 	
     /** Constructs a StoreroomFacilityPanel object 
-     *  @param storeroom the storeroom facility
+     *  @param settlement the settlement 
      *  @param desktop the desktop pane
      */
-    public StoreroomFacilityPanel(StoreroomFacility storeroom, MainDesktopPane desktop) {
+    public StoreroomFacilityPanel(Settlement settlement, MainDesktopPane desktop) {
 	
 	// Use FacilityPanel's constructor	
 	super(desktop);
 		
 	// Initialize data members
-	this.storeroom = storeroom;
+	this.settlement = settlement;
 	tabName = "Storage";
 		
 	// Set up components
@@ -81,7 +81,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 	labelPane.add(foodLabel);
 		
 	// Prepare food value label
-	food = storeroom.getFoodStores();
+	food = settlement.getInventory().getResourceMass(Inventory.FOOD); 
 	foodValueLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
 	foodValueLabel.setForeground(Color.black);
 	labelPane.add(foodValueLabel);
@@ -92,7 +92,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 	labelPane.add(oxygenLabel);
 		
 	// Prepare oxygen value label
-	oxygen = storeroom.getOxygenStores();
+	oxygen = settlement.getInventory().getResourceMass(Inventory.OXYGEN); 
 	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen) + " kg", JLabel.RIGHT);
 	oxygenValueLabel.setForeground(Color.black);
 	labelPane.add(oxygenValueLabel);
@@ -103,7 +103,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 	labelPane.add(waterLabel);
 		
 	// Prepare water value label
-	water = storeroom.getWaterStores();
+	water = settlement.getInventory().getResourceMass(Inventory.WATER);
 	waterValueLabel = new JLabel("" + roundOneDecimal(water) + " kg", JLabel.RIGHT);
 	waterValueLabel.setForeground(Color.black);
 	labelPane.add(waterValueLabel);
@@ -114,7 +114,7 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 	labelPane.add(fuelLabel);
 		
 	// Prepare fuel value label
-	fuel = storeroom.getFuelStores();
+	fuel = settlement.getInventory().getResourceMass(Inventory.FUEL); 
 	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel) + "kg", JLabel.RIGHT);
 	fuelValueLabel.setForeground(Color.black);
 	labelPane.add(fuelValueLabel);
@@ -122,21 +122,28 @@ public class StoreroomFacilityPanel extends FacilityPanel {
 	
     /** Updates the facility panel's information */
     public void updateInfo() { 
-	
-	if (food != storeroom.getFoodStores()) {
-	    food = storeroom.getFoodStores();
+
+	double newFood = settlement.getInventory().getResourceMass(Inventory.FOOD);
+	if (food != newFood) {
+	    food = newFood;
 	    foodValueLabel.setText("" + roundOneDecimal(food) + " kg");
 	}
-	if (oxygen != storeroom.getOxygenStores()) {
-	    oxygen = storeroom.getOxygenStores();
+	
+	double newOxygen = settlement.getInventory().getResourceMass(Inventory.OXYGEN);
+	if (oxygen != newOxygen) {
+	    oxygen = newOxygen;
 	    oxygenValueLabel.setText("" + roundOneDecimal(oxygen) + " kg");
 	}
-	if (water != storeroom.getWaterStores()) {
-	    water = storeroom.getWaterStores();
+	
+	double newWater = settlement.getInventory().getResourceMass(Inventory.WATER);
+	if (water != newWater) {
+	    water = newWater;
 	    waterValueLabel.setText("" + roundOneDecimal(water) + " kg");
 	}
-	if (fuel != storeroom.getFuelStores()) {
-	    fuel = storeroom.getFuelStores();
+	
+	double newFuel = settlement.getInventory().getResourceMass(Inventory.FUEL);
+	if (fuel != newFuel) {
+	    fuel = newFuel;
 	    fuelValueLabel.setText("" + roundOneDecimal(fuel) + " kg");
 	}
     }

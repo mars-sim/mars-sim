@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -21,7 +21,7 @@ import org.mars_sim.msp.simulation.vehicle.*;
  */
 class TravelToSettlement extends Mission implements Serializable {
 
-    // COnstant for phases
+    // Constant for phases
     private final static String DISEMBARK = "Disembarking";
     private final static String DRIVING = "Driving";
     private final static String EMBARK = "Embarking";
@@ -188,8 +188,7 @@ class TravelToSettlement extends Mission implements Serializable {
         }
 
         // Make final preperations on vehicle.
-        startingSettlement.vehicleLeave(vehicle);
-        vehicle.setSettlement(null);
+	startingSettlement.getInventory().dropUnit(vehicle);
         vehicle.setDestinationSettlement(destinationSettlement);
         vehicle.setDestinationType("Settlement");
 
@@ -236,7 +235,7 @@ class TravelToSettlement extends Mission implements Serializable {
     private void disembarkingPhase(Person person) {
         
         // Make sure vehicle is parked at settlement.
-        vehicle.setSettlement(destinationSettlement);
+	destinationSettlement.getInventory().addUnit(vehicle);
         vehicle.setDestinationSettlement(null);
         vehicle.setDestinationType("None");
         vehicle.setStatus("Parked");
@@ -299,7 +298,7 @@ class TravelToSettlement extends Mission implements Serializable {
         int result = 0;
      
         // Determine current capacity of settlement.
-        result = settlement.getPopulationCapacity() - settlement.getCurrentPopulation();
+        result = settlement.getAvailablePopulationCapacity();
         
         // Subtract number of people currently traveling to settlement.
         VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
@@ -319,10 +318,12 @@ class TravelToSettlement extends Mission implements Serializable {
     private boolean isVehicleLoaded() {
         boolean result = true;
 
-        if (vehicle.getFuel() < vehicle.getFuelCapacity()) result = false;
-        if (vehicle.getOxygen() < vehicle.getOxygenCapacity()) result = false;
-        if (vehicle.getWater() < vehicle.getWaterCapacity()) result = false;
-        if (vehicle.getFood() < vehicle.getFoodCapacity()) result = false;
+	Inventory i = vehicle.getInventory();
+
+        if (i.getResourceRemainingCapacity(Inventory.FUEL) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(Inventory.OXYGEN) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(Inventory.WATER) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(Inventory.FOOD) > 0D) result = false;
 
         return result;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDialog.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -386,10 +386,12 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         // Prepare crew list
         DefaultListModel crewListModel = new DefaultListModel();
 
-        for (int x = 0; x < vehicle.getPassengerNum(); x++) {
-            if (!(vehicle.getStatus().equals("Moving") && (vehicle.getPassenger(x) == vehicle.getDriver()))) {
+	PersonIterator i = vehicle.getPassengers().iterator();
+	while (i.hasNext()) {
+	    Person person = i.next();
+            if (!(vehicle.getStatus().equals("Moving") && (person == vehicle.getDriver()))) {
                 PersonUIProxy tempCrew = (PersonUIProxy) 
-                        proxyManager.getUnitUIProxy(vehicle.getPassenger(x));
+                proxyManager.getUnitUIProxy(person);
                 crewInfo.addElement(tempCrew);
                 crewListModel.addElement(tempCrew.getUnit().getName());
             }
@@ -570,7 +572,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	labelPane.add(fuelLabel);
 		
 	// Prepare fuel value label
-	fuel = vehicle.getFuel();
+	fuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
 	fuelValueLabel = new JLabel("" + roundOneDecimal(fuel) + " kg", JLabel.RIGHT);
 	fuelValueLabel.setForeground(Color.black);
 	labelPane.add(fuelValueLabel);
@@ -581,7 +583,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	labelPane.add(oxygenLabel);
 		
 	// Prepare oxygen value label
-	oxygen = vehicle.getOxygen();
+	oxygen = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
 	oxygenValueLabel = new JLabel("" + roundOneDecimal(oxygen) + " kg", JLabel.RIGHT);
 	oxygenValueLabel.setForeground(Color.black);
 	labelPane.add(oxygenValueLabel);
@@ -592,7 +594,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	labelPane.add(waterLabel);
 		
 	// Prepare water value label
-	water = vehicle.getWater();
+	water = vehicle.getInventory().getResourceMass(Inventory.WATER);
 	waterValueLabel = new JLabel("" + roundOneDecimal(water) + " kg", JLabel.RIGHT);
 	waterValueLabel.setForeground(Color.black);
 	labelPane.add(waterValueLabel);
@@ -603,7 +605,7 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
 	labelPane.add(foodLabel);
 		
 	// Prepare food value label
-	food = vehicle.getFood();
+	food = vehicle.getInventory().getResourceMass(Inventory.FOOD);
 	foodValueLabel = new JLabel("" + roundOneDecimal(food) + " kg", JLabel.RIGHT);
 	foodValueLabel.setForeground(Color.black);
 	labelPane.add(foodValueLabel);
@@ -731,17 +733,16 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         boolean match = false;
 
         // Check if model matches passengers
-        Vector tempPassengers = new Vector();
-        for (int x=0; x < tempPassengers.size(); x++) {
-            Person tempPerson = vehicle.getPassenger(x);
-            if (tempPerson != vehicle.getDriver()) tempPassengers.addElement(vehicle.getPassenger(x));
-        }
-
+        PersonCollection tempPassengers = new PersonCollection(vehicle.getPassengers());
+        tempPassengers.remove(vehicle.getDriver());
+	
         if (model.getSize() == tempPassengers.size()) {
             match = true;
-            for (int x=0; x < tempPassengers.size(); x++) {
-                String tempName = (String) model.getElementAt(x);
-                if (!tempName.equals(vehicle.getPassenger(x).getName())) match = false;
+	    PersonIterator i = tempPassengers.iterator();
+	    int count = 0;
+	    while (i.hasNext()) {
+                String tempName = (String) model.getElementAt(count);
+                if (!tempName.equals(i.next().getName())) match = false;
             }
         }
 
@@ -749,14 +750,11 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
         if (!match) {
             model.removeAllElements();
             crewInfo.removeAllElements();
-            for (int x = 0; x < vehicle.getPassengerNum(); x++) {
-                Person tempPassenger = vehicle.getPassenger(x);
-                if (tempPassenger != null) {
-                    if (!(tempPassenger == vehicle.getDriver())) { 
-                        crewInfo.addElement(proxyManager.getUnitUIProxy(tempPassenger));
-                        model.addElement(tempPassenger.getName());
-                    }
-                }
+	    PersonIterator i = tempPassengers.iterator();
+	    while (i.hasNext()) {
+                Person tempPassenger = i.next();
+                crewInfo.addElement(proxyManager.getUnitUIProxy(tempPassenger));
+                model.addElement(tempPassenger.getName());
             }
 
             // This prevents the list from sizing strange due to having no contents
@@ -837,26 +835,30 @@ public abstract class VehicleDialog extends UnitDialog implements MouseListener 
     protected void updateStorage() {
         
         // Update fuel
-        if (fuel != vehicle.getFuel()) {
-	    fuel = vehicle.getFuel();
+	double newFuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
+        if (fuel != newFuel) {
+	    fuel = newFuel;
 	    fuelValueLabel.setText("" + roundOneDecimal(fuel) + " kg");
 	}
         
         // Update oxygen
-	if (oxygen != vehicle.getOxygen()) {
-	    oxygen = vehicle.getOxygen();
+	double newOxygen = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
+	if (oxygen != newOxygen) {
+	    oxygen = newOxygen;
 	    oxygenValueLabel.setText("" + roundOneDecimal(oxygen) + " kg");
 	}
         
         // Update water
-	if (water != vehicle.getWater()) {
-	    water = vehicle.getWater();
+	double newWater = vehicle.getInventory().getResourceMass(Inventory.WATER);
+	if (water != newWater) {
+	    water = newWater;
 	    waterValueLabel.setText("" + roundOneDecimal(water) + " kg");
 	}
         
         // Update food
-        if (food != vehicle.getFood()) {
-	    food = vehicle.getFood();
+	double newFood = vehicle.getInventory().getResourceMass(Inventory.FOOD);
+        if (food != newFood) {
+	    food = newFood;
 	    foodValueLabel.setText("" + roundOneDecimal(food) + " kg");
 	}
     }

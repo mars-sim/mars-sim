@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReserveGroundVehicle.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -62,9 +62,10 @@ class ReserveGroundVehicle extends Task implements Serializable {
             FacilityManager facilities = settlement.getFacilityManager();
             MaintenanceGarageFacility garage = (MaintenanceGarageFacility) facilities.getFacility("Maintenance Garage");
 
-            for (int x=0; x < settlement.getVehicleNum(); x++) {
+	    VehicleIterator i = settlement.getParkedVehicles().iterator();
+	    while (i.hasNext()) {
+	        Vehicle tempVehicle = i.next();
                 if (reservedVehicle == null) {
-                    Vehicle tempVehicle = settlement.getVehicle(x);
                     boolean reservable = true;
 
                     if (!(tempVehicle instanceof GroundVehicle)) reservable = false;
@@ -98,8 +99,9 @@ class ReserveGroundVehicle extends Task implements Serializable {
         FacilityManager facilities = settlement.getFacilityManager();
         MaintenanceGarageFacility garage = (MaintenanceGarageFacility) facilities.getFacility("Maintenance Garage");
 
-        for (int x=0; x < settlement.getVehicleNum(); x++) {
-            Vehicle vehicle = settlement.getVehicle(x);
+	VehicleIterator i = settlement.getParkedVehicles().iterator();
+	while (i.hasNext()) {
+	    Vehicle vehicle = i.next();
             if (vehicle instanceof GroundVehicle) {
                 if (!vehicle.isReserved() && !garage.vehicleInGarage(vehicle)) result = true;
             }

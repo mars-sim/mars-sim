@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GreenhouseFacility.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -119,7 +119,7 @@ public class GreenhouseFacility extends Facility implements Serializable {
             if (workInPhase >= harvestingWork) {
                 workInPhase -= harvestingWork;
                 double foodProduced = getFullHarvestAmount() * (growingWork / workLoad);
-                ((StoreroomFacility) manager.getFacility("Storerooms")).addFood(foodProduced);
+		manager.getSettlement().getInventory().addResource(Inventory.FOOD, foodProduced);
                 phase = "Planting";
                 growingWork = 0D;
                 growthPeriodCompleted = 0D;

@@ -107,19 +107,23 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-                result = new Integer(new Float(vehicle.getWater()).intValue());
+	        double water = vehicle.getInventory().getResourceMass(Inventory.WATER);
+	        result = new Integer((int) water);
             } break;
 
             case FOOD : {
-                result = new Integer(new Float(vehicle.getFood()).intValue());
+	        double food = vehicle.getInventory().getResourceMass(Inventory.FOOD);
+	        result = new Integer((int) food);
             } break;
 
             case OXYGEN : {
-                result = new Integer(new Float(vehicle.getOxygen()).intValue());
+	        double oxygen = vehicle.getInventory().getResourceMass(Inventory.OXYGEN);
+	        result = new Integer((int) oxygen);
             } break;
 
             case FUEL : {
-                result = new Integer(new Float(vehicle.getFuel()).intValue());
+	        double fuel = vehicle.getInventory().getResourceMass(Inventory.FUEL);
+	        result = new Integer((int) fuel);
             } break;
 
             case SPEED : {

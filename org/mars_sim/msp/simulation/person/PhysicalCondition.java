@@ -103,12 +103,12 @@ public class PhysicalCondition implements Serializable {
 
     /** Person consumes given amount of food
      *  @param amount amount of food to consume (in kg).
-     *  @param support Life System system suporting Person.
+     *  @param container unit to get food from 
      *  @param props Simulation proerties.
      */
-    public void consumeFood(double amount, LifeSupport support,
+    public void consumeFood(double amount, Unit container,
                             SimulationProperties props) {
-        double amountRecieved = support.removeFood(amount);
+        double amountRecieved = container.getInventory().removeResource(Inventory.FOOD, amount);
 
         if (amountRecieved != amount) {
             setProblem(medic.getStarvation());
@@ -126,7 +126,7 @@ public class PhysicalCondition implements Serializable {
      *  @param amount amount of oxygen to consume (in kg)
      */
     private void consumeOxygen(LifeSupport support, double amount) {
-        double amountRecieved = support.removeOxygen(amount);
+        double amountRecieved = support.provideOxygen(amount);
 
         if (amountRecieved != amount) {
             setProblem(medic.getLackOfOxygen());
@@ -145,7 +145,7 @@ public class PhysicalCondition implements Serializable {
      *  @param amount amount of water to consume (in kg)
      */
     private void consumeWater(LifeSupport support, double amount) {
-        double amountRecieved = support.removeWater(amount);
+        double amountRecieved = support.provideWater(amount);
 
         if (amountRecieved != amount) {
             setProblem(medic.getDehydration());

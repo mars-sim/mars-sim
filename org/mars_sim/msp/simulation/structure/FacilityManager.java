@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FacilityManager.java
- * @version 2.74 2002-01-13
+ * @version 2.74 2002-01-30
  * @author Scott Davis
  */
 
@@ -34,9 +34,7 @@ public class FacilityManager implements Serializable {
         facilityList = new Vector();
 
         // Add manditory facilities to manager.
-        facilityList.addElement(new LivingQuartersFacility(this));
         facilityList.addElement(new GreenhouseFacility(this));
-        facilityList.addElement(new StoreroomFacility(this));
         facilityList.addElement(new MaintenanceGarageFacility(this));
         facilityList.addElement(new LaboratoryFacility(this));
         facilityList.addElement(new InsituResourceProcessorFacility(this));
