@@ -11,6 +11,7 @@ import org.mars_sim.msp.ui.standard.UIProxyManager;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.*;
+import org.mars_sim.msp.simulation.person.medical.Complaint;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.*;
 
@@ -56,7 +57,7 @@ public class PersonTableModel extends UnitTableModel {
         columnNames[TASK] = "Task";
         columnTypes[TASK] = String.class;
         columnNames[HEALTH] = "Health";
-        columnTypes[HEALTH] = MedicalComplaint.class;
+        columnTypes[HEALTH] = Complaint.class;
     }
 
     // Data members
@@ -129,7 +130,7 @@ public class PersonTableModel extends UnitTableModel {
             add(iter.next());
 	}
     }
-    
+
     /**
      * Compare the current contents to the expected. This would be alot easier
      * if pure Collection were used as the comparision methods have to be
