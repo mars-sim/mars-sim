@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * SocialTabPanel.java
- * @version 2.77 2004-09-08
+ * @version 2.77 2004-09-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.*;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
@@ -16,8 +17,9 @@ import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
 
-public class SocialTabPanel extends TabPanel {
+public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 
+	private JTable relationshipTable;
 	private RelationshipTableModel relationshipTableModel;
 	
 	/**
@@ -46,17 +48,31 @@ public class SocialTabPanel extends TabPanel {
 		relationshipTableModel = new RelationshipTableModel(person);
             
 		// Create relationship table
-		JTable relationshipTable = new JTable(relationshipTableModel);
+		relationshipTable = new JTable(relationshipTableModel);
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(70);
-		relationshipTable.setCellSelectionEnabled(false);
-		relationshipTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+		relationshipTable.setCellSelectionEnabled(true);
+		relationshipTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		relationshipTable.getSelectionModel().addListSelectionListener(this);
 		relationshipScrollPanel.setViewportView(relationshipTable);		
 	}
 
+	/**
+	 * Updates this panel.
+	 */
 	public void update() {
 		relationshipTableModel.update();
+	}
+	
+	/**
+	 * Called whenever the value of the selection changes.
+	 * @param e the event that characterizes the change.
+	 */
+	public void valueChanged(ListSelectionEvent e) {
+		int index = relationshipTable.getSelectedRow();
+		Person selectedPerson = (Person) relationshipTable.getValueAt(index, 0);
+		if (selectedPerson != null) desktop.openUnitWindow(selectedPerson);
 	}
 	
 	/** 
@@ -96,7 +112,7 @@ public class SocialTabPanel extends TabPanel {
 		}
 		
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return knownPeople.get(row).getName();
+			if (column == 0) return knownPeople.get(row);
 			else if (column == 1) {
 				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.get(row));
 				return getRelationshipString(opinion);
@@ -116,15 +132,15 @@ public class SocialTabPanel extends TabPanel {
 		private String getRelationshipString(double opinion) {
 			String result = "";
 			
-			if (opinion < 5) result = "Hate";
-			else if (opinion < 20) result = "Strong Dislike";
-			else if (opinion < 35) result = "Dislike";
-			else if (opinion < 45) result = "Annoying";
-			else if (opinion < 55) result = "Indifferent";
+			if (opinion < 5) result = "Hatred";
+			else if (opinion < 20) result = "Antagonism";
+			else if (opinion < 35) result = "Unfriendly";
+			else if (opinion < 45) result = "Bothersome";
+			else if (opinion < 55) result = "Indifference";
 			else if (opinion < 65) result = "Cordial";
-			else if (opinion < 80) result = "Like";
-			else if (opinion < 95) result = "Friends";
-			else result = "Close Friends";
+			else if (opinion < 80) result = "Amicable";
+			else if (opinion < 95) result = "Friendly";
+			else result = "Devoted";
 			
 			return result;
 		}
