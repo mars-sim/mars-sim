@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 
+<!-- Landmark coordinates from USGS Astrogeology Research Program. -->
+<!-- http://planetarynames.wr.usgs.gov/mars/marssysTOC.html -->
+
 <!-- Landmarks to be displayed in the user interface. -->
 <landmark-list>
+	<!-- Mountains and mountain ranges -->
 	<landmark name="Anseris Mons" longitude="86.6 E" latitude="30.1 S" />
 	<landmark name="Arsia Mons" longitude="121.1 W" latitude="8.4 S" />
 	<landmark name="Ascraeus Mons" longitude="104.5 W" latitude="11.9 N" />
@@ -38,5 +42,27 @@
 	<landmark name="Tartarus Montes" longitude="167.0 E" latitude="16.0 N" />
 	<landmark name="Tharsis Montes" longitude="112.5 W" latitude="1.2 N" />
 	<landmark name="Tyrrhena Mons" longitude="101.1 E" latitude="24.4 S" />
+	
+	<!-- Small domical mountains or hills -->
+	<landmark name="Albor Tholus" longitude="150.4 E" latitude="19.0 N" />
+	<landmark name="Apollinaris Tholus" longitude="175.7 E" latitude="17.9 S" />
+	<landmark name="Australis Tholus" longitude="37.0 E" latitude="59.0 S" />
+	<landmark name="Ceraunius Tholus" longitude="97.4 W" latitude="24.2 N" />
+	<landmark name="Charitum Tholus" longitude="41.0 W" latitude="55.0 S" />
+	<landmark name="E. Mareotis Tholus" longitude="85.3 W" latitude="36.2 N" />
+	<landmark name="Hecates Tholus" longitude="150.2 E" latitude="32.4 N" />
+	<landmark name="Iaxartes Tholus" longitude="15.0 W" latitude="72.0 N" />
+	<landmark name="Issedon Tholus" longitude="95.0 W" latitude="36.3 N" />
+	<landmark name="Jovis Tholus" longitude="117.5 W" latitude="18.4 N" />
+	<landmark name="Kison Tholus" longitude="2.0 E" latitude="73.0 N" />
+	<landmark name="N. Mareotis Tholus" longitude="86.3 W" latitude="36.7 N" />
+	<landmark name="Ortygia Tholus" longitude="8.0 W" latitude="70.0 N" />
+	<landmark name="Scandia Tholi" longitude="162.0 W" latitude="74.0 N" />
+	<landmark name="Tharsis Tholus" longitude="90.8 W" latitude="13.5 N" />
+	<landmark name="Uranius Tholus" longitude="97.7 W" latitude="26.4 N" />
+	<landmark name="W. Mareotis Tholus" longitude="88.1 W" latitude="35.8 N" />
+	<landmark name="Zephyria Tholus" longitude="172.8 E" latitude="20.0 S" />
+	
+	<!-- Craters -->
 	<landmark name="Airy Crater" longitude="0.1 E" latitude="5.1 S" />
 </landmark-list>
