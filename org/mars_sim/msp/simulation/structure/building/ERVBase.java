@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ERVBase.java
- * @version 2.75 2003-02-08
+ * @version 2.75 2003-02-10
  * @author Scott Davis
  */
  
@@ -41,8 +41,8 @@ public class ERVBase extends Building implements ResourceProcessing {
         // Carbon Dioxide is pumped in from outside air.
         ResourceProcess sabatier = new ResourceProcess("Sebatier", inv);
         sabatier.addMaxInputResourceRate(Resource.HYDROGEN, .0001D);
-        sabatier.addMaxOutputResourceRate(Resource.METHANE, .00055D);
-        sabatier.addMaxOutputResourceRate(Resource.WATER, .00155D);
+        sabatier.addMaxOutputResourceRate(Resource.METHANE, .0002D);
+        sabatier.addMaxOutputResourceRate(Resource.WATER, .00045D);
         processManager.addResourceProcess(sabatier);
         
         // Create electrolysis resource process.
