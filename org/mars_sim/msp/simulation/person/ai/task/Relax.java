@@ -69,7 +69,6 @@ class Relax extends Task implements Serializable {
     				result *= Task.getCrowdingProbabilityModifier(person, recBuilding);
 					result *= Task.getRelationshipModifier(person, recBuilding);
     			}
-    			else result = 0D;
     		}
     		catch (Exception e) {
     			System.err.println("Relax.getProbability(): " + e.getMessage());

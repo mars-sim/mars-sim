@@ -81,7 +81,6 @@ class Sleep extends Task implements Serializable {
         			result *= Task.getCrowdingProbabilityModifier(person, building);
 					result *= Task.getRelationshipModifier(person, building);
         		}
-        		else result = 0D;
         	}
         	catch (BuildingException e) {
         		System.err.println("Sleep.getProbability(): " + e.getMessage());

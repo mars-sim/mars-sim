@@ -66,7 +66,6 @@ class EatMeal extends Task implements Serializable {
 				result *= Task.getCrowdingProbabilityModifier(person, building);
 				result *= Task.getRelationshipModifier(person, building);
 			}
-			else result = 0D;
 		}
 		catch (BuildingException e) {
 			System.err.println("EatMeal.getProbability(): " + e.getMessage());
