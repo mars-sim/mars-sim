@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -62,7 +62,11 @@ class EatMeal extends Task implements Serializable {
 	
 		try {
 			Building building = getAvailableDiningBuilding(person);
-			result *= Task.getCrowdingProbabilityModifier(person, building);
+			if (building != null) {
+				result *= Task.getCrowdingProbabilityModifier(person, building);
+				result *= Task.getRelationshipModifier(person, building);
+			}
+			else result = 0D;
 		}
 		catch (BuildingException e) {
 			System.err.println("EatMeal.getProbability(): " + e.getMessage());
@@ -117,6 +121,7 @@ class EatMeal extends Task implements Serializable {
         	List diningBuildings = manager.getBuildings(Dining.NAME);
         	diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
         	diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
+        	diningBuildings = BuildingManager.getBestRelationshipBuildings(person, diningBuildings);
         	
 			if (diningBuildings.size() > 0) {
 				// Pick random dining building from list.

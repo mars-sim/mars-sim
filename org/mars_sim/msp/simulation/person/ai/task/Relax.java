@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -65,7 +65,11 @@ class Relax extends Task implements Serializable {
     	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
     		try {
     			Building recBuilding = getAvailableRecreationBuilding(person);
-    			result *= Task.getCrowdingProbabilityModifier(person, recBuilding);
+    			if (recBuilding != null) {
+    				result *= Task.getCrowdingProbabilityModifier(person, recBuilding);
+					result *= Task.getRelationshipModifier(person, recBuilding);
+    			}
+    			else result = 0D;
     		}
     		catch (Exception e) {
     			System.err.println("Relax.getProbability(): " + e.getMessage());
@@ -110,6 +114,7 @@ class Relax extends Task implements Serializable {
 			List recreationBuildings = manager.getBuildings(Recreation.NAME);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
+			recreationBuildings = BuildingManager.getBestRelationshipBuildings(person, recreationBuildings);
         	
 			if (recreationBuildings.size() > 0) {
 				// Pick random recreation building from list.

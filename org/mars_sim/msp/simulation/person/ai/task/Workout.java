@@ -34,17 +34,15 @@ public class Workout extends Task implements Serializable {
 		// Use Task constructor.
 		super("Exercise", person, true, false, STRESS_MODIFIER);
 		
-		List gyms = getAvailableGyms(person);
-		
-		if (gyms.size() > 0) {
-			gym = (Exercise) gyms.get(RandomUtil.getRandomInt(gyms.size() - 1));
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			try {
-				gym.addExerciser();
-				
-				// Add person to building.
-				Building building = gym.getBuilding();
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-				if (!lifeSupport.containsPerson(person)) lifeSupport.addPerson(person);
+				// If person is in a settlement, try to find a gym.
+				Building gymBuilding = getAvailableGym(person);
+				if (gymBuilding != null) {
+					BuildingManager.addPersonToBuilding(person, gymBuilding);
+					gym = (Exercise) gymBuilding.getFunction(Exercise.NAME);
+				}
+				else endTask();
 			}
 			catch (BuildingException e) {
 				System.err.println("Workout.constructor(): " + e.getMessage());
@@ -66,13 +64,25 @@ public class Workout extends Task implements Serializable {
 		
 		double result = 0D;
 		
-		// Check if there are any available gyms.
-		if (getAvailableGyms(person).size() > 0) {
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			// Probability affected by the person's stress and fatigue.
 			PhysicalCondition condition = person.getPhysicalCondition();
 			result = condition.getStress() - (condition.getFatigue() / 10D) + 20D;
 			if (result < 0D) result = 0D;
-		} 
+			
+			try {
+				// Get an available gym.
+				Building building = getAvailableGym(person);
+				if (building != null) {
+					result *= Task.getCrowdingProbabilityModifier(person, building);
+					result *= Task.getRelationshipModifier(person, building);
+				}
+				else result = 0D;
+			}
+			catch (BuildingException e) {
+				System.err.println("Workout.getProbability(): " + e.getMessage());
+			}
+		}
 		
 		// Effort-driven task modifier.
 		result *= person.getPerformanceRating();
@@ -106,33 +116,32 @@ public class Workout extends Task implements Serializable {
 		
 		// Remove person from exercise function so others can use it.
 		try {
-			gym.removeExerciser();
+			if (gym != null) gym.removeExerciser();
 		}
 		catch(BuildingException e) {}
 	}
 	
 	/**
-	 * Gets a list of buildings with an available exercise function.
+	 * Gets an available building with the exercise function.
 	 * @param person the person looking for the gym.
 	 * @return an available exercise building or null if none found.
+	 * @throws BuildingException if error finding gym building.
 	 */
-	private static List getAvailableGyms(Person person) {
-		List result = new ArrayList();
+	private static Building getAvailableGym(Person person) throws BuildingException {
+		Building result = null;
 		
 		// If person is in a settlement, try to find a building with a gym.	
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
 			List gyms = buildingManager.getBuildings(Exercise.NAME);
-			Iterator i = gyms.iterator();
-			while (i.hasNext()) {
-				Building building = (Building) i.next();
-				try {
-					Exercise gym = (Exercise) building.getFunction(Exercise.NAME);
-					if (gym.getExerciserCapacity() > gym.getNumExercisers()) result.add(gym);
-				}
-				catch (BuildingException e) {
-					System.err.println("Workout.getAvailableGyms(): " + e.getMessage());
-				}
+			gyms = BuildingManager.getNonMalfunctioningBuildings(gyms);
+			gyms = BuildingManager.getLeastCrowdedBuildings(gyms);
+			gyms = BuildingManager.getBestRelationshipBuildings(person, gyms);
+			
+			if (gyms.size() > 0) {
+				// Pick random gym from list.
+				int rand = RandomUtil.getRandomInt(gyms.size() - 1);
+				result = (Building) gyms.get(rand);
 			}
 		}
 		

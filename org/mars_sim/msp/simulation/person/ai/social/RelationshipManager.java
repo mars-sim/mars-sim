@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 2.77 2004-09-08
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -33,6 +33,18 @@ public class RelationshipManager implements Serializable {
 	
 	// The base stress modifier per millisol for relationships.
 	private static final double BASE_STRESS_MODIFIER = .1D;
+	
+	// The base opinion modifier per millisol for relationship change.
+	private static final double BASE_OPINION_MODIFIER = .1D;
+	
+	// The base conversation modifier per millisol for relationship change.
+	private static final double BASE_CONVERSATION_MODIFIER = .1D;
+	
+	// The base attractiveness modifier per millisol for relationship change.
+	private static final double BASE_ATTRACTIVENESS_MODIFIER = .05D;
+	
+	// The base gender bonding modifier per millisol for relationship change.
+	private static final double BASE_GENDER_BONDING_MODIFIER = .01D;
 	
 	private Graph relationshipGraph; // The relationship graph
 	int count = 0;
@@ -83,7 +95,7 @@ public class RelationshipManager implements Serializable {
 				Person person2 = i.next();
 				if (person2 != person) {
 					addRelationship(person, person2, Relationship.EXISTING_RELATIONSHIP);
-					System.out.println(person.getName() + " and " + person2.getName() + " have existing relationship.  " + count);
+					// System.out.println(person.getName() + " and " + person2.getName() + " have existing relationship.  " + count);
 				} 
 			}
 		}
@@ -225,31 +237,34 @@ public class RelationshipManager implements Serializable {
 				double changeAmount = RandomUtil.getRandomDouble(BASE_RELATIONSHIP_CHANGE_AMOUNT) * time;
 				if (RandomUtil.lessThanRandPercent(50)) changeAmount = 0 - changeAmount;
 				
-				// Modify magnitude based on the collective stress of the two people.
-				double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);
-				changeAmount*= stressChangeModifier;
-				
 				// Modify based on difference in other person's opinion.
-				double otherOpinionModifier = (getOpinionOfPerson(localPerson, person) - getOpinionOfPerson(person, localPerson)) / 1000D * time;
+				double otherOpinionModifier = (getOpinionOfPerson(localPerson, person) - getOpinionOfPerson(person, localPerson)) / 100D;
+				otherOpinionModifier*= BASE_OPINION_MODIFIER * time;
 				changeAmount+= otherOpinionModifier;
 				
 				// Modify based on the conversation attribute of other person.
 				double conversation = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.CONVERSATION);
-				double conversationModifier = (conversation - 50D) / 1000D * time;
+				double conversationModifier = (conversation - 50D) / 50D;
+				conversationModifier*= BASE_CONVERSATION_MODIFIER * time;
 				changeAmount+= conversationModifier;
 				
 				// Modify based on attractiveness attribute if people are of opposite genders.
 				// Note: We may add sexual orientation later that will add further complexity to this.
 				double attractiveness = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ATTRACTIVENESS);
-				double attractivenessModifier = (attractiveness - 50D) / 2000D * time;
+				double attractivenessModifier = (attractiveness - 50D) / 50D;
+				attractivenessModifier*= BASE_ATTRACTIVENESS_MODIFIER * time;
 				boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));
 				if (oppositeGenders) changeAmount+= attractivenessModifier;
 				
 				// Modify based on same-gender bonding.
-				double genderBondingModifier = 10D / 1000D * time;
+				double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
 				if (!oppositeGenders) changeAmount+= genderBondingModifier;
 				
 				// TODO: add additional modifiers here to deal with personality when we add that.
+				
+				// Modify magnitude based on the collective stress of the two people.
+				double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);
+				changeAmount*= stressChangeModifier;
 				
 				// Change the person's opinion of the other person.
 				Relationship relationship = getRelationship(person, localPerson);

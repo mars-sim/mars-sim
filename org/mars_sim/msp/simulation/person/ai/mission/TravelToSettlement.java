@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.77 2004-08-25
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.*;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -160,9 +161,20 @@ public class TravelToSettlement extends Mission implements Serializable {
 				if (inStartingSettlement && withinMissionCapacity && remainingInhabitant && (betterJobProspect || isDriver)) 
 					result = 50D;
 				
+				// Relationship modifier for inhabitants of destination settlement.
+				RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+				PersonIterator j = destinationSettlement.getInhabitants().iterator();
+				double totalOpinion = 0D;
+				while (j.hasNext()) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, j.next()) - 50D) / 50D);
+				if (totalOpinion >= 0D) result*= (1D + totalOpinion);
+				else result/= (1D - totalOpinion);
+				
 				// Crowding modifier.
 				int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
 				if (crowding > 0) result *= (crowding + 1);
+				
+				// Relationship modifier.
+				result *= getRelationshipProbabilityModifier(person);
 				
 				// Job modifier.
 				result *= person.getMind().getJob().getJoinMissionProbabilityModifier(TravelToSettlement.class);					

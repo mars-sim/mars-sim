@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.77 2004-08-25
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -189,8 +189,10 @@ public class Maintenance extends Task implements Serializable {
 				double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
 				if (e instanceof Building) {
 					Building building = (Building) e;
-					if (building.hasFunction(LifeSupport.NAME)) 
+					if (building.hasFunction(LifeSupport.NAME)) {
 						entityWeight *= Task.getCrowdingProbabilityModifier(person, building);
+						entityWeight *= Task.getRelationshipModifier(person, building);
+					}
 				}
 				totalProbabilityWeight += entityWeight;
 			}
@@ -217,6 +219,7 @@ public class Maintenance extends Task implements Serializable {
 					if (building.hasFunction(LifeSupport.NAME)) {
 						inhabitableBuilding = true; 
 						entityWeight *= Task.getCrowdingProbabilityModifier(person, building);
+						entityWeight *= Task.getRelationshipModifier(person, building);
 					}
 				}
 			

@@ -12,7 +12,8 @@ import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -272,7 +273,7 @@ public class BuildingManager implements Serializable {
     			Building building = (Building) i.next();
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
-				if (crowded < 0) crowded = 0;
+				if (crowded < -1) crowded = -1;
 				if (crowded < leastCrowded) leastCrowded = crowded;
 			}
 			
@@ -282,12 +283,61 @@ public class BuildingManager implements Serializable {
 				Building building = (Building) j.next();
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
-				if (crowded < 0) crowded = 0;
+				if (crowded < -1) crowded = -1;
 				if (crowded == leastCrowded) result.add(building);
 			}
 		}
 		catch (ClassCastException e) {
 			throw new BuildingException("BuildingManager.getUncrowdedBuildings(): building isn't a life support building.");
+		}
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets a list of buildings with the best relationships for a given person from a list of buildings.
+     * @param person the person to check for.
+     * @param buildingList the list of buildings to filter.
+     * @return list of buildings with the best relationships.
+     * @throws BuildingException if building in list does not have the life support function.if building in list does not have the life support function.
+     */
+    public static List getBestRelationshipBuildings(Person person, List buildingList) throws BuildingException {
+    	List result = new ArrayList();
+    	
+    	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+    	
+		try {
+			// Find best relationship buildings.
+			double bestRelationships = Double.NEGATIVE_INFINITY;
+			Iterator i = buildingList.iterator();
+			while (i.hasNext()) {
+				Building building = (Building) i.next();
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				double buildingRelationships = 0D;
+				PersonIterator j = lifeSupport.getOccupants().iterator();
+				while (j.hasNext()) {
+					Person occupant = j.next();
+					if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
+				} 
+				if (buildingRelationships > bestRelationships) bestRelationships = buildingRelationships;
+			}
+			
+			// Add bestRelationships buildings to list.
+			i = buildingList.iterator();
+			while (i.hasNext()) {
+				Building building = (Building) i.next();
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				double buildingRelationships = 0D;
+				PersonIterator j = lifeSupport.getOccupants().iterator();
+				while (j.hasNext()) {
+					Person occupant = j.next();
+					if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
+				} 
+				if (buildingRelationships == bestRelationships) result.add(building);
+			}
+		}
+		catch (ClassCastException e) {
+			throw new BuildingException("BuildingManager.getBestRelationshipBuildings(): building isn't a life support building.");
 		}
     	
     	return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.77 2004-08-25
+ * @version 2.77 2004-09-09
  * @author Barry Evans
  */
 
@@ -106,7 +106,11 @@ public class MedicalAssistance extends Task implements Serializable {
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
         	try {
 				Building building = getMedicalAidBuilding(person);
-				if (building != null) result *= Task.getCrowdingProbabilityModifier(person, building);
+				if (building != null) {
+					result *= Task.getCrowdingProbabilityModifier(person, building);
+					result *= Task.getRelationshipModifier(person, building);
+				} 
+				else result = 0D;
         	}
         	catch (Exception e) {
         		System.err.println("MedicalAssistance.getProbability(): " + e.getMessage());
@@ -291,7 +295,9 @@ public class MedicalAssistance extends Task implements Serializable {
 				if (isNeedyMedicalAid(medical)) needyMedicalBuildings.add(building);
 			}
 			
-			List bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(needyMedicalBuildings);
+			List bestMedicalBuildings = BuildingManager.getNonMalfunctioningBuildings(needyMedicalBuildings);
+			bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(bestMedicalBuildings);
+			bestMedicalBuildings = BuildingManager.getBestRelationshipBuildings(person, bestMedicalBuildings);
 		
 			if (bestMedicalBuildings.size() > 0) {
 				// Pick random dining building from list.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.76 2004-06-12
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -10,8 +10,8 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
@@ -224,4 +224,23 @@ public abstract class Mission implements Serializable {
      * @return collection of vehicles.
      */
     public abstract VehicleCollection getMissionVehicles();
+    
+    /**
+     * Gets the relationship mission probability modifier.
+     * @param person the person to check for
+     * @return the modifier
+     */
+    protected double getRelationshipProbabilityModifier(Person person) {
+    	double result = 1D;
+    	
+    	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		double totalOpinion = 0D;
+    	PersonIterator i = getPeople().iterator();
+    	while (i.hasNext()) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, i.next()) - 50D) / 50D);
+    	
+    	if (totalOpinion > 0D) result*= (1D + totalOpinion);
+    	else if (totalOpinion < 0D) result/= (1D - totalOpinion);
+    	
+    	return result;
+    }
 }

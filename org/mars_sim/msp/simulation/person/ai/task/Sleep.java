@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -71,14 +71,17 @@ class Sleep extends Task implements Serializable {
         
         // Dark outside modifier.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		if (surface.getSurfaceSunlight(person.getCoordinates()) == 0)
-			result *= 2D;
+		if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) result *= 2D;
         
         // Crowding modifier.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
         	try {
         		Building building = getAvailableLivingQuartersBuilding(person);
-        		Task.getCrowdingProbabilityModifier(person, building);
+        		if (building != null) {
+        			result *= Task.getCrowdingProbabilityModifier(person, building);
+					result *= Task.getRelationshipModifier(person, building);
+        		}
+        		else result = 0D;
         	}
         	catch (BuildingException e) {
         		System.err.println("Sleep.getProbability(): " + e.getMessage());
@@ -140,6 +143,7 @@ class Sleep extends Task implements Serializable {
 			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
 			quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings);
 			quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
+			quartersBuildings = BuildingManager.getBestRelationshipBuildings(person, quartersBuildings);
         	
 			if (quartersBuildings.size() > 0) {
 				// Pick random recreation building from list.

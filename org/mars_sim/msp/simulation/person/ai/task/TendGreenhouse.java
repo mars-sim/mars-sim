@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.77 2004-08-25
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -70,6 +70,7 @@ public class TendGreenhouse extends Task implements Serializable {
         		
         		// Crowding modifier.
         		result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
+				result *= Task.getRelationshipModifier(person, farmingBuilding);
         	}
         }
         catch (BuildingException e) {
@@ -187,6 +188,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
 			farmBuildings = getFarmsNeedingWork(farmBuildings);
 			farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings); 
+			farmBuildings = BuildingManager.getBestRelationshipBuildings(person, farmBuildings);
 			
 			if (farmBuildings.size() > 0) {
 				// Pick random farm from list.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.77 2004-08-16
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -48,7 +48,11 @@ public class StudyRockSamples extends ResearchScience implements Serializable {
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 				try {
 					Building labBuilding = ((Research) lab).getBuilding();	
-					result *= Task.getCrowdingProbabilityModifier(person, labBuilding);				
+					if (labBuilding != null) {
+						result *= Task.getCrowdingProbabilityModifier(person, labBuilding);		
+						result *= Task.getRelationshipModifier(person, labBuilding);
+					}
+					else result = 0D;		
 				}
 				catch (BuildingException e) {
 					System.err.println("StudyRockSamples.getProbability(): " + e.getMessage());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.77 2004-09-08
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.util.List;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 
@@ -314,6 +315,37 @@ public abstract class Task implements Serializable, Comparable {
 			int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.TEACHING);
 			int learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
 			result+= (double) (teachingModifier + learningModifier) / 100D;
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the probability modifier for a person performing a task based on his/her 
+	 * relationships with the people in the room the task is to be performed in.
+	 * @param person the person to check for.
+	 * @param building the building the person will need to be in for the task.
+	 * @return probability modifier
+	 */
+	protected static double getRelationshipModifier(Person person, Building building) throws BuildingException {
+		double result = 1D;
+		
+		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		
+		if ((person == null) || (building == null)) throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
+		else {
+			if (building.hasFunction(LifeSupport.NAME)) {
+				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				double totalOpinion = 0D;
+				PersonIterator i = lifeSupport.getOccupants().iterator();
+				while (i.hasNext()) {
+					Person occupant = i.next();
+					if (person != occupant) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, occupant) - 50D) / 50D);
+				}
+				
+				if (totalOpinion >= 0D) result*= (1D + totalOpinion);
+				else result/= (1D - totalOpinion); 
+			}
 		}
 		
 		return result;

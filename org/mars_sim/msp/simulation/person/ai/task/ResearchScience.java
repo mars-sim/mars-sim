@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResearchScience.java
- * @version 2.77 2004-08-25
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -24,7 +24,7 @@ import org.mars_sim.msp.simulation.vehicle.*;
 public abstract class ResearchScience extends Task implements Serializable {
 
 	// The stress modified per millisol.
-	private static final double STRESS_MODIFIER = 0D; 
+	private static final double STRESS_MODIFIER = -.1D; 
 
 	// Data members
 	private MalfunctionManager malfunctions; // The labs associated malfunction manager.
@@ -182,6 +182,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 			labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
 			labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
 			labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
+			labBuildings = BuildingManager.getBestRelationshipBuildings(person, labBuildings);
         
 			if (labBuildings.size() > 0) {
 				// Pick random lab from list.

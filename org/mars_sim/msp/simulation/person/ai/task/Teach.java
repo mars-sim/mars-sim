@@ -1,15 +1,16 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 2.77 2004-08-17
+ * @version 2.77 2004-09-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
@@ -78,7 +79,12 @@ public class Teach extends Task implements Serializable {
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 				Person student = (Person) potentialStudents.get(0);
 				try {
-					result *= Task.getCrowdingProbabilityModifier(person, BuildingManager.getBuilding(student));
+					Building building = BuildingManager.getBuilding(student);
+					if (building != null) {
+						result *= Task.getCrowdingProbabilityModifier(person, building);
+						result *= Task.getRelationshipModifier(person, building);
+					}
+					else result = 0D;
 				}
 				catch (BuildingException e) {
 					System.err.println("Teach.getProbability(): " + e.getMessage());
@@ -120,7 +126,6 @@ public class Teach extends Task implements Serializable {
 	
 	/**
 	 * Gets a collection of the best students the teacher can teach.
-	 * Currently based on crowding in student building when at a settlement.
 	 * @param teacher the teacher looking for students.
 	 * @return collection of the best students
 	 */
@@ -129,6 +134,7 @@ public class Teach extends Task implements Serializable {
 		PersonCollection students = getTeachableStudents(teacher);
 		
 		// If teacher is in a settlement, best students are in least crowded buildings.
+		PersonCollection leastCrowded = new PersonCollection();
 		if (teacher.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			try {
 				// Find the least crowded buildings that teachable students are in.
@@ -139,7 +145,7 @@ public class Teach extends Task implements Serializable {
 					Building building = BuildingManager.getBuilding(student);
 					LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-					if (buildingCrowding < 0) buildingCrowding = 0;
+					if (buildingCrowding < -1) buildingCrowding = -1;
 					if (buildingCrowding < crowding) crowding = buildingCrowding;
 				}
 				
@@ -150,13 +156,36 @@ public class Teach extends Task implements Serializable {
 					Building building = BuildingManager.getBuilding(student);
 					LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-					if (buildingCrowding < 0) buildingCrowding = 0;
-					if (buildingCrowding == crowding) result.add(student);
+					if (buildingCrowding < -1) buildingCrowding = -1;
+					if (buildingCrowding == crowding) leastCrowded.add(student);
 				}
 			}
 			catch (BuildingException e) {}
 		}
-		else result = students;
+		else leastCrowded = students;
+		
+		// Get the teacher's favorite students.
+		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		PersonCollection favoriteStudents = new PersonCollection();
+		
+		// Find favorite opinion.
+		double favorite = Double.NEGATIVE_INFINITY;
+		PersonIterator k = leastCrowded.iterator();
+		while (k.hasNext()) {
+			Person student = k.next();
+			double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
+			if (opinion > favorite) favorite = opinion;
+		}
+		
+		// Get list of favorite students.
+		k = leastCrowded.iterator();
+		while (k.hasNext()) {
+			Person student = k.next();
+			double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
+			if (opinion == favorite) favoriteStudents.add(student);
+		}
+		
+		result = favoriteStudents;
 		
 		return result;
 	}
