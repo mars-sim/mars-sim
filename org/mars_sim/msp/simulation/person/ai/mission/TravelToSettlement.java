@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.76 2004-06-12
+ * @version 2.76 2004-06-14
  * @author Scott Davis
  */
 
@@ -147,7 +147,10 @@ public class TravelToSettlement extends Mission implements Serializable {
 				JobManager jobManager = Simulation.instance().getJobManager();
 				Job currentJob = person.getMind().getJob();
 				double currentJobProspect = jobManager.getJobProspect(person, currentJob, startingSettlement, true);
-				double destinationJobProspect = jobManager.getJobProspect(person, currentJob, destinationSettlement, false);
+				double destinationJobProspect = 0D;
+				if (person.getMind().getJobLock()) 
+					destinationJobProspect = jobManager.getJobProspect(person, currentJob, destinationSettlement, false);
+				else destinationJobProspect = jobManager.getBestJobProspect(person, destinationSettlement, false);
 				boolean betterJobProspect = (destinationJobProspect > currentJobProspect);
 				
 				// Does person have a driver job?
@@ -344,9 +347,22 @@ public class TravelToSettlement extends Mission implements Serializable {
                 	LifeSupport lifeSupport = (LifeSupport) garageBuilding.getFunction(LifeSupport.NAME);
                 	lifeSupport.addPerson(person);
                 }
-                else BuildingManager.addToRandomBuilding(rover, destinationSettlement);
+                else BuildingManager.addToRandomBuilding(person, destinationSettlement);
             }
             catch (BuildingException e) {}
+        }
+        
+        // If any non-mission personel on rover, have them exit rover.
+        PersonIterator j = rover.getCrew().iterator();
+        while (j.hasNext()) {
+        	Person crewmember = j.next();
+        	if (!people.contains(crewmember)) {
+        		try {
+        			rover.getInventory().takeUnit(crewmember, destinationSettlement);
+					BuildingManager.addToRandomBuilding(crewmember, destinationSettlement);
+        		}
+        		catch (BuildingException e) {}
+        	} 
         }
 
         // Unload rover if necessary.
@@ -387,7 +403,9 @@ public class TravelToSettlement extends Mission implements Serializable {
 			Settlement tempSettlement = iterator.next();
 			if (tempSettlement == startingSettlement) iterator.remove();
 			else {
-				double jobProspect = jobManager.getBestJobProspect(person, tempSettlement, false);
+				double jobProspect = 0D;
+				if (person.getMind().getJobLock()) jobProspect = jobManager.getJobProspect(person, currentJob, tempSettlement, false);
+				else jobProspect = jobManager.getBestJobProspect(person, tempSettlement, false);
 				if (jobProspect <= currentJobProspect) iterator.remove(); 
 			}
 		}

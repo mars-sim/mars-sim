@@ -1,34 +1,24 @@
 /**
  * Mars Simulation Project
  * ActivityTabPanel.java
- * @version 2.76 2004-06-09
+ * @version 2.76 2004-06-14
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Mind;
+import org.mars_sim.msp.simulation.person.ai.job.*;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
 import org.mars_sim.msp.simulation.person.medical.DeathInfo;
-import org.mars_sim.msp.ui.standard.ImageLoader;
-import org.mars_sim.msp.ui.standard.MainDesktopPane;
-import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
@@ -42,6 +32,8 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     private JTextArea missionTextArea;
     private JTextArea missionPhaseTextArea;
     private JLabel jobLabel;
+    private JComboBox jobComboBox;
+    private JButton monitorButton;
     
     // Data cache
     private String jobCache = "";
@@ -78,10 +70,20 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         jobPanel.setBorder(new MarsPanelBorder());
         topContentPanel.add(jobPanel);
         
-        // Prepare job label
-        jobCache = "Job: " + mind.getJob().getName();
-        jobLabel = new JLabel(jobCache, JLabel.CENTER);
-        jobPanel.add(jobLabel);
+		// Prepare job label
+		jobLabel = new JLabel("Job: ", JLabel.CENTER);
+		jobPanel.add(jobLabel);        
+        
+        // Prepare job combo box
+		jobCache = mind.getJob().getName();
+        JobManager jobManager = Simulation.instance().getJobManager();
+        String[] jobNames = new String[jobManager.getJobs().size()];
+        for (int x=0; x < jobManager.getJobs().size(); x++)
+        	jobNames[x] = ((Job) jobManager.getJobs().get(x)).getName();
+        jobComboBox = new JComboBox(jobNames);
+        jobComboBox.setSelectedItem(jobCache);
+        jobComboBox.addActionListener(this);
+        jobPanel.add(jobComboBox);
         
         // Prepare activity panel
         JPanel activityPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -146,7 +148,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         missionPanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
         
         // Prepare mission monitor button
-        JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
+        monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
         monitorButton.setMargin(new Insets(1, 1, 1, 1));
         monitorButton.setToolTipText("Open Monitor tab for this mission.");
         monitorButton.addActionListener(this);
@@ -182,9 +184,12 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
         
         // Update job if necessary.
-        if (dead) jobCache = "Job: " + deathInfo.getJob();
-        else jobCache = "Job: " + mind.getJob().getName();
-        if (!jobCache.equals(jobLabel.getText())) jobLabel.setText(jobCache);
+        if (dead) {
+        	jobCache = deathInfo.getJob();
+        	jobComboBox.setEnabled(false);
+       	} 
+        else jobCache = mind.getJob().getName();
+        if (!jobCache.equals(jobComboBox.getSelectedItem())) jobComboBox.setSelectedItem(jobCache);
         
         TaskManager taskManager = null;
         Mission mission = null;
@@ -226,11 +231,20 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
      * @param event the action event
      */
     public void actionPerformed(ActionEvent event) {
-        Person person = (Person) unit;
-        if (!person.getPhysicalCondition().isDead()) {
-            Mind mind = person.getMind();
-            if (mind.hasActiveMission()) 
-                desktop.addModel(new PersonTableModel(mind.getMission()));
-        }
+    	Object source = event.getSource();
+    	
+    	if (source == monitorButton) {
+        	Person person = (Person) unit;
+        	if (!person.getPhysicalCondition().isDead()) {
+            	Mind mind = person.getMind();
+            	if (mind.hasActiveMission()) 
+                	desktop.addModel(new PersonTableModel(mind.getMission()));
+        	}
+    	}
+    	else if (source == jobComboBox) {
+    		int jobIndex = jobComboBox.getSelectedIndex();
+    		Job job = (Job) Simulation.instance().getJobManager().getJobs().get(jobIndex);
+    		((Person) unit).getMind().setJob(job, true);
+    	}
     }
 }       

@@ -356,6 +356,19 @@ abstract class CollectResourcesMission extends Mission implements Serializable {
 			}
 			catch (BuildingException e) {}
 		}
+		
+		// If any non-mission personel on rover, have them exit rover.
+		PersonIterator j = rover.getCrew().iterator();
+		while (j.hasNext()) {
+			Person crewmember = j.next();
+			if (!people.contains(crewmember)) {
+				try {
+					rover.getInventory().takeUnit(crewmember, startingSettlement);
+					BuildingManager.addToRandomBuilding(crewmember, startingSettlement);
+				}
+				catch (BuildingException e) {}
+			} 
+		}		
 
 		// Unload rover if necessary.
 		if (UnloadVehicle.isFullyUnloaded(rover)) roverUnloaded = true;

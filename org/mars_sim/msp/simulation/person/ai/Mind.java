@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.76 2004-06-10
+ * @version 2.76 2004-06-14
  * @author Scott Davis
  */
 
@@ -25,6 +25,7 @@ public class Mind implements Serializable {
     private TaskManager taskManager; // The person's task manager.
     private Mission mission; // The person's current mission (if any).
     private Job job; // The person's job.
+    private boolean jobLock; // Is the job locked so another can't be chosen?
 
     /** 
      * Constructor
@@ -36,6 +37,7 @@ public class Mind implements Serializable {
         this.person = person;
         mission = null;
         job = null;
+        jobLock = false;
 
         // Construct a task manager
         taskManager = new TaskManager(this);
@@ -96,6 +98,24 @@ public class Mind implements Serializable {
     public Job getJob() {
     	return job;
     }
+    
+    /**
+     * Checks if the person's job is locked and can't be changed.
+     * @return true if job lock.
+     */
+    public boolean getJobLock() {
+    	return jobLock;
+    }
+    
+    /**
+     * Sets the person's job.
+     * @param newJob the new job
+     * @param locked is the job locked so another can't be chosen?
+     */
+    public void setJob(Job newJob, boolean locked) {
+    	job = newJob;
+    	jobLock = locked;
+    }
 
     /** Returns true if person has an active mission.
      *  @return true for active mission
@@ -143,7 +163,7 @@ public class Mind implements Serializable {
 		JobManager jobManager = Simulation.instance().getJobManager();
 		
 		// Check if this person needs to get a new job or change jobs.
-		job = jobManager.getNewJob(person);
+		if (!jobLock) setJob(jobManager.getNewJob(person), false);
 
         // If this Person is too weak then they can not do Missions
         if (person.getPerformanceRating() < 0.5D) {
