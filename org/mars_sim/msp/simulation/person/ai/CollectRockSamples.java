@@ -120,17 +120,26 @@ class CollectRockSamples extends Task implements Serializable {
 	    sampleLimit = remainingSamplesNeeded;
 
 	double samplesCollected = time * COLLECTION_RATE;
+
+        // Modify collection rate by "Areology" skill.
+	int areologySkill = person.getSkillManager().getEffectiveSkillLevel("Areology");
+	if (areologySkill == 0) samplesCollected /= 2D;
+	if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
+
+	// Add experience to "Areology" skill.
+	// 1 base experience point per 10 millisols of collection time spent.
+	// Experience points adjusted by person's "Experience Aptitude" attribute.
+        double experience = time / 100D;
+	experience += experience *
+                (((double) person.getNaturalAttributeManager().getAttribute("Experience Aptitude") - 50D) / 100D);
+        person.getSkillManager().addExperience("Areology", experience);
 	
 	// Collect rock samples.
 	if (samplesCollected <= sampleLimit) {
-            // System.out.println(person.getName() + " collected " + samplesCollected + " kg of rock samples.");
 	    person.getInventory().addResource(Inventory.ROCK_SAMPLES, samplesCollected);
 	    return 0D;
 	}
 	else {
-	    // System.out.println(person.getName() + " collected " + sampleLimit + " kg of rock samples.");
-	    // System.out.println(person.getName() + " finished collecting rock samples.");
-	    // System.out.println(person.getName() + " starting to enter rover.");
 	    if (sampleLimit >= 0D) 
                 person.getInventory().addResource(Inventory.ROCK_SAMPLES, sampleLimit);
 	    phase = ENTER_ROVER;

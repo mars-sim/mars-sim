@@ -32,7 +32,8 @@ public class TaskManager implements Serializable {
                                        Sleep.class, EatMeal.class,
                                        RepairMechanicalFailure.class,
                                        MedicalAssistance.class,
-                                       MaintainSettlement.class };
+                                       MaintainSettlement.class, 
+                                       StudyRockSamples.class };
 
     /** Constructs a TaskManager object
      *  @param person the person the task manager is for

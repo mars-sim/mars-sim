@@ -58,7 +58,7 @@ public class LaboratoryPanel extends FacilityPanel {
 
         // Prepare lab size label
         JLabel labSizeLabel =
-                new JLabel("Laboratory Size: " + laboratory.getLaboratorySize(),
+                new JLabel("Researcher Capacity: " + laboratory.getLaboratorySize(),
                 JLabel.CENTER);
         labSizeLabel.setForeground(Color.black);
         labelPane.add(labSizeLabel);

@@ -31,8 +31,8 @@ class TendGreenhouse extends Task implements Serializable {
         this.settlement = person.getSettlement();
         this.greenhouse = (Greenhouse) settlement.getFacilityManager().getFacility("Greenhouse");
 
-        // Randomly determine duration, from 0 - 250 millisols
-        duration = RandomUtil.getRandomDouble(250D);
+        // Randomly determine duration, from 0 - 500 millisols
+        duration = RandomUtil.getRandomDouble(500D);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -81,7 +81,7 @@ class TendGreenhouse extends Task implements Serializable {
         greenhouse.addWorkToGrowthCycle(workTime);
 
         // Keep track of the duration of the task.
-        timeCompleted += timeLeft;
+        timeCompleted += time;
         if (timeCompleted >= duration) done = true;
 
         // Add experience to "Greenhouse Farming" skill
