@@ -91,6 +91,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         
         // Update buildings if necessary.
         if (!buildingsCache.equals(buildings)) {
+        	
             // Add building panels for new buildings.
             Iterator iter1 = buildings.iterator();
             while (iter1.hasNext()) {
@@ -99,6 +100,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
                     BuildingPanel panel = new BuildingPanel(String.valueOf(count), building, desktop);
                     buildingPanels.add(panel);
                     buildingDisplayPanel.add(panel, panel.getPanelName());
+					buildingComboBoxModel.addElement(building);
                     count++;
                 }
             }
@@ -112,6 +114,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
                     if (panel != null) {
                         buildingPanels.remove(panel);
                         buildingDisplayPanel.remove(panel);
+						buildingComboBoxModel.removeElement(building);
                     }
                 }
             }
@@ -154,4 +157,3 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         return result;
     }
 }
-        

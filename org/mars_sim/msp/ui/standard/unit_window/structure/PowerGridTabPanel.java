@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGridTabPanel.java
- * @version 2.75 2004-04-05
+ * @version 2.76 2004-07-12
  * @author Scott Davis
  */
 
@@ -74,14 +74,20 @@ public class PowerGridTabPanel extends TabPanel {
             formatter.format(powerUsedCache) + " kW.", JLabel.CENTER);
         powerInfoPanel.add(powerUsedLabel);
         
+		// Create scroll panel for the outer table panel.
+		JScrollPane powerScrollPanel = new JScrollPane();
+		powerScrollPanel.setPreferredSize(new Dimension(257, 230));
+		topContentPanel.add(powerScrollPanel);         
+        
         // Prepare outer table panel.
         JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         outerTablePanel.setBorder(new MarsPanelBorder());
-        topContentPanel.add(outerTablePanel);
+        powerScrollPanel.setViewportView(outerTablePanel);   
         
         // Prepare power table panel.
         JPanel powerTablePanel = new JPanel(new BorderLayout(0, 0));
         outerTablePanel.add(powerTablePanel);
+        // powerScrollPanel.setViewportView(powerTablePanel);
         
         // Prepare power table model.
         powerTableModel = new PowerTableModel(settlement);
