@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.71 2000-10-30
+ * @version 2.72 2001-05-10
  * @author Scott Davis
  */
 
@@ -281,7 +281,20 @@ public class Coordinates {
      *  @return new spherical location
      */
     public Coordinates convertRectToSpherical(double x, double y, double rho) {
+        Coordinates result = new Coordinates(0D, 0D);
+        convertRectToSpherical(x, y, rho, result);
+        return result;
+    }
 
+    /** Converts linear rectangular XY position change to spherical coordinates 
+     *  with rho value for map.
+     *  @param x change in x value (in km)
+     *  @param y change in y value (in km)
+     *  @param rho rho value of map used
+     *  @param newCoordinates Coordinates object to put the result in
+     */
+    public void convertRectToSpherical(double x, double y, double rho, Coordinates newCoordinates) {
+        
         double z = Math.sqrt((rho * rho) - (x * x) - (y * y));
 
         double x2 = x;
@@ -304,10 +317,9 @@ public class Coordinates {
             else
                 theta_new = TWO_PI + theta_new;
         }
-
-        Coordinates result = new Coordinates(phi_new, theta_new);
-
-        return result;
+        
+        newCoordinates.setPhi(phi_new);
+        newCoordinates.setTheta(theta_new);
     }
 
     /** Returns angle direction to another location on surface of

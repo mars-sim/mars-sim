@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 2.72 2001-05-08
+ * @version 2.72 2001-05-11
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard;
  
 import org.mars_sim.msp.simulation.*;  
 import java.awt.*;
+import java.awt.image.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -29,6 +30,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     private int height; // height of the globe display component
     private boolean useUSGSMap;  // True if USGS surface map is to be used
     private VirtualMars mars; // Virtual mars object
+    private int[] shadingArray; // Array used to generate day/night shading image
 
     private static final double HALF_PI = (Math.PI / 2);
 
@@ -58,6 +60,7 @@ class GlobeDisplay extends JComponent implements Runnable {
         topo = false;
         recreate = true;
         useUSGSMap = false;
+        shadingArray = new int[width * height];
 
         // Initially show real surface globe
         showSurf();
@@ -141,30 +144,39 @@ class GlobeDisplay extends JComponent implements Runnable {
             g.drawImage(globe.getGlobeImage(), 0, 0, this);
         }
 
-        drawShadow(g);
+        if (!topo) drawShading(g);
         drawUnits(g);
         drawCrossHair(g);
     }
 
-    protected void drawShadow(Graphics g) {
+    /** Draws the day/night shading on the globe.
+     * @param g graphics context
+     */
+    protected void drawShading(Graphics g) {
         int centerX = width / 2;
-        int centerY = width / 2;
+        int centerY = height / 2;
 
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
 
-        g.setColor(new Color(0, 0, 0, 127));
-        for (int x = centerX - 48; x < centerX + 48; x++) {
-            for (int y = centerY - 48; y < centerY + 48; y++) {
+        Coordinates location = new Coordinates(0D, 0D);
+        for (int x = 0; x < 150; x++) {
+            for (int y = 0; y < 150; y++) {
                 int xDiff = x - centerX;
                 int yDiff = y - centerY;
-                if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 48) {
-                    Coordinates location = centerCoords.convertRectToSpherical(xDiff, yDiff, 47.74648293D);
-                    if (sunDirection.getAngle(location) > (Math.PI / 2D))  { 
-                        g.fillRect(x, y, 1, 1);
-                    }
+                if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
+                    centerCoords.convertRectToSpherical(xDiff, yDiff, 47.74648293D, location);
+                    int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
+                    shadingArray[x + (y * 150)] = ((127 - sunlight) << 24) & 0xFF000000;
                 }
+                else shadingArray[x + (y * 150)] = 0xFF000000;
             }
         }
+
+        // Create shading image for map
+        Image shadingMap = this.createImage(new MemoryImageSource(width, height, shadingArray, 0, width));
+
+        // Draw the shading image
+        g.drawImage(shadingMap, 0, 0, this);
     }
 
     /** draw the dots on the globe that identify units 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VirtualMars.java
- * @version 2.72 2001-04-25
+ * @version 2.72 2001-05-10
  * @author Scott Davis
  */
 
@@ -27,7 +27,7 @@ public class VirtualMars {
         orbitInfo = new OrbitInfo();
  
         // Initialize surface features
-        surfaceFeatures = new SurfaceFeatures();
+        surfaceFeatures = new SurfaceFeatures(this);
 
         // Initialize all units
         units = new UnitManager(this);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.71 2000-11-13
+ * @version 2.72 2001-05-11
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard;
 
 import org.mars_sim.msp.simulation.*;
 import java.awt.*;
+import java.awt.image.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -24,6 +25,7 @@ import javax.swing.*;
 public class MapDisplay extends JComponent implements MouseListener, Runnable {
 
     // Data members
+    private VirtualMars mars; // Virtual Mars object
     private UIProxyManager proxyManager; // Unit UI proxy manager
     private NavigatorWindow navWindow; // Navigator Tool Window
     private Map surfMap; // Surface image object
@@ -37,6 +39,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private boolean labels; // True if units should display labels
     private Image mapImage; // Main image
     private boolean useUSGSMap;  // True if USGS surface map is to be used
+    private int[] shadingArray;  // Array used to generate day/night shading image
 
     private int width;
     private int height;
@@ -54,19 +57,21 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      *  @param height the height of the map shown
      */
     public MapDisplay(NavigatorWindow navWindow, UIProxyManager proxyManager,
-            int width, int height) {
+            int width, int height, VirtualMars mars) {
 
         // Initialize data members
         this.navWindow = navWindow;
         this.proxyManager = proxyManager;
         this.width = width;
         this.height = height;
+        this.mars = mars;
 
         wait = false;
         recreate = true;
         topo = false;
         labels = true;
         centerCoords = new Coordinates(HALF_PI, 0D);
+        shadingArray = new int[width * height];
 
         // Set component size
         setPreferredSize(new Dimension(width, height));
@@ -171,9 +176,9 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 recreate = false;
                 repaint();
             } else {
-                // Pause for 1000 milliseconds between display refreshs
+                // Pause for 2000 milliseconds between display refreshs
                 try {
-                    showThread.sleep(1000);
+                    showThread.sleep(2000);
                 } catch (InterruptedException e) {}
                 repaint();
             }
@@ -223,7 +228,51 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 g.drawImage(mapImage, 0, 0, this);
             }
 
+            if (!topo) drawShading(g);
+
             drawUnits(g);
+        }
+    }
+
+    /** Draws the day/night shading on the map.
+     *  @param g graphics context
+     */
+    protected void drawShading(Graphics g) {
+        int centerX = width / 2;
+        int centerY = width / 2;
+        
+        Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
+        
+        // Color[] twilightShading = new Color[128];
+        // for (int x=0; x < 128; x++) twilightShading[x] = new Color(0, 0, 0, x);
+
+        double rho = 1440D / Math.PI;
+        if (useUSGSMap) rho = 11458D / Math.PI;
+
+        boolean nightTime = true;
+        boolean dayTime = true;
+        Coordinates location = new Coordinates(0D, 0D);
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                centerCoords.convertRectToSpherical(x - centerX, y - centerY, rho, location);
+                int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
+                shadingArray[x + (y * width)] = ((127 - sunlight) << 24) & 0xFF000000;
+                if (sunlight > 0) nightTime = false;
+                if (sunlight < 127) dayTime = false;
+                //g.setColor(twilightShading[127 - sunlight]);
+                //g.fillRect(x, y, 1, 1);
+            }
+        }
+        if (nightTime) {
+            g.setColor(new Color(0, 0, 0, 128));
+            g.fillRect(0, 0, width, height);
+        }
+        else if (!dayTime) {
+            // Create shading image for map
+            Image shadingMap = this.createImage(new MemoryImageSource(width, height, shadingArray, 0, width));
+
+            // Draw the shading image
+            g.drawImage(shadingMap, 0, 0, this);
         }
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OrbitInfo.java
- * @version 2.72 2001-05-06
+ * @version 2.72 2001-05-10
  * @author Scott Davis
  */
 
@@ -32,7 +32,7 @@ public class OrbitInfo {
         orbitTime = 0D;
         theta = 0D;
         radius = 1.665732D;
-        sunDirection = new Coordinates((Math.PI / 2D) + TILT, 0D);
+        sunDirection = new Coordinates((Math.PI / 2D) + TILT, Math.PI);
     }
 
     /** Adds time (in seconds) to the orbit
@@ -60,8 +60,8 @@ public class OrbitInfo {
 
         // Determine Sun theta
         double sunTheta = sunDirection.getTheta();
-        sunTheta += (2D * Math.PI) * (seconds / SOLAR_DAY);
-        while (sunTheta >= (2D * Math.PI)) sunTheta -= 2D * Math.PI;
+        sunTheta -= (2D * Math.PI) * (seconds / SOLAR_DAY);
+        while (sunTheta < 0D) sunTheta += 2D * Math.PI;
         sunDirection.setTheta(sunTheta);        
 
         // Determine Sun phi
