@@ -183,16 +183,19 @@ public abstract class Vehicle extends Unit {
         }
     }
 
-    /** Consumes a portion of the vehicle's oxygen. 
-     *  @param consumedOxygen the amount of oxygen consumed (in units)
+    /** Removes a portion of the vehicle's oxygen. 
+     *  @param amount the amount of oxygen removed (in units)
+     *  @return Amount of oxygen actually removed (in units)
      */
-    void consumeOxygen(double consumedOxygen) {
-        boolean noOxygen = (oxygen == 0D);
-        oxygen -= consumedOxygen;
-        if (oxygen < 0D) {
-            oxygen = 0D;
-            if (!noOxygen) System.out.println(getName() + " has run out of oxygen.");
+    double removeOxygen(double amount) {
+       double result = amount;
+        if (amount > oxygen) {
+            result = oxygen;
+            oxygen = 0;
         }
+        else oxygen -= amount;
+
+        return result;
     }
 
     /** Returns the oxygen capacity of the vehicle. 
@@ -226,16 +229,19 @@ public abstract class Vehicle extends Unit {
         }
     }
 
-    /** Consumes a portion of the vehicle's water. 
-     *  @param consumedWater the amount of water consumed (in units)
+    /** Removes water from storage. 
+     *  @param amount the amount of water requested (in units)
+     *  @return the amount of water actually received (in units)
      */
-    void consumeWater(double consumedWater) {
-        boolean noWater = (water == 0D);
-        water -= consumedWater;
-        if (water < 0D) {
-            water = 0D;
-            if (!noWater) System.out.println(getName() + " has run out of water.");
+    double removeWater(double amount) {
+        double result = amount;
+        if (amount > water) {
+            result = water;
+            water = 0;
         }
+        else water -= amount;
+
+        return result;
     }
 
     /** Returns the water capacity of the vehicle. 
@@ -269,16 +275,19 @@ public abstract class Vehicle extends Unit {
         }
     }
 
-    /** Consumes a portion of the vehicle's food. 
-     *  @param consumedFood the amount of food consumed (in units)
+    /** Removes food from storage. 
+     *  @param amount the amount of food requested from storage (in units)
+     *  @return the amount of food actually received from storage (in units)
      */
-    void consumeFood(double consumedFood) {
-        boolean noFood = (food == 0D);
-        food -= consumedFood;
-        if (food < 0D) {
-            food = 0D;
-            if (!noFood) System.out.println(getName() + " has run out of food.");
+    double removeFood(double amount) {
+        double result = amount;
+        if (amount > food) {
+            result = food;
+            food = 0;
         }
+        else food -= amount;
+
+        return result;
     }
     
     /** Returns the food capacity of the vehicle. 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsituResourceProcessorFacility.java
- * @version 2.71 2000-11-13
+ * @version 2.71 2000-12-03
  * @author Scott Davis
  */
 
@@ -30,10 +30,13 @@ public class InsituResourceProcessorFacility extends Facility {
         // User Facility's constructor
         super(manager, "INSITU Resource Processor");
         
+        LivingQuartersFacility quarters = (LivingQuartersFacility) manager.getFacility("Living Quarters");
+        int normalPop = quarters.getNormalCapacity();
+        
         // Initialize data members
-        oxygenUnits = 10D;
-        waterUnits = 10D;
-        fuelUnits = 10D;
+        oxygenUnits = (double) normalPop;
+        waterUnits = (double) normalPop;
+        fuelUnits = (double) normalPop;
     }
     
     /** Returns number of oxygen units that processor can generate in a day.

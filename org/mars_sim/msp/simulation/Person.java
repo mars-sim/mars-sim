@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.71 2000-10-17
+ * @version 2.71 2000-12-03
  * @author Scott Davis
  */
 
@@ -94,6 +94,12 @@ public class Person extends Unit {
      *  @param seconds for action
      */
     void timePasses(int seconds) {
+        consumeOxygen(1D / 24D / 60D / 60D * (double) seconds);
+        consumeWater(1D / 24D / 60D / 60D * (double) seconds);
+        
+        // Later to be replaced with a eat meal task.
+        consumeFood(1D / 24D / 60D / 60D * (double) seconds);
+        
         tasks.takeAction(seconds);
     }
 
@@ -116,5 +122,53 @@ public class Person extends Unit {
      */
     public TaskManager getTaskManager() {
         return tasks;
+    }
+    
+    /** Person consumes given amount of oxygen
+     *  @param amount amount of oxygen to consume (in units)
+     */
+    void consumeOxygen(double amount) {
+        double amountRecieved = 0D;
+        
+        if (locationSituation.equals("In Settlement")) {
+            FacilityManager manager = settlement.getFacilityManager();
+            StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
+            amountRecieved = stores.removeOxygen(amount);
+        }
+        else amountRecieved = vehicle.removeOxygen(amount);
+        
+        if (amountRecieved != amount) System.out.println(getName() + " needs oxygen.");
+    }
+    
+    /** Person consumes given amount of water
+     *  @param amount amount of water to consume (in units)
+     */
+    void consumeWater(double amount) {
+        double amountRecieved = 0D;
+        
+        if (locationSituation.equals("In Settlement")) {
+            FacilityManager manager = settlement.getFacilityManager();
+            StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
+            amountRecieved = stores.removeWater(amount);
+        }
+        else amountRecieved = vehicle.removeWater(amount);
+        
+        if (amountRecieved != amount) System.out.println(getName() + " needs water.");
+    }
+    
+    /** Person consumes given amount of food
+     *  @param amount amount of food to consume (in units)
+     */
+    void consumeFood(double amount) {
+        double amountRecieved = 0D;
+        
+        if (locationSituation.equals("In Settlement")) {
+            FacilityManager manager = settlement.getFacilityManager();
+            StoreroomFacility stores = (StoreroomFacility) manager.getFacility("Storerooms");
+            amountRecieved = stores.removeFood(amount);
+        }
+        else amountRecieved = vehicle.removeFood(amount);
+        
+        if (amountRecieved != amount) System.out.println(getName() + " needs food.");
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StoreroomFacility.java
- * @version 2.71 2000-11-13
+ * @version 2.71 2000-12-03
  * @author Scott Davis
  */
 
@@ -33,12 +33,12 @@ public class StoreroomFacility extends Facility {
         // Use Facility's constructor.
         super(manager, "Storerooms");
 
-        // Initialize random amount for each good from 100 to 500.
-        foodStores = 100 + RandomUtil.getRandomInteger(400);
-        oxygenStores = 100 + RandomUtil.getRandomInteger(400);
-        waterStores = 100 + RandomUtil.getRandomInteger(400);
-        fuelStores = 100 + RandomUtil.getRandomInteger(400);
-        partsStores = 100 + RandomUtil.getRandomInteger(400);
+        // Initialize random amount for each good from 200 to 500.
+        foodStores = 200 + RandomUtil.getRandomInteger(300);
+        oxygenStores = 200 + RandomUtil.getRandomInteger(300);
+        waterStores = 200 + RandomUtil.getRandomInteger(300);
+        fuelStores = 200 + RandomUtil.getRandomInteger(300);
+        partsStores = 200 + RandomUtil.getRandomInteger(300);
     }
 
     /** Constructor for set storage values (used later when facilities can be built or upgraded.) 
