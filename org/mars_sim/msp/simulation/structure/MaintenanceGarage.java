@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceGarage.java
- * @version 2.74 2002-04-28
+ * @version 2.74 2002-05-04
  * @author Scott Davis
  */
 
@@ -172,8 +172,10 @@ public class MaintenanceGarage extends Facility implements Serializable {
         while (i2.hasNext()) {
             Person person = i2.next();
             Task task = person.getMind().getTaskManager().getTask();
-            if (task instanceof MaintainVehicle) {
-                if (!people.contains(person)) people.add(person);
+            if (task instanceof Maintenance) {
+		if (((Maintenance) task).getEntity() instanceof Vehicle) {
+                    if (!people.contains(person)) people.add(person);
+		}
             }
         }
 

@@ -18,7 +18,7 @@ import java.util.*;
 /** The Settlement class represents a settlement unit on virtual Mars.
  *  It contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements LifeSupport {
+public class Settlement extends Structure implements LifeSupport, Airlockable {
 
     // Default population capacity for a settlement
     private static int DEFAULT_POPULATION_CAPACITY = 20;
@@ -351,20 +351,18 @@ public class Settlement extends Structure implements LifeSupport {
             Task task = person.getMind().getTaskManager().getTask();
 
             // Add all people maintaining this settlement. 
-            if (task instanceof MaintainSettlement) {
-                if (((MaintainSettlement) task).getEntity() == this) {
+            if (task instanceof Maintenance) {
+                if (((Maintenance) task).getEntity() == this) {
                     if (!people.contains(person)) people.add(person);
 		}
             }
 
             // Add all people repairing this settlement.
-            /*
-            if (task instanceof RepairSettlement) {
-                if (((RepairSettlement) task).getEntity() == this) {
-                    if (!people.contains(person) people.add(person);
+            if (task instanceof Repair) {
+                if (((Repair) task).getEntity() == this) {
+                    if (!people.contains(person)) people.add(person);
 		}
             }
-            */
         }
 
         return people;

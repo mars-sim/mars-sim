@@ -82,20 +82,18 @@ public abstract class Facility implements Malfunctionable, Serializable {
             Task task = person.getMind().getTaskManager().getTask();
 
             // Add all people maintaining this facility. 
-            if (task instanceof MaintainSettlement) {
-                if (((MaintainSettlement) task).getEntity() == this) {
+            if (task instanceof Maintenance) {
+                if (((Maintenance) task).getEntity() == this) {
                     if (!people.contains(person)) people.add(person);
                 }
             }
 
             // Add all people repairing this facility.
-            /*
-            if (task instanceof RepairSettlement) {
-                if (((RepairSettlement) task).getEntity() == this) {
-                    if (!people.contains(person) people.add(person);
+            if (task instanceof Repair) {
+                if (((Repair) task).getEntity() == this) {
+                    if (!people.contains(person)) people.add(person);
                 }
             }
-            */
         }
 
         return people;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * ExitRoverEVA.java
- * @version 2.74 2002-03-11
+ * ExitAirlock.java
+ * @version 2.74 2002-05-05
  * @author Scott Davis
  */
 
@@ -14,28 +14,28 @@ import org.mars_sim.msp.simulation.equipment.*;
 import java.io.Serializable;
 
 /** 
- * The ExitRoverEVA class is a task for exiting a rover during a EVA operation.
+ * The ExitAirlock class is a task for exiting a airlock from an EVA operation.
  */
-class ExitRoverEVA extends Task implements Serializable {
+class ExitAirlock extends Task implements Serializable {
 
     // Data members
-    private Rover rover; // The rover to be exited.
+    private Airlockable entity;      // The entity to be exited.
     private boolean hasSuit = false; // True if person has an EVA suit.
 
     /** 
-     * Constructs an ExitRoverEVA object
+     * Constructs an ExitAirlock object
      * @param person the person to perform the task
      * @param mars the virtual Mars
-     * @param rover the rover to exit
+     * @param entity the entity to exit
      */
-    public ExitRoverEVA(Person person, Mars mars, Rover rover) {
-        super("Exiting rover for EVA", person, true, mars);
+    public ExitAirlock(Person person, Mars mars, Airlockable entity) {
+        super("Exiting airlock for EVA", person, true, mars);
 
         // Initialize data members
-	description = "Exiting " + rover.getName() + " for EVA";
-        this.rover = rover;
+	description = "Exiting " + entity.getName() + " for EVA";
+        this.entity = entity;
 
-	// System.out.println(person.getName() + " is starting to exit " + rover.getName());
+	// System.out.println(person.getName() + " is starting to exit airlock of " + entity.getName());
     }
 
     /** 
@@ -47,16 +47,16 @@ class ExitRoverEVA extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        // Get an EVA suit from rover inventory.
+        // Get an EVA suit from entity inventory.
 	if (!hasSuit) {
-	    if (goodEVASuitAvailable(rover)) {
-	        Inventory inv = rover.getInventory();
+	    if (goodEVASuitAvailable(entity)) {
+	        Inventory inv = ((Unit) entity).getInventory();
 	        UnitCollection evaSuits = inv.getUnitsOfClass(EVASuit.class);
 	        UnitIterator i = evaSuits.iterator();
 	        while (i.hasNext() && !hasSuit) {
 	            EVASuit suit = (EVASuit) i.next();
 		    if (suit.isFullyLoaded() && suit.lifeSupportCheck()) {
-		        // System.out.println(person.getName() + " taking EVA suit from " + rover.getName());
+		        // System.out.println(person.getName() + " taking EVA suit from " + entity.getName());
 		        if (inv.takeUnit(suit, person)) hasSuit = true;
 		    }
 	        }
@@ -65,12 +65,12 @@ class ExitRoverEVA extends Task implements Serializable {
 
 	// If person still doesn't have an EVA suit, end task.
 	if (!hasSuit) {
-            // System.out.println(person.getName() + " does not have an EVA suit, ExitRoverEVA ended");
+            // System.out.println(person.getName() + " does not have an EVA suit, ExitAirlock ended");
 	    done = true;
 	    return timeLeft;
 	}
 
-        Airlock airlock = rover.getAirlock();
+        Airlock airlock = entity.getAirlock();
 
 	// If person is in airlock, wait around.
 	if (airlock.inAirlock(person)) {
@@ -78,8 +78,8 @@ class ExitRoverEVA extends Task implements Serializable {
 	    airlock.activateAirlock();
 	}
 	else {
-	    // If person is in rover, try to enter airlock.
-	    if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+	    // If person is in entity, try to enter airlock.
+	    if (!person.getLocationSituation().equals(Person.OUTSIDE)) {
 	        if (airlock.isInnerDoorOpen()) airlock.enterAirlock(person, true);
 	        else airlock.requestOpenDoor();
 	    }
@@ -93,35 +93,31 @@ class ExitRoverEVA extends Task implements Serializable {
     }
 
     /**
-     * Checks if a person can exit a rover on an EVA.
-     * @param person
-     * @param rover
-     * @return true if person can exit the rover
+     * Checks if a person can exit an airlock on an EVA.
+     * @param person the person exiting
+     * @param entity the entity to be exited 
+     * @return true if person can exit the entity 
      */
-    public static boolean canExitRover(Person person, Rover rover) {
+    public static boolean canExitAirlock(Person person, Airlockable entity) {
         boolean result = true;
 
-	// Check if EVA suit is available in rover.
-	if (!goodEVASuitAvailable(rover)) result = false;
+	// Check if EVA suit is available in the entity.
+	if (!goodEVASuitAvailable(entity)) result = false;
 
-	// Check if person's medical condition prevents EVA.
-	// (implement later)
-	
 	return result;
     }
     
     /**
-     * Checks if a good EVA suit is in rover inventory.
-     * @param rover the rover
+     * Checks if a good EVA suit is in entity inventory.
+     * @param entity the entity 
      * @return true if good EVA suit is in inventory
      */
-    public static boolean goodEVASuitAvailable(Rover rover) {
+    public static boolean goodEVASuitAvailable(Airlockable entity) {
    
-	// System.out.println("ExitRoverEVA.goodEVASuitAvailable() ");
-        Inventory inv = rover.getInventory();
+        Inventory inv = ((Unit) entity).getInventory();
 
 	UnitCollection evaSuits = inv.getUnitsOfClass(EVASuit.class);
-        // System.out.println(rover.getName() + " has " + evaSuits.size() + " EVA suits.");
+        // System.out.println(entity.getName() + " has " + evaSuits.size() + " EVA suits.");
 	int goodSuits = 0;
 	UnitIterator i = evaSuits.iterator();
         while (i.hasNext()) {
@@ -129,11 +125,10 @@ class ExitRoverEVA extends Task implements Serializable {
 	    EVASuit suit = (EVASuit) i.next();
 	    // System.out.println("EVA suit.isFullyLoaded(): " + suit.isFullyLoaded());
 	    // System.out.println("EVA suit.lifeSupportCheck(): " + suit.lifeSupportCheck());
-	    if (suit.isFullyLoaded() && suit.lifeSupportCheck()) 
-	        goodSuits++;
+	    if (suit.isFullyLoaded() && suit.lifeSupportCheck()) goodSuits++;
 	}
 
-        // System.out.println(rover.getName() + " has " + goodSuits + " good EVA suits.");
+        // System.out.println(entity.getName() + " has " + goodSuits + " good EVA suits.");
 	
 	return (goodSuits > 0);
     }

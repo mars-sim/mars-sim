@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamplesMission.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-05-04
  * @author Scott Davis
  */
 
@@ -43,7 +43,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private int siteIndex; // The index of the current collection site.
     private double collectedSamples; // The amount of samples (kg) collected in a collection phase.
     private double collectingStart; // The starting amount of samples in a rover during a collection phase.
-    private MarsClock startCollectingTime;
+    private MarsClock startCollectingTime; // The time the rock sample collecting is started.
     
     // Tasks tracked
     ReserveRover reserveRover;
@@ -95,7 +95,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	    double rocks = currentSettlement.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
 	    if (rocks >= 300D) possible = false;
 
-            if (currentSettlement.getCurrentPopulationNum() > 1) possible = false;
+            if (currentSettlement.getCurrentPopulationNum() <= 1) possible = false;
 	    
 	    if (possible) result = 5D;
         }
@@ -233,7 +233,6 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             }
             else {
                 phase = COLLECTSAMPLES + " from Site " + (siteIndex + 1);
-		// System.out.println("CollectRockSamplesMission: Collecting phase started.");
 		collectedSamples = 0D;
 		collectingStart = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
 		startCollectingTime = (MarsClock) mars.getMasterClock().getMarsClock().clone();
@@ -244,7 +243,7 @@ class CollectRockSamplesMission extends Mission implements Serializable {
         // If rover doesn't currently have a driver, start drive task for person.
         // Can't be immediate last driver and can't be at night time.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) > 0D) {
-            if (rover.getMalfunctionManager().hasMalfunction()) {
+            if (!rover.getMalfunctionManager().hasMalfunction()) {
 	        if (person == lastDriver) {
                     lastDriver = null;
                 }
@@ -266,21 +265,13 @@ class CollectRockSamplesMission extends Mission implements Serializable {
     private void collectingPhase(Person person) {
 
         boolean endPhase = false;
-
+	
         // Calculate samples collected in phase so far.
 	collectedSamples = rover.getInventory().getResourceMass(Inventory.ROCK_SAMPLES) - collectingStart;
 	
-	// Determine if everyone in mission is in the rover.
-	boolean everyoneInRover = true;
-	PersonIterator i = people.iterator();
-	while (i.hasNext()) {
-	    if (i.next().getLocationSituation().equals(Person.OUTSIDE)) everyoneInRover = false;
-	}
-
-	if (everyoneInRover) {
+	if (everyoneInRover()) {
 	    // If collected samples are sufficient for this site, end the collecting phase.
 	    if (collectedSamples >= SITE_SAMPLE_AMOUNT) {
-		// System.out.println("CollectRockSamplesMission: collecting phase ended.");
 		// System.out.println("CollectRockSamplesMission: collectedSamples: " + collectedSamples);
 		MarsClock currentTime = mars.getMasterClock().getMarsClock();
 		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
@@ -299,7 +290,6 @@ class CollectRockSamplesMission extends Mission implements Serializable {
 	    // night time, end the collecting phase.
 	    int sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates());
 	    if (nobodyCollect && (sunlight > 0)) {
-		// System.out.println("CollectRockSamplesMission: collecting phase ended.");
 		// System.out.println("CollectRockSamplesMission: nobody can collect and not nighttime.");
 		MarsClock currentTime = mars.getMasterClock().getMarsClock();
 		double collectionTime = MarsClock.getTimeDiff(currentTime, startCollectingTime);
@@ -335,6 +325,19 @@ class CollectRockSamplesMission extends Mission implements Serializable {
             startingDistance = 0D;
         }
     }
+
+    /**
+     * Checks that everyone in the mission is aboard the rover.
+     * @return true if everyone is aboard
+     */
+    private boolean everyoneInRover() {
+        boolean result = true;
+        PersonIterator i = people.iterator();
+        while (i.hasNext()) {
+            if (!i.next().getLocationSituation().equals(Person.INVEHICLE)) result = false;
+        }
+        return result;
+    }			    
 
     /** Performs the disembarking phase of the mission.
      *  @param person the person currently performing the mission

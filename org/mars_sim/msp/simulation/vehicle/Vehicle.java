@@ -383,18 +383,18 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
             Task task = person.getMind().getTaskManager().getTask();
 
             // Add all people maintaining this vehicle.
-            if (task instanceof MaintainVehicle) {
-                if (((MaintainVehicle) task).getVehicle() == this)
-                    people.add(person);
+            if (task instanceof Maintenance) {
+                if (((Maintenance) task).getEntity() == this) {
+                    if (!people.contains(person)) people.add(person);
+		}
             }
 
             // Add all people repairing this vehicle.
-            /*
-            if (task instanceof RepairVehicle) {
-                if (((RepairVehicle) task).getVehicle() == this)
-                    people.add(person);
+            if (task instanceof Repair) {
+                if (((Repair) task).getEntity() == this) {
+                    if (!people.contains(person)) people.add(person);
+		}
             }
-            */
         }
 
         return people;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * EnterRoverEVA.java
- * @version 2.74 2002-03-11
+ * EnterAirlock.java
+ * @version 2.74 2002-05-05
  * @author Scott Davis
  */
 
@@ -15,27 +15,27 @@ import org.mars_sim.msp.simulation.equipment.*;
 import java.io.Serializable;
 
 /** 
- * The EnterRoverEVA class is a task for entering a rover from an EVA operation. 
+ * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
  */
-class EnterRoverEVA extends Task implements Serializable {
+class EnterAirlock extends Task implements Serializable {
 
     // Data members
-    private Rover rover; // The rover to be entered.
+    private Airlockable entity; // The entity to be entered.
 
     /** 
-     * Constructs a EnterRoverEVA object
+     * Constructs a EnterAirlock object
      * @param person the person to perform the task
      * @param mars the virtual Mars
-     * @param rover the rover to be entered
+     * @param entity the entity to be entered
      */
-    public EnterRoverEVA(Person person, Mars mars, Rover rover) {
-        super("Entering rover from EVA", person, false, mars);
+    public EnterAirlock(Person person, Mars mars, Airlockable entity) {
+        super("Entering airlock from EVA", person, false, mars);
 
 	// Initialize data members
-	description = "Entering " + rover.getName() + " from EVA";
-        this.rover = rover;
+	description = "Entering " + entity.getName() + " from EVA";
+        this.entity = entity;
 
-	// System.out.println(person.getName() + " is starting to enter " + rover.getName());
+	// System.out.println(person.getName() + " is starting to enter " + entity.getName());
     }
 
     /** 
@@ -47,7 +47,7 @@ class EnterRoverEVA extends Task implements Serializable {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
 
-        Airlock airlock = rover.getAirlock();
+        Airlock airlock = entity.getAirlock();
 	
         // If person is in airlock, wait around.
 	if (airlock.inAirlock(person)) {
@@ -71,30 +71,40 @@ class EnterRoverEVA extends Task implements Serializable {
     }
 
     /**
-     * Puts the person's EVA suite back into the rover's inventory.
-     * EVA Suit is refilled with oxygen and water from the rover's inventory.
+     * Puts the person's EVA suite back into the entity's inventory.
+     * EVA Suit is refilled with oxygen and water from the entity's inventory.
      */
     private void putAwayEVASuit() {
        
         EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
 	Inventory suitInv = suit.getInventory();
 	Inventory personInv = person.getInventory();
-	Inventory roverInv = rover.getInventory();
+	Inventory entityInv = ((Unit) entity).getInventory();
 
-	// Refill oxygen in suit from rover's inventory. 
+	// Refill oxygen in suit from entity's inventory. 
 	double neededOxygen = suitInv.getResourceRemainingCapacity(Inventory.OXYGEN);
-	double takenOxygen = roverInv.removeResource(Inventory.OXYGEN, neededOxygen);
+	double takenOxygen = entityInv.removeResource(Inventory.OXYGEN, neededOxygen);
 	// System.out.println(person.getName() + " refilling EVA suit with " + takenOxygen + " oxygen.");
 	suitInv.addResource(Inventory.OXYGEN, takenOxygen);
 
-	// Refill water in suit from rover's inventory.
+	// Refill water in suit from entity's inventory.
 	double neededWater = suitInv.getResourceRemainingCapacity(Inventory.WATER);
-	double takenWater = roverInv.removeResource(Inventory.WATER, neededWater);
+	double takenWater = entityInv.removeResource(Inventory.WATER, neededWater);
 	// System.out.println(person.getName() + " refilling EVA suit with " + takenWater + " water.");
 	suitInv.addResource(Inventory.WATER, takenWater);
 
-	// Return suit to rover's inventory.
-	// System.out.println(person.getName() + " putting away EVA suit into " + rover.getName());
-	personInv.takeUnit(suit, rover);
+	// Return suit to entity's inventory.
+	// System.out.println(person.getName() + " putting away EVA suit into " + entity.getName());
+	personInv.takeUnit(suit, (Unit) entity);
+    }
+
+    /**
+     * Checks if a person can enter an airlock from an EVA.
+     * @param person the person trying to enter
+     * @param entity the entity to be entered 
+     * @return true if person can enter the entity 
+     */
+    public static boolean canEnterAirlock(Person person, Airlockable entity) {
+        return true;
     }
 }

@@ -19,14 +19,14 @@ import java.util.*;
 public class MalfunctionManager implements Serializable {
 
     // Data members
-    private Malfunctionable entity; // The owning entity.
+    private Malfunctionable entity;          // The owning entity.
     private double timeSinceLastMaintenance; // Time passing (in millisols) since 
                                              // last maintenance on entity.
-    private double maintenanceWorkTime; // The required work time for maintenance on entity.
+    private double maintenanceWorkTime;      // The required work time for maintenance on entity.
     private double maintenanceTimeCompleted; // The completed 
-    private Collection scope; // The scope strings of the unit.
-    private Collection malfunctions; // The current malfunctions in the unit.
-    private Mars mars; // The virtual Mars.
+    private Collection scope;                // The scope strings of the unit.
+    private Collection malfunctions;         // The current malfunctions in the unit.
+    private Mars mars;                       // The virtual Mars.
 
     // Life support modifiers.
     private double oxygenFlowModifier = 100D;
@@ -64,6 +64,54 @@ public class MalfunctionManager implements Serializable {
     public boolean hasMalfunction() {
         return (malfunctions.size() > 0);
     }
+   
+    /**
+     * Checks if entity has any emergency malfunctions.
+     * @return true if emergency malfunction
+     */
+    public boolean hasEmergencyMalfunction() {
+        boolean result = false;
+	Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if ((malfunction.getEmergencyWorkTime() - 
+                    malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
+	}
+
+	return result;
+    }
+
+    /**
+     * Checks if entity has any normal malfunctions.
+     * @return true if normal malfunction
+     */
+    public boolean hasNormalMalfunction() {
+        boolean result = false;
+	Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if ((malfunction.getWorkTime() - 
+                    malfunction.getCompletedWorkTime()) > 0D) result = true;
+	}
+
+	return result;
+    }
+    
+    /**
+     * Checks if entity has any EVA malfunctions.
+     * @return true if EVA malfunction
+     */
+    public boolean hasEVAMalfunction() {
+        boolean result = false;
+	Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if ((malfunction.getEVAWorkTime() - 
+                    malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
+	}
+
+	return result;
+    }
     
     /**
      * Gets an iterator for the unit's current malfunctions.
@@ -78,25 +126,80 @@ public class MalfunctionManager implements Serializable {
      * @return malfunction
      */
     public Malfunction getMostSeriousMalfunction() {
-        Malfunction result = null;
 	    
-	// Check for any emergency malfunctions.
-        Iterator i = malfunctions.iterator();
+        Malfunction result = null;
+	double highestSeverity = 0;
+	Iterator i = malfunctions.iterator();
 	while (i.hasNext()) {
 	    Malfunction malfunction = (Malfunction) i.next();
-	    if ((malfunction.getEmergencyWorkTime() - 
-	            malfunction.getCompletedEmergencyWorkTime()) > 0D) result = malfunction;
+            if ((malfunction.getSeverity() > highestSeverity) && !malfunction.isFixed()) {
+	        highestSeverity = malfunction.getSeverity();
+	        result = malfunction;
+	    }
 	}
 
-	// Otherwise get most serious malfunction.
-	if (result == null) {
-	    double highestSeverity = 0;
-	    i = malfunctions.iterator();
-	    while (i.hasNext()) {
-	        Malfunction malfunction = (Malfunction) i.next();
-		if (malfunction.getSeverity() > highestSeverity) {
-		    highestSeverity = malfunction.getSeverity();
-		    result = malfunction;
+	return result;
+    }
+    
+    /**
+     * Gets the most serious emergency malfunction the entity has.
+     * @return malfunction
+     */
+    public Malfunction getMostSeriousEmergencyMalfunction() {
+
+        Malfunction result = null;
+	double highestSeverity = 0;
+	Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D) {
+	        if (malfunction.getSeverity() > highestSeverity) {
+	            highestSeverity = malfunction.getSeverity();
+	            result = malfunction;
+		}
+	    }
+	}
+
+	return result;
+    }
+
+    /**
+     * Gets the most serious normal malfunction the entity has.
+     * @return malfunction
+     */
+    public Malfunction getMostSeriousNormalMalfunction() {
+
+        Malfunction result = null;
+	double highestSeverity = 0;
+	Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) {
+	        if (malfunction.getSeverity() > highestSeverity) {
+	            highestSeverity = malfunction.getSeverity();
+	            result = malfunction;
+		}
+	    }
+	}
+
+	return result;
+    }
+
+    /**
+     * Gets the most serious EVA malfunction the entity has.
+     * @return malfunction
+     */
+    public Malfunction getMostSeriousEVAMalfunction() {
+
+        Malfunction result = null;
+	double highestSeverity = 0;
+	Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
+	        if (malfunction.getSeverity() > highestSeverity) {
+	            highestSeverity = malfunction.getSeverity();
+	            result = malfunction;
 		}
 	    }
 	}
@@ -139,7 +242,22 @@ public class MalfunctionManager implements Serializable {
      * @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
-   
+
+        Collection fixedMalfunctions = new ArrayList();
+	    
+        // Check if any malfunctions are fixed.
+	Iterator i = malfunctions.iterator();
+	while (i.hasNext()) {
+	    Malfunction malfunction = (Malfunction) i.next();
+	    if (malfunction.isFixed()) {
+		System.out.println(malfunction.getName() + " at " + entity.getName() + " is fully fixed.");    
+		fixedMalfunctions.add(malfunction);
+	    }
+	}
+
+	i = fixedMalfunctions.iterator();
+	while (i.hasNext()) malfunctions.remove(i.next());
+	    
         // Determine life support modifiers.
 	setLifeSupportModifiers(time);
 

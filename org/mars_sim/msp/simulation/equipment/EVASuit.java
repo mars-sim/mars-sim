@@ -59,12 +59,30 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) result = false;
-        if (inventory.getResourceMass(Inventory.WATER) <= 0D) result = false;
-	if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
-	if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
-	if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
-	if (getTemperature() != NORMAL_TEMP) result = false;
+        if (inventory.getResourceMass(Inventory.OXYGEN) <= 0D) {
+	    System.out.println("bad oxygen");
+	    result = false;
+	}
+        if (inventory.getResourceMass(Inventory.WATER) <= 0D) {
+	    System.out.println("bad water");	
+	    result = false;
+	}
+	if (malfunctionManager.getOxygenFlowModifier() < 100D) {
+            System.out.println("bad oxygen flow");		
+	    result = false;
+	}
+	if (malfunctionManager.getWaterFlowModifier() < 100D) {
+	    System.out.println("bad water flow");
+	    result = false;
+	}
+	if (getAirPressure() != NORMAL_AIR_PRESSURE) {
+	    System.out.println("bad air pressure - " + getAirPressure());	
+	    result = false;
+	}
+	if (getTemperature() != NORMAL_TEMP) {
+	    System.out.println("bad temperature - " + getTemperature());	
+	    result = false;
+	}
 
         return result;
     }
@@ -83,8 +101,8 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
      * @return the amount of oxygen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-        return inventory.removeResource(Inventory.OXYGEN, amountRequested) + 
-	        malfunctionManager.getOxygenFlowModifier();
+        return inventory.removeResource(Inventory.OXYGEN, amountRequested) * 
+	        (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
     /**
@@ -93,8 +111,8 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
      * @return the amount of water actually received from system (kg)
      */
     public double provideWater(double amountRequested) {
-        return inventory.removeResource(Inventory.WATER, amountRequested) + 
-	        malfunctionManager.getWaterFlowModifier();
+        return inventory.removeResource(Inventory.WATER, amountRequested) * 
+	        (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
     /**
@@ -102,7 +120,8 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
      * @return air pressure (atm)
      */
     public double getAirPressure() {
-	double result = NORMAL_AIR_PRESSURE + malfunctionManager.getAirPressureModifier();
+	double result = NORMAL_AIR_PRESSURE * 
+	        (malfunctionManager.getAirPressureModifier() / 100D);
 	double ambient = mars.getWeather().getAirPressure(location);
 	if (result < ambient) return ambient;
 	else return result;
@@ -113,7 +132,8 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
      * @return temperature (degrees C)
      */
     public double getTemperature() {
-	double result = NORMAL_TEMP + malfunctionManager.getTemperatureModifier();
+	double result = NORMAL_TEMP * 
+	        (malfunctionManager.getTemperatureModifier() / 100D);
 	double ambient = mars.getWeather().getTemperature(location);
 	if (result < ambient) return ambient;
 	else return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.74 2002-04-30
+ * @version 2.74 2002-05-05
  * @author Scott Davis
  */
 
@@ -16,7 +16,7 @@ import java.io.Serializable;
 /** 
  * The CollectRockSamples class is a task for collecting rock and soil samples at a site.
  */
-class CollectRockSamples extends Task implements Serializable {
+class CollectRockSamples extends EVAOperation implements Serializable {
 
     // Phase names
     private static final String EXIT_ROVER = "Exit Rover";
@@ -39,7 +39,7 @@ class CollectRockSamples extends Task implements Serializable {
      */
     public CollectRockSamples(Person person, Rover rover, Mars mars, 
 		    double requiredSamples, double startingVehicleRockCargo) {
-        super("Collecting rock samples", person, true, mars);
+        super("Collecting rock samples", person, mars);
 
 	this.rover = rover;
 	this.requiredSamples = requiredSamples;
@@ -82,23 +82,9 @@ class CollectRockSamples extends Task implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      */
     private double exitRover(double time) {
-
-	if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-	    if (ExitRoverEVA.canExitRover(person, rover)) {
-	        addSubTask(new ExitRoverEVA(person, mars, rover));
-	        return 0D;
-	    }
-	    else {
-		// System.out.println(person.getName() + " unable to exit " + rover.getName());
-	        done = true;
-		return time;
-	    }
-	}
-	else {
-	    // System.out.println(person.getName() + " collecting rock samples.");
-	    phase = COLLECT_ROCKS;
-	    return time;
-        }
+        time = exitAirlock(time, rover);
+	if (exitedAirlock) phase = COLLECT_ROCKS;
+	return time;
     }
 
     /**
@@ -113,11 +99,11 @@ class CollectRockSamples extends Task implements Serializable {
 	    
         // Check if there is reason to cut the collection phase short and return
 	// to the rover.
-	if (shouldEndCollectionPhase()) {
+	if (shouldEndEVAOperation()) {
 	    phase = ENTER_ROVER;
 	    return time;
 	}
-	
+
         double remainingPersonCapacity = person.getInventory()
 	        .getResourceRemainingCapacity(Inventory.ROCK_SAMPLES);
         double currentSamplesCollected = rover.getInventory()
@@ -162,11 +148,9 @@ class CollectRockSamples extends Task implements Serializable {
      */
     private double enterRover(double time) {
 
-        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-	    addSubTask(new EnterRoverEVA(person, mars, rover));
-	    return 0D;
-	}
-	else {
+        time = enterAirlock(time, rover);
+
+	if (!enteredAirlock) {
 	    double rockSamples = person.getInventory().getResourceMass(Inventory.ROCK_SAMPLES);
 
 	    // Load rock samples into rover.
@@ -182,6 +166,7 @@ class CollectRockSamples extends Task implements Serializable {
 		return time;
 	    }
 	}
+	return 0D;
     }
 
     /**
@@ -204,83 +189,5 @@ class CollectRockSamples extends Task implements Serializable {
         if (person.getPerformanceRating() < .5D) result = false;
 	
         return result;
-    }
-
-    /**
-     * Checks if situation requires that the collection phase should end prematurely
-     * and the person should return to the rover.
-     * @return true if collection phase should end
-     */
-    private boolean shouldEndCollectionPhase() {
-
-	boolean result = false;
-        
-	// Check if it is night time. 
-	if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) == 0) {
-	    // System.out.println(person.getName() + " should end collection phase: night time.");
-	    result = true;
-	}
-
-        EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
-	if (suit == null) {
-	    return true;
-	}
-        Inventory suitInv = suit.getInventory();
-	
-	// Check if EVA suit is at 15% of its oxygen capacity.
-	double oxygenCap = suitInv.getResourceCapacity(Inventory.OXYGEN);
-	double oxygen = suitInv.getResourceMass(Inventory.OXYGEN);
-	if (oxygen <= (oxygenCap * .15D)) {
-	    // System.out.println(person.getName() + " should end collection phase: EVA suit oxygen level less than 15%");	
-	    result = true;
-	}
-
-	// Check if EVA suit is at 15% of its water capacity.
-	double waterCap = suitInv.getResourceCapacity(Inventory.WATER);
-	double water = suitInv.getResourceMass(Inventory.WATER);
-	if (water <= (waterCap * .15D)) {
-	    // System.out.println(person.getName() + " should end collection phase: EVA suit water level less than 15%");	
-            result = true;
-	}
-
-	// Check if life support system in suit is working properly.
-	if (!suit.lifeSupportCheck()) {
-	    // System.out.println(person.getName() + " should end collection phase: EVA suit failed life support check.");	
-	    result = true;
-	}
-
-        // Check if suit has any malfunctions.
-	if (suit.getMalfunctionManager().hasMalfunction()) result = true;
-	
-	// Check if person's medical condition is sufficient to continue phase.
-        if (person.getPerformanceRating() < .5D) {
-	    // System.out.println(person.getName() + " should end collection phase: medical problems.");	
-	    result = true;
-	}
-	
-	return result;
-    }
-
-    /**
-     * Check for accident with EVA suit during collection phase.
-     * @param time the amount of time on EVA (in millisols)
-     */
-    private void checkForAccident(double time) {
-
-        EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
-	if (suit != null) {
-	    
-            double chance = .001D;
-
-	    // EVA operations skill modification.
-	    int skill = person.getSkillManager().getEffectiveSkillLevel("EVA Operations");
-	    if (skill <= 3) chance *= (4 - skill);
-	    else chance /= (skill - 2);
-
-	    if (RandomUtil.lessThanRandPercent(chance * time)) {
-	        System.out.println(person.getName() + " has accident during EVA operation.");
-	        suit.getMalfunctionManager().accident();
-            }
-	}
     }
 }

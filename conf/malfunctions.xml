@@ -135,7 +135,8 @@
 	<WORK_TIME>0.0</WORK_TIME>
 	<EVA_WORK_TIME>50.0</EVA_WORK_TIME>
         <SCOPE>
-	    <ENTITY>Rover</ENTITY>
+            <ENTITY>Rover</ENTITY>
+            <ENTITY>InsituResourceProcessor</ENTITY>
         </SCOPE>
         <EFFECTS>
 	    <RESOURCE>
@@ -204,6 +205,8 @@
         <SCOPE>
 	    <ENTITY>Rover</ENTITY>
 	    <ENTITY>Settlement</ENTITY>
+	    <ENTITY>Greenhouse</ENTITY>
+	    <ENTITY>InsituResourceProcessor</ENTITY>
 	    <ENTITY>EVASuit</ENTITY>
         </SCOPE>
         <EFFECTS>

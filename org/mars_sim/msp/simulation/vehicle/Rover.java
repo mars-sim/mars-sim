@@ -15,7 +15,7 @@ import org.mars_sim.msp.simulation.equipment.*;
 /** The Rover class represents the rover type of ground vehicle.  It
  *  contains information about the rover.
  */
-public abstract class Rover extends GroundVehicle implements Crewable, LifeSupport {
+public abstract class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable {
 
     // Static data members
     private static final double BASE_SPEED = 30D; // Base speed of rover in kph.

@@ -224,7 +224,7 @@ class TravelToSettlement extends Mission implements Serializable {
         // If rover doesn't currently have a driver, start drive task for person.
         // Can't be immediate last driver and can't be at night time.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) > 0D) {
-            if (!rover.getMalfunctionManager().hasMalfunction()) {	    
+            if (!rover.getMalfunctionManager().hasMalfunction() && everyoneInRover()) {	    
                 if (person == lastDriver) {
                     lastDriver = null;
                 }
@@ -238,6 +238,19 @@ class TravelToSettlement extends Mission implements Serializable {
                 }   
             }
         }     
+    }
+
+    /**
+     * Checks that everyone in the mission is aboard the rover.
+     * @return true if everyone is aboard
+     */
+    private boolean everyoneInRover() {
+        boolean result = true;
+	PersonIterator i = people.iterator();
+	while (i.hasNext()) {
+	    if (!i.next().getLocationSituation().equals(Person.INVEHICLE)) result = false;
+	}
+	return result;
     }
 
     /** Performs the disembarking phase of the mission.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.74 2002-04-23
+ * @version 2.74 2002-05-03
  * @author Scott Davis
  */
 
@@ -28,12 +28,12 @@ public class TaskManager implements Serializable {
 
     // Array of available tasks
     private Class[] availableTasks = { Relax.class, TendGreenhouse.class,
-                                       MaintainVehicle.class,
-                                       MaintainSettlement.class,
-				       MaintainEquipment.class,
+                                       Maintenance.class, 
                                        Sleep.class, EatMeal.class,
                                        MedicalAssistance.class,
-                                       StudyRockSamples.class };
+                                       StudyRockSamples.class,
+                                       RepairMalfunction.class, 
+                                       RepairEVAMalfunction.class };
 
     /** Constructs a TaskManager object
      *  @param person the person the task manager is for
@@ -98,8 +98,8 @@ public class TaskManager implements Serializable {
         return currentTask;
     }
 
-    /** Sets the current task to null.
-     *
+    /** 
+     * Sets the current task to null.
      */
     public void clearTask() {
         currentTask = null;
@@ -123,8 +123,28 @@ public class TaskManager implements Serializable {
             if (currentTask.isEffortDriven()) {
                 time *= efficiency;
             }
+	    checkForEmergency();
             currentTask.performTask(time);
         }
+    }
+
+    /**
+     * Checks if any emergencies are happening in the person's local.
+     * Adds an emergency task if necessary.
+     */
+    private void checkForEmergency() {
+
+        // Check for emergency malfunction.
+	if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
+	    boolean hasEmergencyRepair = false;
+            Task task = currentTask;
+	    while (task != null) {
+                if (task instanceof RepairEmergencyMalfunction) hasEmergencyRepair = true;
+		task = task.getSubTask();
+	    }
+            	  
+	    if (!hasEmergencyRepair) addTask(new RepairEmergencyMalfunction(mind.getPerson(), mars));
+	}
     }
 
     /** Gets a new task for the person based on tasks available.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.74 2002-03-11
+ * @version 2.74 2002-05-06
  * @author Scott Davis
  */
 
@@ -38,8 +38,10 @@ class EatMeal extends Task implements Serializable {
     public static double getProbability(Person person, Mars mars) {
 
         double result = person.getPhysicalCondition().getHunger() - 250D;
-        if (result < 0) result = 0;
+        if (result < 0D) result = 0D;
 
+        if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 0D;
+	
         return result;
     }
 
@@ -59,7 +61,7 @@ class EatMeal extends Task implements Serializable {
             done = true;
             return timeCompleted - duration;
         }
-        else return 0;
+        else return 0D;
     }
 }
 

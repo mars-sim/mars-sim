@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.74 2002-04-27
+ * @version 2.74 2002-05-04
  * @author Scott Davis
  */
 
@@ -99,6 +99,15 @@ public abstract class Task implements Serializable, Comparable {
         else subTask = newSubTask;
     }
 
+    /** 
+     * Gets the task's subtask.
+     * Returns null if none
+     * @return subtask
+     */
+    public Task getSubTask() {
+        return subTask;
+    }
+    
     /** Returns the weighted probability that a person might perform this task.
      *  It should return a 0 if there is no chance to perform this task given the person and the situation.
      *  @param person the person to perform the task

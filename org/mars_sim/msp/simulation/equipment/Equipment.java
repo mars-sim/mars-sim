@@ -56,18 +56,18 @@ public abstract class Equipment extends Unit implements Malfunctionable {
 	    Task task = person.getMind().getTaskManager().getTask();
 
 	    // Add all people maintaining this equipment.
-	    if (task instanceof MaintainEquipment) {
-	        if (((MaintainEquipment) task).getEquipment() == this)
-		    people.add(person);
+	    if (task instanceof Maintenance) {
+	        if (((Maintenance) task).getEntity() == this) {
+		    if (!people.contains(person)) people.add(person);
+		}
 	    }
 	    
 	    // Add all people repairing this equipment.
-	    /*
-	    if (task instanceof RepairEquipment) {
-	        if (((RepairEquipment) task).getEquipment() == this)
-	            people.add(person);
+	    if (task instanceof Repair) {
+	        if (((Repair) task).getEntity() == this) {
+	            if (!people.contains(person)) people.add(person);
+		}
 	    }
-	    */
 	}
 	
 	return people;
