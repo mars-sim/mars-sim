@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.75 2003-02-07
+ * @version 2.75 2003-04-20
  * @author Scott Davis
  */
 
@@ -20,26 +20,28 @@ import java.io.Serializable;
 class EnterAirlock extends Task implements Serializable {
 
     // Data members
-    private Airlockable entity; // The entity to be entered.
+    private Airlock airlock; // The airlock to be used.
 
     /** 
-     * Constructs a EnterAirlock object
+     * Constructor
+     *
      * @param person the person to perform the task
      * @param mars the virtual Mars
-     * @param entity the entity to be entered
+     * @param airlock to be used.
      */
-    public EnterAirlock(Person person, Mars mars, Airlockable entity) {
+    public EnterAirlock(Person person, Mars mars, Airlock airlock) {
         super("Entering airlock from EVA", person, false, mars);
 
         // Initialize data members
-        description = "Entering " + entity.getName() + " from EVA";
-        this.entity = entity;
+        description = "Entering " + airlock.getEntityName() + " from EVA";
+        this.airlock = airlock;
 
-        // System.out.println(person.getName() + " is starting to enter " + entity.getName());
+        // System.out.println(person.getName() + " is starting to enter " + airlock.getEntityName());
     }
 
     /**
-     * Constructs a EnterAirlock object without an airlockable entity.
+     * Constructs a EnterAirlock object without an airlock.
+     *
      * @param person the person to perform the task.
      * @param mars the virtual Mars
      */
@@ -50,44 +52,50 @@ class EnterAirlock extends Task implements Serializable {
         // System.out.println("Illness: " + person.getPhysicalCondition().getHealthSituation());
         // System.out.println("Performance Rating: " + person.getPerformanceRating());
 	
-        // Determine airlockable entity from other people on mission.
+        // Determine airlock from other people on mission.
         if (person.getMind().getMission() != null) {
             PersonIterator i = person.getMind().getMission().getPeople().iterator();
-            while (i.hasNext() && (entity == null)) {
+            while (i.hasNext() && (airlock == null)) {
                 Person p = i.next();
                 if (p != person) {
-                    if (p.getSettlement() != null) entity = p.getSettlement();
-                    else if (p.getVehicle() != null) entity = (Rover) p.getVehicle();
+                    String location = p.getLocationSituation();
+                    if (location.equals(Person.INSETTLEMENT)) {
+                        airlock = person.getSettlement().getAvailableAirlock();
+                    }
+                    else if (location.equals(Person.INVEHICLE)) {
+                        Vehicle vehicle = person.getVehicle();
+                        if (vehicle instanceof Airlockable) 
+                            airlock = ((Airlockable) vehicle).getAirlock();
+                    }
                 }
             }
         }
 
         // If not look for any settlements at person's location.
-        if (entity == null) {
+        if (airlock == null) {
             SettlementIterator i = mars.getUnitManager().getSettlements().iterator();
-            while (i.hasNext() && (entity == null)) {
+            while (i.hasNext() && (airlock == null)) {
                 Settlement settlement = i.next();
                 if (person.getCoordinates().equals(settlement.getCoordinates())) 
-                entity = settlement;
+                    airlock = settlement.getAvailableAirlock();
             }
         }
 
-        // If not look for any rovers at person's location.
-        if (entity == null) {
+        // If not look for any airlockable vehicles at person's location.
+        if (airlock == null) {
             VehicleIterator i = mars.getUnitManager().getVehicles().iterator();
-            while (i.hasNext() && (entity == null)) {
+            while (i.hasNext() && (airlock == null)) {
                 Vehicle vehicle = i.next();
-            	if (vehicle instanceof Rover) {
-                    Rover rover = (Rover) vehicle;
-            	    if (person.getCoordinates().equals(rover.getCoordinates())) 
-                    entity = rover;
+                if (person.getCoordinates().equals(vehicle.getCoordinates())) {
+            	    if (vehicle instanceof Airlockable) 
+                        airlock = ((Airlockable) vehicle).getAirlock();
                 }
             }
         }
 
-        // If still no airlockable entity, end task.
-        if (entity == null) done = true;
-        else description = "Entering " + entity.getName() + " from EVA";
+        // If still no airlock, end task.
+        if (airlock == null) endTask();
+        else description = "Entering " + airlock.getEntityName() + " from EVA";
     }
    
     /** Returns the weighted probability that a person might perform this task.
@@ -112,8 +120,6 @@ class EnterAirlock extends Task implements Serializable {
     double performTask(double time) {
         double timeLeft = super.performTask(time);
         if (subTask != null) return timeLeft;
-
-        Airlock airlock = entity.getAirlock();
 	
         // If person is in airlock, wait around.
         if (airlock.inAirlock(person)) {
@@ -129,7 +135,7 @@ class EnterAirlock extends Task implements Serializable {
             else {
                 // If person is inside, put stuff away and end task.
                 putAwayEVASuit();
-            	done = true;
+            	endTask();
             }
         }
 
@@ -145,7 +151,8 @@ class EnterAirlock extends Task implements Serializable {
         EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
         Inventory suitInv = suit.getInventory();
         Inventory personInv = person.getInventory();
-        Inventory entityInv = ((Unit) entity).getInventory();
+        Unit entity = person.getContainerUnit();
+        Inventory entityInv = entity.getInventory();
 
         // Refill oxygen in suit from entity's inventory. 
         double neededOxygen = suitInv.getResourceRemainingCapacity(Resource.OXYGEN);
@@ -166,11 +173,12 @@ class EnterAirlock extends Task implements Serializable {
 
     /**
      * Checks if a person can enter an airlock from an EVA.
+     *
      * @param person the person trying to enter
-     * @param entity the entity to be entered 
-     * @return true if person can enter the entity 
+     * @param airlock the airlock to be used.
+     * @return true if person can enter the airlock 
      */
-    public static boolean canEnterAirlock(Person person, Airlockable entity) {
+    public static boolean canEnterAirlock(Person person, Airlock airlock) {
         return true;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LanderHab.java
- * @version 2.75 2003-04-16
+ * @version 2.75 2003-04-20
  * @author Scott Davis
  */
  
@@ -43,6 +43,7 @@ public class LanderHab extends InhabitableBuilding
     private LivingAccommodations quarters;
     private PowerGeneration solarCells;
     private ResourceProcessing processor;
+    private Airlock airlock;
     
     /**
      * Constructor
@@ -60,6 +61,9 @@ public class LanderHab extends InhabitableBuilding
         
         // Create solar cells
         solarCells = new SolarPowerGeneration(this, BASE_POWER_GENERATION);
+        
+        // Create airlock
+        airlock = new BuildingAirlock(this, 4);
         
         // Create processor
         processor = new StandardResourceProcessing(this, POWER_DOWN_LEVEL);
@@ -185,6 +189,9 @@ public class LanderHab extends InhabitableBuilding
         
         // Process resources
         processor.getResourceProcessManager().processResources(time, productionLevel);
+        
+        // Add time to airlock
+        airlock.timePassing(time);
     } 
     
     /**
@@ -252,5 +259,13 @@ public class LanderHab extends InhabitableBuilding
      */
     public void removeResearcher() throws Exception {
         lab.removeResearcher();
+    }
+    
+    /**
+     * Gets the building's airlock.
+     * @return airlock
+     */
+    public Airlock getAirlock() {
+        return airlock;
     }
 }

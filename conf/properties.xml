@@ -8,6 +8,7 @@
 
     <!-- Airlock pressurization/depressurization time (millisols) -->
     <!-- Default: 10.0 millisols -->
+    <!-- Remove -->
     <AIRLOCK_CYCLE_TIME>10.0</AIRLOCK_CYCLE_TIME>
 
     <PERSON_PROPERTIES>

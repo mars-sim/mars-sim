@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.74 2002-05-04
+ * @version 2.75 2003-04-18
  * @author Scott Davis
  */
 
@@ -50,6 +50,13 @@ public abstract class Task implements Serializable, Comparable {
         subTask = null;
         phase = "";
         effortDriven = effort;
+    }
+    
+    /**
+     * Ends the task and performs any final actions.
+     */
+    public void endTask() {
+        done = true;
     }
 
     /**

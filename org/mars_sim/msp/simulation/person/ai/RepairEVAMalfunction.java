@@ -25,8 +25,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	
     // Data members
     private Malfunctionable entity; // The malfunctionable entity being repaired.
-    private Airlockable airlocker; // The unit that provides the airlock.
-    private Malfunctionable airlocker2; // The unit that provids the airlock.
+    private Airlock airlock; // The airlock to be used.
     private double duration; // Duration of task in millisols.
 	
     /**
@@ -37,14 +36,20 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
     public RepairEVAMalfunction(Person person, Mars mars) {
         super("Repairing EVA Malfunction", person, mars);
 
-	// Randomly determine duration, from 0 - 500 millisols.
-	duration = RandomUtil.getRandomDouble(500D);
-	airlocker = (Airlockable) person.getContainerUnit();
-	airlocker2 = (Malfunctionable) person.getContainerUnit();
+        // Get the malfunctioning entity.
+        entity = getEVAMalfunctionEntity(person);
+        if (entity == null) endTask();
+        
+        // Get an available airlock.
+        airlock = getAvailableAirlock(person);
+        if (airlock == null) endTask();
 
-	phase = EXIT_AIRLOCK;
+        phase = EXIT_AIRLOCK;
 
-	// System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
+        // System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
+        
+        // Randomly determine duration, from 0 - 500 millisols.
+        duration = RandomUtil.getRandomDouble(500D);
     }
 
     /**
@@ -55,13 +60,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
    
         boolean result = false;
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	while (i.hasNext()) {
-	    MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-	    if (manager.hasEVAMalfunction()) result = true;
-	}
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        while (i.hasNext()) {
+            MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
+            if (manager.hasEVAMalfunction()) result = true;
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -72,13 +77,31 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
    
         boolean result = false;
 
-	Iterator i = MalfunctionFactory.getMalfunctionables(entity).iterator();
-	while (i.hasNext()) {
-	    MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-	    if (manager.hasEVAMalfunction()) result = true;
-	}
+        Iterator i = MalfunctionFactory.getMalfunctionables(entity).iterator();
+        while (i.hasNext()) {
+            MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
+            if (manager.hasEVAMalfunction()) result = true;
+        }
 
-	return result;
+        return result;
+    }
+    
+    /**
+     * Gets a malfunctional entity with an EVA malfunction for a user.
+     * 
+     * @return malfunctional entity with EVA malfunction or null if none.
+     */
+    public static Malfunctionable getEVAMalfunctionEntity(Person person) {
+        Malfunctionable result = null;
+        
+        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        while (i.hasNext()) {
+            Malfunctionable entity = (Malfunctionable) i.next();
+            MalfunctionManager manager = entity.getMalfunctionManager();
+            if (manager.hasEVAMalfunction()) result = entity;
+        }
+        
+        return result;
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -96,11 +119,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             if (manager.hasEVAMalfunction()) result = 50D;
         }
 
-        // Check if person is in airlockable unit.
-	if (!(person.getContainerUnit() instanceof Airlockable)) result = 0D;
+        // Check if an airlock is available
+        if (getAvailableAirlock(person) == null) result = 0D;
 
         // Check if it is night time.
-	if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) result = 0D; 
+        if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) result = 0D; 
 	
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -121,12 +144,12 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             if (phase.equals(EXIT_AIRLOCK)) timeLeft = exitEVA(timeLeft);
             else if (phase.equals(REPAIR_MALFUNCTION)) timeLeft = repairMalfunction(timeLeft);
             else if (phase.equals(ENTER_AIRLOCK)) timeLeft = enterEVA(timeLeft);
-	}					            
+        }					            
 	
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 20 millisols of time spent)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-	double experience = timeLeft / 50D;
+        double experience = timeLeft / 50D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("EVA Operations", experience);
@@ -140,7 +163,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return the time remaining after performing this phase (in millisols)
      */
     private double exitEVA(double time) {
-        time = exitAirlock(time, airlocker);
+        try {
+            time = exitAirlock(time, airlock);
+        }
+        catch (Exception e) { 
+            System.out.println(e.getMessage()); 
+        }
+        
         if (exitedAirlock) phase = REPAIR_MALFUNCTION;
         return time;
     }
@@ -151,44 +180,44 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return the time remaining after performing this phase (in millisols)
      */
     private double repairMalfunction(double time) {
-
-        if (!hasEVAMalfunction(airlocker2) || shouldEndEVAOperation()) {
-	    phase = ENTER_AIRLOCK;
-	    return time;
-	}
+        
+        if (!hasEVAMalfunction(entity) || shouldEndEVAOperation()) {
+            phase = ENTER_AIRLOCK;
+            return time;
+        }
 	    
         // Determine effective work time based on "Mechanic" skill.
-	double workTime = time;
+        double workTime = time;
         int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel("Mechanic");
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
-	// Get a local malfunction.
-	Malfunction malfunction = null;
-        Iterator i = MalfunctionFactory.getMalfunctionables(airlocker2).iterator();
-	while (i.hasNext()) {
-	    Malfunctionable e = (Malfunctionable) i.next();
-	    MalfunctionManager manager = e.getMalfunctionManager();
-	    if (manager.hasEVAMalfunction()) {
+        // Get a local malfunction.
+        Malfunction malfunction = null;
+        Iterator i = MalfunctionFactory.getMalfunctionables(entity).iterator();
+        while (i.hasNext()) {
+            Malfunctionable e = (Malfunctionable) i.next();
+            MalfunctionManager manager = e.getMalfunctionManager();
+            if (manager.hasEVAMalfunction()) {
                 malfunction = manager.getMostSeriousEVAMalfunction();
-		description = "Repairing " + malfunction.getName() + " on " + e.getName();
-		entity = e;
-	    }
-	}
+                description = "Repairing " + malfunction.getName() + " on " + e.getName();
+                entity = e;
+            }
+        }
 	
-	// Add EVA work to malfunction.
+        // Add EVA work to malfunction.
         double workTimeLeft = malfunction.addEVAWorkTime(workTime);
 
         // Add experience to "Mechanic" skill.
         // (1 base experience point per 20 millisols of time spent)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-	double experience = time / 50D;
+        double experience = time / 50D;
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         experience += experience * (((double) nManager.getAttribute("Experience Aptitude") - 50D) / 100D);
         person.getSkillManager().addExperience("Mechanic", experience);
 	
-	// Check if there are no more malfunctions. 
-        if (!hasEVAMalfunction(airlocker2)) phase = ENTER_AIRLOCK;
+        // Check if there are no more malfunctions. 
+        if (!hasEVAMalfunction(entity)) phase = ENTER_AIRLOCK;
 
         // Keep track of the duration of the task.
         timeCompleted += time;
@@ -197,7 +226,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         // Check if an accident happens during maintenance.
         checkForAccident(time);
 
-	return (workTimeLeft / workTime) * time;
+        return (workTimeLeft / workTime) * time;
     }
 
     /**
@@ -206,9 +235,15 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return time remaining after performing the phase
      */
     private double enterEVA(double time) {
-        time = enterAirlock(time, airlocker);
-        if (enteredAirlock) done = true;
-	return time;
+        try {
+            time = enterAirlock(time, airlock);
+        }
+        catch (Exception e) { 
+            System.out.println(e.getMessage()); 
+        }
+        
+        if (enteredAirlock) endTask();
+        return time;
     }	
 
     /**

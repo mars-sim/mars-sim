@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.75 2003-02-26
+ * @version 2.75 2003-04-20
  * @author Scott Davis
  */
 
@@ -19,14 +19,13 @@ import java.util.*;
 /** The Settlement class represents a settlement unit on virtual Mars.
  *  It contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements LifeSupport, Airlockable {
+public class Settlement extends Structure implements LifeSupport {
 
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
 
     // Data members
-    private FacilityManager facilityManager; // The facility manager for the settlement
-    protected Airlock airlock; // the settlement's airlock.
+    private FacilityManager facilityManager; // The facility manager for the settlement.
     private BuildingManager buildingManager; // The settlement's building manager.
     private PowerGrid powerGrid; // The settlement's building power grid.
 
@@ -52,9 +51,6 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         
         // Set inventory total mass capacity.
         inventory.setTotalCapacity(Double.MAX_VALUE);
-        
-        // Create airlock for settlement.
-        airlock = new Airlock(this, mars, 4);
     }
     
     /** Returns the facility manager for the settlement
@@ -267,14 +263,6 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         return result;
     }
     
-    /**
-     * Gets the settlement's airlock.
-     * @return settlement's airlock
-     */
-    public Airlock getAirlock() {
-        return airlock;
-    }
-    
     /** 
      * Perform time-related processes
      * @param time the amount of time passing (in millisols)
@@ -284,9 +272,7 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
         powerGrid.timePassing(time);
         facilityManager.timePassing(time);
         buildingManager.timePassing(time);
-        airlock.timePassing(time);
-        if (getCurrentPopulationNum() > 0)
-            malfunctionManager.activeTimePassing(time);
+        if (getCurrentPopulationNum() > 0) malfunctionManager.activeTimePassing(time);
         malfunctionManager.timePassing(time);
     }
 
@@ -328,5 +314,28 @@ public class Settlement extends Structure implements LifeSupport, Airlockable {
      */
     public BuildingManager getBuildingManager() {
         return buildingManager;
+    }
+    
+    /**
+     * Gets an available airlock for the settlement.
+     *
+     * @return airlock or null if none available.
+     */
+    public Airlock getAvailableAirlock() {
+        Airlock result = null;
+        List airlocks = new ArrayList();
+        
+        Iterator i = buildingManager.getBuildings(EVA.class).iterator();
+        while (i.hasNext()) {
+            airlocks.add(((EVA) i.next()).getAirlock());
+        }
+        
+        if (airlocks.size() > 0) {
+            // Pick random airlock from list.
+            int rand = RandomUtil.getRandomInt(airlocks.size() - 1);
+            result = (Airlock) airlocks.get(rand);
+        }
+        
+        return result;
     }
 }

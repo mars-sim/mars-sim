@@ -58,7 +58,8 @@ public abstract class Rover extends GroundVehicle implements Crewable, LifeSuppo
         baseMass = BASE_MASS;
 
         // Create the rover's airlock.
-        airlock = new Airlock(this, mars, 2);
+        try { airlock = new VehicleAirlock(this, 2); }
+        catch (Exception e) { System.out.println(e.getMessage()); }
     }
 
     /** 

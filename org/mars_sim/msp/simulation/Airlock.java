@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 2.74 2002-03-11
+ * @version 2.75 2003-04-20
  * @author Scott Davis
  */
 
@@ -13,15 +13,13 @@ import java.io.Serializable;
 /** 
  * The Airlock class represents an airlock to a vehicle or structure.
  */
-public class Airlock implements Serializable {
+public abstract class Airlock implements Serializable {
 
+    private static final double CYCLE_TIME = 10D; // Pressurize/depressurize time (millisols)
+    
     // Data members
-    private double airlockTime;    // The amount of time required for the airlock to 
-                                   // pressurize/depressurize. (in millisols)
-    private Unit unit;             // the unit the airlock is attached to.
-    private Mars mars;             // The Mars instance.
     private boolean activated;     // True if airlock is activated.
-    private boolean pressurized;   // True if airlock is pressurized.
+    protected boolean pressurized;   // True if airlock is pressurized.
     private boolean innerDoorOpen; // True if inner door is open.
     private boolean outerDoorOpen; // True if outer door is open.
     private int capacity;          // Number of people who can use the airlock at once;
@@ -30,22 +28,18 @@ public class Airlock implements Serializable {
     
     /**
      * Constructs an airlock object for a unit.
-     * @param unit the unit the airlock is attached to
-     * @param mars the Mars instance
-     * @param capacity number of people airlock can hold
+     *
+     * @param capacity number of people airlock can hold.
+     * @throws IllegalArgumentException if capacity is less than one.
      */
-    public Airlock(Unit unit, Mars mars, int capacity) {
+    public Airlock(int capacity) throws IllegalArgumentException {
         
         // Initialize data members
-	this.unit = unit;
-	this.mars = mars;
-	this.capacity = capacity;
-	pressurized = true;
-	innerDoorOpen = true;
-	occupants = new PersonCollection();
-
-	// Initialize airlock time to system property.
-	airlockTime = mars.getSimulationProperties().getAirlockCycleTime();
+        if (capacity < 1) throw new IllegalArgumentException("capacity less than one.");
+        else this.capacity = capacity;
+        pressurized = true;
+        innerDoorOpen = true;
+        occupants = new PersonCollection();
     }
 
     /**
@@ -54,9 +48,7 @@ public class Airlock implements Serializable {
      * Does nothing if airlock is currently occupied.
      */
     public void requestOpenDoor() {
-        if (occupants.size() == 0) {
-	    activateAirlock();
-	}
+        if (occupants.size() == 0) activateAirlock();
     }
 
     /**
@@ -70,14 +62,14 @@ public class Airlock implements Serializable {
     public boolean enterAirlock(Person person, boolean inside) {
         boolean result = false;
 
-	if (!activated && (occupants.size() < capacity)) {
-	    if ((inside && innerDoorOpen) || (!inside && outerDoorOpen)) {
-	        occupants.add(person);
-		result = true;
-	    }
-	}
+        if (!activated && (occupants.size() < capacity)) {
+            if ((inside && innerDoorOpen) || (!inside && outerDoorOpen)) {
+                occupants.add(person);
+	            result = true;
+            }
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -88,14 +80,14 @@ public class Airlock implements Serializable {
     public boolean activateAirlock() {
         boolean result = false;
 
-	if (!activated) {
-	    innerDoorOpen = false;
-	    outerDoorOpen = false;
-	    activated = true;
-	    result = true;
-	}
+        if (!activated) {
+            innerDoorOpen = false;
+            outerDoorOpen = false;
+            activated = true;
+            result = true;
+        }
 
-	return result;
+        return result;
     }
 
     /**
@@ -105,20 +97,33 @@ public class Airlock implements Serializable {
      */
     private void deactivateAirlock() {
         if (activated) {
-	    activated = false;
-	    activationTime = 0D;
-	    pressurized = !pressurized;
-	    if (pressurized) innerDoorOpen = true;
-	    else outerDoorOpen = true;
-	    PersonIterator i = occupants.iterator();
-	    while (i.hasNext()) {
-		Person person = i.next();
-	        if (pressurized) unit.getInventory().addUnit(person);
-		else unit.getInventory().dropUnitOutside(person);
-	    }
-	    occupants.clear();
-	}
+            activated = false;
+            activationTime = 0D;
+            pressurized = !pressurized;
+            if (pressurized) innerDoorOpen = true;
+            else outerDoorOpen = true;
+            PersonIterator i = occupants.iterator();
+            while (i.hasNext()) {
+                try {
+                    exitAirlock(i.next());
+                }
+                catch (Exception e) { 
+                    System.out.println(e.getMessage()); 
+                }
+    	        // if (pressurized) unit.getInventory().addUnit(person);
+                // else unit.getInventory().dropUnitOutside(person);
+            }
+            occupants.clear();
+        }
     }
+    
+    /**
+     * Causes a person within the airlock to exit either inside or outside.
+     *
+     * @param person the person to exit.
+     * @throws Exception if person is not in the airlock.
+     */
+    protected abstract void exitAirlock(Person person) throws Exception;      
     
     /** 
      * Checks if the airlock's outer door is open.
@@ -143,9 +148,9 @@ public class Airlock implements Serializable {
      */
     public void timePassing(double time) {
         if (activated) {
-	    activationTime += time;
-	    if (activationTime >= airlockTime) deactivateAirlock();
-	}
+            activationTime += time;
+            if (activationTime >= CYCLE_TIME) deactivateAirlock();
+        }
     }
 
     /**
@@ -156,4 +161,18 @@ public class Airlock implements Serializable {
     public boolean inAirlock(Person person) {
         return occupants.contains(person);
     }
-}				
+    
+    /**
+     * Gets the name of the entity this airlock is attached to.
+     *
+     * @return name
+     */
+    public abstract String getEntityName();
+    
+    /**
+     * Gets the inventory of the entity this airlock is attached to.
+     *
+     * @return inventory
+     */
+    public abstract Inventory getEntityInventory();
+}

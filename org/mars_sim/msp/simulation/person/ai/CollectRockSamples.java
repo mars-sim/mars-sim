@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.75 2003-02-27
+ * @version 2.75 2003-04-20
  * @author Scott Davis
  */
 
@@ -81,7 +81,12 @@ class CollectRockSamples extends EVAOperation implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      */
     private double exitRover(double time) {
-        time = exitAirlock(time, rover);
+        try {
+            time = exitAirlock(time, rover.getAirlock());
+        }
+        catch (Exception e) { 
+            System.out.println(e.getMessage()); 
+        }
         if (exitedAirlock) phase = COLLECT_ROCKS;
         return time;
     }
@@ -147,7 +152,12 @@ class CollectRockSamples extends EVAOperation implements Serializable {
      */
     private double enterRover(double time) {
 
-        time = enterAirlock(time, rover);
+        try {
+            time = enterAirlock(time, rover.getAirlock());
+        }
+        catch (Exception e) { 
+            System.out.println(e.getMessage()); 
+        }
 
         if (enteredAirlock) {
             double rockSamples = person.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
@@ -165,6 +175,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
                 return time;
             }
         }
+        
         return 0D;
     }
 
@@ -179,7 +190,7 @@ class CollectRockSamples extends EVAOperation implements Serializable {
         boolean result = true;
 
         // Check if person can exit the rover.
-        if (!ExitAirlock.canExitAirlock(person, rover)) result = false;
+        if (!ExitAirlock.canExitAirlock(person, rover.getAirlock())) result = false;
 
         // Check if it is night time outside.
         if (mars.getSurfaceFeatures().getSurfaceSunlight(rover.getCoordinates()) == 0) result = false;

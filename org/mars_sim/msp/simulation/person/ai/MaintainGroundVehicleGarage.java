@@ -39,13 +39,13 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
-        
+        if (vehicle != null) vehicle.setReserved(true);
         
         // Determine the garage it's in.
         garage = getGarage(vehicle);
         
         // End task if vehicle or garage not available.
-        if ((vehicle == null) || (garage == null)) done = true;    
+        if ((vehicle == null) || (garage == null)) endTask();    
         
         // Randomly determine duration, from 0 - 500 millisols
         duration = RandomUtil.getRandomDouble(500D);
@@ -85,13 +85,13 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         MalfunctionManager manager = vehicle.getMalfunctionManager();
 	
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) done = true;
+        if (person.getPerformanceRating() == 0D) endTask();
 
         // Check if maintenance has already been completed.
-        if (manager.getTimeSinceLastMaintenance() == 0D) done = true;
+        if (manager.getTimeSinceLastMaintenance() == 0D) endTask();
 
         // If vehicle has malfunction, end task.
-        if (manager.hasMalfunction()) done = true;
+        if (manager.hasMalfunction()) endTask();
 
         if (done) return timeLeft;
 	
@@ -120,12 +120,20 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
         // Keep track of the duration of the task.
         timeCompleted += time;
-        if (timeCompleted >= duration) done = true;
+        if (timeCompleted >= duration) endTask();
 
         // Check if an accident happens during maintenance.
         checkForAccident(timeLeft);
 	
         return 0D;
+    }
+    
+    /**
+     * Ends the task and performs any final actions.
+     */
+    public void endTask() {
+        if (vehicle != null) vehicle.setReserved(false);
+        done = true;
     }
 
     /**
