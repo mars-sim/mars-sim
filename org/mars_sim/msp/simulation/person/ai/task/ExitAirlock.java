@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2005-07-13
  * @author Scott Davis
  */
 
@@ -20,6 +20,9 @@ import org.mars_sim.msp.simulation.person.*;
  */
 public class ExitAirlock extends Task implements Serializable {
 
+	// Task phase
+	private static final String EXITING_AIRLOCK = "Exiting Airlock";	
+	
 	// Static members
 	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
 	
@@ -31,27 +34,42 @@ public class ExitAirlock extends Task implements Serializable {
      * Constructs an ExitAirlock object
      * @param person the person to perform the task
      * @param airlock the airlock to use.
+     * @throws Exception if error constructing task.
      */
-    public ExitAirlock(Person person, Airlock airlock) {
-        super("Exiting airlock for EVA", person, true, false, STRESS_MODIFIER);
+    public ExitAirlock(Person person, Airlock airlock) throws Exception {
+        super("Exiting airlock for EVA", person, true, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
         description = "Exiting " + airlock.getEntityName() + " for EVA";
         this.airlock = airlock;
+        
+        // Initialize task phase
+        addPhase(EXITING_AIRLOCK);
+        setPhase(EXITING_AIRLOCK);
 
         // System.out.println(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());
     }
-
-    /** 
-     * Performs this task for the given amount of time.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error performing task.
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisols) the phase is to be performed.
+     * @return the remaining time (millisols) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (EXITING_AIRLOCK.equals(getPhase())) return exitingAirlockPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Performs the enter airlock phase of the task.
+     * @param time the amount of time to perform the task.
+     * @return
+     * @throws Exception
+     */
+    private double exitingAirlockPhase(double time) throws Exception {
+    	
         // Get an EVA suit from entity inventory.
         if (!hasSuit) {
             Inventory inv = airlock.getEntityInventory();
@@ -66,7 +84,7 @@ public class ExitAirlock extends Task implements Serializable {
         if (!hasSuit) {
             // System.out.println(person.getName() + " does not have an EVA suit, ExitAirlock ended");
             endTask();
-            return timeLeft;
+            return time;
         }
 
         // If person is in airlock, wait around.
@@ -86,18 +104,30 @@ public class ExitAirlock extends Task implements Serializable {
             }
         }
         
+		// Add experience
+        addExperience(time);
+
+        return 0D;
+    }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		
 		// Add experience to "EVA Operations" skill.
 		// (1 base experience point per 100 millisols of time spent)
-		double experience = time / 100D;
+		double evaExperience = time / 100D;
 		
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
-	
-        return 0D;
-    }
+		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		evaExperience += evaExperience * experienceAptitudeModifier;
+		evaExperience *= getTeachingExperienceModifier();
+		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+	}
 
     /**
      * Checks if a person can exit an airlock on an EVA.

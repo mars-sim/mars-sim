@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -10,16 +10,19 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /** 
  * The TendGreenhouse class is a task for tending the greenhouse in a settlement.
- * It has the phases, "Planting", "Tending" and "Harvesting".
  * This is an effort driven task.
  */
 public class TendGreenhouse extends Task implements Serializable {
+	
+	// Task phase
+	private static final String TENDING = "Tending";
 
 	// Static members
 	private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
@@ -27,11 +30,15 @@ public class TendGreenhouse extends Task implements Serializable {
     // Data members
     private Farming greenhouse; // The greenhouse the person is tending.
     private Settlement settlement; // The settlement the greenhouse is in.
-    private double duration; // The duration (in millisols) the person will perform the task.
 
-    public TendGreenhouse(Person person) {
+    /**
+     * Constructor
+     * @param person the person performing the task.
+     * @throws Exception if error constructing task.
+     */
+    public TendGreenhouse(Person person) throws Exception {
         // Use Task constructor
-        super("Tending Greenhouse", person, true, false, STRESS_MODIFIER);
+        super("Tending Greenhouse", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
         
         // Initialize data members
         description = "Tending Greenhouse at " + person.getSettlement().getName();
@@ -50,8 +57,9 @@ public class TendGreenhouse extends Task implements Serializable {
 			endTask();
         }
         
-        // Randomly determine duration, from 0 - 100 millisols
-        duration = RandomUtil.getRandomDouble(100D);
+        // Initialize phase
+        addPhase(TENDING);
+        setPhase(TENDING);
     }
 
 	/** 
@@ -81,66 +89,71 @@ public class TendGreenhouse extends Task implements Serializable {
         result *= person.getPerformanceRating();
 
 		// Job modifier.
-		result *= person.getMind().getJob().getStartTaskProbabilityModifier(TendGreenhouse.class);
+        Job job = person.getMind().getJob();
+		if (job != null) result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
 
         return result;
     }
-
-    /** 
-     * Performs the tending greenhouse task for a given amount of time.
-     * @param time amount of time to perform the task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error in performing task.
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-
-        if (subTask != null) return timeLeft;
-        
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) {
-            endTask();
-            return timeLeft;
-        }
-        
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (TENDING.equals(getPhase())) return tendingPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Performs the tending phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     * @throws Exception if error performing the phase.
+     */
+    private double tendingPhase(double time) throws Exception {
+    	
         // Check if greenhouse has malfunction.
         if (greenhouse.getBuilding().getMalfunctionManager().hasMalfunction()) {
             endTask();
-            return timeLeft;
+            return time;
         }
         
         // Determine amount of effective work time based on "Botany" skill.
-        double workTime = timeLeft;
-        int greenhouseSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.BOTANY);
+        double workTime = time;
+        int greenhouseSkill = getEffectiveSkillLevel();
         if (greenhouseSkill == 0) workTime /= 2;
         else workTime += workTime * (.2D * (double) greenhouseSkill);
         
         // Add this work to the greenhouse.
-        try {
-        	greenhouse.addWork(workTime);
-        }
-        catch (Exception e) {
-        	throw new Exception("TendGreenhouse.performTask(): Adding work to greenhouse: " + e.getMessage());
-        }
-        
-        // Keep track of the duration of the task.
-        timeCompleted += time;
-        if (timeCompleted >= duration) endTask();
+        greenhouse.addWork(workTime);
 
-        // Add experience to "Botany" skill
-        // (1 base experience point per 100 millisols of work)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = timeLeft / 100D;
-        double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
-        experience += experience * ((experienceAptitude - 50D) / 100D);
-        experience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.BOTANY, experience);
+        // Add experience
+        addExperience(time);
         
         // Check for accident in greenhouse.
         checkForAccident(time);
 	    
         return 0D;
     }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// Add experience to "Botany" skill
+		// (1 base experience point per 100 millisols of work)
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+        double newPoints = time / 100D;
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+        person.getSkillManager().addExperience(Skill.BOTANY, newPoints);
+	}
 
     /**
      * Check for accident in greenhouse.

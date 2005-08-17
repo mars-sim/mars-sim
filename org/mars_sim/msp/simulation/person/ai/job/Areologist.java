@@ -103,12 +103,9 @@ public class Areologist extends Job implements Serializable {
 		Iterator k = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (k.hasNext()) {
 			Mission mission = (Mission) k.next();
-			VehicleIterator l = mission.getMissionVehicles().iterator();
-			while (l.hasNext()) {
-				Vehicle vehicle = l.next();
-				if ((vehicle instanceof Rover) && (vehicle.getSettlement() == null)) {
-					if (vehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) > 0D) result++;
-				} 
+			if (mission instanceof RoverMission) {
+				Rover rover = ((RoverMission) mission).getRover();
+				if ((rover != null) && rover.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) > 0D) result++;
 			}
 		}
 		

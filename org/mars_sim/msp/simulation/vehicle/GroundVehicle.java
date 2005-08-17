@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 2.77 2004-09-29
+ * @version 2.78 2005-07-08
  * @author Scott Davis
  */
 
@@ -24,28 +24,23 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     // Data members
     private double elevation; // Current elevation in km.
     private double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability.
-    private double terrainGrade; // Average angle of terrain over next 7.4km distance in direction vehicle is traveling.
     private boolean isStuck; // True if vehicle is stuck.
     
-    /** Constructs a GroundVehicle object at a given settlement
-     *  @param name name of the ground vehicle
-     *  @param settlement settlement the ground vehicle is parked at
+    /** 
+     * Constructs a GroundVehicle object at a given settlement
+     * @param name name of the ground vehicle
+     * @param description the configuration description of the vehicle.
+     * @param settlement settlement the ground vehicle is parked at
+     * @throws an exception if ground vehicle could not be constructed.
      */
-    GroundVehicle(String name, Settlement settlement) {
+    GroundVehicle(String name, String description, Settlement settlement) throws Exception {
         // use Vehicle constructor
-        super(name, settlement);
+        super(name, description, settlement);
 
-        initGroundVehicleData();
-    }
-    
-    /** Initialize ground vehicle data */
-    private void initGroundVehicleData() {
-        
         // Add scope to malfunction manager.
         malfunctionManager.addScopeString("GroundVehicle");
 	    
         setTerrainHandlingCapability(0D); // Default terrain capability
-        setTerrainGrade(0D);
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         elevation = surface.getSurfaceTerrain().getElevation(location);
     }
@@ -90,18 +85,15 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
         terrainHandlingCapability = c;
     }
 
-    /** Returns terrain steepness as an angle 
-     *  @return ground vehicle's current terrain grade
+    /** 
+     * Gets the average angle of terrain over next 7.4km distance in direction vehicle is traveling.
+     * @return ground vehicle's current terrain grade angle from horizontal (radians)
      */
     public double getTerrainGrade() {
-        return terrainGrade;
-    }
-
-    /** Sets the terrain grade with an angle 
-     *  @param terrainGrade new terrain grade for the ground vehicle
-     */
-    public void setTerrainGrade(double terrainGrade) {
-        this.terrainGrade = terrainGrade;
+    	// Determine the terrain grade in the vehicle's current direction.
+		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        TerrainElevation terrain = surface.getSurfaceTerrain();
+        return terrain.determineTerrainDifficulty(getCoordinates(), getDirection());
     }
 
     /** Returns true if ground vehicle is stuck 
@@ -117,5 +109,21 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     public void setStuck(boolean stuck) {
         isStuck = stuck;
         if (isStuck) setSpeed(0D);
+    }
+    
+    /**
+     * Gets the driver of the ground vehicle.
+     * @return the vehicle driver.
+     */
+    public VehicleOperator getDriver() {
+    	return getOperator();
+    }
+    
+    /**
+     * Sets the driver of the ground vehicle.
+     * @param operator the driver
+     */
+    public void setDriver(VehicleOperator operator) {
+    	setOperator(operator);
     }
 }

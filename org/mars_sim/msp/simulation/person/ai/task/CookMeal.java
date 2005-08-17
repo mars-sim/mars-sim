@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 2.78 2004-11-15
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Cooking;
 
@@ -20,6 +21,9 @@ import org.mars_sim.msp.simulation.structure.building.function.Cooking;
  */
 public class CookMeal extends Task implements Serializable {
 
+	// Task phase
+	private static final String COOKING = "Cooking";
+	
 	// Static members
 	private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
 	
@@ -37,27 +41,26 @@ public class CookMeal extends Task implements Serializable {
 	/**
 	 * Constructor
 	 * @param person the person performing the task.
+	 * @throws Exception if error constructing task.
 	 */
-	public CookMeal(Person person) {
+	public CookMeal(Person person) throws Exception {
 		// Use Task constructor
-		super("Cooking", person, true, false, STRESS_MODIFIER);
+		super("Cooking", person, true, false, STRESS_MODIFIER, false, 0D);
 		
 		// Initialize data members
 		description = "Cooking " + getMealName();
 		
 		// Get available kitchen if any.
-		try {
-			Building kitchenBuilding = getAvailableKitchen(person);
-			if (kitchenBuilding != null) {
-				kitchen = (Cooking) kitchenBuilding.getFunction(Cooking.NAME);
-				BuildingManager.addPersonToBuilding(person, kitchenBuilding);
-			}
-			else endTask();
+		Building kitchenBuilding = getAvailableKitchen(person);
+		if (kitchenBuilding != null) {
+			kitchen = (Cooking) kitchenBuilding.getFunction(Cooking.NAME);
+			BuildingManager.addPersonToBuilding(person, kitchenBuilding);
 		}
-		catch (BuildingException e) {
-			System.err.println("CookMeal: " + e.getMessage());
-			endTask();
-		}		
+		else endTask();
+		
+		// Add task phase
+		addPhase(COOKING);
+		setPhase(COOKING);
 		
 		// String jobName = person.getMind().getJob().getName();
 		// System.out.println(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + " in " + person.getSettlement());
@@ -92,71 +95,80 @@ public class CookMeal extends Task implements Serializable {
 			result *= person.getPerformanceRating();
 
 			// Job modifier.
-			result *= person.getMind().getJob().getStartTaskProbabilityModifier(CookMeal.class);
+			Job job = person.getMind().getJob();
+			if (job != null) result *= job.getStartTaskProbabilityModifier(CookMeal.class);
         }
 
 		return result;
 	}	
 	
-	/** 
-	 * Performs the task for a given amount of time.
-	 * @param time amount of time to perform the task (in millisols)
-	 * @return amount of time remaining after finishing with task (in millisols)
-	 * @throws Exception if error in performing task.
-	 */
-	double performTask(double time) throws Exception {
-		double timeLeft = super.performTask(time);
-
-		if (subTask != null) return timeLeft;
-        
-		// If person is incompacitated, end task.
-		if (person.getPerformanceRating() == 0D) {
-			endTask();
-			return timeLeft;
-		}
-        
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time the phase is to be performed.
+     * @return the remaining time after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
+     */
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (COOKING.equals(getPhase())) return cookingPhase(time);
+    	else return time;
+    }
+	
+    /**
+     * Performs the cooking phase of the task.
+     * @param time the amount of time (millisol) to perform the cooking phase.
+     * @return the amount of time (millisol) left after performing the cooking phase.
+     * @throws Exception if error performing the cooking phase.
+     */
+	private double cookingPhase(double time) throws Exception {
+		
 		// If kitchen has malfunction, end task.
 		if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
 			endTask();
-			return timeLeft;
+			return time;
 		}
 		
-		// If meal time is over, end task.
+		// If meal time is over, clean up kitchen and end task.
 		if (!isMealTime(person)) {
 			endTask();
 			kitchen.cleanup();
 			// System.out.println(person.getName() + " finished cooking.");
-			return timeLeft;
+			return time;
 		}
         
 		// Determine amount of effective work time based on "Cooking" skill.
-		double workTime = timeLeft;
-		int cookingSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.COOKING);
+		double workTime = time;
+		int cookingSkill = getEffectiveSkillLevel();
 		if (cookingSkill == 0) workTime /= 2;
 		else workTime += workTime * (.2D * (double) cookingSkill);
         
 		// Add this work to the kitchen.
-		try {
-			kitchen.addWork(workTime);
-		}
-		catch (Exception e) {
-			throw new Exception("CookMeal.performTask(): Adding work to kitchen: " + e.getMessage());
-		}
-
+		kitchen.addWork(workTime);
+		
+		// Add experience
+		addExperience(time);
+        
+		// Check for accident in kitchen.
+		checkForAccident(time);
+		
+		return 0D;
+	}
+	
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
 		// Add experience to "Cooking" skill
 		// (1 base experience point per 25 millisols of work)
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		double experience = timeLeft / 25D;
-		double experienceAptitude = (double) person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
-		experience += experience * ((experienceAptitude - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.COOKING, experience);
-        
-		// Check for accident in greenhouse.
-		checkForAccident(time);
-	    
-		return 0D;
-	}	
+        double newPoints = time / 25D;
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+        person.getSkillManager().addExperience(Skill.COOKING, newPoints);
+	}
 	
 	/**
 	 * Gets the kitchen the person is cooking in.

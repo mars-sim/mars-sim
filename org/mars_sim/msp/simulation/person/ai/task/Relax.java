@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2005-07-14
  * @author Scott Davis
  */
 
@@ -16,30 +16,28 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /** The Relax class is a simple task that implements resting and doing nothing for a while.
  *  The duration of the task is by default chosen randomly, up to 100 millisols.
- *
- *  Note: Mental stress may be added later, which this task could be used to reduce.
  */
 class Relax extends Task implements Serializable {
+	
+	// Task phase
+	private static final String RELAXING = "Relaxing";
 
 	// Static members
 	private static final double STRESS_MODIFIER = -.5D; // The stress modified per millisol.
 
-    // Data members
-    private double duration; // The predetermined duration of task in millisols
-
     /** 
      * Constructor
      * @param person the person to perform the task
+     * @throws Exception if error constructing task.
      */
-    public Relax(Person person) {
-        super("Relaxing", person, false, false, STRESS_MODIFIER);
+    public Relax(Person person) throws Exception {
+        super("Relaxing", person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomInt(100));
 
         // If person is in a settlement, try to find a place to relax.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-        	
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {      	
         	try {
-        	Building recBuilding = getAvailableRecreationBuilding(person);
-        	if (recBuilding != null) BuildingManager.addPersonToBuilding(person, recBuilding);
+        		Building recBuilding = getAvailableRecreationBuilding(person);
+        		if (recBuilding != null) BuildingManager.addPersonToBuilding(person, recBuilding);
         	}
         	catch (Exception e) {
         		System.err.println("Relax.constructor(): " + e.getMessage());
@@ -47,7 +45,9 @@ class Relax extends Task implements Serializable {
         	}
         }
         
-        duration = RandomUtil.getRandomInt(100);
+        // Initialize phase
+        addPhase(RELAXING);
+        setPhase(RELAXING);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -78,23 +78,36 @@ class Relax extends Task implements Serializable {
         return result;
     }
 
-    /** 
-     * This task simply waits until the set duration of the task is complete, then ends the task.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error performing task.
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-        timeCompleted += time;
-        if (timeCompleted > duration) {
-            endTask();
-            return timeCompleted - duration;
-        }
-        else return 0;
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (RELAXING.equals(getPhase())) return relaxingPhase(time);
+    	else return time;
     }
+    
+    /**
+     * Performs the relaxing phase of the task.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) left after performing the phase.
+     * @throws Exception if error performing the phase.
+     */
+    private double relaxingPhase(double time) throws Exception {
+    	// Do nothing
+        return 0D; 
+    }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// This task adds no experience.
+	}
     
 	/**
 	 * Gets an available recreation building that the person can use.

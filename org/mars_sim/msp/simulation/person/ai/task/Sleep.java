@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2005-07-15
  * @author Scott Davis
  */
 
@@ -22,22 +22,25 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  * Note: Sleeping reduces fatigue and stress.
  */
 class Sleep extends Task implements Serializable {
+	
+	// Task phase
+	private static final String SLEEPING = "Sleeping";
 
 	// Static members
 	private static final double STRESS_MODIFIER = -.3D; // The stress modified per millisol.
 	private static final double BASE_ALARM_TIME = 300D; // The base alarm time (millisols) at 0 degrees longitude.
 
     // Data members
-    private double duration; // The duration of task in millisols
     private LivingAccommodations accommodations; // The living accommodations if any.
     private double previousTime; // The previous time (millisols)
 
     /** 
      * Constructor
      * @param person the person to perform the task
+     * @throws Exception if error constructing task.
      */
-    public Sleep(Person person) {
-        super("Sleeping", person, false, false, STRESS_MODIFIER);
+    public Sleep(Person person) throws Exception {
+        super("Sleeping", person, false, false, STRESS_MODIFIER, true, (250D + RandomUtil.getRandomInt(100)));
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
@@ -57,7 +60,9 @@ class Sleep extends Task implements Serializable {
         
         previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         
-        duration = 250D + RandomUtil.getRandomInt(100);
+        // Initialize phase
+        addPhase(SLEEPING);
+        setPhase(SLEEPING);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -71,7 +76,7 @@ class Sleep extends Task implements Serializable {
 
 		// Fatigue modifier.
 		double fatigue = person.getPhysicalCondition().getFatigue();
-        if (fatigue > 500D) result = (fatigue - 500D) / 5D;
+        if (fatigue > 500D) result = (fatigue - 500D) / 4D;
         
         // Dark outside modifier.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -93,19 +98,29 @@ class Sleep extends Task implements Serializable {
 
         return result;
     }
-
-    /** 
-     * This task allows the person to sleep for the duration.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error performing task.
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (SLEEPING.equals(getPhase())) return sleepingPhase(time);
+    	else return time;
+    }
 
+    /**
+     * Performs the sleeping phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     * @throws Exception if error performing the phase.
+     */
+    private double sleepingPhase(double time) throws Exception {
+    	
 		// Reduce person's fatigue
-		double newFatigue = person.getPhysicalCondition().getFatigue() - (4D * time);
+		double newFatigue = person.getPhysicalCondition().getFatigue() - (5D * time);
 		if (newFatigue < 0D) newFatigue = 0D;
         person.getPhysicalCondition().setFatigue(newFatigue);
         
@@ -115,17 +130,19 @@ class Sleep extends Task implements Serializable {
         if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
         	endTask();
         	// System.out.println(person.getName() + " woke up from alarm.");
-        	return 0;
         }
         else previousTime = newTime;
         
-        timeCompleted += time;
-        if (timeCompleted > duration) {
-            endTask();
-            return timeCompleted - duration;
-        }
-        else return 0;
+        return 0D;
     }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// This task adds no experience.
+	}
     
 	/**
 	 * Ends the task and performs any final actions.

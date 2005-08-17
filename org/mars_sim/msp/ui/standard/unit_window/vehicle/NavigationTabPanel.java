@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 2.75 2004-02-12
+ * @version 2.78 2005-08-09
  * @author Scott Davis
  */
 
@@ -23,11 +23,15 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
+import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleOperator;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
@@ -55,7 +59,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private TerrainDisplayPanel terrainDisplay;
     
     // Data cache
-    private Person driverCache;
+    private VehicleOperator driverCache;
     private String statusCache;
     private double speedCache;
     private double elevationCache;
@@ -95,12 +99,12 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         driverPanel.add(driverLabel);
             
         // Prepare driver button and add it if vehicle has driver.
-        driverCache = vehicle.getDriver();
+        driverCache = vehicle.getOperator();
         driverButton = new JButton();
         driverButton.addActionListener(this);
         driverButton.setVisible(false);
         if (driverCache != null) {
-            driverButton.setText(driverCache.getName());
+            driverButton.setText(driverCache.getOperatorName());
             driverButton.setVisible(true);
         }
         driverPanel.add(driverButton);
@@ -154,15 +158,26 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Prepare destination text label
         destinationTextLabel = new JLabel("", JLabel.LEFT);
         
-        if (vehicle.getDestinationType().equals(Vehicle.SETTLEMENT)) {
-            // If destination is settlement, add destination button.
-            destinationSettlementCache = vehicle.getDestinationSettlement();
-            destinationButton.setText(destinationSettlementCache.getName());
-            destinationLabelPanel.add(destinationButton);
+        VehicleMission mission = (VehicleMission) 
+				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+        	NavPoint destinationPoint = mission.getNextNavpoint();
+        	if (destinationPoint.isSettlementAtNavpoint()) {
+                // If destination is settlement, add destination button.
+                destinationSettlementCache = destinationPoint.getSettlement();
+                destinationButton.setText(destinationSettlementCache.getName());
+                destinationLabelPanel.add(destinationButton);
+        	}
+        	else {
+                // If destination is coordinates, add destination text label.
+                destinationTextCache = "Coordinates";
+                destinationTextLabel.setText(destinationTextCache);
+                destinationLabelPanel.add(destinationTextLabel);
+        	}
         }
         else {
-            // If destination is none or coordinates, add destination text label.
-            destinationTextCache = vehicle.getDestinationType();
+        	// If destination is none, add destination text label.
+            destinationTextCache = "None";
             destinationTextLabel.setText(destinationTextCache);
             destinationLabelPanel.add(destinationTextLabel);
         }
@@ -171,7 +186,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         JPanel destinationInfoLabelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
         destinationInfoPanel.add(destinationInfoLabelPanel, BorderLayout.CENTER);
         
-        destinationLocationCache = vehicle.getDestination();
+        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT))
+        	destinationLocationCache = mission.getNextNavpoint().getLocation();
+        else destinationLocationCache = null;
         
         // Prepare destination latitude label.
         String latitudeString = "";
@@ -188,12 +205,19 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationInfoLabelPanel.add(destinationLongitudeLabel);
         
         // Prepare distance label.
-        distanceCache = vehicle.getDistanceToDestination();
-        distanceLabel = new JLabel("Distance: " + formatter.format(distanceCache) + " km.", JLabel.LEFT);
+        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+        	distanceCache = mission.getCurrentLegRemainingDistance();
+        	distanceLabel = new JLabel("Distance: " + formatter.format(distanceCache) + " km.", JLabel.LEFT);
+        }
+        else {
+        	distanceCache = 0D;
+        	distanceLabel = new JLabel("Distance: ", JLabel.LEFT);
+        }
         destinationInfoLabelPanel.add(distanceLabel);
         
         // Prepare ETA label.
-        etaCache = vehicle.getETA();
+        if (mission != null) etaCache = mission.getLegETA().toString();
+        else etaCache = "";
         etaLabel = new JLabel("ETA: " + etaCache, JLabel.LEFT);
         destinationInfoLabelPanel.add(etaLabel);
         
@@ -231,17 +255,17 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Update driver button if necessary.
         boolean driverChange = false;
         if (driverCache == null) {
-            if (vehicle.getDriver() != null) driverChange = true;
+            if (vehicle.getOperator() != null) driverChange = true;
         }
-        else if (!driverCache.equals(vehicle.getDriver())) driverChange = true;
+        else if (!driverCache.equals(vehicle.getOperator())) driverChange = true;
         if (driverChange) {
-            driverCache = vehicle.getDriver();
+            driverCache = vehicle.getOperator();
             if (driverCache == null) {
                 driverButton.setVisible(false);
             }
             else {
                 driverButton.setVisible(true);
-                driverButton.setText(driverCache.getName());
+                driverButton.setText(driverCache.getOperatorName());
             }
         }
         
@@ -266,51 +290,79 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             }
         }
         
-        // Update destination button and text label if necessary.
-        if (vehicle.getDestinationType().equals(Vehicle.SETTLEMENT)) {
-            if (destinationSettlementCache != vehicle.getDestinationSettlement()) {
-                destinationSettlementCache = vehicle.getDestinationSettlement();
-                destinationButton.setText(destinationSettlementCache.getName());
-                addDestinationButton();
-                destinationTextCache = "";
-            }
+        VehicleMission mission = (VehicleMission) 
+			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+        	NavPoint destinationPoint = mission.getNextNavpoint();
+        	if (destinationPoint.isSettlementAtNavpoint()) {
+        		// If destination is settlement, update destination button.
+        		if (destinationSettlementCache != destinationPoint.getSettlement()) {
+        			destinationSettlementCache = destinationPoint.getSettlement();
+        			destinationButton.setText(destinationSettlementCache.getName());
+        			addDestinationButton();
+        			destinationTextCache = "";
+        		}
+        	}
+        	else {
+        		if (destinationTextCache != "Coordinates") {
+        			// If destination is coordinates, update destination text label.
+        			destinationTextCache = "Coordinates";
+        			destinationTextLabel.setText(destinationTextCache);
+        			addDestinationTextLabel();
+                    destinationSettlementCache = null;
+        		}
+        	}
         }
         else {
-            if (destinationTextCache != vehicle.getDestinationType()) {
-                destinationTextCache = vehicle.getDestinationType();
-                destinationTextLabel.setText(destinationTextCache);
-                addDestinationTextLabel();
-                destinationSettlementCache = null;
-            }
+        	// If destination is none, update destination text label.
+        	if (destinationTextCache != "None") {
+        		destinationTextCache = "None";
+        		destinationTextLabel.setText(destinationTextCache);
+        		addDestinationTextLabel();
+        		destinationSettlementCache = null;
+        	}
         }
         
         // Update latitude and longitude panels if necessary.
-        boolean destinationChange = false;
-        if (destinationLocationCache == null) {
-            if (vehicle.getDestination() != null) destinationChange = true;
-        }
-        else if (!destinationLocationCache.equals(vehicle.getDestination())) destinationChange = true;
-        
-        if (destinationChange) {
+        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
         	if (destinationLocationCache == null) 
-        		destinationLocationCache = new Coordinates(vehicle.getDestination());
-            else destinationLocationCache.setCoords(vehicle.getDestination());
+        		destinationLocationCache = new Coordinates(mission.getNextNavpoint().getLocation());
+        	else destinationLocationCache.setCoords(mission.getNextNavpoint().getLocation());
             destinationLatitudeLabel.setText("Latitude: " + 
-                destinationLocationCache.getFormattedLatitudeString());
+                    destinationLocationCache.getFormattedLatitudeString());
             destinationLongitudeLabel.setText("Longitude: " + 
-                destinationLocationCache.getFormattedLongitudeString());
+                    destinationLocationCache.getFormattedLongitudeString());
+        }
+        else {
+        	if (destinationLocationCache != null) {
+        		destinationLocationCache = null;
+                destinationLatitudeLabel.setText("Latitude: ");
+                destinationLongitudeLabel.setText("Longitude: ");
+        	}
         }
         
         // Update distance to destination if necessary.
-        if (distanceCache != vehicle.getDistanceToDestination()) {
-            distanceCache = vehicle.getDistanceToDestination();
-            distanceLabel.setText("Distance: " + formatter.format(distanceCache) + " km.");
+        if (mission != null) {
+        	if (distanceCache != mission.getCurrentLegRemainingDistance()) {
+        		distanceCache = mission.getCurrentLegRemainingDistance();
+        		distanceLabel.setText("Distance: " + formatter.format(distanceCache) + " km.");
+        	}
+        }
+        else {
+        	distanceCache = 0D;
+        	distanceLabel.setText("Distance:");
         }
         
         // Update ETA if necessary
-        if (!etaCache.equals(vehicle.getETA())) {
-            etaCache = vehicle.getETA();
-            etaLabel.setText("ETA: " + etaCache);
+        if ((mission != null) && (mission.getLegETA() != null)){
+        	if (!etaCache.equals(mission.getLegETA().toString())) {
+        		etaCache = mission.getLegETA().toString();
+                etaLabel.setText("ETA: " + etaCache);
+        	}
+        }
+        else {
+        	etaCache = "";
+        	etaLabel.setText("ETA: ");
         }
         
         // Update direction display
@@ -371,6 +423,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if (source == destinationButton) desktop.openUnitWindow(destinationSettlementCache);
         
         // If driver button is pressed, open window for driver.
-        if (source == driverButton) desktop.openUnitWindow(driverCache);
+        if (source == driverButton) desktop.openUnitWindow((Unit) driverCache);
     }
 }

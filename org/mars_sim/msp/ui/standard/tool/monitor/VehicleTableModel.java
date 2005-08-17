@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.75 2004-01-12
+ * @version 2.78 2005-08-09
  * @author Barry Evans
  */
 
@@ -9,6 +9,9 @@ package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
+import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -141,8 +144,8 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case DRIVER : {
-                if (vehicle.getDriver() != null) {
-                    result = vehicle.getDriver().getName();
+                if (vehicle.getOperator() != null) {
+                	result = vehicle.getOperator().getOperatorName();
                 }
                 else {
                     result = null;
@@ -170,20 +173,24 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case DESTINATION : {
-                if (!vehicle.getDestinationType().equals("None")) {
-                    Settlement settle = vehicle.getDestinationSettlement();
-                    if (settle != null) {
-                        result = settle.getName();
-                    }
-                    else {
-                        result = vehicle.getDestination().getFormattedString();
-                    }
-                }
+            	result = null;
+            	VehicleMission mission = (VehicleMission) 
+						Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            	if (mission != null) {
+            		if (mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+            			NavPoint destination = mission.getNextNavpoint();
+            			if (destination.isSettlementAtNavpoint()) result = destination.getSettlement().getName();
+            			else result = destination.getLocation().getFormattedString();
+            		}
+            	}
             } break;
 
             case DESTDIST : {
-                result = new Integer(new Float(
-                    vehicle.getDistanceToDestination()).intValue());
+            	VehicleMission mission = (VehicleMission) 
+						Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            	if (mission != null)
+            		result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
+            	else result = null;
             } break;
             
 			case ICE : {

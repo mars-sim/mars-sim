@@ -1,25 +1,29 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.ArrayList;
+
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
-/** The Mission class represents a large multi-person task
- *
- *  There is at most one instance of a mission per person.
- *  A Mission may have one or more people associated with it.
+/** 
+ * The Mission class represents a large multi-person task
+ * There is at most one instance of a mission per person.
+ * A Mission may have one or more people associated with it.
  */
 public abstract class Mission implements Serializable {
 
@@ -28,27 +32,33 @@ public abstract class Mission implements Serializable {
     private static final String END_MISSION = "End Mission ";
 
     // Data members
-    protected PersonCollection people; // People in mission
-    protected String name; // Name of mission
-    protected String description; // Description of the mission
-    protected MissionManager missionManager; // The simulation's mission manager
-    protected boolean done; // True if mission is completed
-    protected String phase; // The phase of the mission
-    protected int missionCapacity; // The number of people that can be in the mission
+    private PersonCollection people; // People in mission
+    private String name; // Name of mission
+    private String description; // Description of the mission
+    private int minPeople; // The minimum number of people for mission.
+    private boolean done; // True if mission is completed
+    private Collection phases; // A collection of the mission's phases.
+    private String phase; // The current phase of the mission
+    private boolean phaseEnded; // Has the current phase ended?
+    private int missionCapacity; // The number of people that can be in the mission
 
-    /** Constructs a Mission object
-     *  @param name the name of the mission
-     *  @param missionManager the simulation's misison manager
+    /** 
+     * Constructs a Mission object
+     * @param name the name of the mission
+     * @param startingPerson the person starting the mission.
+     * @param minPeople the minimum number of people required for mission.
+     * @throws MissionException if error constructing mission.
      */
-    public Mission(String name, MissionManager missionManager, Person startingPerson) {
+    public Mission(String name, Person startingPerson, int minPeople) throws MissionException {
 
         // Initialize data members
         this.name = name;
-        this.missionManager = missionManager;
         description = name;
         people = new PersonCollection();
         done = false;
-        phase = "";
+        phase = null;
+        phases = new ArrayList();
+        phaseEnded = false;
         missionCapacity = Integer.MAX_VALUE;
 
 		// Created mission starting event.
@@ -56,11 +66,12 @@ public abstract class Mission implements Serializable {
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
         // Add starting person to mission.
-        addPerson(startingPerson);
+		startingPerson.getMind().setMission(this);
     }
 
-    /** Adds a person to the mission.
-     *  @param person to be added
+    /** 
+     * Adds a person to the mission.
+     * @param person to be added
      */
     public void addPerson(Person person) {
         if (!people.contains(person)) {
@@ -73,8 +84,9 @@ public abstract class Mission implements Serializable {
         }
     }
 
-    /** Removes a person from the mission
-     *  @param person to be removed
+    /** 
+     * Removes a person from the mission
+     * @param person to be removed
      */
     public void removePerson(Person person) {
         if (people.contains(person)) {
@@ -89,19 +101,29 @@ public abstract class Mission implements Serializable {
         }
     }
 
-    /** Determines if a mission includes the given person
-     *  @param person person to be checked
-     *  @return true if person is member of mission
+    /** 
+     * Determines if a mission includes the given person
+     * @param person person to be checked
+     * @return true if person is member of mission
      */
     public boolean hasPerson(Person person) {
         return people.contains(person);
     }
 
-    /** Gets the number of people in the mission.
-     *  @return number of people
+    /** 
+     * Gets the number of people in the mission.
+     * @return number of people
      */
     public int getPeopleNumber() {
         return people.size();
+    }
+    
+    /**
+     * Gets the minimum number of people required for mission.
+     * @return minimum number of people
+     */
+    public int getMinPeople() {
+    	return minPeople;
     }
 
     /**
@@ -112,62 +134,93 @@ public abstract class Mission implements Serializable {
         return new PersonCollection(people);
     }
 
-    /** Returns the mission's manager
-     *  @return mission manager
-     */
-    public MissionManager getMissionManager() {
-        return missionManager;
-    }
-
-    /** Determines if mission is completed.
-     *  @return true if mission is completed
+    /** 
+     * Determines if mission is completed.
+     * @return true if mission is completed
      */
     public boolean isDone() {
         return done;
     }
 
-    /** Gets the name of the mission.
-     *  @return name of mission
+    /** 
+     * Gets the name of the mission.
+     * @return name of mission
      */
     public String getName() {
         return name;
     }
 
-    /** Gets the mission's description.
-     *  @return mission description
+    /** 
+     * Gets the mission's description.
+     * @return mission description
      */
     public String getDescription() {
         return description;
     }
 
-    /** Gets the current phase of the mission.
-     *  @return phase
+    /** 
+     * Gets the current phase of the mission.
+     * @return phase
      */
     public String getPhase() {
         return phase;
     }
-
-    /** Performs the mission.
-     *  Mission may choose a new task for a person in the mission.
-     *  @param person the person performing the mission
+    
+    /**
+     * Sets the mission phase.
+     * @param newPhase the new mission phase.
+     * @throws MissionException if newPhase is not in the mission's collection of phases.
      */
-    public void performMission(Person person) {
-
+    protected void setPhase(String newPhase) throws MissionException {
+    	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
+    	else if (phases.contains(newPhase)) {
+    		phase = newPhase;
+    		setPhaseEnded(false);
+    	}
+    	else throw new MissionException(getPhase(), "newPhase: " + newPhase + " is not a valid phase for this mission.");
     }
+    
+    /**
+     * Adds a phase to the mission's collection of phases.
+     * @param newPhase the new phase to add.
+     */
+    public void addPhase(String newPhase) {
+    	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
+    	else if (!phases.contains(newPhase)) phases.add(newPhase);
+    }
+
+    /** 
+     * Performs the mission. 
+     * @param person the person performing the mission.
+     * @throws MissionException if problem performing the mission.
+     */
+    public void performMission(Person person) throws MissionException {
+
+    	// If current phase is over, decide what to do next.
+    	if (getPhaseEnded()) determineNewPhase();
+    	
+    	// Perform phase.
+    	if (!isDone()) performPhase(person);
+    }
+    
+    /**
+     * Determines a new phase for the mission when the current phase has ended.
+     * @throws MissionException if problem setting a new phase.
+     */
+    protected abstract void determineNewPhase() throws MissionException;
+    
+    /**
+     * The person performs the current phase of the mission.
+     * @param person the person performing the phase.
+     * @throws MissionException if problem performing the phase.
+     */
+    protected abstract void performPhase(Person person) throws MissionException;
 
     /** Gets the weighted probability that a given person would start this mission.
      *  @param person the given person
      *  @return the weighted probability
      */
     public static double getNewMissionProbability(Person person) {
-        return 0D;
-    }
-
-    /** Gets the weighted probability that a given person would join this mission.
-     *  @param person the given person
-     *  @return the weighted probability
-     */
-    public double getJoiningProbability(Person person) {
         return 0D;
     }
 
@@ -191,9 +244,7 @@ public abstract class Mission implements Serializable {
     protected void endMission() {
         done = true;
         Object p[] = people.toArray();
-        for(int i = 0; i < p.length; i++) {
-            removePerson((Person)p[i]);
-        }
+        for(int i = 0; i < p.length; i++) removePerson((Person) p[i]);
     }
 
     /**
@@ -213,34 +264,165 @@ public abstract class Mission implements Serializable {
         if (canPerformTask) person.getMind().getTaskManager().addTask(task);
     }
     
-    /**
-     * Gets the home settlement for the mission. 
-     * @return home settlement or null if none.
-     */
-    public abstract Settlement getHomeSettlement();
-    
-    /**
-     * Gets a collection of the vehicles associated with this mission.
-     * @return collection of vehicles.
-     */
-    public abstract VehicleCollection getMissionVehicles();
-    
-    /**
-     * Gets the relationship mission probability modifier.
-     * @param person the person to check for
-     * @return the modifier
-     */
-    protected double getRelationshipProbabilityModifier(Person person) {
-    	double result = 1D;
-    	
-    	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-		double totalOpinion = 0D;
-    	PersonIterator i = getPeople().iterator();
-    	while (i.hasNext()) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, i.next()) - 50D) / 50D);
-    	
-    	if (totalOpinion > 0D) result*= (1D + totalOpinion);
-    	else if (totalOpinion < 0D) result/= (1D - totalOpinion);
-    	
-    	return result;
-    }
+	/**
+	 * Checks to see if any of the people in the mission have any dangerous medical 
+	 * problems that require treatment at a settlement. 
+	 * Also any environmental problems, such as suffocation.
+	 * @return true if dangerous medical problems
+	 */
+	protected boolean hasDangerousMedicalProblems() {
+		boolean result = false;
+		PersonIterator i = people.iterator();
+		while (i.hasNext()) {
+			if (i.next().getPhysicalCondition().hasSeriousMedicalProblems()) result = true;
+		}
+		return result;
+	}
+	
+	/**
+	 * Checks if the mission has an emergency situation.
+	 * @return true if emergency.
+	 */
+	protected boolean hasEmergency() {
+		return hasDangerousMedicalProblems();
+	}
+	
+	/**
+	 * Recruits new people into the mission.
+	 * @param startingPerson the person starting the mission.
+	 */
+	protected void recruitPeopleForMission(Person startingPerson) {
+		
+		// Get all people qualified for the mission.
+		PersonCollection qualifiedPeople = new PersonCollection();
+		PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			if (isCapableOfMission(person)) qualifiedPeople.add(person);
+		}
+		
+		// Recruit the most qualified and most liked people first.
+		try {
+		while (qualifiedPeople.size() > 0) {
+			double bestPersonValue = 0D;
+			Person bestPerson = null;
+			PersonIterator j = qualifiedPeople.iterator();
+			while (j.hasNext()) {
+				Person person = j.next();
+				if (getPeopleNumber() < getMissionCapacity()) {
+					// Determine the person's mission qualification.
+					double qualification = getMissionQualification(person) * 100D;
+					
+					// Determine how much the recruiter likes the person.
+					RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+					double likability = relationshipManager.getOpinionOfPerson(startingPerson, person);
+					
+					// Check if person is the best recruit.
+					double personValue = (qualification + likability) / 2D;
+					if (personValue > bestPersonValue) {
+						bestPerson = person;
+						bestPersonValue = personValue;
+					}
+				}
+			}
+		
+			// Try to recruit best person available to the mission.
+			if (bestPerson != null) {
+				recruitPerson(startingPerson, bestPerson);
+				qualifiedPeople.remove(bestPerson);
+			}
+			else break;
+		}
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.out);
+		}
+	}
+	
+	/**
+	 * Attempt to recruit a new person into the mission.
+	 * @param recruiter the person doing the recruiting.
+	 * @param recruitee the person being recruited.
+	 * @throws MissionException if problem recruiting person.
+	 */
+	private void recruitPerson(Person recruiter, Person recruitee) throws MissionException {
+		if (isCapableOfMission(recruitee)) {
+			// Get mission qualification modifier.
+			double qualification = getMissionQualification(recruitee) * 100D;
+			
+			RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+			
+			// Get the recruitee's social opinion of the recruiter.
+			double recruiterLikability = relationshipManager.getOpinionOfPerson(recruitee, recruiter);
+			
+			// Get the recruitee's average opinion of all the current mission members.
+			double groupLikability = relationshipManager.getAverageOpinionOfPeople(recruitee, people);
+			
+			double recruitmentChance = (qualification + recruiterLikability + groupLikability) / 3D;
+			if (recruitmentChance > 100D) recruitmentChance = 100D;
+			else if (recruitmentChance < 0D) recruitmentChance = 0D;
+			
+			if (RandomUtil.lessThanRandPercent(recruitmentChance)) recruitee.getMind().setMission(this);
+		}
+	}
+	
+	/**
+	 * Checks to see if a person is capable of joining a mission.
+	 * @param person the person to check.
+	 * @return true if person could join mission.
+	 */
+	protected boolean isCapableOfMission(Person person) {
+		if (person == null) throw new IllegalArgumentException("person is null");
+		
+		// Make sure person isn't already on a mission.
+		if (person.getMind().getMission() == null) {
+			// Make sure person doesn't have any serious health problems.
+			if (!person.getPhysicalCondition().hasSeriousMedicalProblems()) return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Gets the mission qualification value for the person.
+	 * Person is qualified and interested in joining the mission if the value is larger than 0.
+	 * The larger the qualification value, the more likely the person will be picked for the mission.
+	 * @param person the person to check.
+	 * @return mission qualification value.
+	 * @throws MissionException if error determining mission qualification.
+	 */
+	protected double getMissionQualification(Person person) throws MissionException {
+		
+		double result = 0D;
+		
+		if (isCapableOfMission(person)) {
+			// Get base result for job modifier.
+			Job job = person.getMind().getJob();
+			if (job != null) result = job.getJoinMissionProbabilityModifier(this.getClass());
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Checks if the current phase has ended or not.
+	 * @return true if phase has ended
+	 */
+	protected boolean getPhaseEnded() {
+		return phaseEnded;
+	}
+	
+	/**
+	 * Sets if the current phase has ended or not.
+	 * @param phaseEnded true if phase has ended
+	 */
+	protected void setPhaseEnded(boolean phaseEnded) {
+		this.phaseEnded = phaseEnded;
+	}
+	
+	/**
+	 * Gets the settlement associated with the mission.
+	 * @return settlement or null if none.
+	 */
+	public abstract Settlement getAssociatedSettlement();
 }

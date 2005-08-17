@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathInfo.java
- * @version 2.76 2004-06-09
+ * @version 2.78 2005-08-14
  * @author Barry Evans
  */
 
@@ -58,7 +58,8 @@ public class DeathInfo implements java.io.Serializable {
 
         Mind mind = person.getMind();
         
-        job = mind.getJob().getName();
+        job = "";
+        if (mind.getJob() != null) job = mind.getJob().getName();
         
         if (mind.getMission() != null) {
             mission = mind.getMission().getName();

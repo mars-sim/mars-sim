@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2005-07-14
  * @author Scott Davis
  */
 
@@ -19,6 +19,9 @@ import org.mars_sim.msp.simulation.structure.building.*;
  */
 public class RepairEmergencyMalfunction extends Task implements Repair, Serializable {
 
+	// Task phase
+	private static final String REPAIRING = "Repairing";
+	
 	// Static members
 	private static final double STRESS_MODIFIER = 2D; // The stress modified per millisol.
 
@@ -29,9 +32,10 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
     /**
      * Constructs a RepairEmergencyMalfunction object.
      * @param person the person to perform the task
+     * @throws Exception if error constructing task.
      */
-    public RepairEmergencyMalfunction(Person person) {
-        super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER);
+    public RepairEmergencyMalfunction(Person person) throws Exception {
+        super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER, false, 0D);
 
         claimMalfunction();
 
@@ -50,9 +54,72 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 			TaskEvent startingEvent = new TaskEvent(person, this, TaskEvent.START, "");
 			Simulation.instance().getEventManager().registerNewEvent(startingEvent);
 		}
+		
+		// Initialize task phase
+		addPhase(REPAIRING);
+		setPhase(REPAIRING);
 
         // if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
     }
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
+     */
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (REPAIRING.equals(getPhase())) return repairingPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Performs the repairing phase of the task.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) left after performing the phase.
+     * @throws Exception if error performing the phase.
+     */
+    private double repairingPhase(double time) throws Exception {
+    	
+        // Check if there emergency malfunction work is fixed.
+        double workTimeLeft = malfunction.getEmergencyWorkTime() -
+             malfunction.getCompletedEmergencyWorkTime();
+        if (workTimeLeft == 0) endTask();
+
+        if (isDone()) return time;
+
+        // Determine effective work time based on "Mechanic" skill.
+        double workTime = time;
+        int mechanicSkill = getEffectiveSkillLevel();
+        if (mechanicSkill == 0) workTime /= 2;
+        if (mechanicSkill > 1) workTime += (workTime * (.2D * mechanicSkill));
+
+        // Add work to emergency malfunction.
+        double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
+        if (remainingWorkTime > 0D) endTask();
+
+        // Add experience
+        addExperience(time);
+
+        return (time * (remainingWorkTime / workTime));
+    }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// Add experience to "Mechanics" skill
+		// (1 base experience point per 20 millisols of work)
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+        double newPoints = time / 20D;
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+        person.getSkillManager().addExperience(Skill.MECHANICS, newPoints);
+	}
 
     /**
      * Checks if the person has a local emergency malfunction.
@@ -70,52 +137,6 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         }
 
         return result;
-    }
-
-    /**
-     * Perform the task.
-     * @param time the amount of time (millisols) to perform the task
-     * @return amount of time remaining after performing the task
-     * @throws Exception if error performing task.
-     */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-        // Check if there emergency malfunction work is fixed.
-        double workTimeLeft = malfunction.getEmergencyWorkTime() -
-             malfunction.getCompletedEmergencyWorkTime();
-        if (workTimeLeft == 0) {
-	        // System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
-            endTask();
-        }
-
-        if (isDone()) return timeLeft;
-
-        // Determine effective work time based on "Mechanic" skill.
-        double workTime = timeLeft;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
-        if (mechanicSkill == 0) workTime /= 2;
-        if (mechanicSkill > 1) workTime += (workTime * (.2D * mechanicSkill));
-
-        // Add work to emergency malfunction.
-        // System.out.println(person.getName() + " contributing " + workTime + " millisols of work time to emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
-        double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
-        if (remainingWorkTime > 0D) {
-	        // System.out.println(person.getName() + " finished work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));	
-            endTask();
-        }
-
-        // Add experience to "Mechanic" skill.
-        // (1 base experience point per 20 millisols of time spent)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = timeLeft / 20D;
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
-
-        return (timeLeft * (remainingWorkTime / workTime));
     }
 
 	/**

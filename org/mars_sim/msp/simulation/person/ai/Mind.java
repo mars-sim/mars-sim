@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.77 2004-09-14
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
@@ -72,21 +72,26 @@ public class Mind implements Serializable {
      */
     public void takeAction(double time) throws Exception {
         
+		// Check if this person needs to get a new job or change jobs.
+        JobManager jobManager = Simulation.instance().getJobManager();
+		if (!jobLock) setJob(jobManager.getNewJob(person), false);
+    	
         if ((mission != null) && mission.isDone()) mission = null;
-        
         boolean activeMission = (mission != null);
         
+        // Perform a task if the person has one, or determine a new task/mission.
         try {
         	if (taskManager.hasActiveTask()) {
             	taskManager.performTask(time, person.getPerformanceRating());
         	}
         	else {
             	if (activeMission) mission.performMission(person);
-            	if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission, !activeMission);
+            	if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission);
             	takeAction(time);
         	}
         }
         catch (Exception e) {
+        	e.printStackTrace(System.err);
         	throw new Exception("Mind.takeAction(): " + e.getMessage());
         }
     }
@@ -176,35 +181,25 @@ public class Mind implements Serializable {
      * available tasks, missions and active missions.
      * @param tasks can actions be tasks?
      * @param missions can actions be new missions?
-     * @param activeMissions can actions be active missions?
      * @throws Exception if new action cannot be found.
      */
-    public void getNewAction(boolean tasks, boolean missions, boolean activeMissions) throws Exception {
+    public void getNewAction(boolean tasks, boolean missions) throws Exception {
 
 		MissionManager missionManager = Simulation.instance().getMissionManager();
-		JobManager jobManager = Simulation.instance().getJobManager();
-		
-		// Check if this person needs to get a new job or change jobs.
-		if (!jobLock) setJob(jobManager.getNewJob(person), false);
 
         // If this Person is too weak then they can not do Missions
-        if (person.getPerformanceRating() < 0.5D) {
-            missions = false;
-            activeMissions = false;
-        }
+        if (person.getPerformanceRating() < 0.5D) missions = false;
 
 		Person person = getPerson();
 
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = taskManager.getTotalTaskProbability();
         double missionWeights = missionManager.getTotalMissionProbability(person);
-        double activeMissionWeights = missionManager.getTotalActiveMissionProbability(person);
 
         // Determine sum of weights based on given parameters
         double weightSum = 0D;
         if (tasks) weightSum += taskWeights;
         if (missions) weightSum += missionWeights;
-        if (activeMissions) weightSum += activeMissionWeights;
 		if (weightSum <= 0D) throw new Exception("Mind.getNewAction(): weight sum: " + weightSum);
 
         // Select randomly across the total weight sum.
@@ -228,17 +223,6 @@ public class Mind implements Serializable {
                 return;
             }
             else rand -= missionWeights;
-        }
-        if (activeMissions) {
-            if (rand < activeMissionWeights) {
-                // System.out.println(person.getName() + " joining a mission.");
-                Mission activeMission = missionManager.getActiveMission(person);
-                if (activeMission == null) return;
-                activeMission.addPerson(person);
-                setMission(activeMission);
-                return;
-            }
-            else rand -= activeMissionWeights;
         }
     }
     

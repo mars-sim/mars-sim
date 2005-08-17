@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 2.78 2004-11-12
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
@@ -336,5 +336,13 @@ public class MarsClock implements Serializable {
      */
     public Object clone() {
         return new MarsClock(orbit, month, sol, millisol);
+    }
+    
+    /**
+     * Displays the string version of the clock.
+     * @return time stamp string.
+     */
+    public String toString() {
+    	return getTimeStamp();
     }
 }

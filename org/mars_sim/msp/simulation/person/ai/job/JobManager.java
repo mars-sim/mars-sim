@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JobManager.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -72,12 +72,12 @@ public class JobManager implements Serializable {
 		
 		Job originalJob = person.getMind().getJob();
 		
-		// Determine person's home settlement.
+		// Determine person's associated settlement.
 		Settlement settlement = null;
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
 			settlement = person.getSettlement();
 		else if (person.getMind().hasActiveMission()) 
-			settlement = person.getMind().getMission().getHomeSettlement();
+			settlement = person.getMind().getMission().getAssociatedSettlement();
 			
 		// Find new job for person.
 		Job newJob = null;
@@ -108,13 +108,13 @@ public class JobManager implements Serializable {
 	 * @param job the job to check for
 	 * @param settlement the settlement to do the job in.
 	 * @param isHomeSettlement is this the person's home settlement?
-	 * @return job prospect value
+	 * @return job prospect value (0.0 min)
 	 */
 	public double getJobProspect(Person person, Job job, Settlement settlement, boolean isHomeSettlement) {
-		Job currentJob = person.getMind().getJob();
-		double jobCapability = job.getCapability(person);
+		double jobCapability = 0D;
+		if (job != null) job.getCapability(person);
 		double remainingNeed = getRemainingSettlementNeed(settlement, job);
-		if ((job == currentJob) && isHomeSettlement) remainingNeed+= jobCapability;
+		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
 		return (jobCapability + 1D) * remainingNeed;
 	}
 	

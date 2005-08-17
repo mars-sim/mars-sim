@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-07-14
  * @author Scott Davis
  */
 
@@ -16,36 +16,34 @@ import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 
 /** The EatMeal class is a task for eating a meal.
- *  The duration of the task is 20 millisols.
+ *  The duration of the task is 40 millisols.
  *
  *  Note: Eating a meal reduces hunger to 0.
  */
 class EatMeal extends Task implements Serializable {
 
+	// Task phase
+	private static final String EATING = "Eating";
+	
     // Static members
     private static final double DURATION = 40D; // The predetermined duration of task in millisols
     private static final double STRESS_MODIFIER = -.2D; // The stress modified per millisol.
     
     private CookedMeal meal;
 
-    /** Constructs a EatMeal object
-     *  @param person the person to perform the task
+    /** 
+     * Constructs a EatMeal object
+     * @param person the person to perform the task
+     * @throws Exception if error constructing task.
      */
-    public EatMeal(Person person) {
-        super("Eating a meal", person, false, false, STRESS_MODIFIER);
+    public EatMeal(Person person) throws Exception {
+        super("Eating a meal", person, false, false, STRESS_MODIFIER, true, DURATION);
         
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
-        	try {
-				// If person is in a settlement, try to find a dining area.
-        		Building diningBuilding = getAvailableDiningBuilding(person);
-        		if (diningBuilding != null) 
-        			BuildingManager.addPersonToBuilding(person, diningBuilding);
-        	}
-        	catch (BuildingException e) {
-        		System.err.println("EatMeal.constructor(): " + e.getMessage());
-        		endTask();
-        	}
+			// If person is in a settlement, try to find a dining area.
+        	Building diningBuilding = getAvailableDiningBuilding(person);
+        	if (diningBuilding != null) BuildingManager.addPersonToBuilding(person, diningBuilding);
         	
         	// If cooked meal in a local kitchen available, take it to eat.
         	Cooking kitchen = getKitchenWithFood(person);
@@ -53,6 +51,10 @@ class EatMeal extends Task implements Serializable {
         	if (meal != null) description = "Eating a cooked meal";
         }
         else if (location.equals(Person.OUTSIDE)) endTask();
+        
+        // Initialize task phase.
+        addPhase(EATING);
+        setPhase(EATING);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -83,42 +85,52 @@ class EatMeal extends Task implements Serializable {
 	
         return result;
     }
-
-    /** 
-     * This task allows the person to eat for the duration.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error performing task.
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		PersonConfig config = simConfig.getPersonConfiguration();
-
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (EATING.equals(getPhase())) return eatingPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Performs the eating phase of the task.
+     * @param time the amount of time (millisol) to perform the eating phase.
+     * @return the amount of time (millisol) left after performing the eating phase.
+     * @throws Exception if error performing the eating phase.
+     */
+    private double eatingPhase(double time) throws Exception {
+    	
+    	PhysicalCondition condition = person.getPhysicalCondition();
+    	
 		// If person has a cooked meal, additional stress is reduced.
 		if (meal != null) {
-			PhysicalCondition condition = person.getPhysicalCondition();
 			double stress = condition.getStress();
 			condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
 		}
-
-        person.getPhysicalCondition().setHunger(0D);
-        timeCompleted += time;
-        if (timeCompleted > DURATION) {
-        	try {
-            	person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
-        	}
-        	catch (Exception e) {
-        		System.err.println(person.getName() + " unable to eat meal: " + e.getMessage());
-        	}
-            endTask();
-           
-            return timeCompleted - DURATION;
+    	
+        if (getDuration() < (getTimeCompleted() + time)) {
+        	SimulationConfig simConfig = Simulation.instance().getSimConfig();
+    		PersonConfig config = simConfig.getPersonConfiguration();
+            person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
+            condition.setHunger(0D);
         }
-        else return 0D; 
+        
+        return 0D; 
     }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// This task adds no experience.
+	}
     
     /**
      * Gets an available dining building that the person can use.

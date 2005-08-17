@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 2.76 2004-06-01
+ * @version 2.78 2005-07-13
  * @author Scott Davis
  */
 
@@ -41,9 +41,21 @@ abstract class EVAOperation extends Task implements Serializable {
      * Constructor
      * @param name the name of the task
      * @param person the person to perform the task
+     * @throws Exception if task could not be constructed.
      */
-    public EVAOperation(String name, Person person) { 
-        super(name, person, true, false, STRESS_MODIFIER);
+    public EVAOperation(String name, Person person) throws Exception { 
+        super(name, person, true, false, STRESS_MODIFIER, false, 0D);
+        
+        // Initialize data members
+        exitedAirlock = false;
+        enteredAirlock = false;
+        
+        // Add task phases.
+        addPhase(EXIT_AIRLOCK);
+        addPhase(ENTER_AIRLOCK);
+        
+        // Set initial phase.
+        setPhase(EXIT_AIRLOCK);
     }
 
     /**

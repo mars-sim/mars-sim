@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.*;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
@@ -30,16 +30,19 @@ public abstract class Task implements Serializable, Comparable {
     protected String name;            // The name of the task
     protected Person person;          // The person performing the task.
     private boolean done;             // True if task is finished
-    protected double timeCompleted;   // The current amount of time spent on the task (in microsols)
+    protected boolean hasDuration;    // True if task has a time duration.
+    private double duration;        // The time duration (in millisols) of the task.
+    private double timeCompleted;     // The current amount of time spent on the task (in millisols)
     protected String description;     // Description of the task
     protected Task subTask;           // Sub-task of the current task
-    protected String phase;           // Phase of task completion
-    protected double phaseTimeRequired;  // Amount of time required to complete current phase. (in microsols)
-    protected double phaseTimeCompleted; // Amount of time completed on the current phase. (in microsols)
+    private String phase;             // Phase of task completion
+    protected double phaseTimeRequired;  // Amount of time required to complete current phase. (in millisols)
+    protected double phaseTimeCompleted; // Amount of time completed on the current phase. (in millisols)
     protected boolean effortDriven;     // Is this task effort driven
     private boolean createEvents;       // Task should create Historical events
     protected double stressModifier;  // Stress modified by person performing task per millisol.
     private Person teacher;           // The person teaching this task if any.
+    private Collection phases;        // A collection of the task's phases.
 
     /** 
      * Constructs a Task object.
@@ -48,21 +51,27 @@ public abstract class Task implements Serializable, Comparable {
      * @param effort Does this task require physical effort
      * @param createEvents Does this task create events?
      * @param stressModifier stress modified by person performing task per millisol.
+     * @param hasDuration Does the task have a time duration?
+     * @param duration the time duration (in millisols) of the task (or 0 if none)
+     * @throws Exception if task could not be constructed.
      */
     public Task(String name, Person person, boolean effort, boolean createEvents, 
-    		double stressModifier) {
+    		double stressModifier, boolean hasDuration, double duration) throws Exception {
         this.name = name;
         this.person = person;
 		this.createEvents = createEvents;
 		this.stressModifier = stressModifier;
+		this.hasDuration = hasDuration;
+		this.duration = duration;
 
         done = false;
         
         timeCompleted = 0D;
         description = name;
         subTask = null;
-        phase = "";
+        phase = null;
         effortDriven = effort;
+        phases = new ArrayList();
     }
     
     /**
@@ -119,6 +128,26 @@ public abstract class Task implements Serializable, Comparable {
         if ((subTask != null) && !subTask.isDone()) return subTask.getPhase();
         return phase;
     }
+    
+    /**
+     * Sets the task's current phase.
+     * @param newPhase the phase to set the a task at.
+     * @throws Exception if newPhase is not in the task's collection of phases.
+     */
+    public void setPhase(String newPhase) throws Exception {
+    	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
+    	else if (phases.contains(newPhase)) phase = newPhase;
+    	else throw new Exception("newPhase: " + newPhase + " is not a valid phase for this task.");
+    }
+    
+    /**
+     * Adds a phase to the task's collection of phases.
+     * @param newPhase the new phase to add.
+     */
+    public void addPhase(String newPhase) {
+    	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
+    	else if (!phases.contains(newPhase)) phases.add(newPhase);
+    }
 
     /** Determines if task is still active.
      *  @return true if task is completed
@@ -154,8 +183,8 @@ public abstract class Task implements Serializable, Comparable {
     /** 
      * Perform the task for the given number of seconds.
      * Children should override and implement this.
-     * @param time amount of time given to perform the task (in microsols)
-     * @return amount of time remaining after performing the task (in microsols)
+     * @param time amount of time (millisol) given to perform the task (in microsols)
+     * @return amount of time (millisol) remaining after performing the task (in microsols)
      * @throws Exception if error peforming task.
      */
     double performTask(double time) throws Exception {
@@ -165,12 +194,36 @@ public abstract class Task implements Serializable, Comparable {
             else timeLeft = subTask.performTask(timeLeft);
         }
         
+        // If no subtask, perform this task.
+        if ((subTask == null) || subTask.isDone()) {
+            // If task is effort-driven and person is incapacitated, end task.
+            if (effortDriven && (person.getPerformanceRating() == 0D)) endTask();
+            
+            // Perform phases of task until time is up or task is done.
+            while ((timeLeft > 0D) && !isDone()) timeLeft = performMappedPhase(timeLeft);
+            
+            // Keep track of the duration of the task if necesary.
+            timeCompleted += time;
+            if (hasDuration && (timeCompleted >= duration)) {
+            	timeLeft = timeCompleted - duration;
+            	endTask();
+            }
+        }
+        
         // Modify stress performing task.
         modifyStress(timeLeft);
         
         return timeLeft;
     }
 
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
+     */
+    protected abstract double performMappedPhase(double time) throws Exception;
+    
     /**
      * SHould the start of this task create an historical event.
      * @param create New flag value.
@@ -214,7 +267,7 @@ public abstract class Task implements Serializable, Comparable {
     		
     		// Reduce stress modifier if task is in person's current job description.
     		Job job = person.getMind().getJob();
-    		if (job.isJobRelatedTask(this.getClass())) {
+    		if ((job != null) && job.isJobRelatedTask(this.getClass())) {
     			// System.out.println("Job: " + job.getName() + " related to " + this.getName() + " task");
     			effectiveStressModifier*= JOB_STRESS_MODIFIER;
     		}
@@ -349,5 +402,36 @@ public abstract class Task implements Serializable, Comparable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected abstract void addExperience(double time);
+	
+	/**
+	 * Gets the duration of the task or 0 if none.
+	 * @return duration (millisol)
+	 */
+	protected double getDuration() {
+		return duration;
+	}
+	
+	/**
+	 * Sets the duration of the task
+	 * @param newDuration the new duration (millisol)
+	 */
+	protected void setDuration(double newDuration) {
+		if (newDuration < 0D) throw new IllegalArgumentException("newDuration less than 0");
+		this.duration = newDuration;
+	}
+	
+	/**
+	 * Gets the amount of time the task has completed.
+	 * @return time (in millisols)
+	 */
+	protected double getTimeCompleted() {
+		return timeCompleted;
 	}
 }

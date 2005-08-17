@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2005-07-13
  * @author Scott Davis
  */
 
@@ -26,6 +26,9 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
  */
 public class EnterAirlock extends Task implements Serializable {
+	
+	// Task phase
+	private static final String ENTERING_AIRLOCK = "Entering Airlock";
 
 	// Static members
 	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
@@ -35,27 +38,31 @@ public class EnterAirlock extends Task implements Serializable {
 
     /** 
      * Constructor
-     *
      * @param person the person to perform the task
      * @param airlock to be used.
+     * @throws Exception if error constructing task.
      */
-    public EnterAirlock(Person person, Airlock airlock) {
-        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER);
+    public EnterAirlock(Person person, Airlock airlock) throws Exception {
+        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
         description = "Entering " + airlock.getEntityName() + " from EVA";
         this.airlock = airlock;
+        
+        // Initialize task phase
+        addPhase(ENTERING_AIRLOCK);
+        setPhase(ENTERING_AIRLOCK);
 
         // System.out.println(person.getName() + " is starting to enter " + airlock.getEntityName());
     }
 
     /**
      * Constructs a EnterAirlock object without an airlock.
-     *
      * @param person the person to perform the task.
+     * @throws Exception if erro constructing task.
      */
-    public EnterAirlock(Person person) {
-        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER);
+    public EnterAirlock(Person person) throws Exception {
+        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
 	
         // Determine airlock from other people on mission.
         if (person.getMind().getMission() != null) {
@@ -98,6 +105,10 @@ public class EnterAirlock extends Task implements Serializable {
             }
         }
 
+        // Initialize task phase
+        addPhase(ENTERING_AIRLOCK);
+        setPhase(ENTERING_AIRLOCK);
+        
         // If still no airlock, end task.
         if (airlock == null) endTask();
         else description = "Entering " + airlock.getEntityName() + " from EVA";
@@ -116,16 +127,25 @@ public class EnterAirlock extends Task implements Serializable {
         return result;
     }
     
-    /** 
-     * Performs this task for the given amount of time.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error in performing task.
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisols) the phase is to be performed.
+     * @return the remaining time (millisols) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-        
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (ENTERING_AIRLOCK.equals(getPhase())) return enteringAirlockPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Performs the enter airlock phase of the task.
+     * @param time the amount of time to perform the task.
+     * @return
+     * @throws Exception
+     */
+    private double enteringAirlockPhase(double time) throws Exception {
         // If person is in airlock, wait around.
         if (airlock.inAirlock(person)) {
             // Make sure airlock is activated.
@@ -144,18 +164,30 @@ public class EnterAirlock extends Task implements Serializable {
             }
         }
         
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double experience = time / 100D;
-		
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
+		// Add experience
+        addExperience(time);
 
         return 0D;
     }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		
+		// Add experience to "EVA Operations" skill.
+		// (1 base experience point per 100 millisols of time spent)
+		double evaExperience = time / 100D;
+		
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		evaExperience += evaExperience * experienceAptitudeModifier;
+		evaExperience *= getTeachingExperienceModifier();
+		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+	}
 
     /**
      * Puts the person's EVA suite back into the entity's inventory.

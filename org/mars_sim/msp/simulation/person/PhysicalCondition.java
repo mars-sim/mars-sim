@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-07-08
  * @author Barry Evans
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 
@@ -487,5 +488,19 @@ public class PhysicalCondition implements Serializable {
         if (stress >= 80D) performance -= (stress - 80D) * .02D;
         
         if (performance < 0D) performance = 0D;
+    }
+    
+    /**
+     * Checks if the person has any serious medical problems.
+     * @return true if serious medical problems
+     */
+    public boolean hasSeriousMedicalProblems() {
+    	boolean result = false;
+		Iterator meds = getProblems().iterator();
+		while (meds.hasNext()) {
+			HealthProblem prob = (HealthProblem) meds.next();
+			if (prob.getIllness().getSeriousness() >= 50) result = true;
+		}
+		return result;
     }
 }

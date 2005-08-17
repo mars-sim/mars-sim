@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 2.77 2004-09-27
+ * @version 2.78 2005-04-17
  * @author Scott Davis
  */
 
@@ -191,6 +191,31 @@ public class RelationshipManager implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the average opition that a person has of a group of people.
+	 * Note: If person1 doesn't have a relationship with any of the people, return default value of 50.
+	 * @param person1 the person holding the opinion.
+	 * @param people the collection of people who the opinion is of.
+	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close friend).
+	 */
+	public double getAverageOpinionOfPeople(Person person1, PersonCollection people) {
+		
+		if (people == null) throw new IllegalArgumentException("people is null");
+		
+		if (people.size() > 0) {
+			double result = 0D;
+			PersonIterator i = people.iterator();
+			while (i.hasNext()) {
+				Person person2 = i.next();
+				result+= getOpinionOfPerson(person1, person2);
+			}
+		
+			result = result / people.size();
+			return result;
+		}
+		else return 50D;
 	}
 	
 	/**

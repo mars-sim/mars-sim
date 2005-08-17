@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.75 2003-08-03
+ * @version 2.78 2005-08-09
  * @author Scott Davis
  */
 

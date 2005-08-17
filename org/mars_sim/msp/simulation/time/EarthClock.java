@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.75 2004-03-08
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
@@ -60,5 +60,13 @@ public class EarthClock extends GregorianCalendar implements Serializable {
      */
     public void addTime(double seconds) {
         add(Calendar.MILLISECOND, (int) (seconds * 1000D));
+    }
+    
+    /**
+     * Displays the string version of the clock.
+     * @return time stamp string.
+     */
+    public String toString() {
+    	return getTimeStamp();
     }
 }

@@ -212,6 +212,7 @@ public class Simulation implements Serializable {
 			unitManager.timePassing(time);
 		}
 		catch (Exception e) {
+			e.printStackTrace(System.err);
 			System.err.println("Simulation.clockPulse(): " + e.getMessage());
 		}
 	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-04-01
  * @author Scott Davis
  */
 
@@ -18,11 +18,11 @@ import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
- * The Person class represents a person on the virtual Mars. It keeps
+ * The Person class represents a person on Mars. It keeps
  * track of everything related to that person and provides
  * information about him/her.
  */
-public class Person extends Unit implements Serializable {
+public class Person extends Unit implements VehicleOperator, Serializable {
 
     /**
      * Status string used when Person resides in settlement
@@ -340,4 +340,20 @@ public class Person extends Unit implements Serializable {
 		
 		return localGroup;
 	}    
+	
+	/**
+	 * Checks if the vehicle operator is fit for operating the vehicle.
+	 * @return true if vehicle operator is fit.
+	 */
+	public boolean isFitForOperatingVehicle() {
+		return !health.hasSeriousMedicalProblems();
+	}
+	
+	/**
+	 * Gets the name of the vehicle operator
+	 * @return vehicle operator name.
+	 */
+	public String getOperatorName() {
+		return getName();
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.78 2004-11-17
+ * @version 2.78 2005-07-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -18,6 +18,9 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  * The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle.
  */
 public class UnloadVehicle extends Task implements Serializable {
+	
+	// Task phase
+	private static final String UNLOADING = "Unloading";
 
     // The amount of resources (kg) one person of average strength can unload per millisol.
     private static double UNLOAD_RATE = 10D;
@@ -32,30 +35,43 @@ public class UnloadVehicle extends Task implements Serializable {
      * Constructor
      * @param person the person to perform the task
      * @param vehicle the vehicle to be unloaded
+     * @throws Exception if error constructing task.
      */
-    public UnloadVehicle(Person person, Vehicle vehicle) {
-        super("Unloading vehicle", person, true, false, STRESS_MODIFIER);
+    public UnloadVehicle(Person person, Vehicle vehicle) throws Exception {
+        super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
 	    description = "Unloading " + vehicle.getName();
         this.vehicle = vehicle;
 
         settlement = person.getSettlement();
+        
+        // Initialize phase
+        addPhase(UNLOADING);
+        setPhase(UNLOADING);
 
         // System.out.println(person.getName() + " is unloading " + vehicle.getName());
     }
-
-    /** 
-     * Performs this task for a given period of time
-     * @param time amount of time to perform task (in millisols)
-     * @throws Exception if error performing task.
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
-	
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (UNLOADING.equals(getPhase())) return unloadingPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Perform the unloading phase of the task.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) after performing the phase.
+     * @throws Exception if error in loading phase.
+     */
+    private double unloadingPhase(double time) throws Exception {
+    	
         // Determine unload rate.
 		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
 		double strengthModifier = (double) strength / 50D;
@@ -65,12 +81,12 @@ public class UnloadVehicle extends Task implements Serializable {
         Building garage = BuildingManager.getBuilding(vehicle);
         if (garage == null) amountUnloading /= 4D;
         
-        // Unload methane
-	    double methaneAmount = vehicle.getInventory().getResourceMass(Resource.METHANE);
-        if (methaneAmount > amountUnloading) methaneAmount = amountUnloading;
-	    vehicle.getInventory().removeResource(Resource.METHANE, methaneAmount);
-        settlement.getInventory().addResource(Resource.METHANE, methaneAmount);
-        amountUnloading -= methaneAmount;
+        // Unload fuel
+	    double fuelAmount = vehicle.getInventory().getResourceMass(vehicle.getFuelType());
+        if (fuelAmount > amountUnloading) fuelAmount = amountUnloading;
+	    vehicle.getInventory().removeResource(vehicle.getFuelType(), fuelAmount);
+        settlement.getInventory().addResource(vehicle.getFuelType(), fuelAmount);
+        amountUnloading -= fuelAmount;
 
         // Unload oxygen. 
         double oxygenAmount = vehicle.getInventory().getResourceMass(Resource.OXYGEN);
@@ -108,14 +124,17 @@ public class UnloadVehicle extends Task implements Serializable {
 		amountUnloading -= iceAmount;
 
         if (isFullyUnloaded(vehicle)) endTask();
-
-		timeCompleted += time;
-		if (timeCompleted > DURATION) {
-			endTask();
-			return timeCompleted - DURATION;
-		}
-		else return 0;    
+        
+        return 0D;
     }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// This task adds no experience.
+	}
 
     /** 
      * Returns true if the vehicle is fully unloaded.
@@ -125,7 +144,7 @@ public class UnloadVehicle extends Task implements Serializable {
     static public boolean isFullyUnloaded(Vehicle vehicle) {
         boolean result = true;
 
-        if (vehicle.getInventory().getResourceMass(Resource.METHANE) != 0D) result = false;
+        if (vehicle.getInventory().getResourceMass(vehicle.getFuelType()) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Resource.OXYGEN) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Resource.WATER) != 0D) result = false;
         if (vehicle.getInventory().getResourceMass(Resource.FOOD) != 0D) result = false;

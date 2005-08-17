@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 2.77 2004-08-16
+ * @version 2.78 2005-07-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -17,6 +17,9 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  * The Workout class is a task for working out in an exercise facility.
  */
 public class Workout extends Task implements Serializable {
+	
+	// Task phase
+	private static final String EXERCISING = "Exercising";
 
 	// Static members
 	private static final double STRESS_MODIFIER = -1D; // The stress modified per millisol.
@@ -29,10 +32,11 @@ public class Workout extends Task implements Serializable {
 	 * Constructor
 	 * This is an effort-driven task.
 	 * @param person the person performing the task.
+	 * @throws Exception if error constructing task.
 	 */
-	public Workout(Person person) {
+	public Workout(Person person) throws Exception {
 		// Use Task constructor.
-		super("Exercise", person, true, false, STRESS_MODIFIER);
+		super("Exercise", person, true, false, STRESS_MODIFIER, true, 50D + RandomUtil.getRandomInt(100));
 		
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			try {
@@ -51,7 +55,9 @@ public class Workout extends Task implements Serializable {
 		}
 		else endTask();
 		
-		duration = 50D + RandomUtil.getRandomInt(100);
+		// Initialize phase
+		addPhase(EXERCISING);
+		setPhase(EXERCISING);
 	}
 	
 	/** 
@@ -90,22 +96,37 @@ public class Workout extends Task implements Serializable {
 		return result;
 	}
 	
-	/** 
-	 * This task simply waits until the set duration of the task is complete, then ends the task.
-	 * @param time the amount of time to perform this task (in millisols)
-	 * @return amount of time remaining after finishing with task (in millisols)
-	 * @throws Exception if error performing task.
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
+     */
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (EXERCISING.equals(getPhase())) return exercisingPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Performs the exercising phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     * @throws Exception if error performing the phase.
+     */
+    private double exercisingPhase(double time) throws Exception {
+    	
+        // Do nothing
+        
+        return 0D;
+    }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
 	 */
-	double performTask(double time) throws Exception {
-		double timeLeft = super.performTask(time);
-		if (subTask != null) return timeLeft;
-
-		timeCompleted += time;
-		if (timeCompleted > duration) {
-			endTask();
-			return timeCompleted - duration;
-		}
-		else return 0;
+	protected void addExperience(double time) {
+		// This task adds no experience.
 	}
 	
 	/**

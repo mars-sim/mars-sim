@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.76 2004-06-01
+ * @version 2.78 2005-07-08
  * @author Scott Davis
  */
 
@@ -30,51 +30,66 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public final static String MAINTENANCE = "Periodic Maintenance";
     
     // Vehicle destination types
-    public final static String NONE = "None";
-    public final static String SETTLEMENT = "Settlement";
-    public final static String COORDINATES = "Coordinates";
+    // public final static String NONE = "None";
+    // public final static String SETTLEMENT = "Settlement";
+    // public final static String COORDINATES = "Coordinates";
 
     // Data members
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
     private Direction direction; // Direction vehicle is traveling in
     private double speed = 0; // Current speed of vehicle in kph
     private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
-    private Person driver; // Driver of the vehicle
+    private VehicleOperator vehicleOperator; // The operator of the vehicle
     private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
-    protected double range; // Maximum range of vehicle. (km)
+    private double range; // Maximum range of vehicle. (km)
+    private double fuelEfficiency; // The fuel efficiency of the vehicle. (km/kg)
     private Coordinates destinationCoords; // Coordinates of the destination
     private Settlement destinationSettlement; // Destination settlement (it applicable)
     private String destinationType; // Type of destination ("None", "Settlement" or "Coordinates")
-    private double distanceToDestination = 0; // Distance to the destination (km)
-    private boolean isReserved = false; // True if vehicle is currently reserved for a driver and cannot be taken by another
+    private boolean isReservedMission = false; // True if vehicle is currently reserved for a mission and cannot be taken by another
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
     private ArrayList trail; // A collection of locations that make up the vehicle's trail.
     private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
 
-    /** Constructs a Vehicle object with a given settlement
-     *  @param name the vehicle's name
-     *  @param settlement the settlement the vehicle is parked at
+    /** 
+     * Constructs a Vehicle object with a given settlement
+     * @param name the vehicle's name
+     * @param description the configuration description of the vehicle.
+     * @param settlement the settlement the vehicle is parked at.
+     * @throws an exception if vehicle could not be constructed.
      */
-    Vehicle(String name, Settlement settlement) {
+    Vehicle(String name, String description, Settlement settlement) throws Exception {
         // use Unit constructor
         super(name, settlement.getCoordinates());
-
+        
         settlement.getInventory().addUnit(this);
-        initVehicleData();
-    }
 
-    /** Initializes vehicle data */
-    private void initVehicleData() {
-
+        // Initialize vehicle data
+        this.description = description;
+        direction = new Direction(0);
+	    trail = new ArrayList();
+	    
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this);
 	    malfunctionManager.addScopeString("Vehicle");
 	    
-        setDestinationType(NONE);
-        direction = new Direction(0);
-	    trail = new ArrayList();
+	    // Get vehicle configuration.
+	    SimulationConfig simConfig = Simulation.instance().getSimConfig();
+	    VehicleConfig config = simConfig.getVehicleConfiguration();
+		
+	    // Set base speed to 30kph.
+	    setBaseSpeed(config.getBaseSpeed(description));
+
+	    // Set the empty mass of the rover.
+	    baseMass = config.getEmptyMass(description);
+	    
+	    // Set the operating range of rover.
+	    range = config.getRange(description);
+	    
+	    // Set the fuel efficiency of the rover.
+	    fuelEfficiency = config.getFuelEfficiency(getDescription());
     }
 
     /** Returns vehicle's current status
@@ -103,23 +118,32 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         return status;
     }
 
-    /** Returns true if vehicle is reserved by someone
-     *  @return true if vehicle is currently reserved by someone
+    /** 
+     * Checks if the vehicle is reserved for any reason.
+     * @return true if vehicle is currently reserved
      */
     public boolean isReserved() {
-        return isReserved;
+        return isReservedForMission() || isReservedForMaintenance();
     }
 
-    /** Reserves a vehicle or cancels a reservation
-     *  @param reserved the vehicle's reserved status
+    /**
+     * Checks if the vehicle is reserved for a mission.
+     * @return true if vehicle is reserved for a mission.
      */
-    public void setReserved(boolean reserved) {
-        isReserved = reserved;
+    public boolean isReservedForMission() {
+    	return isReservedMission;
+    }
+    
+    /** 
+     * Sets if the vehicle is reserved for a mission or not.
+     * @param reserved the vehicle's reserved for mission status
+     */
+    public void setReservedForMission(boolean reserved) {
+        this.isReservedMission = reserved;
     }
     
     /**
      * Checks if the vehicle is reserved for maintenance.
-     *
      * @return true if reserved for maintenance.
      */
     public boolean isReservedForMaintenance() {
@@ -128,48 +152,60 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     
     /**
      * Sets if the vehicle is reserved for maintenance or not.
-     *
      * @param reserved true if reserved for maintenance
      */
     public void setReservedForMaintenance(boolean reserved) {
         reservedForMaintenance = reserved;
     }
 
-    /** Returns speed of vehicle
-     *  @return the vehicle's speed (in km/hr)
+    /** 
+     * Gets the speed of vehicle
+     * @return the vehicle's speed (in km/hr)
      */
     public double getSpeed() {
         return speed;
     }
 
-    /** Sets the vehicle's current speed
-     *  @param speed the vehicle's speed (in km/hr)
+    /** 
+     * Sets the vehicle's current speed
+     * @param speed the vehicle's speed (in km/hr)
      */
     public void setSpeed(double speed) {
         this.speed = speed;
     }
 
-    /** Returns base speed of vehicle
-     *  @return the vehicle's base speed (in km/hr)
+    /** 
+     * Gets the base speed of vehicle
+     * @return the vehicle's base speed (in km/hr)
      */
     public double getBaseSpeed() {
         return baseSpeed;
     }
 
-    /** Sets the base speed of vehicle
+    /** 
+     * Sets the base speed of vehicle
      * @param speed the vehicle's base speed (in km/hr)
      */
     public void setBaseSpeed(double speed) {
         baseSpeed = speed;
     }
 
-    /** Gets the range of the vehicle
-     *  @return the range of the vehicle (in km)
+    /** 
+     * Gets the range of the vehicle
+     * @return the range of the vehicle (in km)
      */
     public double getRange() {
         return range;
     }
 
+    /**
+     * Gets the fuel efficiency of the vehicle.
+     * @return fuel efficiency (km/kg)
+     */
+    public double getFuelEfficiency() {
+    	return fuelEfficiency;
+    }
+    
     /** Returns total distance traveled by vehicle (in km.)
      *  @return the total distanced traveled by the vehicle (in km)
      */
@@ -219,22 +255,28 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         this.direction.setDirection(direction.getDirection());
     }
 
-    /** Returns driver of the vehicle
-     *  @return the driver
+    /** 
+     * Gets the operator of the vehicle (person or AI)
+     * @return the vehicle operator
      */
-    public Person getDriver() {
-	    if (!inventory.containsUnit(driver)) driver = null;
-        else if (driver.getPhysicalCondition().getDeathDetails() != null) driver = null;
-	    return driver;
+    public VehicleOperator getOperator() {
+	    return vehicleOperator;
     }
 
-    /** Sets the driver of the vehicle
-     *  @param driver the driver
+    /** 
+     * Sets the operator of the vehicle
+     * @param vehicleOperator the vehicle operator
      */
-    public void setDriver(Person driver) {
-	    if (!inventory.containsUnit(driver)) this.driver = null;
-	    else this.driver = driver;
+    public void setOperator(VehicleOperator vehicleOperator) {
+	    this.vehicleOperator = vehicleOperator;
     }
+    
+    /**
+     * Checks if a particular operator is appropriate for a vehicle.
+     * @param operator the operator to check
+     * @return true if appropriate operator for this vehicle.
+     */
+    public abstract boolean isAppropriateOperator(VehicleOperator operator);
 
     /** Returns the current settlement vehicle is parked at.
      *  Returns null if vehicle is not currently parked at a settlement.
@@ -252,50 +294,34 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      *  Returns 0 if vehicle is not currently moving toward a destination
      *  @return the distance to the vehicle's destination
      */
-    public double getDistanceToDestination() {
-        return distanceToDestination;
+/*    public double getDistanceToDestination() {
+    	if (destinationCoords != null) return location.getDistance(destinationCoords);
+    	else return 0D;
     }
-
-    /** Sets the vehicle's distance to its destination
-     *  @param distanceToDestination the distance to the vehicle's destination
-     */
-    public void setDistanceToDestination(double distanceToDestination) {
-        this.distanceToDestination = distanceToDestination;
-    }
-
-    /** Gets the type of destination for the vehicle
-     *  @return the vehicle's destination type
-     */
-    public String getDestinationType() {
-        return destinationType;
-    }
-
-    /** Sets the type of destination for the vehicle ("Coordinates", "Settlement" or "None")
-     *  @param the vehicle's destination type
-     */
-    public void setDestinationType(String destinationType) {
-        this.destinationType = destinationType;
-    }
+*/    
 
     /** Sets the destination coordinates
      *  @param destinationCoords the vehicle's destination location
      */
-    public void setDestination(Coordinates destinationCoords) {
+/*    public void setDestination(Coordinates destinationCoords) {
         this.destinationCoords = new Coordinates(destinationCoords);
         if (destinationType == null) destinationType = COORDINATES;
     }
+*/
 
     /** Returns the destination coordinates.
      *  (null if no destination).
      *  @return the vehicle's destination location
      */
-    public Coordinates getDestination() {
+/*    public Coordinates getDestination() {
         return destinationCoords;
     }
-
+*/
+    
     /** Sets the destination settlement
      *  @param destinationSettlement the vehicle's destination settlement
      */
+/*
     public void setDestinationSettlement(Settlement destinationSettlement) {
         this.destinationSettlement = destinationSettlement;
         if (destinationSettlement != null) {
@@ -303,31 +329,35 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
             destinationType = SETTLEMENT;
         }
     }
+*/
 
     /** Returns the destination settlement.
      *  (null if no destination settlement).
      *  @return the vehicle's destination settlement
      */
-    public Settlement getDestinationSettlement() {
+/*    public Settlement getDestinationSettlement() {
         return destinationSettlement;
     }
-
+*/
+    
     /** Returns the ETA (Estimated Time of Arrival)
      *  @return ETA as string ("13-Adir-05  056.349")
      */
-    public String getETA() {
+/*  public String getETA() {
         if (estimatedTimeOfArrival != null)
             return estimatedTimeOfArrival.getTimeStamp();
         else return "";
     }
+*/
 
     /** Sets the ETA (Estimated Time of Arrival) of the vehicle.
      *  @param newETA new ETA of the vehicle
      */
-    public void setETA(MarsClock newETA) {
+ /*   public void setETA(MarsClock newETA) {
         this.estimatedTimeOfArrival = newETA;
     }
-
+*/
+    
     /**
      * Gets the unit's malfunction manager.
      * @return malfunction manager
@@ -412,6 +442,30 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    }
 	    else trail.add(new Coordinates(location));
     }
+    
+    /**
+     * Checks if the vehicle is loaded with at least a percentage maximum resources.
+     * @param percentage the percentage of maximum
+     * @return true if vehicle has at least percentage many resources.
+     */
+    public boolean isLoaded(double percentage) {
+    	if ((percentage < 0D) || (percentage > 1D)) 
+    		throw new IllegalArgumentException("Not valid percentage: " + percentage);
+    	
+    	// Make sure sufficient fuel is loaded.
+    	Inventory i = getInventory();
+    	String fuel = getFuelType();
+    	double fuelPercentage = i.getResourceMass(fuel) / i.getResourceCapacity(fuel);
+    	return (fuelPercentage >= percentage);
+    }
+    
+    /**
+     * Gets the resource type that this vehicle uses for fuel.
+     * @return resource type as a string
+     * @see org.mars_sim.msp.simulation.Resource
+     */
+    public abstract String getFuelType();
+    
     /**
      * Returns sound type for this vehicle according to
      * vehicle's status.

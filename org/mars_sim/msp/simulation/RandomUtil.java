@@ -1,11 +1,14 @@
 /**
  * Mars Simulation Project
  * RandomUtil.java
- * @version 2.76 2004-08-06
+ * @version 2.78 2005-04-17
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /** The RandomUtil class is a library of various random-related
  *  methods
@@ -93,5 +96,38 @@ public final class RandomUtil {
         }
 
         return result;
+    }
+    
+    /**
+     * Gets a random weighted object from a map.
+     * @param weightedMap a map of objects and their weights as Double values.
+     * @return randomly selected object from the list (or null if empty map).
+     */
+    public static Object getWeightedRandomObject(Map weightedMap) {
+    	if (weightedMap == null) throw new IllegalArgumentException("weightedMap is null");
+    
+    	Object result = null;
+    	
+    	// Get the total weight of all the objects in the map.
+    	double totalWeight = 0D;
+    	Iterator i = weightedMap.values().iterator();
+    	while (i.hasNext()) totalWeight += ((Double) i.next()).doubleValue();
+    	
+    	// Randomly select a weight value.
+    	double randWeight = getRandomDouble(totalWeight);
+    	
+    	// Determine which object the weight applies to.
+    	Iterator j = weightedMap.keySet().iterator();
+    	while (j.hasNext()) {
+    		Object key = j.next();
+    		double weight = ((Double) weightedMap.get(key)).doubleValue();
+    		if (randWeight <= weight) {
+    			result = key;
+    			break;
+    		}
+    		else randWeight -= weight;
+    	}
+    	
+    	return result;
     }
 }

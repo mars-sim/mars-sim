@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.78 2004-11-17
+ * @version 2.78 2005-07-14
  * @author Scott Davis
  */
 
@@ -21,6 +21,9 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class LoadVehicle extends Task implements Serializable {
 
+	// Task phase
+	private static final String LOADING = "Loading";
+	
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 
     // The amount of resources (kg) one person of average strength can load per millisol.
@@ -37,28 +40,41 @@ public class LoadVehicle extends Task implements Serializable {
      * Constructor
      * @param person the person to perform the task
      * @param vehicle the vehicle to be loaded
+     * @throws Exception if error constructing task.
      */
-    public LoadVehicle(Person person, Vehicle vehicle) {
-        super("Loading vehicle", person, true, false, STRESS_MODIFIER);
+    public LoadVehicle(Person person, Vehicle vehicle) throws Exception {
+        super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
         description = "Loading " + vehicle.getName();
         this.vehicle = vehicle;
 
         settlement = person.getSettlement();
+        
+        // Initialize task phase
+        addPhase(LOADING);
+        setPhase(LOADING);
     }
-
-    /** 
-     * Performs this task for a given period of time
-     * @param time amount of time to perform task (in millisols)
-     * @throws Exception if error performing task.
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
-	
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (LOADING.equals(getPhase())) return loadingPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Perform the loading phase of the task.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) after performing the phase.
+     * @throws Exception if error in loading phase.
+     */
+    private double loadingPhase(double time) throws Exception {
+    	
         // Determine load rate.
         int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
         double strengthModifier = (double) strength / 50D;
@@ -68,15 +84,15 @@ public class LoadVehicle extends Task implements Serializable {
         Building garage = BuildingManager.getBuilding(vehicle);
         if (garage == null) amountLoading /= 4D;
            
-
+        // If there are enough supplies at the settlement, load the vehicle.
         if (hasEnoughSupplies(settlement, vehicle)) {
 
-            // Load methane
-	        double methaneAmount = vehicle.getInventory().getResourceRemainingCapacity(Resource.METHANE);
-            if (methaneAmount > amountLoading) methaneAmount = amountLoading;
-	        settlement.getInventory().removeResource(Resource.METHANE, methaneAmount);
-	        vehicle.getInventory().addResource(Resource.METHANE, methaneAmount);
-            amountLoading -= methaneAmount;
+            // Load fuel
+	        double fuelAmount = vehicle.getInventory().getResourceRemainingCapacity(vehicle.getFuelType());
+            if (fuelAmount > amountLoading) fuelAmount = amountLoading;
+	        settlement.getInventory().removeResource(vehicle.getFuelType(), fuelAmount);
+	        vehicle.getInventory().addResource(vehicle.getFuelType(), fuelAmount);
+            amountLoading -= fuelAmount;
 
             // Load oxygen
 	        double oxygenAmount = vehicle.getInventory().getResourceRemainingCapacity(Resource.OXYGEN);
@@ -103,13 +119,16 @@ public class LoadVehicle extends Task implements Serializable {
 
         if (isFullyLoaded(vehicle)) endTask();
         
-		timeCompleted += time;
-		if (timeCompleted > DURATION) {
-			endTask();
-			return timeCompleted - DURATION;
-		}
-		else return 0;        
+        return 0D;
     }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// This task adds no experience.
+	}
 
     /** Returns true if there are enough supplies in the settlements stores to supply vehicle.
      *  @param settlement the settlement the vehicle is at
@@ -119,9 +138,9 @@ public class LoadVehicle extends Task implements Serializable {
     public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle) {
         boolean enoughSupplies = true;
 
-        double neededMethane = vehicle.getInventory().getResourceRemainingCapacity(Resource.METHANE);
-        double storedMethane = settlement.getInventory().getResourceMass(Resource.METHANE);
-        if (neededMethane > storedMethane - 50D) enoughSupplies = false;
+        double neededFuel = vehicle.getInventory().getResourceRemainingCapacity(vehicle.getFuelType());
+        double storedFuel = settlement.getInventory().getResourceMass(vehicle.getFuelType());
+        if (neededFuel > storedFuel - 50D) enoughSupplies = false;
 
         double neededOxygen = vehicle.getInventory().getResourceRemainingCapacity(Resource.OXYGEN);
         double storedOxygen = settlement.getInventory().getResourceMass(Resource.OXYGEN);
@@ -147,7 +166,7 @@ public class LoadVehicle extends Task implements Serializable {
 
         Inventory i = vehicle.getInventory();
 
-        if (i.getResourceRemainingCapacity(Resource.METHANE) > 0D) result = false;
+        if (i.getResourceRemainingCapacity(vehicle.getFuelType()) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.OXYGEN) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.WATER) > 0D) result = false;
         if (i.getResourceRemainingCapacity(Resource.FOOD) > 0D) result = false;

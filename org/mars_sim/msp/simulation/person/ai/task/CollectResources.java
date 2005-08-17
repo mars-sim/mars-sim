@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRockSamples.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2005-07-14
  * @author Scott Davis
  */
 
@@ -24,12 +24,23 @@ public class CollectResources extends EVAOperation implements Serializable {
 	// Data members
 	protected Rover rover; // Rover used.
 	protected double collectionRate; // Collection rate for resource (kg/millisol)
-	protected double targettedAmount; // Targetted amount of resource to collect at site. (kg)
+	protected double targettedAmount; // Targeted amount of resource to collect at site. (kg)
 	protected double startingCargo; // Amount of resource already in rover cargo at start of task. (kg)
 	protected String resourceType; // The resource type (see org.mars_sim.msp.simulation.Resource)
 	
+	/**
+	 * Constructor
+	 * @param taskName The name of the task.
+	 * @param person The person performing the task.
+	 * @param rover The rover used in the task.
+	 * @param resourceType The resource type to collect.
+	 * @param collectionRate The rate (kg/millisol) of collection.
+	 * @param targettedAmount The amount (kg) desired to collect.
+	 * @param startingCargo The starting amount (kg) of resource in the rover cargo.
+	 * @throws Exception if error constructing this task.
+	 */
 	public CollectResources(String taskName, Person person, Rover rover, String resourceType, 
-			double collectionRate, double targettedAmount, double startingCargo) {
+			double collectionRate, double targettedAmount, double startingCargo) throws Exception {
 		
 		// Use EVAOperation parent constructor.
 		super(taskName, person);
@@ -41,52 +52,66 @@ public class CollectResources extends EVAOperation implements Serializable {
 		this.startingCargo = startingCargo;
 		this.resourceType = resourceType;
 		
-		// Set initial task phase.
-		phase = EXIT_AIRLOCK;
+		// Add task phase
+		addPhase(COLLECT_RESOURCES);
 	}
-
-	/** 
-	 * Performs this task for a given period of time.
-	 * @param time amount of time to perform task (in millisols)
-	 * @throws Exception if error performing task.
-	 */
-	double performTask(double time) throws Exception {
-		double timeLeft = super.performTask(time);
-		if (subTask != null) return timeLeft;
 	
-		while ((timeLeft > 0D) && !isDone()) {
-			if (phase.equals(EXIT_AIRLOCK)) timeLeft = exitRover(timeLeft);
-			else if (phase.equals(COLLECT_RESOURCES)) timeLeft = collectResources(timeLeft);
-			else if (phase.equals(ENTER_AIRLOCK)) timeLeft = enterRover(timeLeft);
-		}
-
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time the phase is to be performed.
+     * @return the remaining time after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
+     */
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
+    	if (COLLECT_RESOURCES.equals(getPhase())) return collectResources(time);
+    	if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterRover(time);
+    	else return time;
+    }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		
 		// Add experience to "EVA Operations" skill.
 		// (1 base experience point per 100 millisols of time spent)
-		double experience = time / 100D;
+		double evaExperience = time / 100D;
 		
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
-	
-		return timeLeft;
+		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		evaExperience += evaExperience * experienceAptitudeModifier;
+		evaExperience *= getTeachingExperienceModifier();
+		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		
+		// If phase is collect resource, add experience to areology skill.
+		if (COLLECT_RESOURCES.equals(getPhase())) {
+			// 1 base experience point per 10 millisols of collection time spent.
+			// Experience points adjusted by person's "Experience Aptitude" attribute.
+			double areologyExperience = time / 10D;
+			areologyExperience += areologyExperience * experienceAptitudeModifier;
+			person.getSkillManager().addExperience(Skill.AREOLOGY, areologyExperience);
+		}
 	}
 	
 	/**
 	 * Perform the exit rover phase of the task.
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
+	 * @throws Exception if error exiting rover.
 	 */
-	private double exitRover(double time) {
-		try {
-			time = exitAirlock(time, rover.getAirlock());
-		}
-		catch (Exception e) {
-			// System.err.println(e.getMessage();
-		}
+	private double exitRover(double time) throws Exception {
 		
-		if (exitedAirlock) phase = COLLECT_RESOURCES;
+		time = exitAirlock(time, rover.getAirlock());
+		
+        // Add experience points
+        addExperience(time);
+		
+		if (exitedAirlock) setPhase(COLLECT_RESOURCES);
 		return time;
 	}
 	
@@ -94,8 +119,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * Perform the collect resources phase of the task.
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
+	 * @throws Exception if error collecting resources.
 	 */
-	private double collectResources(double time) {
+	private double collectResources(double time) throws Exception {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
@@ -103,7 +129,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		// Check if there is reason to cut the collection phase short and return
 		// to the rover.
 		if (shouldEndEVAOperation()) {
-			phase = ENTER_AIRLOCK;
+			setPhase(EVAOperation.ENTER_AIRLOCK);
 			return time;
 		}
 
@@ -128,15 +154,10 @@ public class CollectResources extends EVAOperation implements Serializable {
 			if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates()))
 				samplesCollected *= 3D;
 		}
-
-		// Add experience to "Areology" skill.
-		// 1 base experience point per 10 millisols of collection time spent.
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		double experience = time / 100D;
-		experience += experience *
-				(((double) person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		person.getSkillManager().addExperience(Skill.AREOLOGY, experience);
 	
+        // Add experience points
+        addExperience(time);
+		
 		// Collect rock samples.
 		if (samplesCollected <= sampleLimit) {
 			person.getInventory().addResource(resourceType, samplesCollected);
@@ -144,7 +165,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		}
 		else {
 			if (sampleLimit >= 0D) person.getInventory().addResource(resourceType, sampleLimit);
-			phase = ENTER_AIRLOCK;
+			setPhase(ENTER_AIRLOCK);
 			return time - (sampleLimit / collectionRate);
 		}
 	}
@@ -153,16 +174,15 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * Perform the enter rover phase of the task.
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
+	 * @throws Exception if error entering rover.
 	 */
-	private double enterRover(double time) {
+	private double enterRover(double time) throws Exception {
 
-		try {
-			time = enterAirlock(time, rover.getAirlock());
-		}
-		catch (Exception e) { 
-			System.out.println(e.getMessage()); 
-		}
+		time = enterAirlock(time, rover.getAirlock());
 
+        // Add experience points
+        addExperience(time);
+		
 		if (enteredAirlock) {
 			double resources = person.getInventory().getResourceMass(resourceType);
 

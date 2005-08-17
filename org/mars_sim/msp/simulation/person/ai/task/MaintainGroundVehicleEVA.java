@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.function.*;
@@ -29,13 +30,13 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
  
     private GroundVehicle vehicle; // Vehicle to be maintained.
     private Airlock airlock; // Airlock to be used for EVA.
-    private double duration; // Duration (in millisols) the person will perform this task.
     
 	/** 
 	 * Constructor
 	 * @param person the person to perform the task
+	 * @throws Exception if error constructing task.
 	 */
-    public MaintainGroundVehicleEVA(Person person) {
+    public MaintainGroundVehicleEVA(Person person) throws Exception {
         super("Performing Vehicle Maintenance", person);
    
         // Choose an available needy ground vehicle.
@@ -47,11 +48,8 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         airlock = getAvailableAirlock(person);
         if (airlock == null) endTask();
         
-        // Randomly determine duration, from 0 - 100 millisols
-        duration = RandomUtil.getRandomDouble(100D);
-        
-        // Set initial phase.
-        phase = EXIT_AIRLOCK;
+        // Initialize phase.
+        addPhase(MAINTAIN_VEHICLE);
         
         // System.out.println(person.getName() + " starting MaintainGroundVehicleEVA task.");
     }
@@ -112,64 +110,77 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         result *= person.getPerformanceRating();
         
 		// Job modifier.
-		result *= person.getMind().getJob().getStartTaskProbabilityModifier(MaintainGroundVehicleEVA.class);        
+        Job job = person.getMind().getJob();
+		if (job != null) result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleEVA.class);        
 	
         return result;
     }
     
     /**
-     * Perform the task.
-     * @param time the amount of time (millisols) to perform the task
-     * @return amount of time remaining after performing the task
-     * @throws Exception if error performing task.
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time the phase is to be performed.
+     * @return the remaining time after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-        while ((timeLeft > 0D) && !isDone()) {
-            if (phase.equals(EXIT_AIRLOCK)) timeLeft = exitEVA(timeLeft);
-            else if (phase.equals(MAINTAIN_VEHICLE)) timeLeft = maintainVehicle(timeLeft);
-            else if (phase.equals(ENTER_AIRLOCK)) timeLeft = enterEVA(timeLeft);
-        }			            
-	
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 20 millisols of time spent)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = time / 50D;
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
-        
-        return timeLeft;
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
+    	if (MAINTAIN_VEHICLE.equals(getPhase())) return maintainVehicle(time);
+    	if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterEVA(time);
+    	else return time;
     }
     
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		
+		// Add experience to "EVA Operations" skill.
+		// (1 base experience point per 100 millisols of time spent)
+		double evaExperience = time / 100D;
+		
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		evaExperience += evaExperience * experienceAptitudeModifier;
+		evaExperience *= getTeachingExperienceModifier();
+		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		
+		// If phase is maintain vehicle, add experience to mechanics skill.
+		if (MAINTAIN_VEHICLE.equals(getPhase())) {
+			// 1 base experience point per 100 millisols of collection time spent.
+			// Experience points adjusted by person's "Experience Aptitude" attribute.
+			double mechanicsExperience = time / 100D;
+			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
+			person.getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+		}
+	}
+   
     /**
      * Perform the exit airlock phase of the task.
-     *
      * @param time the time to perform this phase (in millisols)
      * @return the time remaining after performing this phase (in millisols)
+     * @throws Exception if error exiting the airlock.
      */
-    private double exitEVA(double time) {
-        try {
-            time = exitAirlock(time, airlock);
-        }
-        catch (Exception e) { 
-            // System.err.println(e.getMessage()); 
-        }
+    private double exitEVA(double time) throws Exception {
+        time = exitAirlock(time, airlock);
         
-        if (exitedAirlock) phase = MAINTAIN_VEHICLE;
+        // Add experience points
+        addExperience(time);
+        
+        if (exitedAirlock) setPhase(MAINTAIN_VEHICLE);
         return time;
     }
     
     /**
      * Perform the maintain vehicle phase of the task.
-     *
      * @param time the time to perform this phase (in millisols)
      * @return the time remaining after performing this phase (in millisols)
+     * @throws Exception if error maintaining vehicle.
      */
-    private double maintainVehicle(double time) {
+    private double maintainVehicle(double time) throws Exception {
         
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
@@ -177,30 +188,21 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         if (finishedMaintenance) vehicle.setReservedForMaintenance(false);
         
         if (finishedMaintenance || malfunction || shouldEndEVAOperation()) {
-            phase = ENTER_AIRLOCK;
+            setPhase(ENTER_AIRLOCK);
             return time;
         }
         
-        // Determine effective work time based on "Mechanic" skill.
+        // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
         double workTime = time;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
-        if (mechanicSkill == 0) workTime /= 2;
-        if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
+        int skill = getEffectiveSkillLevel();
+        if (skill == 0) workTime /= 2;
+        if (skill > 1) workTime += workTime * (.2D * skill);
 
         // Add work to the maintenance
         manager.addMaintenanceWorkTime(workTime);
-
-        // Add experience to "Mechanic" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = time / 100D;
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
-
-        // Keep track of the duration of the task.
-        timeCompleted += time;
-        if (timeCompleted >= duration) phase = ENTER_AIRLOCK;
+        
+        // Add experience points
+        addExperience(time);
 	
         // Check if an accident happens during maintenance.
         checkForAccident(time);
@@ -210,17 +212,15 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     
     /**
      * Perform the enter airlock phase of the task.
-     *
      * @param time amount of time to perform the phase
      * @return time remaining after performing the phase
+     * @throws Exception if error entering airlock.
      */
-    private double enterEVA(double time) {
-        try {
-            time = enterAirlock(time, airlock);
-        }
-        catch (Exception e) { 
-            // System.out.println(e.getMessage()); 
-        }
+    private double enterEVA(double time) throws Exception {
+        time = enterAirlock(time, airlock);
+        
+        // Add experience points
+        addExperience(time);
         
         if (enteredAirlock) endTask();
         return time;
@@ -269,7 +269,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         VehicleIterator vI = person.getSettlement().getParkedVehicles().iterator();
         while (vI.hasNext()) {
             Vehicle vehicle = vI.next();
-            if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
+            if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
         }
         
         return result;

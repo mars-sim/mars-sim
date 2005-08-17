@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
@@ -22,6 +23,9 @@ import org.mars_sim.msp.simulation.vehicle.*;
  * preventive maintenance on ground vehicles in a garage.
  */
 public class MaintainGroundVehicleGarage extends Task implements Serializable {
+	
+	// Task phase
+	private static final String MAINTAIN_VEHICLE = "Maintaining Vehicle";
 
 	// Static members
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
@@ -33,11 +37,12 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
     /** 
      * Constructor
-     *
      * @param person the person to perform the task
+     * @throws Exception if error constructing task.
      */
-    public MaintainGroundVehicleGarage(Person person) {
-        super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER);
+    public MaintainGroundVehicleGarage(Person person) throws Exception {
+        super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER, 
+        		true, RandomUtil.getRandomDouble(100D));
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
@@ -76,9 +81,10 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         
         // End task if vehicle or garage not available.
         if ((vehicle == null) || (garage == null)) endTask();    
-        
-        // Randomly determine duration, from 0 - 100 millisols
-        duration = RandomUtil.getRandomDouble(100D);
+
+        // Initialize phase
+        addPhase(MAINTAIN_VEHICLE);
+        setPhase(MAINTAIN_VEHICLE);
         
         // System.out.println(person.getName() + " starting MaintainGroundVehicleGarage task.");
     }
@@ -129,69 +135,85 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         result *= person.getPerformanceRating();
         
 		// Job modifier.
-		result *= person.getMind().getJob().getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class);        
+        Job job = person.getMind().getJob();
+		if (job != null) result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class);        
 	
         return result;
     }
-
-    /** 
-     * This task simply waits until the set duration of the task is complete, then ends the task.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error performing task.
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-        MalfunctionManager manager = vehicle.getMalfunctionManager();
-	
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
-
-        // Check if maintenance has already been completed.
-        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
-
-        // If vehicle has malfunction, end task.
-        if (manager.hasMalfunction()) endTask();
-
-        if (isDone()) return timeLeft;
-	
-        // Determine effective work time based on "Mechanic" skill.
-        double workTime = timeLeft;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
-        if (mechanicSkill == 0) workTime /= 2;
-        if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
-
-        // Add work to the maintenance
-        manager.addMaintenanceWorkTime(workTime);
-
-        // Add experience to "Mechanic" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = timeLeft / 100D;
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
-
-        // If maintenance is complete, task is done.
-        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
-            // System.out.println(person.getName() + " finished " + description);
-            vehicle.setReservedForMaintenance(false);
-            garage.removeVehicle(vehicle);
-            endTask();
-        }
-
-        // Keep track of the duration of the task.
-        timeCompleted += time;
-        if (timeCompleted >= duration) endTask();
-
-        // Check if an accident happens during maintenance.
-        checkForAccident(timeLeft);
-	
-        return 0D;
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (MAINTAIN_VEHICLE.equals(getPhase())) return maintainVehiclePhase(time);
+    	else return time;
     }
+    
+    /**
+     * Performs the maintain vehicle phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left after performing the phase.
+     * @throws Exception if error performing the phase.
+     */
+    private double maintainVehiclePhase(double time) throws Exception {
+        MalfunctionManager manager = vehicle.getMalfunctionManager();
+    	
+            // If person is incompacitated, end task.
+            if (person.getPerformanceRating() == 0D) endTask();
+
+            // Check if maintenance has already been completed.
+            if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
+
+            // If vehicle has malfunction, end task.
+            if (manager.hasMalfunction()) endTask();
+
+            if (isDone()) return time;
+    	
+            // Determine effective work time based on "Mechanic" skill.
+            double workTime = time;
+            int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+            if (mechanicSkill == 0) workTime /= 2;
+            if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
+
+            // Add work to the maintenance
+            manager.addMaintenanceWorkTime(workTime);
+
+            // Add experience points
+            addExperience(time);
+            
+            // If maintenance is complete, task is done.
+            if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
+                // System.out.println(person.getName() + " finished " + description);
+                vehicle.setReservedForMaintenance(false);
+                garage.removeVehicle(vehicle);
+                endTask();
+            }
+
+            // Check if an accident happens during maintenance.
+            checkForAccident(time);
+    	
+            return 0D;
+    }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// Add experience to "Mechanics" skill
+		// (1 base experience point per 100 millisols of work)
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+        double newPoints = time / 100D;
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+        person.getSkillManager().addExperience(Skill.MECHANICS, newPoints);
+	}
 
     /**
      * Check for accident with entity during maintenance phase.
@@ -223,7 +245,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     
     /**
      * Gets all ground vehicles requiring maintenance in a local garage.
-     *
      * @param person person checking.
      * @return collection of ground vehicles available for maintenance.
      */
@@ -233,7 +254,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		VehicleIterator vI = person.getSettlement().getParkedVehicles().iterator();
 		while (vI.hasNext()) {
 			Vehicle vehicle = vI.next();
-			if ((vehicle instanceof GroundVehicle) && !vehicle.isReserved()) result.add(vehicle);
+			if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
 		}
         
 		return result;
@@ -242,7 +263,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     /**
      * Gets a ground vehicle that requires maintenance in a local garage.
      * Returns null if none available.
-     *
      * @param person person checking.
      * @return ground vehicle
      */

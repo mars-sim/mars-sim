@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.76 2004-06-01
+ * @version 2.78 2005-05-09
  * @author Scott Davis
  */
 
@@ -25,21 +25,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     // Data members
     private int crewCapacity = 0; // The rover's capacity for crewmembers.
     private Airlock airlock; // The rover's airlock.
-    private double range; // Operating range of rover in km.
 	private Lab lab; // The rover's lab.
 	private SickBay sickbay; // The rover's sick bay.
 	
     /** 
      * Constructs a Rover object at a given settlement
      * @param name the name of the rover
+     * @param description the configuration description of the vehicle.
      * @param settlement the settlement the rover is parked at
      * @throws Exception if rover could not be constructed.
      */
     public Rover(String name, String description, Settlement settlement) throws Exception {
         // Use GroundVehicle constructor
-        super(name, settlement);
-
-		this.description = description;
+        super(name, description, settlement);
 		
 		// Get vehicle configuration.
 		SimulationConfig simConfig = Simulation.instance().getSimConfig();
@@ -52,15 +50,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		malfunctionManager.addScopeString(description);
 		if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
 		if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
-		
-		// Set base speed to 30kph.
-		setBaseSpeed(config.getBaseSpeed(description));
-
-		// Set the empty mass of the rover.
-		baseMass = config.getEmptyMass(description);
-	    
-		// Set the operating range of rover.
-		range = config.getRange(description);
         
 		// Set crew capacity
 		crewCapacity = config.getCrewSize(description);
@@ -100,13 +89,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		catch (Exception e) {
 			throw new Exception("Could not add EVA suits.: " + e.getMessage());
 		}
-    }
-
-    /** Gets the range of the rover
-     *  @return the range of the rover (km)
-     */
-    public double getRange() {
-        return range;
     }
 
     /**
@@ -280,4 +262,41 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 	public SickBay getSickBay() {
 		return sickbay;
 	}
+	
+    /**
+     * Checks if a particular operator is appropriate for a vehicle.
+     * @param driver the operator to check
+     * @return true if appropriate operator for this vehicle.
+     */
+    public boolean isAppropriateOperator(VehicleOperator operator) {
+    	if ((operator instanceof Person) && (inventory.containsUnit((Unit) operator))) return true;
+    	else return false;
+    }
+    
+    /**
+     * Gets the resource type that this vehicle uses for fuel.
+     * @return resource type as a string
+     * @see org.mars_sim.msp.simulation.Resource
+     */
+    public String getFuelType() {
+    	return Resource.METHANE;
+    }
+    
+    /**
+     * Checks if the vehicle is loaded with at least a percentage maximum resources.
+     * @param percentage the percentage of maximum
+     * @return true if vehicle has at least percentage many resources.
+     */
+    public boolean isLoaded(double percentage) {
+    	if (super.isLoaded(percentage)) {
+    		// Make sure sufficient life support is loaded.
+    		Inventory i = getInventory();
+    		double oxygenPercentage = i.getResourceMass(Resource.OXYGEN) / i.getResourceCapacity(Resource.OXYGEN);
+    		double waterPercentage = i.getResourceMass(Resource.WATER) / i.getResourceCapacity(Resource.WATER);
+    		double foodPercentage = i.getResourceMass(Resource.FOOD) / i.getResourceCapacity(Resource.FOOD);
+    	
+    		return ((oxygenPercentage >= percentage) && (waterPercentage >= percentage) && (foodPercentage >= percentage));
+    	}
+    	else return false;
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2005-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -13,7 +13,6 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
  * The Driver class represents a rover driver job.
@@ -78,10 +77,7 @@ public class Driver extends Job implements Serializable {
 		Iterator i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = (Mission) i.next();
-			VehicleIterator j = mission.getMissionVehicles().iterator();
-			while (j.hasNext()) {
-				if (j.next().getSettlement() == null) settlementVehicleNum++;
-			}
+			if (mission instanceof VehicleMission) settlementVehicleNum++;
 		}
 		
 		return settlementVehicleNum * 3D;	

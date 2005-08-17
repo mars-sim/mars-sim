@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.78 2004-11-15
+ * @version 2.78 2005-07-15
  * @author Scott Davis
  */
 
@@ -147,8 +147,9 @@ public class TaskManager implements Serializable {
     /**
      * Checks if any emergencies are happening in the person's local.
      * Adds an emergency task if necessary.
+     * @throws Exception if error checking for emergency.
      */
-    private void checkForEmergency() {
+    private void checkForEmergency() throws Exception {
 
         // Check for emergency malfunction.
 		if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {

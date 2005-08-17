@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -21,22 +22,23 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class Maintenance extends Task implements Serializable {
 
+	// Task phase
+	private static final String MAINTAIN = "Maintain";
+	
 	// Static members
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 
     // Data members
     private Malfunctionable entity; // Entity to be maintained.
-    private double duration; // Duration (in millisols) the person with perform this task.
 
     /** 
      * Constructor
      * @param person the person to perform the task
+     * @throws Exception if error constructing task.
      */
-    public Maintenance(Person person) {
-        super("Performing Maintenance", person, true, false, STRESS_MODIFIER);
-
-        // Randomly determine duration, from 0 - 100 millisols
-        duration = RandomUtil.getRandomDouble(100D);
+    public Maintenance(Person person) throws Exception {
+        super("Performing Maintenance", person, true, false, STRESS_MODIFIER, 
+        		true, RandomUtil.getRandomDouble(100D));
 
 		try {
         	entity = getMaintenanceMalfunctionable();
@@ -46,6 +48,10 @@ public class Maintenance extends Task implements Serializable {
 			System.err.println("Maintenance.constructor(): " + e.getMessage());
 			endTask();
 		}
+		
+		// Initialize phase.
+		addPhase(MAINTAIN);
+		setPhase(MAINTAIN);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -77,23 +83,33 @@ public class Maintenance extends Task implements Serializable {
         result *= person.getPerformanceRating();
         
 		// Job modifier.
-		result *= person.getMind().getJob().getStartTaskProbabilityModifier(Maintenance.class);        
+        Job job = person.getMind().getJob();
+		if (job != null) result *= job.getStartTaskProbabilityModifier(Maintenance.class);        
 	
         return result;
     }
-
-    /** 
-     * This task simply waits until the set duration of the task is complete, then ends the task.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error performing task.
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (MAINTAIN.equals(getPhase())) return maintainPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Performs the maintain phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     * @throws Exception if error performing the phase.
+     */
+    private double maintainPhase(double time) throws Exception {
         MalfunctionManager manager = entity.getMalfunctionManager();
-	
+    	
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();
 
@@ -103,38 +119,44 @@ public class Maintenance extends Task implements Serializable {
         // If equipment has malfunction, end task.
         if (manager.hasMalfunction()) endTask();
 
-        if (isDone()) return timeLeft;
-	
+        if (isDone()) return time;
+    	
         // Determine effective work time based on "Mechanic" skill.
-        double workTime = timeLeft;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        double workTime = time;
+        int mechanicSkill = getEffectiveSkillLevel();
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
         // Add work to the maintenance
         manager.addMaintenanceWorkTime(workTime);
-
-        // Add experience to "Mechanic" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = timeLeft / 100D;
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
-
+            
+        // Add experience points
+        addExperience(time);
+            
         // If maintenance is complete, task is done.
         if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
-
-        // Keep track of the duration of the task.
-        timeCompleted += time;
-        if (timeCompleted >= duration) endTask();
-
+            
         // Check if an accident happens during maintenance.
-        checkForAccident(timeLeft);
-	
+        checkForAccident(time);
+    	
         return 0D;
     }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// Add experience to "Mechanics" skill
+		// (1 base experience point per 100 millisols of work)
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+        double newPoints = time / 100D;
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+        person.getSkillManager().addExperience(Skill.MECHANICS, newPoints);
+	}
 
     /**
      * Check for accident with entity during maintenance phase.

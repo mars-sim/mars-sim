@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyRockSamples.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -11,6 +11,7 @@ import java.util.*;
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 
@@ -27,8 +28,9 @@ public class StudyRockSamples extends ResearchScience implements Serializable {
      * Constructor 
      * This is an effort driven task.
      * @param person the person to perform the task
+     * @throws Exception if error constructing task.
      */
-    public StudyRockSamples(Person person) {
+    public StudyRockSamples(Person person) throws Exception {
 		super(Skill.AREOLOGY, person, true, Resource.ROCK_SAMPLES, RESEARCH_RATE);
     }
 
@@ -64,7 +66,8 @@ public class StudyRockSamples extends ResearchScience implements Serializable {
 		result *= person.getPerformanceRating();
 		
 		// Job modifier.
-		result *= person.getMind().getJob().getStartTaskProbabilityModifier(StudyRockSamples.class);		
+		Job job = person.getMind().getJob();
+		if (job != null) result *= job.getStartTaskProbabilityModifier(StudyRockSamples.class);		
 
 		return result;
     }

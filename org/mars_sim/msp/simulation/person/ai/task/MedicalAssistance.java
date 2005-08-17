@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.77 2004-09-09
+ * @version 2.78 2005-08-14
  * @author Barry Evans
  */
 
@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Doctor;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
 import org.mars_sim.msp.simulation.person.medical.Treatment;
@@ -29,6 +30,8 @@ import org.mars_sim.msp.simulation.vehicle.*;
  * help to someone else. 
  */
 public class MedicalAssistance extends Task implements Serializable {
+	
+	private static final String TREATMENT = "Treatment";
 
 	private static final double STRESS_MODIFIER = 1D; // The stress modified per millisol.
 
@@ -38,14 +41,11 @@ public class MedicalAssistance extends Task implements Serializable {
 
     /** 
      * Constructor
-     *
      * @param person the person to perform the task
+     * @throws Exception if error constructing task.
      */
-    public MedicalAssistance(Person person) {
-        super("Medical Assistance", person, true, true, STRESS_MODIFIER);
-        
-        // Sets this task to create historical events.
-        setCreateEvents(true);
+    public MedicalAssistance(Person person) throws Exception {
+        super("Medical Assistance", person, true, true, STRESS_MODIFIER, true, 0D);
 
         // Get a local medical aid that needs work.
         List localAids = getNeedyMedicalAids(person);
@@ -62,7 +62,7 @@ public class MedicalAssistance extends Task implements Serializable {
             // Treat medical problem.
             Treatment treatment = problem.getIllness().getRecoveryTreatment();
 	        description = "Apply " + treatment.getName();
-            duration = treatment.getAdjustedDuration(skill);
+            setDuration(treatment.getAdjustedDuration(skill));
             setStressModifier(STRESS_MODIFIER * treatment.getSkill());
             
             // Start the treatment
@@ -89,6 +89,10 @@ public class MedicalAssistance extends Task implements Serializable {
             }
         }
         else endTask();
+        
+        // Initialize phase.
+        addPhase(TREATMENT);
+        setPhase(TREATMENT);
     }
 
     /** Returns the weighted probability that a person might perform this task.
@@ -122,11 +126,67 @@ public class MedicalAssistance extends Task implements Serializable {
         
 		// Job modifier if there is a nearby doctor.
 		if (isThereADoctorInTheHouse(person)) {
-			result *= person.getMind().getJob().getStartTaskProbabilityModifier(MedicalAssistance.class);
+			Job job = person.getMind().getJob();
+			if (job != null) result *= job.getStartTaskProbabilityModifier(MedicalAssistance.class);
 		}        
 
         return result;
     }
+    
+    /**
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time (millisol) the phase is to be performed.
+     * @return the remaining time (millisol) after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
+     */
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (TREATMENT.equals(getPhase())) return treatmentPhase(time);
+    	else return time;
+    }
+    
+    /**
+     * Performs the treatment phase of the task.
+     * @param time the amount of time (millisol) to perform the phase.
+     * @return the amount of time (millisol) left over after performing the phase.
+     * @throws Exception if error performing the phase.
+     */
+    private double treatmentPhase(double time) throws Exception {
+    	
+        // If sickbay owner has malfunction, end task.
+        if (getMalfunctionable(medical).getMalfunctionManager().hasMalfunction()) endTask();
+
+        if (isDone()) return time;
+
+        // Check for accident in infirmary.
+        checkForAccident(time);
+
+        if (getDuration() < (getTimeCompleted() + time)) {
+            problem.startRecovery();
+            endTask();
+        }
+        
+        // Add experience.
+        addExperience(time);
+        
+        return 0D;
+    }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		// Add experience to "Cooking" skill
+		// (1 base experience point per 25 millisols of work)
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+        double newPoints = time / 25D;
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+        person.getSkillManager().addExperience(Skill.COOKING, newPoints);
+	}
 
     /**
      * Gets the local medical aids that have patients waiting.
@@ -183,49 +243,6 @@ public class MedicalAssistance extends Task implements Serializable {
         else result = (Malfunctionable) aid;
         
         return result;
-    }
-
-    /** 
-     * This task simply waits until the set duration of the task is complete, then ends the task.
-     * @param time the amount of time to perform this task (in millisols)
-     * @return amount of time remaining after finishing with task (in millisols)
-     * @throws Exception if error performing task.
-     */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
-
-        // If sickbay owner has malfunction, end task.
-        if (getMalfunctionable(medical).getMalfunctionManager().hasMalfunction()) endTask();
-
-        if (isDone()) return timeLeft;
-
-        // Check for accident in infirmary.
-        checkForAccident(time);
-
-        timeCompleted += time;
-        if (timeCompleted > duration) {
-            // Add experience points for 'Medical' skill.
-            // Add one point for every 100 millisols.
-            double newPoints = (duration / 100D);
-            
-            // Modify experience by skill level required by treatment.
-			newPoints *= problem.getIllness().getRecoveryTreatment().getSkill();
-            
-            // Modify experience by experience aptitude.
-            int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
-            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-			newPoints *= getTeachingExperienceModifier();
-            person.getSkillManager().addExperience(Skill.MEDICAL, newPoints);
-
-            problem.startRecovery();
-            endTask();
-            return timeCompleted - duration;
-        }
-        else return 0;
     }
 
     /**

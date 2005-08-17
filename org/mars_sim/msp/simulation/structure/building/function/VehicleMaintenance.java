@@ -120,7 +120,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		VehicleIterator i = (new VehicleCollection(vehicles)).iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
-			if (!vehicle.isReserved() && !vehicle.isReservedForMaintenance()) removeVehicle(vehicle); 
+			if (!vehicle.isReserved()) removeVehicle(vehicle); 
 		}
 	}
 	

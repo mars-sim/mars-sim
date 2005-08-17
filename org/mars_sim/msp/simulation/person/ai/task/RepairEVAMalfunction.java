@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 2.78 2004-11-16
+ * @version 2.78 2005-08-14
  * @author Scott Davis
  */
 
@@ -10,11 +10,11 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Airlock;
-import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 
 /**
  * The RepairEVAMalfunction class is a task to repair a malfunction requiring an EVA.
@@ -27,13 +27,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
     // Data members
     private Malfunctionable entity; // The malfunctionable entity being repaired.
     private Airlock airlock; // The airlock to be used.
-    private double duration; // Duration of task in millisols.
 	
     /**
      * Constructs a RepairEVAMalfunction object.
      * @param person the person to perform the task
+     * @throws Exception if error constructing task
      */
-    public RepairEVAMalfunction(Person person) {
+    public RepairEVAMalfunction(Person person) throws Exception {
         super("Repairing EVA Malfunction", person);
 
         // Get the malfunctioning entity.
@@ -44,12 +44,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         airlock = getAvailableAirlock(person);
         if (airlock == null) endTask();
 
-        phase = EXIT_AIRLOCK;
+        // Initialize phase
+        addPhase(REPAIR_MALFUNCTION);
+        setPhase(EXIT_AIRLOCK);
 
         // System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
-        
-        // Randomly determine duration, from 0 - 100 millisols.
-        duration = RandomUtil.getRandomDouble(100D);
     }
 
     /**
@@ -132,53 +131,67 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         result *= person.getPerformanceRating();
         
 		// Job modifier.
-		result *= person.getMind().getJob().getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
+        Job job = person.getMind().getJob();
+		if (job != null) result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
 
         return result;
     }
     
     /**
-     * Perform the task.
-     * @param time the amount of time (millisols) to perform the task
-     * @return amount of time remaining after performing the task
-     * @throws Exception if error performing task.
+     * Performs the method mapped to the task's current phase.
+     * @param time the amount of time the phase is to be performed.
+     * @return the remaining time after the phase has been performed.
+     * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    double performTask(double time) throws Exception {
-        double timeLeft = super.performTask(time);
-        if (subTask != null) return timeLeft;
-
-        while ((timeLeft > 0D) && !isDone()) {
-            if (phase.equals(EXIT_AIRLOCK)) timeLeft = exitEVA(timeLeft);
-            else if (phase.equals(REPAIR_MALFUNCTION)) timeLeft = repairMalfunction(timeLeft);
-            else if (phase.equals(ENTER_AIRLOCK)) timeLeft = enterEVA(timeLeft);
-        }					            
-	
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 20 millisols of time spent)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = time / 50D;
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-		experience *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, experience);
-
-        return timeLeft;
+    protected double performMappedPhase(double time) throws Exception {
+    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+    	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
+    	if (REPAIR_MALFUNCTION.equals(getPhase())) return repairMalfunction(time);
+    	if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterEVA(time);
+    	else return time;
     }
+    
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
+		
+		// Add experience to "EVA Operations" skill.
+		// (1 base experience point per 100 millisols of time spent)
+		double evaExperience = time / 100D;
+		
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		evaExperience += evaExperience * experienceAptitudeModifier;
+		evaExperience *= getTeachingExperienceModifier();
+		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		
+		// If phase is repair malfunction, add experience to mechanics skill.
+		if (REPAIR_MALFUNCTION.equals(getPhase())) {
+			// 1 base experience point per 20 millisols of collection time spent.
+			// Experience points adjusted by person's "Experience Aptitude" attribute.
+			double mechanicsExperience = time / 20D;
+			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
+			person.getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+		}
+	}
 
     /**
      * Perform the exit airlock phase of the task.
      * @param time the time to perform this phase (in millisols)
      * @return the time remaining after performing this phase (in millisols)
+     * @throws Exception if error exiting airlock.
      */
-    private double exitEVA(double time) {
-        try {
-            time = exitAirlock(time, airlock);
-        }
-        catch (Exception e) { 
-            // System.err.println(e.getMessage()); 
-        }
+    private double exitEVA(double time) throws Exception {
+        time = exitAirlock(time, airlock);
         
-        if (exitedAirlock) phase = REPAIR_MALFUNCTION;
+        // Add experience points
+        addExperience(time);
+        
+        if (exitedAirlock) setPhase(REPAIR_MALFUNCTION);
         return time;
     }
 
@@ -186,11 +199,12 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * Perform the repair malfunction phase of the task.
      * @param time the time to perform this phase (in millisols)
      * @return the time remaining after performing this phase (in millisols)
+     * @throws Exception if error repairing malfunction.
      */
-    private double repairMalfunction(double time) {
+    private double repairMalfunction(double time) throws Exception {
         
         if (!hasEVAMalfunction(entity) || shouldEndEVAOperation()) {
-            phase = ENTER_AIRLOCK;
+            setPhase(ENTER_AIRLOCK);
             return time;
         }
 	    
@@ -215,21 +229,12 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	
         // Add EVA work to malfunction.
         double workTimeLeft = malfunction.addEVAWorkTime(workTime);
-
-        // Add experience to "Mechanic" skill.
-        // (1 base experience point per 20 millisols of time spent)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        double experience = time / 50D;
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        experience += experience * (((double) nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE) - 50D) / 100D);
-        person.getSkillManager().addExperience(Skill.MECHANICS, experience);
+        
+        // Add experience points
+        addExperience(time);
 	
         // Check if there are no more malfunctions. 
-        if (!hasEVAMalfunction(entity)) phase = ENTER_AIRLOCK;
-
-        // Keep track of the duration of the task.
-        timeCompleted += time;
-        if (timeCompleted >= duration) phase = ENTER_AIRLOCK;
+        if (!hasEVAMalfunction(entity)) setPhase(ENTER_AIRLOCK);
 	
         // Check if an accident happens during maintenance.
         checkForAccident(time);
@@ -241,14 +246,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * Perform the enter airlock phase of the task.
      * @param time amount of time to perform the phase
      * @return time remaining after performing the phase
+     * @throws Exception if error entering airlock.
      */
-    private double enterEVA(double time) {
-        try {
-            time = enterAirlock(time, airlock);
-        }
-        catch (Exception e) { 
-            // System.out.println(e.getMessage()); 
-        }
+    private double enterEVA(double time) throws Exception {
+        time = enterAirlock(time, airlock);
+        
+        // Add experience points
+        addExperience(time);
         
         if (enteredAirlock) endTask();
         return time;
