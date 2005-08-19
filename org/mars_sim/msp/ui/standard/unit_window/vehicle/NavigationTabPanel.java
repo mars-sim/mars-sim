@@ -216,7 +216,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationInfoLabelPanel.add(distanceLabel);
         
         // Prepare ETA label.
-        if (mission != null) etaCache = mission.getLegETA().toString();
+        if ((mission != null) && (mission.getLegETA() != null)) etaCache = mission.getLegETA().toString();
         else etaCache = "";
         etaLabel = new JLabel("ETA: " + etaCache, JLabel.LEFT);
         destinationInfoLabelPanel.add(etaLabel);

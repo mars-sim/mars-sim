@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.78 2005-08-07
+ * @version 2.78 2005-08-18
  * @author Scott Davis
  */
 
@@ -39,7 +39,6 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	private MarsClock startCollectingTime; // The time the resource collecting is started.
 	private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
 	private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol). 
-	private int minPeople; // Minimum number of people for the mission.
 
 	/**
 	 * Constructor
@@ -60,6 +59,9 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		super(missionName, startingPerson, minPeople);
 		
 		if (!isDone()) {
+			
+        	// Set mission capacity.
+        	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
 		
 			// Initialize data members.
 			startingSettlement = startingPerson.getSettlement();
@@ -73,7 +75,13 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			// Add home settlement
 			addNavpoint(new NavPoint(getAssociatedSettlement().getCoordinates(), 
 					getAssociatedSettlement()));
+			
+        	// Recruit additional people to mission.
+        	recruitPeopleForMission(startingPerson);
 		}
+		
+		// Add collecting phase.
+		addPhase(COLLECT_RESOURCES);
 		
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);

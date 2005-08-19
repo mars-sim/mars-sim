@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.78 2005-08-02
+ * @version 2.78 2005-08-18
  * @author Scott Davis
  */
 
@@ -105,7 +105,7 @@ public abstract class VehicleMission extends TravelMission {
 	 * @return true if vehicle is usable.
 	 * @throws IllegalArgumentException if newVehicle is null.
 	 */
-	protected static boolean isUsableVehicle(Vehicle newVehicle) {
+	protected boolean isUsableVehicle(Vehicle newVehicle) {
 		if (newVehicle != null) {
 			boolean usable = true;
 			if (newVehicle.isReserved()) usable = false;
@@ -125,7 +125,7 @@ public abstract class VehicleMission extends TravelMission {
 	 * and 1 if the first vehicle is better than the second vehicle.
 	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
 	 */
-	protected static int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		if (isUsableVehicle(firstVehicle)) {
 			if (isUsableVehicle(secondVehicle)) {
 				// Vehicle with superior range should be ranked higher.
@@ -182,7 +182,7 @@ public abstract class VehicleMission extends TravelMission {
 	 * @param settlement the settlement to find vehicles.
 	 * @return list of available vehicles.
 	 */
-	private static VehicleCollection getAvailableVehicles(Settlement settlement) {
+	private VehicleCollection getAvailableVehicles(Settlement settlement) {
 		VehicleCollection result = new VehicleCollection();
 		
 		VehicleIterator i = settlement.getParkedVehicles().iterator();
@@ -193,15 +193,6 @@ public abstract class VehicleMission extends TravelMission {
 		
 		return result;
 	}	
-	
-	/**
-	 * Checks to see if any vehicles are available at a settlement.
-	 * @param settlement the settlement to check.
-	 * @return true if vehicles are available.
-	 */
-	protected static boolean areVehiclesAvailable(Settlement settlement) {
-		return (getAvailableVehicles(settlement).size() > 0);
-	}
 	
 	/** 
 	 * Finalizes the mission 

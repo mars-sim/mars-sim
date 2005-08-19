@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.78 2005-08-02
+ * @version 2.78 2005-08-18
  * @author Scott Davis
  */
 
@@ -78,8 +78,8 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
 	 */
-	protected static boolean isUsableVehicle(Vehicle newVehicle) {
-		boolean usable = VehicleMission.isUsableVehicle(newVehicle);
+	protected boolean isUsableVehicle(Vehicle newVehicle) {
+		boolean usable = super.isUsableVehicle(newVehicle);
 		if (!(newVehicle instanceof Rover)) usable = false;
 		return usable;
 	}
@@ -94,8 +94,8 @@ public abstract class RoverMission extends VehicleMission {
 	 * and 1 if the first vehicle is better than the second vehicle.
 	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
 	 */
-	protected static int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		int result = VehicleMission.compareVehicles(firstVehicle, secondVehicle);
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
+		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
 		// Check if one can hold more crew than the other.
 		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {

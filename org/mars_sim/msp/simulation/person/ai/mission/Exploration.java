@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.78 2005-08-08
+ * @version 2.78 2005-08-18
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 
 /** 
@@ -80,13 +81,38 @@ public class Exploration extends CollectResourcesMission {
 	}
 	
 	/**
+	 * Checks to see if any vehicles are available at a settlement.
+	 * @param settlement the settlement to check.
+	 * @return true if vehicles are available.
+	 */
+	private static boolean areVehiclesAvailable(Settlement settlement) {
+		
+		boolean result = false;
+		
+		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			
+			boolean usable = true;
+			if (vehicle.isReserved()) usable = false;
+			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
+			if (!(vehicle instanceof Rover)) usable = false;
+			if (vehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) <= 0D) usable = false;
+			
+			if (usable) result = true;    
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Checks if vehicle is usable for this mission.
 	 * (This method should be overridden by children)
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
 	 */
-	protected static boolean isUsableVehicle(Vehicle newVehicle) {
-		boolean usable = RoverMission.isUsableVehicle(newVehicle);
+	protected boolean isUsableVehicle(Vehicle newVehicle) {
+		boolean usable = super.isUsableVehicle(newVehicle);
 		
 		// Make sure rover can carry rock samples.
 		if (newVehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) <= 0D) usable = false;
@@ -104,8 +130,8 @@ public class Exploration extends CollectResourcesMission {
 	 * and 1 if the first vehicle is better than the second vehicle.
 	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
 	 */
-	protected static int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		int result = RoverMission.compareVehicles(firstVehicle, secondVehicle);
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
+		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
 		// Check if one can hold more rock samples than the other.
 		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {

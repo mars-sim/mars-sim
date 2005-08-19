@@ -28,7 +28,8 @@ public class MissionManager implements Serializable {
     private List missions; // Current missions in the simulation. 
 
     // Array of potential new missions
-    Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, CollectIce.class };
+    // Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, CollectIce.class };
+    Class[] potentialMissions = { Exploration.class, CollectIce.class };
 
     /** 
      * Constructor

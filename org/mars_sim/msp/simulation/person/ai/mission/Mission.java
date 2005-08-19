@@ -59,6 +59,7 @@ public abstract class Mission implements Serializable {
         phase = null;
         phases = new ArrayList();
         phaseEnded = false;
+        this.minPeople = minPeople;
         missionCapacity = Integer.MAX_VALUE;
 
 		// Created mission starting event.
