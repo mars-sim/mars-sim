@@ -97,6 +97,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) setPhase(VehicleMission.DISEMBARKING);
 			else setPhase(COLLECT_RESOURCES);
 		}
+		else if (COLLECT_RESOURCES.equals(getPhase())) setPhase(VehicleMission.TRAVELLING);
 		else if (DISEMBARKING.equals(getPhase())) endMission();
     }
 	
