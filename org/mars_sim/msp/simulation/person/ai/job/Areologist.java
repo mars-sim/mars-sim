@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2005-08-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -61,6 +61,8 @@ public class Areologist extends Job implements Serializable {
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
 		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 		result+= result * ((averageAptitude - 50D) / 100D);
+		
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
 		
 		return result;
 	}

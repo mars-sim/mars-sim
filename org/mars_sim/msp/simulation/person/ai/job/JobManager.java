@@ -112,7 +112,7 @@ public class JobManager implements Serializable {
 	 */
 	public double getJobProspect(Person person, Job job, Settlement settlement, boolean isHomeSettlement) {
 		double jobCapability = 0D;
-		if (job != null) job.getCapability(person);
+		if (job != null) jobCapability = job.getCapability(person);
 		double remainingNeed = getRemainingSettlementNeed(settlement, job);
 		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
 		return (jobCapability + 1D) * remainingNeed;

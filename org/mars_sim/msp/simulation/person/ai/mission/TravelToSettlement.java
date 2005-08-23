@@ -28,7 +28,7 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 public class TravelToSettlement extends RoverMission implements Serializable {
 	
 	// Static members
-	private static final double BASE_MISSION_WEIGHT = 5D;
+	private static final double BASE_MISSION_WEIGHT = 1D;
 	private static final double RELATIONSHIP_MODIFIER = 10D;
 	private static final double JOB_MODIFIER = 1D;
 	private static final double CROWDING_MODIFIER = 5D;

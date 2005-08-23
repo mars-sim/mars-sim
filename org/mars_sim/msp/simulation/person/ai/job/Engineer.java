@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 2.77 2004-08-25
+ * @version 2.78 2005-08-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -54,6 +54,8 @@ public class Engineer extends Job implements Serializable {
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
+		
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
 		
 		return result;
 	}

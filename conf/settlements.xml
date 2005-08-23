@@ -216,7 +216,7 @@
 		<settlement name="random" template="Mars Direct Base (phase 1)">
 			<location longitude="random" latitude="random" />
 		</settlement>
-		
+	
 		<settlement name="random" template="Mars Direct Base (phase 1)">
 			<location longitude="random" latitude="random" />
 		</settlement>					
