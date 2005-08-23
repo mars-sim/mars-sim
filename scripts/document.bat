@@ -33,5 +33,5 @@ set PACKAGES=%PACKAGES% org.mars_sim.msp.ui.standard.unit_display_info
 echo on
 
 cd ../
-javadoc -classpath .;jars\jfreechart.jar;jars\jcommon.jar;jars\junit.jar;jars\plexus-core.jar;jars\commons-collections-3.1.jar;jars\log4j-1.2.8.jar -d docs/javadoc -overview overview.html -use -author -windowtitle "Mars Simulation Project v 2.77 API Specification" -doctitle "Mars Simulation Project v 2.77<BR>API Specification" -header "<b>Mars Simulation Project</b><br><font size=\"-1\">v2.77</font>" %PACKAGES%
+javadoc -classpath .;jars\jfreechart.jar;jars\jcommon.jar;jars\junit.jar;jars\plexus-core.jar;jars\commons-collections-3.1.jar;jars\log4j-1.2.8.jar -d docs/javadoc -overview overview.html -use -author -windowtitle "Mars Simulation Project v 2.78 API Specification" -doctitle "Mars Simulation Project v 2.78<BR>API Specification" -header "<b>Mars Simulation Project</b><br><font size=\"-1\">v2.78</font>" %PACKAGES%
 cd scripts

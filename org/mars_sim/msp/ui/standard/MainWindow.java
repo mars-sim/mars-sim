@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.76 2004-06-02
+ * @version 2.78 2005-08-22
  * @author Scott Davis
  */
 
@@ -20,7 +20,7 @@ import org.mars_sim.msp.simulation.*;
  */
 public class MainWindow extends JFrame implements WindowListener {
 
-    private static final String VERSION = "2.77";
+    private static final String VERSION = "2.78";
 
     // Data members
     private UnitToolBar unitToolbar; // The unit tool bar

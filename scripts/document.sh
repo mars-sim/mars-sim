@@ -31,7 +31,7 @@ set PACKAGES := ${PACKAGES}: org.mars_sim.msp.ui.standard.unit_window.structure.
 set PACKAGES := ${PACKAGES}: org.mars_sim.msp.ui.standard.unit_display.info
 
 set CLASSPATH = .:jars/jcommon.jar:jars/jfreechart.jar:jars/junit.jar:jars/plexus-core.jar:jars/commons-collections-3.1.jar:jars/log4j-1.2.8.jar
-set VERSION = 2.77
+set VERSION = 2.78
 
 
 cd ../
