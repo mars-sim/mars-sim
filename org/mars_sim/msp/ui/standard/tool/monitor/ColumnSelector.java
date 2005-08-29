@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ColumnSelector.java
- * @version 2.75 2003-08-03
+ * @version 2.78 2005-08-28
  * @author Barry Evans
  */
 
@@ -113,7 +113,7 @@ public class ColumnSelector extends JDialog {
     public static int[] createBarSelector(Frame window,
                                           MonitorModel model) {
         ColumnSelector select = new ColumnSelector(window, model, true);
-        select.show();
+        select.setVisible(true);
         return select.getSelectedColumns();
     }
 
@@ -127,7 +127,7 @@ public class ColumnSelector extends JDialog {
     public static int createPieSelector(Frame window,
                                         MonitorModel model) {
         ColumnSelector select = new ColumnSelector(window, model, false);
-        select.show();
+        select.setVisible(true);
         int [] columns = select.getSelectedColumns();
         if (columns.length > 0) {
             return columns[0];
