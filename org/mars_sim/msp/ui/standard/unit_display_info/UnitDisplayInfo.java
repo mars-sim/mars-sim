@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitDisplayInfo.java
- * @version 2.75 2003-07-13
+ * @version 2.78 2005-08-23
  * @author Scott Davis
  */
 
@@ -18,7 +18,6 @@ public interface UnitDisplayInfo {
     
     /** 
      * Checks if unit is to be displayed on the navigator tool map.
-     *
      * @param unit the unit to display
      * @return true if unit is to be displayed on navigator map.
      */
@@ -26,49 +25,42 @@ public interface UnitDisplayInfo {
     
     /** 
      * Gets display icon for the surface navigator map. 
-     *
      * @return icon
      */
     public Icon getSurfMapIcon();
     
     /** 
      * Gets display icon for topo navigator map. 
-     *
      * @return icon
      */
     public Icon getTopoMapIcon();
     
     /** 
      * Gets the label color for surface navigator map. 
-     *
      * @return color
      */
     public Color getSurfMapLabelColor();
     
     /** 
      * Gets the label color for topo navigator map. 
-     *
      * @return color
      */
     public Color getTopoMapLabelColor();
     
     /** 
      * Gets the label font for navigator map. 
-     * 
      * @return font
      */
     public Font getMapLabelFont();
 
     /** 
      * Gets the range (km) for clicking on unit on navigator map. 
-     *
      * @return clicking range
      */
     public double getMapClickRange();
     
     /** 
      * Checks if the unit is to be displayed on the navigator tool globe.
-     *
      * @param unit the unit to display.
      * @return true if unit is to be displayed on globe
      */
@@ -76,22 +68,26 @@ public interface UnitDisplayInfo {
     
     /** 
      * Gets display color for surface globe. 
-     *
      * @return color
      */
     public Color getSurfGlobeColor();
     
     /** 
      * Gets display color for topo globe.
-     *
      * @return color
      */
     public Color getTopoGlobeColor();
     
     /** 
      * Gets icon for unit button.
-     *
      * @return icon
      */
     public Icon getButtonIcon();
+    
+    /**
+     * Gets a sound appropriate for this unit.
+     * @param unit the unit to display.
+     * @returns sound filepath for unit or empty string if none.
+     */
+    public String getSound(Unit unit);
 }

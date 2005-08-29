@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.76 2004-06-01
+ * @version 2.78 2005-08-23
  * @author Scott Davis
  */
 
@@ -146,12 +146,4 @@ public abstract class Unit implements Serializable {
     public String toString() {
         return name;
     }
-    /**
-     * Returns sound appropriate for this unit
-     * This method should be overriden by child classes
-     * 
-     */
-    public String getSound() {
-    	return "";
-    	}
 }

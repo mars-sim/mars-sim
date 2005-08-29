@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.78 2005-07-08
+ * @version 2.78 2005-08-24
  * @author Scott Davis
  */
 
@@ -15,7 +15,6 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.time.*;
-import org.mars_sim.msp.ui.standard.sound.SoundConstants;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
@@ -28,11 +27,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public final static String MOVING = "Moving";
     public final static String MALFUNCTION = "Malfunction";
     public final static String MAINTENANCE = "Periodic Maintenance";
-    
-    // Vehicle destination types
-    // public final static String NONE = "None";
-    // public final static String SETTLEMENT = "Settlement";
-    // public final static String COORDINATES = "Coordinates";
 
     // Data members
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
@@ -465,26 +459,4 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * @see org.mars_sim.msp.simulation.Resource
      */
     public abstract String getFuelType();
-    
-    /**
-     * Returns sound type for this vehicle according to
-     * vehicle's status.
-     * @return Sound constant @see SoundConstants
-     * TODO: Fix above line
-     * 
-     */
-    public String getSound()
-    {
-    	final String status = this.getStatus();
-    	if (status.equals(Vehicle.MOVING))
-    		return SoundConstants.SND_VEHICLE_MOVING;
-    	else 
-    		if (status.equals(Vehicle.MALFUNCTION))
-        		return SoundConstants.SND_VEHICLE_MALFUNCTION;
-        	else
-        		if (status.equals(Vehicle.MAINTENANCE))
-            		return SoundConstants.SND_VEHICLE_MAINTENANCE;
-            
-        	return "";
-    }
 }

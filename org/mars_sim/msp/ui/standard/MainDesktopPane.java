@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.78 2005-08-09
+ * @version 2.78 2005-08-25
  * @author Scott Davis
  */
 
@@ -20,20 +20,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
+import org.mars_sim.msp.ui.standard.sound.SoundConstants;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindowListener;
@@ -44,7 +45,7 @@ import org.mars_sim.msp.ui.standard.unit_window.UnitWindowListener;
  * along with the tool bars, by the main window.
  */
 public class MainDesktopPane extends JDesktopPane implements ComponentListener {
-
+	
     // Data members
     private Collection unitWindows; // List of open or buttoned unit windows.
     private Collection toolWindows; // List of tool windows.
@@ -54,6 +55,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private JLabel logoLabel; // Label that has the centered logo for the project.
     private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
     private UpdateThread updateThread; // The desktop update thread.
+    private AudioPlayer soundPlayer; // The sound player
 
     /** 
      * Constructor
@@ -66,6 +68,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         this.mainWindow = mainWindow;
         unitWindows = new ArrayList();
         toolWindows = new ArrayList();
+        soundPlayer = new AudioPlayer();
 
         // Set background color to black
         setBackground(Color.black);
@@ -321,6 +324,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             tempWindow.moveToFront();
         }
         catch (java.beans.PropertyVetoException e) {}
+        
+        // Play sound for window.
+        String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
+        if ((soundFilePath != null) && !soundFilePath.equals("")) 
+        	soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+        soundPlayer.play(soundFilePath);
     }
 
     /** 
@@ -472,5 +481,13 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 catch (InterruptedException e) {}
             }
         }
+    }
+ 
+    /**
+     * Gets the sound player used by the desktop.
+     * @return sound player.
+     */
+    public AudioPlayer getSoundPlayer() {
+    	return soundPlayer;
     }
 }

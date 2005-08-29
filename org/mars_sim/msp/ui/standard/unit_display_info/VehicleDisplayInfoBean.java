@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDisplayInfo.java
- * @version 2.75 2003-07-16
+ * @version 2.78 2005-08-28
  * @author Scott Davis
  */
 
@@ -37,7 +37,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Checks if unit is to be displayed on the navigator tool map.
-     *
      * @param unit the unit to display
      * @return true if unit is to be displayed on navigator map.
      */
@@ -49,7 +48,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets display icon for the surface navigator map. 
-     *
      * @return icon
      */
     public Icon getSurfMapIcon() {
@@ -58,7 +56,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets display icon for topo navigator map. 
-     *
      * @return icon
      */
     public Icon getTopoMapIcon() {
@@ -67,7 +64,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets the label color for surface navigator map. 
-     *
      * @return color
      */
     public Color getSurfMapLabelColor() {
@@ -76,7 +72,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets the label color for topo navigator map. 
-     *
      * @return color
      */
     public Color getTopoMapLabelColor() {
@@ -85,7 +80,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets the label font for navigator map. 
-     * 
      * @return font
      */
     public Font getMapLabelFont() {
@@ -94,7 +88,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
 
     /** 
      * Gets the range (km) for clicking on unit on navigator map. 
-     *
      * @return clicking range
      */
     public double getMapClickRange() {
@@ -103,7 +96,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Checks if the unit is to be displayed on the navigator tool globe.
-     *
      * @param unit the unit to display.
      * @return true if unit is to be displayed on globe
      */
@@ -115,7 +107,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets display color for surface globe. 
-     *
      * @return color
      */
     public Color getSurfGlobeColor() {
@@ -124,7 +115,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets display color for topo globe.
-     *
      * @return color
      */
     public Color getTopoGlobeColor() {
