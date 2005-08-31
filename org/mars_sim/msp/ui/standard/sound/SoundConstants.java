@@ -17,7 +17,7 @@ public interface SoundConstants {
 	// Unit window sounds for rovers.
 	public final static String SND_ROVER_MOVING = "rover_moving.wav";
     public final static String SND_ROVER_MALFUNCTION = "rover_malfunction.wav";
-    public final static String SND_ROVER_MAINTENANCE = "";
+    public final static String SND_ROVER_MAINTENANCE = "rover_maintenance.wav";
     public final static String SND_ROVER_PARKED = "";
     
     // Unit window sound for settlements.
