@@ -85,7 +85,7 @@ set CLASSES=%CLASSES% org\mars_sim\msp\ui\standard\unit_display_info\*.class
 
 echo on
 
-jar -cvf jars/msp-standard-ui.jar %CLASSES% images\*.*
+jar -cvf jars/msp-standard-ui.jar %CLASSES% images\*.* sounds\*.*
 
 pause
 
