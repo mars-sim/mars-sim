@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 2.75 2003-07-28
+ * @version 2.78 2005-09-05
  * @author Scott Davis
  */
 
@@ -95,7 +95,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		add(searchButton);
 		toolButtons.addElement(searchButton);
 
-
 		// Add time tool button
 		ToolButton timeButton = new ToolButton("Time Tool", "Time");
 		timeButton.addActionListener(this);
@@ -107,6 +106,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);
+		
+		// Add sound tool button
+		ToolButton soundButton = new ToolButton("Sound Tool", "Sound");
+		soundButton.addActionListener(this);
+		add(soundButton);
+		toolButtons.addElement(soundButton);
 	}
 
 	/** ActionListener method overriden */

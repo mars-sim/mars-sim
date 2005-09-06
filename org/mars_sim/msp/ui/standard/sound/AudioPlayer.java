@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 2.78 2005-08-28
+ * @version 2.78 2005-09-05
  * @author Dima Stepanchuk
  */
 
@@ -17,6 +17,14 @@ public class AudioPlayer {
 
 	// Data members
 	private Clip clip; // The sound clip.
+	private boolean mute; // Is the audio player muted?
+	private float volume; // The volume of the audio player (0.0 to 1.0)
+	
+	public AudioPlayer() {
+		clip = null;
+		mute = false;
+		volume = .5F;
+	}
 	
 	/**
 	 * Starts playing a sound clip
@@ -43,6 +51,10 @@ public class AudioPlayer {
 				// ###############################################
 				
 				clip.open(audioInputStream);
+				
+				setVolume(volume);
+				setMute(mute);
+				
 				if (loop) clip.loop(Clip.LOOP_CONTINUOUSLY);
 				else clip.loop(0);
 			} 
@@ -73,5 +85,56 @@ public class AudioPlayer {
 	 */
 	public void stop() {
 		if (clip != null) clip.stop();
+	}
+	
+	/**
+	 * Gets the volume of the audio player.
+	 * @return volume (0.0 to 1.0)
+	 */
+	public float getVolume() {
+		return volume;
+	}
+	
+	/**
+	 * Sets the volume for the audio player.
+	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
+	 */
+	public void setVolume(float volume) {
+		if ((volume < 0F) && (volume > 1F)) 
+			throw new IllegalArgumentException("Volume invalid: " + volume);
+		
+		this.volume = volume;
+		
+		// Set volume
+		if (clip != null) {
+			// Note: No linear volume control for the clip, so use gain control.
+			// Linear volume = pow(10.0, gainDB/20.0) 
+			float gain = (float) Math.log10(volume) * 20F;
+			FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+			gainControl.setValue(gain);
+		}
+	}
+	
+	/**
+	 * Checks if the audio player is muted.
+	 * @return true if muted.
+	 */
+	public boolean isMute() {
+		return mute;
+	}
+	
+	/**
+	 * Sets if the audio player is mute or not.
+	 * @param mute is audio player mute?
+	 */
+	public void setMute(boolean mute) {
+		// Set mute value.
+		this.mute = mute;
+		
+		if (clip != null) {
+			BooleanControl muteControl = 
+				(BooleanControl) clip.getControl(BooleanControl.Type.MUTE);
+			muteControl.setValue(mute);
+		}
 	}
 }
