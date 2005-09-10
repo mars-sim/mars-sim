@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.76 2004-06-02
+ * @version 2.78 2005-09-08
  * @author Scott Davis
  */
 
@@ -56,6 +56,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private MapLayer vehicleTrailLayer;  // Display layer for showing vehicle trails.
     private MapLayer shadingLayer; // Display layer for showing day/night shading.
     private MapLayer landmarkLayer; // Display layer for showing landmarks.
+    private MapLayer navpointLayer; // Display layer for showing travel mission navpoints.
     private boolean mapError; // True if there is an error in rendering the map.
     private String mapErrorMessage; // The map error message.
 
@@ -120,6 +121,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         vehicleTrailLayer = new VehicleTrailMapLayer(this);
         shadingLayer = new ShadingMapLayer(this);
         landmarkLayer = new LandmarkMapLayer(this);
+        navpointLayer = new NavpointMapLayer(this);
 
         // initially show real surface map (versus topo map)
         showSurf();
@@ -335,8 +337,10 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             
                 // Display units.
                 unitLayer.displayLayer(g);
+                
+                // Display travel mission navpoints.
+                navpointLayer.displayLayer(g);
             }
-            // System.out.println("end go");
         }
     }
     
