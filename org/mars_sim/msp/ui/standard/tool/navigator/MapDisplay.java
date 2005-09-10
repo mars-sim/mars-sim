@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDisplay.java
- * @version 2.78 2005-09-08
+ * @version 2.78 2005-09-09
  * @author Scott Davis
  */
 
@@ -52,6 +52,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private boolean showDayNightShading; // True if day/night shading is to be used
     private boolean showVehicleTrails; // True if vehicle trails are to be displayed.
     private boolean showLandmarks; // True if landmarks are to be displayed.
+    private boolean showNavpoints; // True if travel mission navpoints are to be displayed.
     private MapLayer unitLayer;  // Display layer for showing units.
     private MapLayer vehicleTrailLayer;  // Display layer for showing vehicle trails.
     private MapLayer shadingLayer; // Display layer for showing day/night shading.
@@ -96,6 +97,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         showDayNightShading = false;
         showVehicleTrails = true;
         showLandmarks = true;
+        showNavpoints = true;
         mapError = false;
         mapErrorMessage = null;
 
@@ -339,7 +341,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 unitLayer.displayLayer(g);
                 
                 // Display travel mission navpoints.
-                navpointLayer.displayLayer(g);
+                if (showNavpoints) navpointLayer.displayLayer(g);
             }
         }
     }
@@ -453,10 +455,26 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     
     /**
      * Are landmarks showing?
-     * @return trow if landmarks are showing.
+     * @return true if landmarks are showing.
      */
     public boolean isLandmarks() {
     	return showLandmarks;
+    }
+    
+    /**
+     * Sets the navpoints flag.
+     * @param showNavpoints true if navpoints are to be displayed.
+     */
+    public void setNavpoints(boolean showNavpoints) {
+    	this.showNavpoints = showNavpoints;
+    }
+    
+    /**
+     * Are navpoints showing?
+     * @return true if navpoints are showing.
+     */
+    public boolean isNavpoints() {
+    	return showNavpoints;
     }
     
     /** 

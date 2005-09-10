@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.76 2004-06-07
+ * @version 2.78 2005-09-09
  * @author Scott Davis
  */
 
@@ -40,6 +40,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     private JCheckBoxMenuItem usgsItem; // Show USGS map mode menu item.
     private JCheckBoxMenuItem trailItem; // Show vehicle trails menu item.
     private JCheckBoxMenuItem landmarkItem; // Show landmarks menu item. 
+    private JCheckBoxMenuItem navpointItem; // Show navpoints menu item.
 
     /** Constructs a NavigatorWindow object 
      *  @param desktop the desktop pane
@@ -255,6 +256,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         } 
         else if (source == trailItem) map.setVehicleTrails(trailItem.isSelected());
         else if (source == landmarkItem) map.setLandmarks(landmarkItem.isSelected());
+        else if (source == navpointItem) map.setNavpoints(navpointItem.isSelected());
     }
     
     /**
@@ -293,6 +295,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		landmarkItem = new JCheckBoxMenuItem("Show Landmarks", map.isLandmarks());
 		landmarkItem.addActionListener(this);
 		optionsMenu.add(landmarkItem);
+		
+		// Create navpoints menu item.
+		navpointItem = new JCheckBoxMenuItem("Show Mission Navpoints", map.isNavpoints());
+		navpointItem.addActionListener(this);
+		optionsMenu.add(navpointItem);
 		
 		optionsMenu.pack();
     }
