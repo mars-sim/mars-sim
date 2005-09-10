@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RandomUtil.java
- * @version 2.78 2005-04-17
+ * @version 2.78 2005-09-10
  * @author Scott Davis
  */
 
@@ -9,18 +9,22 @@ package org.mars_sim.msp.simulation;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 
 /** The RandomUtil class is a library of various random-related
  *  methods
  */
 public final class RandomUtil {
+	
+	// Random generator.
+	private final static Random random = new Random();
 
     /** Returns true if given number is less than a random percentage. 
      *  @param the random percentage limit
      *  @return true if random percent is less than percentage limit
      */
     public static boolean lessThanRandPercent(int randomLimit) {
-        int rand = (int) Math.round(Math.random() * 100 + 1);
+    	int rand = random.nextInt(100) + 1;
         if (rand < randomLimit) return true;
         else return false;
     }
@@ -30,7 +34,7 @@ public final class RandomUtil {
      *  @return true if random percent is less than percentage limit
      */
     public static boolean lessThanRandPercent(double randomLimit) {
-        double rand = Math.random() * 100D;
+    	double rand = random.nextDouble() * 100D;
         if (rand < randomLimit) return true;
         else return false;
     }
@@ -41,7 +45,7 @@ public final class RandomUtil {
      *  @return the random number
      */
     public static int getRandomInt(int ceiling) {
-        return (int) Math.round(Math.random() * ceiling);
+    	return (int) random.nextInt(ceiling + 1);
     }
     
     /** Returns a random int number from a given base number
@@ -51,7 +55,7 @@ public final class RandomUtil {
      *  @return the random number
      */
     public static int getRandomInt(int base, int ceiling) {
-        return (int) Math.round(Math.random() * (ceiling - base)) + base;
+    	return (int) random.nextInt(ceiling - base + 1) + base;
     }
 
     /** Returns a random double number from 0 
@@ -60,7 +64,7 @@ public final class RandomUtil {
      *  @return the random number
      */
     public static double getRandomDouble(double ceiling) {
-        return Math.random() * ceiling;
+    	return random.nextDouble() * ceiling;
     }
 
     /** 
