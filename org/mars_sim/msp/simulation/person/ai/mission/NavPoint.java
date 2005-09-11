@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.78 2005-08-14
+ * @version 2.78 2005-09-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -25,7 +25,7 @@ public class NavPoint implements Serializable {
 	 */
 	public NavPoint(Coordinates location) {
 		if (location == null) throw new IllegalArgumentException("location is null");
-		this.location = location;
+		this.location = new Coordinates(location);
 	}
 
 	/**
