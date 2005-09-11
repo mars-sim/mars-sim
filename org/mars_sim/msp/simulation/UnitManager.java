@@ -268,6 +268,7 @@ public class UnitManager implements Serializable {
     		}
     	}
     	catch (Exception e) {
+    		e.printStackTrace(System.err);
     		throw new Exception("People could not be created: " + e.getMessage());
     	}
     }

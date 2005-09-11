@@ -45,6 +45,7 @@ public final class RandomUtil {
      *  @return the random number
      */
     public static int getRandomInt(int ceiling) {
+    	if (ceiling < 0) throw new IllegalArgumentException("ceiling must be positive: " + ceiling);
     	return (int) random.nextInt(ceiling + 1);
     }
     
@@ -55,6 +56,7 @@ public final class RandomUtil {
      *  @return the random number
      */
     public static int getRandomInt(int base, int ceiling) {
+    	if (ceiling < base) throw new IllegalArgumentException("ceiling must be greater than base.");
     	return (int) random.nextInt(ceiling - base + 1) + base;
     }
 
