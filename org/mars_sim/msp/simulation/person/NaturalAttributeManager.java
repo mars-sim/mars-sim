@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.77 2004-08-31
+ * @version 2.78 2005-09-11
  * @author Scott Davis
  */
 
@@ -80,7 +80,8 @@ public class NaturalAttributeManager implements Serializable {
 	 * @param modifier the random ceiling of the modifier
 	 */
 	private void addAttributeModifier(String attributeName, int modifier) {
-		int random = RandomUtil.getRandomInt(modifier);
+		int random = RandomUtil.getRandomInt(Math.abs(modifier));
+		if (modifier < 0) random *= -1;
 		setAttribute(attributeName, getAttribute(attributeName) + random);
 	}
 
