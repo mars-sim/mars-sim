@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * VehicleDisplayInfo.java
+ * VehicleDisplayInfoBean.java
  * @version 2.78 2005-08-28
  * @author Scott Davis
  */
