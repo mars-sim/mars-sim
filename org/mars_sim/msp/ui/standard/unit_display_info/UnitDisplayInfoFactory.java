@@ -21,6 +21,7 @@ public final class UnitDisplayInfoFactory {
     // Static bean instances.
     private static UnitDisplayInfo settlementBean = new SettlementDisplayInfoBean();
     private static UnitDisplayInfo personBean = new PersonDisplayInfoBean();
+    private static UnitDisplayInfo roverBean = new RoverDisplayInfoBean();
     private static UnitDisplayInfo explorerRoverBean = new ExplorerRoverDisplayInfoBean();
 	private static UnitDisplayInfo transportRoverBean = new TransportRoverDisplayInfoBean();
     private static UnitDisplayInfo equipmentBean = new EquipmentDisplayInfoBean();
@@ -41,7 +42,7 @@ public final class UnitDisplayInfoFactory {
         else if (unit instanceof Rover) {
         	if (unit.getDescription().equals("Explorer Rover")) return explorerRoverBean;
         	else if (unit.getDescription().equals("Transport Rover")) return transportRoverBean;
-        	else return null;
+        	else return roverBean;
         }
         else if (unit instanceof Equipment) return equipmentBean;
         else return null;
