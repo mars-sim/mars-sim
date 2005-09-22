@@ -53,7 +53,7 @@ public class Simulation implements Serializable {
 		
 		try {
 			// Initialize transient data members.
-			initializeTransientDate();
+			initializeTransientData();
 		}
 		catch (Exception e) {
 			System.err.println("Simulation could not be created: " + e.getMessage());
@@ -78,7 +78,7 @@ public class Simulation implements Serializable {
 		
 		try {
 			// Initialize transient data members to reload configuration.
-			simulation.initializeTransientDate();
+			simulation.initializeTransientData();
 			
 			// Initialize intransient data members.
 			simulation.initializeIntransientData();
@@ -93,7 +93,7 @@ public class Simulation implements Serializable {
 	 * Initialize transient data in the simulation.
 	 * @throws Exception if transient data could not be loaded.
 	 */
-	private void initializeTransientDate() throws Exception {
+	private void initializeTransientData() throws Exception {
 		simConfig = new SimulationConfig();
 		malfunctionFactory = new MalfunctionFactory(simConfig.getMalfunctionConfiguration());
 		eventManager = new HistoricalEventManager();
