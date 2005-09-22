@@ -57,6 +57,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
     private UpdateThread updateThread; // The desktop update thread.
     private AudioPlayer soundPlayer; // The sound player
+    private AnnouncementWindow announcementWindow; // The desktop popup announcement window.
 
     /** 
      * Constructor
@@ -97,6 +98,11 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         
         // Prepare tool windows.
         prepareToolWindows();
+        
+        // Prepare announcementWindow.
+        announcementWindow = new AnnouncementWindow(this);
+        try { announcementWindow.setClosed(true); }
+        catch (java.beans.PropertyVetoException e) { }
         
         // Create update thread.
         updateThread = new UpdateThread(this);
@@ -496,5 +502,26 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      */
     public AudioPlayer getSoundPlayer() {
     	return soundPlayer;
+    }
+    
+    /**
+     * Opens a popup announcement window on the desktop.
+     * @param announcement the announcement text to display.
+     */
+    public void openAnnouncementWindow(String announcement) {
+    	announcementWindow.setAnnouncement(announcement);
+    	announcementWindow.pack();
+    	add(announcementWindow, 0);
+    	int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
+		int Yloc = (getHeight() - announcementWindow.getHeight()) / 2;
+        announcementWindow.setLocation(Xloc, Yloc);
+        announcementWindow.show();
+    }
+    
+    /**
+     * Removes the popup announcement window from the desktop.
+     */
+    public void disposeAnnouncementWindow() {
+    	announcementWindow.dispose();
     }
 }

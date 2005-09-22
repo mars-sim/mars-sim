@@ -28,16 +28,9 @@ public class SplashWindow extends Window {
 
         String imageName = IMAGE_NAMES[RandomUtil.getRandomInt(IMAGE_NAMES.length - 1)];
         splashImage = ImageLoader.getImage(imageName);
-
-        MediaTracker tracker = new MediaTracker(this);
-        tracker.addImage(splashImage, 0);
-        try { tracker.waitForAll(); }
-        catch (InterruptedException e) { System.out.println(e.toString()); }
-
         ImageIcon splashIcon = new ImageIcon(splashImage);
         width = splashIcon.getIconWidth();
         height = splashIcon.getIconHeight();
-
         setSize(width, height);
 
         // Center the splash window on the screen.

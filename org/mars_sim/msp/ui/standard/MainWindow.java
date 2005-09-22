@@ -26,6 +26,8 @@ public class MainWindow extends JFrame implements WindowListener {
     private UnitToolBar unitToolbar; // The unit tool bar
     private MainDesktopPane desktop; // The main desktop
 
+    private Thread newSimThread;
+    
     /** 
      * Constructor
      */
@@ -95,7 +97,7 @@ public class MainWindow extends JFrame implements WindowListener {
             JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
             chooser.setDialogTitle("Selected stored simulation");
             int returnVal = chooser.showOpenDialog(this);
-            if(returnVal == JFileChooser.APPROVE_OPTION) {
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
             	Simulation simulation = Simulation.instance();
             	simulation.loadSimulation(chooser.getSelectedFile());
             	desktop.resetDesktop();
@@ -114,8 +116,25 @@ public class MainWindow extends JFrame implements WindowListener {
      */
     public void newSimulation() {
 	    try {
-			Simulation.createNewSimulation();
-           	desktop.resetDesktop();
+	    	if ((newSimThread == null) || !newSimThread.isAlive()) {
+	    		newSimThread = new Thread() {
+	    	    	public void run() {
+	    	    		try {
+	    	    			desktop.openAnnouncementWindow("Creating new simulation...");
+	    	    			Simulation.createNewSimulation();
+	    	    			desktop.resetDesktop();
+	    	    			desktop.disposeAnnouncementWindow();
+	    	    		}
+	    	    		catch(Exception e) {
+	    	    			e.printStackTrace(System.err);
+	    	    		}
+	    	    	}
+	    	    };
+	    	    newSimThread.start();
+	    	}
+	    	else {
+	    		newSimThread.interrupt();
+	    	}
 	    }
 	    catch (Exception e) {
 	    	System.err.println("Problem creating new simulation: " + e);
@@ -133,14 +152,10 @@ public class MainWindow extends JFrame implements WindowListener {
 
         if (!useDefault) {
             JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-            chooser.setDialogTitle("Selected storage location");
+            chooser.setDialogTitle("Selected save location");
             int returnVal = chooser.showSaveDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                fileLocn = chooser.getSelectedFile();
-            }
-            else {
-                return;
-            }
+            if (returnVal == JFileChooser.APPROVE_OPTION) fileLocn = chooser.getSelectedFile();
+            else return;
         }
 
         // Attempt a save
@@ -149,7 +164,7 @@ public class MainWindow extends JFrame implements WindowListener {
         }
         catch(Exception e) {
             e.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Problem saving simualtion",
+	        JOptionPane.showMessageDialog(null, "Problem saving simulation",
 				e.toString(), JOptionPane.ERROR_MESSAGE);
 	    }
     }
