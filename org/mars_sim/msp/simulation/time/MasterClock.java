@@ -28,7 +28,7 @@ public class MasterClock implements Runnable, Serializable {
     private double timeRatio;     // Simulation/real-time ratio
 
     // Sleep duration in milliseconds 
-    private final static int SLEEP_DURATION = 1000;
+    public final static int TIME_PULSE_PAUSE = 1000;
     
     static final long serialVersionUID = -1688463735489226494L;
 
@@ -83,7 +83,7 @@ public class MasterClock implements Runnable, Serializable {
 
         double timePulse;
         if (timeRatio > 0D) {
-            double timePulseSeconds = timeRatio * (SLEEP_DURATION / 1000D);
+            double timePulseSeconds = timeRatio * (TIME_PULSE_PAUSE / 1000D);
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
         }
         else timePulse = 1D;
@@ -117,13 +117,13 @@ public class MasterClock implements Runnable, Serializable {
         // Keep running until told not to
         while (keepRunning) {
             try {
-                Thread.sleep(SLEEP_DURATION);
+                Thread.sleep(TIME_PULSE_PAUSE);
             } 
             catch (InterruptedException e) {}
 
 			try {
             	//Increment the uptimer
-            	uptimer.addTime(SLEEP_DURATION);
+            	uptimer.addTime(TIME_PULSE_PAUSE);
 
             	// Get the time pulse length in millisols.
             	double timePulse = getTimePulse();

@@ -45,6 +45,8 @@ public class Simulation implements Serializable {
 	private MedicalManager medicalManager; // Medical complaints
 	private JobManager jobManager; // Job manager
 	private MasterClock masterClock; // Master clock for the simulation.
+	
+	public int id = 0;
 
 	/**
 	 * Constructor
@@ -76,12 +78,16 @@ public class Simulation implements Serializable {
 		Simulation simulation = instance();
 		simulation.stop();
 		
+		// Wait until current time pulse runs it course.
+		Thread.sleep(MasterClock.TIME_PULSE_PAUSE);
+		
 		try {
 			// Initialize transient data members to reload configuration.
 			simulation.initializeTransientData();
 			
 			// Initialize intransient data members.
 			simulation.initializeIntransientData();
+			
 			simulation.start();
 		}
 		catch (Exception e) {

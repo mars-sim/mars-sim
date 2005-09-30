@@ -58,7 +58,6 @@ public class RelationshipManager implements Serializable {
 	 * Constructor
 	 */
 	public RelationshipManager() {
-		
 		// Create new graph for relationships.
 		relationshipGraph = new DefaultGraph(); 
 	}
@@ -240,7 +239,7 @@ public class RelationshipManager implements Serializable {
 	 * @throws Exception if error
 	 */
 	private void updateRelationships(Person person, double time) throws Exception {
-		
+		try {
 		double personStress = person.getPhysicalCondition().getStress();
 		
 		// Get the person's local group of people.
@@ -248,6 +247,7 @@ public class RelationshipManager implements Serializable {
 		
 		// Go through each person in local group.
 		PersonIterator i = localGroup.iterator();
+		int count2 = 0;
 		while (i.hasNext()) {
 			Person localPerson = i.next();
 			double localPersonStress = localPerson.getPhysicalCondition().getStress(); 
@@ -311,6 +311,12 @@ public class RelationshipManager implements Serializable {
 				// System.out.println(person.getName() + " has changed opinion of " + localPerson.getName() + " by " + changeAmount);
 			}
 		}	
+		count2++;
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+			throw new Exception(e.getMessage());
+		}
 	}
 	
 	/**
