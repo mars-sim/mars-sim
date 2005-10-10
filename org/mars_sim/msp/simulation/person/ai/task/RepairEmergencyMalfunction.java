@@ -12,6 +12,8 @@ import java.util.*;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.structure.building.*;
 
 /**
@@ -118,7 +120,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
         	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.MECHANICS, newPoints);
+        person.getMind().getSkillManager().addExperience(Skill.MECHANICS, newPoints);
 	}
 
     /**
@@ -169,7 +171,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.MECHANICS);
 	}  
 	

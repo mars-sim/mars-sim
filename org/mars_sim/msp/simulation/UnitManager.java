@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.77 2004-09-01
+ * @version 2.78 2005-10-07
  * @author Scott Davis
  */
 
@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -251,13 +254,18 @@ public class UnitManager implements Serializable {
      */
     private void createInitialPeople() throws Exception {
     	
+    	// Create configured people.
+    	createConfiguredPeople();
+    	
     	PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-    	
+		
+		// Randomly create all remaining people to fill the settlements to capacity.
     	try {
     		SettlementIterator i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
+    			
     			while (settlement.getAvailablePopulationCapacity() > 0) {
     				String gender = Person.FEMALE;
     				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
@@ -271,6 +279,142 @@ public class UnitManager implements Serializable {
     		e.printStackTrace(System.err);
     		throw new Exception("People could not be created: " + e.getMessage());
     	}
+    }
+    
+    /**
+     * Creates all configured people.
+     * @throws Exception if error parsing XML.
+     */
+    private void createConfiguredPeople() throws Exception {
+    	PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+    	
+		// Create all configured people.
+		for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
+			try {
+				// Get person's name (required)
+				String name = personConfig.getConfiguredPersonName(x);
+				if (name == null) throw new Exception("Person name is null");
+				
+				// Get person's gender or randomly determine it if not configured.
+				String gender = personConfig.getConfiguredPersonGender(x);
+				if (gender == null) {
+					gender = Person.FEMALE;
+					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
+				}
+				
+				// Get person's settlement or randomly determine it if not configured.
+				String settlementName = personConfig.getConfiguredPersonSettlement(x);
+				Settlement settlement = null;
+				if (settlementName != null) settlement = getSettlements().getSettlement(settlementName);
+				else settlement = getSettlements().getRandomSettlement();
+
+				// Create person and add to the unit manager.
+				Person person = new Person(name, gender, settlement);
+				addUnit(person);
+				relationshipManager.addInitialSettler(person, settlement);
+				
+				// Set person's configured personality type (if any).
+				String personalityType = personConfig.getConfiguredPersonPersonalityType(x);
+				if (personalityType != null) person.getMind().getPersonalityType().setTypeString(personalityType);
+				
+				// Set person's job (if any).
+				String jobName = personConfig.getConfiguredPersonJob(x);
+				if (jobName != null) {
+					Job job = Simulation.instance().getJobManager().getJob(jobName);
+					person.getMind().setJob(job, true);
+				}
+				
+				// Set person's configured natural attributes (if any).
+				Map naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
+				if (naturalAttributeMap != null) {
+					Iterator i = naturalAttributeMap.keySet().iterator();
+					while (i.hasNext()) {
+						String attributeName = (String) i.next();
+						int value = ((Integer) naturalAttributeMap.get(attributeName)).intValue();
+						person.getNaturalAttributeManager().setAttribute(attributeName, value);
+					}
+				}
+				
+				// Set person's configured skills (if any).
+				Map skillMap = personConfig.getSkillMap(x);
+				if (skillMap != null) {
+					Iterator i = skillMap.keySet().iterator();
+					while (i.hasNext()) {
+						String skillName = (String) i.next();
+						int level = ((Integer) skillMap.get(skillName)).intValue();
+						person.getMind().getSkillManager().addNewSkill(new Skill(skillName, level));
+					}
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+				System.err.println("Configured person could not be created: " + e.getMessage());
+			}
+		}
+		
+		// Create all configured relationships.
+		createConfiguredRelationships();
+    }
+    
+    /**
+     * Creates all configured people relationships.
+     * @throws Exception if error parsing XML.
+     */
+    private void createConfiguredRelationships() throws Exception{
+    	PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		
+		// Create all configured people relationships.
+		for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
+			try {
+				// Get person's name
+				String name = personConfig.getConfiguredPersonName(x);
+				if (name == null) throw new Exception("Person name is null");
+				
+				// Get the person
+				Person person = null;
+				PersonIterator j = getPeople().iterator();
+				while (j.hasNext()) {
+					Person tempPerson = j.next();
+					if (tempPerson.getName().equals(name)) person = tempPerson;
+				}
+				if (person == null) throw new Exception("Person: " + name + " not found.");
+				
+				// Set person's configured relationships (if any).
+				Map relationshipMap = personConfig.getRelationshipMap(x);
+				if (relationshipMap != null) {
+					Iterator i = relationshipMap.keySet().iterator();
+					while (i.hasNext()) {
+						String relationshipName = (String) i.next();
+						
+						// Get the other person in the relationship.
+						Person relationshipPerson = null;
+						PersonIterator k = getPeople().iterator();
+						while (k.hasNext()) {
+							Person tempPerson = k.next();
+							if (tempPerson.getName().equals(relationshipName)) relationshipPerson = tempPerson;
+						}
+						if (relationshipPerson == null) throw new Exception("Person: " + relationshipName + " not found.");
+						
+						int opinion = ((Integer) relationshipMap.get(relationshipName)).intValue();
+						
+						// Set the relationship opinion.
+						Relationship relationship = relationshipManager.getRelationship(person, relationshipPerson);
+						if (relationship != null) relationship.setPersonOpinion(person, opinion);
+						else {
+							relationshipManager.addRelationship(person, relationshipPerson, Relationship.EXISTING_RELATIONSHIP);
+							relationship = relationshipManager.getRelationship(person, relationshipPerson);
+							relationship.setPersonOpinion(person, opinion);
+						}
+					}
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+				System.err.println("Configured relationship could not be created: " + e.getMessage());
+			}
+		}
     }
 
     /** 

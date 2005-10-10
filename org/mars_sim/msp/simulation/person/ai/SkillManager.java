@@ -5,11 +5,12 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.person;
+package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import java.util.Hashtable;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.person.Person;
 
 /** The SkillManager class manages skills for a given person.
  *  Each person has one skill manager.

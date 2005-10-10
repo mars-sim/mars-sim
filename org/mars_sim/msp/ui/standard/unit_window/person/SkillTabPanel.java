@@ -12,6 +12,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
@@ -75,7 +76,7 @@ public class SkillTabPanel extends TabPanel {
         java.util.List skillNames;
         
         private SkillTableModel(Person person) {
-            manager = person.getSkillManager();
+            manager = person.getMind().getSkillManager();
             
             String[] keys = manager.getKeys();
             skills = new HashMap();

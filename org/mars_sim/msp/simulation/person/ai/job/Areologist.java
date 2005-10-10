@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -53,7 +54,7 @@ public class Areologist extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		int areologySkill = person.getSkillManager().getSkillLevel(Skill.AREOLOGY);
+		int areologySkill = person.getMind().getSkillManager().getSkillLevel(Skill.AREOLOGY);
 		result = areologySkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

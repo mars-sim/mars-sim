@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.78 2005-09-11
+ * @version 2.78 2005-10-07
  * @author Scott Davis
  */
 
@@ -115,17 +115,23 @@ public class NaturalAttributeManager implements Serializable {
         return result;
     }
 
-    /** Sets an attribute's level.
-     *  @param name the name of the attribute
-     *  @param level the level the attribute is to be set
+    /** 
+     * Sets an attribute's level.
+     * @param name the name of the attribute
+     * @param level the level the attribute is to be set
      */
-    private void setAttribute(String name, int level) {
+    public void setAttribute(String name, int level) {
 
         if (level > 100) level = 100;
         if (level < 0) level = 0;
 
+        boolean found = false;
         for (int x=0; x < attributeKeys.length; x++) {
-            if (name.equals(attributeKeys[x])) attributeList.put(name, new Integer(level));
+            if (name.equals(attributeKeys[x])) {
+            	attributeList.put(name, new Integer(level));
+            	found = true;
+            } 
         }
+        if (!found) throw new IllegalArgumentException("Attribute: " + name + " is not a valid attribute.");
     }
 }

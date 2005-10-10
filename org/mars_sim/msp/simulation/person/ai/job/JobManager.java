@@ -43,6 +43,21 @@ public class JobManager implements Serializable {
 	}
 	
 	/**
+	 * Gets a job from a job name.
+	 * @param jobName the name of the job.
+	 * @return job or null if job with name not found.
+	 */
+	public Job getJob(String jobName) {
+		Job result = null;
+		Iterator i = jobs.iterator();
+		while (i.hasNext()) {
+			Job job = (Job) i.next();
+			if (job.getName().equals(jobName)) result = job;
+		}
+		return result;
+	}
+	
+	/**
 	 * Gets the need for a job at a settlement minus the capability of the inhabitants
 	 * performing that job there.
 	 * @param settlement the settlement to check.

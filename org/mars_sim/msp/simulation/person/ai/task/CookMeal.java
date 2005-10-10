@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Cooking;
@@ -167,7 +169,7 @@ public class CookMeal extends Task implements Serializable {
         	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.COOKING, newPoints);
+        person.getMind().getSkillManager().addExperience(Skill.COOKING, newPoints);
 	}
 	
 	/**
@@ -187,7 +189,7 @@ public class CookMeal extends Task implements Serializable {
 		double chance = .001D;
 
 		// Cooking skill modification.
-		int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.COOKING);
+		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.COOKING);
 		if (skill <= 3) chance *= (4 - skill);
 		else chance /= (skill - 2);
 
@@ -285,7 +287,7 @@ public class CookMeal extends Task implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.COOKING);
 	}
 

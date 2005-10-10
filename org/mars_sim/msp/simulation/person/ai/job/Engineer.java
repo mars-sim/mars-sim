@@ -8,6 +8,7 @@ package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -48,7 +49,7 @@ public class Engineer extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		int areologySkill = person.getSkillManager().getSkillLevel(Skill.MECHANICS);
+		int areologySkill = person.getMind().getSkillManager().getSkillLevel(Skill.MECHANICS);
 		result = areologySkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

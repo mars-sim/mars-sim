@@ -14,6 +14,8 @@ import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 
 /** 
  * The ExitAirlock class is a task for exiting a airlock from an EVA operation.
@@ -126,7 +128,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
 	}
 
     /**
@@ -199,7 +201,7 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
 	}
 	

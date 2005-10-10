@@ -230,6 +230,8 @@
 		<person-name value="Jani Patokallio" gender="male" />
 		<person-name value="Mihaly Gyulai" gender="male" />
 		<person-name value="Dima Stepanchuk" gender="male" />
+		<person-name value="Patrick O'Hara" gender="male" />
+		<person-name value="Chamal Perera" gender="male" />
 		<person-name value="Erinn Thayne" gender="female" />
 		<person-name value="Janay Benko" gender="female" />
 		<person-name value="Theola Binsfeld" gender="female" />
@@ -293,5 +295,61 @@
 		<person-name value="Paula Jenkins" gender="female" />
 		
 	</person-name-list>
+	
+	<!-- List of configured people -->
+	<person-list>
+	
+		<!-- Configured person -->
+		<!-- name: the person's name (required) -->
+		<!-- gender: the person's gender ("male" or "female") (optional) -->
+		<!-- personality-type: the person's MBTI personality type. (optional) -->
+		<!-- settlement: the person's starting settlement. Must be a named settlement -->
+		<!--   configured in settlements.xml.  (optional) -->
+		<!-- job: the person's permanent job. (optional) -->
+		<person name="Trey Monty" gender="male" personality-type="ISTJ" settlement="Alpha Base" job="Engineer">
+			<!-- List of configured natural attributes. (optional) -->
+			<natural-attribute-list>
+				<!-- A natural attribute for the person. -->
+				<!-- name: the name of the attribute. (required) -->
+				<!-- value: 0 (low) to 100 (high) (required). -->
+				<natural-attribute name="Strength" value="60"/>
+				<natural-attribute name="Endurance" value="42"/>
+				<natural-attribute name="Agility" value="71"/>
+				<natural-attribute name="Teaching" value="65"/>
+				<natural-attribute name="Academic Aptitude" value="70"/>
+				<natural-attribute name="Experience Aptitude" value="35"/>
+				<natural-attribute name="Stress Resilience" value="43"/>
+				<natural-attribute name="Actractiveness" value="67"/>
+				<natural-attribute name="Leadership" value="25"/>
+				<natural-attribute name="Conversation" value="80"/>
+			</natural-attribute-list>
+			
+			<!-- List of configured skills. (optional) -->
+			<skill-list>
+				<!-- A skill for the person. -->
+				<!-- name: the name of the skill. (required). -->
+				<!-- level: the level of the skill ( > 1 ) (required). -->
+				<skill name="Driving" level="1"/>
+				<skill name="Botany" level="2"/>
+				<skill name="Mechanics" level="3"/>
+				<skill name="EVA Operations" level="1"/>
+				<skill name="Areology" level="1"/>
+				<skill name="Medicine" level="2"/>
+				<skill name="Cooking" level="4"/>
+			</skill-list>
+			
+			<!-- List of configured relationships. (optional) -->
+			<relationship-list>
+				<!-- A relationship with another configured person. -->
+				<!-- person-name: the name of the relationship person. (required) -->
+				<!--   note: other person must be configured on this list. -->
+				<!-- opinion: this person's opinion of the relationship person. -->
+				<!--   0 (hate) - 100 (close friend) (required) -->
+				<relationship person-name="Rik Declercq" opinion="100"/>
+			</relationship-list>
+		</person>
+		<person name="Rik Declercq" gender="male"/>
+	
+	</person-list>
 
 </people-configuration>

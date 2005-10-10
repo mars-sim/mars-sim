@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -152,7 +154,7 @@ public class TendGreenhouse extends Task implements Serializable {
         	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.BOTANY, newPoints);
+        person.getMind().getSkillManager().addExperience(Skill.BOTANY, newPoints);
 	}
 
     /**
@@ -164,7 +166,7 @@ public class TendGreenhouse extends Task implements Serializable {
         double chance = .001D;
 
         // Greenhouse farming skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.BOTANY);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.BOTANY);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -233,7 +235,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.BOTANY);
 	}  
 	

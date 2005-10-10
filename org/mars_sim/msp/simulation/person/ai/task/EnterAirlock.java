@@ -16,6 +16,8 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.vehicle.Airlockable;
@@ -186,7 +188,7 @@ public class EnterAirlock extends Task implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
 	}
 
     /**
@@ -234,7 +236,7 @@ public class EnterAirlock extends Task implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
 	}
 	

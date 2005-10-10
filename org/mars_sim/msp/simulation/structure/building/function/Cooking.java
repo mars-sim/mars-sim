@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.time.MarsClock;
@@ -97,7 +98,7 @@ public class Cooking extends Function implements Serializable {
 					Person person = i.next();
 					Task task = person.getMind().getTaskManager().getTask();
 					if (task instanceof CookMeal) {
-						int cookingSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.COOKING);
+						int cookingSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.COOKING);
 						if (cookingSkill > result) result = cookingSkill;
 					}
 				}

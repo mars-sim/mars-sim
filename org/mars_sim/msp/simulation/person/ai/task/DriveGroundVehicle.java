@@ -12,6 +12,8 @@ import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.time.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
@@ -322,7 +324,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.DRIVING);
 	}
 	
@@ -352,7 +354,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		double phaseModifier = 1D;
 		if (AVOID_OBSTACLE.equals(getPhase())) phaseModifier = 4D;
 		newPoints *= phaseModifier;
-        person.getSkillManager().addExperience(Skill.DRIVING, newPoints);
+        person.getMind().getSkillManager().addExperience(Skill.DRIVING, newPoints);
 	}
 	
     /**

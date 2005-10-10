@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.78 2005-04-01
+ * @version 2.78 2005-10-07
  * @author Scott Davis
  */
 
@@ -49,7 +49,6 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 
     // Data members
     private NaturalAttributeManager attributes; // Manager for Person's natural attributes
-    private SkillManager skills; // Manager for Person's skills
     private Mind mind; // Person's mind
     private PhysicalCondition health; // Person's physical
     private boolean isBuried; // True if person is dead and buried.
@@ -70,7 +69,6 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		// Initialize data members
 		this.gender = gender;
 		attributes = new NaturalAttributeManager(this);
-		skills = new SkillManager(this);
 		mind = new Mind(this);
 		isBuried = false;
 		health = new PhysicalCondition(this);
@@ -212,13 +210,6 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      */
     public PhysicalCondition getPhysicalCondition() {
         return health;
-    }
-
-    /** Returns a reference to the Person's skill manager
-     *  @return the person's skill manager
-     */
-    public SkillManager getSkillManager() {
-        return skills;
     }
 
     /**

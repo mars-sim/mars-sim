@@ -120,7 +120,7 @@ public abstract class ResearchScience extends Task implements Serializable {
         	NaturalAttributeManager.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(science, newPoints);
+        person.getMind().getSkillManager().addExperience(science, newPoints);
 	}
     
     /**
@@ -294,7 +294,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 		double chance = .001D;
 
 		// Areology skill modification.
-		int skill = person.getSkillManager().getEffectiveSkillLevel(science);
+		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(science);
 		if (skill <= 3) chance *= (4 - skill);
 		else chance /= (skill - 2);
 

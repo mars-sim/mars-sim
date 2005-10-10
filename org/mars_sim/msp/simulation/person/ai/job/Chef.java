@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.job;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -41,7 +42,7 @@ public class Chef extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		int cookingSkill = person.getSkillManager().getSkillLevel(Skill.COOKING);
+		int cookingSkill = person.getMind().getSkillManager().getSkillLevel(Skill.COOKING);
 		result = cookingSkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

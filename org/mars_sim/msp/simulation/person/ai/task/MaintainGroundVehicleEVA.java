@@ -13,6 +13,8 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
@@ -146,7 +148,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
 		
 		// If phase is maintain vehicle, add experience to mechanics skill.
 		if (MAINTAIN_VEHICLE.equals(getPhase())) {
@@ -154,7 +156,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+			person.getMind().getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
 		}
 	}
    
@@ -238,7 +240,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -320,7 +322,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
 		return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 

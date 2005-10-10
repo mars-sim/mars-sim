@@ -12,6 +12,8 @@ import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.*;
 
@@ -115,7 +117,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -161,7 +163,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.MECHANICS, newPoints);
+        person.getMind().getSkillManager().addExperience(Skill.MECHANICS, newPoints);
 	}
 
     /**
@@ -173,7 +175,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -212,7 +214,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.MECHANICS);
 	}  
 	

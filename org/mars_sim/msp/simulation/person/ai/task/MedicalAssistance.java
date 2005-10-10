@@ -13,6 +13,8 @@ import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Doctor;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
@@ -57,7 +59,7 @@ public class MedicalAssistance extends Task implements Serializable {
             problem = (HealthProblem) medical.getProblemsAwaitingTreatment().get(0);
 
             // Get the person's medical skill.
-            int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MEDICAL);
+            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MEDICAL);
             
             // Treat medical problem.
             Treatment treatment = problem.getIllness().getRecoveryTreatment();
@@ -185,7 +187,7 @@ public class MedicalAssistance extends Task implements Serializable {
         	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getSkillManager().addExperience(Skill.COOKING, newPoints);
+        person.getMind().getSkillManager().addExperience(Skill.COOKING, newPoints);
 	}
 
     /**
@@ -256,7 +258,7 @@ public class MedicalAssistance extends Task implements Serializable {
         double chance = .001D;
 
         // Medical skill modification.
-        int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MEDICAL);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MEDICAL);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -359,7 +361,7 @@ public class MedicalAssistance extends Task implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.MEDICAL);
 	}    
 	

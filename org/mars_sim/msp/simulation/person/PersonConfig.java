@@ -18,7 +18,7 @@ public class PersonConfig {
 	// Element names
 	private static final String PERSON_NAME_LIST = "person-name-list";
 	private static final String PERSON_NAME = "person-name";
-	private static final String GENDER="gender";
+	private static final String GENDER = "gender";
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String FOOD_CONSUMPTION_RATE = "food-consumption-rate";
@@ -34,6 +34,21 @@ public class PersonConfig {
 	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
+	private static final String PERSON_LIST = "person-list";
+	private static final String PERSON = "person";
+	private static final String NAME = "name";
+	private static final String PERSONALITY_TYPE = "personality-type";
+	private static final String SETTLEMENT = "settlement";
+	private static final String JOB = "job";
+	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
+	private static final String NATURAL_ATTRIBUTE = "natural-attribute";
+	private static final String VALUE= "value";
+	private static final String SKILL_LIST = "skill-list";
+	private static final String SKILL = "skill";
+	private static final String LEVEL = "level";
+	private static final String RELATIONSHIP_LIST = "relationship-list";
+	private static final String RELATIONSHIP = "relationship";
+	private static final String OPINION = "opinion";
 	
 	private Document personDoc;
 	private List nameList;
@@ -276,5 +291,164 @@ public class PersonConfig {
 		}
 		
 		return result;		
+	}
+	
+	/**
+	 * Gets the number of people configured for the simulation.
+	 * @return number of people.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public int getNumberOfConfiguredPeople() throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		NodeList personNodes = personList.getElementsByTagName(PERSON);
+		if (personNodes != null) return personNodes.getLength();
+		else return 0;
+	}
+	
+	/**
+	 * Gets the configured person's name.
+	 * @param index the person's index.
+	 * @return name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getConfiguredPersonName(int index) throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
+		if (personElement.hasAttribute(NAME)) return personElement.getAttribute(NAME);
+		else return null;
+	}
+	
+	/**
+	 * Gets the configured person's gender.
+	 * @param index the person's index.
+	 * @return "male", "female" or null if not found.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getConfiguredPersonGender(int index) throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
+		if (personElement.hasAttribute(GENDER)) return personElement.getAttribute(GENDER);
+		else return null;
+	}
+	
+	/**
+	 * Gets the configured person's MBTI personality type.
+	 * @param index the person's index.
+	 * @return four character string for MBTI ex. "ISTJ". Return null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getConfiguredPersonPersonalityType(int index) throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
+		if (personElement.hasAttribute(PERSONALITY_TYPE)) return personElement.getAttribute(PERSONALITY_TYPE);
+		else return null;
+	}
+	
+	/**
+	 * Gets the configured person's starting settlement. 
+	 * @param index the person's index.
+	 * @return the settlement name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getConfiguredPersonSettlement(int index) throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
+		if (personElement.hasAttribute(SETTLEMENT)) return personElement.getAttribute(SETTLEMENT);
+		else return null;
+	}
+	
+	/**
+	 * Gets the configured person's job.
+	 * @param index the person's index.
+	 * @return the job name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getConfiguredPersonJob(int index) throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
+		if (personElement.hasAttribute(JOB)) return personElement.getAttribute(JOB);
+		else return null;
+	}
+	
+	/**
+	 * Gets a map of the configured person's natural attributes.
+	 * @param index the person's index.
+	 * @return map of natural attributes (empty map if not found).
+	 * @throws Exception if error in XML parsing.
+	 */
+	public Map getNaturalAttributeMap(int index) throws Exception {
+		Map result = new HashMap();
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
+		NodeList naturalAttributeListNodes = personElement.getElementsByTagName(NATURAL_ATTRIBUTE_LIST);
+		if ((naturalAttributeListNodes != null) && (naturalAttributeListNodes.getLength() > 0)) {
+			Element naturalAttributeList = (Element) naturalAttributeListNodes.item(0);
+			int attributeNum = naturalAttributeList.getElementsByTagName(NATURAL_ATTRIBUTE).getLength();
+			for (int x=0; x < attributeNum; x++) {
+				Element naturalAttributeElement = (Element) naturalAttributeList.getElementsByTagName(NATURAL_ATTRIBUTE).item(x);
+				String name = naturalAttributeElement.getAttribute(NAME);
+				Integer value = new Integer(naturalAttributeElement.getAttribute(VALUE));
+				result.put(name, value);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets a map of the configured person's skills.
+	 * @param index the person's index.
+	 * @return map of skills (empty map if not found).
+	 * @throws Exception if error in XML parsing.
+	 */
+	public Map getSkillMap(int index) throws Exception {
+		Map result = new HashMap();
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
+		NodeList skillListNodes = personElement.getElementsByTagName(SKILL_LIST);
+		if ((skillListNodes != null) && (skillListNodes.getLength() > 0)) {
+			Element skillList = (Element) skillListNodes.item(0);
+			int skillNum = skillList.getElementsByTagName(SKILL).getLength();
+			for (int x=0; x < skillNum; x++) {
+				Element skillElement = (Element) skillList.getElementsByTagName(SKILL).item(x);
+				String name = skillElement.getAttribute(NAME);
+				Integer level = new Integer(skillElement.getAttribute(LEVEL));
+				result.put(name, level);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets a map of the configured person's relationships.
+	 * @param index the person's index.
+	 * @return map of relationships (key: person name, value: opinion (0 - 100)) 
+	 * (empty map if not found).
+	 * @throws Exception if error in XML parsing.
+	 */
+	public Map getRelationshipMap(int index) throws Exception {
+		Map result = new HashMap();
+		Element root = personDoc.getDocumentElement();
+		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
+		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
+		NodeList relationshipListNodes = personElement.getElementsByTagName(RELATIONSHIP_LIST);
+		if ((relationshipListNodes != null) && (relationshipListNodes.getLength() > 0)) {
+			Element relationshipList = (Element) relationshipListNodes.item(0);
+			int relationshipNum = relationshipList.getElementsByTagName(RELATIONSHIP).getLength();
+			for (int x=0; x < relationshipNum; x++) {
+				Element relationshipElement = (Element) relationshipList.getElementsByTagName(RELATIONSHIP).item(x);
+				String personName = relationshipElement.getAttribute(PERSON_NAME);
+				Integer opinion = new Integer(relationshipElement.getAttribute(OPINION));
+				result.put(personName, opinion);
+			}
+		}
+		return result;
 	}
 }

@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.job;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -45,7 +46,7 @@ public class Botanist extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		int botanySkill = person.getSkillManager().getSkillLevel(Skill.BOTANY);
+		int botanySkill = person.getMind().getSkillManager().getSkillLevel(Skill.BOTANY);
 		result = botanySkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

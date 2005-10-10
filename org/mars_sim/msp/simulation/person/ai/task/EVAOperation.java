@@ -17,6 +17,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Airlockable;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -185,7 +186,7 @@ abstract class EVAOperation extends Task implements Serializable {
             double chance = .001D;
 
             // EVA operations skill modification.
-            int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
             if (skill <= 3) chance *= (4 - skill);
             else chance /= (skill - 2);
 

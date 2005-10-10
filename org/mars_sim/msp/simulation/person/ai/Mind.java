@@ -27,6 +27,7 @@ public class Mind implements Serializable {
     private Job job; // The person's job.
     private boolean jobLock; // Is the job locked so another can't be chosen?
     private PersonalityType personality; // The person's personality.
+    private SkillManager skillManager; // The person's skill manager.
 
     /** 
      * Constructor
@@ -46,6 +47,9 @@ public class Mind implements Serializable {
 
         // Construct a task manager
         taskManager = new TaskManager(this);
+        
+        // Construct a skill manager.
+        skillManager = new SkillManager(person);
     }
     
 	/**
@@ -232,5 +236,12 @@ public class Mind implements Serializable {
      */
     public PersonalityType getPersonalityType() {
     	return personality;
+    }
+    
+    /** Returns a reference to the Person's skill manager
+     *  @return the person's skill manager
+     */
+    public SkillManager getSkillManager() {
+        return skillManager;
     }
 }

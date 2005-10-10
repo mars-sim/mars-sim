@@ -14,6 +14,8 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 
 /**
@@ -167,7 +169,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
 		
 		// If phase is repair malfunction, add experience to mechanics skill.
 		if (REPAIR_MALFUNCTION.equals(getPhase())) {
@@ -175,7 +177,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 20D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+			person.getMind().getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
 		}
 	}
 
@@ -210,7 +212,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	    
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
-        int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -271,7 +273,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
 		return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 

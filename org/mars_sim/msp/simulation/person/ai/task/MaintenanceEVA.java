@@ -12,6 +12,8 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -141,7 +143,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
 		
 		// If phase is maintenance vehicle, add experience to mechanics skill.
 		if (MAINTAIN.equals(getPhase())) {
@@ -149,7 +151,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+			person.getMind().getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
 		}
 	}
 	
@@ -188,7 +190,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
         
 		// Determine effective work time based on "Mechanic" skill.
 		double workTime = time;
-		int mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+		int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
 		if (mechanicSkill == 0) workTime /= 2;
 		if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -232,7 +234,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		double chance = .001D;
 
 		// Mechanic skill modification.
-		int skill = person.getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
 		if (skill <= 3) chance *= (4 - skill);
 		else chance /= (skill - 2);
 
@@ -302,7 +304,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
 		return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 

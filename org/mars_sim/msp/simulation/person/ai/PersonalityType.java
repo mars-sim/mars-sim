@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonalityType.java
- * @version 2.77 2004-09-14
+ * @version 2.78 2005-10-06
  * @author Scott Davis
  */
 
@@ -82,6 +82,15 @@ public class PersonalityType implements Serializable {
 	 */
 	public String getTypeString() {
 		return personalityType;
+	}
+	
+	/**
+	 * Sets the personality type
+	 * @param newPersonalityType for letter MBTI code.
+	 */
+	public void setTypeString(String newPersonalityType) {
+		if (personalityTypes.containsKey(newPersonalityType)) personalityType = newPersonalityType;
+		else throw new IllegalArgumentException("Personality type: " + newPersonalityType + " invalid.");
 	}
 	
 	/**

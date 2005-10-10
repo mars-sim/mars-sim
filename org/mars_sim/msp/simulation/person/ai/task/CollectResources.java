@@ -12,6 +12,8 @@ import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /** 
@@ -86,7 +88,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
 		
 		// If phase is collect resource, add experience to areology skill.
 		if (COLLECT_RESOURCES.equals(getPhase())) {
@@ -94,7 +96,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double areologyExperience = time / 10D;
 			areologyExperience += areologyExperience * experienceAptitudeModifier;
-			person.getSkillManager().addExperience(Skill.AREOLOGY, areologyExperience);
+			person.getMind().getSkillManager().addExperience(Skill.AREOLOGY, areologyExperience);
 		}
 	}
 	
@@ -145,7 +147,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		double samplesCollected = time * collectionRate;
 
 		// Modify collection rate by "Areology" skill.
-		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
+		int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
 		if (areologySkill == 0) samplesCollected /= 2D;
 		if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
 
@@ -231,7 +233,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
 		int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
 		return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 

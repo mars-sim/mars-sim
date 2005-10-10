@@ -19,8 +19,8 @@ import org.mars_sim.msp.simulation.person.ai.PersonalityType;
 public class Relationship implements Serializable {
 
 	// Types of starting relationships.
-	static final String FIRST_IMPRESSION = "First Impression";
-	static final String EXISTING_RELATIONSHIP = "Existing Relationship";
+	public static final String FIRST_IMPRESSION = "First Impression";
+	public static final String EXISTING_RELATIONSHIP = "Existing Relationship";
 	
 	// Relationship modifier for settlers since they are trained to get along with each other.
 	private static final double SETTLER_MODIFIER = 20D;

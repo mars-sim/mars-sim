@@ -111,7 +111,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person2 the second person (order isn't important)
 	 * @param relationshipType the type of relationship (see Relationship static members)
 	 */
-	private void addRelationship(Person person1, Person person2, String relationshipType) {
+	public void addRelationship(Person person1, Person person2, String relationshipType) {
 		Relationship relationship = new Relationship(person1, person2, relationshipType);
 		relationshipGraph.addEdge(relationship, person1, person2, false);
 		count++;

@@ -11,6 +11,8 @@ import java.util.*;
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
@@ -77,7 +79,7 @@ public class StudyRockSamples extends ResearchScience implements Serializable {
 	 * @return effective skill level
 	 */
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
+		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(Skill.AREOLOGY);
 	}  
 	

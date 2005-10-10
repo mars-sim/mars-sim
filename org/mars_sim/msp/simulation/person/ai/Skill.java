@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.simulation.person;
+package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 
@@ -29,14 +29,25 @@ public class Skill implements Serializable {
     private double neededExperiencePoints; // The experience points needed to reach the next skill level.
     private String name; // The unique (for each person) name of the skill.
 
-    /** Constructs a Skill object 
-     *  @param name the skill's name
+    /** 
+     * Constructs a Skill object 
+     * @param name the skill's name
      */
-    Skill(String name) {
+    public Skill(String name) {
         this.name = new String(name);
         level = 0;
         experiencePoints = 0D;
         neededExperiencePoints = 25D;
+    }
+    
+    /**
+     * Constructor with level.
+     * @param name the skill's name.
+     * @param level the skill's initial level.
+     */
+    public Skill(String name, int level) {
+    	this(name);
+    	setLevel(level);
     }
 
     /** Returns the name of the skill. 
