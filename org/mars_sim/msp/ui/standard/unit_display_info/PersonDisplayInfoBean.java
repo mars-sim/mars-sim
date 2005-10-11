@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDisplayInfo.java
- * @version 2.78 2005-08-23
+ * @version 2.78 2005-10-10
  * @author Scott Davis
  */
 
@@ -9,7 +9,9 @@ package org.mars_sim.msp.ui.standard.unit_display_info;
  
 import java.awt.*;
 import javax.swing.*;
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.sound.SoundConstants;
 
@@ -124,6 +126,18 @@ class PersonDisplayInfoBean implements UnitDisplayInfo {
      * @returns sound filepath for unit or empty string if none.
      */
     public String getSound(Unit unit) {
-    	return SoundConstants.SND_PERSON;
+    	Person person = (Person) unit;
+    	String result = "";
+    	boolean male = Person.MALE.equals(person.getGender());
+    	int randomSoundNum = RandomUtil.getRandomInt(1, 2);
+    	if (male) {
+    		if (randomSoundNum == 1) result = SoundConstants.SND_PERSON_MALE1;
+    		else if (randomSoundNum == 2) result = SoundConstants.SND_PERSON_MALE2;
+    	}
+    	else {
+    		if (randomSoundNum == 1) result = SoundConstants.SND_PERSON_FEMALE1;
+    		else if (randomSoundNum == 2) result = SoundConstants.SND_PERSON_FEMALE2;
+    	}
+    	return result;
     }
 }
