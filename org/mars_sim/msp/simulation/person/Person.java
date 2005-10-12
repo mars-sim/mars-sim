@@ -186,6 +186,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         	}
         }
         catch (Exception e) {
+        	e.printStackTrace(System.err);
         	throw new Exception("Person " + getName() + " timePassing(): " + e.getMessage());
         }
     }

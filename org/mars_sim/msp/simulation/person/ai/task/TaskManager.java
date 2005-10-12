@@ -139,6 +139,7 @@ public class TaskManager implements Serializable {
             	currentTask.performTask(time);
             }
             catch (Exception e) {
+            	e.printStackTrace(System.err);
             	throw new Exception("TaskManager.performTask(): " + currentTask.getName() + ": " + e.getMessage());
             }
         }

@@ -29,7 +29,6 @@ public class MissionManager implements Serializable {
 
     // Array of potential new missions
     Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, CollectIce.class };
-    // Class[] potentialMissions = { };
 
     /** 
      * Constructor
@@ -58,7 +57,7 @@ public class MissionManager implements Serializable {
     	// Remove inactive missions.
     	cleanMissions();
     	
-    	return missions;
+    	return new ArrayList(missions);
     }
 
     /** 
@@ -91,7 +90,7 @@ public class MissionManager implements Serializable {
      * Removes a mission from the mission list.
      * @param the mission to be removed
      */
-    void removeMission(Mission oldMission) {
+    private void removeMission(Mission oldMission) {
         if (missions.contains(oldMission)) {
             missions.remove(oldMission);
             // System.out.println("MissionManager: Removed old mission - " + oldMission.getName());
@@ -180,7 +179,7 @@ public class MissionManager implements Serializable {
     	if (settlement == null) throw new IllegalArgumentException("settlement is null");
     	
     	List settlementMissions = new ArrayList();
-    	Iterator i = missions.iterator();
+    	Iterator i = getMissions().iterator();
     	while (i.hasNext()) {
     		Mission mission = (Mission) i.next();
     		if (!mission.isDone() && (settlement == mission.getAssociatedSettlement())) settlementMissions.add(mission);
@@ -199,7 +198,7 @@ public class MissionManager implements Serializable {
     	
     	Mission result = null;
     	
-    	Iterator i = missions.iterator();
+    	Iterator i = getMissions().iterator();
     	while (i.hasNext()) {
     		Mission mission = (Mission) i.next();
     		if (!mission.isDone() && (mission instanceof VehicleMission)) {
