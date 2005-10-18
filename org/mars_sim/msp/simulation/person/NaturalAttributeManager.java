@@ -25,7 +25,7 @@ public class NaturalAttributeManager implements Serializable {
 	public static final String ACADEMIC_APTITUDE = "Academic Aptitude";
 	public static final String EXPERIENCE_APTITUDE = "Experience Aptitude";
 	public static final String STRESS_RESILIENCE = "Stress Resilience";
-	public static final String ATTRACTIVENESS = "Actractiveness";
+	public static final String ATTRACTIVENESS = "Attractiveness";
 	public static final String LEADERSHIP = "Leadership";
 	public static final String CONVERSATION = "Conversation";
 
