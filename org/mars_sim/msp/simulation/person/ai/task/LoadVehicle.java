@@ -136,6 +136,10 @@ public class LoadVehicle extends Task implements Serializable {
      *  @return enough supplies?
      */
     public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle) {
+    	// Check input parameters.
+    	if (settlement == null) throw new IllegalArgumentException("settlement is null");
+    	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
+    	
         boolean enoughSupplies = true;
 
         double neededFuel = vehicle.getInventory().getResourceRemainingCapacity(vehicle.getFuelType());

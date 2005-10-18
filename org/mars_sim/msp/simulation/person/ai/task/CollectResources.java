@@ -108,10 +108,16 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 */
 	private double exitRover(double time) throws Exception {
 		
-		time = exitAirlock(time, rover.getAirlock());
+		try {
+			time = exitAirlock(time, rover.getAirlock());
 		
-        // Add experience points
-        addExperience(time);
+			// Add experience points
+			addExperience(time);
+		}
+		catch (Exception e) {
+			// Person unable to exit airlock.
+			endTask();
+		}
 		
 		if (exitedAirlock) setPhase(COLLECT_RESOURCES);
 		return time;

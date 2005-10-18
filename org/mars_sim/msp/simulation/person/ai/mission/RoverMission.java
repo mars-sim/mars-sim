@@ -167,7 +167,7 @@ public abstract class RoverMission extends VehicleMission {
 			if (RandomUtil.lessThanRandPercent(50)) { 
 				try {
 					assignTask(person, new LoadVehicle(person, getVehicle()));
-					if (!LoadVehicle.hasEnoughSupplies(person.getSettlement(), getVehicle())) endMission(); 
+					if (!LoadVehicle.hasEnoughSupplies(settlement, getVehicle())) endMission(); 
 					return;
 				}
 				catch (Exception e) {

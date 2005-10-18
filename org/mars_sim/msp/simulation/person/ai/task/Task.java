@@ -121,12 +121,21 @@ public abstract class Task implements Serializable, Comparable {
         return createEvents;
     }
 
-    /** Returns a string of the current phase of the task.
-     *  @return the current phase of the task
+    /** 
+     * Gets a string of the current phase of the task.
+     * @return the current phase of the task
      */
     public String getPhase() {
         if ((subTask != null) && !subTask.isDone()) return subTask.getPhase();
         return phase;
+    }
+    
+    /**
+     * Gets a string of the current phase of this task, ignoring subtasks.
+     * @return the current phase of this task.
+     */
+    public String getTopPhase() {
+    	return phase;
     }
     
     /**

@@ -167,10 +167,18 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @throws Exception if error exiting the airlock.
      */
     private double exitEVA(double time) throws Exception {
-        time = exitAirlock(time, airlock);
+    	
+    	try {
+    		time = exitAirlock(time, airlock);
         
-        // Add experience points
-        addExperience(time);
+    		// Add experience points
+    		addExperience(time);
+    	}
+		catch (Exception e) {
+			// Person unable to exit airlock.
+			endTask();
+		}
+    	
         
         if (exitedAirlock) setPhase(MAINTAIN_VEHICLE);
         return time;

@@ -188,10 +188,17 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @throws Exception if error exiting airlock.
      */
     private double exitEVA(double time) throws Exception {
-        time = exitAirlock(time, airlock);
+    	
+    	try {
+    		time = exitAirlock(time, airlock);
         
-        // Add experience points
-        addExperience(time);
+    		// Add experience points
+    		addExperience(time);
+    	}
+		catch (Exception e) {
+			// Person unable to exit airlock.
+			endTask();
+		}
         
         if (exitedAirlock) setPhase(REPAIR_MALFUNCTION);
         return time;

@@ -261,7 +261,7 @@ public abstract class VehicleMission extends TravelMission {
     			if (getVehicle().getOperator() == null) {
     				try {
     					if (operateVehicleTask != null) {
-    						operateVehicleTask = getOperateVehicleTask(person, operateVehicleTask.getPhase());
+    						operateVehicleTask = getOperateVehicleTask(person, operateVehicleTask.getTopPhase());
     					}
     					else operateVehicleTask = getOperateVehicleTask(person, null); 
     					assignTask(person, operateVehicleTask);
