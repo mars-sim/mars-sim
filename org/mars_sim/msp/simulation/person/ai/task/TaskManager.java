@@ -210,6 +210,7 @@ public class TaskManager implements Serializable {
             return (Task) construct.newInstance(parametersForInvokingMethod);
         }
         catch (Exception e) {
+        	e.printStackTrace(System.err);
         	throw new Exception("TaskManager.getNewTask(): " + e.getMessage());
         }
     }

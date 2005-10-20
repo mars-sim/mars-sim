@@ -375,6 +375,16 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         	if (getStatus().equals(MAINTENANCE)) {
             	if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
         	}
+        	
+        	// If operator is dead, remove operator and stop vehicle.
+        	VehicleOperator operator = getOperator();
+        	if ((operator != null) && (operator instanceof Person)) {
+        		Person personOperator = (Person) operator;
+        		if (personOperator.getPhysicalCondition().isDead()) {
+        			setOperator(null);
+        			setSpeed(0);
+        		}
+        	}
     	}
     	catch (Exception e) {
     		throw new Exception("Vehicle " + getName() + " timePassing(): " + e.getMessage());

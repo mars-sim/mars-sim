@@ -194,13 +194,10 @@ public class PhysicalCondition implements Serializable {
      *  @param holder unit to get food from
      */
     public void consumeFood(double amount, Unit container) {
-        double amountRecieved =
-                container.getInventory().removeResource(Resource.FOOD, amount);
-
-        if (checkResourceConsumption(amountRecieved, amount,
-                                     MIN_VALUE, medic.getStarvation())) {
+    	if (container == null) throw new IllegalArgumentException("container is null");
+        double amountRecieved = container.getInventory().removeResource(Resource.FOOD, amount);
+        if (checkResourceConsumption(amountRecieved, amount, MIN_VALUE, medic.getStarvation()))
             recalculate();
-        }
     }
     
     /**

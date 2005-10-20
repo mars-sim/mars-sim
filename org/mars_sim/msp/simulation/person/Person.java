@@ -105,33 +105,31 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         return location;
     }
 
-    /** Get settlement person is at, null if person is not at
-     *  a settlement
-     *  @return the person's settlement
+    /** 
+     * Get settlement person is at, null if person is not at
+     * a settlement
+     * @return the person's settlement
      */
     public Settlement getSettlement() {
-
-        Unit topUnit = getTopContainerUnit();
-        if ((topUnit != null) && (topUnit instanceof Settlement)) {
-	        return (Settlement) topUnit;
-        }
-        else return null;
+    	if (INSETTLEMENT.equals(getLocationSituation())) 
+    		return (Settlement) getContainerUnit();
+    	else return null;
     }
 
-    /** Get vehicle person is in, null if person is not in vehicle
-     *  @return the person's vehicle
+    /** 
+     * Get vehicle person is in, null if person is not in vehicle
+     * @return the person's vehicle
      */
     public Vehicle getVehicle() {
-
-        if ((containerUnit != null) && (containerUnit instanceof Vehicle)) {
-	        return (Vehicle) containerUnit;
-	    }
-	    else return null;
+    	if (INVEHICLE.equals(getLocationSituation()))
+    		return (Vehicle) getContainerUnit();
+    	else return null;
     }
 
-    /** Sets the unit's container unit.
-     *  Overridden from Unit class.
-     *  @param containerUnit the unit to contain this unit.
+    /** 
+     * Sets the unit's container unit.
+     * Overridden from Unit class.
+     * @param containerUnit the unit to contain this unit.
      */
     public void setContainerUnit(Unit containerUnit) {
         super.setContainerUnit(containerUnit);
@@ -316,11 +314,13 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		
 		if (getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Building building = BuildingManager.getBuilding(this);
-			if (building.hasFunction(org.mars_sim.msp.simulation.structure.building.function.LifeSupport.NAME)) {
-				org.mars_sim.msp.simulation.structure.building.function.LifeSupport lifeSupport = 
-					(org.mars_sim.msp.simulation.structure.building.function.LifeSupport) 
-					building.getFunction(org.mars_sim.msp.simulation.structure.building.function.LifeSupport.NAME);
-				localGroup = new PersonCollection(lifeSupport.getOccupants());
+			if (building != null) {
+				if (building.hasFunction(org.mars_sim.msp.simulation.structure.building.function.LifeSupport.NAME)) {
+					org.mars_sim.msp.simulation.structure.building.function.LifeSupport lifeSupport = 
+						(org.mars_sim.msp.simulation.structure.building.function.LifeSupport) 
+						building.getFunction(org.mars_sim.msp.simulation.structure.building.function.LifeSupport.NAME);
+					localGroup = new PersonCollection(lifeSupport.getOccupants());
+				}
 			}
 		}
 		else if (getLocationSituation().equals(Person.INVEHICLE)) {
