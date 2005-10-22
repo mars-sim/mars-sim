@@ -79,9 +79,11 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 		buf.append("  Mihaly Gyulai - Java Programming\n");
 		buf.append("  Kyur Thadeshwar - Java Programming\n");
 		buf.append("  Kent Primrose - Java Programming, JUnit tests\n");
-		buf.append("  Dima Stephanchuk - Java Programmer, sound\n\n");
+		buf.append("  Dima Stephanchuk - Java Programmer, sound\n");
+		buf.append("  Paula Jenkins - Voice Actress\n\n");
 
         buf.append("Testing and Recommendations:\n");
+        buf.append("  Trey Monty\n");
         buf.append("  Rik Declercq\n");
         buf.append("  Claude David\n");
         buf.append("  Paul Speed\n");
@@ -107,6 +109,25 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
         buf.append("Frans Blok: The Rotterdam System\n(http://www.geocities.com/fra_nl/rotmonth.html)\n");
         buf.append("Bruce Mackenzie: Metric Time for Mars\n(http://members.nbci.com/_XMCM/mars_ultor/mars/other/mcknzfrm.htm)\n\n");
 
+        buf.append("Sounds in the Mars Simulation Project are licensed under the Creative Commons Sampling Plus 1.0 License.\n");
+        buf.append("http://creativecommons.org/licenses/sampling+/1.0/\n\n");
+        
+        buf.append("Vehicle sounds created from the following base sounds:\n\n");
+        
+        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=6086\n");
+        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=2885\n");
+        buf.append("Vance Dylan - Sonic Valley Productions: http://www.sonicvalley.com\n\n");
+        
+        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=515\n");
+        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=517\n");
+        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=518\n");
+        buf.append("Jen Carlile: http://www.atonaltrek.com\n\n");
+        
+        buf.append("Female settler voice by Paula Jenkins\n");
+        buf.append("Male settler voice by Scott Davis\n\n");
+        
+        buf.append("The FreeSound Project: http://freesound.iua.upf.edu\n\n");
+        
         buf.append("Map images and data courtesy of NASA JPL ");
         buf.append("(www.jpl.nasa.gov) and Malin Space Science Systems ");
         buf.append("(www.msss.com).\n\n");
