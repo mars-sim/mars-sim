@@ -1,10 +1,10 @@
 #
 # Mars Simulation Project
 # Java makefile by jpatokal
-# $Id: Makefile,v 1.3 2004-09-03 02:53:17 scud1 Exp $
+# $Id: Makefile,v 1.4 2005-10-22 02:42:49 scud1 Exp $
 #
 
-VERSION = 2.77
+VERSION = 2.78
 
 JAVAROOT = /usr/local/java/jdk1.3.1/j2sdk1.3.1/
 JAVABIN = $(JAVAROOT)/bin
