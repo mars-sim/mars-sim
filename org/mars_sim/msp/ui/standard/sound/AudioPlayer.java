@@ -109,7 +109,10 @@ public class AudioPlayer {
 		if (clip != null) {
 			// Note: No linear volume control for the clip, so use gain control.
 			// Linear volume = pow(10.0, gainDB/20.0) 
-			float gain = (float) Math.log10(volume) * 20F;
+			// Note Math.log10 is Java 1.5 or better.
+			// float gainLog10 = (float) Math.log10(volume);
+			float gainLog10 = (float) (Math.log(volume) / Math.log(10F));
+			float gain = gainLog10 * 20F;
 			FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
 			gainControl.setValue(gain);
 		}
