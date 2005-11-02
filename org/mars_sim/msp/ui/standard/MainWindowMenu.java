@@ -26,6 +26,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
     private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
+    private JCheckBoxMenuItem soundToolItem;      // Sound tool menu item
     private JCheckBoxMenuItem lookAndFeelItem;    // Look and feel menu item
     private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
 
@@ -95,6 +96,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         monitorToolItem.addActionListener(this);
         toolsMenu.add(monitorToolItem);
 
+        // Create sound tool menu item
+        soundToolItem = new JCheckBoxMenuItem("Sound Tool");
+        soundToolItem.addActionListener(this);
+        toolsMenu.add(soundToolItem);
+        
 		// Create option menu
 		JMenu optionMenu = new JMenu("Option");
 		add(optionMenu);
@@ -150,15 +156,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
                 mainWindow.getDesktop().openToolWindow("Monitor Tool");
             else mainWindow.getDesktop().closeToolWindow("Monitor Tool");
         }
+        
+        if (selectedItem == soundToolItem) {
+            if (soundToolItem.isSelected()) 
+                mainWindow.getDesktop().openToolWindow("Sound Tool");
+            else mainWindow.getDesktop().closeToolWindow("Sound Tool");
+        }
 
         if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
-    }
-
-    private synchronized void sleep(int millis) {
-        try {
-            this.wait(millis);
-        } 
-        catch(InterruptedException ie) {}
     }
 
     // MenuListener method overriding
@@ -171,6 +176,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             mainWindow.getDesktop().isToolWindowOpen("Time Tool"));
         monitorToolItem.setSelected(
             mainWindow.getDesktop().isToolWindowOpen("Monitor Tool"));
+        soundToolItem.setSelected(
+        	mainWindow.getDesktop().isToolWindowOpen("Sound Tool"));
     }
 
     public void menuCanceled(MenuEvent event) {}
