@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation.resource;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,7 +16,7 @@ import java.util.Set;
 /**
  * A phase of an amount resource.
  */
-public final class Phase {
+public final class Phase implements Serializable {
 	
 	// List of all phases.
 	private final static Set phases = new HashSet(3);

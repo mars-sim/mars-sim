@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation.resource;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,7 +17,7 @@ import java.util.Set;
  * The AmountResource class represents a type of resource that is a material 
  * measured in mass kg.
  */
-public final class AmountResource implements Resource {
+public final class AmountResource implements Resource, Serializable {
 	
     // Set of all amount resources.
     private static final Set resources = new HashSet(10);

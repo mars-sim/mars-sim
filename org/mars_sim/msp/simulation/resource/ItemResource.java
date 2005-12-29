@@ -7,12 +7,13 @@
 
 package org.mars_sim.msp.simulation.resource;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public final class ItemResource implements Resource {
+public final class ItemResource implements Resource, Serializable {
 
 	// Set of all item resources.
 	private static final Set resources = new HashSet(3);
