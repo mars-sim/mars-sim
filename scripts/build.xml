@@ -132,14 +132,20 @@
     <!-- Clean build of all jars. -->
     <target name="clean-build" depends="clean, build" />
 
+	<path id="test.classpath">
+		<pathelement location="${mars.basDir}" />
+		<pathelement location="${mars.jars}/junit.jar" />
+		<fileset dir="${mars.jars}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
     <!-- Perform Unit test. -->
     <target name="test">
-        <junit printsummary="true">
-            <classpath>
-              <fileset dir="${mars.baseDir}" />
-            </classpath>
-            <!-- <formatter type="brief" usefile="false" /> -->
-            <test name="org.mars_sim.msp.simulation.AllJUnitTests" />
+        <junit printsummary="true" fork="yes" haltonfailure="yes">
+        	<test name="org.mars_sim.msp.simulation.AllJUnitTests" />
+        	<formatter type="plain" usefile="false" />
+            <classpath refid="test.classpath" />
         </junit>
     </target>
 
