@@ -145,8 +145,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     	double range = getVehicle().getRange();
         UnitManager unitManager = startingSettlement.getUnitManager();
         Settlement result = null;
-
-        SettlementCollection settlements = new SettlementCollection(unitManager.getSettlements());
         
         // Find all desirable destination settlements.
         Map desirableSettlements = new HashMap();
@@ -192,7 +190,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		if (person.getMind().getJobLock()) 
 			destinationJobProspect = jobManager.getJobProspect(person, currentJob, destinationSettlement, false);
 		else destinationJobProspect = jobManager.getBestJobProspect(person, destinationSettlement, false);
-		boolean betterJobProspect = (destinationJobProspect > currentJobProspect);
 		double jobFactor = 0D;
 		if (destinationJobProspect > currentJobProspect) jobFactor = 1D;
 		else if (destinationJobProspect < currentJobProspect) jobFactor = -1D;

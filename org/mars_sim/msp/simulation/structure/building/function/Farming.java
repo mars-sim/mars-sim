@@ -11,6 +11,7 @@ import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
  
@@ -96,8 +97,9 @@ public class Farming extends Function implements Serializable {
      * Adds work time to the crops current phase.
      * @param workTime - Work time to be added (millisols)
      * @return workTime remaining after working on crop (millisols)
+     * @throws Exception if error adding work.
      */
-    public double addWork(double workTime) {
+    public double addWork(double workTime) throws Exception {
 		double workTimeRemaining = workTime;
 		int needyCrops = 0;
 		// Scott - I used the comparison criteria 00001D rather than 0D
@@ -132,9 +134,10 @@ public class Farming extends Function implements Serializable {
     /**
      * Adds harvested food to the farm.
      * @param harvest harvested food to add (kg.)
+     * @throws Exception if error adding harvest.
      */
-    public void addHarvest(double harvest) {
-    	getBuilding().getInventory().addResource(Resource.FOOD, harvest);
+    public void addHarvest(double harvest) throws Exception {
+    	getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, harvest);
     }
     
     /**
@@ -177,7 +180,7 @@ public class Farming extends Function implements Serializable {
 		try {
 			while (i.hasNext()) {
 				Crop crop = (Crop) i.next();
-				crop.timePassing(time);
+				crop.timePassing(time * productionLevel);
             
 				// Remove old crops.
 				if (crop.getPhase().equals(Crop.FINISHED)) {

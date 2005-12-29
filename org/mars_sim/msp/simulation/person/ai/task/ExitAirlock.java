@@ -77,7 +77,8 @@ public class ExitAirlock extends Task implements Serializable {
             Inventory inv = airlock.getEntityInventory();
             EVASuit suit = getGoodEVASuit(inv);
             if (suit != null) {
-                inv.takeUnit(suit, person);
+                inv.retrieveUnit(suit);
+                person.getInventory().storeUnit(suit);
                 hasSuit = true;
             }
         }
@@ -186,7 +187,7 @@ public class ExitAirlock extends Task implements Serializable {
 
         EVASuit result = null;
         
-        UnitIterator i = inv.getUnitsOfClass(EVASuit.class).iterator();
+        UnitIterator i = inv.findAllUnitsOfClass(EVASuit.class).iterator();
         while (i.hasNext() && (result == null)) {
             EVASuit suit = (EVASuit) i.next();
             boolean fullyLoaded = suit.isFullyLoaded();

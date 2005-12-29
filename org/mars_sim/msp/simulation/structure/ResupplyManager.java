@@ -17,7 +17,6 @@ import org.mars_sim.msp.simulation.time.MarsClock;
 public class ResupplyManager implements Serializable {
 	
 	// Data members
-	private Settlement settlement;
 	private List resupplies;
 	
 	/**
@@ -28,7 +27,6 @@ public class ResupplyManager implements Serializable {
 	ResupplyManager(Settlement settlement) throws Exception {
 		
 		//Initialize data
-		this.settlement = settlement;
 		resupplies = new ArrayList();
 		
 		// Create resupply missions.

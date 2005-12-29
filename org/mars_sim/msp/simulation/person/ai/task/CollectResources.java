@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /** 
@@ -28,7 +29,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	protected double collectionRate; // Collection rate for resource (kg/millisol)
 	protected double targettedAmount; // Targeted amount of resource to collect at site. (kg)
 	protected double startingCargo; // Amount of resource already in rover cargo at start of task. (kg)
-	protected String resourceType; // The resource type (see org.mars_sim.msp.simulation.Resource)
+	protected AmountResource resourceType; // The resource type 
 	
 	/**
 	 * Constructor
@@ -41,7 +42,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param startingCargo The starting amount (kg) of resource in the rover cargo.
 	 * @throws Exception if error constructing this task.
 	 */
-	public CollectResources(String taskName, Person person, Rover rover, String resourceType, 
+	public CollectResources(String taskName, Person person, Rover rover, AmountResource resourceType, 
 			double collectionRate, double targettedAmount, double startingCargo) throws Exception {
 		
 		// Use EVAOperation parent constructor.
@@ -141,14 +142,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 			return time;
 		}
 
-		double remainingPersonCapacity = person.getInventory()
-			.getResourceRemainingCapacity(resourceType);
-		double currentSamplesCollected = rover.getInventory()
-			.getResourceMass(resourceType) - startingCargo; 
+		double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(resourceType);
+		double currentSamplesCollected = rover.getInventory().getAmountResourceStored(resourceType) - startingCargo; 
 		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
 		double sampleLimit = remainingPersonCapacity;
-		if (remainingSamplesNeeded < remainingPersonCapacity)
-			sampleLimit = remainingSamplesNeeded;
+		if (remainingSamplesNeeded < remainingPersonCapacity) sampleLimit = remainingSamplesNeeded;
 
 		double samplesCollected = time * collectionRate;
 
@@ -158,7 +156,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
 
 		// Modify collection rate by polar region if ice collecting.
-		if (resourceType.equals(Resource.ICE)) {
+		if (resourceType.equals(AmountResource.ICE)) {
 			if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates()))
 				samplesCollected *= 3D;
 		}
@@ -168,11 +166,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 		
 		// Collect rock samples.
 		if (samplesCollected <= sampleLimit) {
-			person.getInventory().addResource(resourceType, samplesCollected);
+			person.getInventory().storeAmountResource(resourceType, samplesCollected);
 			return 0D;
 		}
 		else {
-			if (sampleLimit >= 0D) person.getInventory().addResource(resourceType, sampleLimit);
+			if (sampleLimit >= 0D) person.getInventory().storeAmountResource(resourceType, sampleLimit);
 			setPhase(ENTER_AIRLOCK);
 			return time - (sampleLimit / collectionRate);
 		}
@@ -192,12 +190,12 @@ public class CollectResources extends EVAOperation implements Serializable {
         addExperience(time);
 		
 		if (enteredAirlock) {
-			double resources = person.getInventory().getResourceMass(resourceType);
+			double resources = person.getInventory().getAmountResourceStored(resourceType);
 
 			// Load rock samples into rover.
 			if (resources > 0D) {
-				resources = person.getInventory().removeResource(resourceType, resources);
-				rover.getInventory().addResource(resourceType, resources);
+				person.getInventory().retrieveAmountResource(resourceType, resources);
+				rover.getInventory().storeAmountResource(resourceType, resources);
 				return 0D;
 			}
 			else {

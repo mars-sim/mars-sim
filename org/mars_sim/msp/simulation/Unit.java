@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.78 2005-08-23
+ * @version 2.79 2005-12-11
  * @author Scott Davis
  */
 
@@ -136,7 +136,7 @@ public abstract class Unit implements Serializable {
      *  @return mass of unit and inventory
      */
     public double getMass() {
-        return baseMass + inventory.getTotalMass();
+        return baseMass + inventory.getTotalInventoryMass();
     }
 
     /**

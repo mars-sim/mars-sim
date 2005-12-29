@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -34,7 +35,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 	private Lab lab;         // The laboratory the person is working in.
 	private Inventory inv;   // The inventory the lab uses.
 	private boolean consumesResources; // Does the research consume resources?
-	private String resourceType; // The type of resource the research consumes.
+	private AmountResource resourceType; // The type of resource the research consumes.
 	private double resourceRate; // The rate the research consumes resources.
 	private String science;  // The science that is being researched.
 	
@@ -48,7 +49,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 	 * @throws Exception if error constructing task.
 	 */
 	public ResearchScience(String science, Person person, boolean consumesResources, 
-			String resourceType, double resourceRate) throws Exception {
+			AmountResource resourceType, double resourceRate) throws Exception {
 		// Use task constructor.
 		super("Research " + science, person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
 		
@@ -96,7 +97,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 		if (isDone()) return time;
 
 		// Remove any used resources.
-		if (consumesResources) inv.removeResource(resourceType, getEffectiveResearchTime(time) * resourceRate);
+		if (consumesResources) inv.retrieveAmountResource(resourceType, getEffectiveResearchTime(time) * resourceRate);
 		
 		// Add experience
 		addExperience(time);
@@ -159,7 +160,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 	 * @param resourceType the resource that is consumed (or null)
 	 * @return laboratory found or null if none.
 	 */
-	protected static Lab getLocalLab(Person person, String science, boolean consumesResource, String resourceType) {
+	protected static Lab getLocalLab(Person person, String science, boolean consumesResource, AmountResource resourceType) {
 		Lab result = null;
 		
 		// If research consumes a resource, determine if the resource is available.
@@ -178,12 +179,12 @@ public abstract class ResearchScience extends Task implements Serializable {
 	 * @param resourceType the type of resource.
 	 * @return true if sufficient resource.
 	 */
-	private static boolean hasSufficientResource(Person person, String resourceType) {
+	private static boolean hasSufficientResource(Person person, AmountResource resourceType) {
 		boolean result = false;
 		
 		Unit container = person.getContainerUnit();
 		if (container != null) {
-			if (container.getInventory().getResourceMass(resourceType) > 0) result = true;
+			if (container.getInventory().getAmountResourceStored(resourceType) > 0) result = true;
 		}
 		
 		return result;

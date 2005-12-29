@@ -7,6 +7,7 @@
 package org.mars_sim.msp.simulation.malfunction;
 
 import java.util.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.w3c.dom.*;
 
 /**
@@ -118,7 +119,10 @@ public class MalfunctionConfig {
 							Double changeRate = new Double(effectElement.getAttribute(CHANGE_RATE));
 							
 							if (type.equals("life support")) lifeSupportEffects.put(effectName, changeRate);
-							else if (type.equals("resource")) resourceEffects.put(effectName, changeRate);
+							else if (type.equals("resource")) {
+								AmountResource resource = AmountResource.findAmountResource(effectName);
+								resourceEffects.put(resource, changeRate);
+							}
 							else throw new Exception("Effect " + effectName + " type not correct in malfunction " + name);
 						}
 					}

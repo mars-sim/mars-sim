@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.building.function;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 
 /**
@@ -39,9 +40,10 @@ public class Storage extends Function implements Serializable {
 			Iterator i1 = storageCapacity.keySet().iterator();
 			while (i1.hasNext()) {
 				String resourceName = (String) i1.next();
-				double currentCapacity = inventory.getResourceCapacity(resourceName);
+				AmountResource resource = AmountResource.findAmountResource(resourceName);
+				double currentCapacity = inventory.getAmountResourceCapacity(resource);
 				double buildingCapacity = ((Double) storageCapacity.get(resourceName)).doubleValue();
-				inventory.setResourceCapacity(resourceName, currentCapacity + buildingCapacity);
+				inventory.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
 			}
 		
 			// Get initial resources in building.
@@ -49,8 +51,9 @@ public class Storage extends Function implements Serializable {
 			Iterator i2 = initialResources.keySet().iterator();
 			while (i2.hasNext()) {
 				String resourceName = (String) i2.next();
+				AmountResource resource = AmountResource.findAmountResource(resourceName);
 				double initialResource = ((Double) initialResources.get(resourceName)).doubleValue();
-				inventory.addResource(resourceName, initialResource);
+				inventory.storeAmountResource(resource, initialResource);
 			}
 		}
 		catch (Exception e) {

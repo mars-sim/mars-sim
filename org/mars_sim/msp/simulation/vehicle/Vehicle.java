@@ -13,8 +13,8 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.time.*;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
@@ -38,12 +38,8 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
     private double range; // Maximum range of vehicle. (km)
     private double fuelEfficiency; // The fuel efficiency of the vehicle. (km/kg)
-    private Coordinates destinationCoords; // Coordinates of the destination
-    private Settlement destinationSettlement; // Destination settlement (it applicable)
-    private String destinationType; // Type of destination ("None", "Settlement" or "Coordinates")
     private boolean isReservedMission = false; // True if vehicle is currently reserved for a mission and cannot be taken by another
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
-    private MarsClock estimatedTimeOfArrival; // Estimated time of arrival to destination.
     private ArrayList trail; // A collection of locations that make up the vehicle's trail.
     private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
 
@@ -58,7 +54,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         // use Unit constructor
         super(name, settlement.getCoordinates());
         
-        settlement.getInventory().addUnit(this);
+        settlement.getInventory().storeUnit(this);
 
         // Initialize vehicle data
         this.description = description;
@@ -458,15 +454,14 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     	
     	// Make sure sufficient fuel is loaded.
     	Inventory i = getInventory();
-    	String fuel = getFuelType();
-    	double fuelPercentage = i.getResourceMass(fuel) / i.getResourceCapacity(fuel);
+    	AmountResource fuel = getFuelType();
+    	double fuelPercentage = i.getAmountResourceStored(fuel) / i.getAmountResourceCapacity(fuel);
     	return (fuelPercentage >= percentage);
     }
     
     /**
      * Gets the resource type that this vehicle uses for fuel.
-     * @return resource type as a string
-     * @see org.mars_sim.msp.simulation.Resource
+     * @return resource type
      */
-    public abstract String getFuelType();
+    public abstract AmountResource getFuelType();
 }

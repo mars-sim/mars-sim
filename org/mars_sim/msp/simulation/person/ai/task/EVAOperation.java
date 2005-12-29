@@ -12,12 +12,12 @@ import java.io.Serializable;
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Airlockable;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -130,7 +130,7 @@ abstract class EVAOperation extends Task implements Serializable {
             	result = true;
         }
 
-        EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
+        EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit == null) {
             // System.out.println(person.getName() + " should end EVA: No EVA suit found.");
             return true;
@@ -138,16 +138,16 @@ abstract class EVAOperation extends Task implements Serializable {
         Inventory suitInv = suit.getInventory();
 	
         // Check if EVA suit is at 15% of its oxygen capacity.
-        double oxygenCap = suitInv.getResourceCapacity(Resource.OXYGEN);
-        double oxygen = suitInv.getResourceMass(Resource.OXYGEN);
+        double oxygenCap = suitInv.getAmountResourceCapacity(AmountResource.OXYGEN);
+        double oxygen = suitInv.getAmountResourceStored(AmountResource.OXYGEN);
         if (oxygen <= (oxygenCap * .15D)) {
             // System.out.println(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
             result = true;
         }
 
         // Check if EVA suit is at 15% of its water capacity.
-        double waterCap = suitInv.getResourceCapacity(Resource.WATER);
-        double water = suitInv.getResourceMass(Resource.WATER);
+        double waterCap = suitInv.getAmountResourceCapacity(AmountResource.WATER);
+        double water = suitInv.getAmountResourceStored(AmountResource.WATER);
         if (water <= (waterCap * .15D)) {
             // System.out.println(person.getName() + " should end EVA: EVA suit water level less than 15%");	
             result = true;
@@ -180,7 +180,7 @@ abstract class EVAOperation extends Task implements Serializable {
      */
     protected void checkForAccident(double time) {
 
-        EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
+        EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit != null) {
 	    
             double chance = .001D;

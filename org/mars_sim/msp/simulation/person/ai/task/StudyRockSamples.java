@@ -9,11 +9,11 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Lab;
-import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 
@@ -33,7 +33,7 @@ public class StudyRockSamples extends ResearchScience implements Serializable {
      * @throws Exception if error constructing task.
      */
     public StudyRockSamples(Person person) throws Exception {
-		super(Skill.AREOLOGY, person, true, Resource.ROCK_SAMPLES, RESEARCH_RATE);
+		super(Skill.AREOLOGY, person, true, AmountResource.ROCK_SAMPLES, RESEARCH_RATE);
     }
 
     /** 
@@ -44,7 +44,7 @@ public class StudyRockSamples extends ResearchScience implements Serializable {
     public static double getProbability(Person person) {
 		double result = 0D;
 
-		Lab lab = getLocalLab(person, Skill.AREOLOGY, true, Resource.ROCK_SAMPLES);
+		Lab lab = getLocalLab(person, Skill.AREOLOGY, true, AmountResource.ROCK_SAMPLES);
 		if (lab != null) {
 			result = 25D; 
 		

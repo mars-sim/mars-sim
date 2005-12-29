@@ -8,8 +8,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -82,45 +82,45 @@ public class UnloadVehicle extends Task implements Serializable {
         if (garage == null) amountUnloading /= 4D;
         
         // Unload fuel
-	    double fuelAmount = vehicle.getInventory().getResourceMass(vehicle.getFuelType());
+	    double fuelAmount = vehicle.getInventory().getAmountResourceStored(vehicle.getFuelType());
         if (fuelAmount > amountUnloading) fuelAmount = amountUnloading;
-	    vehicle.getInventory().removeResource(vehicle.getFuelType(), fuelAmount);
-        settlement.getInventory().addResource(vehicle.getFuelType(), fuelAmount);
+	    vehicle.getInventory().retrieveAmountResource(vehicle.getFuelType(), fuelAmount);
+        settlement.getInventory().storeAmountResource(vehicle.getFuelType(), fuelAmount);
         amountUnloading -= fuelAmount;
 
         // Unload oxygen. 
-        double oxygenAmount = vehicle.getInventory().getResourceMass(Resource.OXYGEN);
+        double oxygenAmount = vehicle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
         if (oxygenAmount > amountUnloading) oxygenAmount = amountUnloading;
-        vehicle.getInventory().removeResource(Resource.OXYGEN, oxygenAmount);
-        settlement.getInventory().addResource(Resource.OXYGEN, oxygenAmount);
+        vehicle.getInventory().retrieveAmountResource(AmountResource.OXYGEN, oxygenAmount);
+        settlement.getInventory().storeAmountResource(AmountResource.OXYGEN, oxygenAmount);
         amountUnloading -= oxygenAmount;
 
         // Unload water
-        double waterAmount = vehicle.getInventory().getResourceMass(Resource.WATER);
+        double waterAmount = vehicle.getInventory().getAmountResourceStored(AmountResource.WATER);
         if (waterAmount > amountUnloading) waterAmount = amountUnloading;
-        vehicle.getInventory().removeResource(Resource.WATER, waterAmount);
-        settlement.getInventory().addResource(Resource.WATER, waterAmount);
+        vehicle.getInventory().retrieveAmountResource(AmountResource.WATER, waterAmount);
+        settlement.getInventory().storeAmountResource(AmountResource.WATER, waterAmount);
         amountUnloading -= waterAmount;
 
         // Unload Food
-        double foodAmount = vehicle.getInventory().getResourceMass(Resource.FOOD);
+        double foodAmount = vehicle.getInventory().getAmountResourceStored(AmountResource.FOOD);
         if (foodAmount > amountUnloading) foodAmount = amountUnloading;
-        vehicle.getInventory().removeResource(Resource.FOOD, foodAmount);
-        settlement.getInventory().addResource(Resource.FOOD, foodAmount);
+        vehicle.getInventory().retrieveAmountResource(AmountResource.FOOD, foodAmount);
+        settlement.getInventory().storeAmountResource(AmountResource.FOOD, foodAmount);
         amountUnloading -= foodAmount;
 
         // Unload Rock Samples 
-        double rockAmount = vehicle.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
+        double rockAmount = vehicle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
         if (rockAmount > amountUnloading) rockAmount = amountUnloading;
-        vehicle.getInventory().removeResource(Resource.ROCK_SAMPLES, rockAmount);
-        settlement.getInventory().addResource(Resource.ROCK_SAMPLES, rockAmount);
+        vehicle.getInventory().retrieveAmountResource(AmountResource.ROCK_SAMPLES, rockAmount);
+        settlement.getInventory().storeAmountResource(AmountResource.ROCK_SAMPLES, rockAmount);
         amountUnloading -= rockAmount;
 
 		// Unload Ice 
-		double iceAmount = vehicle.getInventory().getResourceMass(Resource.ICE);
+		double iceAmount = vehicle.getInventory().getAmountResourceStored(AmountResource.ICE);
 		if (iceAmount > amountUnloading) iceAmount = amountUnloading;
-		vehicle.getInventory().removeResource(Resource.ICE, iceAmount);
-		settlement.getInventory().addResource(Resource.ICE, iceAmount);
+		vehicle.getInventory().retrieveAmountResource(AmountResource.ICE, iceAmount);
+		settlement.getInventory().storeAmountResource(AmountResource.ICE, iceAmount);
 		amountUnloading -= iceAmount;
 
         if (isFullyUnloaded(vehicle)) endTask();
@@ -144,12 +144,12 @@ public class UnloadVehicle extends Task implements Serializable {
     static public boolean isFullyUnloaded(Vehicle vehicle) {
         boolean result = true;
 
-        if (vehicle.getInventory().getResourceMass(vehicle.getFuelType()) != 0D) result = false;
-        if (vehicle.getInventory().getResourceMass(Resource.OXYGEN) != 0D) result = false;
-        if (vehicle.getInventory().getResourceMass(Resource.WATER) != 0D) result = false;
-        if (vehicle.getInventory().getResourceMass(Resource.FOOD) != 0D) result = false;
-        if (vehicle.getInventory().getResourceMass(Resource.ROCK_SAMPLES) != 0D) result = false;
-        if (vehicle.getInventory().getResourceMass(Resource.ICE) != 0D) result = false;
+        if (vehicle.getInventory().getAmountResourceStored(vehicle.getFuelType()) != 0D) result = false;
+        if (vehicle.getInventory().getAmountResourceStored(AmountResource.OXYGEN) != 0D) result = false;
+        if (vehicle.getInventory().getAmountResourceStored(AmountResource.WATER) != 0D) result = false;
+        if (vehicle.getInventory().getAmountResourceStored(AmountResource.FOOD) != 0D) result = false;
+        if (vehicle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES) != 0D) result = false;
+        if (vehicle.getInventory().getAmountResourceStored(AmountResource.ICE) != 0D) result = false;
 
         return result;
     }

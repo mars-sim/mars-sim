@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard.tool.monitor;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
@@ -107,27 +108,27 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-                double water = settle.getInventory().getResourceMass(Resource.WATER);
+                double water = settle.getInventory().getAmountResourceStored(AmountResource.WATER);
                 result = new Integer((int) water);
             } break;
 
             case FOOD : {
-                double food = settle.getInventory().getResourceMass(Resource.FOOD);
+                double food = settle.getInventory().getAmountResourceStored(AmountResource.FOOD);
                 result = new Integer((int) food);
             } break;
 
             case OXYGEN : {
-                double oxygen = settle.getInventory().getResourceMass(Resource.OXYGEN);
+                double oxygen = settle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
                 result = new Integer((int) oxygen);
             } break;
 
             case METHANE : {
-                double methane = settle.getInventory().getResourceMass(Resource.METHANE);
+                double methane = settle.getInventory().getAmountResourceStored(AmountResource.METHANE);
                 result = new Integer((int) methane);
             } break;
 
             case ROCK_SAMPLES : {
-                double rockSamples = settle.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
+                double rockSamples = settle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
 		        result = new Integer((int) rockSamples);
 	        } break;
 
@@ -181,22 +182,22 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case HYDROGEN : {
-                double hydrogen = settle.getInventory().getResourceMass(Resource.HYDROGEN);
+                double hydrogen = settle.getInventory().getAmountResourceStored(AmountResource.HYDROGEN);
                 result = new Integer((int) hydrogen);
             } break;
 
             case WASTE_WATER : {
-                double wasteWater = settle.getInventory().getResourceMass(Resource.WASTE_WATER);
+                double wasteWater = settle.getInventory().getAmountResourceStored(AmountResource.WASTE_WATER);
                 result = new Integer((int) wasteWater);
             } break;
             
             case CO2 : {
-                double co2 = settle.getInventory().getResourceMass(Resource.CARBON_DIOXIDE);
+                double co2 = settle.getInventory().getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
                 result = new Integer((int) co2);
             } break;
             
             case ICE : {
-            	double ice = settle.getInventory().getResourceMass(Resource.ICE);
+            	double ice = settle.getInventory().getAmountResourceStored(AmountResource.ICE);
             	result = new Integer((int) ice);
             } break;
         }

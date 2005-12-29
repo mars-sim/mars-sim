@@ -44,7 +44,7 @@ public class EVA extends Function implements Serializable {
 			int evaSuitNum = config.getEVASuitNumber(building.getName());
 			Settlement settlement = building.getBuildingManager().getSettlement();
 			for (int x=0; x < evaSuitNum; x++) 
-				building.getInventory().addUnit(new EVASuit(settlement.getCoordinates()));
+				building.getInventory().storeUnit(new EVASuit(settlement.getCoordinates()));
 		}
 		catch (Exception e) {
 			throw new BuildingException("EVA.constructor: " + e.getMessage());

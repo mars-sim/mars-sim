@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.mars.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /**
@@ -138,8 +139,9 @@ public class Crop implements Serializable {
      * Adds work time to the crops current phase.
      * @param workTime - Work time to be added (millisols)
      * @return workTime remaining after working on crop (millisols)
+     * @throws Exception if error adding work.
      */
-    public double addWork(double workTime) {
+    public double addWork(double workTime) throws Exception {
         double remainingWorkTime = workTime;
         
         if (phase.equals(PLANTING)) {
@@ -214,17 +216,28 @@ public class Crop implements Serializable {
                 double sunlight = (double) surface.getSurfaceSunlight(settlement.getCoordinates());
                 harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
                     
-                // Determine harvest modifier by amount of waste water available.
-                double wasteWaterRequired = maxPeriodHarvest * 100D;
-                double wasteWaterUsed = settlement.getInventory().removeResource(Resource.WASTE_WATER, wasteWaterRequired);
-                settlement.getInventory().addResource(Resource.WATER, wasteWaterUsed * .8D);
-                harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
+                try {
+                	// Determine harvest modifier by amount of waste water available.
+                	double wasteWaterRequired = maxPeriodHarvest * 100D;
+                	double wasteWaterAvailable = settlement.getInventory().getAmountResourceStored(AmountResource.WASTE_WATER);
+                	double wasteWaterUsed = wasteWaterRequired;
+                	if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
+                	settlement.getInventory().retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
+                	settlement.getInventory().storeAmountResource(AmountResource.WATER, wasteWaterUsed * .8D);
+                	harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
                     
-                // Determine harvest modifier by amount of carbon dioxide available.
-                double carbonDioxideRequired = maxPeriodHarvest * 2D;
-                double carbonDioxideUsed = settlement.getInventory().removeResource(Resource.CARBON_DIOXIDE, carbonDioxideRequired);
-                settlement.getInventory().addResource(Resource.OXYGEN, carbonDioxideUsed * .9D);
-                harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
+                	// Determine harvest modifier by amount of carbon dioxide available.
+                	double carbonDioxideRequired = maxPeriodHarvest * 2D;
+                	double carbonDioxideAvailable = settlement.getInventory().getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
+                	double carbonDioxideUsed = carbonDioxideRequired;
+                	if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
+                	settlement.getInventory().retrieveAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideUsed);
+                	settlement.getInventory().storeAmountResource(AmountResource.OXYGEN, carbonDioxideUsed * .9D);
+                	harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
+                }
+                catch (InventoryException e) {
+                	e.printStackTrace(System.err);
+                }
                     
                 // Modifiy harvest amount.
                 actualHarvest += maxPeriodHarvest * harvestModifier;

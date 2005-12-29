@@ -178,7 +178,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
         // Consume fuel for distance traveled.
         double fuelConsumed = distanceTraveled / vehicle.getFuelEfficiency();
-        vehicle.getInventory().removeResource(vehicle.getFuelType(), fuelConsumed);
+        vehicle.getInventory().retrieveAmountResource(vehicle.getFuelType(), fuelConsumed);
 
         double result = 0;
 

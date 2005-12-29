@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
@@ -182,8 +183,14 @@ public abstract class RoverMission extends VehicleMission {
     	if (!aboard) {
     		// board rover
             if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
-                settlement.getInventory().takeUnit(person, getVehicle());
-                aboard = isEveryoneInRover();
+            	try {
+            		settlement.getInventory().retrieveUnit(person);
+            		getVehicle().getInventory().storeUnit(person);
+            		aboard = isEveryoneInRover();
+            	}
+            	catch (InventoryException e) {
+            		throw new MissionException(VehicleMission.EMBARKING, e);
+            	}
             }
             else return;
     	}
@@ -199,7 +206,12 @@ public abstract class RoverMission extends VehicleMission {
     		catch (Exception e) {}
     		
     		// embark from settlement
-    		settlement.getInventory().dropUnitOutside(getVehicle());
+    		try {
+    			settlement.getInventory().retrieveUnit(getVehicle());
+    		}
+    		catch (InventoryException e) {
+    			throw new MissionException(VehicleMission.EMBARKING, e);
+    		}
     		setPhaseEnded(true);
     	}
     }
@@ -218,7 +230,12 @@ public abstract class RoverMission extends VehicleMission {
     	
     	// If rover is not parked at settlement, park it.
     	if (getVehicle().getSettlement() == null) {
-    		disembarkSettlement.getInventory().addUnit(getVehicle());
+    		try {
+    			disembarkSettlement.getInventory().storeUnit(getVehicle());
+    		}
+    		catch (InventoryException e) {
+    			throw new MissionException(VehicleMission.DISEMBARKING, e);
+    		}
     		
     		// Add vehicle to a garage if available.
     		try {
@@ -231,7 +248,13 @@ public abstract class RoverMission extends VehicleMission {
     	
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-            getVehicle().getInventory().takeUnit(person, disembarkSettlement);
+        	try {
+        		getVehicle().getInventory().retrieveUnit(person);
+        		disembarkSettlement.getInventory().storeUnit(person);
+        	}
+        	catch (InventoryException e) {
+        		throw new MissionException(VehicleMission.DISEMBARKING, e);
+        	}
             
             // Add the person to the rover's garage if it's in one.
             // Otherwise add person to another building in the settlement.
@@ -254,11 +277,12 @@ public abstract class RoverMission extends VehicleMission {
         	PersonIterator i = rover.getCrew().iterator();
         	while (i.hasNext()) {
         		Person crewmember = i.next();
-        		rover.getInventory().takeUnit(crewmember, disembarkSettlement);
         		try {
+        			rover.getInventory().retrieveUnit(crewmember);
+        			disembarkSettlement.getInventory().storeUnit(crewmember);
         			BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
         		}
-        		catch (BuildingException e) {
+        		catch (Exception e) {
         			throw new MissionException(VehicleMission.DISEMBARKING, e);
         		}
         	}

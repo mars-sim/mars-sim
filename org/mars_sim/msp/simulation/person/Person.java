@@ -77,13 +77,10 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		baseMass = 70D;
 
 		// Set inventory total mass capacity.
-		inventory.setTotalCapacity(100D);
-		inventory.setResourceCapacity(Resource.ROCK_SAMPLES, 100D);
-		inventory.setResourceCapacity(Resource.ICE, 100D);
-		inventory.setResourceCapacity(Resource.FOOD, 100D);
+		inventory.addGeneralCapacity(100D);
 		
 		// Put person in proper building.
-	    settlement.getInventory().addUnit(this);
+	    settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
     }
 
@@ -145,7 +142,15 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      * location of the containing unit.
      */
     public void buryBody() {
-        if (containerUnit != null) containerUnit.getInventory().dropUnitOutside(this);
+        if (containerUnit != null) {
+        	try {
+        		containerUnit.getInventory().retrieveUnit(this);
+        	}
+        	catch (InventoryException e) {
+        		System.err.println("Could not bury " + name);
+        		e.printStackTrace(System.err);
+        	}
+        }
 	    isBuried = true;
     }
 

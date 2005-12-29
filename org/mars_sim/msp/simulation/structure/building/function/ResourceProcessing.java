@@ -75,7 +75,12 @@ public class ResourceProcessing extends Function implements Serializable {
 		Iterator i = resourceProcesses.iterator();
 		while (i.hasNext()) {
 			ResourceProcess process = (ResourceProcess) i.next();
-			process.processResources(time, productionLevel, getBuilding().getInventory());
+			try {
+				process.processResources(time, productionLevel, getBuilding().getInventory());
+			}
+			catch(Exception e) {
+				throw new BuildingException("Error processing resources: " + e.getMessage());
+			}
 		}
 	}
 	

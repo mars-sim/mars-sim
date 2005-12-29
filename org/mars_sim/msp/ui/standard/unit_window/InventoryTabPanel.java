@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard.unit_window;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.equipment.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.ui.standard.*;
 import java.awt.*;
 import java.util.*;
@@ -113,13 +114,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
-            resources = inventory.getAllResources();
             keys = new ArrayList();
-            Iterator i = resources.keySet().iterator();
+            keys.addAll(inventory.getAllAmountResourcesStored());
+            resources = new HashMap();
+            Iterator i = keys.iterator();
             while (i.hasNext()) {
-                Object key = i.next();
-                double mass = ((Double) resources.get(key)).doubleValue();
-                if (mass > 0D) keys.add(key);
+            	AmountResource resource = (AmountResource) i.next();
+            	resources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
             }
         }
         
@@ -150,17 +151,18 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
   
         public void update() {
-            java.util.Map newResources = inventory.getAllResources();
+            java.util.List newResourceKeys = new ArrayList();
+            newResourceKeys.addAll(inventory.getAllAmountResourcesStored());
+            Map newResources = new HashMap();
+            Iterator i = newResourceKeys.iterator();
+            while (i.hasNext()) {
+            	AmountResource resource = (AmountResource) i.next();
+            	newResources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
+            }
+            
             if (!resources.equals(newResources)) {
                 resources = newResources;
-                keys = new ArrayList();
-                Iterator i = resources.keySet().iterator();
-                while (i.hasNext()) {
-                    Object key = i.next();
-                    double mass = ((Double) resources.get(key)).doubleValue();
-                    if (mass > 0D) keys.add(key);
-                }
-            
+                keys = newResourceKeys;
                 fireTableDataChanged();
             }
         }
@@ -176,7 +178,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         
         private EquipmentTableModel(Inventory inventory) {
             this.inventory = inventory;
-            equipment = inventory.getUnitsOfClass(Equipment.class);
+            equipment = inventory.findAllUnitsOfClass(Equipment.class);
         }
         
         public int getRowCount() {
@@ -213,7 +215,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
   
         public void update() {
-            UnitCollection newEquipment = inventory.getUnitsOfClass(Equipment.class);
+            UnitCollection newEquipment = inventory.findAllUnitsOfClass(Equipment.class);
             if (!equipment.equals(newEquipment)) {
                 equipment = newEquipment;
                 fireTableDataChanged();

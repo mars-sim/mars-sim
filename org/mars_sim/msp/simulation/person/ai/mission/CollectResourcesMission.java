@@ -17,8 +17,8 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.time.MarsClock;
 
 /** 
  * The CollectResourcesMission class is a mission to travel in a rover to several
@@ -31,12 +31,12 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 
 	// Data members
 	protected Settlement startingSettlement; // The settlement the mission starts at.
-	private boolean roverLoaded; // True if the rover is fully loaded with supplies.
-	private boolean roverUnloaded; // True if the rover is fully unloaded of supplies.
-	private String resourceType; // The type of resource to collect.
+	// private boolean roverLoaded; // True if the rover is fully loaded with supplies.
+	// private boolean roverUnloaded; // True if the rover is fully unloaded of supplies.
+	private AmountResource resourceType; // The type of resource to collect.
 	private double siteCollectedResources; // The amount of resources (kg) collected at a collection site.
 	private double collectingStart; // The starting amount of resources in a rover at a collection site.
-	private MarsClock startCollectingTime; // The time the resource collecting is started.
+	// private MarsClock startCollectingTime; // The time the resource collecting is started.
 	private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
 	private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol). 
 
@@ -44,14 +44,14 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	 * Constructor
 	 * @param missionName The name of the mission.
 	 * @param startingPerson The person starting the mission.
-	 * @param resourceType The type of resource (see org.mars_sim.msp.simulation.Resource).
+	 * @param resourceType The type of resource.
 	 * @param siteResourceGoal The goal amount of resources to collect at a site (kg).
 	 * @param resourceCollectionRate The resource collection rate for a person (kg/millisol).
 	 * @param numSites The number of collection sites.
 	 * @param minPeople The mimimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, Person startingPerson, String resourceType, 
+	CollectResourcesMission(String missionName, Person startingPerson, AmountResource resourceType, 
 			double siteResourceGoal, double resourceCollectionRate, int numSites, int minPeople) 
 			throws MissionException {
 		
@@ -119,8 +119,8 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	private void collectingPhase(Person person) throws MissionException {
 	
 		Inventory inv = getRover().getInventory();
-		double resourcesCollected = inv.getResourceMass(resourceType);
-		double resourcesCapacity = inv.getResourceCapacity(resourceType);
+		double resourcesCollected = inv.getAmountResourceStored(resourceType);
+		double resourcesCapacity = inv.getAmountResourceCapacity(resourceType);
 	
 		// Calculate resources collected at the site so far.
 		siteCollectedResources = resourcesCollected - collectingStart;
@@ -158,7 +158,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 					try {
 						CollectResources collectResources = new CollectResources("Collecting Resources", person, 
 							getRover(), resourceType, resourceCollectionRate, 
-							siteResourceGoal - siteCollectedResources, inv.getResourceMass(resourceType));
+							siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceType));
 						assignTask(person, collectResources);
 					}
 					catch (Exception e) {

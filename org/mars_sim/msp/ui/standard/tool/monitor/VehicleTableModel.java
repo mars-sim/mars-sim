@@ -12,6 +12,7 @@ import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -115,27 +116,27 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-	        double water = vehicle.getInventory().getResourceMass(Resource.WATER);
+	        double water = vehicle.getInventory().getAmountResourceStored(AmountResource.WATER);
 	        result = new Integer((int) water);
             } break;
 
             case FOOD : {
-	        double food = vehicle.getInventory().getResourceMass(Resource.FOOD);
+	        double food = vehicle.getInventory().getAmountResourceStored(AmountResource.FOOD);
 	        result = new Integer((int) food);
             } break;
 
             case OXYGEN : {
-	        double oxygen = vehicle.getInventory().getResourceMass(Resource.OXYGEN);
+	        double oxygen = vehicle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
 	        result = new Integer((int) oxygen);
             } break;
 
             case METHANE : {
-	        double methane = vehicle.getInventory().getResourceMass(Resource.METHANE);
+	        double methane = vehicle.getInventory().getAmountResourceStored(AmountResource.METHANE);
 	        result = new Integer((int) methane);
             } break;
 
             case ROCK_SAMPLES : {
-	        double rockSamples = vehicle.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
+	        double rockSamples = vehicle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
 	        result = new Integer((int) rockSamples);
             } break;
 
@@ -194,7 +195,7 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
             
 			case ICE : {
-				double ice = vehicle.getInventory().getResourceMass(Resource.ICE);
+				double ice = vehicle.getInventory().getAmountResourceStored(AmountResource.ICE);
 				result = new Integer((int) ice);
 			} break;
         }

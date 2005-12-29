@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
-import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -42,7 +42,7 @@ public class Exploration extends CollectResourcesMission {
 	public Exploration(Person startingPerson) throws MissionException {
 		
 		// Use CollectResourcesMission constructor.
-		super("Exploration", startingPerson, Resource.ROCK_SAMPLES, 
+		super("Exploration", startingPerson, AmountResource.ROCK_SAMPLES, 
 			SITE_GOAL, COLLECTION_RATE, NUM_SITES, MIN_PEOPLE);
 	}
 
@@ -60,7 +60,7 @@ public class Exploration extends CollectResourcesMission {
 	    
 			boolean reservableRover = areVehiclesAvailable(settlement);
 
-			double rocks = settlement.getInventory().getResourceMass(Resource.ROCK_SAMPLES);
+			double rocks = settlement.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
 			boolean enoughRockSamples = (rocks >= 500D);
 
 			// At least one person left to hold down the fort.
@@ -97,7 +97,7 @@ public class Exploration extends CollectResourcesMission {
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
-			if (vehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) <= 0D) usable = false;
+			if (vehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES) <= 0D) usable = false;
 			
 			if (usable) result = true;    
 		}
@@ -115,7 +115,7 @@ public class Exploration extends CollectResourcesMission {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		
 		// Make sure rover can carry rock samples.
-		if (newVehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) <= 0D) usable = false;
+		if (newVehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES) <= 0D) usable = false;
 		
 		return usable;
 	}
@@ -135,8 +135,8 @@ public class Exploration extends CollectResourcesMission {
 		
 		// Check if one can hold more rock samples than the other.
 		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
-			double firstRockCapacity = firstVehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES);
-			double secondRockCapacity = secondVehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES);
+			double firstRockCapacity = firstVehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES);
+			double secondRockCapacity = secondVehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES);
 			if (firstRockCapacity > secondRockCapacity) result = 1;
 			else if (firstRockCapacity < secondRockCapacity) result = -1;
 		}

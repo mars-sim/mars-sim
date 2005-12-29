@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 
 /**
  * The MalfunctionManager class manages the current malfunctions in a unit.
@@ -367,9 +368,16 @@ public class MalfunctionManager implements Serializable {
                     Map effects = malfunction.getResourceEffects();
                     Iterator i2 = effects.keySet().iterator();
                     while (i2.hasNext()) {
-                        String key = (String) i2.next();
-                        double amount = ((Double) effects.get(key)).doubleValue();
-                        entity.getInventory().removeResource(key, amount * time);
+                        AmountResource resource = (AmountResource) i2.next();
+                        double amount = ((Double) effects.get(resource)).doubleValue();
+                        double amountDepleted = amount * time;
+                        Inventory inv = entity.getInventory();
+                        double amountStored = inv.getAmountResourceStored(resource);
+                        if (amountStored < amountDepleted) amountDepleted = amountStored;
+                        try {
+                        	inv.retrieveAmountResource(resource, amountDepleted);
+                        }
+                        catch (InventoryException e) {}
                     }
                 }
             }

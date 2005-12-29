@@ -202,11 +202,8 @@ public abstract class TravelMission extends Mission {
 	 * @return distance (km) 
 	 */
 	public double getCurrentLegDistance() {
-		if (TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
-			NavPoint prev = getPreviousNavpoint();
-			NavPoint next = getNextNavpoint();
+		if (TRAVEL_TO_NAVPOINT.equals(travelStatus)) 
 			return getPreviousNavpoint().getLocation().getDistance(getNextNavpoint().getLocation());
-		}
 		else return 0D;
 	}
 	

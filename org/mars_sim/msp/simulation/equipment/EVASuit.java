@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.equipment;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 
 /** 
  * The EVASuit class represents an EVA suit which provides life support
@@ -19,6 +20,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
 
     // Static members
     private double BASE_MASS = 45D;          // Unloaded mass of EVA suit (kg.)
+    private double GENERAL_CAPACITY = 100D;  // General capacity.
     private double OXYGEN_CAPACITY = 1D;     // Oxygen capacity (kg.)
     private double WATER_CAPACITY = 4D;      // Water capacity (kg.)
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
@@ -27,8 +29,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     /**
      * Constructor
      * @param location the location of the EVA suit.
+     * @throws Exception if error creating EVASuit.
      */
-    public EVASuit(Coordinates location) {
+    public EVASuit(Coordinates location) throws Exception {
     
         // User Equipment constructor.
         super("EVA Suit", location);
@@ -43,16 +46,16 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         // Set the empty mass of the EVA suit in kg.
         baseMass = BASE_MASS;
 
-        // Set the total mass capacity of the EVA suit in kg.
-        inventory.setTotalCapacity(100D);
+        // Set the general mass capacity of the EVA suit in kg.
+        inventory.addGeneralCapacity(GENERAL_CAPACITY);
 	
         // Set the resource capacities of the EVA suit.
-        inventory.setResourceCapacity(Resource.OXYGEN, OXYGEN_CAPACITY);
-        inventory.setResourceCapacity(Resource.WATER, WATER_CAPACITY);
+        inventory.addAmountResourceTypeCapacity(AmountResource.OXYGEN, OXYGEN_CAPACITY);
+        inventory.addAmountResourceTypeCapacity(AmountResource.WATER, WATER_CAPACITY);
 
         // Set the initial quantity of resources in the EVA suit.
-        inventory.addResource(Resource.OXYGEN, OXYGEN_CAPACITY);
-        inventory.addResource(Resource.WATER, WATER_CAPACITY);
+        inventory.storeAmountResource(AmountResource.OXYGEN, OXYGEN_CAPACITY);
+        inventory.storeAmountResource(AmountResource.WATER, WATER_CAPACITY);
     }
 
     /** 
@@ -63,11 +66,11 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        if (inventory.getResourceMass(Resource.OXYGEN) <= 0D) {
+        if (inventory.getAmountResourceStored(AmountResource.OXYGEN) <= 0D) {
             // System.out.println("bad oxygen");
             result = false;
         }
-        if (inventory.getResourceMass(Resource.WATER) <= 0D) {
+        if (inventory.getAmountResourceStored(AmountResource.WATER) <= 0D) {
             // System.out.println("bad water");	
             result = false;
         }
@@ -105,8 +108,14 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
      * @return the amount of oxygen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-        return inventory.removeResource(Resource.OXYGEN, amountRequested) * 
-	        (malfunctionManager.getOxygenFlowModifier() / 100D);
+    	double oxygenTaken = amountRequested;
+    	double oxygenLeft = inventory.getAmountResourceStored(AmountResource.OXYGEN);
+    	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
+    	try {
+    		inventory.retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
+    	}
+    	catch (InventoryException e) {};
+        return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
     /**
@@ -115,8 +124,14 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
      * @return the amount of water actually received from system (kg)
      */
     public double provideWater(double amountRequested) {
-        return inventory.removeResource(Resource.WATER, amountRequested) * 
-	        (malfunctionManager.getWaterFlowModifier() / 100D);
+    	double waterTaken = amountRequested;
+    	double waterLeft = inventory.getAmountResourceStored(AmountResource.WATER);
+    	if (waterTaken > waterLeft) waterTaken = waterLeft;
+    	try {
+    		inventory.retrieveAmountResource(AmountResource.WATER, waterTaken);
+    	}
+    	catch (InventoryException e) {};
+        return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
     /**
@@ -151,10 +166,10 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
    
         boolean result = true;
 
-        double oxygen = inventory.getResourceMass(Resource.OXYGEN);
+        double oxygen = inventory.getAmountResourceStored(AmountResource.OXYGEN);
         if (oxygen != OXYGEN_CAPACITY) result = false;
 
-        double water = inventory.getResourceMass(Resource.WATER);
+        double water = inventory.getAmountResourceStored(AmountResource.WATER);
         if (water != WATER_CAPACITY) result = false;
 
         return result;

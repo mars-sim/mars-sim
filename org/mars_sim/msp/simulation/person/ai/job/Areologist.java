@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
@@ -97,7 +98,7 @@ public class Areologist extends Job implements Serializable {
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			if (vehicle instanceof Rover) {
-				if (vehicle.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) > 0D) result++;
+				if (vehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES) > 0D) result++;
 			}
 		}
 		
@@ -108,7 +109,7 @@ public class Areologist extends Job implements Serializable {
 			Mission mission = (Mission) k.next();
 			if (mission instanceof RoverMission) {
 				Rover rover = ((RoverMission) mission).getRover();
-				if ((rover != null) && rover.getInventory().getResourceCapacity(Resource.ROCK_SAMPLES) > 0D) result++;
+				if ((rover != null) && rover.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES) > 0D) result++;
 			}
 		}
 		

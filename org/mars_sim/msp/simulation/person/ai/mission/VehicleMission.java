@@ -30,8 +30,6 @@ public abstract class VehicleMission extends TravelMission {
 	// Data members
 	private Vehicle vehicle;
 	private VehicleOperator lastOperator; // The last operator of this vehicle in the mission.
-	private boolean vehicleLoaded;
-	private boolean vehicleUnloaded;
 	
     // Mission tasks tracked
     private OperateVehicle operateVehicleTask; // The current operate vehicle task.

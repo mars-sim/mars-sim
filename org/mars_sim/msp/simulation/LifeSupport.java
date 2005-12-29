@@ -30,12 +30,14 @@ public interface LifeSupport {
     /** Gets oxygen from system.
      *  @param amountRequested the amount of oxygen requested from system (kg)
      *  @return the amount of oxgyen actually received from system (kg)
+     *  @throws Exception if error providing oxygen.
      */
     public double provideOxygen(double amountRequested);
 
     /** Gets water from system.
      *  @param amountRequested the amount of water requested from system (kg)
      *  @return the amount of water actually received from system (kg)
+     *  @throws Exception if error providing water.
      */
     public double provideWater(double amountRequested);
 

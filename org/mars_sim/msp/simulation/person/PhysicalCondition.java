@@ -12,6 +12,7 @@ import java.util.*;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.medical.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 
 /**
  * This class represents the Physical Condition of a Person. It is models the
@@ -23,8 +24,8 @@ public class PhysicalCondition implements Serializable {
     private static int MIN_VALUE = 0;
     private static int MAX_VALUE = 1;
     
-    private static final String START_MEDICAL = "Has Illness";
-    private static final String STOP_MEDICAL = "Cured";
+    // private static final String START_MEDICAL = "Has Illness";
+    // private static final String STOP_MEDICAL = "Cured";
     
     // Stress jump resulting from being in an accident.
     public static final double ACCIDENT_STRESS = 40D;
@@ -195,9 +196,17 @@ public class PhysicalCondition implements Serializable {
      */
     public void consumeFood(double amount, Unit container) {
     	if (container == null) throw new IllegalArgumentException("container is null");
-        double amountRecieved = container.getInventory().removeResource(Resource.FOOD, amount);
-        if (checkResourceConsumption(amountRecieved, amount, MIN_VALUE, medic.getStarvation()))
-            recalculate();
+    	double foodEaten = amount;
+        double foodAvailable = container.getInventory().getAmountResourceStored(AmountResource.FOOD);
+        if (foodEaten > foodAvailable) foodEaten = foodAvailable;
+        try {
+        	container.getInventory().retrieveAmountResource(AmountResource.FOOD, foodEaten);
+        	if (checkResourceConsumption(foodEaten, amount, MIN_VALUE, medic.getStarvation())) recalculate();
+        }
+        catch (InventoryException e) {
+        	System.err.println(person.getName() + " could not retrieve food.");
+        	e.printStackTrace(System.err);
+        }
     }
     
     /**

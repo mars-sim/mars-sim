@@ -71,11 +71,11 @@ public class BuildingAirlock extends Airlock {
         	
             if (pressurized) {
                 lifeSupport.addPerson(person);
-                inv.addUnit(person);
+                inv.storeUnit(person);
             }
             else {
             	if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person);
-                inv.dropUnitOutside(person);
+                inv.retrieveUnit(person);
             }
         }
         else throw new Exception(person.getName() + " not in airlock of " + getEntityName());

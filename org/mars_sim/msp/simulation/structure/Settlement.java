@@ -12,6 +12,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
@@ -45,7 +46,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         this.template = template;
         
 		// Set inventory total mass capacity.
-		inventory.setTotalCapacity(Double.MAX_VALUE);
+		inventory.addGeneralCapacity(Double.MAX_VALUE);
         
         // Initialize building manager
         buildingManager = new BuildingManager(this);
@@ -138,8 +139,8 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        if (inventory.getResourceMass(Resource.OXYGEN) <= 0D) result = false;
-        if (inventory.getResourceMass(Resource.WATER) <= 0D) result = false;
+        if (inventory.getAmountResourceStored(AmountResource.OXYGEN) <= 0D) result = false;
+        if (inventory.getAmountResourceStored(AmountResource.WATER) <= 0D) result = false;
         if (getOxygenFlowModifier() < 100D) result = false;
         if (getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -160,10 +161,15 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      *  @return the amount of oxgyen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-        double oxygenProvided = inventory.removeResource(Resource.OXYGEN, amountRequested) *
-            (getOxygenFlowModifier() / 100D);
-        inventory.addResource(Resource.CARBON_DIOXIDE, oxygenProvided);
-        return oxygenProvided;
+    	double oxygenTaken = amountRequested;
+    	double oxygenLeft = inventory.getAmountResourceStored(AmountResource.OXYGEN);
+    	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
+    	try {
+    		inventory.retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
+    		inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, oxygenTaken);
+    	}
+    	catch (InventoryException e) {};
+        return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
     /**
@@ -179,8 +185,14 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      *  @return the amount of water actually received from system (kg)
      */
     public double provideWater(double amountRequested) {
-        return inventory.removeResource(Resource.WATER, amountRequested) * 
-            (getWaterFlowModifier() / 100D);
+    	double waterTaken = amountRequested;
+    	double waterLeft = inventory.getAmountResourceStored(AmountResource.WATER);
+    	if (waterTaken > waterLeft) waterTaken = waterLeft;
+    	try {
+    		inventory.retrieveAmountResource(AmountResource.WATER, waterTaken);
+    	}
+    	catch (InventoryException e) {};
+        return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
     /**

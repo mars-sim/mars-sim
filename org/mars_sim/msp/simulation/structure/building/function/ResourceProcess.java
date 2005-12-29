@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.structure.building.function;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.time.*;
  
 /**
@@ -159,8 +160,9 @@ public class ResourceProcess implements Serializable {
      * @param time (millisols)
      * @param productionLevel proportion of max process rate (0.0D - 1.0D)
      * @param inventory the inventory pool to use for processes.
+     * @throws Exception if error processing resources.
      */
-    public void processResources(double time, double productionLevel, Inventory inventory) {
+    public void processResources(double time, double productionLevel, Inventory inventory) throws Exception {
         if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
             throw new IllegalArgumentException();
         
@@ -180,10 +182,11 @@ public class ResourceProcess implements Serializable {
             Iterator inputI = maxInputResourceRates.keySet().iterator();
             while (inputI.hasNext()) {
                 String resourceName = (String) inputI.next();
+                AmountResource resource = AmountResource.findAmountResource(resourceName);
                 double maxRate = ((Double) maxInputResourceRates.get(resourceName)).doubleValue();
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * timeSec;
-                inventory.removeResource(resourceName, resourceAmount);
+                inventory.retrieveAmountResource(resource, resourceAmount);
                 // System.out.println(resourceName + " input: " + resourceAmount + "kg.");
             }
             
@@ -191,10 +194,11 @@ public class ResourceProcess implements Serializable {
             Iterator outputI = maxOutputResourceRates.keySet().iterator();
             while (outputI.hasNext()) {
                 String resourceName = (String) outputI.next();
+                AmountResource resource = AmountResource.findAmountResource(resourceName);
                 double maxRate = ((Double) maxOutputResourceRates.get(resourceName)).doubleValue();
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * timeSec;
-                inventory.addResource(resourceName, resourceAmount);
+                inventory.storeAmountResource(resource, resourceAmount);
                 // System.out.println(resourceName + " output: " + resourceAmount + "kg.");
             }
         }
@@ -209,8 +213,9 @@ public class ResourceProcess implements Serializable {
      * @param time (millisols)
      * @param inventory the inventory pool the process uses.
      * @return bottleneck (0.0D - 1.0D)
+     * @throws Exception if error getting input bottleneck.
      */
-    private double getInputBottleneck(double time, Inventory inventory) {
+    private double getInputBottleneck(double time, Inventory inventory) throws Exception {
         
         // Check for illegal argument.
         if (time < 0D) throw new IllegalArgumentException("time must be > 0D");
@@ -223,9 +228,10 @@ public class ResourceProcess implements Serializable {
         Iterator inputI = maxInputResourceRates.keySet().iterator();
         while (inputI.hasNext()) {
             String resourceName = (String) inputI.next();
+            AmountResource resource = AmountResource.findAmountResource(resourceName);
             double maxRate = ((Double) maxInputResourceRates.get(resourceName)).doubleValue();
             double desiredResourceAmount = maxRate * timeSec;
-            double inventoryResourceAmount = inventory.getResourceMass(resourceName);
+            double inventoryResourceAmount = inventory.getAmountResourceStored(resource);
             double proportionAvailable = 1D;
             if (desiredResourceAmount > 0D) 
                 proportionAvailable = inventoryResourceAmount / desiredResourceAmount;

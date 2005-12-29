@@ -12,6 +12,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.time.MarsClock;
 
@@ -182,11 +183,13 @@ public class Cooking extends Function implements Serializable {
 			
 				SimulationConfig simConfig = Simulation.instance().getSimConfig();
 				PersonConfig config = simConfig.getPersonConfiguration();
-				getBuilding().getInventory().removeResource(Resource.FOOD, config.getFoodConsumptionRate() * (1D / 3D));
+				getBuilding().getInventory().retrieveAmountResource(AmountResource.FOOD, 
+						config.getFoodConsumptionRate() * (1D / 3D));
 			
 				meals.add(new CookedMeal(mealQuality, time));
 				cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
-				// System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + " has " + meals.size() + " hot meals, quality=" + mealQuality);
+				// System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + 
+				//	" has " + meals.size() + " hot meals, quality=" + mealQuality);
 			}
 			catch (Exception e) {
 				System.err.println("Cooking.addWork(): " + e.getMessage());
@@ -209,9 +212,11 @@ public class Cooking extends Function implements Serializable {
 				try {
 					SimulationConfig simConfig = Simulation.instance().getSimConfig();
 					PersonConfig config = simConfig.getPersonConfiguration();
-					getBuilding().getInventory().addResource(Resource.FOOD, config.getFoodConsumptionRate() * (1D / 3D));
+					getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, 
+							config.getFoodConsumptionRate() * (1D / 3D));
 					i.remove();
-					// System.out.println("Cooked meal expiring at " + getBuilding().getBuildingManager().getSettlement().getName());
+					// System.out.println("Cooked meal expiring at " + 
+					// 	getBuilding().getBuildingManager().getSettlement().getName());
 				}
 				catch (Exception e) {
 					System.err.println("Cooking.timePassing(): " + e.getMessage());

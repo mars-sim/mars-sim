@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.vehicle;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
@@ -55,15 +56,15 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		crewCapacity = config.getCrewSize(description);
 
 		// Set inventory total mass capacity.
-		inventory.setTotalCapacity(config.getTotalCapacity(description));
+		inventory.addGeneralCapacity(config.getTotalCapacity(description));
 	
 		// Set inventory resource capacities.
-		inventory.setResourceCapacity(Resource.METHANE, config.getCargoCapacity(description, Resource.METHANE));
-		inventory.setResourceCapacity(Resource.OXYGEN, config.getCargoCapacity(description, Resource.OXYGEN));
-		inventory.setResourceCapacity(Resource.WATER, config.getCargoCapacity(description, Resource.WATER));
-		inventory.setResourceCapacity(Resource.FOOD, config.getCargoCapacity(description, Resource.FOOD));
-		inventory.setResourceCapacity(Resource.ROCK_SAMPLES, config.getCargoCapacity(description, Resource.ROCK_SAMPLES));
-		inventory.setResourceCapacity(Resource.ICE, config.getCargoCapacity(description, Resource.ICE));
+		inventory.addAmountResourceTypeCapacity(AmountResource.METHANE, config.getCargoCapacity(description, AmountResource.METHANE.getName()));
+		inventory.addAmountResourceTypeCapacity(AmountResource.OXYGEN, config.getCargoCapacity(description, AmountResource.OXYGEN.getName()));
+		inventory.addAmountResourceTypeCapacity(AmountResource.WATER, config.getCargoCapacity(description, AmountResource.WATER.getName()));
+		inventory.addAmountResourceTypeCapacity(AmountResource.FOOD, config.getCargoCapacity(description, AmountResource.FOOD.getName()));
+		inventory.addAmountResourceTypeCapacity(AmountResource.ROCK_SAMPLES, config.getCargoCapacity(description, AmountResource.ROCK_SAMPLES.getName()));
+		inventory.addAmountResourceTypeCapacity(AmountResource.ICE, config.getCargoCapacity(description, AmountResource.ICE.getName()));
 	
 		// Construct sickbay.
 		if (config.hasSickbay(description)) 
@@ -84,7 +85,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		try {
 			int suitNum = config.getEvaSuits(description);
 			for (int x=0; x < suitNum; x++) 
-			inventory.addUnit(new EVASuit(location));
+			inventory.storeUnit(new EVASuit(location));
 		}
 		catch (Exception e) {
 			throw new Exception("Could not add EVA suits.: " + e.getMessage());
@@ -131,8 +132,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        if (inventory.getResourceMass(Resource.OXYGEN) <= 0D) result = false;
-        if (inventory.getResourceMass(Resource.WATER) <= 0D) result = false;
+        if (inventory.getAmountResourceStored(AmountResource.OXYGEN) <= 0D) result = false;
+        if (inventory.getAmountResourceStored(AmountResource.WATER) <= 0D) result = false;
         if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
         if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -153,8 +154,14 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      *  @return the amount of oxgyen actually received from system (kg)
      */
     public double provideOxygen(double amountRequested) {
-        return inventory.removeResource(Resource.OXYGEN, amountRequested) *
-	        (malfunctionManager.getOxygenFlowModifier() / 100D);
+    	double oxygenTaken = amountRequested;
+    	double oxygenLeft = inventory.getAmountResourceStored(AmountResource.OXYGEN);
+    	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
+    	try {
+    		inventory.retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
+    	}
+    	catch (InventoryException e) {};
+        return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
     /** Gets water from system.
@@ -162,8 +169,14 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      *  @return the amount of water actually received from system (kg)
      */
     public double provideWater(double amountRequested) {
-        return inventory.removeResource(Resource.WATER, amountRequested)  *
-	        (malfunctionManager.getWaterFlowModifier() / 100D);
+    	double waterTaken = amountRequested;
+    	double waterLeft = inventory.getAmountResourceStored(AmountResource.WATER);
+    	if (waterTaken > waterLeft) waterTaken = waterLeft;
+    	try {
+    		inventory.retrieveAmountResource(AmountResource.WATER, waterTaken);
+    	}
+    	catch (InventoryException e) {};
+        return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
     /** Gets the air pressure of the life support system.
@@ -278,8 +291,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @return resource type as a string
      * @see org.mars_sim.msp.simulation.Resource
      */
-    public String getFuelType() {
-    	return Resource.METHANE;
+    public AmountResource getFuelType() {
+    	return AmountResource.METHANE;
     }
     
     /**
@@ -291,9 +304,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	if (super.isLoaded(percentage)) {
     		// Make sure sufficient life support is loaded.
     		Inventory i = getInventory();
-    		double oxygenPercentage = i.getResourceMass(Resource.OXYGEN) / i.getResourceCapacity(Resource.OXYGEN);
-    		double waterPercentage = i.getResourceMass(Resource.WATER) / i.getResourceCapacity(Resource.WATER);
-    		double foodPercentage = i.getResourceMass(Resource.FOOD) / i.getResourceCapacity(Resource.FOOD);
+    		double oxygenPercentage = i.getAmountResourceStored(AmountResource.OXYGEN) / i.getAmountResourceCapacity(AmountResource.OXYGEN);
+    		double waterPercentage = i.getAmountResourceStored(AmountResource.WATER) / i.getAmountResourceCapacity(AmountResource.WATER);
+    		double foodPercentage = i.getAmountResourceStored(AmountResource.FOOD) / i.getAmountResourceCapacity(AmountResource.FOOD);
     	
     		return ((oxygenPercentage >= percentage) && (waterPercentage >= percentage) && (foodPercentage >= percentage));
     	}

@@ -11,13 +11,13 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Resource;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.vehicle.Airlockable;
@@ -194,10 +194,11 @@ public class EnterAirlock extends Task implements Serializable {
     /**
      * Puts the person's EVA suite back into the entity's inventory.
      * EVA Suit is refilled with oxygen and water from the entity's inventory.
+     * @throws Exception if error putting away suit.
      */
-    private void putAwayEVASuit() {
+    private void putAwayEVASuit() throws Exception {
        
-        EVASuit suit = (EVASuit) person.getInventory().findUnit(EVASuit.class);
+        EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit != null) {
         	Inventory suitInv = suit.getInventory();
         	Inventory personInv = person.getInventory();
@@ -205,21 +206,29 @@ public class EnterAirlock extends Task implements Serializable {
         	Inventory entityInv = entity.getInventory();
 
         	// Refill oxygen in suit from entity's inventory. 
-        	double neededOxygen = suitInv.getResourceRemainingCapacity(Resource.OXYGEN);
-        	double takenOxygen = entityInv.removeResource(Resource.OXYGEN, neededOxygen);
+        	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
+        	double availableOxygen = entityInv.getAmountResourceStored(AmountResource.OXYGEN);
+        	double takenOxygen = neededOxygen;
+        	if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
+        	entityInv.retrieveAmountResource(AmountResource.OXYGEN, takenOxygen);
         	// System.out.println(person.getName() + " refilling EVA suit with " + takenOxygen + " oxygen.");
-        	suitInv.addResource(Resource.OXYGEN, takenOxygen);
+        	suitInv.storeAmountResource(AmountResource.OXYGEN, takenOxygen);
 
         	// Refill water in suit from entity's inventory.
-        	double neededWater = suitInv.getResourceRemainingCapacity(Resource.WATER);
-        	double takenWater = entityInv.removeResource(Resource.WATER, neededWater);
+        	double neededWater = suitInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
+        	double availableWater = entityInv.getAmountResourceStored(AmountResource.WATER);
+        	double takenWater = neededWater;
+        	if (takenWater > availableWater) takenWater = availableWater;
+        	entityInv.retrieveAmountResource(AmountResource.WATER, takenWater);
         	// System.out.println(person.getName() + " refilling EVA suit with " + takenWater + " water.");
-        	suitInv.addResource(Resource.WATER, takenWater);
+        	suitInv.storeAmountResource(AmountResource.WATER, takenWater);
 
         	// Return suit to entity's inventory.
         	// System.out.println(person.getName() + " putting away EVA suit into " + entity.getName());
-        	personInv.takeUnit(suit, (Unit) entity);
+        	personInv.retrieveUnit(suit);
+        	entityInv.storeUnit(suit);
         }
+        throw new Exception("Person doesn't have an EVA suit to put away.");
     }
 
     /**

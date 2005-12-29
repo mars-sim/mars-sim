@@ -12,6 +12,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.events.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Rover;
@@ -115,7 +116,8 @@ public class Resupply implements Serializable {
 		while (resourcesI.hasNext()) {
 			String resourceType = (String) resourcesI.next();
 			double amount = ((Double) newResources.get(resourceType)).doubleValue();
-			settlement.getInventory().addResource(resourceType, amount);
+			AmountResource resource = AmountResource.findAmountResource(resourceType);
+			settlement.getInventory().storeAmountResource(resource, amount);
 		}
 		
 		// Deliver immigrants.

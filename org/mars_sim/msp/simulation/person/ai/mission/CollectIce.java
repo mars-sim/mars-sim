@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
-import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -40,7 +40,7 @@ public class CollectIce extends CollectResourcesMission {
 	public CollectIce(Person startingPerson) throws MissionException {
 		
 		// Use CollectResourcesMission constructor.
-		super("Ice Prospecting", startingPerson, Resource.ICE, SITE_GOAL, COLLECTION_RATE, 
+		super("Ice Prospecting", startingPerson, AmountResource.ICE, SITE_GOAL, COLLECTION_RATE, 
 				NUM_SITES, MIN_PEOPLE);
 	}
 	
@@ -58,7 +58,7 @@ public class CollectIce extends CollectResourcesMission {
 	    
 			boolean reservableRover = areVehiclesAvailable(settlement);
 
-			double water = settlement.getInventory().getResourceMass(Resource.WATER);
+			double water = settlement.getInventory().getAmountResourceStored(AmountResource.WATER);
 			boolean enoughWater = (water >= 5000D);
 
 			// At least one person left to hold down the fort.
@@ -98,7 +98,7 @@ public class CollectIce extends CollectResourcesMission {
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
-			if (vehicle.getInventory().getResourceCapacity(Resource.ICE) <= 0D) usable = false;
+			if (vehicle.getInventory().getAmountResourceCapacity(AmountResource.ICE) <= 0D) usable = false;
 			
 			if (usable) result = true;    
 		}
@@ -116,7 +116,7 @@ public class CollectIce extends CollectResourcesMission {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		
 		// Make sure rover can carry ice.
-		if (newVehicle.getInventory().getResourceCapacity(Resource.ICE) <= 0D) usable = false;
+		if (newVehicle.getInventory().getAmountResourceCapacity(AmountResource.ICE) <= 0D) usable = false;
 		
 		return usable;
 	}
@@ -136,8 +136,8 @@ public class CollectIce extends CollectResourcesMission {
 		
 		// Check if one can hold more ice than the other.
 		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
-			double firstIceCapacity = firstVehicle.getInventory().getResourceCapacity(Resource.ICE);
-			double secondIceCapacity = secondVehicle.getInventory().getResourceCapacity(Resource.ICE);
+			double firstIceCapacity = firstVehicle.getInventory().getAmountResourceCapacity(AmountResource.ICE);
+			double secondIceCapacity = secondVehicle.getInventory().getAmountResourceCapacity(AmountResource.ICE);
 			if (firstIceCapacity > secondIceCapacity) result = 1;
 			else if (firstIceCapacity < secondIceCapacity) result = -1;
 		}

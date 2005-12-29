@@ -28,8 +28,8 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 public abstract class Mission implements Serializable {
 
     // Constant string type for events
-    private static final String START_MISSION = "Start Mission ";
-    private static final String END_MISSION = "End Mission ";
+    // private static final String START_MISSION = "Start Mission ";
+    // private static final String END_MISSION = "End Mission ";
 
     // Data members
     private PersonCollection people; // People in mission

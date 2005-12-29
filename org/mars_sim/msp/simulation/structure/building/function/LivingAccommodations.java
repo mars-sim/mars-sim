@@ -8,6 +8,7 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 
@@ -87,8 +88,9 @@ public class LivingAccommodations extends Function implements Serializable {
     /** 
      * Utilizes water for bathing, washing, etc based on population.
      * @param time amount of time passing (millisols)
+     * @throws Exception if error in water usage.
      */
-    public void waterUsage(double time) {
+    public void waterUsage(double time) throws Exception {
 		Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 		double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D) * time;
 		double waterUsageSettlement = waterUsagePerPerson * settlement.getCurrentPopulationNum();
@@ -96,8 +98,11 @@ public class LivingAccommodations extends Function implements Serializable {
 		double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
         
 		Inventory inv = getBuilding().getInventory();
-		double waterUsed = inv.removeResource(Resource.WATER, waterUsageBuilding);
-		inv.addResource(Resource.WASTE_WATER, waterUsed);
+		double waterUsed = waterUsageBuilding;
+		double waterAvailable = inv.getAmountResourceStored(AmountResource.WATER);
+		if (waterUsed > waterAvailable) waterUsed = waterAvailable;
+		inv.retrieveAmountResource(AmountResource.WATER, waterUsed);
+		inv.storeAmountResource(AmountResource.WASTE_WATER, waterUsed);
     }
     
 	/**
