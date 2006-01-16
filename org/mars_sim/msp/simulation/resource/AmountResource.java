@@ -63,6 +63,13 @@ public final class AmountResource implements Resource, Serializable {
 	}
 	
 	/**
+	 * Returns the resource as a string.
+	 */
+	public String toString() {
+		return getName();
+	}
+	
+	/**
 	 * Gets the resources material phase.
 	 * @return phase value
 	 */

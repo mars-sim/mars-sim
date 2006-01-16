@@ -28,7 +28,6 @@ public class VehicleConfig {
 	private static final String CAPACITY = "capacity";
 	private static final String RESOURCE = "resource";
 	private static final String VALUE = "value";
-	private static final String EVA_SUITS = "eva-suits";
 	private static final String SICKBAY = "sickbay";
 	private static final String LAB = "lab";
 	private static final String TECH_LEVEL = "tech-level";
@@ -167,18 +166,6 @@ public class VehicleConfig {
 	}
 	
 	/**
-	 * Gets the number of EVA suits in the rover.
-	 * @param roverType the rover type
-	 * @return the number of EVA suits
-	 * @throws Exception if rover type could not be found or XML parsing error.
-	 */
-	public int getEvaSuits(String roverType) throws Exception {
-		Element roverElement = getRoverElement(roverType);
-		Element evaSuitsElement = (Element) roverElement.getElementsByTagName(EVA_SUITS).item(0);
-		return Integer.parseInt(evaSuitsElement.getAttribute(VALUE));
-	}
-	
-	/**
 	 * Checks if the rover has a sickbay.
 	 * @param roverType the rover type
 	 * @return true if sickbay
@@ -302,7 +289,7 @@ public class VehicleConfig {
 			
 			Element root = roverDoc.getDocumentElement();
 			Element roverNameListElement = (Element) root.getElementsByTagName(ROVER_NAME_LIST).item(0);
-			NodeList roverNameNodes = root.getElementsByTagName(ROVER_NAME);
+			NodeList roverNameNodes = roverNameListElement.getElementsByTagName(ROVER_NAME);
 			for (int x=0; x < roverNameNodes.getLength(); x++) {
 				Element roverNameElement = (Element) roverNameNodes.item(x);
 				roverNames.add(roverNameElement.getAttribute(VALUE));

@@ -21,11 +21,11 @@ public class MarsClock implements Serializable {
     private static final int MONTHS_IN_ORBIT = 24;
     private static final int SOLS_IN_MONTH_SHORT = 27;
     private static final int SOLS_IN_MONTH_LONG = 28;
-    private static final int WEEKS_IN_ORBIT = 96;
-    private static final int WEEKS_IN_MONTH = 4;
+    // private static final int WEEKS_IN_ORBIT = 96;
+    // private static final int WEEKS_IN_MONTH = 4;
     private static final int SOLS_IN_WEEK_SHORT = 6;
     private static final int SOLS_IN_WEEK_LONG = 7;
-    private static final int MILLISOLS_IN_SOL = 1000;
+    // private static final int MILLISOLS_IN_SOL = 1000;
     public static final int NORTHERN_HEMISPHERE = 1;
     public static final int SOUTHERN_HEMISPHERE = 2;
     

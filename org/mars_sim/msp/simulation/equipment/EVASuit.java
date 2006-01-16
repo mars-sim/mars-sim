@@ -19,12 +19,13 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 public class EVASuit extends Equipment implements LifeSupport, Serializable {
 
     // Static members
-    private double BASE_MASS = 45D;          // Unloaded mass of EVA suit (kg.)
-    private double GENERAL_CAPACITY = 100D;  // General capacity.
-    private double OXYGEN_CAPACITY = 1D;     // Oxygen capacity (kg.)
-    private double WATER_CAPACITY = 4D;      // Water capacity (kg.)
-    private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
-    private double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
+	public static final String TYPE = "EVA Suit";
+    private static final double BASE_MASS = 45D; // Unloaded mass of EVA suit (kg.)
+    private static final double GENERAL_CAPACITY = 100D; // General capacity.
+    private static final double OXYGEN_CAPACITY = 1D; // Oxygen capacity (kg.)
+    private static final double WATER_CAPACITY = 4D; // Water capacity (kg.)
+    private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
+    private static final double NORMAL_TEMP = 25D; // Normal temperature (celsius)
 
     /**
      * Constructor
@@ -34,7 +35,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     public EVASuit(Coordinates location) throws Exception {
     
         // User Equipment constructor.
-        super("EVA Suit", location);
+        super(TYPE, location);
 
         // Add scope to malfunction manager.
         malfunctionManager.addScopeString("EVA Suit");

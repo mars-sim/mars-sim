@@ -108,8 +108,7 @@ public class PowerGridTabPanel extends TabPanel {
      * Updates the info on this panel.
      */
     public void update() {
-        Settlement settlement = (Settlement) unit;
-        
+       
         // Update power generated label.
         if (powerGeneratedCache != powerGrid.getGeneratedPower()) {
             powerGeneratedCache = powerGrid.getGeneratedPower();

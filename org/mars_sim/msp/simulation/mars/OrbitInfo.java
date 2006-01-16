@@ -19,7 +19,7 @@ public class OrbitInfo implements Serializable {
     // Static data members
     private static final double ORBIT_PERIOD = 59355072D; // Mars orbit period in seconds
     private static final double ECCENTRICITY = .093D;     // Mars orbit eccentricity
-    private static final double SEMIMAJOR_AXIS = 1.524D;  // Mars orbit semimajor axis in au
+    // private static final double SEMIMAJOR_AXIS = 1.524D;  // Mars orbit semimajor axis in au
     private static final double TILT=.4396D;              // Mars tilt in radians
     private static final double SOLAR_DAY = 88775.244D;   // Mars solar day in seconds
     private static final double ORBIT_AREA = 9.5340749D;  // The area of Mars' orbit in au squared

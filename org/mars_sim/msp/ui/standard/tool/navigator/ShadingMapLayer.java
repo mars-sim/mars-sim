@@ -12,11 +12,9 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
-
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.Mars;
-import org.mars_sim.msp.simulation.mars.OrbitInfo;
 import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 
 /**
@@ -26,7 +24,6 @@ class ShadingMapLayer implements MapLayer {
     
     // Domain data
     private SurfaceFeatures surfaceFeatures;
-    private OrbitInfo orbitInfo;
     private MapDisplay mapDisplay;
     private int[] shadingArray;
 
@@ -38,7 +35,6 @@ class ShadingMapLayer implements MapLayer {
         
         Mars mars = Simulation.instance().getMars();
         surfaceFeatures = mars.getSurfaceFeatures();
-        orbitInfo = mars.getOrbitInfo();
         this.mapDisplay = mapDisplay;
         shadingArray = new int[mapDisplay.getWidth() * mapDisplay.getHeight()];
     }
@@ -55,7 +51,7 @@ class ShadingMapLayer implements MapLayer {
         int width = mapDisplay.getWidth();
         int height = mapDisplay.getHeight();
 
-        Coordinates sunDirection = orbitInfo.getSunDirection();
+        // Coordinates sunDirection = orbitInfo.getSunDirection();
 
         double rho = MapDisplay.NORMAL_PIXEL_RHO;
         if (mapDisplay.isUsgs()) rho = MapDisplay.USGS_PIXEL_RHO;

@@ -26,7 +26,6 @@ public class Workout extends Task implements Serializable {
 
 	// Data members
 	private Exercise gym; // The exercise building the person is using.
-	private double duration; // The duration (in millisols) the person will perform this task.
 	
 	/**
 	 * Constructor

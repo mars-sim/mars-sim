@@ -90,8 +90,6 @@ class UnitMapLayer implements MapLayer {
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         
         IntPoint labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon());
-        int locX = labelLocation.getiX();
-        int locY = labelLocation.getiY();
         
         if (mapDisplay.isTopo()) g.setColor(displayInfo.getTopoMapLabelColor());
         else g.setColor(displayInfo.getSurfMapLabelColor());

@@ -17,7 +17,6 @@ public class Mars implements Serializable {
     private transient SurfaceFeatures surfaceFeatures; // Surface features
 
     // Persistent Data members
-    private String stateFile; // Name of file to load/store this simulation.
     private OrbitInfo orbitInfo; // Orbital information
     private Weather weather; // Martian weather
 

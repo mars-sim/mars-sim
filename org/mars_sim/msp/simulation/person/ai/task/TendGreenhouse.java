@@ -13,7 +13,6 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
-import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 
@@ -31,7 +30,6 @@ public class TendGreenhouse extends Task implements Serializable {
 
     // Data members
     private Farming greenhouse; // The greenhouse the person is tending.
-    private Settlement settlement; // The settlement the greenhouse is in.
 
     /**
      * Constructor

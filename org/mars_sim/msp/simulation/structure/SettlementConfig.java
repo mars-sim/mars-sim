@@ -23,6 +23,7 @@ public class SettlementConfig {
 	private static final String TYPE = "type";
 	private static final String NUMBER = "number";
 	private static final String VEHICLE = "vehicle";
+	private static final String EQUIPMENT = "equipment";
 	private static final String INITIAL_SETTLEMENT_LIST = "initial-settlement-list";
 	private static final String SETTLEMENT = "settlement";
 	private static final String LOCATION = "location";
@@ -117,6 +118,28 @@ public class SettlementConfig {
 			String type = vehicleElement.getAttribute(TYPE);
 			int number = Integer.parseInt(vehicleElement.getAttribute(NUMBER));
 			for (int y=0; y < number; y++) result.add(type); 
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the equipment types in a settlement template.
+	 * @param templateName the name of the settlement template.
+	 * @return map of equipment types and number.
+	 * @throws Exception if there isn't a settlement template with this name or
+	 * if there is an XML parsing error.
+	 */
+	public Map getTemplateEquipment(String templateName) throws Exception {
+		Map result = new HashMap();
+		
+		Element templateElement = getSettlementTemplateElement(templateName);
+		NodeList equipmentNodes = templateElement.getElementsByTagName(EQUIPMENT);
+		for (int x=0; x < equipmentNodes.getLength(); x++) {
+			Element equipmentElement = (Element) equipmentNodes.item(x);
+			String type = equipmentElement.getAttribute(TYPE);
+			Integer number = new Integer(equipmentElement.getAttribute(NUMBER));
+			result.put(type, number);
 		}
 		
 		return result;
@@ -231,6 +254,27 @@ public class SettlementConfig {
 		}
 		
 		return result;		
+	}
+	
+	/**
+	 * Gets the equipment types in a resupply mission.
+	 * @param resupplyName the name of the resupply mission.
+	 * @return map of equipment types and number.
+	 * @throws Exception if XML parsing error.
+	 */
+	public Map getResupplyEquipment(String resupplyName) throws Exception {
+		Map result = new HashMap();
+		
+		Element resupplyElement = getResupplyElement(resupplyName);
+		NodeList equipmentNodes = resupplyElement.getElementsByTagName(EQUIPMENT);
+		for (int x=0; x < equipmentNodes.getLength(); x++) {
+			Element equipmentElement = (Element) equipmentNodes.item(x);
+			String type = equipmentElement.getAttribute(TYPE);
+			Integer number = Integer.getInteger(equipmentElement.getAttribute(NUMBER));
+			result.put(type, number);
+		}
+		
+		return result;
 	}
 	
 	/**

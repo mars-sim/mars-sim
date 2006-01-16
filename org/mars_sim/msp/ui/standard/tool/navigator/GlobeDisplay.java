@@ -172,7 +172,7 @@ class GlobeDisplay extends JComponent implements Runnable {
         int centerY = height / 2;
 
 		Mars mars = Simulation.instance().getMars();
-        Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
+        // Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
 
         Coordinates location = new Coordinates(0D, 0D);
         for (int x = 0; x < 150; x++) {

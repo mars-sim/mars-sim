@@ -23,7 +23,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     // Data members
     private Icon surfMapIcon;
     private Icon topoMapIcon;
-    private Icon buttonIcon;
+    // private Icon buttonIcon;
     private Font mapLabelFont;
     
     /**

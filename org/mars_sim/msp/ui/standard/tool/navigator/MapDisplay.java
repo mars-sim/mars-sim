@@ -73,7 +73,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     static final double USGS_PIXEL_RHO = 11458D / Math.PI;
     private static final int NORMAL_HALF_MAP = 1440 / 2;
     private static final int USGS_HALF_MAP = 11458 / 2;
-    private static final int LABEL_HORIZONTAL_OFFSET = 2;
+    // private static final int LABEL_HORIZONTAL_OFFSET = 2;
 
     /** 
      * Constructor

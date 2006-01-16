@@ -53,7 +53,6 @@ public class USGSMarsMap implements Map, ActionListener {
     private boolean goodConnection = false;
     private boolean connectionTimeout = false;
     private Image img;
-    private Image prefetchedImage;
     private Timer connectionTimer = null;
 
     /** Constructs a USGSMarsMap object */
@@ -123,7 +122,7 @@ public class USGSMarsMap implements Map, ActionListener {
             HttpURLConnection urlCon = (HttpURLConnection) url.openConnection();
             
             // Connect with PDS CGI.
-            PDSConnectionManager connectionManager = new PDSConnectionManager(urlCon, this);
+            new PDSConnectionManager(urlCon, this);
         } 
         catch (MalformedURLException e) {
             System.out.println("URL not valid: " + url.toString());

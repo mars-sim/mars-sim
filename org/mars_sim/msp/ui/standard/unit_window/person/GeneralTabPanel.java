@@ -65,7 +65,7 @@ public class GeneralTabPanel extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-		Person person = (Person) unit;
+		// Person person = (Person) unit;
 		// Fill in as we have more to update on this panel.
 	}
 }

@@ -23,7 +23,7 @@ import org.mars_sim.msp.ui.standard.*;
 abstract class MonitorTab extends JPanel {
     
     private MonitorModel model;    // Mode providing the data
-    private String name;
+    // private String name;
     private Icon icon;
     private boolean mandatory;
 

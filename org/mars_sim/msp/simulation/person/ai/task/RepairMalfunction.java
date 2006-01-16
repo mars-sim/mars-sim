@@ -30,7 +30,6 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
     // Data members
     private Malfunctionable entity; // Entity being repaired.
-    private double duration; // Duration of task in millisols.
 
     /**
      * Constructor

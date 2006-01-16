@@ -28,7 +28,7 @@ public class MarsGlobe {
     // Data members
     private Coordinates centerCoords; // Center position of globe
     private Vector[] Sphere_Color; // point colors in variably-sized vectors
-    private String globeType; // "surface" or "topo"
+    // private String globeType; // "surface" or "topo"
     private Image marsMap; // cylindrical map image
     private Image globeImage; // finished image of sphere with transparency
     private boolean imageDone; // true when image is done
@@ -41,7 +41,7 @@ public class MarsGlobe {
     public MarsGlobe (String globeType, JComponent displayArea) {
 
         // Initialize Variables
-        this.globeType = globeType;
+        // this.globeType = globeType;
         this.displayArea = displayArea;
         Sphere_Color = new Vector[map_height];
         centerCoords = new Coordinates(Math.PI / 2, Math.PI / 2);
@@ -231,7 +231,7 @@ public class MarsGlobe {
     private void setup_sphere() {
 
         // Initialize variables
-        int row, col, col_num, map_col;
+        int row, col_num, map_col;
         double rho, phi, theta;
         double circum, offset;
         double ih_d = (double) map_height;

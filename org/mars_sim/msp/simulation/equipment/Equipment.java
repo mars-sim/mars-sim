@@ -12,9 +12,10 @@ import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 
-/** The Equipment class is an abstract class that represents  
- *  a useful piece of equipment, such as a EVA suite or a
- *  medpack.
+/** 
+ * The Equipment class is an abstract class that represents  
+ * a useful piece of equipment, such as a EVA suite or a
+ * medpack.
  */
 public abstract class Equipment extends Unit implements Malfunctionable {
    

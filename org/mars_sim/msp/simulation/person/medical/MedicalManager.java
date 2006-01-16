@@ -25,7 +25,6 @@ public class MedicalManager implements Serializable {
     private HashMap complaints = new HashMap(); // Possible Complaints
     private HashMap treatments = new HashMap(); // Possible Treatments
     private HashMap supported = new HashMap();  // Treatments 2 Facilities
-    private Collection allTreatments = null;    // Collection of Treatments
     private Complaint starvation;        // Pre-defined complaint
     private Complaint suffocation;       // Pre-defined complaint
     private Complaint dehydration;       // Pre-defined complaint

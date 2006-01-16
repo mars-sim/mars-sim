@@ -8,7 +8,6 @@
 package org.mars_sim.msp.simulation.vehicle;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -80,16 +79,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		// Create the rover's airlock.
 		try { airlock = new VehicleAirlock(this, 2); }
 		catch (Exception e) { System.out.println(e.getMessage()); }
-		
-		// Add EVA suits to inventory.
-		try {
-			int suitNum = config.getEvaSuits(description);
-			for (int x=0; x < suitNum; x++) 
-			inventory.storeUnit(new EVASuit(location));
-		}
-		catch (Exception e) {
-			throw new Exception("Could not add EVA suits.: " + e.getMessage());
-		}
     }
 
     /**

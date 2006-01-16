@@ -13,7 +13,7 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 
 /**
- * The storage class is a building function for storing resources.
+ * The storage class is a building function for storing resources and units.
  */
 public class Storage extends Function implements Serializable {
         
@@ -34,7 +34,7 @@ public class Storage extends Function implements Serializable {
 			SimulationConfig simConfig = Simulation.instance().getSimConfig();
 			BuildingConfig config = simConfig.getBuildingConfiguration();
 			Inventory inventory = building.getInventory();	
-		
+			
 			// Get building resource capacity.
 			storageCapacity = config.getStorageCapacities(building.getName());
 			Iterator i1 = storageCapacity.keySet().iterator();
@@ -60,7 +60,7 @@ public class Storage extends Function implements Serializable {
 			throw new BuildingException("Storage.constructor: " + e.getMessage());
 		}
 	}
-        
+	
     /** 
      * Gets a map of the resources this building is capable of
      * storing and their amounts in kg.

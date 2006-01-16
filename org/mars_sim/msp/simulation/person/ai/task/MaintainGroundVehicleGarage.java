@@ -35,7 +35,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     // Data members
     private VehicleMaintenance garage; // The maintenance garage.
     private GroundVehicle vehicle; // Vehicle to be maintained.
-    private double duration; // Duration (in millisols) the person will perform this task.
 
     /** 
      * Constructor

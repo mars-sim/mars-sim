@@ -84,7 +84,7 @@ public class TableSorter extends AbstractTableModel
      * deleted/inserted or a change to the sorted column, then re-sort
      */
     public void tableChanged(TableModelEvent e) {
-        boolean resort = false;
+        // boolean resort = false;
         TableModelEvent newEvent = null;
         int type = e.getType();
 
@@ -146,6 +146,7 @@ public class TableSorter extends AbstractTableModel
     // arrays. The number of compares appears to vary between N-1 and
     // NlogN depending on the initial order but the main reason for
     // using it here is that, unlike qsort, it is stable.
+    /*
     private void shuttlesort(int from[], int to[], int low, int high) {
         if (high - low < 2) {
             return;
@@ -156,7 +157,7 @@ public class TableSorter extends AbstractTableModel
 
         int p = low;
         int q = middle;
-
+    */
         /* This is an optional short-cut; at each recursive call,
         check to see if the elements in this subset are already
         ordered.  If so, no further comparisons are needed; the
@@ -171,7 +172,7 @@ public class TableSorter extends AbstractTableModel
         for partially ordered lists but some analysis is needed to
         find out how the performance drops to Nlog(N) as the initial
         order diminishes - it may drop very quickly.  */
-
+    /*
         if (high - low >= 4 && compare(from[middle-1], from[middle]) <= 0) {
             for (int i = low; i < high; i++) {
                 to[i] = from[i];
@@ -190,6 +191,7 @@ public class TableSorter extends AbstractTableModel
             }
         }
     }
+    */
 
     public int getColumnCount() {
         return sourceModel.getColumnCount();

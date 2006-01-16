@@ -51,6 +51,13 @@ public final class ItemResource implements Resource, Serializable {
 	}
 	
 	/**
+	 * Returns the resource as a string.
+	 */
+	public String toString() {
+		return getName();
+	}
+	
+	/**
 	 * Gets the mass for an item of the resource.
 	 * @return mass (kg)
 	 */

@@ -76,9 +76,9 @@ class TableProperties extends JInternalFrame {
         }
 
         // Selected if column is visible
-        Enumeration enum = model.getColumns();
-        while(enum.hasMoreElements()) {
-            int selected = ((TableColumn)enum.nextElement()).getModelIndex();
+        Enumeration en = model.getColumns();
+        while(en.hasMoreElements()) {
+            int selected = ((TableColumn)en.nextElement()).getModelIndex();
             JCheckBox columnButton  = (JCheckBox)columnButtons.get(selected);
             columnButton.setSelected(true);
         }
@@ -105,9 +105,9 @@ class TableProperties extends JInternalFrame {
         }
         else {
             TableColumn col = null;
-            Enumeration enum = model.getColumns();
-            while((col == null) && enum.hasMoreElements()) {
-                TableColumn next = (TableColumn)enum.nextElement();
+            Enumeration en = model.getColumns();
+            while((col == null) && en.hasMoreElements()) {
+                TableColumn next = (TableColumn)en.nextElement();
                 if (next.getModelIndex() == index) {
                     col = next;
                 }

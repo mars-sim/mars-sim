@@ -23,7 +23,6 @@ public class TerrainElevation {
 	private static final String INDEX_FILE = "TopoMarsMap.index";
 	private static final String MAP_FILE = "TopoMarsMap.dat";
 	private static final int MAP_HEIGHT = 1440; // Source map height in pixels.
-	private static final int MAP_WIDTH = 2880; // Source map width in pixels.
 	private static final double TWO_PI = Math.PI * 2D;
 	private static final double OLYMPUS_MONS_CALDERA_PHI = 1.246165D;
 	private static final double OLYMPUS_MONS_CALDERA_THETA = 3.944444D;
@@ -169,7 +168,6 @@ public class TerrainElevation {
     public double getElevation(Coordinates location) {
     	
     	// Find hue and saturation color components at location.
-    	int colorRGB = getRGBColor(location.getPhi(), location.getTheta());
     	Color color = new Color(getRGBColor(location.getPhi(), location.getTheta()));
         float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
         float hue = hsb[0];

@@ -24,7 +24,6 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 public class MalfunctionFactory {
 
     // Data members
-    private MalfunctionConfig config; // Malfunction configuration.
     private Collection malfunctions;  // The possible malfunctions in the simulation.
 
     /**

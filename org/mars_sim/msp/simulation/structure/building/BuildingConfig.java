@@ -32,7 +32,6 @@ public class BuildingConfig {
 	private static final String COMMUNICATION = "communication";
 	private static final String EVA = "EVA";
 	private static final String AIRLOCK_CAPACITY = "airlock-capacity";
-	private static final String EVA_SUITS = "eva-suits";
 	private static final String RECREATION = "recreation";
 	private static final String DINING = "dining";
 	private static final String RESOURCE_PROCESSING = "resource-processing";
@@ -294,19 +293,6 @@ public class BuildingConfig {
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element evaElement = (Element) functionsElement.getElementsByTagName(EVA).item(0);
 		return Integer.parseInt(evaElement.getAttribute(AIRLOCK_CAPACITY));
-	}
-	
-	/**
-	 * Gets the number of EVA suits in the building.
-	 * @param buildingName the name of the building
-	 * @return number of EVA suits
-	 * @throws Exception if building name can not be found or XML parsing error.
-	 */
-	public int getEVASuitNumber(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element evaElement = (Element) functionsElement.getElementsByTagName(EVA).item(0);
-		return Integer.parseInt(evaElement.getAttribute(EVA_SUITS));
 	}
 	
 	/**
@@ -572,7 +558,7 @@ public class BuildingConfig {
 	public int getCropNum(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element farmElement = (Element) buildingElement.getElementsByTagName(FARMING).item(0);
+		Element farmElement = (Element) functionsElement.getElementsByTagName(FARMING).item(0);
 		return Integer.parseInt(farmElement.getAttribute(CROPS));
 	}
 	
@@ -585,7 +571,7 @@ public class BuildingConfig {
 	public double getPowerForGrowingCrop(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element farmElement = (Element) buildingElement.getElementsByTagName(FARMING).item(0);
+		Element farmElement = (Element) functionsElement.getElementsByTagName(FARMING).item(0);
 		return Double.parseDouble(farmElement.getAttribute(POWER_GROWING_CROP));
 	}
 	
@@ -598,7 +584,7 @@ public class BuildingConfig {
 	public double getPowerForSustainingCrop(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element farmElement = (Element) buildingElement.getElementsByTagName(FARMING).item(0);
+		Element farmElement = (Element) functionsElement.getElementsByTagName(FARMING).item(0);
 		return Double.parseDouble(farmElement.getAttribute(POWER_SUSTAINING_CROP));
 	}
 	
@@ -611,7 +597,7 @@ public class BuildingConfig {
 	public double getCropGrowingArea(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element farmElement = (Element) buildingElement.getElementsByTagName(FARMING).item(0);
+		Element farmElement = (Element) functionsElement.getElementsByTagName(FARMING).item(0);
 		return Double.parseDouble(farmElement.getAttribute(GROWING_AREA));
 	}
 	
@@ -639,7 +625,7 @@ public class BuildingConfig {
 	public int getExerciseCapacity(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element exerciseElement = (Element) buildingElement.getElementsByTagName(EXERCISE).item(0);
+		Element exerciseElement = (Element) functionsElement.getElementsByTagName(EXERCISE).item(0);
 		return Integer.parseInt(exerciseElement.getAttribute(CAPACITY));
 	}
 	
@@ -667,7 +653,7 @@ public class BuildingConfig {
 	public int getVehicleCapacity(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element maintenanceElement = (Element) buildingElement.getElementsByTagName(GROUND_VEHICLE_MAINTENANCE).item(0);
+		Element maintenanceElement = (Element) functionsElement.getElementsByTagName(GROUND_VEHICLE_MAINTENANCE).item(0);
 		return Integer.parseInt(maintenanceElement.getAttribute(VEHICLE_CAPACITY));
 	}
 	
@@ -695,7 +681,7 @@ public class BuildingConfig {
 	public int getCookCapacity(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element cookingElement = (Element) buildingElement.getElementsByTagName(COOKING).item(0);
+		Element cookingElement = (Element) functionsElement.getElementsByTagName(COOKING).item(0);
 		return Integer.parseInt(cookingElement.getAttribute(CAPACITY));
 	}	
 }
