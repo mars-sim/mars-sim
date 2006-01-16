@@ -20,7 +20,7 @@ import org.mars_sim.msp.simulation.*;
  */
 public class MainWindow extends JFrame implements WindowListener {
 
-    private static final String VERSION = "2.78";
+    private static final String VERSION = "2.79";
 
     // Data members
     private UnitToolBar unitToolbar; // The unit tool bar
