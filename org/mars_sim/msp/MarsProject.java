@@ -7,6 +7,8 @@
 package org.mars_sim.msp;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.ui.standard.MainWindow;
 import org.mars_sim.msp.ui.standard.SplashWindow;
@@ -17,53 +19,52 @@ import org.mars_sim.msp.ui.standard.SplashWindow;
  */
 public class MarsProject {
 
-    /** Constructs a MarsProject object */
+    /** 
+     * Constructor
+     * @param args command line arguments. 
+     */
     public MarsProject(String args[]) {
 
-        // create a splash window
+        // Create a splash window
         SplashWindow splashWindow = new SplashWindow();
         
-        // create Simulation
-        boolean usage = false;
-        if (args.length == 1) {
-            if (args[0].equals("-new")) {
-            	try {
-            		Simulation.createNewSimulation();
-            	}
-            	catch (Exception e) {
-            		System.err.println("Problem creating new simulation " + e);
-            		System.exit(0);
-            	}
-            } 
-            else usage = true;
+        // Create a simulation
+        List argList = Arrays.asList(args);
+        
+        // If debug argument, put in debug mode.
+        if (argList.contains("-debug")) setDebugMode();
+        
+        if (argList.contains("-new")) {
+        	// If new argument, create new simulation.
+        	try {
+        		Simulation.createNewSimulation();
+        	}
+        	catch (Exception e) {
+        		System.err.println("Problem creating new simulation " + e);
+        		System.exit(0);
+        	}
         }
-
-        else if (args.length == 2) {
-            // Load a previous simulation
-            if (args[0].equals("-load")) {
-                File loadFile = new File(args[1]);
-                if (loadFile.exists()) {
-                    try {
-                    	Simulation.instance().loadSimulation(loadFile);
-                    }
-                    catch (Exception e) {
-                        System.err.println("Problem loading existing simulation " + e);
-                        System.exit(0);
-                    }
-                }
-                else {
-                    System.err.println("Problem loading simulation.");
-                    System.err.println(args[1] + " not found.");
+        else if (argList.contains("-load")) {
+        	// If load argument, load simulation from file.
+        	try {
+        		int index = argList.indexOf("-load");
+        		// Get the next argument as the filename.
+        		File loadFile = new File((String) argList.get(index + 1));
+        		if (loadFile.exists()) Simulation.instance().loadSimulation(loadFile);
+        		else {
+        			System.err.println("Problem loading simulation.");
+                    System.err.println(argList.get(index + 1) + " not found.");
                     System.exit(0);
-                } 
-            }
-            else {
-                usage = true;
-            }
+        		}
+        	}
+        	catch (Exception e) {
+        		System.err.println("Problem loading existing simulation " + e);
+        		System.exit(0);
+        	}
         }
 
         // Load a the default simulation
-        else if (args.length == 0) {
+        if (argList.size() == 0) {
             try {
             	Simulation.instance().loadSimulation(null);
             }
@@ -81,39 +82,36 @@ public class MarsProject {
 				}
             }
         }
-        else {
-            usage = true;
-        }
         
-        // Is the command line correct
-        if (usage) {
-            System.err.println("MarsProject [-new | -load file]");
-            System.exit(0);
-        }
+        // Start the simulation.
         Simulation.instance().start();
 
-        // create main desktop window
-        MainWindow window = new MainWindow();
+        // Create the main desktop window.
+        new MainWindow();
        
-        // dispose splash window
+        // Dispose the splash window.
         splashWindow.dispose();
     }
 
-    /** Set error output to a text file (for debugging) */
+    /** 
+     * Set error output to a text file (for debugging) 
+     */
     private void setDebugMode() {
         try {
-            FileOutputStream errFileStream = new FileOutputStream("err.txt");
+            FileOutputStream errFileStream = new FileOutputStream("err.log");
             System.setErr(new PrintStream(errFileStream));
+            System.err.println("Testing");
         } 
         catch (FileNotFoundException e) {
-            System.out.println("err.txt could not be opened");
+            System.err.println("err.log could not be opened");
         }
     }
 
-    /** The starting method for the application
-     *  @param args the command line arguments
+    /** 
+     * The starting method for the application
+     * @param args the command line arguments
      */
     public static void main(String args[]) {
-        MarsProject marsSim = new MarsProject(args);
+        new MarsProject(args);
     }
 }
