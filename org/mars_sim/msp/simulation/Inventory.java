@@ -502,6 +502,12 @@ public class Inventory implements Serializable {
         return result;
     }
     
+    /**
+     * Finds all of the units of a class in storage or in the inventory of any
+     * unit thatis in storage.
+     * @param unitClass the unit class.
+     * @return collection of units or empty collection if none.
+     */
     public UnitCollection findAllUnitsOfClass(Class unitClass) {
     	UnitCollection result = new UnitCollection();
         if (containsUnitClass(unitClass)) {

@@ -9,7 +9,9 @@ package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.equipment.*;
+import org.mars_sim.msp.simulation.equipment.Equipment;
+import org.mars_sim.msp.simulation.equipment.EquipmentCollection;
+import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
@@ -54,14 +56,15 @@ public class UnitManager implements Serializable {
      */
     void constructInitialUnits() throws Exception {
         
-        // Initialize name lists;
+        // Initialize name lists
         initializePersonNames();
         initializeSettlementNames();
         initializeVehicleNames();
         
-        // Create initial settlements
+        // Create initial units.
         createInitialSettlements();
         createInitialVehicles();
+        createInitialEquipment();
         createInitialPeople();
     }
 
@@ -245,6 +248,37 @@ public class UnitManager implements Serializable {
     	}
     	catch (Exception e) {
     		throw new Exception("Vehicles could not be created: " + e.getMessage());
+    	}
+    }
+    
+    /**
+     * Creates the initial equipment at a settlement.
+     * @throws Exception if error constructing equipment.
+     */
+    private void createInitialEquipment() throws Exception {
+    	
+		SimulationConfig simConfig = Simulation.instance().getSimConfig();
+		SettlementConfig config = simConfig.getSettlementConfiguration();
+    	
+    	try {
+    		SettlementIterator i = getSettlements().iterator();
+    		while (i.hasNext()) {
+    			Settlement settlement = i.next();
+    			Map equipmentMap = config.getTemplateEquipment(settlement.getTemplate());
+    			Iterator j = equipmentMap.keySet().iterator();
+    			while (j.hasNext()) {
+    				String type = (String) j.next();
+    				int number = ((Integer) equipmentMap.get(type)).intValue();
+    				for (int x = 0; x < number; x++) {
+    					Equipment equipment = EquipmentFactory.getEquipment(type, settlement.getCoordinates());
+    					settlement.getInventory().storeUnit(equipment);
+    					addUnit(equipment);
+    				}
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		throw new Exception("Equipment could not be created: " + e.getMessage());
     	}
     }
     
