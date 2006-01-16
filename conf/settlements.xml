@@ -31,6 +31,13 @@
 			     and ice prospecting. -->
 			<vehicle type="Explorer Rover" number="1" />
 			
+			<!-- Equipment -->
+			<equipment type="EVA Suit" number="8" />
+			<equipment type="Gas Canister" number="50" />
+			<equipment type="Barrel" number="20" />
+			<equipment type="Bag" number="100" />
+			<equipment type="Specimen Container" number="50" />
+			
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
 				
@@ -51,6 +58,11 @@
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="2" />
 			<vehicle type="Explorer Rover" number="2" />
+			<equipment type="EVA Suit" number="16" />
+			<equipment type="Gas Canister" number="100" />
+			<equipment type="Barrel" number="40" />
+			<equipment type="Bag" number="200" />
+			<equipment type="Specimen Container" number="100" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -65,6 +77,11 @@
 			<building type="ERV Base" number="3" />
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="1" />
+			<equipment type="EVA Suit" number="24" />
+			<equipment type="Gas Canister" number="150" />
+			<equipment type="Barrel" number="60" />
+			<equipment type="Bag" number="300" />
+			<equipment type="Specimen Container" number="150" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -87,6 +104,11 @@
 			<building type="ERV Base" number="3" />
 			<vehicle type="Explorer Rover" number="5" />
 			<vehicle type="Transport Rover" number="3" />
+			<equipment type="EVA Suit" number="24" />
+			<equipment type="Gas Canister" number="200" />
+			<equipment type="Barrel" number="80" />
+			<equipment type="Bag" number="400" />
+			<equipment type="Specimen Container" number="200" />
 		</template>
 	
 	</settlement-template-list>
@@ -112,6 +134,15 @@
 			<!-- number: the number of these vehicles provided. -->
 			<vehicle type="Explorer Rover" number="1" />
 			
+			<!-- New equipment -->
+			<!-- type: the type of equipment. -->
+			<!-- number: the number of this type of equipment. -->
+			<equipment type="EVA Suit" number="5" />
+			<equipment type="Gas Canister" number="50" />
+			<equipment type="Barrel" number="20" />
+			<equipment type="Bag" number="100" />
+			<equipment type="Specimen Container" number="50" />
+			
 			<!-- New immigrants from Earth. -->
 			<!-- number: the number of immigrants. -->
 			<person number="4" />
@@ -130,6 +161,11 @@
 			<building type="Starting ERV Base" number="1" />
 			<vehicle type="Explorer Rover" number="1" />
 			<vehicle type="Transport Rover" number="1" />
+			<equipment type="EVA Suit" number="5" />
+			<equipment type="Gas Canister" number="50" />
+			<equipment type="Barrel" number="20" />
+			<equipment type="Bag" number="100" />
+			<equipment type="Specimen Container" number="50" />
 			<person number="4" />
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
@@ -147,6 +183,11 @@
 			<building type="MD4 Nuclear Reactor" number="2" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="2" />
+			<equipment type="EVA Suit" number="5" />
+			<equipment type="Gas Canister" number="50" />
+			<equipment type="Barrel" number="20" />
+			<equipment type="Bag" number="100" />
+			<equipment type="Specimen Container" number="50" />
 			<person number="12" />
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />

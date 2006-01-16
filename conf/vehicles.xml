@@ -64,10 +64,6 @@
 
 		</cargo>
 
-		<!-- Number of EVA (Extra Vehicular Activity) suits in the rover -->
-		<!-- Default: 4 -->
-		<eva-suits value="4" />
-
 		<!-- Sickbay -->
 		<!-- Medical tech level of sickbay (see tech_level.txt) - default: 1 -->
 		<!-- Number of beds in sickbay - default: 1 -->
@@ -97,7 +93,6 @@
 			<capacity resource="Water" value="4000.0" />
 			<capacity resource="Food" value="787.5" />            
 		</cargo>
-		<eva-suits value="8" />
 		<sickbay tech-level="3" beds="2" />
 	</rover>
 	

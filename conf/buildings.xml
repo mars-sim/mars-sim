@@ -40,7 +40,7 @@
 		
 			<!-- The building has an airlock and changing room for EVA operations. -->
 			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
-			<EVA airlock-capacity="4" eva-suits="8" />
+			<EVA airlock-capacity="4" />
 			
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation />
@@ -105,9 +105,8 @@
 				<resource-storage resource="Water" capacity="5000.0" />
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
-				<resource-storage resource="Food" capacity="1000.0" />
-				<resource-storage resource="Rock Samples" capacity="2000.0" />
-				<resource-storage resource="Ice" capacity="2000.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+				<resource-storage resource="Ice" capacity="100.0" />
 				
 				<!-- The initial resources in the building. -->
 				<!-- resource: the resource initially in the building. -->
@@ -299,7 +298,7 @@
 				<resource-storage resource="Methane" capacity="10000.0" />
 				<resource-storage resource="Oxygen" capacity="10000.0" />
 				<resource-storage resource="Water" capacity="10000.0" />
-				<resource-storage resource="Ice" capacity="5000.0" />
+				<resource-storage resource="Ice" capacity="1000.0" />
 			</storage>
 		</functions>
 	</building>		
@@ -343,7 +342,7 @@
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
 			<communication />
-			<EVA airlock-capacity="8" eva-suits="20" />
+			<EVA airlock-capacity="8" />
 		</functions>
 	</building>
 	
@@ -360,7 +359,7 @@
 				<resource-storage resource="Water" capacity="1000.0" />
 				<resource-storage resource="Waste Water" capacity="1000.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
-				<resource-storage resource="Food" capacity="1000.0" />
+				<resource-storage resource="Food" capacity="500.0" />
 			</storage>	
 			<resource-processing power-down-level=".5">
 				<process name="Carbon Dioxide Pump">
