@@ -22,6 +22,7 @@ class AmountResourceTypeStorage implements Serializable {
 	// Data members
 	private Map amountResourceTypeCapacities = null; // Capacity for each type of amount resource.
     private Map amountResourceTypeStored = null; // Stored resources by type.
+    private double totalAmountCache = 0D; // Cache value for the total amount of resources stored.
     
     /**
      * Adds capacity for a resource type.
@@ -31,10 +32,12 @@ class AmountResourceTypeStorage implements Serializable {
      */
     void addAmountResourceTypeCapacity(AmountResource resource, double capacity) throws ResourceException {
     	if (capacity < 0D) throw new ResourceException("Cannot add negative type capacity: " + capacity);
-    	if (amountResourceTypeCapacities == null) amountResourceTypeCapacities = new HashMap(1);
-    	double totalCapacity = capacity;
-    	if (hasAmountResourceTypeCapacity(resource)) totalCapacity += getAmountResourceTypeCapacity(resource);
-    	amountResourceTypeCapacities.put(resource, new Double(totalCapacity));
+    	if (amountResourceTypeCapacities == null) amountResourceTypeCapacities = new HashMap();
+    	if (hasAmountResourceTypeCapacity(resource)) {
+    		ResourceAmount existingCapacity = (ResourceAmount) amountResourceTypeCapacities.get(resource);
+    		existingCapacity.setAmount(existingCapacity.getAmount() + capacity);
+    	}
+    	else amountResourceTypeCapacities.put(resource, new ResourceAmount(capacity));
     }
     
     /**
@@ -57,7 +60,7 @@ class AmountResourceTypeStorage implements Serializable {
     double getAmountResourceTypeCapacity(AmountResource resource) {
     	double result = 0D;
     	if (hasAmountResourceTypeCapacity(resource)) 
-    		result = ((Double) amountResourceTypeCapacities.get(resource)).doubleValue();
+    		result = ((ResourceAmount) amountResourceTypeCapacities.get(resource)).getAmount();
     	return result;
     }
     
@@ -69,10 +72,20 @@ class AmountResourceTypeStorage implements Serializable {
     double getAmountResourceTypeStored(AmountResource resource) {
     	double result = 0D;
     	if (hasAmountResourceTypeCapacity(resource) && (amountResourceTypeStored != null)) {
-    		Double amount = (Double) amountResourceTypeStored.get(resource);
-    		if (amount != null) result = amount.doubleValue();
+    		ResourceAmount amount = (ResourceAmount) amountResourceTypeStored.get(resource);
+    		if (amount != null) result = amount.getAmount();
     	}
     	return result;
+    }
+    
+    /**
+     * Gets the amount of a resource type stored.
+     * @param resource the resource.
+     * @return stored amount as Double (kg).
+     */
+    private ResourceAmount getAmountResourceTypeStoredObject(AmountResource resource) {
+    	if (amountResourceTypeStored != null) return (ResourceAmount) amountResourceTypeStored.get(resource);
+    	else return null;
     }
     
     /**
@@ -80,12 +93,18 @@ class AmountResourceTypeStorage implements Serializable {
      * @return stored amount (kg).
      */
     double getTotalAmountResourceTypesStored() {
-    	double result = 0D;
+    	return totalAmountCache;
+    }
+    
+    /**
+     * Updates the total amount of resources stored.
+     */
+    private void updateTotalAmountResourceTypesStored() {
+    	totalAmountCache = 0D;
     	if (amountResourceTypeStored != null) {
     		Iterator i = amountResourceTypeStored.keySet().iterator();
-    		while (i.hasNext()) result += getAmountResourceTypeStored((AmountResource) i.next());
+    		while (i.hasNext()) totalAmountCache += getAmountResourceTypeStored((AmountResource) i.next());
     	}
-    	return result;
     }
     
     /**
@@ -124,11 +143,22 @@ class AmountResourceTypeStorage implements Serializable {
      */
     void storeAmountResourceType(AmountResource resource, double amount) throws ResourceException {
     	if (amount < 0D) throw new ResourceException("Cannot store negative amount of type: " + amount);
-    	if (getAmountResourceTypeRemainingCapacity(resource) >= amount) {
-    		if (amountResourceTypeStored == null) amountResourceTypeStored = new HashMap(1);
-    		amountResourceTypeStored.put(resource, new Double(getAmountResourceTypeStored(resource) + amount));
+    	if (amount > 0D) {
+    		if (getAmountResourceTypeRemainingCapacity(resource) >= amount) {
+    			if (amountResourceTypeStored == null) amountResourceTypeStored = new HashMap();
+    			ResourceAmount stored = getAmountResourceTypeStoredObject(resource);
+    			if (stored != null) {
+    				stored.setAmount(stored.getAmount() + amount);
+    			}
+    			else {
+    				amountResourceTypeStored.put(resource, new ResourceAmount(amount));
+    			}
+    			
+    			// Update total resources amount cache.
+    			updateTotalAmountResourceTypesStored();
+    		}
+    		else throw new ResourceException("Amount resource could not be added in type storage.");
     	}
-    	else throw new ResourceException("Amount resource could not be added in type storage.");
     }
     
     /**
@@ -139,9 +169,33 @@ class AmountResourceTypeStorage implements Serializable {
      */
     void retrieveAmountResourceType(AmountResource resource, double amount) throws ResourceException {
     	if (amount < 0D) throw new ResourceException("Cannot retrieve negative amount of type: " + amount); 
-    	if (getAmountResourceTypeStored(resource) >= amount) 
-    		amountResourceTypeStored.put(resource, new Double(getAmountResourceTypeStored(resource) - amount));
+    	if (getAmountResourceTypeStored(resource) >= amount) {
+    		ResourceAmount stored = getAmountResourceTypeStoredObject(resource);
+    		stored.setAmount(stored.getAmount() - amount);
+    		
+    		// Update total resources amount cache.
+			updateTotalAmountResourceTypesStored();
+    	}
     	else throw new ResourceException("Amount resource (" + resource.getName() +  
     			":" + amount + ") could not be retrieved from type storage");
+    }
+    
+    /**
+     * Internal class for storing type resource amounts.
+     */
+    private class ResourceAmount implements Serializable {
+    	double amount;
+    	
+    	private ResourceAmount(double amount) {
+    		this.amount = amount;
+    	}
+    	
+    	private void setAmount(double amount) {
+    		this.amount = amount;
+    	}
+    	
+    	private double getAmount() {
+    		return amount;
+    	}
     }
 }

@@ -270,7 +270,7 @@ public class SettlementConfig {
 		for (int x=0; x < equipmentNodes.getLength(); x++) {
 			Element equipmentElement = (Element) equipmentNodes.item(x);
 			String type = equipmentElement.getAttribute(TYPE);
-			Integer number = Integer.getInteger(equipmentElement.getAttribute(NUMBER));
+			Integer number = new Integer(equipmentElement.getAttribute(NUMBER));
 			result.put(type, number);
 		}
 		

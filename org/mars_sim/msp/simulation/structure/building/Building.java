@@ -198,10 +198,10 @@ public class Building implements Malfunctionable, Serializable {
         	// Send time to each building function.
         	Iterator i = functions.iterator();
         	while (i.hasNext()) ((Function) i.next()).timePassing(time);
-        
+        	
         	// Update malfunction manager.
         	malfunctionManager.timePassing(time);
-        
+        	
         	// If powered up, active time passing.
         	if (getPowerMode().equals(FULL_POWER)) malfunctionManager.activeTimePassing(time);
         }

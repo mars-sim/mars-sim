@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.76 2004-06-01
+ * @version 2.79 2006-01-18
  * @author Scott Davis
  */
 
@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.equipment;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 
@@ -16,7 +18,7 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
  * The EVASuit class represents an EVA suit which provides life support
  * for a person during a EVA operation.
  */
-public class EVASuit extends Equipment implements LifeSupport, Serializable {
+public class EVASuit extends Equipment implements LifeSupport, Serializable, Malfunctionable {
 
     // Static members
 	public static final String TYPE = "EVA Suit";
@@ -27,6 +29,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D; // Normal temperature (celsius)
 
+    // Data members
+    protected MalfunctionManager malfunctionManager; // The equipment's malfunction manager
+    
     /**
      * Constructor
      * @param location the location of the EVA suit.
@@ -38,6 +43,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         super(TYPE, location);
 
         // Add scope to malfunction manager.
+        malfunctionManager = new MalfunctionManager(this);
         malfunctionManager.addScopeString("EVA Suit");
         malfunctionManager.addScopeString("Life Support");
         
@@ -57,6 +63,14 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable {
         // Set the initial quantity of resources in the EVA suit.
         inventory.storeAmountResource(AmountResource.OXYGEN, OXYGEN_CAPACITY);
         inventory.storeAmountResource(AmountResource.WATER, WATER_CAPACITY);
+    }
+    
+    /**
+     * Gets the unit's malfunction manager.
+     * @return malfunction manager
+     */
+    public MalfunctionManager getMalfunctionManager() {
+        return malfunctionManager;
     }
 
     /** 

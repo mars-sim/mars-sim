@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * Equipment.java
- * @version 2.76 2004-06-01
+ * @version 2.79 2006-01-18
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.equipment;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 
@@ -17,10 +16,7 @@ import org.mars_sim.msp.simulation.person.ai.task.*;
  * a useful piece of equipment, such as a EVA suite or a
  * medpack.
  */
-public abstract class Equipment extends Unit implements Malfunctionable {
-   
-    // Data members
-    protected MalfunctionManager malfunctionManager; // The equipment's malfunction manager
+public abstract class Equipment extends Unit {
 	
     /** Constructs an Equipment object
      *  @param name the name of the unit
@@ -28,18 +24,6 @@ public abstract class Equipment extends Unit implements Malfunctionable {
      */
     Equipment(String name, Coordinates location) {
         super(name, location);
-
-		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this);
-		malfunctionManager.addScopeString("Equipment");
-    }
-
-    /**
-     * Gets the unit's malfunction manager.
-     * @return malfunction manager
-     */
-    public MalfunctionManager getMalfunctionManager() {
-        return malfunctionManager;
     }
 
     /**

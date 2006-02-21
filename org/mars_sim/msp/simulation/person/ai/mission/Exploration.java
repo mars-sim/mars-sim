@@ -97,7 +97,7 @@ public class Exploration extends CollectResourcesMission {
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
-			if (vehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES) <= 0D) usable = false;
+			if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) usable = false;
 			
 			if (usable) result = true;    
 		}
@@ -115,7 +115,7 @@ public class Exploration extends CollectResourcesMission {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		
 		// Make sure rover can carry rock samples.
-		if (newVehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES) <= 0D) usable = false;
+		if (newVehicle.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) usable = false;
 		
 		return usable;
 	}

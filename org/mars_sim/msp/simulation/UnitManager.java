@@ -9,8 +9,8 @@ package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
 import java.util.*;
+import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.Equipment;
-import org.mars_sim.msp.simulation.equipment.EquipmentCollection;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -272,7 +272,7 @@ public class UnitManager implements Serializable {
     				for (int x = 0; x < number; x++) {
     					Equipment equipment = EquipmentFactory.getEquipment(type, settlement.getCoordinates());
     					settlement.getInventory().storeUnit(equipment);
-    					addUnit(equipment);
+    					if (!(equipment instanceof Container)) addUnit(equipment);
     				}
     			}
     		}
@@ -502,24 +502,6 @@ public class UnitManager implements Serializable {
      */
     public PersonCollection getPeople() {
         return units.getPeople();
-    }
-    
-    /** 
-     * Get number of equipment
-     *
-     * @return the number of equipment
-     */
-    public int getEquipmentNum() {
-        return units.getEquipment().size();
-    }
-
-    /** 
-     * Get all of the equipment.
-     *
-     * @return EquipmentCollection of equipment
-     */
-    public EquipmentCollection getEquipment() {
-        return units.getEquipment();
     }
 
     /** The total number of units

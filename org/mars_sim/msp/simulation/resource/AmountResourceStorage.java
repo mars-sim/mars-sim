@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.resource;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -18,8 +19,16 @@ import java.util.Set;
 public class AmountResourceStorage implements Serializable {
 	
 	// Domain members
-	AmountResourceTypeStorage typeStorage = null;
-	AmountResourcePhaseStorage phaseStorage = null;
+	private AmountResourceTypeStorage typeStorage = null;
+	private AmountResourcePhaseStorage phaseStorage = null;
+	
+	// Cache values
+	private AmountResource resourceCapacityKeyCache = null;
+	private double resourceCapacityCache = 0D;
+	private AmountResource resourceStoredKeyCache = null;
+	private double resourceStoredCache = 0D;
+	private Set allStoredResourcesCache = null;
+	private double totalResourcesStored = -1D;
 	
     /**
      * Adds capacity for a resource type.
@@ -30,6 +39,7 @@ public class AmountResourceStorage implements Serializable {
 	public void addAmountResourceTypeCapacity(AmountResource resource, double capacity) throws ResourceException {
 		if (typeStorage == null) typeStorage = new AmountResourceTypeStorage();
 		typeStorage.addAmountResourceTypeCapacity(resource, capacity);
+		resourceCapacityKeyCache = null;
 	}
 	
     /**
@@ -41,6 +51,7 @@ public class AmountResourceStorage implements Serializable {
     public void addAmountResourcePhaseCapacity(Phase phase, double capacity) throws ResourceException {
     	if (phaseStorage == null)  phaseStorage = new AmountResourcePhaseStorage();
     	phaseStorage.addAmountResourcePhaseCapacity(phase, capacity);
+    	resourceCapacityKeyCache = null;
     }
 	
     /**
@@ -50,8 +61,11 @@ public class AmountResourceStorage implements Serializable {
      */
     public boolean hasAmountResourceCapacity(AmountResource resource) {
     	boolean result = false;
-    	if ((typeStorage != null) && typeStorage.hasAmountResourceTypeCapacity(resource)) result = true;
-    	else if ((phaseStorage != null) && phaseStorage.hasAmountResourcePhaseCapacity(resource.getPhase())) result = true;
+    	if (resourceCapacityKeyCache == resource) result = (resourceCapacityCache > 0D);
+    	else {
+    		if ((typeStorage != null) && typeStorage.hasAmountResourceTypeCapacity(resource)) result = true;
+    		else if ((phaseStorage != null) && phaseStorage.hasAmountResourcePhaseCapacity(resource.getPhase())) result = true;
+    	}
     	return result;
     }
     
@@ -62,12 +76,17 @@ public class AmountResourceStorage implements Serializable {
      */
     public double getAmountResourceCapacity(AmountResource resource) {
     	double result = 0D;
-    	if ((typeStorage != null) && typeStorage.hasAmountResourceTypeCapacity(resource)) 
-    		result = typeStorage.getAmountResourceTypeCapacity(resource);
-    	if ((phaseStorage != null) && phaseStorage.hasAmountResourcePhaseCapacity(resource.getPhase())) {
-    		if ((phaseStorage.getAmountResourcePhaseType(resource.getPhase()) == null) || 
-    				phaseStorage.getAmountResourcePhaseType(resource.getPhase()).equals(resource)) 
-    			result += phaseStorage.getAmountResourcePhaseCapacity(resource.getPhase());
+    	if (resourceCapacityKeyCache == resource) result = resourceCapacityCache;
+    	else {
+    		if ((typeStorage != null) && typeStorage.hasAmountResourceTypeCapacity(resource)) 
+    			result = typeStorage.getAmountResourceTypeCapacity(resource);
+    		if ((phaseStorage != null) && phaseStorage.hasAmountResourcePhaseCapacity(resource.getPhase())) {
+    			if ((phaseStorage.getAmountResourcePhaseType(resource.getPhase()) == null) || 
+    					phaseStorage.getAmountResourcePhaseType(resource.getPhase()).equals(resource)) 
+    				result += phaseStorage.getAmountResourcePhaseCapacity(resource.getPhase());
+    		}
+    		resourceCapacityKeyCache = resource;
+    		resourceCapacityCache = result;
     	}
     	return result;
     }
@@ -79,10 +98,15 @@ public class AmountResourceStorage implements Serializable {
      */
     public double getAmountResourceStored(AmountResource resource) {
     	double result = 0D;
-    	if ((typeStorage != null) && typeStorage.hasAmountResourceTypeCapacity(resource)) 
-    		result = typeStorage.getAmountResourceTypeStored(resource);
-    	if ((phaseStorage != null) && resource.equals(phaseStorage.getAmountResourcePhaseType(resource.getPhase()))) 
-    		result += phaseStorage.getAmountResourcePhaseStored(resource.getPhase());
+    	if (resourceStoredKeyCache == resource) result = resourceStoredCache;
+    	else {
+    		if ((typeStorage != null) && typeStorage.hasAmountResourceTypeCapacity(resource)) 
+    			result = typeStorage.getAmountResourceTypeStored(resource);
+    		if ((phaseStorage != null) && resource.equals(phaseStorage.getAmountResourcePhaseType(resource.getPhase()))) 
+    			result += phaseStorage.getAmountResourcePhaseStored(resource.getPhase());
+    		resourceStoredKeyCache = resource;
+    		resourceStoredCache = result;
+    	}
     	return result;
     }
     
@@ -91,17 +115,20 @@ public class AmountResourceStorage implements Serializable {
      * @return set of amount resources.
      */
     public Set getAllAmountResourcesStored() {
-    	Set result = new HashSet();
-    	if (typeStorage != null) result.addAll(typeStorage.getAllAmountResourcesStored());
-    	if (phaseStorage != null) {
-    		Iterator i = Phase.getPhases().iterator();
-    		while (i.hasNext()) {
-    			Phase phase = (Phase) i.next();
-    			if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) 
-    				result.add(phaseStorage.getAmountResourcePhaseType(phase));
+    	if (allStoredResourcesCache != null) return Collections.unmodifiableSet(allStoredResourcesCache);
+    	else {
+    		allStoredResourcesCache = new HashSet();
+    		if (typeStorage != null) allStoredResourcesCache.addAll(typeStorage.getAllAmountResourcesStored());
+    		if (phaseStorage != null) {
+    			Iterator i = Phase.getPhases().iterator();
+    			while (i.hasNext()) {
+    				Phase phase = (Phase) i.next();
+    				if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) 
+    					allStoredResourcesCache.add(phaseStorage.getAmountResourcePhaseType(phase));
+    			}
     		}
+    		return Collections.unmodifiableSet(allStoredResourcesCache);
     	}
-    	return result;
     }
     
     /**
@@ -109,10 +136,13 @@ public class AmountResourceStorage implements Serializable {
      * @return stored amount (kg).
      */
     public double getTotalAmountResourcesStored() {
-    	double result = 0D;
-    	if (typeStorage != null) result += typeStorage.getTotalAmountResourceTypesStored();
-    	if (phaseStorage != null) result += phaseStorage.getTotalAmountResourcePhasesStored();
-    	return result;
+    	if (totalResourcesStored >= 0D) return totalResourcesStored;
+    	else {
+    		totalResourcesStored = 0D;
+    		if (typeStorage != null) totalResourcesStored += typeStorage.getTotalAmountResourceTypesStored();
+    		if (phaseStorage != null) totalResourcesStored += phaseStorage.getTotalAmountResourcePhasesStored();
+    		return totalResourcesStored;
+    	}
     }
     
     /**
@@ -136,38 +166,43 @@ public class AmountResourceStorage implements Serializable {
      */
     public void storeAmountResource(AmountResource resource, double amount) throws ResourceException {
     	if (amount < 0D) throw new ResourceException("Cannot store negative amount of resource: " + amount);
-    	boolean storable = false;
-    	if (hasAmountResourceCapacity(resource)) {
-    		if (getAmountResourceRemainingCapacity(resource) >= amount) {
-    			double remainingAmount = amount;
+    	if (amount > 0D) {
+    		boolean storable = false;
+    		if (hasAmountResourceCapacity(resource)) {
+    			if (getAmountResourceRemainingCapacity(resource) >= amount) {
+    				double remainingAmount = amount;
     			
-    			// Store resource in type storage.
-    			if (typeStorage != null) {
-    				double remainingTypeCapacity = typeStorage.getAmountResourceTypeRemainingCapacity(resource);
-    				if (remainingTypeCapacity > 0D) {
-    					double typeStore = remainingAmount;
-    					if (typeStore > remainingTypeCapacity) typeStore = remainingTypeCapacity;
-    					typeStorage.storeAmountResourceType(resource, typeStore);
-    					remainingAmount -= typeStore;
+    				// Store resource in type storage.
+    				if (typeStorage != null) {
+    					double remainingTypeCapacity = typeStorage.getAmountResourceTypeRemainingCapacity(resource);
+    					if (remainingTypeCapacity > 0D) {
+    						double typeStore = remainingAmount;
+    						if (typeStore > remainingTypeCapacity) typeStore = remainingTypeCapacity;
+    						typeStorage.storeAmountResourceType(resource, typeStore);
+    						remainingAmount -= typeStore;
+    					}
+    				}
+    			
+    				// Store resource in phase storage.
+    				if ((phaseStorage != null) && (remainingAmount > 0D)) {
+    					double remainingPhaseCapacity = phaseStorage.getAmountResourcePhaseRemainingCapacity(resource.getPhase());
+    					if (remainingPhaseCapacity >= remainingAmount) {
+    						AmountResource resourceTypeStored = phaseStorage.getAmountResourcePhaseType(resource.getPhase());
+    						if ((resourceTypeStored == null) || resource.equals(resourceTypeStored)) 
+    							phaseStorage.storeAmountResourcePhase(resource, remainingAmount);
+    						remainingAmount = 0D;
+    					}
+    				}
+    			
+    				if (remainingAmount == 0D) {
+    					storable = true;
+    					clearStoredCache();
     				}
     			}
-    			
-    			// Store resource in phase storage.
-    			if ((phaseStorage != null) && (remainingAmount > 0D)) {
-    				double remainingPhaseCapacity = phaseStorage.getAmountResourcePhaseRemainingCapacity(resource.getPhase());
-    				if (remainingPhaseCapacity >= remainingAmount) {
-    					AmountResource resourceTypeStored = phaseStorage.getAmountResourcePhaseType(resource.getPhase());
-    					if ((resourceTypeStored == null) || resource.equals(resourceTypeStored)) 
-    						phaseStorage.storeAmountResourcePhase(resource, remainingAmount);
-    					remainingAmount = 0D;
-    				}
-    			}
-    			
-    			if (remainingAmount == 0D) storable = true;
     		}
-    	}
-    	if (!storable) throw new ResourceException("Amount resource: " + resource + " of amount: " + amount + 
+    		if (!storable) throw new ResourceException("Amount resource: " + resource + " of amount: " + amount + 
     			" could not be stored in inventory.");
+    	}
     }
     
     /**
@@ -201,9 +236,21 @@ public class AmountResourceStorage implements Serializable {
     			}
     		}
     		
-    		if (remainingAmount == 0D) retrievable = true;
+    		if (remainingAmount == 0D) {
+    			retrievable = true;
+    			clearStoredCache();
+    		}
     	}
     	if (!retrievable) throw new ResourceException("Amount resource: " + resource + " of amount: " + amount + 
     			" could not be retrieved from inventory.");
+    }
+    
+    private void clearStoredCache() {
+    	resourceStoredKeyCache = null;
+    	if (allStoredResourcesCache != null) {
+    		allStoredResourcesCache.clear();
+			allStoredResourcesCache = null;
+    	}
+    	totalResourcesStored = -1D;
     }
 }

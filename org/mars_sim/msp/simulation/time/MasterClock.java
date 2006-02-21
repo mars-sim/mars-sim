@@ -26,9 +26,10 @@ public class MasterClock implements Runnable, Serializable {
     private UpTimer uptimer;      // Uptime Timer
     private boolean keepRunning;  // Runnable flag
     private double timeRatio;     // Simulation/real-time ratio
+    private long lastTimeDiff;    // The millisecond time diff used in the last time pulse.
 
     // Sleep duration in milliseconds 
-    public final static int TIME_PULSE_PAUSE = 1000;
+    public final static int TIME_PULSE_LENGTH = 1000;
     
     static final long serialVersionUID = -1688463735489226494L;
 
@@ -48,6 +49,10 @@ public class MasterClock implements Runnable, Serializable {
 
         // Create an Uptime Timer
         uptimer = new UpTimer();
+        
+        // Set last time diff to 1000 ms. 
+        // (First time pulse always takes extra long)
+        lastTimeDiff = 1000L;
     }
 
     /** Returns the Martian clock
@@ -83,7 +88,7 @@ public class MasterClock implements Runnable, Serializable {
 
         double timePulse;
         if (timeRatio > 0D) {
-            double timePulseSeconds = timeRatio * (TIME_PULSE_PAUSE / 1000D);
+            double timePulseSeconds = timeRatio * (TIME_PULSE_LENGTH / 1000D);
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
         }
         else timePulse = 1D;
@@ -116,27 +121,36 @@ public class MasterClock implements Runnable, Serializable {
 
         // Keep running until told not to
         while (keepRunning) {
+        	
+        	long pauseTime = TIME_PULSE_LENGTH - lastTimeDiff;
+        	if (pauseTime < 10L) pauseTime = 10L;
+        	
             try {
-                Thread.sleep(TIME_PULSE_PAUSE);
+                Thread.sleep(pauseTime);
             } 
             catch (InterruptedException e) {}
 
 			try {
             	//Increment the uptimer
-            	uptimer.addTime(TIME_PULSE_PAUSE);
+            	uptimer.addTime(TIME_PULSE_LENGTH);
 
             	// Get the time pulse length in millisols.
             	double timePulse = getTimePulse();
 
+            	long startTime = System.currentTimeMillis();
+            	
             	// Send simulation a clock pulse representing the time pulse length (in millisols).
             	Simulation.instance().clockPulse(timePulse);
 
+            	long endTime = System.currentTimeMillis();
+            	lastTimeDiff = endTime - startTime;
+        		
             	// Add time pulse length to Earth and Mars clocks. 
             	earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
             	marsTime.addTime(timePulse);
 			}
 			catch (Exception e) {
-				System.out.println(e.getMessage());
+				e.printStackTrace(System.err);
 				stop();
 			}
         }

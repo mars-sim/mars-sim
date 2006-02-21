@@ -245,7 +245,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * @throws Exception if error during time passing.
      */
     public void timePassing(double time) throws Exception {
-        
+    	
 		// If settlement is overcrowded, increase inhabitant's stress.
 		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
 		if (overCrowding > 0) {
@@ -271,7 +271,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         	}
         
         	powerGrid.timePassing(time);
+        	
         	buildingManager.timePassing(time);
+        	
         	if (getCurrentPopulationNum() > 0) malfunctionManager.activeTimePassing(time);
         	malfunctionManager.timePassing(time);
         }

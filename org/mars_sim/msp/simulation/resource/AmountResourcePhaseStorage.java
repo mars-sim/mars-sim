@@ -20,6 +20,7 @@ class AmountResourcePhaseStorage implements Serializable {
 	// Data members
 	private Map amountResourcePhaseCapacities = null; // Capacity for each phase of amount resource.
     private Map amountResourcePhaseStored = null; // Stored resources by phase.
+    private double totalStoredCache = 0D; // The total amount phase resources stored. (kg)
     
     /**
      * Adds capacity for a resource phase.
@@ -29,10 +30,12 @@ class AmountResourcePhaseStorage implements Serializable {
      */
     void addAmountResourcePhaseCapacity(Phase phase, double capacity) throws ResourceException {
     	if (capacity < 0D) throw new ResourceException("Cannot add negative phase capacity: " + capacity);
-    	if (amountResourcePhaseCapacities == null) amountResourcePhaseCapacities = new HashMap(1);
-    	double totalCapacity = capacity;
-    	if (hasAmountResourcePhaseCapacity(phase)) totalCapacity += getAmountResourcePhaseCapacity(phase);
-    	amountResourcePhaseCapacities.put(phase, new Double(totalCapacity));
+    	if (amountResourcePhaseCapacities == null) amountResourcePhaseCapacities = new HashMap();
+    	if (hasAmountResourcePhaseCapacity(phase)) {
+    		double current = ((Double) amountResourcePhaseCapacities.get(phase)).doubleValue();
+    		amountResourcePhaseCapacities.put(phase, new Double(current + capacity));
+    	}
+    	else amountResourcePhaseCapacities.put(phase, new Double(capacity));
     }
     
     /**
@@ -78,12 +81,18 @@ class AmountResourcePhaseStorage implements Serializable {
      * @return amount stored (kg).
      */
     double getTotalAmountResourcePhasesStored() {
-    	double result = 0D;
+    	return totalStoredCache;
+    }
+    
+    /**
+     * Updates the total amount resource phases stored cache value.
+     */
+    private void updateTotalAmountResourcePhasesStored() {
+    	totalStoredCache = 0D;
     	if (amountResourcePhaseStored != null) {
     		Iterator i = amountResourcePhaseStored.keySet().iterator();
-    		while (i.hasNext()) result += getAmountResourcePhaseStored((Phase) i.next());
+    		while (i.hasNext()) totalStoredCache += getAmountResourcePhaseStored((Phase) i.next());
     	}
-    	return result;
     }
     
     /**
@@ -120,19 +129,22 @@ class AmountResourcePhaseStorage implements Serializable {
      */
     void storeAmountResourcePhase(AmountResource resource, double amount) throws ResourceException {
     	if (amount < 0D) throw new ResourceException("Cannot store negative amount of phase: " + amount);
-    	Phase resourcePhase = resource.getPhase();
-    	boolean storable = false;
-    	if (getAmountResourcePhaseRemainingCapacity(resourcePhase) >= amount) {
-    		if ((getAmountResourcePhaseStored(resourcePhase) == 0D) || 
-    					(resource.equals(getAmountResourcePhaseType(resourcePhase))))
-    			storable = true;
+    	if (amount > 0D) {
+    		Phase resourcePhase = resource.getPhase();
+    		boolean storable = false;
+    		if (getAmountResourcePhaseRemainingCapacity(resourcePhase) >= amount) {
+    			if ((getAmountResourcePhaseStored(resourcePhase) == 0D) || 
+    						(resource.equals(getAmountResourcePhaseType(resourcePhase))))
+    				storable = true;
+    		}
+    		if (storable) {
+    			double totalAmount = getAmountResourcePhaseStored(resourcePhase) + amount;
+    			if (amountResourcePhaseStored == null) amountResourcePhaseStored = new HashMap();
+    			amountResourcePhaseStored.put(resourcePhase, new StoredPhase(resource, totalAmount));
+    			updateTotalAmountResourcePhasesStored();
+    		}
+    		else throw new ResourceException("Amount resource could not be added in phase storage.");
     	}
-    	if (storable) {
-    		double totalAmount = getAmountResourcePhaseStored(resourcePhase) + amount;
-    		if (amountResourcePhaseStored == null) amountResourcePhaseStored = new HashMap(1);
-    		amountResourcePhaseStored.put(resourcePhase, new StoredPhase(resource, totalAmount));
-    	}
-    	else throw new ResourceException("Amount resource could not be added in phase storage.");
     }
     
     /**
@@ -149,6 +161,7 @@ class AmountResourcePhaseStorage implements Serializable {
     		if (stored != null) {
     			stored.amount -= amount;
     			retrievable = true;
+    			updateTotalAmountResourcePhasesStored();
     		}
     	}
     	if (!retrievable) throw new ResourceException("Amount resource (" + phase.getName() +  ":" + 

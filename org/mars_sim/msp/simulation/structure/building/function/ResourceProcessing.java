@@ -65,7 +65,6 @@ public class ResourceProcessing extends Function implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) throws BuildingException {
-	
 		double productionLevel = 0D;
 		if (getBuilding().getPowerMode().equals(Building.FULL_POWER)) productionLevel = 1D;
 		else if (getBuilding().getPowerMode().equals(Building.POWER_DOWN)) 

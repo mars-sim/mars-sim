@@ -204,7 +204,7 @@ public class Farming extends Function implements Serializable {
 			}
 		}
 		catch (Exception e) {
-			throw new BuildingException("Inflatable greenhouse could not add new crop: " + e.getMessage());    
+			throw new BuildingException("Farming could not add new crop: " + e.getMessage());    
 		}
 	}
 	

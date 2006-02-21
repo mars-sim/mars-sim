@@ -188,7 +188,6 @@ public class Mind implements Serializable {
      * @throws Exception if new action cannot be found.
      */
     public void getNewAction(boolean tasks, boolean missions) throws Exception {
-
 		MissionManager missionManager = Simulation.instance().getMissionManager();
 
         // If this Person is too weak then they can not do Missions
@@ -197,13 +196,19 @@ public class Mind implements Serializable {
 		Person person = getPerson();
 
         // Get probability weights from tasks, missions and active missions.
-        double taskWeights = taskManager.getTotalTaskProbability();
-        double missionWeights = missionManager.getTotalMissionProbability(person);
+        double taskWeights = 0D;
+        double missionWeights = 0D;
 
         // Determine sum of weights based on given parameters
         double weightSum = 0D;
-        if (tasks) weightSum += taskWeights;
-        if (missions) weightSum += missionWeights;
+        if (tasks) {
+        	taskWeights = taskManager.getTotalTaskProbability();
+        	weightSum += taskWeights;
+        }
+        if (missions) {
+        	missionWeights = missionManager.getTotalMissionProbability(person);
+        	weightSum += missionWeights;
+        }
 		if (weightSum <= 0D) throw new Exception("Mind.getNewAction(): weight sum: " + weightSum);
 
         // Select randomly across the total weight sum.

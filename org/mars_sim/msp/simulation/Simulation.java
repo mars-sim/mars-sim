@@ -79,7 +79,7 @@ public class Simulation implements Serializable {
 		simulation.stop();
 		
 		// Wait until current time pulse runs it course.
-		Thread.sleep(MasterClock.TIME_PULSE_PAUSE);
+		Thread.sleep(MasterClock.TIME_PULSE_LENGTH);
 		
 		try {
 			// Initialize transient data members to reload configuration.

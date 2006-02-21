@@ -11,9 +11,12 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -26,6 +29,12 @@ public class MissionManager implements Serializable {
 
     // Data members
     private List missions; // Current missions in the simulation. 
+    
+    // Cache variables.
+    private Person personCache;
+    private MarsClock timeCache;
+    private Map missionProbCache;
+    private double totalProbCache;
 
     // Array of potential new missions
     Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, CollectIce.class };
@@ -36,6 +45,12 @@ public class MissionManager implements Serializable {
     public MissionManager() {
         // Initialize data members
         missions = new ArrayList();
+        
+        // Initialize cache values.
+        personCache = null;
+        timeCache = null;
+        missionProbCache = new HashMap(potentialMissions.length);
+        totalProbCache = 0D;
     }
 
     /** 
@@ -104,24 +119,11 @@ public class MissionManager implements Serializable {
      * @return total probability weight
      */ 
     public double getTotalMissionProbability(Person person) {
-        double result = 0D;
-     
-        // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class };
-        Object[] parametersForInvokingMethod = { person };
-
-        // Sum the probable weights for each available potential mission.
-        for (int x=0; x < potentialMissions.length; x++) {
-            try {
-                Method probability = potentialMissions[x].getMethod("getNewMissionProbability", parametersForFindingMethod);
-                result += ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
-            } 
-            catch (Exception e) { 
-                // System.out.println("MissionManager.getTotalMissionProbability(): " + e.toString());
-            }
-        }
-
-        return result; 
+    	
+    	// If cache is not current, calculate the probabilities.
+        if (!useCache(person)) calculateProbability(person);
+        
+        return totalProbCache;
     }
 
     /** 
@@ -131,28 +133,22 @@ public class MissionManager implements Serializable {
      */
     public Mission getNewMission(Person person) {
         
-        // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class };
-        Object[] parametersForInvokingMethod = { person };
+    	// If cache is not current, calculate the probabilities.
+        if (!useCache(person)) calculateProbability(person);
 
         // Get a random number from 0 to the total probability weight.
         double r = RandomUtil.getRandomDouble(getTotalMissionProbability(person));
 
         // Determine which mission is selected.
-        Class mission = null;
-        for (int x=0; x < potentialMissions.length; x++) {
-            try {
-                Method probability = potentialMissions[x].getMethod("getNewMissionProbability", parametersForFindingMethod);
-                double weight = ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
-                
-                if (mission == null) {
-                    if (r < weight) mission = potentialMissions[x];
-                    else r -= weight;
-                }
-            } 
-            catch (Exception e) { 
-                System.out.println("MissionManager.getNewMission() (1): " + e.toString());
-            }
+        Class selectedMission = null;
+        Iterator i = missionProbCache.keySet().iterator();
+        while (i.hasNext()) {
+        	Class mission = (Class) i.next();
+        	double probWeight = ((Double) missionProbCache.get(mission)).doubleValue();
+        	if (selectedMission == null) {
+        		if (r < probWeight) selectedMission = mission;
+        		else r -= probWeight;
+        	}
         }
 
         // Initialize construction parameters
@@ -161,11 +157,11 @@ public class MissionManager implements Serializable {
 
         // Construct the mission
         try {
-            Constructor construct = (mission.getConstructor(parametersForFindingConstructor));
+            Constructor construct = (selectedMission.getConstructor(parametersForFindingConstructor));
             return (Mission) construct.newInstance(parametersForInvokingConstructor);
         }
         catch (Exception e) {
-            System.out.println("MissionManager.getNewMission() (2): " + e.toString());
+            System.err.println("MissionManager.getNewMission(): " + e.toString());
             return null;
         } 
     }
@@ -220,5 +216,47 @@ public class MissionManager implements Serializable {
             if ((tempMission == null) || tempMission.isDone()) removeMission(tempMission);
             else index++;
         }
+    }
+    
+    /**
+     * Calculates and caches the probabilities.
+     * @param person the person to check for.
+     */
+    private void calculateProbability(Person person) {
+    	// Initialize parameters.
+    	Class[] parametersForFindingMethod = { Person.class };
+        Object[] parametersForInvokingMethod = { person };
+    	
+    	// Clear total probabilities.
+    	totalProbCache = 0D;
+    	
+    	// Determine probabilities.
+        for (int x=0; x < potentialMissions.length; x++) {
+            try {
+            	Class probabilityClass = potentialMissions[x];
+                Method probabilityMethod = probabilityClass.getMethod("getNewMissionProbability", parametersForFindingMethod);
+                Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
+                missionProbCache.put(probabilityClass, probability);
+    			totalProbCache += probability.doubleValue();
+            } 
+            catch (Exception e) { 
+                System.err.println("MissionManager.getTotalMissionProbability(): " + e.toString());
+            }
+        }
+    	
+    	// Set the time cache to the current time.
+    	timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+    	personCache = person;
+    }
+    
+    /**
+     * Checks if task probability cache should be used.
+     * @param the person to check for.
+     * @return true if cache should be used.
+     */
+    private boolean useCache(Person person) {
+    	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+    	if (currentTime.equals(timeCache) && (person == personCache)) return true;
+    	return false;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GasCanister.java
- * @version 2.79 2006-01-02
+ * @version 2.79 2006-01-18
  * @author Scott Davis
  */
 

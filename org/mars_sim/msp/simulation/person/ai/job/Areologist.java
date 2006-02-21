@@ -98,7 +98,7 @@ public class Areologist extends Job implements Serializable {
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			if (vehicle instanceof Rover) {
-				if (vehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES) > 0D) result++;
+				if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) result++;
 			}
 		}
 		
@@ -109,7 +109,7 @@ public class Areologist extends Job implements Serializable {
 			Mission mission = (Mission) k.next();
 			if (mission instanceof RoverMission) {
 				Rover rover = ((RoverMission) mission).getRover();
-				if ((rover != null) && rover.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES) > 0D) result++;
+				if ((rover != null) && rover.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) result++;
 			}
 		}
 		

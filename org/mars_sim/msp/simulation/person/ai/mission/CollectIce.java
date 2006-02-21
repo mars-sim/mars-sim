@@ -98,7 +98,7 @@ public class CollectIce extends CollectResourcesMission {
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
-			if (vehicle.getInventory().getAmountResourceCapacity(AmountResource.ICE) <= 0D) usable = false;
+			if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ICE)) usable = false;
 			
 			if (usable) result = true;    
 		}
@@ -116,7 +116,7 @@ public class CollectIce extends CollectResourcesMission {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		
 		// Make sure rover can carry ice.
-		if (newVehicle.getInventory().getAmountResourceCapacity(AmountResource.ICE) <= 0D) usable = false;
+		if (newVehicle.getInventory().hasAmountResourceCapacity(AmountResource.ICE)) usable = false;
 		
 		return usable;
 	}

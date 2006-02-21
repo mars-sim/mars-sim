@@ -217,22 +217,24 @@ public class Crop implements Serializable {
                 harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
                     
                 try {
+                	Inventory inv = settlement.getInventory();
+                	
                 	// Determine harvest modifier by amount of waste water available.
                 	double wasteWaterRequired = maxPeriodHarvest * 100D;
-                	double wasteWaterAvailable = settlement.getInventory().getAmountResourceStored(AmountResource.WASTE_WATER);
+                	double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
                 	double wasteWaterUsed = wasteWaterRequired;
                 	if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
-                	settlement.getInventory().retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
-                	settlement.getInventory().storeAmountResource(AmountResource.WATER, wasteWaterUsed * .8D);
+                	inv.retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
+                	inv.storeAmountResource(AmountResource.WATER, wasteWaterUsed * .8D);
                 	harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
                     
                 	// Determine harvest modifier by amount of carbon dioxide available.
                 	double carbonDioxideRequired = maxPeriodHarvest * 2D;
-                	double carbonDioxideAvailable = settlement.getInventory().getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
+                	double carbonDioxideAvailable = inv.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
                 	double carbonDioxideUsed = carbonDioxideRequired;
                 	if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
-                	settlement.getInventory().retrieveAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideUsed);
-                	settlement.getInventory().storeAmountResource(AmountResource.OXYGEN, carbonDioxideUsed * .9D);
+                	inv.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideUsed);
+                	inv.storeAmountResource(AmountResource.OXYGEN, carbonDioxideUsed * .9D);
                 	harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
                 }
                 catch (InventoryException e) {

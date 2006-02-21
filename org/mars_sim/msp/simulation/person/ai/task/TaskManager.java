@@ -9,11 +9,15 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.mars_sim.msp.simulation.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Mind;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /** 
  * The TaskManager class keeps track of a person's current task and can randomly
@@ -45,6 +49,11 @@ public class TaskManager implements Serializable {
                                        Teach.class, CookMeal.class,
                                        MaintenanceEVA.class };
 
+    // Cache variables.
+    private MarsClock timeCache;
+    private Map taskProbCache;
+    private double totalProbCache;
+    
     /** 
      * Constructor
      * @param person the person the task manager is for
@@ -53,6 +62,11 @@ public class TaskManager implements Serializable {
         // Initialize data members
         this.mind = mind;
         currentTask = null;
+        
+        // Initialize cache values.
+        timeCache = null;
+        taskProbCache = new HashMap(availableTasks.length);
+        totalProbCache = 0D;
     }
 
     /** Returns true if person has an active task.
@@ -172,41 +186,31 @@ public class TaskManager implements Serializable {
      */
     public Task getNewTask() throws Exception {
 
-        // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class };
-        Object[] parametersForInvokingMethod = { mind.getPerson() };
+    	// If cache is not current, calculate the probabilities.
+        if (!useCache()) calculateProbability();
 
         // Get a random number from 0 to the total weight
         double totalProbability = getTotalTaskProbability(); 
         double r = RandomUtil.getRandomDouble(totalProbability);
 
         // Determine which task is selected.
-        Class task = null;
-        for (int x=0; x < availableTasks.length; x++) {
-            try {
-                Method probability = availableTasks[x].getMethod("getProbability", parametersForFindingMethod);
-                double weight = ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
-
-                if (task == null) {
-                    if (r < weight) task = availableTasks[x];
-                    else r -= weight;
-                }
-            }
-            catch (InvocationTargetException ie) {
-                Throwable nested = ie.getTargetException();
-                System.err.println("TaskManager.getNewTask() (Invocation Exception): " + nested.toString());
-                System.err.println("Target = " + availableTasks[x]);
-                System.err.println("Args = " + parametersForInvokingMethod);
-                nested.printStackTrace();
-            }
-            catch (Exception e) {
-            	System.err.println("TaskManager.getNewTask(): " + e.getMessage());
-            }
+        Class selectedTask = null;
+        Iterator i = taskProbCache.keySet().iterator();
+        while (i.hasNext()) {
+        	Class task = (Class) i.next();
+        	double probWeight = ((Double) taskProbCache.get(task)).doubleValue();
+        	if (selectedTask == null) {
+        		if (r < probWeight) selectedTask = task;
+        		else r -= probWeight;
+        	}
         }
 
         // Construct the task
+    	Class[] parametersForFindingMethod = { Person.class };
+    	Object[] parametersForInvokingMethod = { mind.getPerson() };
+        
         try {
-            Constructor construct = (task.getConstructor(parametersForFindingMethod));
+            Constructor construct = (selectedTask.getConstructor(parametersForFindingMethod));
             return (Task) construct.newInstance(parametersForInvokingMethod);
         }
         catch (Exception e) {
@@ -215,26 +219,53 @@ public class TaskManager implements Serializable {
         }
     }
 
-    /** Determines the total probability weight for available tasks.
-     *  @return total probability weight
+    /** 
+     * Determines the total probability weight for available tasks.
+     * @return total probability weight
      */
     public double getTotalTaskProbability() {
-        double result = 0D;
 
-        // Initialize parameters
-        Class[] parametersForFindingMethod = { Person.class };
-        Object[] parametersForInvokingMethod = { mind.getPerson() };
-
-        // Sum the probable weights of each available task.
-        for (int x = 0; x < availableTasks.length; x++) {
-            try {
-                Method probability = availableTasks[x].getMethod("getProbability", parametersForFindingMethod);
-                result += ((Double) probability.invoke(null, parametersForInvokingMethod)).doubleValue();
-            } catch (Exception e) {
-                System.err.println("TaskManager.getTotalTaskProbability(): " + e.toString());
-            }
-        }
-
-        return result;
+    	// If cache is not current, calculate the probabilities.
+        if (!useCache()) calculateProbability();
+        
+        return totalProbCache;
+    }
+    
+    /**
+     * Calculates and caches the probabilities.
+     */
+    private void calculateProbability() {
+    	// Initialize parameters.
+    	Class[] parametersForFindingMethod = { Person.class };
+    	Object[] parametersForInvokingMethod = { mind.getPerson() };
+    	
+    	// Clear total probabilities.
+    	totalProbCache = 0D;
+    	
+    	// Determine probabilities.
+    	for (int x = 0; x < availableTasks.length; x++) {
+    		try {
+    			Class probabilityClass = availableTasks[x];
+    			Method probabilityMethod = probabilityClass.getMethod("getProbability", parametersForFindingMethod);
+    			Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
+    			taskProbCache.put(probabilityClass, probability);
+    			totalProbCache += probability.doubleValue();
+    		} catch (Exception e) {
+    			System.err.println("TaskManager.getTotalTaskProbability(): " + e.toString());
+    		}
+    	}
+    	
+    	// Set the time cache to the current time.
+    	timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+    }
+    
+    /**
+     * Checks if task probability cache should be used.
+     * @return true if cache should be used.
+     */
+    private boolean useCache() {
+    	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+    	if (currentTime.equals(timeCache)) return true;
+    	return false;
     }
 }

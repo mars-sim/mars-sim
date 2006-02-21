@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.structure;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.equipment.Equipment;
+import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.events.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
@@ -29,6 +31,7 @@ public class Resupply implements Serializable {
 	private boolean isDelivered;
 	private List newBuildings;
 	private List newVehicles;
+	private Map newEquipment;
 	private int newImmigrantNum;
 	private Map newResources;
 
@@ -55,6 +58,9 @@ public class Resupply implements Serializable {
 			
 		// Get new vehicle types.
 		newVehicles = config.getResupplyVehicleTypes(resupplyName);
+		
+		// Get new equipment types.
+		newEquipment = config.getResupplyEquipment(resupplyName);
 			
 		// Get number of new immigrants.
 		newImmigrantNum = config.getNumberOfResupplyImmigrants(resupplyName);
@@ -109,6 +115,17 @@ public class Resupply implements Serializable {
 			String vehicleName = unitManager.getNewName(UnitManager.VEHICLE, null);
 			Rover rover = new Rover(vehicleName, vehicleType, settlement);
 			unitManager.addUnit(rover);
+		}
+		
+		// Deliver equipment.
+		Iterator equipmentI = newEquipment.keySet().iterator();
+		while (equipmentI.hasNext()) {
+			String equipmentType = (String) equipmentI.next();
+			int number = ((Integer) newEquipment.get(equipmentType)).intValue();
+			for (int x=0; x < number; x++) {
+				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates());
+				settlement.getInventory().storeUnit(equipment);
+			}
 		}
 		
 		// Deliver resources.

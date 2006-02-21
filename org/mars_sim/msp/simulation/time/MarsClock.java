@@ -331,8 +331,9 @@ public class MarsClock implements Serializable {
         return season;
     }
     
-    /** Creates a clone of this MarsClock object, with the time set the same.
-     *  @return clone of this MarsClock object
+    /** 
+     * Creates a clone of this MarsClock object, with the time set the same.
+     * @return clone of this MarsClock object
      */
     public Object clone() {
         return new MarsClock(orbit, month, sol, millisol);
@@ -344,5 +345,21 @@ public class MarsClock implements Serializable {
      */
     public String toString() {
     	return getTimeStamp();
+    }
+    
+    /**
+     * Checks if another object is equal to this one.
+     */
+    public boolean equals(Object object) {
+    	boolean result = true;
+    	if (object instanceof MarsClock) {
+    		MarsClock otherClock = (MarsClock) object;
+    		if (orbit != otherClock.getOrbit()) result = false;
+    		else if (month != otherClock.getMonth()) result = false;
+    		else if (sol != otherClock.getSolOfMonth()) result = false;
+    		else if (millisol != otherClock.getMillisol()) result = false;
+    	}
+    	else result = false;
+    	return result;
     }
 }
