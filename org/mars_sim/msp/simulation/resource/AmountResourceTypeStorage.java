@@ -22,7 +22,7 @@ class AmountResourceTypeStorage implements Serializable {
 	// Data members
 	private Map amountResourceTypeCapacities = null; // Capacity for each type of amount resource.
     private Map amountResourceTypeStored = null; // Stored resources by type.
-    private double totalAmountCache = 0D; // Cache value for the total amount of resources stored.
+    private transient double totalAmountCache = 0D; // Cache value for the total amount of resources stored.
     
     /**
      * Adds capacity for a resource type.

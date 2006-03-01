@@ -101,4 +101,24 @@ public final class AmountResource implements Resource, Serializable {
 	public static final Set getAmountResources() {
 		return Collections.unmodifiableSet(resources);
 	}
+	
+	/**
+	 * Checks if an object is equal to this object.
+	 * @return true if equal
+	 */
+	public boolean equals(Object object) {
+		if (object instanceof AmountResource) {
+			AmountResource otherObject = (AmountResource) object;
+			if ((name.equals(otherObject.getName())) && (phase.equals(otherObject.getPhase())))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets the hash code value.
+	 */
+	public int hashCode() {
+		return (name.hashCode() * phase.hashCode());
+	}
 }

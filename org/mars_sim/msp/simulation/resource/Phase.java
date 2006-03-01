@@ -70,4 +70,23 @@ public final class Phase implements Serializable {
 	public static final Set getPhases() {
 		return Collections.unmodifiableSet(phases);
 	}
+	
+	/**
+	 * Checks if an object is equal to this object.
+	 * @return true if equal
+	 */
+	public boolean equals(Object object) {
+		if (object instanceof Phase) {
+			Phase otherObject = (Phase) object;
+			if (name.equals(otherObject.getName())) return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets the hash code value.
+	 */
+	public int hashCode() {
+		return name.hashCode();
+	}
 }

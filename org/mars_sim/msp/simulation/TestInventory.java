@@ -157,6 +157,15 @@ public class TestInventory extends TestCase {
 		assertEquals("Amount type capacity remaining is correct amount.", 40D, remainingCapacity, 0D);
 	}
 	
+	public void testInventoryAmountResourceRemainingCapacityMultiple() throws Exception {
+		Inventory inventory = new Inventory(null);
+		inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 40D);
+		inventory.addAmountResourceTypeCapacity(AmountResource.METHANE, 20D);
+		inventory.getAmountResourceRemainingCapacity(AmountResource.METHANE);
+		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE);
+		assertEquals("Amount type capacity remaining is correct amount.", 40D, remainingCapacity, 0D);
+	}
+	
 	public void testInventoryAmountResourceTypeRemainingCapacityNoCapacity() throws Exception {
 		Inventory inventory = new Inventory(null);
 		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE);
@@ -497,17 +506,6 @@ public class TestInventory extends TestCase {
 		assertTrue("Does not contain unit", !inventory.containsUnit(testUnit));
 	}
 	
-	public void testInventoryContainsUnitDeep() throws Exception {
-		Inventory inventory = new Inventory(null);
-		inventory.addGeneralCapacity(30D);
-		Unit testUnit1 = new MockUnit1();
-		testUnit1.getInventory().addGeneralCapacity(20D);
-		inventory.storeUnit(testUnit1);
-		Unit testUnit2 = new MockUnit2();
-		testUnit1.getInventory().storeUnit(testUnit2);
-		assertTrue("Contains test unit 2.", inventory.containsUnit(testUnit2));
-	}
-	
 	public void testInventoryContainsUnitClassGood() throws Exception {
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(10D);
@@ -520,17 +518,6 @@ public class TestInventory extends TestCase {
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(10D);
 		assertTrue("Does not contain MockUnit1 class", !inventory.containsUnitClass(MockUnit1.class));
-	}
-	
-	public void testInventoryContainsUnitClassDeep() throws Exception {
-		Inventory inventory = new Inventory(null);
-		inventory.addGeneralCapacity(30D);
-		Unit testUnit1 = new MockUnit1();
-		testUnit1.getInventory().addGeneralCapacity(20D);
-		inventory.storeUnit(testUnit1);
-		Unit testUnit2 = new MockUnit2();
-		testUnit1.getInventory().storeUnit(testUnit2);
-		assertTrue("Contains MockUnit2 class.", inventory.containsUnitClass(MockUnit2.class));
 	}
 	
 	public void testInventoryFindUnitGood() throws Exception {
@@ -547,18 +534,6 @@ public class TestInventory extends TestCase {
 		inventory.addGeneralCapacity(10D);
 		Unit found = inventory.findUnitOfClass(MockUnit1.class);
 		assertEquals("Could not find unit of class.", null, found);
-	}
-	
-	public void testInventoryFindUnitDeep() throws Exception {
-		Inventory inventory = new Inventory(null);
-		inventory.addGeneralCapacity(30D);
-		Unit testUnit1 = new MockUnit1();
-		testUnit1.getInventory().addGeneralCapacity(20D);
-		inventory.storeUnit(testUnit1);
-		Unit testUnit2 = new MockUnit2();
-		testUnit1.getInventory().storeUnit(testUnit2);
-		Unit found = inventory.findUnitOfClass(MockUnit2.class);
-		assertEquals("Found unit correctly.", testUnit2, found);
 	}
 	
 	public void testInventoryFindAllUnitsGood() throws Exception {
@@ -581,18 +556,22 @@ public class TestInventory extends TestCase {
 		assertEquals("Could not fine units of class", 0, units.size());
 	}
 	
-	public void testInventoryFindAllUnitsDeep() throws Exception {
+	public void testInventoryFindNumUnitsGood() throws Exception {
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(20D);
 		Unit testUnit1 = new MockUnit1();
-		testUnit1.getInventory().addGeneralCapacity(10D);
-		inventory.storeUnit(testUnit1);
 		Unit testUnit2 = new MockUnit1();
-		testUnit1.getInventory().storeUnit(testUnit2);
-		UnitCollection units = inventory.findAllUnitsOfClass(MockUnit1.class);
-		assertEquals("Found correct number of units.", 2, units.size());
-		assertTrue("Found test unit 1", units.contains(testUnit1));
-		assertTrue("Found test unit 2", units.contains(testUnit2));
+		inventory.storeUnit(testUnit1);
+		inventory.storeUnit(testUnit2);
+		int numUnits = inventory.findNumUnitsOfClass(MockUnit1.class);
+		assertEquals("Found correct number of units.", 2, numUnits);
+	}
+	
+	public void testInventoryFindNumUnitsFail() throws Exception {
+		Inventory inventory = new Inventory(null);
+		inventory.addGeneralCapacity(20D);
+		int numUnits = inventory.findNumUnitsOfClass(MockUnit1.class);
+		assertEquals("Could not fine units of class", 0, numUnits);
 	}
 	
 	public void testInventoryRetrieveUnitGood() throws Exception {
@@ -625,16 +604,5 @@ public class TestInventory extends TestCase {
 			fail("testUnit retrieved twice.");
 		}
 		catch (InventoryException e) {}
-	}
-	
-	public void testInventoryRetrieveUnitDeep() throws Exception {
-		Inventory inventory = new Inventory(null);
-		inventory.addGeneralCapacity(30D);
-		Unit testUnit1 = new MockUnit1();
-		testUnit1.getInventory().addGeneralCapacity(20D);
-		inventory.storeUnit(testUnit1);
-		Unit testUnit2 = new MockUnit2();
-		testUnit1.getInventory().storeUnit(testUnit2);
-		inventory.retrieveUnit(testUnit2);
 	}
 }

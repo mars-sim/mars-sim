@@ -23,12 +23,12 @@ public class AmountResourceStorage implements Serializable {
 	private AmountResourcePhaseStorage phaseStorage = null;
 	
 	// Cache values
-	private AmountResource resourceCapacityKeyCache = null;
-	private double resourceCapacityCache = 0D;
-	private AmountResource resourceStoredKeyCache = null;
-	private double resourceStoredCache = 0D;
-	private Set allStoredResourcesCache = null;
-	private double totalResourcesStored = -1D;
+	private transient AmountResource resourceCapacityKeyCache = null;
+	private transient double resourceCapacityCache = 0D;
+	private transient AmountResource resourceStoredKeyCache = null;
+	private transient double resourceStoredCache = 0D;
+	private transient Set allStoredResourcesCache = null;
+	private transient double totalResourcesStored = -1D;
 	
     /**
      * Adds capacity for a resource type.

@@ -228,7 +228,7 @@ public class EnterAirlock extends Task implements Serializable {
         	personInv.retrieveUnit(suit);
         	entityInv.storeUnit(suit);
         }
-        throw new Exception("Person doesn't have an EVA suit to put away.");
+        else throw new Exception("Person doesn't have an EVA suit to put away.");
     }
 
     /**

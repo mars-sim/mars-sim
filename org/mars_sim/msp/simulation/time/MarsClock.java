@@ -362,4 +362,12 @@ public class MarsClock implements Serializable {
     	else result = false;
     	return result;
     }
+    
+    /**
+     * Gets the hash code for this object.
+     * @return hash code.
+     */
+    public int hashCode() {
+    	return orbit * month * sol + ((int) (millisol * 1000D));
+    }
 }

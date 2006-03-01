@@ -80,4 +80,12 @@ public class NavPoint implements Serializable {
 		}
 		return result;
 	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		return getLocation().hashCode() * getSettlement().hashCode();
+	}
 }

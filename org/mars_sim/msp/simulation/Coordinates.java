@@ -172,6 +172,14 @@ public class Coordinates implements Serializable {
 
         return false;
     }
+    
+    /**
+     * Gets the hash code for this object.
+     * @return hash code.
+     */
+    public int hashCode() {
+    	return (int) ((phi * 1000D) + (theta * 1000D));
+    }
 
     /** Returns the arc angle in radians between this location and the
      *  given coordinates

@@ -32,14 +32,14 @@ public class Inventory implements Serializable {
     private AmountResourceStorage resourceStorage = null; // Resource storage.
     
     // Cache capacity variables.
-    private AmountResource amountResourceCapacityKeyCache = null;
-	private double amountResourceCapacityCache = 0D;
-	private AmountResource amountResourceStoredKeyCache = null;
-	private double amountResourceStoredCache = 0D;
-	private Set allStoredAmountResourcesCache = null;
-	private double totalAmountResourcesStored = -1D;
-	private AmountResource amountResourceRemainingKeyCache = null;
-	private double amountResourceRemainingCache = 0D;
+    private transient AmountResource amountResourceCapacityKeyCache = null;
+	private transient double amountResourceCapacityCache = 0D;
+	private transient AmountResource amountResourceStoredKeyCache = null;
+	private transient double amountResourceStoredCache = 0D;
+	private transient Set allStoredAmountResourcesCache = null;
+	private transient double totalAmountResourcesStored = -1D;
+	private transient AmountResource amountResourceRemainingKeyCache = null;
+	private transient double amountResourceRemainingCache = 0D;
     
     /** 
      * Constructor
@@ -218,7 +218,7 @@ public class Inventory implements Serializable {
      */
     public double getAmountResourceRemainingCapacity(AmountResource resource) {
     	double result = 0D;
-    	if (amountResourceRemainingKeyCache != null) return amountResourceRemainingCache;
+    	if (amountResourceRemainingKeyCache == resource) return amountResourceRemainingCache;
     	else {
     		if (resourceStorage != null) result += resourceStorage.getAmountResourceRemainingCapacity(resource);
     		if (containedUnits != null) {
@@ -494,7 +494,7 @@ public class Inventory implements Serializable {
     }
     
     /** 
-     * Checks if a unit is in storage or in any contained unit's inventory.
+     * Checks if a unit is in storage.
      * @param unit the unit.
      * @return true if unit is in storage.
      */
@@ -503,13 +503,6 @@ public class Inventory implements Serializable {
         if (containedUnits != null) {
         	// See if this unit contains the unit in question.
         	if (containedUnits.contains(unit)) result = true;
-        	else {
-        		// Go though each contained unit and see it contains the unit in question.
-        		UnitIterator i = containedUnits.iterator();
-        		while (i.hasNext()) {
-        			if (i.next().getInventory().containsUnit(unit)) result = true;
-        		}
-        	}
         }
         return result;
     }
@@ -531,8 +524,7 @@ public class Inventory implements Serializable {
     }
     
     /**
-     * Checks if any of a given class of unit is in storage, or in the inventory of any
-     * unit that is in storage.
+     * Checks if any of a given class of unit is in storage.
      * @param unitClass the unit class.
      * @return if class of unit is in storage.
      */
@@ -541,20 +533,12 @@ public class Inventory implements Serializable {
     	if (containedUnits != null) {
     		// Check if unit of class is in inventory.
     		if (containsUnitClassLocal(unitClass)) result = true;
-    		else {
-    			// Check if each contained unit has this unit class in it's storage.
-    			UnitIterator i = containedUnits.iterator();
-    			while (i.hasNext()) {
-    				if (i.next().getInventory().containsUnitClass(unitClass)) result = true;
-    			}
-    		}
     	}
     	return result;
     }
     
     /**
-     * Finds a unit of a given class in storage or in the inventory of any 
-     * unit that is in storage.
+     * Finds a unit of a given class in storage.
      * @param unitClass the unit class.
      * @return the instance of the unit class or null if none.
      */
@@ -565,19 +549,13 @@ public class Inventory implements Serializable {
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unitClass.isInstance(unit)) result = unit;
-                else {
-                    if (unit.getInventory().containsUnitClass(unitClass)) {
-                        return unit.getInventory().findUnitOfClass(unitClass);
-                    }
-                }
             }
         }
         return result;
     }
     
     /**
-     * Finds all of the units of a class in storage or in the inventory of any
-     * unit thatis in storage.
+     * Finds all of the units of a class in storage.
      * @param unitClass the unit class.
      * @return collection of units or empty collection if none.
      */
@@ -588,11 +566,26 @@ public class Inventory implements Serializable {
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unitClass.isInstance(unit)) result.add(unit);
-                if (unit.getInventory().containsUnitClass(unitClass)) 
-                	result.mergeUnits(unit.getInventory().findAllUnitsOfClass(unitClass));
             }
         }
         return result;
+    }
+    
+    /**
+     * Finds the number of units of a class that are contained in storage.
+     * @param unitClass the unit class.
+     * @return number of units
+     */
+    public int findNumUnitsOfClass(Class unitClass) {
+    	int result = 0;
+    	if (containsUnitClass(unitClass)) {
+    		UnitIterator i = containedUnits.iterator();
+    		while (i.hasNext()) {
+    			Unit unit = i.next();
+    			if (unitClass.isInstance(unit)) result++;
+    		}
+    	}
+    	return result;
     }
 
     /**
@@ -637,16 +630,6 @@ public class Inventory implements Serializable {
     		if (containedUnits.contains(unit)) {
     			containedUnits.remove(unit);
     			retrieved = true;
-    		}
-    		else {
-    			UnitIterator i = containedUnits.iterator();
-    			while (i.hasNext()) {
-    				Unit containedUnit = i.next();
-    				if (containedUnit.getInventory().containsUnit(unit)) {
-    					containedUnit.getInventory().retrieveUnit(unit);
-    					retrieved = true;
-    				}
-    			}
     		}
     	}
     	if (retrieved) unit.setContainerUnit(null);

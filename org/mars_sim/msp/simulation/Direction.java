@@ -47,6 +47,14 @@ public class Direction implements Cloneable, Serializable {
         return result;
     }
     
+    /**
+     * Gets the hash code for this object.
+     * @return hash code.
+     */
+    public int hashCode() {
+    	return (int) (direction * 1000D);
+    }
+    
     /** Returns direction in radians
      *  0 = North, clockwise
      *  @return direction in radians

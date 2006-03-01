@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.78 2005-07-14
+ * @version 2.79 2006-02-28
  * @author Scott Davis
  */
 
@@ -10,10 +10,13 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -87,33 +90,51 @@ public class LoadVehicle extends Task implements Serializable {
         // If there are enough supplies at the settlement, load the vehicle.
         if (hasEnoughSupplies(settlement, vehicle)) {
 
+        	Inventory vehicleInv = vehicle.getInventory();
+            Inventory settlementInv = settlement.getInventory();
+        	
             // Load fuel
-	        double fuelAmount = vehicle.getInventory().getAmountResourceRemainingCapacity(vehicle.getFuelType());
+	        double fuelAmount = vehicleInv.getAmountResourceRemainingCapacity(vehicle.getFuelType());
             if (fuelAmount > amountLoading) fuelAmount = amountLoading;
-	        settlement.getInventory().retrieveAmountResource(vehicle.getFuelType(), fuelAmount);
-	        vehicle.getInventory().storeAmountResource(vehicle.getFuelType(), fuelAmount);
+            settlementInv.retrieveAmountResource(vehicle.getFuelType(), fuelAmount);
+	        vehicleInv.storeAmountResource(vehicle.getFuelType(), fuelAmount);
             amountLoading -= fuelAmount;
 
             // Load oxygen
-	        double oxygenAmount = vehicle.getInventory().getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
+	        double oxygenAmount = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
             if (oxygenAmount > amountLoading) oxygenAmount = amountLoading;
-	        settlement.getInventory().retrieveAmountResource(AmountResource.OXYGEN, oxygenAmount);
-	        vehicle.getInventory().storeAmountResource(AmountResource.OXYGEN, oxygenAmount);
+            settlementInv.retrieveAmountResource(AmountResource.OXYGEN, oxygenAmount);
+	        vehicleInv.storeAmountResource(AmountResource.OXYGEN, oxygenAmount);
             amountLoading -= oxygenAmount;
 	    
             // Load water
-	        double waterAmount = vehicle.getInventory().getAmountResourceRemainingCapacity(AmountResource.WATER);
+	        double waterAmount = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
             if (waterAmount > amountLoading) waterAmount = amountLoading;
-	        settlement.getInventory().retrieveAmountResource(AmountResource.WATER, waterAmount);
-	        vehicle.getInventory().storeAmountResource(AmountResource.WATER, waterAmount);
+            settlementInv.retrieveAmountResource(AmountResource.WATER, waterAmount);
+	        vehicleInv.storeAmountResource(AmountResource.WATER, waterAmount);
             amountLoading -= waterAmount;
 
             // Load Food
-            double foodAmount = vehicle.getInventory().getAmountResourceRemainingCapacity(AmountResource.FOOD);
+            double foodAmount = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.FOOD);
             if (foodAmount > amountLoading) foodAmount = amountLoading;
-	        settlement.getInventory().retrieveAmountResource(AmountResource.FOOD, foodAmount);
-	        vehicle.getInventory().storeAmountResource(AmountResource.FOOD, foodAmount);
+            settlementInv.retrieveAmountResource(AmountResource.FOOD, foodAmount);
+	        vehicleInv.storeAmountResource(AmountResource.FOOD, foodAmount);
             amountLoading -= foodAmount;
+            
+            // If crewable vehicle, load EVA suits.
+            if (vehicle instanceof Crewable) {
+            	int neededEvaSuits = ((Crewable) vehicle).getCrewCapacity();
+            	int currentEvaSuits = vehicleInv.findNumUnitsOfClass(EVASuit.class);
+            	int remainingNeededEvaSuits = neededEvaSuits - currentEvaSuits;
+            	for (int x = 0; x < remainingNeededEvaSuits; x++) {
+            		Unit suit = settlementInv.findUnitOfClass(EVASuit.class);
+            		if ((suit != null) && vehicleInv.canStoreUnit(suit)) {
+            			settlementInv.retrieveUnit(suit);
+            			vehicleInv.storeUnit(suit);
+            		}
+            		else throw new Exception("Suit not found in settlement or cannot be stored in vehicle.");
+            	}
+            }
         }
         else endTask();
 
@@ -142,21 +163,34 @@ public class LoadVehicle extends Task implements Serializable {
     	
         boolean enoughSupplies = true;
 
-        double neededFuel = vehicle.getInventory().getAmountResourceRemainingCapacity(vehicle.getFuelType());
-        double storedFuel = settlement.getInventory().getAmountResourceStored(vehicle.getFuelType());
+        Inventory vehicleInv = vehicle.getInventory();
+        Inventory settlementInv = settlement.getInventory();
+        
+        double neededFuel = vehicleInv.getAmountResourceRemainingCapacity(vehicle.getFuelType());
+        double storedFuel = settlementInv.getAmountResourceStored(vehicle.getFuelType());
         if (neededFuel > storedFuel - 50D) enoughSupplies = false;
 
-        double neededOxygen = vehicle.getInventory().getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
-        double storedOxygen = settlement.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
+        double neededOxygen = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
+        double storedOxygen = settlementInv.getAmountResourceStored(AmountResource.OXYGEN);
         if (neededOxygen > storedOxygen - 50D) enoughSupplies = false;
 
-        double neededWater = vehicle.getInventory().getAmountResourceRemainingCapacity(AmountResource.WATER);
-        double storedWater = settlement.getInventory().getAmountResourceStored(AmountResource.WATER);
+        double neededWater = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
+        double storedWater = settlementInv.getAmountResourceStored(AmountResource.WATER);
         if (neededWater > storedWater - 50D) enoughSupplies = false;
 	
-        double neededFood = vehicle.getInventory().getAmountResourceRemainingCapacity(AmountResource.FOOD);
-        double storedFood = settlement.getInventory().getAmountResourceStored(AmountResource.FOOD);
+        double neededFood = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.FOOD);
+        double storedFood = settlementInv.getAmountResourceStored(AmountResource.FOOD);
         if (neededFood > storedFood - 50D) enoughSupplies = false;
+        
+        // If a crewable vehicle, check if there are proper number of EVA suits available to load.
+        if (vehicle instanceof Crewable) {
+        	int neededEvaSuits = ((Crewable) vehicle).getCrewCapacity();
+        	int currentEvaSuits = vehicleInv.findNumUnitsOfClass(EVASuit.class);
+        	int remainingNeededEvaSuits = neededEvaSuits - currentEvaSuits;
+        	int storedEvaSuits = settlementInv.findNumUnitsOfClass(EVASuit.class);
+        	// Make sure there is at least one EVA suit left at the settlement.
+        	if (remainingNeededEvaSuits > (storedEvaSuits - 1)) enoughSupplies = false;
+        }
 
         return enoughSupplies;
     }
@@ -174,6 +208,12 @@ public class LoadVehicle extends Task implements Serializable {
         if (i.getAmountResourceRemainingCapacity(AmountResource.OXYGEN) > 0D) result = false;
         if (i.getAmountResourceRemainingCapacity(AmountResource.WATER) > 0D) result = false;
         if (i.getAmountResourceRemainingCapacity(AmountResource.FOOD) > 0D) result = false;
+        
+        if (vehicle instanceof Crewable) {
+        	int neededEvaSuits = ((Crewable) vehicle).getCrewCapacity();
+        	int currentEvaSuits = i.findNumUnitsOfClass(EVASuit.class);
+        	if (neededEvaSuits > currentEvaSuits) result = false;
+        }
 
         return result;
     }
