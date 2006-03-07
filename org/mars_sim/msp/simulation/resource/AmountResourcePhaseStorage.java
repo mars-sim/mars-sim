@@ -171,7 +171,7 @@ class AmountResourcePhaseStorage implements Serializable {
     /**
      * Internal class for a stored phase.
      */
-    private class StoredPhase {
+    private class StoredPhase implements Serializable {
     	private AmountResource resource;
     	private double amount;
     	
