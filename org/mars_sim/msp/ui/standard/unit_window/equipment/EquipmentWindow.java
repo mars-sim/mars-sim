@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.standard.unit_window.equipment;
 
 import org.mars_sim.msp.simulation.equipment.*;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.*;
 
@@ -29,6 +30,7 @@ public class EquipmentWindow extends UnitWindow {
         // Add tab panels
         addTabPanel(new LocationTabPanel(equipment, desktop));
         addTabPanel(new InventoryTabPanel(equipment, desktop));
-        addTabPanel(new MaintenanceTabPanel(equipment, desktop));
+        if (equipment instanceof Malfunctionable) 
+        	addTabPanel(new MaintenanceTabPanel(equipment, desktop));
     }
 }
