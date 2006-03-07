@@ -174,26 +174,29 @@ public class Cooking extends Function implements Serializable {
 	 * The amount of work is dependent upon the person's cooking skill.
 	 * @param workTime work time (millisols)
 	 */
-	public void addWork(double workTime) {
+	public void addWork(double workTime) throws BuildingException {
 		cookingWorkTime += workTime;
 		while (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) {
-			try {
-				int mealQuality = getBestCookSkill();
-				MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			int mealQuality = getBestCookSkill();
+			MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 			
+			try {
 				SimulationConfig simConfig = Simulation.instance().getSimConfig();
 				PersonConfig config = simConfig.getPersonConfiguration();
-				getBuilding().getInventory().retrieveAmountResource(AmountResource.FOOD, 
-						config.getFoodConsumptionRate() * (1D / 3D));
-			
-				meals.add(new CookedMeal(mealQuality, time));
-				cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
-				// System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + 
-				//	" has " + meals.size() + " hot meals, quality=" + mealQuality);
+				double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
+				getBuilding().getInventory().retrieveAmountResource(AmountResource.FOOD, foodAmount);
+			}
+			catch (InventoryException e) {
+				throw new BuildingException("Not enough food in settlement to cook.");
 			}
 			catch (Exception e) {
-				System.err.println("Cooking.addWork(): " + e.getMessage());
+				throw new BuildingException("Error getting configuration data.");
 			}
+			
+			meals.add(new CookedMeal(mealQuality, time));
+			cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
+			// System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + 
+			//	" has " + meals.size() + " hot meals, quality=" + mealQuality);
 		}
 	}
 	

@@ -145,7 +145,14 @@ public class CookMeal extends Task implements Serializable {
 		else workTime += workTime * (.2D * (double) cookingSkill);
         
 		// Add this work to the kitchen.
-		kitchen.addWork(workTime);
+		try {
+			kitchen.addWork(workTime);
+		}
+		catch (BuildingException e) {
+			// Not enough food.
+			endTask();
+			return time;
+		}
 		
 		// Add experience
 		addExperience(time);
