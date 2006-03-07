@@ -63,7 +63,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         	else endMission();
         	
         	// Recruit additional people to mission.
-        	recruitPeopleForMission(startingPerson);
+        	if (!isDone()) recruitPeopleForMission(startingPerson);
         }
         
         // Set initial phase
