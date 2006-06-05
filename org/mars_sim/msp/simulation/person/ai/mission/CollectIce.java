@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -20,8 +21,11 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  */
 public class CollectIce extends CollectResourcesMission {
 
-	//	Amount of ice to be gathered at a given site (kg). 
-	private static final double SITE_GOAL = 2000D;
+	// Amount of ice to be gathered at a given site (kg). 
+	private static final double SITE_GOAL = 1000D;
+	
+	// Number of bags required for the mission. 
+	private static final int REQUIRED_BAGS = 20;
 	
 	// Collection rate of ice during EVA (kg/millisol).
 	private static final double COLLECTION_RATE = 1D;
@@ -41,7 +45,7 @@ public class CollectIce extends CollectResourcesMission {
 		
 		// Use CollectResourcesMission constructor.
 		super("Ice Prospecting", startingPerson, AmountResource.ICE, SITE_GOAL, COLLECTION_RATE, 
-				NUM_SITES, MIN_PEOPLE);
+				Bag.class, REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 	
 	/** 
@@ -56,17 +60,21 @@ public class CollectIce extends CollectResourcesMission {
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Settlement settlement = person.getSettlement();
 	    
+			// Check if a mission-capable rover is available.
 			boolean reservableRover = areVehiclesAvailable(settlement);
 
-			double water = settlement.getInventory().getAmountResourceStored(AmountResource.WATER);
-			boolean enoughWater = (water >= 5000D);
-
-			// At least one person left to hold down the fort.
+			// Check if at least one person left to hold down the fort.
 			boolean remainingInhabitant = atLeastOnePersonRemainingAtSettlement(settlement);
+			
+			// Check if there are enough bags at the settlement for collecting ice.
+			boolean enoughBags = (numCollectingContainersAvailable(settlement, Bag.class) >= REQUIRED_BAGS);
 	    
-			if (reservableRover && remainingInhabitant) {
-				if (enoughWater) result = 1D;
-				else result = 100D;
+			if (reservableRover && remainingInhabitant && enoughBags) {
+				// Calculate the probability based on the water situation.
+				double water = settlement.getInventory().getAmountResourceStored(AmountResource.WATER);
+				double amountNeeded = settlement.getAllAssociatedPeople().size() * 250D;
+				if (water > 0D) result = 100D * (amountNeeded / water);
+				else result = 100D * (amountNeeded / 1D);
 			} 
 			
 			// Crowding modifier
@@ -98,7 +106,7 @@ public class CollectIce extends CollectResourcesMission {
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
-			if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ICE)) usable = false;
+			// if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ICE)) usable = false;
 			
 			if (usable) result = true;    
 		}
@@ -112,6 +120,7 @@ public class CollectIce extends CollectResourcesMission {
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
 	 */
+	/*
 	protected boolean isUsableVehicle(Vehicle newVehicle) {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		
@@ -120,6 +129,7 @@ public class CollectIce extends CollectResourcesMission {
 		
 		return usable;
 	}
+	*/
 	
 	/**
 	 * Compares the quality of two vehicles for use in this mission.
@@ -131,6 +141,7 @@ public class CollectIce extends CollectResourcesMission {
 	 * and 1 if the first vehicle is better than the second vehicle.
 	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
 	 */
+	/*
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
@@ -144,4 +155,5 @@ public class CollectIce extends CollectResourcesMission {
 		
 		return result;
 	}
+	*/
 }

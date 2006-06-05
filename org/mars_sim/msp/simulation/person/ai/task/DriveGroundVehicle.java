@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.78 2005-07-11
+ * @version 2.79 2006-05-11
  * @author Scott Davis
  */
 
@@ -251,6 +251,19 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         else isBackingUp = true;
 
         return resultDirection;
+    }
+    
+    /** 
+     * Determine vehicle speed for a given direction.
+     * @param direction the direction of travel
+     * @return speed in km/hr
+     */
+    protected double getSpeed(Direction direction) {
+    	double result = super.getSpeed(direction);
+    	result *= getSpeedLightConditionModifier();
+    	result *= getTerrainModifier();
+    	
+    	return result;
     }
     
     /**

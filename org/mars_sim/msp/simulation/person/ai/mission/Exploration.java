@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -28,6 +29,9 @@ public class Exploration extends CollectResourcesMission {
 	// Collection rate of rock samples during EVA (kg/millisol).
 	private static final double COLLECTION_RATE = .1D;
 	
+	// Number of specimen containers required for the mission. 
+	private static final int REQUIRED_SPECIMEN_CONTAINERS = 4;
+	
 	//	Number of collection sites.
 	private static final int NUM_SITES = 8;
 	
@@ -43,7 +47,8 @@ public class Exploration extends CollectResourcesMission {
 		
 		// Use CollectResourcesMission constructor.
 		super("Exploration", startingPerson, AmountResource.ROCK_SAMPLES, 
-			SITE_GOAL, COLLECTION_RATE, NUM_SITES, MIN_PEOPLE);
+			SITE_GOAL, COLLECTION_RATE, SpecimenContainer.class, 
+			REQUIRED_SPECIMEN_CONTAINERS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/** 
@@ -58,15 +63,17 @@ public class Exploration extends CollectResourcesMission {
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Settlement settlement = person.getSettlement();
 	    
+			// Check if a mission-capable rover is available.
 			boolean reservableRover = areVehiclesAvailable(settlement);
-
-			double rocks = settlement.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
-			boolean enoughRockSamples = (rocks >= 500D);
-
-			// At least one person left to hold down the fort.
+			
+			// Check if at least one person left to hold down the fort.
 			boolean remainingInhabitant = atLeastOnePersonRemainingAtSettlement(settlement);
+			
+			// Check if there are enough specimen containers at the settlement for collecting rock samples.
+			boolean enoughContainers = 
+				(numCollectingContainersAvailable(settlement, SpecimenContainer.class) >= REQUIRED_SPECIMEN_CONTAINERS);
 	    
-			if (reservableRover && !enoughRockSamples && remainingInhabitant) result = 5D;
+			if (reservableRover && remainingInhabitant && enoughContainers) result = 5D;
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
@@ -97,7 +104,7 @@ public class Exploration extends CollectResourcesMission {
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
-			if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) usable = false;
+			// if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) usable = false;
 			
 			if (usable) result = true;    
 		}
@@ -111,6 +118,7 @@ public class Exploration extends CollectResourcesMission {
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
 	 */
+	/*
 	protected boolean isUsableVehicle(Vehicle newVehicle) {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		
@@ -119,6 +127,7 @@ public class Exploration extends CollectResourcesMission {
 		
 		return usable;
 	}
+	*/
 	
 	/**
 	 * Compares the quality of two vehicles for use in this mission.
@@ -128,18 +137,20 @@ public class Exploration extends CollectResourcesMission {
 	 * @return -1 if the second vehicle is better than the first vehicle, 
 	 * 0 if vehicle are equal in quality,
 	 * and 1 if the first vehicle is better than the second vehicle.
-	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
+	 * @throws Exception if problem comparing vehicles..
 	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
 		// Check if one can hold more rock samples than the other.
+		/*
 		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
 			double firstRockCapacity = firstVehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES);
 			double secondRockCapacity = secondVehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES);
 			if (firstRockCapacity > secondRockCapacity) result = 1;
 			else if (firstRockCapacity < secondRockCapacity) result = -1;
 		}
+		*/
 		
 		// Check of one rover has a research lab and the other one doesn't.
 		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
@@ -151,4 +162,17 @@ public class Exploration extends CollectResourcesMission {
 		
 		return result;
 	}
+	
+    /**
+     * Gets the estimated time remaining on the trip.
+     * @return time (millisols)
+     * @throws Exception
+     */
+    public double getEstimatedRemainingTripTime() throws Exception {
+    	double result = super.getEstimatedRemainingTripTime();
+    	
+    	// TODO: Add additional exploration time at sites.
+    	
+    	return result;
+    }
 }

@@ -21,7 +21,7 @@ public final class EquipmentFactory {
 	
 	public static Equipment getEquipment(String type, Coordinates location) throws Exception {
 		
-		if (Bag.TYPE.equals(type)) return new Bag(location, 100D);
+		if (Bag.TYPE.equals(type)) return new Bag(location, 50D);
 		else if (Barrel.TYPE.equals(type)) return new Barrel(location, 200D);
 		else if (EVASuit.TYPE.equals(type)) return new EVASuit(location);
 		else if (GasCanister.TYPE.equals(type)) return new GasCanister(location, 50D);

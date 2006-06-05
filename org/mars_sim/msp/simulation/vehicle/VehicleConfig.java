@@ -18,7 +18,6 @@ public class VehicleConfig {
 	// Element names
 	private static final String ROVER = "rover";
 	private static final String TYPE = "type";
-	private static final String RANGE = "range";
 	private static final String FUEL_EFFICIENCY = "fuel-efficiency";
 	private static final String BASE_SPEED = "base-speed";
 	private static final String EMPTY_MASS = "empty-mass";
@@ -68,18 +67,6 @@ public class VehicleConfig {
 			" could not be found in vehicles.xml.");
 		
 		return result;
-	}
-	
-	/**
-	 * Gets the rover's range
-	 * @param roverType the rover type
-	 * @return range in km.
-	 * @throws Exception if rover type could not be found or XML parsing error.
-	 */
-	public double getRange(String roverType) throws Exception {	
-		Element roverElement = getRoverElement(roverType);
-		Element rangeElement = (Element) roverElement.getElementsByTagName(RANGE).item(0);
-		return Double.parseDouble(rangeElement.getAttribute(VALUE));
 	}
 	
 	/**

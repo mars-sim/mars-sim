@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.78 2005-08-18
+ * @version 2.79 2006-06-01
  * @author Scott Davis
  */
 
@@ -10,13 +10,20 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.job.*;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.job.Driver;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.simulation.structure.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.SettlementCollection;
+import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
@@ -140,28 +147,35 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @param person the person searching for a settlement.
      * @param startingSettlement the settlement the mission is starting at.
      * @return randomly determined settlement
+     * @throws MissionException if problem determining destination settlement.
      */
-    private Settlement getRandomDestinationSettlement(Person person, Settlement startingSettlement) {
-    	double range = getVehicle().getRange();
-        UnitManager unitManager = startingSettlement.getUnitManager();
-        Settlement result = null;
+    private Settlement getRandomDestinationSettlement(Person person, Settlement startingSettlement) throws MissionException {
+    	
+    	try {
+    		double range = getVehicle().getRange();
+    		UnitManager unitManager = startingSettlement.getUnitManager();
+    		Settlement result = null;
         
-        // Find all desirable destination settlements.
-        Map desirableSettlements = new HashMap();
-        SettlementIterator i = new SettlementCollection(unitManager.getSettlements()).iterator();
-        while (i.hasNext()) {
-        	Settlement settlement = i.next();
-        	double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
-        	if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))) {
-        		double desirability = getDestinationSettlementDesirability(person, startingSettlement, settlement);
-        		if (desirability > 0D) desirableSettlements.put(settlement, new Double(desirability));
-        	}
-        }
+    		// Find all desirable destination settlements.
+    		Map desirableSettlements = new HashMap();
+    		SettlementIterator i = new SettlementCollection(unitManager.getSettlements()).iterator();
+    		while (i.hasNext()) {
+    			Settlement settlement = i.next();
+    			double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
+    			if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))) {
+    				double desirability = getDestinationSettlementDesirability(person, startingSettlement, settlement);
+    				if (desirability > 0D) desirableSettlements.put(settlement, new Double(desirability));
+    			}
+    		}
         
-        // Randomly select a desirable settlement.
-        if (desirableSettlements.size() > 0) result = (Settlement) RandomUtil.getWeightedRandomObject(desirableSettlements);
+    		// Randomly select a desirable settlement.
+    		if (desirableSettlements.size() > 0) result = (Settlement) RandomUtil.getWeightedRandomObject(desirableSettlements);
     
-        return result;
+    		return result;
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(VehicleMission.EMBARKING, e);
+    	}
     }
 	
 	/**

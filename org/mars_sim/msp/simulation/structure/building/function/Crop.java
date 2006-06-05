@@ -220,7 +220,7 @@ public class Crop implements Serializable {
                 	Inventory inv = settlement.getInventory();
                 	
                 	// Determine harvest modifier by amount of waste water available.
-                	double wasteWaterRequired = maxPeriodHarvest * 100D;
+                	double wasteWaterRequired = maxPeriodHarvest * 5D;
                 	double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
                 	double wasteWaterUsed = wasteWaterRequired;
                 	if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;

@@ -8,7 +8,10 @@
 package org.mars_sim.msp.simulation.vehicle;
 
 import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonConfig;
+import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -289,6 +292,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @param percentage the percentage of maximum
      * @return true if vehicle has at least percentage many resources.
      */
+    /*
     public boolean isLoaded(double percentage) {
     	if (super.isLoaded(percentage)) {
     		// Make sure sufficient life support is loaded.
@@ -300,5 +304,42 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     		return ((oxygenPercentage >= percentage) && (waterPercentage >= percentage) && (foodPercentage >= percentage));
     	}
     	else return false;
+    }
+    */
+    
+    /** 
+     * Gets the range of the vehicle
+     * @return the range of the vehicle (in km)
+     * @throws Exception if error getting range.
+     */
+    public double getRange() throws Exception {
+    	double range = super.getRange();
+    	
+    	double distancePerSol = getEstimatedTravelDistancePerSol();
+    	
+    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    		
+    	// Check food capacity as range limit.
+    	double foodConsumptionRate = config.getFoodConsumptionRate();
+    	double foodCapacity = inventory.getAmountResourceCapacity(AmountResource.FOOD);
+    	double foodSols = foodCapacity / foodConsumptionRate;
+    	double foodRange = distancePerSol * foodSols;
+    	if (foodRange < range) range = foodRange;
+    		
+    	// Check water capacity as range limit.
+    	double waterConsumptionRate = config.getWaterConsumptionRate();
+    	double waterCapacity = inventory.getAmountResourceCapacity(AmountResource.WATER);
+    	double waterSols = waterCapacity / waterConsumptionRate;
+    	double waterRange = distancePerSol * waterSols;
+    	if (waterRange < range) range = waterRange;
+    		
+    	// Check oxygen capacity as range limit.
+    	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
+    	double oxygenCapacity = inventory.getAmountResourceCapacity(AmountResource.OXYGEN);
+    	double oxygenSols = oxygenCapacity / oxygenConsumptionRate;
+    	double oxygenRange = distancePerSol * oxygenSols;
+    	if (oxygenRange < range) range = oxygenRange;
+    	
+    	return range;
     }
 }

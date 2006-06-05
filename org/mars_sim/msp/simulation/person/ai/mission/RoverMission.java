@@ -1,20 +1,26 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.78 2005-08-18
+ * @version 2.79 2006-05-15
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.UnloadVehicle;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -94,8 +100,9 @@ public abstract class RoverMission extends VehicleMission {
 	 * 0 if vehicle are equal in quality,
 	 * and 1 if the first vehicle is better than the second vehicle.
 	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
+	 * @throws Exception if error comparing vehicles.
 	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
 		// Check if one can hold more crew than the other.
@@ -148,71 +155,63 @@ public abstract class RoverMission extends VehicleMission {
      */ 
     protected void performEmbarkFromSettlementPhase(Person person) throws MissionException {
     	
-    	Settlement settlement = getVehicle().getSettlement();
-    	if (settlement == null) throw new 
-				MissionException(VehicleMission.EMBARKING, "Vehicle is not at a settlement.");
+    	try {
+    		Settlement settlement = getVehicle().getSettlement();
+    		if (settlement == null) 
+    			throw new MissionException(VehicleMission.EMBARKING, "Vehicle is not at a settlement.");
     	
-    	// Add the rover to a garage if possible.
-    	if (BuildingManager.getBuilding(getVehicle()) != null) {
-    		try {
-    			BuildingManager.addToRandomBuilding((Rover) getVehicle(), getVehicle().getSettlement());
+    		// Add the rover to a garage if possible.
+    		if (BuildingManager.getBuilding(getVehicle()) != null) {
+    			try {
+    				BuildingManager.addToRandomBuilding((Rover) getVehicle(), getVehicle().getSettlement());
+    			}
+    			catch (BuildingException e) {}
     		}
-    		catch (BuildingException e) {}
-    	}
     	
-    	// Load vehicle if not fully loaded.
-    	boolean loaded = isVehicleLoaded(getTotalDistance());
-    	if (!loaded) {
-    		// Load rover
-			// Random chance of having person load (this allows person to do otherthings sometimes)
-			if (RandomUtil.lessThanRandPercent(50)) { 
-				try {
-					assignTask(person, new LoadVehicle(person, getVehicle()));
-					if (!LoadVehicle.hasEnoughSupplies(settlement, getVehicle())) endMission(); 
-					return;
-				}
-				catch (Exception e) {
-					throw new MissionException(VehicleMission.EMBARKING, e);
-				}
-			}
-			else return;
-    	}
+    		// Load vehicle if not fully loaded.
+    		boolean loaded = isVehicleLoaded();
+    		if (!loaded) {
+    			// Load rover
+    			// Random chance of having person load (this allows person to do other things sometimes)
+    			if (RandomUtil.lessThanRandPercent(50)) { 
+    				if (!LoadVehicle.hasEnoughSupplies(settlement, getResourcesNeededForMission(), 
+    						getEquipmentNeededForMission(), getPeopleNumber(), getEstimatedRemainingTripTime())) endMission();
+    				else assignTask(person, new LoadVehicle(person, getVehicle(), 
+    						getResourcesNeededForMission(), getEquipmentNeededForMission()));
+    				return;
+    			}
+    			else return;
+    		}
     	
-    	// If person is not aboard the rover, board rover.
-    	boolean aboard = isEveryoneInRover();
-    	if (!aboard) {
-    		// board rover
-            if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
-            	try {
+    		// If person is not aboard the rover, board rover.
+    		boolean aboard = isEveryoneInRover();
+    		if (!aboard) {
+    			// board rover
+    			if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
             		settlement.getInventory().retrieveUnit(person);
             		getVehicle().getInventory().storeUnit(person);
             		aboard = isEveryoneInRover();
             	}
-            	catch (InventoryException e) {
-            		throw new MissionException(VehicleMission.EMBARKING, e);
-            	}
             }
-            else return;
-    	}
+            else return;    		
     	
-    	// Embark from settlement if necessary.
-    	if (loaded && aboard) {
-    		// Remove from garage if in garage.
-    		try {
-    			Building garageBuilding = BuildingManager.getBuilding(getVehicle());
-    			VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
-    			garage.removeVehicle(getVehicle());
-    		}
-    		catch (Exception e) {}
+    		// Embark from settlement if necessary.
+    		if (loaded && aboard) {
+    			// Remove from garage if in garage.
+    			try {
+    				Building garageBuilding = BuildingManager.getBuilding(getVehicle());
+    				VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+    				garage.removeVehicle(getVehicle());
+    			}
+    			catch (Exception e) {}
     		
-    		// embark from settlement
-    		try {
+    			// embark from settlement
     			settlement.getInventory().retrieveUnit(getVehicle());
+    			setPhaseEnded(true);
     		}
-    		catch (InventoryException e) {
-    			throw new MissionException(VehicleMission.EMBARKING, e);
-    		}
-    		setPhaseEnded(true);
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(VehicleMission.EMBARKING, e);
     	}
     }
     
@@ -387,4 +386,40 @@ public abstract class RoverMission extends VehicleMission {
 		if (hasDangerousMedicalProblemAtAssociatedSettlement()) result = true;
 		return result;
 	}
+	
+	/**
+	 * Gets the number and amounts of resources needed for the mission.
+	 * @return map of amount and item resources and their Double amount or Integer number.
+	 * @throws Exception if error determining needed resources.
+	 */
+    public Map getResourcesNeededForMission() throws Exception {
+    	Map result = super.getResourcesNeededForMission();
+    	
+    	// Determine estimate time for trip.
+    	double time = getEstimatedRemainingTripTime();
+    	double timeSols = time / 1000D;
+    	
+    	int crewNum = getPeopleNumber();
+    	
+    	// Determine life support supplies needed for trip.
+    	result.put(AmountResource.OXYGEN, new Double(PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum));
+    	result.put(AmountResource.WATER, new Double(PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum));
+    	result.put(AmountResource.FOOD, new Double(PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum));
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets the number and types of equipment needed for the mission.
+     * @return map of equipment class and Integer number.
+     * @throws Exception if error determining needed equipment.
+     */
+    public Map getEquipmentNeededForMission() throws Exception {
+    	Map result = new HashMap();
+    	
+    	// Include one EVA suit per person on mission.
+    	result.put(EVASuit.class, new Integer(getPeopleNumber()));
+    	
+    	return result;
+    }
 }

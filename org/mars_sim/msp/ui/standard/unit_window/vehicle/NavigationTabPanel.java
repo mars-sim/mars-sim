@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 2.78 2005-08-09
+ * @version 2.79 2006-06-01
  * @author Scott Davis
  */
 
@@ -206,7 +206,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         // Prepare distance label.
         if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-        	distanceCache = mission.getCurrentLegRemainingDistance();
+        	try {
+        		distanceCache = mission.getCurrentLegRemainingDistance();
+        	}
+        	catch (Exception e) {
+        		System.err.println("Error getting current leg remaining distance.");
+    			e.printStackTrace(System.err);
+        	}
         	distanceLabel = new JLabel("Distance: " + formatter.format(distanceCache) + " km.", JLabel.LEFT);
         }
         else {
@@ -343,9 +349,15 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         // Update distance to destination if necessary.
         if (mission != null) {
-        	if (distanceCache != mission.getCurrentLegRemainingDistance()) {
-        		distanceCache = mission.getCurrentLegRemainingDistance();
-        		distanceLabel.setText("Distance: " + formatter.format(distanceCache) + " km.");
+        	try {
+        		if (distanceCache != mission.getCurrentLegRemainingDistance()) {
+        			distanceCache = mission.getCurrentLegRemainingDistance();
+        			distanceLabel.setText("Distance: " + formatter.format(distanceCache) + " km.");
+        		}
+        	}
+        	catch (Exception e) {
+        		System.err.println("Error getting current leg remaining distance.");
+    			e.printStackTrace(System.err);
         	}
         }
         else {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 2.76 2004-06-02
+ * @version 2.79 2006-03-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -50,6 +50,22 @@ public class LifeSupport extends Function implements Serializable {
 		catch (Exception e) {
 			throw new BuildingException("LifeSupport.constructor: " + e.getMessage());
 		}
+	}
+	
+	/**
+	 * Alternate constructor with given occupant capacity and power required.
+	 * @param building the building this function is for.
+	 * @param occupantCapacity the number of occupants this building can hold.
+	 * @param powerRequired the power required (kW)
+	 * @throws BuildingException if error constructing function.
+	 */
+	public LifeSupport(Building building, int occupantCapacity, double powerRequired) throws BuildingException {
+		// Use Function constructor
+		super(NAME, building);
+		
+		occupants = new PersonCollection();
+		this.occupantCapacity = occupantCapacity;
+		this.powerRequired = powerRequired;
 	}
 	
 	/**

@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.time.MarsClock;
@@ -87,6 +88,15 @@ public abstract class TravelMission extends Mission {
 	public NavPoint getNextNavpoint() {
 		if (navIndex < navPoints.size()) return (NavPoint) navPoints.get(navIndex);
 		else return null;
+	}
+	
+	/**
+	 * Gets the mission's next navpoint index.
+	 * @return navpoint index or -1 if none.
+	 */
+	public int getNextNavpointIndex() {
+		if (navIndex < navPoints.size()) return navIndex;
+		else return -1;
 	}
 	
 	/**
@@ -208,10 +218,25 @@ public abstract class TravelMission extends Mission {
 	}
 	
 	/**
+	 * Gets the current location of the mission.
+	 * @return coordinate location.
+	 * @throws Exception if error determining location.
+	 */
+	public Coordinates getCurrentMissionLocation() throws Exception {
+		if (getPeopleNumber() > 0) return getPeople().get(0).getCoordinates();
+		throw new Exception("No people in the mission.");
+	}
+	
+	/**
 	 * Gets the remaining distance for the current leg of the mission.
 	 * @return distance (km) or 0 if not in the travelling phase.
+	 * @throws Exception if error determining distance.
 	 */
-	public abstract double getCurrentLegRemainingDistance();
+	public double getCurrentLegRemainingDistance() throws Exception {
+		if (getTravelStatus().equals(TRAVEL_TO_NAVPOINT))
+			return getCurrentMissionLocation().getDistance(getNextNavpoint().getLocation());
+		else return 0D;
+	}
 	
 	/**
 	 * Gets the total distance of the trip.
@@ -230,11 +255,36 @@ public abstract class TravelMission extends Mission {
 		return result;
 	}
 	
+	/**
+	 * Gets the total remaining distance to travel in the mission.
+	 * @return distance (km).
+	 * @throws Exception if error determining distance.
+	 */
+	public double getTotalRemainingDistance() throws Exception {
+		double result = getCurrentLegRemainingDistance();
+		
+		int index = 0;
+		if (AT_NAVPOINT.equals(travelStatus)) index = getCurrentNavpointIndex();
+		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus)) index = getNextNavpointIndex();
+		
+		for (int x = (index + 1); x < getNumberOfNavpoints(); x++) 
+			result += getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
+		
+		return result;
+	}
+	
     /**
      * Gets the estimated time of arrival (ETA) for the current leg of the mission.
      * @return time (MarsClock) or null if not applicable.
      */
     public abstract MarsClock getLegETA();
+    
+    /**
+     * Gets the estimated time remaining on the trip.
+     * @return time (millisols)
+     * @throws Exception
+     */
+    public abstract double getEstimatedRemainingTripTime() throws Exception;
     
     /**
      * Sets the mission emergency travel home mode

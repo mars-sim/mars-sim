@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.78 2005-08-09
+ * @version 2.79 2006-06-01
  * @author Barry Evans
  */
 
@@ -189,8 +189,15 @@ public class VehicleTableModel extends UnitTableModel {
             case DESTDIST : {
             	VehicleMission mission = (VehicleMission) 
 						Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            	if (mission != null)
-            		result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
+            	if (mission != null) {
+            		try {
+            			result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
+            		}
+            		catch (Exception e) {
+            			System.err.println("Error getting current leg remaining distance.");
+            			e.printStackTrace(System.err);
+            		}
+            	}
             	else result = null;
             } break;
             

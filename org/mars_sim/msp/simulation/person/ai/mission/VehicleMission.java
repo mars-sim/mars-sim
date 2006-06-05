@@ -1,14 +1,19 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.78 2005-08-18
+ * @version 2.79 2006-04-28
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -26,6 +31,9 @@ public abstract class VehicleMission extends TravelMission {
 	protected static final String EMBARKING = "Embarking";
 	protected static final String TRAVELLING = "Travelling";
 	protected static final String DISEMBARKING = "Disembarking";
+	
+    // The error margin for determining vehicle range. (actual distance / safe distance)
+    public final static double RANGE_ERROR_MARGIN = 1.5D;
 	
 	// Data members
 	private Vehicle vehicle;
@@ -51,7 +59,12 @@ public abstract class VehicleMission extends TravelMission {
 		addPhase(DISEMBARKING);
 		
 		// Reserve a vehicle.
-		if (!reserveVehicle(startingPerson)) endMission();
+		try {
+			if (!reserveVehicle(startingPerson)) endMission();
+		}
+		catch (Exception e) {
+			throw new MissionException("Constructor", e);
+		}
 	}
 	
 	/**
@@ -121,9 +134,9 @@ public abstract class VehicleMission extends TravelMission {
 	 * @return -1 if the second vehicle is better than the first vehicle, 
 	 * 0 if vehicle are equal in quality,
 	 * and 1 if the first vehicle is better than the second vehicle.
-	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
+	 * @throws Exception if error determining vehicle range.
 	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
 		if (isUsableVehicle(firstVehicle)) {
 			if (isUsableVehicle(secondVehicle)) {
 				// Vehicle with superior range should be ranked higher.
@@ -143,8 +156,9 @@ public abstract class VehicleMission extends TravelMission {
 	 * Reserves a vehicle for the mission if possible.
 	 * @param person the person reserving the vehicle.
 	 * @return true if vehicle is reserved, false if unable to.
+	 * @throws Exception if error reserving vehicle.
 	 */
-	protected boolean reserveVehicle(Person person) {
+	protected boolean reserveVehicle(Person person) throws Exception {
 		
 		VehicleCollection bestVehicles = new VehicleCollection();
 		
@@ -202,15 +216,23 @@ public abstract class VehicleMission extends TravelMission {
 	
     /** 
      * Determine if a vehicle is sufficiently loaded with fuel and supplies.
-     * @param distance the distance (km) the vehicle is to travel.
      * @return true if rover is loaded.
+     * @throws Exception if error checking vehicle.
      */
-    protected boolean isVehicleLoaded(double distance) {
-    	if (distance > vehicle.getRange()) 
-    		throw new IllegalArgumentException("Distance out of vehicle range.");
-    	if (distance < 0D) throw new IllegalArgumentException("Distance is negative.");
+    protected boolean isVehicleLoaded() throws Exception {
     	
-        return vehicle.isLoaded(distance / vehicle.getRange());
+    	return LoadVehicle.isFullyLoaded(getResourcesNeededForMission(), 
+    			getEquipmentNeededForMission(), getVehicle());
+    }
+    
+    /**
+     * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
+     * @param tripDistance the distance (km) of the trip.
+     * @param fuelEfficiency the vehicle's fuel efficiency (km/kg).
+     * @return
+     */
+    public static double getFuelNeededForTrip(double tripDistance, double fuelEfficiency) {
+    	return (tripDistance * RANGE_ERROR_MARGIN) / fuelEfficiency;
     }
     
     /**
@@ -320,13 +342,55 @@ public abstract class VehicleMission extends TravelMission {
     	else return null;
     }
     
+    /**
+     * Gets the estimated time remaining on the trip.
+     * @return time (millisols)
+     * @throws Exception
+     */
+    public double getEstimatedRemainingTripTime() throws Exception {
+    	
+    	// Determine total remaining distance for trip.
+    	double distance = getTotalRemainingDistance();
+    	
+    	// Determine average driving speed for all mission members.
+    	double averageSpeed = getAverageVehicleSpeedForOperators();
+    	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+    	double averageSpeedMillisol = averageSpeed / millisolsInHour;
+    	
+    	return distance / averageSpeedMillisol;
+    }
+    
+    /**
+     * Gets the average operating speed of the mission vehicle for all of the mission members. 
+     * @return average operating speed (km/h)
+     */
+    private double getAverageVehicleSpeedForOperators() {
+    	
+    	double totalSpeed = 0D;
+    	PersonIterator i = getPeople().iterator();
+    	while (i.hasNext()) totalSpeed += getAverageVehicleSpeedForOperator(i.next());
+    	
+    	return totalSpeed / getPeopleNumber();
+    }
+    
+    /**
+     * Gets the average speed of a vehicle with a given person operating it.
+     * @param person the vehicle operator.
+     * @return average speed (km/h)
+     */
+    private double getAverageVehicleSpeedForOperator(Person person) {
+    	return OperateVehicle.getAverageVehicleSpeed(vehicle, person);
+    }
+    
 	/**
-	 * Gets the remaining distance for the current leg of the mission.
-	 * @return distance (km) or 0 if not in the travelling phase.
+	 * Gets the number and amounts of resources needed for the mission.
+	 * @return map of amount and item resources and their Double amount or Integer number.
+	 * @throws Exception if error determining needed resources.
 	 */
-	public double getCurrentLegRemainingDistance() {
-		if (getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT))
-			return vehicle.getCoordinates().getDistance(getNextNavpoint().getLocation());
-		else return 0D;
-	}
+    public Map getResourcesNeededForMission() throws Exception {
+    	Map result = new HashMap();
+    	result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(getTotalDistance(), 
+    			vehicle.getFuelEfficiency())));
+    	return result;
+    }
 }

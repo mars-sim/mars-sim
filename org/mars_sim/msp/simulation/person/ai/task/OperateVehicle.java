@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 2.78 2005-08-06
+ * @version 2.79 2006-05-11
  * @author Scott Davis
  */
 
@@ -14,7 +14,9 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.time.MarsClock;
+import org.mars_sim.msp.simulation.vehicle.VehicleOperator;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
+
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle, 
@@ -253,8 +255,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      */
     protected double getSpeed(Direction direction) {
 
-        double speed = (getVehicle().getBaseSpeed() + getSpeedSkillModifier()) * 
-				getTerrainModifier() * getSpeedLightConditionModifier();
+        double speed = getVehicle().getBaseSpeed() + getSpeedSkillModifier(); 
         if (speed < 0D) speed = 0D;
 
         return speed;
@@ -277,18 +278,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
         }
         return result;
     }
-    
-    /**
-     * Gets the lighting condition speed modifier.
-     * @return speed modifier (0D - 1D)
-     */
-    protected abstract double getSpeedLightConditionModifier();
-    
-    /**
-     * Gets the terrain speed modifier.
-     * @return speed modifier (0D - 1D)
-     */
-    protected abstract double getTerrainModifier();
     
     /**
      * Gets the distance to the destination.
@@ -315,5 +304,17 @@ public abstract class OperateVehicle extends Task implements Serializable {
         getVehicle().setOperator(null);
     	
     	super.endTask();
+    }
+    
+    /**
+     * Gets the average operating speed of a vehicle for a given operator.
+     * @param vehicle the vehicle.
+     * @param operator the vehicle operator.
+     * @return average operating speed (km/h)
+     */
+    public static double getAverageVehicleSpeed(Vehicle vehicle, VehicleOperator operator) {
+    	
+    	// Need to update this to reflect the particular operator's average speed operating the vehicle.
+    	return vehicle.getBaseSpeed() / 2D;
     }
 }

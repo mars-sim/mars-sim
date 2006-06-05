@@ -18,7 +18,7 @@ public class SpecimenContainer extends Equipment implements Container, Serializa
 
 	public static final String TYPE = "Specimen Container";
 	private static final double BASE_MASS = .5D; // Base mass of the container (kg).
-	private static final double ROCK_CAPACITY = 45D; // Rock sample capacity (kg).
+	private static final double ROCK_CAPACITY = 50D; // Rock sample capacity (kg).
 	
 	public SpecimenContainer(Coordinates location) throws Exception {
 		// Use Equipment constructor.

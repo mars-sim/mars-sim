@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.79 2006-02-28
+ * @version 2.79 2006-06-01
  * @author Scott Davis
  */
 
@@ -10,13 +10,16 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitCollection;
+import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
-import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.ItemResource;
+import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -38,19 +41,29 @@ public class LoadVehicle extends Task implements Serializable {
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
     private Settlement settlement; // The person's settlement.
-
-    /** 
+    private Map resources; // Resources needed to load.
+    private Map equipment; // Equipment needed to load.
+    
+    /**
      * Constructor
-     * @param person the person to perform the task
-     * @param vehicle the vehicle to be loaded
-     * @throws Exception if error constructing task.
+     * @param person the person performing the task.
+     * @param vehicle the vehicle to be loaded.
+     * @param resources a map of resources to be loaded. 
+     * @param equipment a map of equipment to be loaded.
+     * @throws Exception if error creating task.
      */
-    public LoadVehicle(Person person, Vehicle vehicle) throws Exception {
-        super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
-
-        description = "Loading " + vehicle.getName();
+    public LoadVehicle(Person person, Vehicle vehicle, Map resources, Map equipment) throws Exception {
+    	// Use Task constructor.
+    	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
+    	
+    	description = "Loading " + vehicle.getName();
         this.vehicle = vehicle;
-
+        
+        if (resources != null) this.resources = new HashMap(resources);
+        if (equipment != null) this.equipment = new HashMap(equipment);
+        
+        // tripProportion = tripDistance / vehicle.getRange();
+        
         settlement = person.getSettlement();
         
         // Initialize task phase
@@ -76,7 +89,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return the amount of time (millisol) after performing the phase.
      * @throws Exception if error in loading phase.
      */
-    private double loadingPhase(double time) throws Exception {
+    double loadingPhase(double time) throws Exception {
     	
         // Determine load rate.
         int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
@@ -86,61 +99,146 @@ public class LoadVehicle extends Task implements Serializable {
         // If vehicle is not in a garage, load rate is reduced.
         Building garage = BuildingManager.getBuilding(vehicle);
         if (garage == null) amountLoading /= 4D;
-           
-        // If there are enough supplies at the settlement, load the vehicle.
-        if (hasEnoughSupplies(settlement, vehicle)) {
+        
+        // Load resources
+        amountLoading = loadResources(amountLoading);
+        
+        // Load equipment
+        amountLoading = loadEquipment(amountLoading);
 
-        	Inventory vehicleInv = vehicle.getInventory();
-            Inventory settlementInv = settlement.getInventory();
-        	
-            // Load fuel
-	        double fuelAmount = vehicleInv.getAmountResourceRemainingCapacity(vehicle.getFuelType());
-            if (fuelAmount > amountLoading) fuelAmount = amountLoading;
-            settlementInv.retrieveAmountResource(vehicle.getFuelType(), fuelAmount);
-	        vehicleInv.storeAmountResource(vehicle.getFuelType(), fuelAmount);
-            amountLoading -= fuelAmount;
-
-            // Load oxygen
-	        double oxygenAmount = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
-            if (oxygenAmount > amountLoading) oxygenAmount = amountLoading;
-            settlementInv.retrieveAmountResource(AmountResource.OXYGEN, oxygenAmount);
-	        vehicleInv.storeAmountResource(AmountResource.OXYGEN, oxygenAmount);
-            amountLoading -= oxygenAmount;
-	    
-            // Load water
-	        double waterAmount = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
-            if (waterAmount > amountLoading) waterAmount = amountLoading;
-            settlementInv.retrieveAmountResource(AmountResource.WATER, waterAmount);
-	        vehicleInv.storeAmountResource(AmountResource.WATER, waterAmount);
-            amountLoading -= waterAmount;
-
-            // Load Food
-            double foodAmount = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.FOOD);
-            if (foodAmount > amountLoading) foodAmount = amountLoading;
-            settlementInv.retrieveAmountResource(AmountResource.FOOD, foodAmount);
-	        vehicleInv.storeAmountResource(AmountResource.FOOD, foodAmount);
-            amountLoading -= foodAmount;
-            
-            // If crewable vehicle, load EVA suits.
-            if (vehicle instanceof Crewable) {
-            	int neededEvaSuits = ((Crewable) vehicle).getCrewCapacity();
-            	int currentEvaSuits = vehicleInv.findNumUnitsOfClass(EVASuit.class);
-            	int remainingNeededEvaSuits = neededEvaSuits - currentEvaSuits;
-            	for (int x = 0; x < remainingNeededEvaSuits; x++) {
-            		Unit suit = settlementInv.findUnitOfClass(EVASuit.class);
-            		if ((suit != null) && vehicleInv.canStoreUnit(suit)) {
-            			settlementInv.retrieveUnit(suit);
-            			vehicleInv.storeUnit(suit);
-            		}
-            		else throw new Exception("Suit not found in settlement or cannot be stored in vehicle.");
-            	}
-            }
-        }
-        else endTask();
-
-        if (isFullyLoaded(vehicle)) endTask();
+        if (isFullyLoaded(resources, equipment, vehicle)) endTask();
         
         return 0D;
+    }
+    
+    /**
+     * Loads the vehicle with required resources from the settlement.
+     * @param amountLoading the amount (kg) the person can load in this time period.
+     * @return the remaining amount (kg) the person can load in this time period.
+     * @throws Exception if problem loading resources.
+     */
+    private double loadResources(double amountLoading) throws Exception {
+        
+        Iterator iR = resources.keySet().iterator();
+        while (iR.hasNext() && (amountLoading > 0D)) {
+        	Resource resource = (Resource) iR.next();
+        	if (resource instanceof AmountResource) {
+        		// Load amount resources
+        		amountLoading = loadAmountResource(amountLoading, (AmountResource) resource);
+        	}
+        	else if (resource instanceof ItemResource) {
+        		// Load item resources
+        		amountLoading = loadItemResource(amountLoading, (ItemResource) resource);
+        	}
+        }
+        
+        // Return remaining amount that can be loaded by person this time period.
+        return amountLoading;
+    }
+    
+    /**
+     * Loads the vehicle with an amount resource from the settlement.
+     * @param amountLoading the amount (kg) the person can load in this time period.
+     * @param resource the amount resource to be loaded.
+     * @return the remaining amount (kg) the person can load in this time period.
+     * @throws Exception if problem loading resource.
+     */
+    private double loadAmountResource(double amountLoading, AmountResource resource) throws Exception {
+    	
+    	Inventory vInv = vehicle.getInventory();
+        Inventory sInv = settlement.getInventory();
+        
+    	double amountNeededTotal = ((Double) resources.get(resource)).doubleValue();
+		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource);
+		if (amountAlreadyLoaded < amountNeededTotal) {
+			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
+			if ((sInv.getAmountResourceStored(resource) >= amountNeeded) && 
+					(vInv.getAmountResourceRemainingCapacity(resource) >= amountNeeded)) {
+				double resourceAmount = amountNeeded;
+				if (amountNeeded > amountLoading) resourceAmount = amountLoading;
+				sInv.retrieveAmountResource(resource, resourceAmount);
+				vInv.storeAmountResource(resource, resourceAmount);
+				amountLoading -= resourceAmount;
+			}
+			else endTask();
+		}
+		
+		//  Return remaining amount that can be loaded by person this time period.
+		return amountLoading;
+    }
+    
+    /**
+     * Loads the vehicle with an amount resource from the settlement.
+     * @param amountLoading the amount (kg) the person can load in this time period.
+     * @param resource the item resource to be loaded.
+     * @return the remaining amount (kg) the person can load in this time period.
+     * @throws Exception if problem loading resource.
+     */
+    private double loadItemResource(double amountLoading, ItemResource resource) throws Exception {
+    	
+    	Inventory vInv = vehicle.getInventory();
+        Inventory sInv = settlement.getInventory();
+        
+        int numNeededTotal = ((Integer) resources.get(resource)).intValue();
+		ItemResource itemResource = (ItemResource) resource;
+		int numAlreadyLoaded = vInv.getItemResourceNum(itemResource);
+		if (numAlreadyLoaded < numNeededTotal) {
+			int numNeeded = numNeededTotal - numAlreadyLoaded;
+			if ((sInv.getItemResourceNum(itemResource) >= numNeeded) && 
+					(vInv.getRemainingGeneralCapacity() >= (numNeeded * itemResource.getMassPerItem()))) {
+				int resourceNum = (int) (amountLoading / itemResource.getMassPerItem());
+				if (resourceNum < 1) resourceNum = 1;
+				if (resourceNum > numNeeded) resourceNum = numNeeded;
+				sInv.retrieveItemResources(itemResource, resourceNum);
+				vInv.storeItemResources(itemResource, resourceNum);
+				amountLoading -= (resourceNum * itemResource.getMassPerItem());
+				if (amountLoading < 0D) amountLoading = 0D;
+			}
+			else endTask();
+		}
+		
+		// Return remaining amount that can be loaded by person this time period.
+		return amountLoading;
+    }
+    
+    /**
+     * Loads the vehicle with required equipment from the settlement.
+     * @param amountLoading the amount (kg) the person can load in this time period.
+     * @return the remaining amount (kg) the person can load in this time period.
+     * @throws Exception if problem loading equipment.
+     */
+    private double loadEquipment(double amountLoading) throws Exception {
+    	
+    	Inventory vInv = vehicle.getInventory();
+        Inventory sInv = settlement.getInventory();
+        
+        Iterator iE = equipment.keySet().iterator();
+        while (iE.hasNext() && (amountLoading > 0D)) {
+        	Class equipmentType = (Class) iE.next();
+        	int numNeededTotal = ((Integer) equipment.get(equipmentType)).intValue();
+        	int numAlreadyLoaded = vInv.findNumUnitsOfClass(equipmentType);
+        	if (numAlreadyLoaded < numNeededTotal) {
+        		int numNeeded = numNeededTotal - numAlreadyLoaded;
+        		UnitCollection units = sInv.findAllUnitsOfClass(equipmentType);
+        		if (units.size() >= numNeeded) {
+        			UnitIterator i = units.iterator();
+        			while (i.hasNext() && (amountLoading > 0D)) {
+        				Equipment eq = (Equipment) i.next();
+        				if (vInv.canStoreUnit(eq)) {
+        					sInv.retrieveUnit(eq);
+            				vInv.storeUnit(eq);
+            				amountLoading -= eq.getMass();
+            				if (amountLoading < 0D) amountLoading = 0D;
+            			}
+            			else endTask();
+        			}
+        		}
+        		else endTask();
+        	}
+        }
+        
+		// Return remaining amount that can be loaded by person this time period.
+		return amountLoading;
     }
     
 	/**
@@ -151,71 +249,174 @@ public class LoadVehicle extends Task implements Serializable {
 		// This task adds no experience.
 	}
 
-    /** Returns true if there are enough supplies in the settlements stores to supply vehicle.
-     *  @param settlement the settlement the vehicle is at
-     *  @param vehicle the vehicle to be checked
-     *  @return enough supplies?
+    /** 
+     * Checks if there are enough supplies in the settlement's stores to supply trip.
+     * @param settlement the settlement the vehicle is at.
+     * @param resources a map of resources required for the trip.
+     * @param equipment a map of equipment required for the trip.
+     * @param vehicleCrewNum the number of people in the vehicle crew.
+     * @param tripTime the estimated time for the trip (millisols).
+     * @return true if enough supplies
+     * @throws Exception if error checking supplies.
      */
-    public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle) {
+    public static boolean hasEnoughSupplies(Settlement settlement, Map resources, Map equipment, int vehicleCrewNum, double tripTime) throws Exception {
+    	
     	// Check input parameters.
     	if (settlement == null) throw new IllegalArgumentException("settlement is null");
-    	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
     	
         boolean enoughSupplies = true;
-
-        Inventory vehicleInv = vehicle.getInventory();
-        Inventory settlementInv = settlement.getInventory();
+        Inventory inv = settlement.getInventory();
         
-        double neededFuel = vehicleInv.getAmountResourceRemainingCapacity(vehicle.getFuelType());
-        double storedFuel = settlementInv.getAmountResourceStored(vehicle.getFuelType());
-        if (neededFuel > storedFuel - 50D) enoughSupplies = false;
-
-        double neededOxygen = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
-        double storedOxygen = settlementInv.getAmountResourceStored(AmountResource.OXYGEN);
-        if (neededOxygen > storedOxygen - 50D) enoughSupplies = false;
-
-        double neededWater = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
-        double storedWater = settlementInv.getAmountResourceStored(AmountResource.WATER);
-        if (neededWater > storedWater - 50D) enoughSupplies = false;
-	
-        double neededFood = vehicleInv.getAmountResourceRemainingCapacity(AmountResource.FOOD);
-        double storedFood = settlementInv.getAmountResourceStored(AmountResource.FOOD);
-        if (neededFood > storedFood - 50D) enoughSupplies = false;
+        // Check if there are enough resources at the settlement.
+        Iterator iR = resources.keySet().iterator();
+        while (iR.hasNext()) {
+        	Resource resource = (Resource) iR.next();
+        	if (resource instanceof AmountResource) {
+        		double amountNeeded = ((Double) resources.get(resource)).doubleValue();
+        		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, (AmountResource) resource, tripTime);
+        		double totalNeeded = amountNeeded + remainingSettlementAmount;
+        		if (inv.getAmountResourceStored((AmountResource) resource) < totalNeeded) enoughSupplies = false;
+        	}
+        	else if (resource instanceof ItemResource) {
+        		int numNeeded = ((Integer) resources.get(resource)).intValue();
+        		int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, (ItemResource) resource);
+        		int totalNeeded = numNeeded + remainingSettlementNum;
+        		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) enoughSupplies = false;
+        	}
+        	else throw new Exception("Unknown resource type: " + resource);
+        }
         
-        // If a crewable vehicle, check if there are proper number of EVA suits available to load.
-        if (vehicle instanceof Crewable) {
-        	int neededEvaSuits = ((Crewable) vehicle).getCrewCapacity();
-        	int currentEvaSuits = vehicleInv.findNumUnitsOfClass(EVASuit.class);
-        	int remainingNeededEvaSuits = neededEvaSuits - currentEvaSuits;
-        	int storedEvaSuits = settlementInv.findNumUnitsOfClass(EVASuit.class);
-        	// Make sure there is at least one EVA suit left at the settlement.
-        	if (remainingNeededEvaSuits > (storedEvaSuits - 1)) enoughSupplies = false;
+        // Check if there is enough equipment at the settlement.
+        Iterator iE = equipment.keySet().iterator();
+        while (iE.hasNext()) {
+        	Class equipmentType = (Class) iE.next();
+        	int numNeeded = ((Integer) equipment.get(equipmentType)).intValue();
+        	int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
+    		int totalNeeded = numNeeded + remainingSettlementNum;
+        	if (inv.findNumUnitsOfClass(equipmentType) < totalNeeded) enoughSupplies = false;
         }
 
         return enoughSupplies;
     }
-
-    /** Returns true if the vehicle is fully loaded with supplies.
-     *  @param vehicle to be checked
-     *  @return is vehicle fully loaded?
+    
+    /**
+     * Gets the amount of an amount resource that should remain at the settlement.
+     * @param settlement the settlement
+     * @param vehicleCrewNum the number of crew leaving on the vehicle.
+     * @param resource the amount resource
+     * @param double tripTime the estimated trip time (millisols).
+     * @return remaining amount (kg)
+     * @throws Exception if error getting the remaining amount.
      */
-    public static boolean isFullyLoaded(Vehicle vehicle) {
-        boolean result = true;
+    private static final double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum, 
+    		AmountResource resource, double tripTime) throws Exception {
+    	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
+    	double amountPersonPerSol = 0D;
+    	double tripTimeSols = tripTime / 1000D;
+    	
+    	// Only life support resources are required at settlement at this time.
+    	if (resource.equals(AmountResource.OXYGEN)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
+    	else if (resource.equals(AmountResource.WATER)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
+    	else if (resource.equals(AmountResource.FOOD)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
+    	
+    	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
+    }
+    
+    /**
+     * Gets the number of an item resource that should remain at the settlement.
+     * @param settlement the settlement
+     * @param vehicleCrewNum the number of crew leaving on the vehicle.
+     * @param resource the item resource
+     * @return remaining number
+     * @throws Exception if error getting the remaining number.
+     */
+    private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, ItemResource resource) throws Exception {
+    	// No item resources required at settlement at this time.
+    	return 0;
+    }
+    
+    /**
+     * Gets the number of an equipment type that should remain at the settlement.
+     * @param settlement the settlement
+     * @param vehicleCrewNum the number of crew leaving on the vehicle.
+     * @param equipmentType the equipment type class.
+     * @return remaining number.
+     * @throws Exception if error getting the remaining number.
+     */
+    private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, Class equipmentType) throws Exception {
+    	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
+    	// Leave one EVA suit per remaining person at settlement.
+    	if (equipmentType == EVASuit.class) return remainingPeopleNum;
+    	else return 0;
+    }
 
-        Inventory i = vehicle.getInventory();
+    /** 
+     * Checks if the vehicle is fully loaded with supplies.
+     * @return true if vehicle is fully loaded.
+     * @throws Exception if error checking supplies.
+     */
+    public static final boolean isFullyLoaded(Map resources, Map equipment, Vehicle vehicle) throws Exception {
+    	
+    	boolean sufficientSupplies = true;
 
-        if (i.getAmountResourceRemainingCapacity(vehicle.getFuelType()) > 0D) result = false;
-        if (i.getAmountResourceRemainingCapacity(AmountResource.OXYGEN) > 0D) result = false;
-        if (i.getAmountResourceRemainingCapacity(AmountResource.WATER) > 0D) result = false;
-        if (i.getAmountResourceRemainingCapacity(AmountResource.FOOD) > 0D) result = false;
+        // Check if there are enough resources in the vehicle.
+        sufficientSupplies = isFullyLoadedWithResources(resources, vehicle);
         
-        if (vehicle instanceof Crewable) {
-        	int neededEvaSuits = ((Crewable) vehicle).getCrewCapacity();
-        	int currentEvaSuits = i.findNumUnitsOfClass(EVASuit.class);
-        	if (neededEvaSuits > currentEvaSuits) result = false;
-        }
+        // Check if there is enough equipment in the vehicle.
+        if (sufficientSupplies) sufficientSupplies = isFullyLoadedWithEquipment(equipment, vehicle);
 
-        return result;
+        return sufficientSupplies;
+    }
+    
+    /**
+     * Checks if the vehicle is fully loaded with resources.
+     * @param resources the resource map.
+     * @param vehicle the vehicle.
+     * @return true if vehicle is loaded.
+     * @throws Exception if error checking vehicle.
+     */
+    private static final boolean isFullyLoadedWithResources(Map resources, Vehicle vehicle) throws Exception {
+    	
+    	boolean sufficientSupplies = true;
+        Inventory inv = vehicle.getInventory();
+
+        Iterator iR = resources.keySet().iterator();
+        while (iR.hasNext() && sufficientSupplies) {
+        	Resource resource = (Resource) iR.next();
+        	if (resource instanceof AmountResource) {
+        		double amount = ((Double) resources.get(resource)).doubleValue();
+        		if (inv.getAmountResourceStored((AmountResource) resource) < amount) sufficientSupplies = false;
+        	}
+        	else if (resource instanceof ItemResource) {
+        		int num = ((Integer) resources.get(resource)).intValue();
+        		if (inv.getItemResourceNum((ItemResource) resource) < num) sufficientSupplies = false;
+        	}
+        	else throw new Exception("Unknown resource type: " + resource);
+        }
+        
+        return sufficientSupplies;
+    }
+    
+    /**
+     * Checks if the vehicle is fully loaded with resources.
+     * @param equipment the equipment map.
+     * @param vehicle the vehicle.
+     * @return true if vehicle is full loaded.
+     * @throws Exception if error checking vehicle.
+     */
+    private static final boolean isFullyLoadedWithEquipment(Map equipment, Vehicle vehicle) throws Exception {
+    	
+    	boolean sufficientSupplies = true;
+        Inventory inv = vehicle.getInventory();
+        
+        Iterator iE = equipment.keySet().iterator();
+        while (iE.hasNext() && sufficientSupplies) {
+        	Class equipmentType = (Class) iE.next();
+        	int num = ((Integer) equipment.get(equipmentType)).intValue();
+        	if (inv.findNumUnitsOfClass(equipmentType) < num) sufficientSupplies = false;
+        }
+        
+        return sufficientSupplies;
     }
     
 	/**
@@ -232,7 +433,6 @@ public class LoadVehicle extends Task implements Serializable {
 	 * @return list of skills as strings
 	 */
 	public List getAssociatedSkills() {
-		List results = new ArrayList();
-		return results;
+		return Collections.EMPTY_LIST;
 	}
 }

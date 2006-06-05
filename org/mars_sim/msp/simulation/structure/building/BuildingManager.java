@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.77 2004-09-27
+ * @version 2.79 2006-03-25
  * @author Scott Davis
  */
  
@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.*;
@@ -27,24 +26,33 @@ public class BuildingManager implements Serializable {
     private List buildings; // The settlement's buildings.
     
     /**
-     * Constructor
-     * @param settlement - the manager's settlement.
+     * Constructor to construct buildings from settlement config template.
+     * @param settlement the manager's settlement.
      * @throws Exception if buildings cannot be constructed.
      */
     public BuildingManager(Settlement settlement) throws Exception {
-        
-        this.settlement = settlement;
-        
-        // Construct all buildings at settlement based on template.
-        buildings = new ArrayList();
-        
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-        SettlementConfig config = simConfig.getSettlementConfiguration();
-        
-        Iterator i = config.getTemplateBuildingTypes(settlement.getTemplate()).iterator();
-        while (i.hasNext()) {
-        	String buildingType = (String) i.next();
-        	addBuilding(buildingType);
+        this(settlement, Simulation.instance().getSimConfig().getSettlementConfiguration()
+        		.getTemplateBuildingTypes(settlement.getTemplate()));
+    }
+    
+    /**
+     * Constructor to construct buildings from name list.
+     * @param settlement the manager's settlement
+     * @param buildingNames the names of the settlement's buildings.
+     * @throws Exception if buildings cannot be constructed.
+     */
+    public BuildingManager(Settlement settlement, List buildingNames) throws Exception {
+    	
+    	this.settlement = settlement;
+    	
+    	// Construct all buildings in the settlement.
+    	buildings = new ArrayList();
+    	if (buildingNames != null) {
+    		Iterator i = buildingNames.iterator();
+    		while (i.hasNext()) {
+    			String buildingType = (String) i.next();
+    			addBuilding(buildingType);
+    		}
         }
     }
     

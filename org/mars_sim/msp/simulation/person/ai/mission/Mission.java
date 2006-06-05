@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
@@ -426,4 +427,18 @@ public abstract class Mission implements Serializable {
 	 * @return settlement or null if none.
 	 */
 	public abstract Settlement getAssociatedSettlement();
+	
+	/**
+	 * Gets the number and amounts of resources needed for the mission.
+	 * @return map of amount and item resources and their Double amount or Integer number.
+	 * @throws Exception if error determining needed resources.
+	 */
+    public abstract Map getResourcesNeededForMission() throws Exception ;
+    
+    /**
+     * Gets the number and types of equipment needed for the mission.
+     * @return map of equipment class and Integer number.
+     * @throws Exception if error determining needed equipment.
+     */
+    public abstract Map getEquipmentNeededForMission() throws Exception;
 }

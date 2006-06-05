@@ -27,11 +27,21 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     private static final double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
 
     // Data members
-    private BuildingManager buildingManager; // The settlement's building manager.
-    private ResupplyManager resupplyManager; // The settlement's resupply manager.
-    private PowerGrid powerGrid; // The settlement's building power grid.
+    protected BuildingManager buildingManager; // The settlement's building manager.
+    protected ResupplyManager resupplyManager; // The settlement's resupply manager.
+    protected PowerGrid powerGrid; // The settlement's building power grid.
     private String template; // The settlement template name.
-
+    
+    /**
+     * Constructor for subclass extension.
+     * @param name the settlement's name
+     * @param location the settlement's location
+     */
+    protected Settlement(String name, Coordinates location) {
+    	// Use Structure constructor.
+    	super(name, location);
+    }
+    
     /** 
      * Constructs a Settlement object at a given location
      * @param name the settlement's name
@@ -40,7 +50,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * @throws Exception if settlement cannot be constructed.
      */
     public Settlement(String name, String template, Coordinates location) throws Exception { 
-        // Use Unit constructor
+        // Use Structure constructor
         super(name, location);
         
         this.template = template;

@@ -28,13 +28,13 @@ public class Building implements Malfunctionable, Serializable {
     public static final String NO_POWER = "No Power";
     
     // Data members
-    private BuildingManager manager; 
-    private String name;
-    private String powerMode;
-    private MalfunctionManager malfunctionManager;
-    private List functions;
-    private double basePowerRequirement;
-    private double basePowerDownPowerRequirement;
+    protected BuildingManager manager; 
+    protected String name;
+    protected String powerMode;
+    protected MalfunctionManager malfunctionManager;
+    protected List functions;
+    protected double basePowerRequirement;
+    protected double basePowerDownPowerRequirement;
     
     /**
      * Constructs a Building object.
@@ -73,6 +73,13 @@ public class Building implements Malfunctionable, Serializable {
 			Function function = (Function) i.next();
 			malfunctionManager.addScopeString(function.getName());
 		}
+    }
+    
+    /**
+     * Empty constructor.
+     */
+    protected Building() {
+    	
     }
     
     /**

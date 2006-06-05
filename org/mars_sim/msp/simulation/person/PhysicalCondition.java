@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.78 2005-07-08
+ * @version 2.79 2006-05-15
  * @author Barry Evans
  */
 
@@ -41,7 +41,6 @@ public class PhysicalCondition implements Serializable {
     private double hunger;              // Person's hunger level
     private double stress;              // Person's stress level (0.0 - 100.0)
     private double performance;         // Performance factor
-    private MedicalManager medic;       // Simulation Medical manager
     private Person person;              // Person's of this physical
     private boolean alive;              // True if person is alive.
 
@@ -54,12 +53,18 @@ public class PhysicalCondition implements Serializable {
         person = newPerson;
         problems = new HashMap();
         performance = 1.0D;
-
-		medic = Simulation.instance().getMedicalManager();
         fatigue = RandomUtil.getRandomDouble(1000D);
         hunger = RandomUtil.getRandomDouble(1000D);
         stress = RandomUtil.getRandomDouble(100D);
         alive = true;
+    }
+    
+    /**
+     * Gets the medical manager.
+     * @return medical manager.
+     */
+    private MedicalManager getMedicalManager() {
+    	return Simulation.instance().getMedicalManager();
     }
 
     /**
@@ -146,7 +151,7 @@ public class PhysicalCondition implements Serializable {
         if (isDead()) return false;
 
         // See if a random illness happens.
-        Complaint randomComplaint = medic.getProbableComplaint(person);
+        Complaint randomComplaint = getMedicalManager().getProbableComplaint(person);
 
         // New complaint must not exist already
         if ((randomComplaint != null) && !problems.containsKey(randomComplaint)) {
@@ -156,8 +161,8 @@ public class PhysicalCondition implements Serializable {
 
         // Consume necessary oxygen and water.
         try {
-        	consumeOxygen(support, config.getOxygenConsumptionRate() * (time / 1000D));
-        	consumeWater(support, config.getWaterConsumptionRate() * (time / 1000D));
+        	consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D));
+        	consumeWater(support, getWaterConsumptionRate() * (time / 1000D));
         	requireAirPressure(support, config.getMinAirPressure());
         	requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature());
         }
@@ -201,7 +206,7 @@ public class PhysicalCondition implements Serializable {
         if (foodEaten > foodAvailable) foodEaten = foodAvailable;
         try {
         	container.getInventory().retrieveAmountResource(AmountResource.FOOD, foodEaten);
-        	if (checkResourceConsumption(foodEaten, amount, MIN_VALUE, medic.getStarvation())) recalculate();
+        	if (checkResourceConsumption(foodEaten, amount, MIN_VALUE, getMedicalManager().getStarvation())) recalculate();
         }
         catch (InventoryException e) {
         	System.err.println(person.getName() + " could not retrieve food.");
@@ -214,7 +219,7 @@ public class PhysicalCondition implements Serializable {
      * @param amount the amount of food to consume (in kg).
      */
     public void consumeFood(double amount) {
-		if (checkResourceConsumption(amount, amount, MIN_VALUE, medic.getStarvation())) 
+		if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation())) 
 			recalculate();
     }
 
@@ -227,7 +232,7 @@ public class PhysicalCondition implements Serializable {
         double amountRecieved = support.provideOxygen(amount);
 
         return checkResourceConsumption(amountRecieved, amount / 2D,
-                                        MIN_VALUE, medic.getSuffocation());
+                                        MIN_VALUE, getMedicalManager().getSuffocation());
     }
 
     /** Person consumes given amount of water
@@ -239,7 +244,7 @@ public class PhysicalCondition implements Serializable {
         double amountReceived = support.provideWater(amount);
 
         return checkResourceConsumption(amountReceived, amount / 2D,
-                                        MIN_VALUE, medic.getDehydration());
+                                        MIN_VALUE, getMedicalManager().getDehydration());
     }
 
     /**
@@ -283,7 +288,7 @@ public class PhysicalCondition implements Serializable {
      */
     private boolean requireAirPressure(LifeSupport support, double pressure) {
         return checkResourceConsumption(support.getAirPressure(), pressure,
-                                        MIN_VALUE, medic.getDecompression());
+                                        MIN_VALUE, getMedicalManager().getDecompression());
     }
 
     /**
@@ -296,9 +301,9 @@ public class PhysicalCondition implements Serializable {
             double maxTemperature) {
                 
         boolean freeze = checkResourceConsumption(support.getTemperature(),
-                minTemperature, MIN_VALUE, medic.getFreezing());
+                minTemperature, MIN_VALUE, getMedicalManager().getFreezing());
         boolean hot = checkResourceConsumption(support.getTemperature(),
-	        maxTemperature, MAX_VALUE, medic.getHeatStroke());
+	        maxTemperature, MAX_VALUE, getMedicalManager().getHeatStroke());
         return freeze || hot;
     }
 
@@ -389,7 +394,7 @@ public class PhysicalCondition implements Serializable {
 				
 				// If random breakdown, add anxiety attack.
 				if (RandomUtil.lessThanRandPercent(config.getStressBreakdownChance() * time * resilienceModifier)) {
-					Complaint anxietyAttack = medic.getComplaintByName(ANXIETY_ATTACK);
+					Complaint anxietyAttack = getMedicalManager().getComplaintByName(ANXIETY_ATTACK);
 					if (anxietyAttack != null) {
 						addMedicalComplaint(anxietyAttack);
 						// System.out.println(person.getName() + " has an anxiety attack.");
@@ -508,5 +513,35 @@ public class PhysicalCondition implements Serializable {
 			if (prob.getIllness().getSeriousness() >= 50) result = true;
 		}
 		return result;
+    }
+    
+    /**
+     * Gets the oxygen consumption rate per Sol.
+     * @return oxygen consumed (kg/Sol)
+     * @throws Exception if error in configuration.
+     */
+    public static double getOxygenConsumptionRate() throws Exception {
+    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	return config.getOxygenConsumptionRate();
+    }
+    
+    /**
+     * Gets the water consumption rate per Sol.
+     * @return water consumed (kg/Sol)
+     * @throws Exception if error in configuration.
+     */
+    public static double getWaterConsumptionRate() throws Exception {
+    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	return config.getWaterConsumptionRate();
+    }
+    
+    /**
+     * Gets the food consumption rate per Sol.
+     * @return food consumed (kg/Sol)
+     * @throws Exception if error in configuration.
+     */
+    public static double getFoodConsumptionRate() throws Exception {
+    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	return config.getFoodConsumptionRate();
     }
 }

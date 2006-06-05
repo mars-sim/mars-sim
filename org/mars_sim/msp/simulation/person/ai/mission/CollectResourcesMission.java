@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.78 2005-08-18
+ * @version 2.79 2006-06-01
  * @author Scott Davis
  */
 
@@ -14,6 +14,8 @@ import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
@@ -31,29 +33,30 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 
 	// Data members
 	protected Settlement startingSettlement; // The settlement the mission starts at.
-	// private boolean roverLoaded; // True if the rover is fully loaded with supplies.
-	// private boolean roverUnloaded; // True if the rover is fully unloaded of supplies.
 	private AmountResource resourceType; // The type of resource to collect.
 	private double siteCollectedResources; // The amount of resources (kg) collected at a collection site.
 	private double collectingStart; // The starting amount of resources in a rover at a collection site.
-	// private MarsClock startCollectingTime; // The time the resource collecting is started.
 	private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
-	private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol). 
+	private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol).
+	private Class containerType; // The type of container needed for the mission or null if none.
+	private int containerNum; // The number of containers needed for the mission.
 
 	/**
 	 * Constructor
 	 * @param missionName The name of the mission.
 	 * @param startingPerson The person starting the mission.
 	 * @param resourceType The type of resource.
-	 * @param siteResourceGoal The goal amount of resources to collect at a site (kg).
+	 * @param siteResourceGoal The goal amount of resources to collect at a site (kg) (or 0 if none).
 	 * @param resourceCollectionRate The resource collection rate for a person (kg/millisol).
+	 * @param containerType The type of container needed for the mission or null if none.
+	 * @param containerNum The number of containers needed for the mission.
 	 * @param numSites The number of collection sites.
 	 * @param minPeople The mimimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
 	CollectResourcesMission(String missionName, Person startingPerson, AmountResource resourceType, 
-			double siteResourceGoal, double resourceCollectionRate, int numSites, int minPeople) 
-			throws MissionException {
+			double siteResourceGoal, double resourceCollectionRate, Class containerType, 
+			int containerNum, int numSites, int minPeople) throws MissionException {
 		
 		// Use RoverMission constructor
 		super(missionName, startingPerson, minPeople);
@@ -68,9 +71,16 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			this.resourceType = resourceType;
 			this.siteResourceGoal = siteResourceGoal;
 			this.resourceCollectionRate = resourceCollectionRate;
+			this.containerType = containerType;
+			this.containerNum = containerNum;
 			
 			// Determine collection sites
-			determineCollectionSites(getVehicle().getRange(), numSites);
+			try {
+				determineCollectionSites(getVehicle().getRange(), numSites);
+			}
+			catch (Exception e) {
+				throw new MissionException(VehicleMission.EMBARKING, e);
+			}
 			
 			// Add home settlement
 			addNavpoint(new NavPoint(getAssociatedSettlement().getCoordinates(), 
@@ -270,4 +280,35 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			}
 		}
 	}
+	
+	/**
+	 * Gets the number of empty containers of given type at the settlement.
+	 * @param settlement the settlement
+	 * @param containerType the type of container
+	 * @return number of empty containers.
+	 */
+	protected static int numCollectingContainersAvailable(Settlement settlement, Class containerType) {
+		Inventory inv = settlement.getInventory();
+		int availableContainersNum = 0;
+		UnitIterator i = inv.findAllUnitsOfClass(containerType).iterator();
+		while (i.hasNext()) {
+			Unit container = (Unit) i.next();
+			if (container.getInventory().getTotalInventoryMass() == 0D) availableContainersNum ++;
+		}
+		
+		return availableContainersNum; 
+	}
+	
+    /**
+     * Gets the estimated time remaining on the trip.
+     * @return time (millisols)
+     * @throws Exception
+     */
+    public double getEstimatedRemainingTripTime() throws Exception {
+    	double result = super.getEstimatedRemainingTripTime();
+    	
+    	// TODO: Add estimated collection time at sites.
+    	
+    	return result;
+    }
 }

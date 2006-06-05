@@ -110,7 +110,14 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {}
+	public void timePassing(double time) throws BuildingException {
+		try {
+			waterUsage(time);
+		}
+		catch (Exception e) {
+			throw new BuildingException("Error with LivingQuarters.waterUsage(): " + e.getMessage());
+		}
+	}
 	
 	/**
 	 * Gets the amount of power required when function is at full power.

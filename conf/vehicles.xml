@@ -7,10 +7,6 @@
 		 and ice prospecting. -->
 	<rover type="Explorer Rover">
 
-		<!-- The range of the rover (km) (required) -->
-		<!-- Default: 3000.0 -->
-		<range value="3000.0" />
-
 		<!-- The fuel efficiency of the rover (km/kg) (required) -->
 		<!-- Default: 2.0 -->
 		<fuel-efficiency value="2.0" />
@@ -82,7 +78,6 @@
 	<!-- A rover for transporting people from one settlement to another. -->
 	<!-- Note: This rover type is not available in version 2.75. -->
 	<rover type="Transport Rover">
-		<range value="4000.0" />
 		<fuel-efficiency value="2.0" />
 		<base-speed value="30.0" />
 		<empty-mass value="10000.0" />

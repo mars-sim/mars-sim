@@ -35,8 +35,8 @@
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="10" />
-			<equipment type="Specimen Container" number="10" />
+			<equipment type="Bag" number="20" />
+			<equipment type="Specimen Container" number="8" />
 			
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
@@ -61,8 +61,8 @@
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="10" />
-			<equipment type="Specimen Container" number="10" />
+			<equipment type="Bag" number="20" />
+			<equipment type="Specimen Container" number="8" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -80,8 +80,8 @@
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="10" />
-			<equipment type="Specimen Container" number="10" />
+			<equipment type="Bag" number="40" />
+			<equipment type="Specimen Container" number="16" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -107,8 +107,8 @@
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="10" />
-			<equipment type="Specimen Container" number="10" />
+			<equipment type="Bag" number="40" />
+			<equipment type="Specimen Container" number="16" />
 		</template>
 	
 	</settlement-template-list>
@@ -140,8 +140,6 @@
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="10" />
-			<equipment type="Specimen Container" number="10" />
 			
 			<!-- New immigrants from Earth. -->
 			<!-- number: the number of immigrants. -->
@@ -164,8 +162,8 @@
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="10" />
-			<equipment type="Specimen Container" number="10" />
+			<equipment type="Bag" number="20" />
+			<equipment type="Specimen Container" number="8" />
 			<person number="4" />
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
@@ -186,8 +184,6 @@
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="10" />
-			<equipment type="Specimen Container" number="10" />
 			<person number="12" />
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />

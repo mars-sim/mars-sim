@@ -15,6 +15,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
@@ -36,13 +37,43 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private VehicleOperator vehicleOperator; // The operator of the vehicle
     private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
     private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
-    private double range; // Maximum range of vehicle. (km)
     private double fuelEfficiency; // The fuel efficiency of the vehicle. (km/kg)
     private boolean isReservedMission = false; // True if vehicle is currently reserved for a mission and cannot be taken by another
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private ArrayList trail; // A collection of locations that make up the vehicle's trail.
     private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
 
+    /**
+     * Constructor to be used for testing.
+     * @param name the vehicle's name
+     * @param description the configuration description of the vehicle.
+     * @param settlement the settlement the vehicle is parked at.
+     * @param baseSpeed the base speed of the vehicle (kph)
+     * @param baseMass the base mass of the vehicle (kg)
+     * @param fuelEfficiency the fuel efficiency of the vehicle (km/kg)
+     * @throws Exception if error constructing vehicle
+     */
+    protected Vehicle(String name, String description, Settlement settlement, 
+    		double baseSpeed, double baseMass, double fuelEfficiency) throws Exception {
+    	
+    	// Use Unit constructor
+        super(name, settlement.getCoordinates());
+        
+        settlement.getInventory().storeUnit(this);
+
+        // Initialize vehicle data
+        this.description = description;
+        direction = new Direction(0);
+	    trail = new ArrayList();
+	    setBaseSpeed(baseSpeed);
+	    this.baseMass = baseMass;
+	    this.fuelEfficiency = fuelEfficiency;
+	    
+	    // Initialize malfunction manager.
+	    malfunctionManager = new MalfunctionManager(this);
+	    malfunctionManager.addScopeString("Vehicle");
+    }
+    
     /** 
      * Constructs a Vehicle object with a given settlement
      * @param name the vehicle's name
@@ -51,7 +82,8 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * @throws an exception if vehicle could not be constructed.
      */
     Vehicle(String name, String description, Settlement settlement) throws Exception {
-        // use Unit constructor
+	    
+    	// Use Unit constructor
         super(name, settlement.getCoordinates());
         
         settlement.getInventory().storeUnit(this);
@@ -64,7 +96,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this);
 	    malfunctionManager.addScopeString("Vehicle");
-	    
+    	
 	    // Get vehicle configuration.
 	    SimulationConfig simConfig = Simulation.instance().getSimConfig();
 	    VehicleConfig config = simConfig.getVehicleConfiguration();
@@ -74,9 +106,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 
 	    // Set the empty mass of the rover.
 	    baseMass = config.getEmptyMass(description);
-	    
-	    // Set the operating range of rover.
-	    range = config.getRange(description);
 	    
 	    // Set the fuel efficiency of the rover.
 	    fuelEfficiency = config.getFuelEfficiency(getDescription());
@@ -183,9 +212,11 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     /** 
      * Gets the range of the vehicle
      * @return the range of the vehicle (in km)
+     * @throws Exception if error getting range.
      */
-    public double getRange() {
-        return range;
+    public double getRange() throws Exception {
+    	double fuelCapacity = inventory.getAmountResourceCapacity(getFuelType());
+        return fuelCapacity * fuelEfficiency;
     }
 
     /**
@@ -279,74 +310,6 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    if ((topUnit != null) && (topUnit instanceof Settlement)) return (Settlement) topUnit;
 	    else return null;
     }
-
-    /** Returns distance to destination in kilometers
-     *  Returns 0 if vehicle is not currently moving toward a destination
-     *  @return the distance to the vehicle's destination
-     */
-/*    public double getDistanceToDestination() {
-    	if (destinationCoords != null) return location.getDistance(destinationCoords);
-    	else return 0D;
-    }
-*/    
-
-    /** Sets the destination coordinates
-     *  @param destinationCoords the vehicle's destination location
-     */
-/*    public void setDestination(Coordinates destinationCoords) {
-        this.destinationCoords = new Coordinates(destinationCoords);
-        if (destinationType == null) destinationType = COORDINATES;
-    }
-*/
-
-    /** Returns the destination coordinates.
-     *  (null if no destination).
-     *  @return the vehicle's destination location
-     */
-/*    public Coordinates getDestination() {
-        return destinationCoords;
-    }
-*/
-    
-    /** Sets the destination settlement
-     *  @param destinationSettlement the vehicle's destination settlement
-     */
-/*
-    public void setDestinationSettlement(Settlement destinationSettlement) {
-        this.destinationSettlement = destinationSettlement;
-        if (destinationSettlement != null) {
-            setDestination(destinationSettlement.getCoordinates());
-            destinationType = SETTLEMENT;
-        }
-    }
-*/
-
-    /** Returns the destination settlement.
-     *  (null if no destination settlement).
-     *  @return the vehicle's destination settlement
-     */
-/*    public Settlement getDestinationSettlement() {
-        return destinationSettlement;
-    }
-*/
-    
-    /** Returns the ETA (Estimated Time of Arrival)
-     *  @return ETA as string ("13-Adir-05  056.349")
-     */
-/*  public String getETA() {
-        if (estimatedTimeOfArrival != null)
-            return estimatedTimeOfArrival.getTimeStamp();
-        else return "";
-    }
-*/
-
-    /** Sets the ETA (Estimated Time of Arrival) of the vehicle.
-     *  @param newETA new ETA of the vehicle
-     */
- /*   public void setETA(MarsClock newETA) {
-        this.estimatedTimeOfArrival = newETA;
-    }
-*/
     
     /**
      * Gets the unit's malfunction manager.
@@ -444,24 +407,20 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     }
     
     /**
-     * Checks if the vehicle is loaded with at least a percentage maximum resources.
-     * @param percentage the percentage of maximum
-     * @return true if vehicle has at least percentage many resources.
-     */
-    public boolean isLoaded(double percentage) {
-    	if ((percentage < 0D) || (percentage > 1D)) 
-    		throw new IllegalArgumentException("Not valid percentage: " + percentage);
-    	
-    	// Make sure sufficient fuel is loaded.
-    	Inventory i = getInventory();
-    	AmountResource fuel = getFuelType();
-    	double fuelPercentage = i.getAmountResourceStored(fuel) / i.getAmountResourceCapacity(fuel);
-    	return (fuelPercentage >= percentage);
-    }
-    
-    /**
      * Gets the resource type that this vehicle uses for fuel.
      * @return resource type
      */
     public abstract AmountResource getFuelType();
+    
+    /**
+     * Gets the estimated distance traveled in one sol.
+     * @return distance traveled (km)
+     */
+    protected double getEstimatedTravelDistancePerSol() {
+    	// Get estimated average speed (km / hr).
+    	double estSpeed = getBaseSpeed() / 2D;
+    	
+    	// Return estimated average speed in km / sol.
+    	return estSpeed / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+    }
 }
