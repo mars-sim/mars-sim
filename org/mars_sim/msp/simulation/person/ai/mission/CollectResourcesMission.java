@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.Inventory;
@@ -308,6 +309,20 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     	double result = super.getEstimatedRemainingTripTime();
     	
     	// TODO: Add estimated collection time at sites.
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets the number and types of equipment needed for the mission.
+     * @return map of equipment class and Integer number.
+     * @throws Exception if error determining needed equipment.
+     */
+    public Map getEquipmentNeededForMission() throws Exception {
+    	Map result = super.getEquipmentNeededForMission();
+    	
+    	// Include required number of containers.
+    	result.put(containerType, new Integer(containerNum));
     	
     	return result;
     }
