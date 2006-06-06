@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.78 2005-07-15
+ * @version 2.79 2006-06-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -10,13 +10,13 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.equipment.EVASuit;
+import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -75,7 +75,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @return the amount of time (millisol) after performing the phase.
      * @throws Exception if error in loading phase.
      */
-    private double unloadingPhase(double time) throws Exception {
+    protected double unloadingPhase(double time) throws Exception {
     	
         // Determine unload rate.
 		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
@@ -89,58 +89,41 @@ public class UnloadVehicle extends Task implements Serializable {
         Inventory vehicleInv = vehicle.getInventory();
         Inventory settlementInv = settlement.getInventory();
         
-        // Unload fuel
-	    double fuelAmount = vehicleInv.getAmountResourceStored(vehicle.getFuelType());
-        if (fuelAmount > amountUnloading) fuelAmount = amountUnloading;
-        vehicleInv.retrieveAmountResource(vehicle.getFuelType(), fuelAmount);
-        settlementInv.storeAmountResource(vehicle.getFuelType(), fuelAmount);
-        amountUnloading -= fuelAmount;
-
-        // Unload oxygen. 
-        double oxygenAmount = vehicleInv.getAmountResourceStored(AmountResource.OXYGEN);
-        if (oxygenAmount > amountUnloading) oxygenAmount = amountUnloading;
-        vehicleInv.retrieveAmountResource(AmountResource.OXYGEN, oxygenAmount);
-        settlementInv.storeAmountResource(AmountResource.OXYGEN, oxygenAmount);
-        amountUnloading -= oxygenAmount;
-
-        // Unload water
-        double waterAmount = vehicleInv.getAmountResourceStored(AmountResource.WATER);
-        if (waterAmount > amountUnloading) waterAmount = amountUnloading;
-        vehicleInv.retrieveAmountResource(AmountResource.WATER, waterAmount);
-        settlementInv.storeAmountResource(AmountResource.WATER, waterAmount);
-        amountUnloading -= waterAmount;
-
-        // Unload Food
-        double foodAmount = vehicleInv.getAmountResourceStored(AmountResource.FOOD);
-        if (foodAmount > amountUnloading) foodAmount = amountUnloading;
-        vehicleInv.retrieveAmountResource(AmountResource.FOOD, foodAmount);
-        settlementInv.storeAmountResource(AmountResource.FOOD, foodAmount);
-        amountUnloading -= foodAmount;
-
-        // Unload Rock Samples 
-        double rockAmount = vehicleInv.getAmountResourceStored(AmountResource.ROCK_SAMPLES);
-        if (rockAmount > amountUnloading) rockAmount = amountUnloading;
-        vehicleInv.retrieveAmountResource(AmountResource.ROCK_SAMPLES, rockAmount);
-        settlementInv.storeAmountResource(AmountResource.ROCK_SAMPLES, rockAmount);
-        amountUnloading -= rockAmount;
-
-		// Unload Ice 
-		double iceAmount = vehicleInv.getAmountResourceStored(AmountResource.ICE);
-		if (iceAmount > amountUnloading) iceAmount = amountUnloading;
-		vehicleInv.retrieveAmountResource(AmountResource.ICE, iceAmount);
-		settlementInv.storeAmountResource(AmountResource.ICE, iceAmount);
-		amountUnloading -= iceAmount;
-
-        // If crewable vehicle, unload EVA suits.
-        if (vehicle instanceof Crewable) {
-        	int numEvaSuits = vehicleInv.findNumUnitsOfClass(EVASuit.class);
-        	for (int x = 0; x < numEvaSuits; x++) {
-        		Unit suit = vehicleInv.findUnitOfClass(EVASuit.class);
-        		if ((suit != null) && settlementInv.canStoreUnit(suit)) {
-        			vehicleInv.retrieveUnit(suit);
-        			settlementInv.storeUnit(suit);
+        // Unload amount resources.
+        Iterator i = vehicleInv.getAllAmountResourcesStored().iterator();
+        while (i.hasNext() && (amountUnloading > 0D)) {
+        	AmountResource resource = (AmountResource) i.next();
+        	double amount = vehicleInv.getAmountResourceStored(resource);
+        	if (amount > amountUnloading) amount = amountUnloading;
+        	vehicleInv.retrieveAmountResource(resource, amount);
+			settlementInv.storeAmountResource(resource, amount);
+			amountUnloading -= amount;
+        }
+        
+        // Unload item resources.
+        if (amountUnloading > 0D) {
+        	Iterator j = vehicleInv.getAllItemResourcesStored().iterator();
+        	while (j.hasNext() && (amountUnloading > 0D)) {
+        		ItemResource resource = (ItemResource) j.next();
+        		int num = vehicleInv.getItemResourceNum(resource);
+        		if ((num * resource.getMassPerItem()) > amountUnloading) {
+        			num = (int) Math.round(amountUnloading / resource.getMassPerItem());
+        			if (num == 0) num = 1;
         		}
-        		else throw new Exception("Suit not found in vehicle or cannot be stored in settlement.");
+        		vehicleInv.retrieveItemResources(resource, num);
+        		settlementInv.storeItemResources(resource, num);
+        		amountUnloading -= (num * resource.getMassPerItem());
+        	}
+        }
+        
+        // Unload equipment.
+        if (amountUnloading > 0D) {
+        	UnitIterator k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
+        	while (k.hasNext() && (amountUnloading > 0D)) {
+        		Equipment equipment = (Equipment) k.next();
+        		vehicleInv.retrieveUnit(equipment);
+        		settlementInv.storeUnit(equipment);
+        		amountUnloading -= equipment.getMass();
         	}
         }
 		
@@ -163,23 +146,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @return is vehicle fully unloaded?
      */
     static public boolean isFullyUnloaded(Vehicle vehicle) {
-        boolean result = true;
-
-        Inventory vehicleInv = vehicle.getInventory();
-        
-        if (vehicleInv.getAmountResourceStored(vehicle.getFuelType()) != 0D) result = false;
-        if (vehicleInv.getAmountResourceStored(AmountResource.OXYGEN) != 0D) result = false;
-        if (vehicleInv.getAmountResourceStored(AmountResource.WATER) != 0D) result = false;
-        if (vehicleInv.getAmountResourceStored(AmountResource.FOOD) != 0D) result = false;
-        if (vehicleInv.getAmountResourceStored(AmountResource.ROCK_SAMPLES) != 0D) result = false;
-        if (vehicleInv.getAmountResourceStored(AmountResource.ICE) != 0D) result = false;
-
-        // If a crewable vehicle, check for remaining EVA suits.
-        if (vehicle instanceof Crewable) {
-        	if (vehicleInv.findNumUnitsOfClass(EVASuit.class) > 0) result = false;
-        }
-        
-        return result;
+        return (vehicle.getInventory().getTotalInventoryMass() == 0D);
     }
     
 	/**

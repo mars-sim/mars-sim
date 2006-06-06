@@ -113,23 +113,6 @@ public class Exploration extends CollectResourcesMission {
 	}
 	
 	/**
-	 * Checks if vehicle is usable for this mission.
-	 * (This method should be overridden by children)
-	 * @param newVehicle the vehicle to check
-	 * @return true if vehicle is usable.
-	 */
-	/*
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
-		boolean usable = super.isUsableVehicle(newVehicle);
-		
-		// Make sure rover can carry rock samples.
-		if (newVehicle.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) usable = false;
-		
-		return usable;
-	}
-	*/
-	
-	/**
 	 * Compares the quality of two vehicles for use in this mission.
 	 * (This method should be added to by children)
 	 * @param firstVehicle the first vehicle to compare
@@ -142,16 +125,6 @@ public class Exploration extends CollectResourcesMission {
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
-		// Check if one can hold more rock samples than the other.
-		/*
-		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
-			double firstRockCapacity = firstVehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES);
-			double secondRockCapacity = secondVehicle.getInventory().getAmountResourceCapacity(AmountResource.ROCK_SAMPLES);
-			if (firstRockCapacity > secondRockCapacity) result = 1;
-			else if (firstRockCapacity < secondRockCapacity) result = -1;
-		}
-		*/
-		
 		// Check of one rover has a research lab and the other one doesn't.
 		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
 			boolean firstLab = ((Rover) firstVehicle).hasLab();
@@ -162,14 +135,13 @@ public class Exploration extends CollectResourcesMission {
 		
 		return result;
 	}
-	
+    
     /**
-     * Gets the estimated time remaining on the trip.
+     * Gets the estimated time spent at a collection site.
      * @return time (millisols)
-     * @throws Exception
      */
-    public double getEstimatedRemainingTripTime() throws Exception {
-    	double result = super.getEstimatedRemainingTripTime();
+    protected double getEstimatedTimeAtCollectionSite() {
+    	double result = super.getEstimatedTimeAtCollectionSite();
     	
     	// TODO: Add additional exploration time at sites.
     	

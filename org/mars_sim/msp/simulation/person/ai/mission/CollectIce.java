@@ -106,54 +106,10 @@ public class CollectIce extends CollectResourcesMission {
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
-			// if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ICE)) usable = false;
 			
 			if (usable) result = true;    
 		}
 		
 		return result;
 	}
-	
-	/**
-	 * Checks if vehicle is usable for this mission.
-	 * (This method should be overridden by children)
-	 * @param newVehicle the vehicle to check
-	 * @return true if vehicle is usable.
-	 */
-	/*
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
-		boolean usable = super.isUsableVehicle(newVehicle);
-		
-		// Make sure rover can carry ice.
-		if (newVehicle.getInventory().hasAmountResourceCapacity(AmountResource.ICE)) usable = false;
-		
-		return usable;
-	}
-	*/
-	
-	/**
-	 * Compares the quality of two vehicles for use in this mission.
-	 * (This method should be added to by children)
-	 * @param firstVehicle the first vehicle to compare
-	 * @param secondVehicle the second vehicle to compare
-	 * @return -1 if the second vehicle is better than the first vehicle, 
-	 * 0 if vehicle are equal in quality,
-	 * and 1 if the first vehicle is better than the second vehicle.
-	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
-	 */
-	/*
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
-		int result = super.compareVehicles(firstVehicle, secondVehicle);
-		
-		// Check if one can hold more ice than the other.
-		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
-			double firstIceCapacity = firstVehicle.getInventory().getAmountResourceCapacity(AmountResource.ICE);
-			double secondIceCapacity = secondVehicle.getInventory().getAmountResourceCapacity(AmountResource.ICE);
-			if (firstIceCapacity > secondIceCapacity) result = 1;
-			else if (firstIceCapacity < secondIceCapacity) result = -1;
-		}
-		
-		return result;
-	}
-	*/
 }

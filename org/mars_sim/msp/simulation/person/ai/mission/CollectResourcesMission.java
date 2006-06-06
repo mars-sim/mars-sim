@@ -31,10 +31,14 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 
 	// Mission phases
 	final protected static String COLLECT_RESOURCES = "Collecting Resources";
+	
+	// Estimated collection time multiplyer for EVA.
+	final private static double EVA_COLLECTION_OVERHEAD = 3D;
 
 	// Data members
 	protected Settlement startingSettlement; // The settlement the mission starts at.
 	private AmountResource resourceType; // The type of resource to collect.
+	private int numCollectionSites; // The number of collection sites for the mission.
 	private double siteCollectedResources; // The amount of resources (kg) collected at a collection site.
 	private double collectingStart; // The starting amount of resources in a rover at a collection site.
 	private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
@@ -225,6 +229,9 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 				remainingRange -= siteDistance;
 			}
 		}
+		
+		// Record the number of collection sites.
+		numCollectionSites = unorderedSites.size();
 
 		// Reorder sites for shortest distance.
 		currentLocation = startingLocation;
@@ -239,7 +246,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			addNavpoint(new NavPoint(shortest));
 			unorderedSites.remove(shortest);
 			currentLocation = shortest;
-		}
+		}		
 	}
 	
 	/**
@@ -308,9 +315,19 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     public double getEstimatedRemainingTripTime() throws Exception {
     	double result = super.getEstimatedRemainingTripTime();
     	
-    	// TODO: Add estimated collection time at sites.
+    	// Add estimated collection time at sites.
+    	result += getEstimatedTimeAtCollectionSite() * numCollectionSites;
     	
     	return result;
+    }
+    
+    /**
+     * Gets the estimated time spent at a collection site.
+     * @return time (millisols)
+     */
+    protected double getEstimatedTimeAtCollectionSite() {
+    	double timePerPerson =  (siteResourceGoal / resourceCollectionRate) * EVA_COLLECTION_OVERHEAD;
+    	return timePerPerson / getPeopleNumber();
     }
     
     /**

@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.UnitCollection;
-import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
@@ -104,7 +103,7 @@ public class LoadVehicle extends Task implements Serializable {
         amountLoading = loadResources(amountLoading);
         
         // Load equipment
-        amountLoading = loadEquipment(amountLoading);
+        if (amountLoading > 0D) amountLoading = loadEquipment(amountLoading);
 
         if (isFullyLoaded(resources, equipment, vehicle)) endTask();
         
@@ -221,9 +220,8 @@ public class LoadVehicle extends Task implements Serializable {
         		int numNeeded = numNeededTotal - numAlreadyLoaded;
         		UnitCollection units = sInv.findAllUnitsOfClass(equipmentType);
         		if (units.size() >= numNeeded) {
-        			UnitIterator i = units.iterator();
-        			while (i.hasNext() && (amountLoading > 0D)) {
-        				Equipment eq = (Equipment) i.next();
+        			for (int x = 0; (x < numNeeded) && (amountLoading > 0D); x++) {
+        				Equipment eq = (Equipment) units.get(x);
         				if (vInv.canStoreUnit(eq)) {
         					sInv.retrieveUnit(eq);
             				vInv.storeUnit(eq);

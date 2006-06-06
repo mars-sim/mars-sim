@@ -169,45 +169,40 @@ public abstract class RoverMission extends VehicleMission {
     		}
     	
     		// Load vehicle if not fully loaded.
-    		boolean loaded = isVehicleLoaded();
-    		if (!loaded) {
-    			// Load rover
-    			// Random chance of having person load (this allows person to do other things sometimes)
-    			if (RandomUtil.lessThanRandPercent(50)) { 
-    				if (!LoadVehicle.hasEnoughSupplies(settlement, getResourcesNeededForMission(), 
-    						getEquipmentNeededForMission(), getPeopleNumber(), getEstimatedRemainingTripTime())) endMission();
-    				else assignTask(person, new LoadVehicle(person, getVehicle(), 
-    						getResourcesNeededForMission(), getEquipmentNeededForMission()));
-    				return;
+    		if (!loadedFlag) {
+    			if (isVehicleLoaded()) loadedFlag = true;
+    			else {
+    				// Load rover
+        			// Random chance of having person load (this allows person to do other things sometimes)
+        			if (RandomUtil.lessThanRandPercent(50)) { 
+        				if (!LoadVehicle.hasEnoughSupplies(settlement, getResourcesNeededForMission(), 
+        						getEquipmentNeededForMission(), getPeopleNumber(), getEstimatedRemainingTripTime())) endMission();
+        				else assignTask(person, new LoadVehicle(person, getVehicle(), 
+        						getResourcesNeededForMission(), getEquipmentNeededForMission()));
+        			}
     			}
-    			else return;
     		}
-    	
-    		// If person is not aboard the rover, board rover.
-    		boolean aboard = isEveryoneInRover();
-    		if (!aboard) {
-    			// board rover
+    		else {
+    			// If person is not aboard the rover, board rover.
     			if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
             		settlement.getInventory().retrieveUnit(person);
             		getVehicle().getInventory().storeUnit(person);
-            		aboard = isEveryoneInRover();
             	}
-            }
-            else return;    		
-    	
-    		// Embark from settlement if necessary.
-    		if (loaded && aboard) {
-    			// Remove from garage if in garage.
-    			try {
-    				Building garageBuilding = BuildingManager.getBuilding(getVehicle());
-    				VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
-    				garage.removeVehicle(getVehicle());
-    			}
-    			catch (Exception e) {}
-    		
-    			// embark from settlement
-    			settlement.getInventory().retrieveUnit(getVehicle());
-    			setPhaseEnded(true);
+    			
+    			// If rover is loaded and everyone is aboard, embark from settlement.
+        		if (isEveryoneInRover()) {
+        			
+        			// Remove from garage if in garage.
+        			Building garageBuilding = BuildingManager.getBuilding(getVehicle());
+        			if (garageBuilding != null) {
+        				VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+        				garage.removeVehicle(getVehicle());
+        			}
+        			
+        			// Embark from settlement
+        			settlement.getInventory().retrieveUnit(getVehicle());
+        			setPhaseEnded(true);
+        		}
     		}
     	}
     	catch (Exception e) {
