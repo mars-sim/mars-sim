@@ -399,6 +399,14 @@ public class Inventory implements Serializable {
     }
     
     /**
+     * Gets a set of all the item resources in storage.
+     * @return set of item resources.
+     */
+    public Set getAllItemResourcesStored() {
+    	return Collections.unmodifiableSet(containedItemResources.keySet());
+    }
+    
+    /**
      * Gets the total mass of item resources in storage.
      * @return the total mass (kg).
      */
