@@ -263,6 +263,13 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     	result *= getSpeedLightConditionModifier();
     	result *= getTerrainModifier();
     	
+    	if (result < 0D) {
+    		double test1 = getSpeedLightConditionModifier();
+    		System.err.println("light condition: " + test1);
+    		double test2 = getTerrainModifier();
+    		System.err.println("terrain modifier: " + test2);
+    	}
+    	
     	return result;
     }
     

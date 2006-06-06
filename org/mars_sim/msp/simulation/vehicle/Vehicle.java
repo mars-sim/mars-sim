@@ -190,6 +190,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * @param speed the vehicle's speed (in km/hr)
      */
     public void setSpeed(double speed) {
+    	if (speed < 0D) throw new IllegalArgumentException("Vehicle speed cannot be less than 0 km/hr: " + speed);
         this.speed = speed;
     }
 
@@ -206,6 +207,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * @param speed the vehicle's base speed (in km/hr)
      */
     public void setBaseSpeed(double speed) {
+    	if (speed < 0D) throw new IllegalArgumentException("Vehicle base speed cannot be less than 0 km/hr");
         baseSpeed = speed;
     }
 
