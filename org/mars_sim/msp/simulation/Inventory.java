@@ -189,7 +189,7 @@ public class Inventory implements Serializable {
     			UnitIterator i = containedUnits.iterator();
     			while (i.hasNext()) allStoredAmountResourcesCache.addAll(i.next().getInventory().getAllAmountResourcesStored());
     		}
-    		return allStoredAmountResourcesCache;
+    		return Collections.unmodifiableSet(allStoredAmountResourcesCache);
     	}
     }
     
