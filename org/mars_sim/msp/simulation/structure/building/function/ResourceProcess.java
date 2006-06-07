@@ -186,6 +186,8 @@ public class ResourceProcess implements Serializable {
                 double maxRate = ((Double) maxInputResourceRates.get(resourceName)).doubleValue();
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * timeSec;
+                double remainingAmount = inventory.getAmountResourceStored(resource);
+                if (resourceAmount > remainingAmount) resourceAmount = remainingAmount;
                 inventory.retrieveAmountResource(resource, resourceAmount);
                 // System.out.println(resourceName + " input: " + resourceAmount + "kg.");
             }
@@ -198,6 +200,8 @@ public class ResourceProcess implements Serializable {
                 double maxRate = ((Double) maxOutputResourceRates.get(resourceName)).doubleValue();
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * timeSec;
+                double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource);
+                if (resourceAmount > remainingCapacity) resourceAmount = remainingCapacity;
                 inventory.storeAmountResource(resource, resourceAmount);
                 // System.out.println(resourceName + " output: " + resourceAmount + "kg.");
             }
