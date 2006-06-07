@@ -44,8 +44,14 @@ public class UnloadVehicleTest extends TestCase {
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
 		
 		UnloadVehicle unloadVehicle = new UnloadVehicle(person, vehicle);
-		unloadVehicle.unloadingPhase(10D);
+		unloadVehicle.unloadingPhase(11D);
+		unloadVehicle.unloadingPhase(12D);
+		unloadVehicle.unloadingPhase(13D);
+		unloadVehicle.unloadingPhase(14D);
+		unloadVehicle.unloadingPhase(15D);
+		unloadVehicle.unloadingPhase(16D);
+		unloadVehicle.unloadingPhase(100D);
 		
-		assertTrue("Vehicle unloaded correctly.", (vehicleInv.getAmountResourceStored(AmountResource.OXYGEN) == 50D));
+		assertEquals("Vehicle unloaded correctly.", 0D, vehicleInv.getTotalInventoryMass(), 0D);
 	}
 }

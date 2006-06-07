@@ -8,7 +8,11 @@
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.AmountResourceStorage;
@@ -181,7 +185,7 @@ public class Inventory implements Serializable {
      * @return set of amount resources.
      */
     public Set getAllAmountResourcesStored() {
-    	if (allStoredAmountResourcesCache != null) return Collections.unmodifiableSet(allStoredAmountResourcesCache);
+    	if (allStoredAmountResourcesCache != null) return new HashSet(allStoredAmountResourcesCache);
     	else {
     		allStoredAmountResourcesCache = new HashSet(1, 1);
     		if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
@@ -189,7 +193,7 @@ public class Inventory implements Serializable {
     			UnitIterator i = containedUnits.iterator();
     			while (i.hasNext()) allStoredAmountResourcesCache.addAll(i.next().getInventory().getAllAmountResourcesStored());
     		}
-    		return Collections.unmodifiableSet(allStoredAmountResourcesCache);
+    		return new HashSet(allStoredAmountResourcesCache);
     	}
     }
     
@@ -403,7 +407,8 @@ public class Inventory implements Serializable {
      * @return set of item resources.
      */
     public Set getAllItemResourcesStored() {
-    	return Collections.unmodifiableSet(containedItemResources.keySet());
+    	if (containedItemResources != null) return new HashSet(containedItemResources.keySet());
+    	else return new HashSet();
     }
     
     /**
