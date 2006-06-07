@@ -262,14 +262,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     	double result = super.getSpeed(direction);
     	result *= getSpeedLightConditionModifier();
     	result *= getTerrainModifier();
-    	
-    	if (result < 0D) {
-    		double test1 = getSpeedLightConditionModifier();
-    		System.err.println("light condition: " + test1);
-    		double test2 = getTerrainModifier();
-    		System.err.println("terrain modifier: " + test2);
-    	}
-    	
     	return result;
     }
     
@@ -298,7 +290,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         // Determine modifier.
         double angleModifier = handling + getEffectiveSkillLevel() - 10D;
         if (angleModifier < 0D) angleModifier = Math.abs(1D / angleModifier);
-        double tempAngle = vehicle.getTerrainGrade() / angleModifier;
+        double tempAngle = Math.abs(vehicle.getTerrainGrade() / angleModifier);
         if (tempAngle > (Math.PI / 2D)) tempAngle = Math.PI / 2D;
         return Math.cos(tempAngle);
     }
