@@ -30,6 +30,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	protected double targettedAmount; // Targeted amount of resource to collect at site. (kg)
 	protected double startingCargo; // Amount of resource already in rover cargo at start of task. (kg)
 	protected AmountResource resourceType; // The resource type 
+	protected Class containerType; // The container type to use to collect resource.
 	
 	/**
 	 * Constructor
@@ -40,10 +41,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @param collectionRate The rate (kg/millisol) of collection.
 	 * @param targettedAmount The amount (kg) desired to collect.
 	 * @param startingCargo The starting amount (kg) of resource in the rover cargo.
+	 * @param containerType the type of container to use to collect resource.
 	 * @throws Exception if error constructing this task.
 	 */
 	public CollectResources(String taskName, Person person, Rover rover, AmountResource resourceType, 
-			double collectionRate, double targettedAmount, double startingCargo) throws Exception {
+			double collectionRate, double targettedAmount, double startingCargo, Class containerType) throws Exception {
 		
 		// Use EVAOperation parent constructor.
 		super(taskName, person);
@@ -54,6 +56,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		this.targettedAmount = targettedAmount;
 		this.startingCargo = startingCargo;
 		this.resourceType = resourceType;
+		this.containerType = containerType;
 		
 		// Add task phase
 		addPhase(COLLECT_RESOURCES);
@@ -120,8 +123,65 @@ public class CollectResources extends EVAOperation implements Serializable {
 			endTask();
 		}
 		
-		if (exitedAirlock) setPhase(COLLECT_RESOURCES);
+		if (exitedAirlock) {
+			// Take container for collecting resource.
+			if (!hasContainers()) takeContainer();
+			
+			setPhase(COLLECT_RESOURCES);
+		}
 		return time;
+	}
+	
+	/**
+	 * Checks if the person is carrying any containers.
+	 * @return true if carrying containers.
+	 */
+	private boolean hasContainers() {
+		return person.getInventory().containsUnitClass(containerType);
+	}
+	
+	/**
+	 * Takes the least full container from the rover.
+	 * @throws Exception if error taking container.
+	 */
+	private void takeContainer() throws Exception {
+		Unit container = findLeastFullContainer();
+		if (container != null) {
+			if (container.getInventory().getAmountResourceRemainingCapacity(resourceType) > 0D) {
+				if (person.getInventory().canStoreUnit(container)) {
+					rover.getInventory().retrieveUnit(container);
+					person.getInventory().storeUnit(container);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Gets the least full container in the rover.
+	 * @return container.
+	 */
+	private Unit findLeastFullContainer() {
+		Unit result = null;
+		double mostCapacity = 0D;
+		
+		UnitIterator i = rover.getInventory().findAllUnitsOfClass(containerType).iterator();
+		while (i.hasNext()) {
+			Unit container = i.next();
+			double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resourceType);
+			
+			if (result == null) {
+				result = container;
+				mostCapacity = remainingCapacity;
+			}
+			else {
+				if (remainingCapacity > mostCapacity) {
+					result = container;
+					mostCapacity = remainingCapacity;
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -190,13 +250,16 @@ public class CollectResources extends EVAOperation implements Serializable {
         addExperience(time);
 		
 		if (enteredAirlock) {
-			double resources = person.getInventory().getAmountResourceStored(resourceType);
-
-			// Load rock samples into rover.
-			if (resources > 0D) {
-				person.getInventory().retrieveAmountResource(resourceType, resources);
-				rover.getInventory().storeAmountResource(resourceType, resources);
-				return 0D;
+			Inventory pInv = person.getInventory();
+			
+			if (pInv.containsUnitClass(containerType)) {
+				// Load containers in rover.
+				UnitIterator i = pInv.findAllUnitsOfClass(containerType).iterator();
+				while (i.hasNext()) {
+					Unit container = i.next();
+					pInv.retrieveUnit(container);
+					rover.getInventory().storeUnit(container);
+				}
 			}
 			else {
 				endTask();

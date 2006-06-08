@@ -173,7 +173,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 					try {
 						CollectResources collectResources = new CollectResources("Collecting Resources", person, 
 							getRover(), resourceType, resourceCollectionRate, 
-							siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceType));
+							siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceType), containerType);
 						assignTask(person, collectResources);
 					}
 					catch (Exception e) {
