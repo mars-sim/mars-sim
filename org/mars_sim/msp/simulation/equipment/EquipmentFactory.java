@@ -3,6 +3,7 @@
  * EquipmentFactory.java
  * @version 2.79 2006-01-11
  * @author Scott Davis
+ *  
  */
 
 package org.mars_sim.msp.simulation.equipment;
