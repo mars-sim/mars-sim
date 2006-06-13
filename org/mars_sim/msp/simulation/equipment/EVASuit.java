@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.79 2006-01-18
+ * @version 2.79 2006-06-13
  * @author Scott Davis
  */
 
@@ -59,10 +59,6 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         // Set the resource capacities of the EVA suit.
         inventory.addAmountResourceTypeCapacity(AmountResource.OXYGEN, OXYGEN_CAPACITY);
         inventory.addAmountResourceTypeCapacity(AmountResource.WATER, WATER_CAPACITY);
-
-        // Set the initial quantity of resources in the EVA suit.
-        inventory.storeAmountResource(AmountResource.OXYGEN, OXYGEN_CAPACITY);
-        inventory.storeAmountResource(AmountResource.WATER, WATER_CAPACITY);
     }
     
     /**

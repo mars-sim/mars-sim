@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 2.78 2005-07-13
+ * @version 2.79 2006-06-13
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 
 /** 
  * The ExitAirlock class is a task for exiting a airlock from an EVA operation.
@@ -79,6 +80,7 @@ public class ExitAirlock extends Task implements Serializable {
             if (suit != null) {
                 inv.retrieveUnit(suit);
                 person.getInventory().storeUnit(suit);
+                loadEVASuit(suit);
                 hasSuit = true;
             }
         }
@@ -142,30 +144,6 @@ public class ExitAirlock extends Task implements Serializable {
 
         // Check if EVA suit is available.
         return (goodEVASuitAvailable(airlock.getEntityInventory()));
-        /*
-        boolean result = goodEVASuitAvailable(airlock.getEntityInventory());
-        if (!result) {
-            EVASuit finalSuit = null;
-        
-            UnitIterator i = airlock.getEntityInventory().getUnitsOfClass(EVASuit.class).iterator();
-            while (i.hasNext() && (finalSuit == null)) {
-                EVASuit suit = (EVASuit) i.next();
-                boolean fullyLoaded = suit.isFullyLoaded();
-                boolean lifeSupport = suit.lifeSupportCheck();
-                boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-                if (fullyLoaded && lifeSupport && !malfunction) finalSuit = suit; 
-                else {
-                    // System.out.println("EVA Suit fullyLoaded: " + fullyLoaded);
-                    // System.out.println("EVA Suit lifeSupport: " + lifeSupport);
-                    // System.out.println("EVA Suit malfunction: " + malfunction);
-                }
-            }
-        
-            // if (finalSuit == null) System.out.println("ExitAirlock.getGoodEVASuit() false");
-        }
-        
-        return result;
-        */
     }
     
     /**
@@ -190,13 +168,62 @@ public class ExitAirlock extends Task implements Serializable {
         UnitIterator i = inv.findAllUnitsOfClass(EVASuit.class).iterator();
         while (i.hasNext() && (result == null)) {
             EVASuit suit = (EVASuit) i.next();
-            boolean fullyLoaded = suit.isFullyLoaded();
-            boolean lifeSupport = suit.lifeSupportCheck();
             boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-            if (fullyLoaded && lifeSupport && !malfunction) result = suit; 
+            boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
+            if (!malfunction && hasEnoughResources) result = suit;
         }
         
         return result;
+    }
+    
+    /**
+     * Checks if entity unit has enough resource supplies to fill the EVA suit.
+     * @param entityInv the entity unit.
+     * @param suit the EVA suit.
+     * @return true if enough supplies.
+     */
+    private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) {
+    	
+    	Inventory suitInv = suit.getInventory();
+    	
+    	// Check if enough oxygen.
+    	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
+    	double availableOxygen = entityInv.getAmountResourceStored(AmountResource.OXYGEN);
+    	boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
+    	
+    	// Check if enough water.
+    	double neededWater = suitInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
+    	double availableWater = entityInv.getAmountResourceStored(AmountResource.WATER);
+    	boolean hasEnoughWater = (availableWater >= neededWater);
+    	
+    	return hasEnoughOxygen && hasEnoughWater;
+    }
+    
+    /**
+     * Loads an EVA suit with resources from the container unit.
+     * @param suit the EVA suit.
+     * @throws Exception if problem loading supplies.
+     */
+    private void loadEVASuit(EVASuit suit) throws Exception {
+    	
+    	Inventory suitInv = suit.getInventory();
+    	Inventory entityInv = person.getContainerUnit().getInventory();
+    	
+    	// Fill oxygen in suit from entity's inventory. 
+    	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
+    	double availableOxygen = entityInv.getAmountResourceStored(AmountResource.OXYGEN);
+    	double takenOxygen = neededOxygen;
+    	if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
+    	entityInv.retrieveAmountResource(AmountResource.OXYGEN, takenOxygen);
+    	suitInv.storeAmountResource(AmountResource.OXYGEN, takenOxygen);
+
+    	// Fill water in suit from entity's inventory.
+    	double neededWater = suitInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
+    	double availableWater = entityInv.getAmountResourceStored(AmountResource.WATER);
+    	double takenWater = neededWater;
+    	if (takenWater > availableWater) takenWater = availableWater;
+    	entityInv.retrieveAmountResource(AmountResource.WATER, takenWater);
+    	suitInv.storeAmountResource(AmountResource.WATER, takenWater);
     }
     
 	/**

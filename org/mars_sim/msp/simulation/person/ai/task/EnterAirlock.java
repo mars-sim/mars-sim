@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.78 2005-07-13
+ * @version 2.79 2006-06-13
  * @author Scott Davis
  */
 
@@ -9,10 +9,10 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -202,26 +202,21 @@ public class EnterAirlock extends Task implements Serializable {
         if (suit != null) {
         	Inventory suitInv = suit.getInventory();
         	Inventory personInv = person.getInventory();
-        	Unit entity = person.getContainerUnit();
-        	Inventory entityInv = entity.getInventory();
+        	Inventory entityInv = person.getContainerUnit().getInventory();
 
-        	// Refill oxygen in suit from entity's inventory. 
-        	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
-        	double availableOxygen = entityInv.getAmountResourceStored(AmountResource.OXYGEN);
-        	double takenOxygen = neededOxygen;
-        	if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
-        	entityInv.retrieveAmountResource(AmountResource.OXYGEN, takenOxygen);
-        	// System.out.println(person.getName() + " refilling EVA suit with " + takenOxygen + " oxygen.");
-        	suitInv.storeAmountResource(AmountResource.OXYGEN, takenOxygen);
-
-        	// Refill water in suit from entity's inventory.
-        	double neededWater = suitInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
-        	double availableWater = entityInv.getAmountResourceStored(AmountResource.WATER);
-        	double takenWater = neededWater;
-        	if (takenWater > availableWater) takenWater = availableWater;
-        	entityInv.retrieveAmountResource(AmountResource.WATER, takenWater);
-        	// System.out.println(person.getName() + " refilling EVA suit with " + takenWater + " water.");
-        	suitInv.storeAmountResource(AmountResource.WATER, takenWater);
+        	// Unload oxygen from suit.
+        	double oxygenAmount = suitInv.getAmountResourceStored(AmountResource.OXYGEN);
+        	double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
+        	if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
+        	suitInv.retrieveAmountResource(AmountResource.OXYGEN, oxygenAmount);
+        	entityInv.storeAmountResource(AmountResource.OXYGEN, oxygenAmount);
+        	
+        	// Unload water from suit.
+        	double waterAmount = suitInv.getAmountResourceStored(AmountResource.WATER);
+        	double waterCapacity = entityInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
+        	if (waterAmount > waterCapacity) waterAmount = waterCapacity;
+        	suitInv.retrieveAmountResource(AmountResource.WATER, waterAmount);
+        	entityInv.storeAmountResource(AmountResource.WATER, waterAmount);
 
         	// Return suit to entity's inventory.
         	// System.out.println(person.getName() + " putting away EVA suit into " + entity.getName());
