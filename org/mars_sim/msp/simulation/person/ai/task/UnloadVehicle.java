@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.79 2006-06-05
+ * @version 2.79 2006-06-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -10,9 +10,15 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
+import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -36,6 +42,30 @@ public class UnloadVehicle extends Task implements Serializable {
     private Vehicle vehicle;  // The vehicle that needs to be unloaded.
     private Settlement settlement; // The settlement the person is unloading to.
 
+    /**
+     * Constructor
+     * @param person the person to perform the task.
+     * @throws Exception if error constructing task.
+     */
+    public UnloadVehicle(Person person) throws Exception {
+    	// Use Task constructor.
+    	super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
+    	
+    	VehicleMission mission = getMissionNeedingUnloading();
+    	if (mission != null) {
+    		vehicle = mission.getVehicle();
+    		description = "Unloading " + vehicle.getName();
+    		settlement = person.getSettlement();
+    		
+    		// Initialize task phase
+            addPhase(UNLOADING);
+            setPhase(UNLOADING);
+    	}
+    	else {
+    		endTask();
+    	}
+    }
+    
     /** 
      * Constructor
      * @param person the person to perform the task
@@ -43,6 +73,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @throws Exception if error constructing task.
      */
     public UnloadVehicle(Person person, Vehicle vehicle) throws Exception {
+    	// Use Task constructor.
         super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
 	    description = "Unloading " + vehicle.getName();
@@ -55,6 +86,87 @@ public class UnloadVehicle extends Task implements Serializable {
         setPhase(UNLOADING);
 
         // System.out.println(person.getName() + " is unloading " + vehicle.getName());
+    }
+    
+    /** 
+     * Returns the weighted probability that a person might perform this task.
+     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
+     * @param person the person to perform the task
+     * @return the weighted probability that a person might perform this task
+     */
+    public static double getProbability(Person person) {
+        double result = 0D;
+
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        	
+        	// Check all vehicle missions occuring at the settlement.
+        	try {
+        		List missions = getAllMissionsNeedingUnloading(person.getSettlement());
+        		result = 50D * missions.size();
+        	}
+        	catch (Exception e) {
+        		System.err.println("Error finding unloading missions. " + e.getMessage());
+        		e.printStackTrace(System.err);
+        	}
+        }
+
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
+        
+		// Job modifier.
+        Job job = person.getMind().getJob();
+		if (job != null) result *= job.getStartTaskProbabilityModifier(LoadVehicle.class);        
+	
+        return result;
+    }
+    
+    /**
+     * Gets a list of all disembarking vehicle missions at a settlement.
+     * @param settlement the settlement.
+     * @return list of vehicle missions.
+     * @throws Exception if error finding missions.
+     */
+    private static List getAllMissionsNeedingUnloading(Settlement settlement) throws Exception {
+    	
+    	List result = new ArrayList();
+    	
+    	MissionManager manager = Simulation.instance().getMissionManager();
+    	Iterator i = manager.getMissions().iterator();
+    	while (i.hasNext()) {
+    		Mission mission = (Mission) i.next();
+    		if (mission instanceof VehicleMission) {
+    			if (VehicleMission.DISEMBARKING.equals(mission.getPhase())) {
+    				VehicleMission vehicleMission = (VehicleMission) mission;
+    				if (vehicleMission.hasVehicle()) {
+    					Vehicle vehicle = vehicleMission.getVehicle();
+    					if (settlement == vehicle.getSettlement()) {
+    						if (!isFullyUnloaded(vehicle)) result.add(vehicleMission);
+    					}
+    				}
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets a random vehicle mission unloading at the settlement.
+     * @return vehicle mission.
+     * @throws Exception if error finding vehicle mission.
+     */
+    private VehicleMission getMissionNeedingUnloading() throws Exception {
+    	
+    	VehicleMission result = null;
+    	
+    	List unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
+    	
+    	if (unloadingMissions.size() > 0) {
+    		int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
+    		result = (VehicleMission) unloadingMissions.get(index);
+    	}
+    	
+    	return result;
     }
     
     /**

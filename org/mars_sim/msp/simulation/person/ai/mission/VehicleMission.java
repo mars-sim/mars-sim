@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.79 2006-04-28
+ * @version 2.79 2006-06-13
  * @author Scott Davis
  */
 
@@ -28,9 +28,9 @@ import org.mars_sim.msp.simulation.time.MarsClock;
 public abstract class VehicleMission extends TravelMission {
 	
 	// Mission phases
-	protected static final String EMBARKING = "Embarking";
-	protected static final String TRAVELLING = "Travelling";
-	protected static final String DISEMBARKING = "Disembarking";
+	public static final String EMBARKING = "Embarking";
+	public static final String TRAVELLING = "Travelling";
+	public static final String DISEMBARKING = "Disembarking";
 	
     // The error margin for determining vehicle range. (actual distance / safe distance)
     public final static double RANGE_ERROR_MARGIN = 1.5D;
@@ -220,7 +220,7 @@ public abstract class VehicleMission extends TravelMission {
      * @return true if rover is loaded.
      * @throws Exception if error checking vehicle.
      */
-    protected boolean isVehicleLoaded() throws Exception {
+    public boolean isVehicleLoaded() throws Exception {
     	
     	return LoadVehicle.isFullyLoaded(getResourcesNeededForMission(), 
     			getEquipmentNeededForMission(), getVehicle());
