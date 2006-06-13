@@ -23,7 +23,6 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     // Static members
 	public static final String TYPE = "EVA Suit";
     private static final double BASE_MASS = 45D; // Unloaded mass of EVA suit (kg.)
-    private static final double GENERAL_CAPACITY = 100D; // General capacity.
     private static final double OXYGEN_CAPACITY = 1D; // Oxygen capacity (kg.)
     private static final double WATER_CAPACITY = 4D; // Water capacity (kg.)
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
@@ -52,9 +51,6 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
 	
         // Set the empty mass of the EVA suit in kg.
         baseMass = BASE_MASS;
-
-        // Set the general mass capacity of the EVA suit in kg.
-        inventory.addGeneralCapacity(GENERAL_CAPACITY);
 	
         // Set the resource capacities of the EVA suit.
         inventory.addAmountResourceTypeCapacity(AmountResource.OXYGEN, OXYGEN_CAPACITY);
