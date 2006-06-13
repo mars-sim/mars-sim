@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.78 2005-10-07
+ * @version 2.79 2006-06-13
  * @author Scott Davis
  */
 
@@ -46,6 +46,9 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 
 	public final static String MALE = "male";
 	public final static String FEMALE = "female";
+	
+	// The base carrying capacity (kg) of a person.
+	private final static double BASE_CAPACITY = 60D;
 
     // Data members
     private NaturalAttributeManager attributes; // Manager for Person's natural attributes
@@ -76,8 +79,9 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		// Set base mass of person.
 		baseMass = 70D;
 
-		// Set inventory total mass capacity.
-		inventory.addGeneralCapacity(100D);
+		// Set inventory total mass capacity based on the person's strength.
+		int strength = attributes.getAttribute(NaturalAttributeManager.STRENGTH);
+		inventory.addGeneralCapacity(BASE_CAPACITY + strength);
 		
 		// Put person in proper building.
 	    settlement.getInventory().storeUnit(this);
