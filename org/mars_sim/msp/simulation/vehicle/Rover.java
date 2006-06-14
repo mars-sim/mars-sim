@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.78 2005-05-09
+ * @version 2.79 2006-06-13
  * @author Scott Davis
  */
 
@@ -24,6 +24,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     // Static data members
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private double NORMAL_TEMP = 25D; // Normal temperature (celsius)
+    
+    public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 2D;
     
     // Data members
     private int crewCapacity = 0; // The rover's capacity for crewmembers.
@@ -287,26 +289,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	return AmountResource.METHANE;
     }
     
-    /**
-     * Checks if the vehicle is loaded with at least a percentage maximum resources.
-     * @param percentage the percentage of maximum
-     * @return true if vehicle has at least percentage many resources.
-     */
-    /*
-    public boolean isLoaded(double percentage) {
-    	if (super.isLoaded(percentage)) {
-    		// Make sure sufficient life support is loaded.
-    		Inventory i = getInventory();
-    		double oxygenPercentage = i.getAmountResourceStored(AmountResource.OXYGEN) / i.getAmountResourceCapacity(AmountResource.OXYGEN);
-    		double waterPercentage = i.getAmountResourceStored(AmountResource.WATER) / i.getAmountResourceCapacity(AmountResource.WATER);
-    		double foodPercentage = i.getAmountResourceStored(AmountResource.FOOD) / i.getAmountResourceCapacity(AmountResource.FOOD);
-    	
-    		return ((oxygenPercentage >= percentage) && (waterPercentage >= percentage) && (foodPercentage >= percentage));
-    	}
-    	else return false;
-    }
-    */
-    
     /** 
      * Gets the range of the vehicle
      * @return the range of the vehicle (in km)
@@ -323,21 +305,21 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	double foodConsumptionRate = config.getFoodConsumptionRate();
     	double foodCapacity = inventory.getAmountResourceCapacity(AmountResource.FOOD);
     	double foodSols = foodCapacity / foodConsumptionRate;
-    	double foodRange = distancePerSol * foodSols;
+    	double foodRange = distancePerSol * foodSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (foodRange < range) range = foodRange;
     		
     	// Check water capacity as range limit.
     	double waterConsumptionRate = config.getWaterConsumptionRate();
     	double waterCapacity = inventory.getAmountResourceCapacity(AmountResource.WATER);
     	double waterSols = waterCapacity / waterConsumptionRate;
-    	double waterRange = distancePerSol * waterSols;
+    	double waterRange = distancePerSol * waterSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (waterRange < range) range = waterRange;
     		
     	// Check oxygen capacity as range limit.
     	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
     	double oxygenCapacity = inventory.getAmountResourceCapacity(AmountResource.OXYGEN);
     	double oxygenSols = oxygenCapacity / oxygenConsumptionRate;
-    	double oxygenRange = distancePerSol * oxygenSols;
+    	double oxygenRange = distancePerSol * oxygenSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (oxygenRange < range) range = oxygenRange;
     	
     	return range;

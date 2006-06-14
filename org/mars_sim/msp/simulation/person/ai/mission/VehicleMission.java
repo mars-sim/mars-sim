@@ -32,9 +32,6 @@ public abstract class VehicleMission extends TravelMission {
 	public static final String TRAVELLING = "Travelling";
 	public static final String DISEMBARKING = "Disembarking";
 	
-    // The error margin for determining vehicle range. (actual distance / safe distance)
-    public final static double RANGE_ERROR_MARGIN = 1.5D;
-	
 	// Data members
 	private Vehicle vehicle;
 	private VehicleOperator lastOperator; // The last operator of this vehicle in the mission.
@@ -233,7 +230,7 @@ public abstract class VehicleMission extends TravelMission {
      * @return
      */
     public static double getFuelNeededForTrip(double tripDistance, double fuelEfficiency) {
-    	return (tripDistance * RANGE_ERROR_MARGIN) / fuelEfficiency;
+    	return (tripDistance * Vehicle.RANGE_ERROR_MARGIN) / fuelEfficiency;
     }
     
     /**

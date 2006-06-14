@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.78 2005-08-24
+ * @version 2.79 2006-06-13
  * @author Scott Davis
  */
 
@@ -28,6 +28,9 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public final static String MOVING = "Moving";
     public final static String MALFUNCTION = "Malfunction";
     public final static String MAINTENANCE = "Periodic Maintenance";
+    
+    // The error margin for determining vehicle range. (actual distance / safe distance)
+    public final static double RANGE_ERROR_MARGIN = 1.5D;
 
     // Data members
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
@@ -218,7 +221,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public double getRange() throws Exception {
     	double fuelCapacity = inventory.getAmountResourceCapacity(getFuelType());
-        return fuelCapacity * fuelEfficiency;
+        return fuelCapacity * fuelEfficiency / RANGE_ERROR_MARGIN;
     }
 
     /**
