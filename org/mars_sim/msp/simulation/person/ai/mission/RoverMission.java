@@ -37,6 +37,8 @@ public abstract class RoverMission extends VehicleMission {
 
 	// Static members
 	protected static final int MIN_PEOPLE = 2;
+	
+	private static final double LIFE_SUPPORT_BUFFER = 1.5D;
 
 	/**
 	 * Constructor
@@ -397,9 +399,9 @@ public abstract class RoverMission extends VehicleMission {
     	int crewNum = getPeopleNumber();
     	
     	// Determine life support supplies needed for trip.
-    	result.put(AmountResource.OXYGEN, new Double(PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum));
-    	result.put(AmountResource.WATER, new Double(PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum));
-    	result.put(AmountResource.FOOD, new Double(PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum));
+    	result.put(AmountResource.OXYGEN, new Double(PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum * LIFE_SUPPORT_BUFFER));
+    	result.put(AmountResource.WATER, new Double(PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum * LIFE_SUPPORT_BUFFER));
+    	result.put(AmountResource.FOOD, new Double(PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum* LIFE_SUPPORT_BUFFER));
     	
     	return result;
     }

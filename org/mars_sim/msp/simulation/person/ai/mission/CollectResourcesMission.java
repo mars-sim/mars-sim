@@ -33,7 +33,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	final protected static String COLLECT_RESOURCES = "Collecting Resources";
 	
 	// Estimated collection time multiplyer for EVA.
-	final private static double EVA_COLLECTION_OVERHEAD = 3D;
+	final private static double EVA_COLLECTION_OVERHEAD = 20D;
 
 	// Data members
 	protected Settlement startingSettlement; // The settlement the mission starts at.
@@ -327,7 +327,8 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      */
     protected double getEstimatedTimeAtCollectionSite() {
     	double timePerPerson =  (siteResourceGoal / resourceCollectionRate) * EVA_COLLECTION_OVERHEAD;
-    	return timePerPerson / getPeopleNumber();
+    	double result =  timePerPerson / getPeopleNumber();
+    	return result;
     }
     
     /**
