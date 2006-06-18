@@ -305,13 +305,12 @@ public abstract class Mission implements Serializable {
 		
 		// Recruit the most qualified and most liked people first.
 		try {
-		while (qualifiedPeople.size() > 0) {
-			double bestPersonValue = 0D;
-			Person bestPerson = null;
-			PersonIterator j = qualifiedPeople.iterator();
-			while (j.hasNext()) {
-				Person person = j.next();
-				if (getPeopleNumber() < getMissionCapacity()) {
+			while (qualifiedPeople.size() > 0) {
+				double bestPersonValue = 0D;
+				Person bestPerson = null;
+				PersonIterator j = qualifiedPeople.iterator();
+				while (j.hasNext() && (getPeopleNumber() < getMissionCapacity())) {
+					Person person = j.next();
 					// Determine the person's mission qualification.
 					double qualification = getMissionQualification(person) * 100D;
 					
@@ -326,15 +325,14 @@ public abstract class Mission implements Serializable {
 						bestPersonValue = personValue;
 					}
 				}
-			}
 		
-			// Try to recruit best person available to the mission.
-			if (bestPerson != null) {
-				recruitPerson(startingPerson, bestPerson);
-				qualifiedPeople.remove(bestPerson);
+				// Try to recruit best person available to the mission.
+				if (bestPerson != null) {
+					recruitPerson(startingPerson, bestPerson);
+					qualifiedPeople.remove(bestPerson);
+				}
+				else break;
 			}
-			else break;
-		}
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.out);
