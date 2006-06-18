@@ -45,7 +45,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @throws MissionException if error constructing mission.
 	 */
 	protected RoverMission(String name, Person startingPerson) throws MissionException {
-		// Use TravelMission constructor.
+		// Use VehicleMission constructor.
 		super(name, startingPerson, MIN_PEOPLE);
 	}
 	
@@ -57,7 +57,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @throws MissionException if error constructing mission.
 	 */
 	protected RoverMission(String name, Person startingPerson, int minPeople) throws MissionException { 
-		// Use TravelMission constructor.
+		// Use VehicleMission constructor.
 		super(name, startingPerson, minPeople);
 	}
 	
@@ -84,8 +84,9 @@ public abstract class RoverMission extends VehicleMission {
 	 * (This method should be overridden by children)
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
+	 * @throws Exception if problem determining if vehicle is usable.
 	 */
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
+	protected boolean isUsableVehicle(Vehicle newVehicle) throws Exception {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		if (!(newVehicle instanceof Rover)) usable = false;
 		return usable;
@@ -172,14 +173,17 @@ public abstract class RoverMission extends VehicleMission {
     		if (!loadedFlag) {
     			if (isVehicleLoaded()) loadedFlag = true;
     			else {
-    				// Load rover
-        			// Random chance of having person load (this allows person to do other things sometimes)
-        			if (RandomUtil.lessThanRandPercent(50)) { 
-        				if (!LoadVehicle.hasEnoughSupplies(settlement, getResourcesNeededForMission(), 
-        						getEquipmentNeededForMission(), getPeopleNumber(), getEstimatedRemainingTripTime())) endMission();
-        				else assignTask(person, new LoadVehicle(person, getVehicle(), 
-        						getResourcesNeededForMission(), getEquipmentNeededForMission()));
+    				// Check if vehicle can hold enough supplies for mission.
+    				if (isVehicleLoadable() && LoadVehicle.hasEnoughSupplies(settlement, getResourcesNeededForMission(), 
+							getEquipmentNeededForMission(), getPeopleNumber(), getEstimatedRemainingTripTime())) {
+    					// Load rover
+    					// Random chance of having person load (this allows person to do other things sometimes)
+    					if (RandomUtil.lessThanRandPercent(50)) { 
+    						assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesNeededForMission(), 
+    								getEquipmentNeededForMission()));
+    					}
         			}
+    				else endMission();
     			}
     		}
     		else {

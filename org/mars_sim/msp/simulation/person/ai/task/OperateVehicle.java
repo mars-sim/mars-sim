@@ -10,9 +10,11 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
+import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.VehicleOperator;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -180,7 +182,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
         // Consume fuel for distance traveled.
         double fuelConsumed = distanceTraveled / vehicle.getFuelEfficiency();
-        vehicle.getInventory().retrieveAmountResource(vehicle.getFuelType(), fuelConsumed);
+        Inventory vInv = vehicle.getInventory();
+        AmountResource fuelType = vehicle.getFuelType();
+        double remainingFuel = vInv.getAmountResourceStored(fuelType);
+        if (fuelConsumed > remainingFuel) {
+        	fuelConsumed = remainingFuel;
+        }
+        vInv.retrieveAmountResource(vehicle.getFuelType(), fuelConsumed);
 
         double result = 0;
 

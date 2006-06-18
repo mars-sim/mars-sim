@@ -93,6 +93,14 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			
         	// Recruit additional people to mission.
         	recruitPeopleForMission(startingPerson);
+        	
+        	// Check if vehicle can carry enough supplies for the mission.
+        	try {
+        		if (hasVehicle() && !isVehicleLoadable()) endMission();
+        	}
+        	catch (Exception e) {
+        		throw new MissionException(null, e);
+        	}
 		}
 		
 		// Add collecting phase.

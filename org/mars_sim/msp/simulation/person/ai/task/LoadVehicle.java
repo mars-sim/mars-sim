@@ -117,7 +117,7 @@ public class LoadVehicle extends Task implements Serializable {
         	// Check all vehicle missions occuring at the settlement.
         	try {
         		List missions = getAllMissionsNeedingLoading(person.getSettlement());
-        		result = 50D * missions.size();
+        		result = 100D * missions.size();
         	}
         	catch (Exception e) {
         		System.err.println("Error finding loading missions. " + e.getMessage());
@@ -460,6 +460,53 @@ public class LoadVehicle extends Task implements Serializable {
     	// Leave one EVA suit per remaining person at settlement.
     	if (equipmentType == EVASuit.class) return remainingPeopleNum;
     	else return 0;
+    }
+    
+    /**
+     * Checks if a vehicle has enough storage capacity for the supplies needed on the trip.
+     * @param resources a map of the resources required.
+     * @param equipment a map of the equipment types and numbers needed.
+     * @param vehicle the vehicle to check.
+     * @param settlement the settlement to disembark from.
+     * @return true if vehicle can carry supplies.
+     * @throws Exception if error
+     */
+    public static boolean enoughCapacityForSupplies(Map resources, Map equipment, Vehicle vehicle, Settlement settlement) throws Exception {
+    	
+    	boolean sufficientCapacity = true;
+    	
+    	Inventory vInv = vehicle.getInventory(); 
+    	
+    	double generalMass = 0D;
+    	
+    	// Check if enough capacity to carry resources.
+    	Iterator iR = resources.keySet().iterator();
+    	while (iR.hasNext() && sufficientCapacity) {
+    		Resource resource = (Resource) iR.next();
+    		if (resource instanceof AmountResource) {
+    			double amount = ((Double) resources.get(resource)).doubleValue();
+    			if (vInv.getAmountResourceCapacity((AmountResource) resource) < amount) sufficientCapacity = false;
+    		}
+    		else if (resource instanceof ItemResource) {
+    			int num = ((Integer) resources.get(resource)).intValue();
+    			generalMass += ((ItemResource) resource).getMassPerItem() * num;
+    		}
+    	}
+    	
+    	// Check if enough capacity to carry equipment.
+    	Iterator iE = equipment.keySet().iterator();
+    	while (iE.hasNext() && sufficientCapacity) {
+    		Class equipmentType = (Class) iE.next();
+    		int num = ((Integer) equipment.get(equipmentType)).intValue();
+    		
+    		// Use an example of the equipment from the settlement.
+    		Equipment equipmentExample = (Equipment) settlement.getInventory().findUnitOfClass(equipmentType);
+    		if (equipmentExample != null) generalMass += equipmentExample.getMass() * num;
+    	}
+    	
+    	if (vInv.getGeneralCapacity() < generalMass) sufficientCapacity = false;
+    	
+    	return sufficientCapacity;
     }
 
     /** 

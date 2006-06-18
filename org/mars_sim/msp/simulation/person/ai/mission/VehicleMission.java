@@ -80,11 +80,16 @@ public abstract class VehicleMission extends TravelMission {
 	 */
 	protected void setVehicle(Vehicle newVehicle) throws MissionException {
 		if (newVehicle != null) {
-			if (isUsableVehicle(newVehicle)) {
-				vehicle = newVehicle;
-				newVehicle.setReservedForMission(true);
+			try {
+				if (isUsableVehicle(newVehicle)) {
+					vehicle = newVehicle;
+					newVehicle.setReservedForMission(true);
+				}
+				throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
 			}
-			throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
+			catch (Exception e) {
+				throw new MissionException(getPhase(), "Problem determining if vehicle is usable.");
+			}
 		}
 		else throw new IllegalArgumentException("newVehicle is null.");
 	}
@@ -113,8 +118,9 @@ public abstract class VehicleMission extends TravelMission {
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
 	 * @throws IllegalArgumentException if newVehicle is null.
+	 * @throws Exception if problem checking vehicle is loadable.
 	 */
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
+	protected boolean isUsableVehicle(Vehicle newVehicle) throws Exception {
 		if (newVehicle != null) {
 			boolean usable = true;
 			if (newVehicle.isReserved()) usable = false;
@@ -191,14 +197,15 @@ public abstract class VehicleMission extends TravelMission {
 	 * Gets a collection of available vehicles at a settlement that are usable for this mission.
 	 * @param settlement the settlement to find vehicles.
 	 * @return list of available vehicles.
+	 * @throws Exception if problem determining if vehicles are usable.
 	 */
-	private VehicleCollection getAvailableVehicles(Settlement settlement) {
+	private VehicleCollection getAvailableVehicles(Settlement settlement) throws Exception {
 		VehicleCollection result = new VehicleCollection();
 		
 		VehicleIterator i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
-			if (isUsableVehicle(vehicle)) result.add(vehicle);    
+			if (isUsableVehicle(vehicle)) result.add(vehicle);
 		}
 		
 		return result;
@@ -221,6 +228,17 @@ public abstract class VehicleMission extends TravelMission {
     	
     	return LoadVehicle.isFullyLoaded(getResourcesNeededForMission(), 
     			getEquipmentNeededForMission(), getVehicle());
+    }
+    
+    /**
+     * Checks if a vehicle can load the supplies needed by the mission.
+     * @return true if vehicle is loadable.
+     * @throws Exception if error checking vehicle.
+     */
+    public boolean isVehicleLoadable() throws Exception {
+    	
+    	return LoadVehicle.enoughCapacityForSupplies(getResourcesNeededForMission(), 
+    			getEquipmentNeededForMission(), getVehicle(), getVehicle().getSettlement());
     }
     
     /**
@@ -387,8 +405,9 @@ public abstract class VehicleMission extends TravelMission {
 	 */
     public Map getResourcesNeededForMission() throws Exception {
     	Map result = new HashMap();
-    	result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(getTotalDistance(), 
-    			vehicle.getFuelEfficiency())));
+    	if (vehicle != null) 
+    		result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(getTotalDistance(), 
+    				vehicle.getFuelEfficiency())));
     	return result;
     }
 }
