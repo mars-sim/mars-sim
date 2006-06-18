@@ -74,7 +74,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         	
         	// Check if vehicle can carry enough supplies for the mission.
         	try {
-        		if (hasVehicle() && !isVehicleLoadable()) endMission();
+        		if (hasVehicle() && !isVehicleLoadable()) {
+        			endMission();
+        		}
         	}
         	catch (Exception e) {
         		throw new MissionException(null, e);
@@ -309,4 +311,18 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	public Settlement getAssociatedSettlement() {
 		return destinationSettlement;
 	}
+	
+    /**
+     * Gets the number and types of equipment needed for the mission.
+     * @return map of equipment class and Integer number.
+     * @throws Exception if error determining needed equipment.
+     */
+    public Map getEquipmentNeededForMission() throws Exception {
+    	if (equipmentNeededCache != null) return equipmentNeededCache;
+    	else {
+    		Map result = super.getEquipmentNeededForMission();
+    		equipmentNeededCache = result;
+    		return result;
+    	}
+    }
 }

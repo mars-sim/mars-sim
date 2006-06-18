@@ -345,11 +345,15 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      * @throws Exception if error determining needed equipment.
      */
     public Map getEquipmentNeededForMission() throws Exception {
-    	Map result = super.getEquipmentNeededForMission();
+    	if (equipmentNeededCache != null) return equipmentNeededCache;
+    	else {
+    		Map result = super.getEquipmentNeededForMission();
     	
-    	// Include required number of containers.
-    	result.put(containerType, new Integer(containerNum));
+    		// Include required number of containers.
+    		result.put(containerType, new Integer(containerNum));
     	
-    	return result;
+    		equipmentNeededCache = result;
+    		return result;
+    	}
     }
 }

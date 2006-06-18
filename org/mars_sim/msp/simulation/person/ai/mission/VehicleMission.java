@@ -39,6 +39,10 @@ public abstract class VehicleMission extends TravelMission {
 	
     // Mission tasks tracked
     private OperateVehicle operateVehicleTask; // The current operate vehicle task.
+    
+    // Caches
+    protected Map resourcesNeededCache;
+	protected Map equipmentNeededCache;
 
     /**
      * Constructor
@@ -237,8 +241,16 @@ public abstract class VehicleMission extends TravelMission {
      */
     public boolean isVehicleLoadable() throws Exception {
     	
-    	return LoadVehicle.enoughCapacityForSupplies(getResourcesNeededForMission(), 
-    			getEquipmentNeededForMission(), getVehicle(), getVehicle().getSettlement());
+    	Map resources = getResourcesNeededForMission();
+    	Map equipment = getEquipmentNeededForMission();
+    	Vehicle vehicle = getVehicle();
+    	Settlement settlement = vehicle.getSettlement();
+    	double tripTime = getEstimatedRemainingTripTime();
+    	
+    	boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(resources, equipment, vehicle, settlement);
+    	boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, resources, equipment, getPeopleNumber(), tripTime);
+    	
+    	return vehicleCapacity && settlementSupplies;
     }
     
     /**
