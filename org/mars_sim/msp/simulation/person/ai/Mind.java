@@ -173,11 +173,11 @@ public class Mind implements Serializable {
      *  @param newMission the new mission
      */
     public void setMission(Mission newMission) {
-        if (mission != null) {
-            mission.removePerson(person);
-        }
-        mission = newMission;
-        newMission.addPerson(person);
+    	if (newMission != mission) {
+    		if (mission != null) mission.removePerson(person);
+    		mission = newMission;
+    		newMission.addPerson(person);
+    	}
     }
 
     /** 
