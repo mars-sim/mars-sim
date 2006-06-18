@@ -102,7 +102,7 @@ public class UnloadVehicle extends Task implements Serializable {
         	// Check all vehicle missions occuring at the settlement.
         	try {
         		List missions = getAllMissionsNeedingUnloading(person.getSettlement());
-        		result = 50D * missions.size();
+        		result = 100D * missions.size();
         	}
         	catch (Exception e) {
         		System.err.println("Error finding unloading missions. " + e.getMessage());
@@ -201,6 +201,17 @@ public class UnloadVehicle extends Task implements Serializable {
         Inventory vehicleInv = vehicle.getInventory();
         Inventory settlementInv = settlement.getInventory();
         
+        // Unload equipment.
+        if (amountUnloading > 0D) {
+        	UnitIterator k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
+        	while (k.hasNext() && (amountUnloading > 0D)) {
+        		Equipment equipment = (Equipment) k.next();
+        		vehicleInv.retrieveUnit(equipment);
+        		settlementInv.storeUnit(equipment);
+        		amountUnloading -= equipment.getMass();
+        	}
+        }
+        
         // Unload amount resources.
         Iterator i = vehicleInv.getAllAmountResourcesStored().iterator();
         while (i.hasNext() && (amountUnloading > 0D)) {
@@ -225,17 +236,6 @@ public class UnloadVehicle extends Task implements Serializable {
         		vehicleInv.retrieveItemResources(resource, num);
         		settlementInv.storeItemResources(resource, num);
         		amountUnloading -= (num * resource.getMassPerItem());
-        	}
-        }
-        
-        // Unload equipment.
-        if (amountUnloading > 0D) {
-        	UnitIterator k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
-        	while (k.hasNext() && (amountUnloading > 0D)) {
-        		Equipment equipment = (Equipment) k.next();
-        		vehicleInv.retrieveUnit(equipment);
-        		settlementInv.storeUnit(equipment);
-        		amountUnloading -= equipment.getMass();
         	}
         }
 		
