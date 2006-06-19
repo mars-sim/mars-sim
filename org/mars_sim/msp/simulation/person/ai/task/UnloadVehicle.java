@@ -24,6 +24,7 @@ import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle.
@@ -51,19 +52,20 @@ public class UnloadVehicle extends Task implements Serializable {
     	// Use Task constructor.
     	super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
+    	settlement = person.getSettlement();
+    	
     	VehicleMission mission = getMissionNeedingUnloading();
-    	if (mission != null) {
-    		vehicle = mission.getVehicle();
+    	if (mission != null) vehicle = mission.getVehicle();
+    	else vehicle = getNonMissionVehicleNeedingUnloading(settlement);
+    	
+    	if (vehicle != null) {
     		description = "Unloading " + vehicle.getName();
-    		settlement = person.getSettlement();
     		
     		// Initialize task phase
             addPhase(UNLOADING);
             setPhase(UNLOADING);
     	}
-    	else {
-    		endTask();
-    	}
+    	else endTask();
     }
     
     /** 
@@ -101,8 +103,10 @@ public class UnloadVehicle extends Task implements Serializable {
         	
         	// Check all vehicle missions occuring at the settlement.
         	try {
-        		List missions = getAllMissionsNeedingUnloading(person.getSettlement());
-        		result = 100D * missions.size();
+        		int numVehicles = 0;
+        		numVehicles += getAllMissionsNeedingUnloading(person.getSettlement()).size();
+        		if (getNonMissionVehicleNeedingUnloading(person.getSettlement()) != null) numVehicles++;
+        		result = 100D * numVehicles;
         	}
         	catch (Exception e) {
         		System.err.println("Error finding unloading missions. " + e.getMessage());
@@ -118,6 +122,24 @@ public class UnloadVehicle extends Task implements Serializable {
 		if (job != null) result *= job.getStartTaskProbabilityModifier(LoadVehicle.class);        
 	
         return result;
+    }
+    
+    /**
+     * Gets a vehicle that needs unloading that isn't reserved for a mission.
+     * @param settlement the settlement the vehicle is at.
+     * @return vehicle or null if none.
+     */
+    private static Vehicle getNonMissionVehicleNeedingUnloading(Settlement settlement) {
+    	Vehicle result = null;
+    	
+    	VehicleIterator i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			if (!vehicle.isReserved() && (vehicle.getInventory().getTotalInventoryMass() > 0D)) 
+				result = vehicle;
+		}
+    	
+    	return result;
     }
     
     /**
