@@ -176,7 +176,7 @@ public class Mind implements Serializable {
     	if (newMission != mission) {
     		if (mission != null) mission.removePerson(person);
     		mission = newMission;
-    		newMission.addPerson(person);
+    		if (newMission != null) newMission.addPerson(person);
     	}
     }
 
