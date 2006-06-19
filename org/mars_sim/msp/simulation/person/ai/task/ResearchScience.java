@@ -97,7 +97,12 @@ public abstract class ResearchScience extends Task implements Serializable {
 		if (isDone()) return time;
 
 		// Remove any used resources.
-		if (consumesResources) inv.retrieveAmountResource(resourceType, getEffectiveResearchTime(time) * resourceRate);
+		if (consumesResources) {
+			double resourceAmount = getEffectiveResearchTime(time) * resourceRate;
+			double resourceRemaining = inv.getAmountResourceStored(resourceType);
+			if (resourceRemaining < resourceAmount) resourceAmount = resourceRemaining;
+			inv.retrieveAmountResource(resourceType, resourceAmount);
+		}
 		
 		// Add experience
 		addExperience(time);

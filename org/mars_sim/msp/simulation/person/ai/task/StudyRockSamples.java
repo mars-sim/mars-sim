@@ -24,7 +24,7 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
 public class StudyRockSamples extends ResearchScience implements Serializable {
 
     // Rate of rock sample research (kg / millisol)
-    private static final double RESEARCH_RATE = .01D;
+    private static final double RESEARCH_RATE = .1D;
 
     /** 
      * Constructor 
