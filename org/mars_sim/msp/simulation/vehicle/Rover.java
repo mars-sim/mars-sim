@@ -25,7 +25,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private double NORMAL_TEMP = 25D; // Normal temperature (celsius)
     
-    public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 2D;
+    public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 2.5D;
     
     // Data members
     private int crewCapacity = 0; // The rover's capacity for crewmembers.
