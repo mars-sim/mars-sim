@@ -22,6 +22,8 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.time.MarsClock;
+import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /** 
  * The CollectResourcesMission class is a mission to travel in a rover to several
@@ -79,9 +81,12 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			this.containerType = containerType;
 			this.containerNum = containerNum;
 			
+			// Recruit additional people to mission.
+        	recruitPeopleForMission(startingPerson);
+			
 			// Determine collection sites
 			try {
-				determineCollectionSites(getVehicle().getRange(), numSites);
+				determineCollectionSites(getVehicle().getRange(), getTotalTripTimeLimit(), numSites);
 			}
 			catch (Exception e) {
 				throw new MissionException(VehicleMission.EMBARKING, e);
@@ -90,9 +95,6 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			// Add home settlement
 			addNavpoint(new NavPoint(getAssociatedSettlement().getCoordinates(), 
 					getAssociatedSettlement()));
-			
-        	// Recruit additional people to mission.
-        	recruitPeopleForMission(startingPerson);
         	
         	// Check if vehicle can carry enough supplies for the mission.
         	try {
@@ -206,9 +208,14 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	 * @param numSites the number of collection sites
 	 * @throws MissionException of collection sites can not be determined.
 	 */
-	private void determineCollectionSites(double roverRange, int numSites) throws MissionException {
+	private void determineCollectionSites(double roverRange, double tripTimeLimit, int numSites) throws MissionException {
 
 		List unorderedSites = new ArrayList();
+		
+		// Determining the actual travelling range.
+		double range = roverRange;
+		double timeRange = getTripTimeRange(tripTimeLimit, numSites);
+    	if (timeRange < range) range = timeRange;
         
 		// Get the current location.
 		Coordinates startingLocation = startingSettlement.getCoordinates();
@@ -258,6 +265,21 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	}
 	
 	/**
+	 * Gets the range of a trip based on its time limit and collection sites.
+	 * @param tripTimeLimit time (millisols) limit of trip.
+	 * @param numSites the number of collection sites.
+	 * @return range (km) limit.
+	 */
+	private double getTripTimeRange(double tripTimeLimit, int numSites) {
+		double timeAtSites = getEstimatedTimeAtCollectionSite() * numSites;
+		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
+    	double averageSpeed = getAverageVehicleSpeedForOperators();
+    	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+    	double averageSpeedMillisol = averageSpeed / millisolsInHour;
+    	return tripTimeTravellingLimit * averageSpeedMillisol;
+	}
+	
+	/**
 	 * Gets the settlement associated with the mission.
 	 * @return settlement or null if none.
 	 */
@@ -291,7 +313,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			// Remove last person added to the mission.
 			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 			if (lastPerson != null) {
-				getPeople().remove(lastPerson);
+				lastPerson.getMind().setMission(null);
 				if (getPeopleNumber() < getMinPeople()) endMission();
 			}
 		}
@@ -337,6 +359,44 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     	double timePerPerson =  (siteResourceGoal / resourceCollectionRate) * EVA_COLLECTION_OVERHEAD;
     	double result =  timePerPerson / getPeopleNumber();
     	return result;
+    }
+    
+    /**
+     * Gets the time limit of the trip based on life support capacity.
+     * @return time (millisols) limit.
+     * @throws Exception if error determining time limit.
+     */
+    public double getTotalTripTimeLimit() throws Exception {
+    	
+    	int crewNum = getPeopleNumber();
+    	Inventory vInv = getVehicle().getInventory();
+    	
+    	double timeLimit = Double.MAX_VALUE;
+    	
+    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+		
+    	// Check food capacity as time limit.
+    	double foodConsumptionRate = config.getFoodConsumptionRate();
+    	double foodCapacity = vInv.getAmountResourceCapacity(AmountResource.FOOD);
+    	double foodTimeLimit = foodCapacity / (foodConsumptionRate * crewNum);
+    	if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
+    		
+    	// Check water capacity as time limit.
+    	double waterConsumptionRate = config.getWaterConsumptionRate();
+    	double waterCapacity = vInv.getAmountResourceCapacity(AmountResource.WATER);
+    	double waterTimeLimit = waterCapacity / (waterConsumptionRate * crewNum);
+    	if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
+    		
+    	// Check oxygen capacity as time limit.
+    	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
+    	double oxygenCapacity = vInv.getAmountResourceCapacity(AmountResource.OXYGEN);
+    	double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * crewNum);
+    	if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
+    	
+    	// Convert timeLimit into millisols and use error margin.
+    	timeLimit = (timeLimit * 1000D) / Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	
+    	return timeLimit;
     }
     
     /**

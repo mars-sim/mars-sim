@@ -24,7 +24,7 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 public class Exploration extends CollectResourcesMission {
 
 	// Amount of rock samples to be gathered at a given site (kg). 
-	private static final double SITE_GOAL = 200D;
+	private static final double SITE_GOAL = 40D;
 	
 	// Collection rate of rock samples during EVA (kg/millisol).
 	private static final double COLLECTION_RATE = .1D;
@@ -33,7 +33,7 @@ public class Exploration extends CollectResourcesMission {
 	private static final int REQUIRED_SPECIMEN_CONTAINERS = 4;
 	
 	//	Number of collection sites.
-	private static final int NUM_SITES = 8;
+	private static final int NUM_SITES = 5;
 	
 	// Minimum number of people to do mission.
 	private final static int MIN_PEOPLE = 2;

@@ -106,6 +106,19 @@ public class TravelToSettlement extends RoverMission implements Serializable {
             
 			// At least one person left to hold down the fort.
 	    	if (!atLeastOnePersonRemainingAtSettlement(settlement)) missionPossible = false;
+	    	
+	    	// Check if there are any desirable settlements within range.
+	    	try {
+	    		Vehicle vehicle = getVehicleWithGreatestRange(settlement);
+	    		if (vehicle != null) {
+	    			Map desirableSettlements = getDestinationSettlements(person, settlement, vehicle.getRange());
+	    			if (desirableSettlements.size() == 0) missionPossible = false;
+	    		}
+	    	}
+	    	catch (Exception e) {
+	    		System.err.println("Error finding vehicles at settlement.");
+	    		e.printStackTrace(System.err);
+	    	}
         }
         
         // Determine mission probability.
@@ -151,6 +164,33 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		
 		return result;
 	}
+	
+	/**
+	 * Gets the available vehicle at the settlement with the greatest range.
+	 * @param settlement the settlement to check.
+	 * @return vehicle or null if none available.
+	 * @throws Exception if error finding vehicles.
+	 */
+	private static Vehicle getVehicleWithGreatestRange(Settlement settlement) throws Exception {
+		Vehicle result = null;
+
+		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			
+			boolean usable = true;
+			if (vehicle.isReserved()) usable = false;
+			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
+			if (!(vehicle instanceof Rover)) usable = false;
+			
+			if (usable) {
+				if (result == null) result = vehicle;
+				else if (vehicle.getRange() > result.getRange()) result = vehicle;
+			}
+		}
+		
+		return result;
+	}
 
     /** 
      * Determines a random destination settlement other than current one.
@@ -163,20 +203,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     	
     	try {
     		double range = getVehicle().getRange();
-    		UnitManager unitManager = startingSettlement.getUnitManager();
     		Settlement result = null;
         
     		// Find all desirable destination settlements.
-    		Map desirableSettlements = new HashMap();
-    		SettlementIterator i = new SettlementCollection(unitManager.getSettlements()).iterator();
-    		while (i.hasNext()) {
-    			Settlement settlement = i.next();
-    			double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
-    			if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))) {
-    				double desirability = getDestinationSettlementDesirability(person, startingSettlement, settlement);
-    				if (desirability > 0D) desirableSettlements.put(settlement, new Double(desirability));
-    			}
-    		}
+    		Map desirableSettlements = getDestinationSettlements(person, startingSettlement, range);
         
     		// Randomly select a desirable settlement.
     		if (desirableSettlements.size() > 0) result = (Settlement) RandomUtil.getWeightedRandomObject(desirableSettlements);
@@ -186,6 +216,30 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     	catch (Exception e) {
     		throw new MissionException(VehicleMission.EMBARKING, e);
     	}
+    }
+    
+    /**
+     * Gets all possible and desirable destination settlements.
+     * @param person the person searching for a settlement.
+     * @param startingSettlement the settlement the mission is starting at.
+     * @param range the range (km) that can be travelled.
+     * @return map of destination settlements.
+     */
+    private static Map getDestinationSettlements(Person person, Settlement startingSettlement, double range) {
+    	Map result = new HashMap();
+    	
+    	UnitManager unitManager = startingSettlement.getUnitManager();
+    	SettlementIterator i = new SettlementCollection(unitManager.getSettlements()).iterator();
+		while (i.hasNext()) {
+			Settlement settlement = i.next();
+			double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
+			if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))) {
+				double desirability = getDestinationSettlementDesirability(person, startingSettlement, settlement);
+				if (desirability > 0D) result.put(settlement, new Double(desirability));
+			}
+		}
+    	
+    	return result;
     }
 	
 	/**
@@ -298,7 +352,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			// Remove last person added to the mission.
 			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 			if (lastPerson != null) {
-				getPeople().remove(lastPerson);
+				lastPerson.getMind().setMission(null);
 				if (getPeopleNumber() < getMinPeople()) endMission();
 			}
 		}

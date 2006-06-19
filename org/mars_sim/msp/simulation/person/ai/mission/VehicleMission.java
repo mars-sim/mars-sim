@@ -392,7 +392,7 @@ public abstract class VehicleMission extends TravelMission {
      * Gets the average operating speed of the mission vehicle for all of the mission members. 
      * @return average operating speed (km/h)
      */
-    private double getAverageVehicleSpeedForOperators() {
+    protected double getAverageVehicleSpeedForOperators() {
     	
     	double totalSpeed = 0D;
     	PersonIterator i = getPeople().iterator();
