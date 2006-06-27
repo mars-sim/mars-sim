@@ -63,8 +63,8 @@ public class LoadVehicle extends Task implements Serializable {
     	if (mission != null) {
     		vehicle = mission.getVehicle();
     		description = "Loading " + vehicle.getName();
-    		resources = mission.getResourcesNeededForMission();
-    		equipment = mission.getEquipmentNeededForMission();
+    		resources = mission.getResourcesNeededForRemainingMission(true);
+    		equipment = mission.getEquipmentNeededForRemainingMission(true);
     		settlement = person.getSettlement();
     		
     		// Initialize task phase

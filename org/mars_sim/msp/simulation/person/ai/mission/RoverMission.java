@@ -75,7 +75,7 @@ public abstract class RoverMission extends VehicleMission {
      * @throws MissionException if problem performing the phase.
      */
     protected void performPhase(Person person) throws MissionException {
-    	if (hasEmergency()) setEmergencyTravelHome(true);
+    	// if (hasEmergency()) setEmergencyDestination(true);
     	super.performPhase(person);
     }
 	
@@ -178,8 +178,8 @@ public abstract class RoverMission extends VehicleMission {
     					// Load rover
     					// Random chance of having person load (this allows person to do other things sometimes)
     					if (RandomUtil.lessThanRandPercent(50)) { 
-    						assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesNeededForMission(), 
-    								getEquipmentNeededForMission()));
+    						assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesNeededForRemainingMission(true), 
+    								getEquipmentNeededForRemainingMission(true)));
     					}
         			}
     				else endMission();
@@ -387,40 +387,42 @@ public abstract class RoverMission extends VehicleMission {
 	
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
+	 * @param useBuffer use time buffers in estimation if true.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public Map getResourcesNeededForMission() throws Exception {
-    	if (resourcesNeededCache != null) return resourcesNeededCache;
-    	else {
-    		Map result = super.getResourcesNeededForMission();
+    public Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
+    	Map result = super.getResourcesNeededForRemainingMission(useBuffer);
     	
-    		// Determine estimate time for trip.
-    		double time = getEstimatedRemainingTripTime();
-    		double timeSols = time / 1000D;
+    	// Determine estimate time for trip.
+    	double time = getEstimatedRemainingTripTime(useBuffer);
+    	double timeSols = time / 1000D;
     	
-    		int crewNum = getPeopleNumber();
+    	int crewNum = getPeopleNumber();
     	
-    		// Determine life support supplies needed for trip.
-    		result.put(AmountResource.OXYGEN, new Double(PhysicalCondition.getOxygenConsumptionRate() 
-    				* timeSols * crewNum * Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN));
-    		result.put(AmountResource.WATER, new Double(PhysicalCondition.getWaterConsumptionRate() 
-    				* timeSols * crewNum * Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN));
-    		result.put(AmountResource.FOOD, new Double(PhysicalCondition.getFoodConsumptionRate() 
-    				* timeSols * crewNum* Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN));
+    	// Determine life support supplies needed for trip.
+    	double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
+    	if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
+    		
+    	double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
+    	if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	result.put(AmountResource.WATER, new Double(waterAmount));
+    		
+    	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
+    	if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	result.put(AmountResource.FOOD, new Double(foodAmount));
     	
-    		resourcesNeededCache = result;
-    	
-    		return result;
-    	}
+    	return result;
     }
     
     /**
      * Gets the number and types of equipment needed for the mission.
+     * @param useBuffer use time buffers in estimation if true.
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public Map getEquipmentNeededForMission() throws Exception {
+    public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
     	Map result = new HashMap();
     	
     	// Include one EVA suit per person on mission.

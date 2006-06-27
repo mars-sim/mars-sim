@@ -30,7 +30,7 @@ public class Exploration extends CollectResourcesMission {
 	private static final double COLLECTION_RATE = .1D;
 	
 	// Number of specimen containers required for the mission. 
-	private static final int REQUIRED_SPECIMEN_CONTAINERS = 4;
+	private static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
 	
 	//	Number of collection sites.
 	private static final int NUM_SITES = 5;
@@ -138,10 +138,11 @@ public class Exploration extends CollectResourcesMission {
     
     /**
      * Gets the estimated time spent at a collection site.
+     * @param useBuffer use time buffers in estimation if true.
      * @return time (millisols)
      */
-    protected double getEstimatedTimeAtCollectionSite() {
-    	double result = super.getEstimatedTimeAtCollectionSite();
+    protected double getEstimatedTimeAtCollectionSite(boolean useBuffer) {
+    	double result = super.getEstimatedTimeAtCollectionSite(useBuffer);
     	
     	// TODO: Add additional exploration time at sites.
     	

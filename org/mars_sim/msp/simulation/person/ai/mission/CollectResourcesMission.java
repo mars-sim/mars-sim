@@ -40,13 +40,14 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	// Data members
 	protected Settlement startingSettlement; // The settlement the mission starts at.
 	private AmountResource resourceType; // The type of resource to collect.
-	private int numCollectionSites; // The number of collection sites for the mission.
+	// private int numCollectionSites; // The number of collection sites for the mission.
 	private double siteCollectedResources; // The amount of resources (kg) collected at a collection site.
 	private double collectingStart; // The starting amount of resources in a rover at a collection site.
 	private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
 	private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol).
 	private Class containerType; // The type of container needed for the mission or null if none.
 	private int containerNum; // The number of containers needed for the mission.
+	private MarsClock collectionSiteStartTime; // The start time at the current collection site.
 
 	/**
 	 * Constructor
@@ -86,10 +87,10 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			
 			// Determine collection sites
 			try {
-				determineCollectionSites(getVehicle().getRange(), getTotalTripTimeLimit(), numSites);
+				if (hasVehicle()) determineCollectionSites(getVehicle().getRange(), getTotalTripTimeLimit(true), numSites);
 			}
 			catch (Exception e) {
-				throw new MissionException(VehicleMission.EMBARKING, e);
+				throw new MissionException(null, e);
 			}
 			
 			// Add home settlement
@@ -120,7 +121,10 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     	if (EMBARKING.equals(getPhase())) setPhase(VehicleMission.TRAVELLING);
 		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) setPhase(VehicleMission.DISEMBARKING);
-			else setPhase(COLLECT_RESOURCES);
+			else {
+				setPhase(COLLECT_RESOURCES);
+				collectionSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			}
 		}
 		else if (COLLECT_RESOURCES.equals(getPhase())) setPhase(VehicleMission.TRAVELLING);
 		else if (DISEMBARKING.equals(getPhase())) endMission();
@@ -174,6 +178,18 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			
 			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
 			if (hasEmergency()) setPhaseEnded(true);
+			
+			try {
+				// Check if enough resources for remaining trip.
+				if (!hasEnoughResourcesForRemainingTrip(false)) {
+					// If not, determine an emergency destination.
+					determineEmergencyDestination();
+					setPhaseEnded(true);
+				}
+			}
+			catch (Exception e) {
+				throw new MissionException(e.getMessage(), getPhase());
+			}
 		}
 
 		if (!getPhaseEnded()) {
@@ -214,7 +230,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		
 		// Determining the actual travelling range.
 		double range = roverRange;
-		double timeRange = getTripTimeRange(tripTimeLimit, numSites);
+		double timeRange = getTripTimeRange(tripTimeLimit, numSites, true);
     	if (timeRange < range) range = timeRange;
         
 		// Get the current location.
@@ -244,9 +260,6 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 				remainingRange -= siteDistance;
 			}
 		}
-		
-		// Record the number of collection sites.
-		numCollectionSites = unorderedSites.size();
 
 		// Reorder sites for shortest distance.
 		currentLocation = startingLocation;
@@ -268,10 +281,11 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	 * Gets the range of a trip based on its time limit and collection sites.
 	 * @param tripTimeLimit time (millisols) limit of trip.
 	 * @param numSites the number of collection sites.
+	 * @param useBuffer Use time buffer in estimations if true.
 	 * @return range (km) limit.
 	 */
-	private double getTripTimeRange(double tripTimeLimit, int numSites) {
-		double timeAtSites = getEstimatedTimeAtCollectionSite() * numSites;
+	private double getTripTimeRange(double tripTimeLimit, int numSites, boolean useBuffer) {
+		double timeAtSites = getEstimatedTimeAtCollectionSite(useBuffer) * numSites;
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
     	double averageSpeed = getAverageVehicleSpeedForOperators();
     	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
@@ -339,34 +353,65 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	
     /**
      * Gets the estimated time remaining on the trip.
+     * @param useBuffer Use time buffer in estimations if true.
      * @return time (millisols)
      * @throws Exception
      */
-    public double getEstimatedRemainingTripTime() throws Exception {
-    	double result = super.getEstimatedRemainingTripTime();
+    public double getEstimatedRemainingTripTime(boolean useBuffer) throws Exception {
+    	double result = super.getEstimatedRemainingTripTime(useBuffer);
     	
-    	// Add estimated collection time at sites.
-    	result += getEstimatedTimeAtCollectionSite() * numCollectionSites;
+    	// Add estimated remaining collection time at current site if still there.
+    	if (COLLECT_RESOURCES.equals(getPhase())) {
+    		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+    		double timeSpentAtCollectionSite = MarsClock.getTimeDiff(currentTime, collectionSiteStartTime);
+    		double remainingTime = getEstimatedTimeAtCollectionSite(useBuffer) - timeSpentAtCollectionSite;
+    		if (remainingTime > 0D) result += remainingTime;
+    	}
+    	
+    	// Add estimated collection time at sites that haven't been visited yet.
+    	int remainingCollectionSites = getNumCollectionSites() - getNumCollectionSitesVisited();
+    	result += getEstimatedTimeAtCollectionSite(useBuffer) * remainingCollectionSites;
     	
     	return result;
     }
     
     /**
+     * Gets the total number of collection sites for this mission.
+     * @return number of sites.
+     */
+    public int getNumCollectionSites() {
+    	return getNumberOfNavpoints() - 2;
+    }
+    
+    /**
+     * Gets the number of collection sites that have been currently visited by the mission.
+     * @return number of sites.
+     */
+    public int getNumCollectionSitesVisited() {
+    	int result = getCurrentNavpointIndex();
+    	if (result == (getNumberOfNavpoints() - 1)) result -= 1;
+    	return result;
+    }
+    
+    /**
      * Gets the estimated time spent at a collection site.
+     * @param useBuffer Use time buffer in estimation if true.
      * @return time (millisols)
      */
-    protected double getEstimatedTimeAtCollectionSite() {
-    	double timePerPerson =  (siteResourceGoal / resourceCollectionRate) * EVA_COLLECTION_OVERHEAD;
+    protected double getEstimatedTimeAtCollectionSite(boolean useBuffer) {
+    	double timePerPerson =  siteResourceGoal / resourceCollectionRate;
+    	if (useBuffer) timePerPerson *= EVA_COLLECTION_OVERHEAD;
     	double result =  timePerPerson / getPeopleNumber();
     	return result;
     }
     
     /**
      * Gets the time limit of the trip based on life support capacity.
+     * @param useBuffer use time buffer in estimation if true.
      * @return time (millisols) limit.
      * @throws Exception if error determining time limit.
      */
-    public double getTotalTripTimeLimit() throws Exception {
+    public double getTotalTripTimeLimit(boolean useBuffer) throws Exception {
     	
     	int crewNum = getPeopleNumber();
     	Inventory vInv = getVehicle().getInventory();
@@ -394,20 +439,22 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     	if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
     	
     	// Convert timeLimit into millisols and use error margin.
-    	timeLimit = (timeLimit * 1000D) / Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	timeLimit = (timeLimit * 1000D);
+    	if (useBuffer) timeLimit /= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	
     	return timeLimit;
     }
     
     /**
      * Gets the number and types of equipment needed for the mission.
+     * @param useBuffer use time buffer in estimation if true.
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public Map getEquipmentNeededForMission() throws Exception {
+    public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
-    		Map result = super.getEquipmentNeededForMission();
+    		Map result = super.getEquipmentNeededForRemainingMission(useBuffer);
     	
     		// Include required number of containers.
     		result.put(containerType, new Integer(containerNum));

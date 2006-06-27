@@ -54,7 +54,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     public TravelToSettlement(Person startingPerson) throws MissionException {
     	// Use RoverMission constructor
         super("Travel To Settlement", startingPerson);
-   
+        
         if (!isDone()) {
         	
         	// Initialize data members
@@ -74,9 +74,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         	
         	// Check if vehicle can carry enough supplies for the mission.
         	try {
-        		if (hasVehicle() && !isVehicleLoadable()) {
-        			endMission();
-        		}
+        		if (hasVehicle() && !isVehicleLoadable()) endMission();
         	}
         	catch (Exception e) {
         		throw new MissionException(null, e);
@@ -368,13 +366,14 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	
     /**
      * Gets the number and types of equipment needed for the mission.
+     * @param useBuffer use time buffer in estimation if true.
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public Map getEquipmentNeededForMission() throws Exception {
+    public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
-    		Map result = super.getEquipmentNeededForMission();
+    		Map result = super.getEquipmentNeededForRemainingMission(useBuffer);
     		equipmentNeededCache = result;
     		return result;
     	}

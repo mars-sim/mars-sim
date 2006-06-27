@@ -8,13 +8,18 @@
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.OperateVehicle;
+import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.ItemResource;
+import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
@@ -41,7 +46,6 @@ public abstract class VehicleMission extends TravelMission {
     private OperateVehicle operateVehicleTask; // The current operate vehicle task.
     
     // Caches
-    protected Map resourcesNeededCache;
 	protected Map equipmentNeededCache;
 
     /**
@@ -230,8 +234,8 @@ public abstract class VehicleMission extends TravelMission {
      */
     public boolean isVehicleLoaded() throws Exception {
     	
-    	return LoadVehicle.isFullyLoaded(getResourcesNeededForMission(), 
-    			getEquipmentNeededForMission(), getVehicle());
+    	return LoadVehicle.isFullyLoaded(getResourcesNeededForRemainingMission(true), 
+    			getEquipmentNeededForRemainingMission(true), getVehicle());
     }
     
     /**
@@ -241,11 +245,11 @@ public abstract class VehicleMission extends TravelMission {
      */
     public boolean isVehicleLoadable() throws Exception {
     	
-    	Map resources = getResourcesNeededForMission();
-    	Map equipment = getEquipmentNeededForMission();
+    	Map resources = getResourcesNeededForRemainingMission(true);
+    	Map equipment = getEquipmentNeededForRemainingMission(true);
     	Vehicle vehicle = getVehicle();
     	Settlement settlement = vehicle.getSettlement();
-    	double tripTime = getEstimatedRemainingTripTime();
+    	double tripTime = getEstimatedRemainingTripTime(true);
     	
     	boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(resources, equipment, vehicle, settlement);
     	boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, resources, equipment, getPeopleNumber(), tripTime);
@@ -257,10 +261,13 @@ public abstract class VehicleMission extends TravelMission {
      * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
      * @param tripDistance the distance (km) of the trip.
      * @param fuelEfficiency the vehicle's fuel efficiency (km/kg).
+     * @param useBuffer use time buffers in estimation if true.
      * @return
      */
-    public static double getFuelNeededForTrip(double tripDistance, double fuelEfficiency) {
-    	return (tripDistance * Vehicle.RANGE_ERROR_MARGIN) / fuelEfficiency;
+    public static double getFuelNeededForTrip(double tripDistance, double fuelEfficiency, boolean useBuffer) {
+    	double result = tripDistance / fuelEfficiency;
+    	if (useBuffer) result *= Vehicle.RANGE_ERROR_MARGIN;
+    	return result;
     }
     
     /**
@@ -333,6 +340,17 @@ public abstract class VehicleMission extends TravelMission {
     		reachedNextNode(person);
     		setPhaseEnded(true);
     	}
+    	
+    	try {
+    		// Check if enough resources for remaining trip.
+    		if (!hasEnoughResourcesForRemainingTrip(false)) {
+    			// If not, determine an emergency destination.
+    			determineEmergencyDestination();
+    		}
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(e.getMessage(), getPhase());
+    	}
     }
     
     /**
@@ -372,10 +390,11 @@ public abstract class VehicleMission extends TravelMission {
     
     /**
      * Gets the estimated time remaining on the trip.
+     * @param useBuffer use time buffers in estimation if true.
      * @return time (millisols)
      * @throws Exception
      */
-    public double getEstimatedRemainingTripTime() throws Exception {
+    public double getEstimatedRemainingTripTime(boolean useBuffer) throws Exception {
     	
     	// Determine total remaining distance for trip.
     	double distance = getTotalRemainingDistance();
@@ -412,14 +431,51 @@ public abstract class VehicleMission extends TravelMission {
     
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
+	 * @param useBuffer use time buffers in estimation if true;
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public Map getResourcesNeededForMission() throws Exception {
+    public Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
     	Map result = new HashMap();
     	if (vehicle != null) 
-    		result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(getTotalDistance(), 
-    				vehicle.getFuelEfficiency())));
+    		result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(getTotalRemainingDistance(), 
+    				vehicle.getFuelEfficiency(), useBuffer)));
     	return result;
+    }
+    
+    /**
+     * Checks if there are enough resources available in the vehicle for the remaining trip.
+     * @param useBuffers use time buffers for estimation if true.
+     * @return true if enough resources.
+     * @throws Exception if error checking resources.
+     */
+    protected boolean hasEnoughResourcesForRemainingTrip(boolean useBuffers) throws Exception {
+    	boolean result = true;
+    	
+    	Map neededResources = getResourcesNeededForRemainingMission(useBuffers);
+        Inventory inv = vehicle.getInventory();
+
+        Iterator iR = neededResources.keySet().iterator();
+        while (iR.hasNext() && result) {
+        	Resource resource = (Resource) iR.next();
+        	if (resource instanceof AmountResource) {
+        		double amount = ((Double) neededResources.get(resource)).doubleValue();
+        		double amountStored = inv.getAmountResourceStored((AmountResource) resource);
+        		if (amountStored < amount) result = false;
+        	}
+        	else if (resource instanceof ItemResource) {
+        		int num = ((Integer) neededResources.get(resource)).intValue();
+        		if (inv.getItemResourceNum((ItemResource) resource) < num) result = false;
+        	}
+        	else throw new Exception("Unknown resource type: " + resource);
+        }
+        
+        return result;
+    }
+    
+    protected void determineEmergencyDestination() {
+    	System.out.println("Determining emergency destination.");
+    	
+    	
     }
 }

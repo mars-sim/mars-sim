@@ -162,6 +162,7 @@ public class MissionManager implements Serializable {
         }
         catch (Exception e) {
             System.err.println("MissionManager.getNewMission(): " + e.toString());
+            e.printStackTrace(System.err);
             return null;
         } 
     }

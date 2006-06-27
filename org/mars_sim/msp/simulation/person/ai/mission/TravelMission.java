@@ -29,7 +29,7 @@ public abstract class TravelMission extends Mission {
 	private String travelStatus; // The current traveling status of the mission. 
 	private NavPoint lastStopNavpoint; // The last navpoint the mission stopped at.
 	private MarsClock legStartingTime;  // The time the last leg of the mission started at. 
-	private boolean emergencyTravelHome; // True if mission needs to travel home next.
+	// private boolean emergencyTravelHome; // True if mission needs to travel home next.
 
 	/**
 	 * Constructor
@@ -175,9 +175,11 @@ public abstract class TravelMission extends Mission {
 	protected void startTravelToNextNode(Person person) throws MissionException {
 		
 		// If emergency, set to last navpoint.
+		/*
 		if (getEmergencyTravelHome()) setNextNavpointIndex(navPoints.size() - 1);
 		else setNextNavpointIndex(navIndex + 1);
-		
+		*/
+		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
 		legStartingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	}
@@ -281,24 +283,29 @@ public abstract class TravelMission extends Mission {
     
     /**
      * Gets the estimated time remaining on the trip.
+     * @param useBuffer use a time buffer in estimation if true.
      * @return time (millisols)
      * @throws Exception
      */
-    public abstract double getEstimatedRemainingTripTime() throws Exception;
+    public abstract double getEstimatedRemainingTripTime(boolean useBuffer) throws Exception;
     
     /**
      * Sets the mission emergency travel home mode
      * @param emergencyTravelHome true if emergency home mode.
      */
+    /*
     public void setEmergencyTravelHome(boolean emergencyTravelHome) {
     	this.emergencyTravelHome = emergencyTravelHome;
     }
+    */
     
     /**
      * Checks if the mission is in emergency travel home mode.
      * @return true if emergency travel home mode.
      */
+    /*
     public boolean getEmergencyTravelHome() {
     	return emergencyTravelHome;
     }
+    */
 }
