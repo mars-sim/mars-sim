@@ -395,7 +395,7 @@ public abstract class RoverMission extends VehicleMission {
     	Map result = super.getResourcesNeededForRemainingMission(useBuffer);
     	
     	// Determine estimate time for trip.
-    	double time = getEstimatedRemainingTripTime(useBuffer);
+    	double time = getEstimatedRemainingMissionTime(useBuffer);
     	double timeSols = time / 1000D;
     	
     	int crewNum = getPeopleNumber();
@@ -412,6 +412,14 @@ public abstract class RoverMission extends VehicleMission {
     	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
     	if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	result.put(AmountResource.FOOD, new Double(foodAmount));
+    	
+    	return result;
+    }
+    
+    public Map getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
+    	Map result = super.getResourcesNeededForTrip(useBuffer, distance);
+    	
+    	
     	
     	return result;
     }

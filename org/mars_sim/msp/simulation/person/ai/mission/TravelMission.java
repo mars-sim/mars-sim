@@ -44,11 +44,17 @@ public abstract class TravelMission extends Mission {
 		super(name, startingPerson, minPeople);
 		
 		NavPoint startingNavPoint = null;
-		if (startingPerson.getSettlement() != null) 
-			startingNavPoint = new NavPoint(startingPerson.getCoordinates(), startingPerson.getSettlement());
-		else startingNavPoint = new NavPoint(startingPerson.getCoordinates());
-		addNavpoint(startingNavPoint);
-		lastStopNavpoint = startingNavPoint;
+		try {
+			if (startingPerson.getSettlement() != null) 
+				startingNavPoint = new NavPoint(getCurrentMissionLocation(), startingPerson.getSettlement());
+			else startingNavPoint = new NavPoint(getCurrentMissionLocation());
+			addNavpoint(startingNavPoint);
+			lastStopNavpoint = startingNavPoint;
+		}
+		catch (Exception e) {
+			throw new MissionException(null, e);
+		}
+		
 		setTravelStatus(AT_NAVPOINT);
 	}
 	
@@ -71,6 +77,17 @@ public abstract class TravelMission extends Mission {
 	protected void setNavpoint(int index, NavPoint navPoint) {
 		if ((navPoint != null) && (index >= 0)) navPoints.set(index, navPoint);
 		else throw new IllegalArgumentException("navPoint is null");
+	}
+	
+	/**
+	 * Clears out any unreached nav points.
+	 */
+	protected void clearRemainingNavpoints() {
+		int index = getNextNavpointIndex();
+		int numNavpoints = getNumberOfNavpoints();
+		for (int x = index; x < numNavpoints; x++) {
+			navPoints.remove(index);
+		}
 	}
 	
 	/**
@@ -173,12 +190,6 @@ public abstract class TravelMission extends Mission {
 	 * @throws MissionException if no more navpoints.
 	 */
 	protected void startTravelToNextNode(Person person) throws MissionException {
-		
-		// If emergency, set to last navpoint.
-		/*
-		if (getEmergencyTravelHome()) setNextNavpointIndex(navPoints.size() - 1);
-		else setNextNavpointIndex(navIndex + 1);
-		*/
 		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
 		legStartingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
@@ -186,11 +197,11 @@ public abstract class TravelMission extends Mission {
 	
 	/**
 	 * The mission has reached the next navpoint.
-	 * @person the person performing the mission
+	 * @throws Exception if error determining mission location.
 	 */
-	protected void reachedNextNode(Person person) {
+	protected void reachedNextNode() throws Exception {
 		setTravelStatus(AT_NAVPOINT);
-		lastStopNavpoint = new NavPoint(person.getCoordinates());
+		lastStopNavpoint = new NavPoint(getCurrentMissionLocation());
 	}
 	
 	/**
@@ -282,30 +293,20 @@ public abstract class TravelMission extends Mission {
     public abstract MarsClock getLegETA();
     
     /**
-     * Gets the estimated time remaining on the trip.
+     * Gets the estimated time remaining for the mission.
      * @param useBuffer use a time buffer in estimation if true.
+     * @param distance the distance of the trip.
      * @return time (millisols)
      * @throws Exception
      */
-    public abstract double getEstimatedRemainingTripTime(boolean useBuffer) throws Exception;
+    public abstract double getEstimatedRemainingMissionTime(boolean useBuffer) throws Exception;
     
     /**
-     * Sets the mission emergency travel home mode
-     * @param emergencyTravelHome true if emergency home mode.
+     * Gets the estimated time for a trip.
+     * @param useBuffer use time buffers in estimation if true.
+     * @param distance the distance of the trip.
+     * @return time (millisols)
+     * @throws Exception
      */
-    /*
-    public void setEmergencyTravelHome(boolean emergencyTravelHome) {
-    	this.emergencyTravelHome = emergencyTravelHome;
-    }
-    */
-    
-    /**
-     * Checks if the mission is in emergency travel home mode.
-     * @return true if emergency travel home mode.
-     */
-    /*
-    public boolean getEmergencyTravelHome() {
-    	return emergencyTravelHome;
-    }
-    */
+    public abstract double getEstimatedTripTime(boolean useBuffer, double distance) throws Exception;
 }

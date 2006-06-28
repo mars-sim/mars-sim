@@ -171,17 +171,22 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	    
 			// If no one can collect resources and this is not due to it just being
 			// night time, end the collecting phase.
-			Mars mars = Simulation.instance().getMars();
-			boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getRover().getCoordinates());
-			double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getRover().getCoordinates());
-			if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
+			try {
+				Mars mars = Simulation.instance().getMars();
+				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
+				double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
+				if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
+			} 
+			catch (Exception e) {
+				throw new MissionException(getPhase(), e);
+			}
 			
 			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
 			if (hasEmergency()) setPhaseEnded(true);
 			
 			try {
 				// Check if enough resources for remaining trip.
-				if (!hasEnoughResourcesForRemainingTrip(false)) {
+				if (!hasEnoughResourcesForRemainingMission(false)) {
 					// If not, determine an emergency destination.
 					determineEmergencyDestination();
 					setPhaseEnded(true);
@@ -233,48 +238,53 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		double timeRange = getTripTimeRange(tripTimeLimit, numSites, true);
     	if (timeRange < range) range = timeRange;
         
-		// Get the current location.
-		Coordinates startingLocation = startingSettlement.getCoordinates();
+    	try {
+    		// Get the current location.
+    		Coordinates startingLocation = getCurrentMissionLocation();
         
-		// Determine the first collection site.
-		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-		double limit = roverRange / 4D;
-		double siteDistance = RandomUtil.getRandomDouble(limit);
-		Coordinates newLocation = startingLocation.getNewLocation(direction, siteDistance);
-		unorderedSites.add(newLocation);
-		Coordinates currentLocation = newLocation;
+    		// Determine the first collection site.
+    		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
+    		double limit = roverRange / 4D;
+    		double siteDistance = RandomUtil.getRandomDouble(limit);
+    		Coordinates newLocation = startingLocation.getNewLocation(direction, siteDistance);
+    		unorderedSites.add(newLocation);
+    		Coordinates currentLocation = newLocation;
         
-		// Determine remaining collection sites.
-		double remainingRange = (roverRange / 2D) - siteDistance;
-		for (int x=1; x < numSites; x++) {
-			double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
-			if (remainingRange > currentDistanceToSettlement) {
-				direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-				double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
-				double tempLimit2 = (2D * remainingRange) - (2D * currentDistanceToSettlement * direction.getCosDirection());
-				limit = tempLimit1 / tempLimit2;
-				siteDistance = RandomUtil.getRandomDouble(limit);
-				newLocation = currentLocation.getNewLocation(direction, siteDistance);
-				unorderedSites.add(newLocation);
-				currentLocation = newLocation;
-				remainingRange -= siteDistance;
-			}
-		}
+    		// Determine remaining collection sites.
+    		double remainingRange = (roverRange / 2D) - siteDistance;
+    		for (int x=1; x < numSites; x++) {
+    			double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
+    			if (remainingRange > currentDistanceToSettlement) {
+    				direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+    				double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
+    				double tempLimit2 = (2D * remainingRange) - (2D * currentDistanceToSettlement * direction.getCosDirection());
+    				limit = tempLimit1 / tempLimit2;
+    				siteDistance = RandomUtil.getRandomDouble(limit);
+    				newLocation = currentLocation.getNewLocation(direction, siteDistance);
+    				unorderedSites.add(newLocation);
+    				currentLocation = newLocation;
+    				remainingRange -= siteDistance;
+    			}
+    		}
 
-		// Reorder sites for shortest distance.
-		currentLocation = startingLocation;
-		while (unorderedSites.size() > 0) {
-			Coordinates shortest = (Coordinates) unorderedSites.get(0);
-			Iterator i = unorderedSites.iterator();
-			while (i.hasNext()) {
-				Coordinates site = (Coordinates) i.next();
-				if (currentLocation.getDistance(site) < currentLocation.getDistance(shortest)) 
-					shortest = site;
-			}
-			addNavpoint(new NavPoint(shortest));
-			unorderedSites.remove(shortest);
-			currentLocation = shortest;
-		}		
+    		// Reorder sites for shortest distance.
+    		currentLocation = startingLocation;
+    		while (unorderedSites.size() > 0) {
+    			Coordinates shortest = (Coordinates) unorderedSites.get(0);
+    			Iterator i = unorderedSites.iterator();
+    			while (i.hasNext()) {
+    				Coordinates site = (Coordinates) i.next();
+    				if (currentLocation.getDistance(site) < currentLocation.getDistance(shortest)) 
+    					shortest = site;
+    			}
+    			addNavpoint(new NavPoint(shortest));
+    			unorderedSites.remove(shortest);
+    			currentLocation = shortest;
+    		}
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(getPhase(), e);
+    	}
 	}
 	
 	/**
@@ -352,13 +362,13 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	}
 	
     /**
-     * Gets the estimated time remaining on the trip.
+     * Gets the estimated time remaining for the mission.
      * @param useBuffer Use time buffer in estimations if true.
      * @return time (millisols)
      * @throws Exception
      */
-    public double getEstimatedRemainingTripTime(boolean useBuffer) throws Exception {
-    	double result = super.getEstimatedRemainingTripTime(useBuffer);
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws Exception {
+    	double result = super.getEstimatedRemainingMissionTime(useBuffer);
     	
     	// Add estimated remaining collection time at current site if still there.
     	if (COLLECT_RESOURCES.equals(getPhase())) {

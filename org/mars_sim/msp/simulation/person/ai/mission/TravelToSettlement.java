@@ -94,9 +94,12 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      */
     public static double getNewMissionProbability(Person person) {
 
-        // Check if mission is possible for person based on their circumstance.
-    	boolean missionPossible = true;
+    	double missionProbability = 0D;
+    	
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        	
+        	// Check if mission is possible for person based on their circumstance.
+        	boolean missionPossible = true;
             Settlement settlement = person.getSettlement();
 	    
 	    	// Check if available rover.
@@ -117,23 +120,19 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	    		System.err.println("Error finding vehicles at settlement.");
 	    		e.printStackTrace(System.err);
 	    	}
-        }
-        
-        // Determine mission probability.
-        double missionProbability = 0D;
-        if (missionPossible) {
-        	missionProbability = BASE_MISSION_WEIGHT;
-            
-            // Crowding modifier.
-        	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-                Settlement settlement = person.getSettlement();
-                int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-                if (crowding > 0) missionProbability *= (crowding + 1);
-        	}
-        	
-    		// Job modifier.
-        	Job job = person.getMind().getJob();
-        	if (job != null) missionProbability *= job.getStartMissionProbabilityModifier(TravelToSettlement.class);	
+	    	
+	    	// Determine mission probability.
+	        if (missionPossible) {
+	        	missionProbability = BASE_MISSION_WEIGHT;
+	            
+	            // Crowding modifier.
+	            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+	            if (crowding > 0) missionProbability *= (crowding + 1);
+	        	
+	    		// Job modifier.
+	        	Job job = person.getMind().getJob();
+	        	if (job != null) missionProbability *= job.getStartMissionProbabilityModifier(TravelToSettlement.class);	
+	        }
         }
 
         return missionProbability;

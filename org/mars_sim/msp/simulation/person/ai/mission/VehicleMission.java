@@ -11,8 +11,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
@@ -21,6 +23,7 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 import org.mars_sim.msp.simulation.vehicle.VehicleOperator;
@@ -249,7 +252,7 @@ public abstract class VehicleMission extends TravelMission {
     	Map equipment = getEquipmentNeededForRemainingMission(true);
     	Vehicle vehicle = getVehicle();
     	Settlement settlement = vehicle.getSettlement();
-    	double tripTime = getEstimatedRemainingTripTime(true);
+    	double tripTime = getEstimatedRemainingMissionTime(true);
     	
     	boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(resources, equipment, vehicle, settlement);
     	boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, resources, equipment, getPeopleNumber(), tripTime);
@@ -337,13 +340,18 @@ public abstract class VehicleMission extends TravelMission {
     	
     	// If the destination has been reached, end the phase.
     	if (reachedDestination) {
-    		reachedNextNode(person);
-    		setPhaseEnded(true);
+    		try {
+    			reachedNextNode();
+    			setPhaseEnded(true);
+    		}
+    		catch (Exception e) {
+    			throw new MissionException(getPhase(), e);
+    		}
     	}
     	
     	try {
     		// Check if enough resources for remaining trip.
-    		if (!hasEnoughResourcesForRemainingTrip(false)) {
+    		if (!hasEnoughResourcesForRemainingMission(false)) {
     			// If not, determine an emergency destination.
     			determineEmergencyDestination();
     		}
@@ -389,15 +397,13 @@ public abstract class VehicleMission extends TravelMission {
     }
     
     /**
-     * Gets the estimated time remaining on the trip.
+     * Gets the estimated time for a trip.
      * @param useBuffer use time buffers in estimation if true.
+     * @param distance the distance of the trip.
      * @return time (millisols)
      * @throws Exception
      */
-    public double getEstimatedRemainingTripTime(boolean useBuffer) throws Exception {
-    	
-    	// Determine total remaining distance for trip.
-    	double distance = getTotalRemainingDistance();
+    public double getEstimatedTripTime(boolean useBuffer, double distance) throws Exception {
     	
     	// Determine average driving speed for all mission members.
     	double averageSpeed = getAverageVehicleSpeedForOperators();
@@ -405,6 +411,16 @@ public abstract class VehicleMission extends TravelMission {
     	double averageSpeedMillisol = averageSpeed / millisolsInHour;
     	
     	return distance / averageSpeedMillisol;
+    }
+    
+    /**
+     * Gets the estimated time remaining for the mission.
+     * @param useBuffer Use time buffer in estimations if true.
+     * @return time (millisols)
+     * @throws Exception
+     */
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws Exception {
+    	return getEstimatedTripTime(useBuffer, getTotalRemainingDistance());
     }
     
     /**
@@ -431,28 +447,48 @@ public abstract class VehicleMission extends TravelMission {
     
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
-	 * @param useBuffer use time buffers in estimation if true;
+	 * @param useBuffer use time buffers in estimation if true.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
     public Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
+    	return getResourcesNeededForTrip(useBuffer, getTotalRemainingDistance());
+    }
+    
+    /**
+     * Gets the number and amounts of resources needed for a trip.
+     * @param useBuffer use time buffers in estimation if true.
+     * @param distance the distance (km) of the trip.
+     * @return map of amount and item resources and their Double amount or Integer number.
+     * @throws Exception if error determining needed resources.
+     */
+    public Map getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
     	Map result = new HashMap();
     	if (vehicle != null) 
-    		result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(getTotalRemainingDistance(), 
+    		result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(distance, 
     				vehicle.getFuelEfficiency(), useBuffer)));
     	return result;
     }
     
     /**
-     * Checks if there are enough resources available in the vehicle for the remaining trip.
+     * Checks if there are enough resources available in the vehicle for the remaining mission.
      * @param useBuffers use time buffers for estimation if true.
      * @return true if enough resources.
      * @throws Exception if error checking resources.
      */
-    protected boolean hasEnoughResourcesForRemainingTrip(boolean useBuffers) throws Exception {
+    protected boolean hasEnoughResourcesForRemainingMission(boolean useBuffers) throws Exception {
+    	return hasEnoughResources(getResourcesNeededForRemainingMission(useBuffers));
+    }
+    
+    /**
+     * Checks if there are enough resources available in the vehicle.
+     * @param neededResources map of amount and item resources and their Double amount or Integer number.
+     * @return true if enough resources.
+     * @throws Exception if error checking resources.
+     */
+    private boolean hasEnoughResources(Map neededResources) throws Exception {
     	boolean result = true;
     	
-    	Map neededResources = getResourcesNeededForRemainingMission(useBuffers);
         Inventory inv = vehicle.getInventory();
 
         Iterator iR = neededResources.keySet().iterator();
@@ -473,9 +509,55 @@ public abstract class VehicleMission extends TravelMission {
         return result;
     }
     
-    protected void determineEmergencyDestination() {
+    /**
+     * Determines the emergency destination settlement for the mission if one is reachable, 
+     * otherwise sets the emergency beacon and ends the mission.
+     * @throws Exception if error determining an emergency destination.
+     */
+    protected void determineEmergencyDestination() throws Exception {
     	System.out.println("Determining emergency destination.");
     	
+    	// Determine closest settlement.
+    	Settlement newDestination = findClosestSettlement();
     	
+    	// Check if enough resources to get to settlement.
+    	double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
+    	if (hasEnoughResources(getResourcesNeededForTrip(false, distance))) {
+    		
+    		// Set the new destination as the travel mission's next and final navpoint.
+    		clearRemainingNavpoints();
+    		addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination));
+    	}
+    	else {
+    		// Set the emergency beacon on the rover and end mission.
+    		System.out.println("Setting emergency beacon.");
+    		endMission();
+    	}
+    }
+    
+    /**
+     * Finds the closest settlement to the mission.
+     * @return settlement
+     * @throws Exception if error finding closest settlement.
+     */
+    private Settlement findClosestSettlement() throws Exception {
+    	Settlement result = null;
+    	Coordinates location = getCurrentMissionLocation();
+    	double closestDistance = Double.MAX_VALUE;
+    	
+    	SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().iterator();
+    	while (i.hasNext()) {
+    		Settlement settlement = i.next();
+    		if (result == null) result = settlement;
+    		else {
+    			double distance = settlement.getCoordinates().getDistance(location);
+    			if (distance < closestDistance) {
+    				result = settlement;
+    				closestDistance = distance;
+    			}
+    		}
+    	}
+    	
+    	return result;
     }
 }
