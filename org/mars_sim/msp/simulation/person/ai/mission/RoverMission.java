@@ -384,18 +384,12 @@ public abstract class RoverMission extends VehicleMission {
 		if (hasDangerousMedicalProblemAtAssociatedSettlement()) result = true;
 		return result;
 	}
-	
-	/**
-	 * Gets the number and amounts of resources needed for the mission.
-	 * @param useBuffer use time buffers in estimation if true.
-	 * @return map of amount and item resources and their Double amount or Integer number.
-	 * @throws Exception if error determining needed resources.
-	 */
-    public Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
-    	Map result = super.getResourcesNeededForRemainingMission(useBuffer);
+    
+    public Map getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
+    	Map result = super.getResourcesNeededForTrip(useBuffer, distance);
     	
     	// Determine estimate time for trip.
-    	double time = getEstimatedRemainingMissionTime(useBuffer);
+    	double time = getEstimatedTripTime(useBuffer, distance);
     	double timeSols = time / 1000D;
     	
     	int crewNum = getPeopleNumber();
@@ -412,14 +406,6 @@ public abstract class RoverMission extends VehicleMission {
     	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
     	if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	result.put(AmountResource.FOOD, new Double(foodAmount));
-    	
-    	return result;
-    }
-    
-    public Map getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
-    	Map result = super.getResourcesNeededForTrip(useBuffer, distance);
-    	
-    	
     	
     	return result;
     }

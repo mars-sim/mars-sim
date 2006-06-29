@@ -515,7 +515,6 @@ public abstract class VehicleMission extends TravelMission {
      * @throws Exception if error determining an emergency destination.
      */
     protected void determineEmergencyDestination() throws Exception {
-    	System.out.println("Determining emergency destination.");
     	
     	// Determine closest settlement.
     	Settlement newDestination = findClosestSettlement();
@@ -523,14 +522,14 @@ public abstract class VehicleMission extends TravelMission {
     	// Check if enough resources to get to settlement.
     	double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
     	if (hasEnoughResources(getResourcesNeededForTrip(false, distance))) {
-    		
+    		System.out.println(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
     		// Set the new destination as the travel mission's next and final navpoint.
     		clearRemainingNavpoints();
     		addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination));
     	}
     	else {
     		// Set the emergency beacon on the rover and end mission.
-    		System.out.println("Setting emergency beacon.");
+    		System.out.println(vehicle.getName() + " setting emergency beacon.");
     		endMission();
     	}
     }

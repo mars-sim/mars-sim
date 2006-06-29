@@ -29,7 +29,6 @@ public abstract class TravelMission extends Mission {
 	private String travelStatus; // The current traveling status of the mission. 
 	private NavPoint lastStopNavpoint; // The last navpoint the mission stopped at.
 	private MarsClock legStartingTime;  // The time the last leg of the mission started at. 
-	// private boolean emergencyTravelHome; // True if mission needs to travel home next.
 
 	/**
 	 * Constructor

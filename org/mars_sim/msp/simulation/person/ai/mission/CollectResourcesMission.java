@@ -363,12 +363,26 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	
     /**
      * Gets the estimated time remaining for the mission.
-     * @param useBuffer Use time buffer in estimations if true.
+     * @param useBuffer use time buffer in estimations if true.
      * @return time (millisols)
      * @throws Exception
      */
     public double getEstimatedRemainingMissionTime(boolean useBuffer) throws Exception {
     	double result = super.getEstimatedRemainingMissionTime(useBuffer);
+    	
+    	result += getEstimatedRemainingCollectionSiteTime(useBuffer);
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets the estimated time remaining for collection sites in the mission.
+     * @param useBuffer use time buffer in estimations if true.
+     * @return time (millisols)
+     * @throws Exception if error estimating time.
+     */
+    private double getEstimatedRemainingCollectionSiteTime(boolean useBuffer) throws Exception {
+    	double result = 0D;
     	
     	// Add estimated remaining collection time at current site if still there.
     	if (COLLECT_RESOURCES.equals(getPhase())) {
@@ -381,6 +395,39 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     	// Add estimated collection time at sites that haven't been visited yet.
     	int remainingCollectionSites = getNumCollectionSites() - getNumCollectionSitesVisited();
     	result += getEstimatedTimeAtCollectionSite(useBuffer) * remainingCollectionSites;
+    	
+    	return result;
+    }
+    
+    /**
+	 * Gets the number and amounts of resources needed for the mission.
+	 * @param useBuffer use time buffers in estimation if true.
+	 * @return map of amount and item resources and their Double amount or Integer number.
+	 * @throws Exception if error determining needed resources.
+	 */
+    public Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
+    	Map result = super.getResourcesNeededForRemainingMission(useBuffer);
+    	
+    	double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
+    	double timeSols = collectionSitesTime / 1000D;
+    	
+    	int crewNum = getPeopleNumber();
+    	
+    	// Determine life support supplies needed for trip.
+    	double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
+    	if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	if (result.containsKey(AmountResource.OXYGEN)) oxygenAmount += ((Double) result.get(AmountResource.OXYGEN)).doubleValue();
+    	result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
+    		
+    	double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
+    	if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	if (result.containsKey(AmountResource.WATER)) waterAmount += ((Double) result.get(AmountResource.WATER)).doubleValue();
+    	result.put(AmountResource.WATER, new Double(waterAmount));
+    		
+    	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
+    	if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	if (result.containsKey(AmountResource.FOOD)) foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
+    	result.put(AmountResource.FOOD, new Double(foodAmount));
     	
     	return result;
     }
