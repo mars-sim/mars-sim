@@ -45,6 +45,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private DecimalFormat formatter = new DecimalFormat("0.0");
     private JButton driverButton;
     private JLabel statusLabel;
+    private JLabel beaconLabel;
     private JLabel speedLabel;
     private JLabel elevationLabel;
     private JButton centerMapButton;
@@ -61,6 +62,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     // Data cache
     private VehicleOperator driverCache;
     private String statusCache;
+    private boolean beaconCache;
     private double speedCache;
     private double elevationCache;
     private Settlement destinationSettlementCache;
@@ -110,13 +112,21 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         driverPanel.add(driverButton);
         
         // Prepare info label panel
-        JPanel infoLabelPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        JPanel infoLabelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
         topInfoPanel.add(infoLabelPanel, BorderLayout.CENTER);
         
         // Prepare status label
         statusCache = vehicle.getStatus();
         statusLabel = new JLabel("Status: " + statusCache, JLabel.LEFT);
         infoLabelPanel.add(statusLabel);
+        
+        // Prepare beacon label
+        beaconCache = vehicle.isEmergencyBeacon();
+        String beaconString;
+        if (beaconCache) beaconString = "on";
+        else beaconString = "off";
+        beaconLabel = new JLabel("Emergency Beacon: " + beaconString, JLabel.LEFT);
+        infoLabelPanel.add(beaconLabel);
         
         // Prepare speed label
         speedCache = vehicle.getSpeed();
@@ -279,6 +289,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         if (!statusCache.equals(vehicle.getStatus())) {
             statusCache = vehicle.getStatus();
             statusLabel.setText("Status: " + statusCache);
+        }
+        
+        // Update beacon label
+        if (beaconCache != vehicle.isEmergencyBeacon()) {
+        	beaconCache = vehicle.isEmergencyBeacon();
+        	if (beaconCache) beaconLabel.setText("Emergency Beacon: on");
+        	else beaconLabel.setText("Emergency Beacon: off");
         }
         
         // Update speed label
