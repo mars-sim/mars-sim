@@ -216,30 +216,31 @@ public class Crop implements Serializable {
                 double sunlight = (double) surface.getSurfaceSunlight(settlement.getCoordinates());
                 harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
                     
-                try {
-                	Inventory inv = settlement.getInventory();
+                Inventory inv = settlement.getInventory();
                 	
-                	// Determine harvest modifier by amount of waste water available.
-                	double wasteWaterRequired = maxPeriodHarvest * 5D;
-                	double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
-                	double wasteWaterUsed = wasteWaterRequired;
-                	if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
+                // Determine harvest modifier by amount of waste water available.
+                double wasteWaterRequired = maxPeriodHarvest * 5D;
+                double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
+                double wasteWaterUsed = wasteWaterRequired;
+                if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
+                try {
                 	inv.retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
                 	inv.storeAmountResource(AmountResource.WATER, wasteWaterUsed * .8D);
-                	harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
+                }
+                catch (Exception e) {}
+                harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
                     
-                	// Determine harvest modifier by amount of carbon dioxide available.
-                	double carbonDioxideRequired = maxPeriodHarvest * 2D;
-                	double carbonDioxideAvailable = inv.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
-                	double carbonDioxideUsed = carbonDioxideRequired;
-                	if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
+                // Determine harvest modifier by amount of carbon dioxide available.
+                double carbonDioxideRequired = maxPeriodHarvest * 2D;
+                double carbonDioxideAvailable = inv.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
+                double carbonDioxideUsed = carbonDioxideRequired;
+                if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
+                try {
                 	inv.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideUsed);
                 	inv.storeAmountResource(AmountResource.OXYGEN, carbonDioxideUsed * .9D);
-                	harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
                 }
-                catch (InventoryException e) {
-                	e.printStackTrace(System.err);
-                }
+                catch (Exception e) {}
+                harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
                     
                 // Modifiy harvest amount.
                 actualHarvest += maxPeriodHarvest * harvestModifier;

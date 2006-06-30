@@ -240,8 +240,11 @@ public class UnloadVehicle extends Task implements Serializable {
         	AmountResource resource = (AmountResource) i.next();
         	double amount = vehicleInv.getAmountResourceStored(resource);
         	if (amount > amountUnloading) amount = amountUnloading;
-        	vehicleInv.retrieveAmountResource(resource, amount);
-			settlementInv.storeAmountResource(resource, amount);
+        	try {
+        		vehicleInv.retrieveAmountResource(resource, amount);
+        		settlementInv.storeAmountResource(resource, amount);
+        	}
+        	catch (Exception e) {}
 			amountUnloading -= amount;
         }
         

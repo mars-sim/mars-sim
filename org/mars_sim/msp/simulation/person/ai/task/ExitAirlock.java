@@ -214,16 +214,22 @@ public class ExitAirlock extends Task implements Serializable {
     	double availableOxygen = entityInv.getAmountResourceStored(AmountResource.OXYGEN);
     	double takenOxygen = neededOxygen;
     	if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
-    	entityInv.retrieveAmountResource(AmountResource.OXYGEN, takenOxygen);
-    	suitInv.storeAmountResource(AmountResource.OXYGEN, takenOxygen);
+    	try {
+    		entityInv.retrieveAmountResource(AmountResource.OXYGEN, takenOxygen);
+    		suitInv.storeAmountResource(AmountResource.OXYGEN, takenOxygen);
+    	}
+    	catch (Exception e) {}
 
     	// Fill water in suit from entity's inventory.
     	double neededWater = suitInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
     	double availableWater = entityInv.getAmountResourceStored(AmountResource.WATER);
     	double takenWater = neededWater;
     	if (takenWater > availableWater) takenWater = availableWater;
-    	entityInv.retrieveAmountResource(AmountResource.WATER, takenWater);
-    	suitInv.storeAmountResource(AmountResource.WATER, takenWater);
+    	try {
+    		entityInv.retrieveAmountResource(AmountResource.WATER, takenWater);
+    		suitInv.storeAmountResource(AmountResource.WATER, takenWater);
+    	}
+    	catch (Exception e) {}
     }
     
 	/**

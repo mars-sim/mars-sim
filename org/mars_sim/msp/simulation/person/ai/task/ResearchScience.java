@@ -101,7 +101,10 @@ public abstract class ResearchScience extends Task implements Serializable {
 			double resourceAmount = getEffectiveResearchTime(time) * resourceRate;
 			double resourceRemaining = inv.getAmountResourceStored(resourceType);
 			if (resourceRemaining < resourceAmount) resourceAmount = resourceRemaining;
-			inv.retrieveAmountResource(resourceType, resourceAmount);
+			try {
+				inv.retrieveAmountResource(resourceType, resourceAmount);
+			}
+			catch (Exception e) {}
 		}
 		
 		// Add experience

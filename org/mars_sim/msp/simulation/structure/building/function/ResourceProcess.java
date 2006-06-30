@@ -188,7 +188,10 @@ public class ResourceProcess implements Serializable {
                 double resourceAmount = resourceRate * timeSec;
                 double remainingAmount = inventory.getAmountResourceStored(resource);
                 if (resourceAmount > remainingAmount) resourceAmount = remainingAmount;
-                inventory.retrieveAmountResource(resource, resourceAmount);
+                try {
+                	inventory.retrieveAmountResource(resource, resourceAmount);
+                }
+                catch (Exception e) {}
                 // System.out.println(resourceName + " input: " + resourceAmount + "kg.");
             }
             
@@ -202,7 +205,10 @@ public class ResourceProcess implements Serializable {
                 double resourceAmount = resourceRate * timeSec;
                 double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource);
                 if (resourceAmount > remainingCapacity) resourceAmount = remainingCapacity;
-                inventory.storeAmountResource(resource, resourceAmount);
+                try {
+                	inventory.storeAmountResource(resource, resourceAmount);
+                }
+                catch (Exception e) {}
                 // System.out.println(resourceName + " output: " + resourceAmount + "kg.");
             }
         }

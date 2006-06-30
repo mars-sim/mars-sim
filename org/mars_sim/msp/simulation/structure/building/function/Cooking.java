@@ -184,7 +184,10 @@ public class Cooking extends Function implements Serializable {
 				SimulationConfig simConfig = Simulation.instance().getSimConfig();
 				PersonConfig config = simConfig.getPersonConfiguration();
 				double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-				getBuilding().getInventory().retrieveAmountResource(AmountResource.FOOD, foodAmount);
+				try {
+					getBuilding().getInventory().retrieveAmountResource(AmountResource.FOOD, foodAmount);
+				}
+				catch (Exception e) {}
 			}
 			catch (InventoryException e) {
 				throw new BuildingException("Not enough food in settlement to cook.");
