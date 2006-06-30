@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.79 2006-06-13
+ * @version 2.79 2006-06-28
  * @author Scott Davis
  */
 
@@ -45,6 +45,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
     private ArrayList trail; // A collection of locations that make up the vehicle's trail.
     private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
+    private boolean emergencyBeacon = false; // The emergency beacon for the vehicle.  True if beacon is turned on.
 
     /**
      * Constructor to be used for testing.
@@ -427,5 +428,21 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     	
     	// Return estimated average speed in km / sol.
     	return estSpeed / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+    }
+    
+    /**
+     * Checks if the vehicle's emergency beacon is turned on.
+     * @return true if beacon is on.
+     */
+    public boolean isEmergencyBeacon() {
+    	return emergencyBeacon;
+    }
+    
+    /**
+     * Sets the vehicle's emergency beacon on or off. 
+     * @param isOn true if beacon is on.
+     */
+    public void setEmergencyBeacon(boolean isOn) {
+    	emergencyBeacon = isOn;
     }
 }

@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.standard.unit_display_info;
 import java.awt.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 
 /**
@@ -23,7 +24,6 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     // Data members
     private Icon surfMapIcon;
     private Icon topoMapIcon;
-    // private Icon buttonIcon;
     private Font mapLabelFont;
     
     /**
@@ -47,19 +47,30 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     }
     
     /** 
-     * Gets display icon for the surface navigator map. 
+     * Gets display icon for the surface navigator map.
+     * @param unit the unit to display 
      * @return icon
      */
-    public Icon getSurfMapIcon() {
-        return surfMapIcon;
+    public Icon getSurfMapIcon(Unit unit) {
+    	return surfMapIcon;
     }
     
     /** 
      * Gets display icon for topo navigator map. 
+     * @param unit the unit to display 
      * @return icon
      */
-    public Icon getTopoMapIcon() {
-        return topoMapIcon;
+    public Icon getTopoMapIcon(Unit unit) {
+    	return topoMapIcon;
+    }
+    
+    /**
+     * Checks if the map icon should blink on and off.
+     * @param unit the unit to display
+     * @return true if blink
+     */
+    public boolean isMapBlink(Unit unit) {
+    	return ((Vehicle) unit).isEmergencyBeacon();
     }
     
     /** 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.79 2006-06-13
+ * @version 2.79 2006-06-28
  * @author Scott Davis
  */
 
@@ -530,6 +530,7 @@ public abstract class VehicleMission extends TravelMission {
     	else {
     		// Set the emergency beacon on the rover and end mission.
     		System.out.println(vehicle.getName() + " setting emergency beacon.");
+    		vehicle.setEmergencyBeacon(true);
     		endMission();
     	}
     }

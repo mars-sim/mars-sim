@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitMapLayer.java
- * @version 2.76 2004-06-02
+ * @version 2.79 2006-06-28
  * @author Scott Davis
  */
 
@@ -22,6 +22,7 @@ class UnitMapLayer implements MapLayer {
     // Domain data
     private UnitManager manager;
     private MapDisplay mapDisplay;
+    private boolean blinkFlag;
 
     /**
      * Constructor
@@ -31,6 +32,7 @@ class UnitMapLayer implements MapLayer {
         
         manager = Simulation.instance().getUnitManager();
         this.mapDisplay = mapDisplay;
+        blinkFlag = false;
     }
     
     /**
@@ -57,6 +59,8 @@ class UnitMapLayer implements MapLayer {
                 }
             }
         }
+        
+        blinkFlag = !blinkFlag;
     }
     
     /**
@@ -70,12 +74,14 @@ class UnitMapLayer implements MapLayer {
         IntPoint location = mapDisplay.getRectPosition(unit.getCoordinates());
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         
-        IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getSurfMapIcon());
+        IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getSurfMapIcon(unit));
         int locX = imageLocation.getiX();
         int locY = imageLocation.getiY();
         
-        if (mapDisplay.isTopo()) displayInfo.getTopoMapIcon().paintIcon(mapDisplay, g, locX, locY);
-        else displayInfo.getSurfMapIcon().paintIcon(mapDisplay, g, locX, locY);
+        if (!displayInfo.isMapBlink(unit) || (displayInfo.isMapBlink(unit) && blinkFlag)) {
+        	if (mapDisplay.isTopo()) displayInfo.getTopoMapIcon(unit).paintIcon(mapDisplay, g, locX, locY);
+        	else displayInfo.getSurfMapIcon(unit).paintIcon(mapDisplay, g, locX, locY);
+        }
     }
     
     /**
@@ -89,14 +95,16 @@ class UnitMapLayer implements MapLayer {
         IntPoint location = mapDisplay.getRectPosition(unit.getCoordinates());
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         
-        IntPoint labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon());
+        IntPoint labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
         
         if (mapDisplay.isTopo()) g.setColor(displayInfo.getTopoMapLabelColor());
         else g.setColor(displayInfo.getSurfMapLabelColor());
         
         g.setFont(displayInfo.getMapLabelFont());
         
-        g.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
+        if (!displayInfo.isMapBlink(unit) || (displayInfo.isMapBlink(unit) && blinkFlag)) {
+        	g.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
+        }
     }   
     
     /** 

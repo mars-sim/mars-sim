@@ -39,18 +39,29 @@ class EquipmentDisplayInfoBean implements UnitDisplayInfo {
     
     /** 
      * Gets display icon for the surface navigator map. 
+     * @param unit the unit to display 
      * @return icon
      */
-    public Icon getSurfMapIcon() {
+    public Icon getSurfMapIcon(Unit unit) {
         return null;
     }
     
     /** 
      * Gets display icon for topo navigator map. 
+     * @param unit the unit to display 
      * @return icon
      */
-    public Icon getTopoMapIcon() {
+    public Icon getTopoMapIcon(Unit unit) {
         return null;
+    }
+    
+    /**
+     * Checks if the map icon should blink on and off.
+     * @param unit the unit to display
+     * @return true if blink
+     */
+    public boolean isMapBlink(Unit unit) {
+    	return false;
     }
     
     /** 
