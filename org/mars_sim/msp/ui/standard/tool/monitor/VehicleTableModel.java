@@ -25,21 +25,25 @@ public class VehicleTableModel extends UnitTableModel {
 
     // Column indexes
     private final static int  NAME = 0;
-    private final static int  LOCATION = 1;
-    private final static int  DESTINATION = 2;
-    private final static int  DESTDIST = 3;
-    private final static int  CREW = 4;
-    private final static int  DRIVER = 5;
-    private final static int  STATUS = 6;
-    private final static int  SPEED = 7;
-    private final static int  MALFUNCTION = 8;
-    private final static int  OXYGEN = 9;
-    private final static int  METHANE = 10;
-    private final static int  WATER = 11;
-    private final static int  FOOD = 12;
-    private final static int  ROCK_SAMPLES = 13;
-    private final static int  ICE = 14;
-    private final static int  COLUMNCOUNT = 15; // The number of Columns
+    private final static int  TYPE = 1;
+    private final static int  LOCATION = 2;
+    private final static int  DESTINATION = 3;
+    private final static int  DESTDIST = 4;
+    private final static int  MISSION = 5;
+    private final static int  CREW = 6;
+    private final static int  DRIVER = 7;
+    private final static int  STATUS = 8;
+    private final static int  BEACON = 9;
+    private final static int  RESERVED = 10;
+    private final static int  SPEED = 11;
+    private final static int  MALFUNCTION = 12;
+    private final static int  OXYGEN = 13;
+    private final static int  METHANE = 14;
+    private final static int  WATER = 15;
+    private final static int  FOOD = 16;
+    private final static int  ROCK_SAMPLES = 17;
+    private final static int  ICE = 18;
+    private final static int  COLUMNCOUNT = 19; // The number of Columns
     private static String columnNames[]; // Names of Columns
     private static Class columnTypes[]; // Names of Columns
 
@@ -51,10 +55,16 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes = new Class[COLUMNCOUNT];
         columnNames[NAME] = "Name";
         columnTypes[NAME] = String.class;
+        columnNames[TYPE] = "Type";
+        columnTypes[TYPE] = String.class;
         columnNames[DRIVER] = "Driver";
         columnTypes[DRIVER] = String.class;
         columnNames[STATUS] = "Status";
         columnTypes[STATUS] = String.class;
+        columnNames[BEACON] = "Beacon";
+        columnTypes[BEACON] = String.class;
+        columnNames[RESERVED] = "Reserved";
+        columnTypes[RESERVED] = String.class;
         columnNames[LOCATION] = "Location";
         columnTypes[LOCATION] = String.class;
         columnNames[SPEED] = "Speed";
@@ -67,6 +77,8 @@ public class VehicleTableModel extends UnitTableModel {
         columnTypes[DESTINATION] = Coordinates.class;
         columnNames[DESTDIST] = "Dest. Dist.";
         columnTypes[DESTDIST] = Integer.class;
+        columnNames[MISSION] = "Mission";
+        columnTypes[MISSION] = String.class;
         columnNames[FOOD] = "Food";
         columnTypes[FOOD] = Integer.class;
         columnNames[OXYGEN] = "Oxygen";
@@ -109,6 +121,10 @@ public class VehicleTableModel extends UnitTableModel {
                 result = vehicle.getName();
             } break;
 
+            case TYPE : {
+            	result = vehicle.getDescription();
+            } break;
+            
             case CREW : {
 		        if (vehicle instanceof Crewable)
 		            result = new Integer(((Crewable) vehicle).getCrewNum());
@@ -157,6 +173,16 @@ public class VehicleTableModel extends UnitTableModel {
             case STATUS : {
                 result = vehicle.getStatus();
             } break;
+            
+            case BEACON : {
+            	if (vehicle.isEmergencyBeacon()) result = "on";
+            	else result = "off";
+            } break;
+            
+            case RESERVED : {
+            	if (vehicle.isReserved()) result = "true";
+            	else result = "false";
+            } break;
 
             case MALFUNCTION: {
                 Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
@@ -197,6 +223,15 @@ public class VehicleTableModel extends UnitTableModel {
             			System.err.println("Error getting current leg remaining distance.");
             			e.printStackTrace(System.err);
             		}
+            	}
+            	else result = null;
+            } break;
+            
+            case MISSION : {
+            	VehicleMission mission = (VehicleMission) 
+            			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            	if (mission != null) {
+            		result = mission.getName();
             	}
             	else result = null;
             } break;
