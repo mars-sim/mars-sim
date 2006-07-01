@@ -188,7 +188,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 				// Check if enough resources for remaining trip.
 				if (!hasEnoughResourcesForRemainingMission(false)) {
 					// If not, determine an emergency destination.
-					determineEmergencyDestination();
+					determineEmergencyDestination(person);
 					setPhaseEnded(true);
 				}
 			}

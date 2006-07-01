@@ -15,6 +15,7 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
@@ -353,7 +354,7 @@ public abstract class VehicleMission extends TravelMission {
     		// Check if enough resources for remaining trip.
     		if (!hasEnoughResourcesForRemainingMission(false)) {
     			// If not, determine an emergency destination.
-    			determineEmergencyDestination();
+    			determineEmergencyDestination(person);
     		}
     	}
     	catch (Exception e) {
@@ -512,9 +513,10 @@ public abstract class VehicleMission extends TravelMission {
     /**
      * Determines the emergency destination settlement for the mission if one is reachable, 
      * otherwise sets the emergency beacon and ends the mission.
+     * @param person the person performing the mission.
      * @throws Exception if error determining an emergency destination.
      */
-    protected void determineEmergencyDestination() throws Exception {
+    protected void determineEmergencyDestination(Person person) throws Exception {
     	
     	// Determine closest settlement.
     	Settlement newDestination = findClosestSettlement();
@@ -523,6 +525,11 @@ public abstract class VehicleMission extends TravelMission {
     	double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
     	if (hasEnoughResources(getResourcesNeededForTrip(false, distance))) {
     		System.out.println(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
+    		
+    		// Creating emergency destination mission event.
+            HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.EMERGENCY_DESTINATION);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+    		
     		// Set the new destination as the travel mission's next and final navpoint.
     		clearRemainingNavpoints();
     		addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination));
@@ -530,6 +537,11 @@ public abstract class VehicleMission extends TravelMission {
     	else {
     		// Set the emergency beacon on the rover and end mission.
     		System.out.println(vehicle.getName() + " setting emergency beacon.");
+    		
+    		// Creating mission emergency beacon event.
+            HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.EMERGENCY_BEACON);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+    		
     		vehicle.setEmergencyBeacon(true);
     		endMission();
     	}

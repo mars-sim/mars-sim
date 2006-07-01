@@ -19,6 +19,8 @@ public class MissionEvent extends HistoricalEvent {
 	public static final String JOINING = "Mission Joined";
 	public static final String FINISH = "Mission Finished";
 	public static final String DEVELOPMENT = "Mission Development";
+	public static final String EMERGENCY_DESTINATION = "Changing To Emergency Destination";
+	public static final String EMERGENCY_BEACON = "Emergency Beacon Turned On";
 
 	/**
 	 * Constructor
