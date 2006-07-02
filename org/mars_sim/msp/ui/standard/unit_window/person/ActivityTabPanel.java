@@ -108,6 +108,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         taskTextArea = new JTextArea(2, 20);
         if (taskCache != null) taskTextArea.setText(taskCache);
         taskTextArea.setLineWrap(true);
+        taskTextArea.setEditable(false);
         taskPanel.add(new JScrollPane(taskTextArea), BorderLayout.CENTER);
         
         // Prepare task phase panel
@@ -124,6 +125,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         taskPhaseTextArea = new JTextArea(2, 20);
         if (taskPhaseCache != null) taskPhaseTextArea.setText(taskPhaseCache);
         taskPhaseTextArea.setLineWrap(true);
+        taskPhaseTextArea.setEditable(false);
         taskPhasePanel.add(new JScrollPane(taskPhaseTextArea), BorderLayout.CENTER);
         
         // Prepare mission top panel
@@ -145,6 +147,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         missionTextArea = new JTextArea(2, 20);
         if (missionCache != null) missionTextArea.setText(missionCache);
         missionTextArea.setLineWrap(true);
+        missionTextArea.setEditable(false);
         missionPanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
         
         // Prepare mission monitor button
@@ -170,6 +173,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         missionPhaseTextArea = new JTextArea(2, 20);
         if (missionPhaseCache != null) missionPhaseTextArea.setText(missionPhaseCache);
         missionPhaseTextArea.setLineWrap(true);
+        missionPhaseTextArea.setEditable(false);
         missionPhasePanel.add(new JScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
     }
     
