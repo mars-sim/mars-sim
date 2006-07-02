@@ -42,5 +42,6 @@ public class VehicleWindow extends UnitWindow {
         	if (rover.hasLab()) addTabPanel(new LaboratoryTabPanel(rover, desktop));
         	// TODO: Add sickbay tab panel.
         }
+        addTabPanel(new MissionTabPanel(vehicle, desktop));
     }
 }
