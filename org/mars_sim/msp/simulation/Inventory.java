@@ -36,14 +36,14 @@ public class Inventory implements Serializable {
     private AmountResourceStorage resourceStorage = null; // Resource storage.
     
     // Cache capacity variables.
-    private transient AmountResource amountResourceCapacityKeyCache = null;
-	private transient double amountResourceCapacityCache = 0D;
+    private transient Map amountResourceCapacityCache = new HashMap(10);
 	private transient AmountResource amountResourceStoredKeyCache = null;
 	private transient double amountResourceStoredCache = 0D;
 	private transient Set allStoredAmountResourcesCache = null;
 	private transient double totalAmountResourcesStored = -1D;
-	private transient AmountResource amountResourceRemainingKeyCache = null;
-	private transient double amountResourceRemainingCache = 0D;
+	private transient Map amountResourceRemainingCache = new HashMap(10);
+	// private transient AmountResource amountResourceRemainingKeyCache = null;
+	// private transient double amountResourceRemainingCache = 0D;
     
     /** 
      * Constructor
@@ -95,7 +95,10 @@ public class Inventory implements Serializable {
      */
     public boolean hasAmountResourceCapacity(AmountResource resource) {
     	boolean result = false;
-    	if (amountResourceCapacityKeyCache == resource) result = (amountResourceCapacityCache > 0D);
+    	if (amountResourceCapacityCache.containsKey(resource)) {
+    		double amountCapacity = ((Double) amountResourceCapacityCache.get(resource)).doubleValue();
+    		result = (amountCapacity > 0D);
+    	}
     	else {
     		if ((resourceStorage != null) && resourceStorage.hasAmountResourceCapacity(resource)) result = true;
     		else if ((containedUnits != null) && (getRemainingGeneralCapacity() > 0D)) {
@@ -116,7 +119,10 @@ public class Inventory implements Serializable {
      */
     public boolean hasAmountResourceCapacity(AmountResource resource, double amount) {
     	boolean result = false;
-    	if (amountResourceCapacityKeyCache == resource) result = (amountResourceCapacityCache >= amount);
+    	if (amountResourceCapacityCache.containsKey(resource)) {
+    		double amountCapacity = ((Double) amountResourceCapacityCache.get(resource)).doubleValue();
+    		result = (amountCapacity >= amount);
+    	}
     	else {
     		double capacity = 0D;
     		if (resourceStorage != null) capacity += resourceStorage.getAmountResourceCapacity(resource);
@@ -129,8 +135,7 @@ public class Inventory implements Serializable {
     			capacity += containedCapacity;
     			if ((capacity + containedCapacity) > amount) result = true;
     		}
-    		amountResourceCapacityKeyCache = resource;
-    		amountResourceCapacityCache = capacity;
+    		amountResourceCapacityCache.put(resource, new Double(capacity));
     	}
     	return result;
     }
@@ -142,7 +147,8 @@ public class Inventory implements Serializable {
      */
     public double getAmountResourceCapacity(AmountResource resource) {
     	double result = 0D;
-    	if (amountResourceCapacityKeyCache == resource) result = amountResourceCapacityCache;
+    	if (amountResourceCapacityCache.containsKey(resource)) 
+    		result = ((Double) amountResourceCapacityCache.get(resource)).doubleValue();
     	else {
     		if (hasAmountResourceCapacity(resource)) {
     			if (resourceStorage != null) result += resourceStorage.getAmountResourceCapacity(resource);
@@ -154,8 +160,7 @@ public class Inventory implements Serializable {
     				result += containedCapacity;
     			}
     		}
-    		amountResourceCapacityKeyCache = resource;
-    		amountResourceCapacityCache = result;
+    		amountResourceCapacityCache.put(resource, new Double(result));
     	}
     	return result;
     }
@@ -222,7 +227,8 @@ public class Inventory implements Serializable {
      */
     public double getAmountResourceRemainingCapacity(AmountResource resource) {
     	double result = 0D;
-    	if (amountResourceRemainingKeyCache == resource) return amountResourceRemainingCache;
+    	if (amountResourceRemainingCache.containsKey(resource))
+    		return ((Double) amountResourceRemainingCache.get(resource)).doubleValue();
     	else {
     		if (resourceStorage != null) result += resourceStorage.getAmountResourceRemainingCapacity(resource);
     		if (containedUnits != null) {
@@ -234,8 +240,7 @@ public class Inventory implements Serializable {
     		}
     		if (result > getContainerUnitGeneralCapacityLimit()) result = getContainerUnitGeneralCapacityLimit();
     		
-    		amountResourceRemainingKeyCache = resource;
-    		amountResourceRemainingCache = result;
+    		amountResourceRemainingCache.put(resource, new Double(result));
     	}
     	return result;
     }
@@ -698,12 +703,12 @@ public class Inventory implements Serializable {
      * Clears the amount resource capacity cache as well as the container's cache if any.
      */
     private void clearAmountResourceCapacityCache() {
-    	amountResourceCapacityKeyCache = null;
+    	amountResourceCapacityCache.clear();
     	if (owner != null) {
     		Unit container = owner.getContainerUnit();
     		if (container != null) container.getInventory().clearAmountResourceCapacityCache();
     	}
-    	amountResourceRemainingKeyCache = null;
+    	amountResourceRemainingCache.clear();
     }
     
     /**
@@ -722,6 +727,6 @@ public class Inventory implements Serializable {
     		if (container != null) container.getInventory().clearAmountResourceStoredCache();
     	}
     	
-    	amountResourceRemainingKeyCache = null;
+    	amountResourceRemainingCache.clear();
     }
 }
