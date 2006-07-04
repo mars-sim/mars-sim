@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.Equipment;
+import org.mars_sim.msp.simulation.equipment.EquipmentCollection;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -502,6 +503,22 @@ public class UnitManager implements Serializable {
      */
     public PersonCollection getPeople() {
         return units.getPeople();
+    }
+    
+    /**
+     * Get the number of equipment.
+     * @return number
+     */
+    public int getEquipmentNum() {
+    	return units.getEquipment().size();
+    }
+    
+    /**
+     * Get a collection of equipment.
+     * @return collection
+     */
+    public EquipmentCollection getEquipment() {
+    	return units.getEquipment();
     }
 
     /** The total number of units
