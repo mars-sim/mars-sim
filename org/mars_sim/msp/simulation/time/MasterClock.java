@@ -137,13 +137,13 @@ public class MasterClock implements Runnable, Serializable {
             	// Get the time pulse length in millisols.
             	double timePulse = getTimePulse();
 
-            	long startTime = System.currentTimeMillis();
+            	// long startTime = System.currentTimeMillis();
             	
             	// Send simulation a clock pulse representing the time pulse length (in millisols).
             	Simulation.instance().clockPulse(timePulse);
 
-            	long endTime = System.currentTimeMillis();
-            	lastTimeDiff = endTime - startTime;
+            	// long endTime = System.currentTimeMillis();
+            	// System.out.println("time: " + (endTime - startTime));
         		
             	// Add time pulse length to Earth and Mars clocks. 
             	earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));

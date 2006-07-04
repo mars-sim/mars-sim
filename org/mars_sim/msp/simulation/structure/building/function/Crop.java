@@ -224,6 +224,7 @@ public class Crop implements Serializable {
                 double wasteWaterUsed = wasteWaterRequired;
                 if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
                 try {
+                	
                 	inv.retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
                 	inv.storeAmountResource(AmountResource.WATER, wasteWaterUsed * .8D);
                 }

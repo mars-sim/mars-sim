@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.building.function;
  
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.time.*;
@@ -163,7 +164,8 @@ public class ResourceProcess implements Serializable {
      * @throws Exception if error processing resources.
      */
     public void processResources(double time, double productionLevel, Inventory inventory) throws Exception {
-        if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
+    	
+    	if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
             throw new IllegalArgumentException();
         
         // System.out.println(name + " process");

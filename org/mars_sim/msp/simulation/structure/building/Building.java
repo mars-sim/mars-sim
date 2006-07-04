@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;

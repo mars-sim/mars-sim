@@ -8,6 +8,7 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -209,6 +210,7 @@ public class Cooking extends Function implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) throws BuildingException {
+		
 		// Move expired meals back to food again (refrigerate leftovers).
 		Iterator i = meals.iterator();
 		while (i.hasNext()) {

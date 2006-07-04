@@ -91,6 +91,7 @@ public class LivingAccommodations extends Function implements Serializable {
      * @throws Exception if error in water usage.
      */
     public void waterUsage(double time) throws Exception {
+    	
 		Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 		double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D) * time;
 		double waterUsageSettlement = waterUsagePerPerson * settlement.getCurrentPopulationNum();
@@ -105,6 +106,7 @@ public class LivingAccommodations extends Function implements Serializable {
 			inv.retrieveAmountResource(AmountResource.WATER, waterUsed);
     	}
 		catch (Exception e) {}
+		
 		double wasteWaterProduced = waterUsed;
 		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.WASTE_WATER);
 		if (wasteWaterProduced > wasteWaterCapacity) wasteWaterProduced = wasteWaterCapacity;

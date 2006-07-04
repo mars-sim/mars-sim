@@ -9,10 +9,12 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -387,4 +389,22 @@ public class BuildingManager implements Serializable {
 		}
 		else throw new BuildingException("Building is null");
     }
+    
+	/**
+	 * Adds the amount resources in the addition map to the starting map.
+	 * @param startingMap map of amount resources and their Double values.
+	 * @param additionMap map of amount resources and their Double values.
+	 */
+	public static void sumAmountResourceChanges(Map startingMap, Map additionMap) {
+		Iterator i = additionMap.keySet().iterator();
+		while (i.hasNext()) {
+			AmountResource resource = (AmountResource) i.next();
+			double additionValue = ((Double) additionMap.get(resource)).doubleValue();
+			if (startingMap.containsKey(resource)) {
+				double startingValue = ((Double) startingMap.get(resource)).doubleValue();
+				startingMap.put(resource, new Double(startingValue + additionValue));
+			}
+			else startingMap.put(resource, new Double(additionValue));
+		}
+	}
 }
