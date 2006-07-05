@@ -40,6 +40,7 @@ public abstract class Mission implements Serializable {
     private boolean done; // True if mission is completed
     private Collection phases; // A collection of the mission's phases.
     private String phase; // The current phase of the mission
+    private String phaseDescription; // The discription of the current phase of operation.
     private boolean phaseEnded; // Has the current phase ended?
     private int missionCapacity; // The number of people that can be in the mission
 
@@ -58,6 +59,7 @@ public abstract class Mission implements Serializable {
         people = new PersonCollection();
         done = false;
         phase = null;
+        phaseDescription = null;
         phases = new ArrayList();
         phaseEnded = false;
         this.minPeople = minPeople;
@@ -178,6 +180,7 @@ public abstract class Mission implements Serializable {
     	else if (phases.contains(newPhase)) {
     		phase = newPhase;
     		setPhaseEnded(false);
+    		phaseDescription = null;
     	}
     	else throw new MissionException(getPhase(), "newPhase: " + newPhase + " is not a valid phase for this mission.");
     }
@@ -189,6 +192,23 @@ public abstract class Mission implements Serializable {
     public void addPhase(String newPhase) {
     	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
     	else if (!phases.contains(newPhase)) phases.add(newPhase);
+    }
+    
+    /**
+     * Gets the description of the current phase.
+     * @return phase description.
+     */
+    public String getPhaseDescription() {
+    	if (phaseDescription != null) return phaseDescription;
+    	else return phase;
+    }
+    
+    /**
+     * Sets the description of the current phase.
+     * @param description the phase description.
+     */
+    public void setPhaseDescription(String description) {
+    	phaseDescription = description;
     }
 
     /** 

@@ -112,4 +112,13 @@ public class CollectIce extends CollectResourcesMission {
 		
 		return result;
 	}
+	
+    /**
+     * Gets the description of a collection site.
+     * @param siteNum the number of the site.
+     * @return description
+     */
+    protected String getCollectionSiteDescription(int siteNum) {
+    	return "prospecting site";
+    }
 }

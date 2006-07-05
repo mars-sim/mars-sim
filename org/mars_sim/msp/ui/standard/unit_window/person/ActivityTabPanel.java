@@ -169,7 +169,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         
         // Prepare mission phase text area
         if (dead) missionPhaseCache = deathInfo.getMissionPhase();
-        else if (mind.getMission() != null) missionPhaseCache = mind.getMission().getPhase();
+        else if (mind.getMission() != null) missionPhaseCache = mind.getMission().getPhaseDescription();
         missionPhaseTextArea = new JTextArea(2, 20);
         if (missionPhaseCache != null) missionPhaseTextArea.setText(missionPhaseCache);
         missionPhaseTextArea.setLineWrap(true);
@@ -223,7 +223,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         
         // Update mission phase text area if necessary.
         if (dead) missionPhaseCache = deathInfo.getMissionPhase();
-        else if (mission != null) missionPhaseCache = mission.getPhase();
+        else if (mission != null) missionPhaseCache = mission.getPhaseDescription();
         else missionPhaseCache = "";
         if (!missionPhaseCache.equals(missionPhaseTextArea.getText())) 
             missionPhaseTextArea.setText(missionPhaseCache);

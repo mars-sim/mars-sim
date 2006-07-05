@@ -94,7 +94,7 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
         missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
         
         // Prepare mission phase text area
-        if (mission != null) missionPhaseCache = mission.getPhase();
+        if (mission != null) missionPhaseCache = mission.getPhaseDescription();
         missionPhaseTextArea = new JTextArea(2, 20);
         if (missionPhaseCache != null) missionPhaseTextArea.setText(missionPhaseCache);
         missionPhaseTextArea.setLineWrap(true);
@@ -151,7 +151,7 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
 		if (!missionCache.equals(missionTextArea.getText())) 
             missionTextArea.setText(missionCache);
 		
-		if (mission != null) missionPhaseCache = mission.getPhase();
+		if (mission != null) missionPhaseCache = mission.getPhaseDescription();
 		else missionPhaseCache = "";
 		if (!missionPhaseCache.equals(missionPhaseTextArea.getText())) 
             missionPhaseTextArea.setText(missionPhaseCache);

@@ -66,7 +66,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         	// Choose destination settlement.
         	destinationSettlement = getRandomDestinationSettlement(startingPerson, startingSettlement);
         	if (destinationSettlement != null) 
-        		addNavpoint(new NavPoint(destinationSettlement.getCoordinates(), destinationSettlement));
+        		addNavpoint(new NavPoint(destinationSettlement.getCoordinates(), destinationSettlement, 
+        				destinationSettlement.getName()));
         	else endMission();
         	
         	// Recruit additional people to mission.
@@ -83,6 +84,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
+        setPhaseDescription("Embarking from " + startingSettlement.getName());
         
         // System.out.println("Travel to Settlement mission");
     }

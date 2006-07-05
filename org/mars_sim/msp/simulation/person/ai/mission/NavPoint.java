@@ -18,23 +18,27 @@ public class NavPoint implements Serializable {
 	// Data members.
 	private Coordinates location; // The location of the navpoint.
 	private Settlement settlement; // The settlement at this navpoint.
+	private String description; // The description of the navpoint.
 
 	/**
 	 * Constructor with location.
 	 * @param location the location of the navpoint.
+	 * @param description the navpoint description.
 	 */
-	public NavPoint(Coordinates location) {
+	public NavPoint(Coordinates location, String description) {
 		if (location == null) throw new IllegalArgumentException("location is null");
 		this.location = new Coordinates(location);
+		this.description = description;
 	}
 
 	/**
 	 * Constructor with location and settlement.
 	 * @param location the location of the navpoint.
 	 * @param settlement the settlement at the navpoint.
+	 * @param description the navpoint description.
 	 */
-	public NavPoint(Coordinates location, Settlement settlement) {
-		this(location);
+	public NavPoint(Coordinates location, Settlement settlement, String description) {
+		this(location, description);
 		if (settlement == null) throw new IllegalArgumentException("settlement is null");
 		this.settlement = settlement;
 	}
@@ -45,6 +49,14 @@ public class NavPoint implements Serializable {
 	 */
 	public Coordinates getLocation() {
 		return new Coordinates(location);
+	}
+	
+	/**
+	 * Gets the description of the navpoint.
+	 * @return description
+	 */
+	public String getDescription() {
+		return description;
 	}
 	
 	/**

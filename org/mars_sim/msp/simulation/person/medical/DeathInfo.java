@@ -63,7 +63,7 @@ public class DeathInfo implements java.io.Serializable {
         
         if (mind.getMission() != null) {
             mission = mind.getMission().getName();
-            missionPhase = mind.getMission().getPhase();
+            missionPhase = mind.getMission().getPhaseDescription();
         }
 
         TaskManager taskMgr = mind.getTaskManager();

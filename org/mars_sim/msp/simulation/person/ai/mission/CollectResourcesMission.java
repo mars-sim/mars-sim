@@ -94,8 +94,8 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			}
 			
 			// Add home settlement
-			addNavpoint(new NavPoint(getAssociatedSettlement().getCoordinates(), 
-					getAssociatedSettlement()));
+			addNavpoint(new NavPoint(startingSettlement.getCoordinates(), 
+					startingSettlement, startingSettlement.getName()));
         	
         	// Check if vehicle can carry enough supplies for the mission.
         	try {
@@ -111,6 +111,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
+		setPhaseDescription("Embarking from " + startingSettlement.getName());
 	}
 	
     /**
@@ -118,15 +119,27 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      * @throws MissionException if problem setting a new phase.
      */
     protected void determineNewPhase() throws MissionException {
-    	if (EMBARKING.equals(getPhase())) setPhase(VehicleMission.TRAVELLING);
+    	if (EMBARKING.equals(getPhase())) {
+    		startTravelToNextNode();
+    		setPhase(VehicleMission.TRAVELLING);
+    		setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+    	}
 		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) setPhase(VehicleMission.DISEMBARKING);
+			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				setPhase(VehicleMission.DISEMBARKING);
+				setPhaseDescription("Disembarking at " + getCurrentNavpoint().getSettlement().getName());
+			}
 			else {
 				setPhase(COLLECT_RESOURCES);
+				setPhaseDescription("Collection resources at " + getCurrentNavpoint().getDescription());
 				collectionSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 			}
 		}
-		else if (COLLECT_RESOURCES.equals(getPhase())) setPhase(VehicleMission.TRAVELLING);
+		else if (COLLECT_RESOURCES.equals(getPhase())) {
+			startTravelToNextNode();
+			setPhase(VehicleMission.TRAVELLING);
+			setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+		}
 		else if (DISEMBARKING.equals(getPhase())) endMission();
     }
 	
@@ -268,6 +281,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     		}
 
     		// Reorder sites for shortest distance.
+    		int collectionSiteNum = 1;
     		currentLocation = startingLocation;
     		while (unorderedSites.size() > 0) {
     			Coordinates shortest = (Coordinates) unorderedSites.get(0);
@@ -277,9 +291,10 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     				if (currentLocation.getDistance(site) < currentLocation.getDistance(shortest)) 
     					shortest = site;
     			}
-    			addNavpoint(new NavPoint(shortest));
+    			addNavpoint(new NavPoint(shortest, getCollectionSiteDescription(collectionSiteNum)));
     			unorderedSites.remove(shortest);
     			currentLocation = shortest;
+    			collectionSiteNum++;
     		}
     	}
     	catch (Exception e) {
@@ -520,4 +535,11 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     		return result;
     	}
     }
+    
+    /**
+     * Gets the description of a collection site.
+     * @param siteNum the number of the site.
+     * @return description
+     */
+    protected abstract String getCollectionSiteDescription(int siteNum);
 }

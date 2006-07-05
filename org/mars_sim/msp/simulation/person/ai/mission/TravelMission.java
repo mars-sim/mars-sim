@@ -45,8 +45,9 @@ public abstract class TravelMission extends Mission {
 		NavPoint startingNavPoint = null;
 		try {
 			if (startingPerson.getSettlement() != null) 
-				startingNavPoint = new NavPoint(getCurrentMissionLocation(), startingPerson.getSettlement());
-			else startingNavPoint = new NavPoint(getCurrentMissionLocation());
+				startingNavPoint = new NavPoint(getCurrentMissionLocation(), startingPerson.getSettlement(), 
+						startingPerson.getSettlement().getName());
+			else startingNavPoint = new NavPoint(getCurrentMissionLocation(), "starting location");
 			addNavpoint(startingNavPoint);
 			lastStopNavpoint = startingNavPoint;
 		}
@@ -139,6 +140,17 @@ public abstract class TravelMission extends Mission {
 	}
 	
 	/**
+	 * Gets the index of a navpoint.
+	 * @param navpoint the navpoint
+	 * @return index or -1 if navpoint isn't in the trip.
+	 */
+	public int getNavpointIndex(NavPoint navpoint) {
+		if (navpoint == null) throw new IllegalArgumentException("navpoint is null");
+		if (navPoints.contains(navpoint)) return navPoints.indexOf(navpoint);
+		else return -1;
+	}
+	
+	/**
 	 * Gets the number of navpoints on the trip.
 	 * @return number of navpoints
 	 */
@@ -185,10 +197,9 @@ public abstract class TravelMission extends Mission {
 	
 	/**
 	 * Starts travel to the next navpoint in the mission.
-	 * @param person the person performing the mission
 	 * @throws MissionException if no more navpoints.
 	 */
-	protected void startTravelToNextNode(Person person) throws MissionException {
+	protected void startTravelToNextNode() throws MissionException {
 		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
 		legStartingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
@@ -200,7 +211,8 @@ public abstract class TravelMission extends Mission {
 	 */
 	protected void reachedNextNode() throws Exception {
 		setTravelStatus(AT_NAVPOINT);
-		lastStopNavpoint = new NavPoint(getCurrentMissionLocation());
+		// lastStopNavpoint = new NavPoint(getCurrentMissionLocation());
+		lastStopNavpoint = getCurrentNavpoint();
 	}
 	
 	/**

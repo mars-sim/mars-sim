@@ -279,9 +279,16 @@ public abstract class VehicleMission extends TravelMission {
      * @throws MissionException if problem setting a new phase.
      */
     protected void determineNewPhase() throws MissionException {
-    	if (EMBARKING.equals(getPhase())) setPhase(VehicleMission.TRAVELLING);
+    	if (EMBARKING.equals(getPhase())) {
+    		startTravelToNextNode();
+    		setPhase(VehicleMission.TRAVELLING);
+    		setPhaseDescription("Travelling to " + getNextNavpoint().getDescription());
+    	}
 		else if (TRAVELLING.equals(getPhase())) {
-			if (getCurrentNavpoint().isSettlementAtNavpoint()) setPhase(VehicleMission.DISEMBARKING);
+			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				setPhase(VehicleMission.DISEMBARKING);
+				setPhaseDescription("Disembarking at " + getCurrentNavpoint().getDescription());
+			}
 		}
 		else if (DISEMBARKING.equals(getPhase())) endMission();
     }
@@ -306,7 +313,7 @@ public abstract class VehicleMission extends TravelMission {
     protected void performTravelPhase(Person person) throws MissionException {
     	
     	// Initialize travel phase if it's not.
-    	if (!TravelMission.TRAVEL_TO_NAVPOINT.equals(getTravelStatus())) startTravelToNextNode(person);
+    	// if (!TravelMission.TRAVEL_TO_NAVPOINT.equals(getTravelStatus())) startTravelToNextNode(person);
     	
     	NavPoint destination = getNextNavpoint();
     	
@@ -532,7 +539,8 @@ public abstract class VehicleMission extends TravelMission {
     		
     		// Set the new destination as the travel mission's next and final navpoint.
     		clearRemainingNavpoints();
-    		addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination));
+    		addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination, 
+    				"emergency destination: " + newDestination.getName()));
     	}
     	else {
     		// Set the emergency beacon on the rover and end mission.
