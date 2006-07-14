@@ -6,14 +6,12 @@
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.Rover;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The Exploration class is a mission to travel in a rover to several
@@ -71,10 +69,15 @@ public class CollectIce extends CollectResourcesMission {
 	    
 			if (reservableRover && remainingInhabitant && enoughBags) {
 				// Calculate the probability based on the water situation.
-				double water = settlement.getInventory().getAmountResourceStored(AmountResource.WATER);
-				double amountNeeded = settlement.getAllAssociatedPeople().size() * 250D;
-				if (water > 0D) result = 100D * (amountNeeded / water);
-				else result = 100D * (amountNeeded / 1D);
+				try {
+					double water = settlement.getInventory().getAmountResourceStored(AmountResource.WATER);
+					double amountNeeded = settlement.getAllAssociatedPeople().size() * 250D;
+					if (water > 0D) result = 100D * (amountNeeded / water);
+					else result = 100D * (amountNeeded / 1D);
+				}
+				catch (InventoryException e) {
+					e.printStackTrace(System.err);
+				}
 			} 
 			
 			// Crowding modifier
@@ -86,30 +89,6 @@ public class CollectIce extends CollectResourcesMission {
 			if (job != null) result *= job.getStartMissionProbabilityModifier(CollectIce.class);			
 		}
         
-		return result;
-	}
-	
-	/**
-	 * Checks to see if any vehicles are available at a settlement.
-	 * @param settlement the settlement to check.
-	 * @return true if vehicles are available.
-	 */
-	private static boolean areVehiclesAvailable(Settlement settlement) {
-		
-		boolean result = false;
-		
-		VehicleIterator i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			
-			boolean usable = true;
-			if (vehicle.isReserved()) usable = false;
-			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
-			if (!(vehicle instanceof Rover)) usable = false;
-			
-			if (usable) result = true;    
-		}
-		
 		return result;
 	}
 	

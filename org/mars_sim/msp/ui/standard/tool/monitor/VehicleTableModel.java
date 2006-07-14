@@ -132,28 +132,43 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-	        double water = vehicle.getInventory().getAmountResourceStored(AmountResource.WATER);
-	        result = new Integer((int) water);
+            	try {
+            		double water = vehicle.getInventory().getAmountResourceStored(AmountResource.WATER);
+            		result = new Integer((int) water);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case FOOD : {
-	        double food = vehicle.getInventory().getAmountResourceStored(AmountResource.FOOD);
-	        result = new Integer((int) food);
+            	try {
+            		double food = vehicle.getInventory().getAmountResourceStored(AmountResource.FOOD);
+            		result = new Integer((int) food);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case OXYGEN : {
-	        double oxygen = vehicle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
-	        result = new Integer((int) oxygen);
+            	try {
+            		double oxygen = vehicle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
+            		result = new Integer((int) oxygen);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case METHANE : {
-	        double methane = vehicle.getInventory().getAmountResourceStored(AmountResource.METHANE);
-	        result = new Integer((int) methane);
+            	try {
+            		double methane = vehicle.getInventory().getAmountResourceStored(AmountResource.METHANE);
+            		result = new Integer((int) methane);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case ROCK_SAMPLES : {
-	        double rockSamples = vehicle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
-	        result = new Integer((int) rockSamples);
+            	try {
+            		double rockSamples = vehicle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
+            		result = new Integer((int) rockSamples);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case SPEED : {
@@ -237,8 +252,11 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
             
 			case ICE : {
-				double ice = vehicle.getInventory().getAmountResourceStored(AmountResource.ICE);
-				result = new Integer((int) ice);
+				try {
+					double ice = vehicle.getInventory().getAmountResourceStored(AmountResource.ICE);
+					result = new Integer((int) ice);
+				}
+				catch (InventoryException e) {}
 			} break;
         }
 

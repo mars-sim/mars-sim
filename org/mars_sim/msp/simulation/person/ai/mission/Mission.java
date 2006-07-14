@@ -153,6 +153,14 @@ public abstract class Mission implements Serializable {
     public String getName() {
         return name;
     }
+    
+    /**
+     * Sets the name of the mission.
+     * @param name the new mission name
+     */
+    protected void setName(String name) {
+    	this.name = name;
+    }
 
     /** 
      * Gets the mission's description.

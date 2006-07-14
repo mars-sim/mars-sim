@@ -137,26 +137,31 @@ abstract class EVAOperation extends Task implements Serializable {
         }
         Inventory suitInv = suit.getInventory();
 	
-        // Check if EVA suit is at 15% of its oxygen capacity.
-        double oxygenCap = suitInv.getAmountResourceCapacity(AmountResource.OXYGEN);
-        double oxygen = suitInv.getAmountResourceStored(AmountResource.OXYGEN);
-        if (oxygen <= (oxygenCap * .15D)) {
-            // System.out.println(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
-            result = true;
-        }
+        try {
+        	// Check if EVA suit is at 15% of its oxygen capacity.
+        	double oxygenCap = suitInv.getAmountResourceCapacity(AmountResource.OXYGEN);
+        	double oxygen = suitInv.getAmountResourceStored(AmountResource.OXYGEN);
+        	if (oxygen <= (oxygenCap * .15D)) {
+        		// System.out.println(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
+        		result = true;
+        	}
 
-        // Check if EVA suit is at 15% of its water capacity.
-        double waterCap = suitInv.getAmountResourceCapacity(AmountResource.WATER);
-        double water = suitInv.getAmountResourceStored(AmountResource.WATER);
-        if (water <= (waterCap * .15D)) {
-            // System.out.println(person.getName() + " should end EVA: EVA suit water level less than 15%");	
-            result = true;
-        }
+        	// Check if EVA suit is at 15% of its water capacity.
+        	double waterCap = suitInv.getAmountResourceCapacity(AmountResource.WATER);
+        	double water = suitInv.getAmountResourceStored(AmountResource.WATER);
+        	if (water <= (waterCap * .15D)) {
+        		// System.out.println(person.getName() + " should end EVA: EVA suit water level less than 15%");	
+        		result = true;
+        	}
 
-        // Check if life support system in suit is working properly.
-        if (!suit.lifeSupportCheck()) {
-            // System.out.println(person.getName() + " should end EVA: EVA suit failed life support check.");	
-            result = true;
+        	// Check if life support system in suit is working properly.
+        	if (!suit.lifeSupportCheck()) {
+        		// System.out.println(person.getName() + " should end EVA: EVA suit failed life support check.");	
+        		result = true;
+        	}
+        }
+        catch (Exception e) {
+        	e.printStackTrace(System.err);
         }
 
         // Check if suit has any malfunctions.

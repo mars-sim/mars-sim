@@ -21,6 +21,9 @@ public class MissionEvent extends HistoricalEvent {
 	public static final String DEVELOPMENT = "Mission Development";
 	public static final String EMERGENCY_DESTINATION = "Changing To Emergency Destination";
 	public static final String EMERGENCY_BEACON = "Emergency Beacon Turned On";
+	public static final String RENDEZVOUS = "Rescue/Salvage Mission Rendezvous with Target Vehicle";
+	public static final String SALVAGE_VEHICLE = "Salvage Vehicle";
+	public static final String RESCUE_PERSON = "Rescue Person";
 
 	/**
 	 * Constructor

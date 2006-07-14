@@ -13,6 +13,7 @@ import java.util.*;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
@@ -40,7 +41,6 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	// Data members
 	protected Settlement startingSettlement; // The settlement the mission starts at.
 	private AmountResource resourceType; // The type of resource to collect.
-	// private int numCollectionSites; // The number of collection sites for the mission.
 	private double siteCollectedResources; // The amount of resources (kg) collected at a collection site.
 	private double collectingStart; // The starting amount of resources in a rover at a collection site.
 	private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
@@ -159,10 +159,16 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	 * @throws MissionException if problem performing collecting phase.
 	 */
 	private void collectingPhase(Person person) throws MissionException {
-	
 		Inventory inv = getRover().getInventory();
-		double resourcesCollected = inv.getAmountResourceStored(resourceType);
-		double resourcesCapacity = inv.getAmountResourceCapacity(resourceType);
+		double resourcesCollected = 0D;
+		double resourcesCapacity = 0D;
+		try {
+			resourcesCollected = inv.getAmountResourceStored(resourceType);
+			resourcesCapacity = inv.getAmountResourceCapacity(resourceType);
+		}
+		catch (InventoryException e) {
+			throw new MissionException(getPhase(), e);
+		}
 	
 		// Calculate resources collected at the site so far.
 		siteCollectedResources = resourcesCollected - collectingStart;
@@ -370,7 +376,12 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		UnitIterator i = inv.findAllUnitsOfClass(containerType).iterator();
 		while (i.hasNext()) {
 			Unit container = (Unit) i.next();
-			if (container.getInventory().getTotalInventoryMass() == 0D) availableContainersNum ++;
+			try {
+				if (container.getInventory().getTotalInventoryMass() == 0D) availableContainersNum ++;
+			}
+			catch (InventoryException e) {
+				e.printStackTrace(System.err);
+			}
 		}
 		
 		return availableContainersNum; 

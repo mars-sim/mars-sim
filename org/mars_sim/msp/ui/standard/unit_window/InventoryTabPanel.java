@@ -115,13 +115,17 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
             keys = new ArrayList();
-            keys.addAll(inventory.getAllAmountResourcesStored());
             resources = new HashMap();
-            Iterator i = keys.iterator();
-            while (i.hasNext()) {
-            	AmountResource resource = (AmountResource) i.next();
-            	resources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
+            
+            try {
+            	keys.addAll(inventory.getAllAmountResourcesStored());
+            	Iterator i = keys.iterator();
+            	while (i.hasNext()) {
+            		AmountResource resource = (AmountResource) i.next();
+            		resources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
+            	}
             }
+            catch (InventoryException e) {}
         }
         
         public int getRowCount() {
@@ -151,20 +155,23 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
   
         public void update() {
-            java.util.List newResourceKeys = new ArrayList();
-            newResourceKeys.addAll(inventory.getAllAmountResourcesStored());
-            Map newResources = new HashMap();
-            Iterator i = newResourceKeys.iterator();
-            while (i.hasNext()) {
-            	AmountResource resource = (AmountResource) i.next();
-            	newResources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
-            }
+        	try {
+        		java.util.List newResourceKeys = new ArrayList();
+        		newResourceKeys.addAll(inventory.getAllAmountResourcesStored());
+        		Map newResources = new HashMap();
+        		Iterator i = newResourceKeys.iterator();
+        		while (i.hasNext()) {
+        			AmountResource resource = (AmountResource) i.next();
+        			newResources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
+        		}
             
-            if (!resources.equals(newResources)) {
-                resources = newResources;
-                keys = newResourceKeys;
-                fireTableDataChanged();
-            }
+        		if (!resources.equals(newResources)) {
+        			resources = newResources;
+        			keys = newResourceKeys;
+        			fireTableDataChanged();
+        		}
+        	}
+        	catch(Exception e) {}
         }
     }
     

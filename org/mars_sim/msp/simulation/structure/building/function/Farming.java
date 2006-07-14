@@ -135,10 +135,15 @@ public class Farming extends Function implements Serializable {
     /**
      * Adds harvested food to the farm.
      * @param harvest harvested food to add (kg.)
-     * @throws Exception if error adding harvest.
      */
-    public void addHarvest(double harvest) throws Exception {
-    	getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, harvest);
+    public void addHarvest(double harvest) {
+    	try {
+    		Inventory inv = getBuilding().getInventory();
+    		double remainingCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.FOOD);
+    		if (remainingCapacity < harvest) harvest = remainingCapacity;
+    		inv.storeAmountResource(AmountResource.FOOD, harvest);
+    	}
+    	catch (Exception e) {}
     }
     
     /**

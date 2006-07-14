@@ -132,10 +132,12 @@ public abstract class Unit implements Serializable {
         this.containerUnit = containerUnit;
     }
 
-    /** Gets the unit's mass including inventory mass.
-     *  @return mass of unit and inventory
+    /** 
+     * Gets the unit's mass including inventory mass.
+     * @return mass of unit and inventory
+     * @throws Exception if error getting the mass.
      */
-    public double getMass() {
+    public double getMass() throws Exception {
         return baseMass + inventory.getTotalInventoryMass();
     }
 

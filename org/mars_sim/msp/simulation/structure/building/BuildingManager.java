@@ -221,6 +221,7 @@ public class BuildingManager implements Serializable {
      * @return building or null if none.
      */
     public static Building getBuilding(Vehicle vehicle) {
+    	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
         
         Building result = null;
         

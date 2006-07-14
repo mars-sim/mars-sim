@@ -80,7 +80,7 @@ public class ResourceProcessing extends Function implements Serializable {
 				process.processResources(time, productionLevel, getBuilding().getInventory());
 			}
 			catch(Exception e) {
-				throw new BuildingException("Error processing resources: " + e.getMessage());
+				throw new BuildingException("Error processing resources: " + e.getMessage(), e);
 			}
 		}
 	}

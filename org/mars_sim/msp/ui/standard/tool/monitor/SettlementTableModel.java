@@ -108,28 +108,43 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-                double water = settle.getInventory().getAmountResourceStored(AmountResource.WATER);
-                result = new Integer((int) water);
+            	try {
+            		double water = settle.getInventory().getAmountResourceStored(AmountResource.WATER);
+            		result = new Integer((int) water);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case FOOD : {
-                double food = settle.getInventory().getAmountResourceStored(AmountResource.FOOD);
-                result = new Integer((int) food);
+            	try {
+            		double food = settle.getInventory().getAmountResourceStored(AmountResource.FOOD);
+            		result = new Integer((int) food);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case OXYGEN : {
-                double oxygen = settle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
-                result = new Integer((int) oxygen);
+            	try {
+            		double oxygen = settle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
+            		result = new Integer((int) oxygen);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case METHANE : {
-                double methane = settle.getInventory().getAmountResourceStored(AmountResource.METHANE);
-                result = new Integer((int) methane);
+            	try {
+            		double methane = settle.getInventory().getAmountResourceStored(AmountResource.METHANE);
+            		result = new Integer((int) methane);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case ROCK_SAMPLES : {
-                double rockSamples = settle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
-		        result = new Integer((int) rockSamples);
+            	try {
+            		double rockSamples = settle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
+            		result = new Integer((int) rockSamples);
+            	}
+            	catch (InventoryException e) {}
 	        } break;
 
             case MALFUNCTION: {
@@ -182,23 +197,35 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case HYDROGEN : {
-                double hydrogen = settle.getInventory().getAmountResourceStored(AmountResource.HYDROGEN);
-                result = new Integer((int) hydrogen);
+            	try {
+            		double hydrogen = settle.getInventory().getAmountResourceStored(AmountResource.HYDROGEN);
+            		result = new Integer((int) hydrogen);
+            	}
+            	catch (InventoryException e) {}
             } break;
 
             case WASTE_WATER : {
-                double wasteWater = settle.getInventory().getAmountResourceStored(AmountResource.WASTE_WATER);
-                result = new Integer((int) wasteWater);
+            	try {
+            		double wasteWater = settle.getInventory().getAmountResourceStored(AmountResource.WASTE_WATER);
+            		result = new Integer((int) wasteWater);
+            	}
+            	catch (InventoryException e) {}
             } break;
             
             case CO2 : {
-                double co2 = settle.getInventory().getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
-                result = new Integer((int) co2);
+            	try {
+            		double co2 = settle.getInventory().getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
+            		result = new Integer((int) co2);
+            	}
+            	catch (InventoryException e) {}
             } break;
             
             case ICE : {
-            	double ice = settle.getInventory().getAmountResourceStored(AmountResource.ICE);
-            	result = new Integer((int) ice);
+            	try {
+            		double ice = settle.getInventory().getAmountResourceStored(AmountResource.ICE);
+            		result = new Integer((int) ice);
+            	}
+            	catch (InventoryException e) {}
             } break;
         }
 

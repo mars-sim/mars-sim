@@ -188,8 +188,9 @@ public class Crop implements Serializable {
     /**
      * Time passing for crop.
      * @param time - amount of time passing (millisols)
+     * @throws Exception if error during time.
      */
-    public void timePassing(double time) {
+    public void timePassing(double time) throws Exception {
         
         if (phase.equals(GROWING)) {
             growingTimeCompleted += time;

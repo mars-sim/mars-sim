@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitIterator;
@@ -135,8 +136,13 @@ public class UnloadVehicle extends Task implements Serializable {
     	VehicleIterator i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
-			if (!vehicle.isReserved() && (vehicle.getInventory().getTotalInventoryMass() > 0D)) 
-				result = vehicle;
+			try {
+				if (!vehicle.isReserved() && (vehicle.getInventory().getTotalInventoryMass() > 0D)) 
+					result = vehicle;
+			}
+			catch(InventoryException e) {
+				e.printStackTrace(System.err);
+			}
 		}
     	
     	return result;
@@ -281,8 +287,9 @@ public class UnloadVehicle extends Task implements Serializable {
      * Returns true if the vehicle is fully unloaded.
      * @param vehicle Vehicle to check.
      * @return is vehicle fully unloaded?
+     * @throws InventoryException if error checking vehicle.
      */
-    static public boolean isFullyUnloaded(Vehicle vehicle) {
+    static public boolean isFullyUnloaded(Vehicle vehicle) throws InventoryException {
         return (vehicle.getInventory().getTotalInventoryMass() == 0D);
     }
     

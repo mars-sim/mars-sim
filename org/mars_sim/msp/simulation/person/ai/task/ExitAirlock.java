@@ -169,8 +169,13 @@ public class ExitAirlock extends Task implements Serializable {
         while (i.hasNext() && (result == null)) {
             EVASuit suit = (EVASuit) i.next();
             boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-            boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
-            if (!malfunction && hasEnoughResources) result = suit;
+            try {
+            	boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
+            	if (!malfunction && hasEnoughResources) result = suit;
+            }
+            catch (Exception e) {
+            	e.printStackTrace(System.err);
+            }
         }
         
         return result;
@@ -181,19 +186,25 @@ public class ExitAirlock extends Task implements Serializable {
      * @param entityInv the entity unit.
      * @param suit the EVA suit.
      * @return true if enough supplies.
+     * @throws Exception if error checking suit resources.
      */
-    private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) {
+    private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) throws Exception {
     	
     	Inventory suitInv = suit.getInventory();
+    	int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
     	
     	// Check if enough oxygen.
     	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
     	double availableOxygen = entityInv.getAmountResourceStored(AmountResource.OXYGEN);
+    	// Make sure there is enough extra oxygen for everyone else.
+    	availableOxygen -= (neededOxygen * otherPeopleNum);
     	boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
     	
     	// Check if enough water.
     	double neededWater = suitInv.getAmountResourceRemainingCapacity(AmountResource.WATER);
     	double availableWater = entityInv.getAmountResourceStored(AmountResource.WATER);
+    	// Make sure there is enough extra water for everyone else.
+    	availableWater -= (neededWater * otherPeopleNum);
     	boolean hasEnoughWater = (availableWater >= neededWater);
     	
     	return hasEnoughOxygen && hasEnoughWater;

@@ -69,8 +69,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
      * Returns true if life support is working properly and is not out
      * of oxygen or water.
      * @return true if life support is OK
+     * @throws Exception if error checking life support.
      */
-    public boolean lifeSupportCheck() {
+    public boolean lifeSupportCheck() throws Exception {
         boolean result = true;
 
         if (inventory.getAmountResourceStored(AmountResource.OXYGEN) <= 0D) {
@@ -113,8 +114,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
      * Gets oxygen from system.
      * @param amountRequested the amount of oxygen requested from system (kg)
      * @return the amount of oxygen actually received from system (kg)
+     * @throws Exception if error providing oxygen.
      */
-    public double provideOxygen(double amountRequested) {
+    public double provideOxygen(double amountRequested) throws Exception {
     	double oxygenTaken = amountRequested;
     	double oxygenLeft = inventory.getAmountResourceStored(AmountResource.OXYGEN);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
@@ -129,8 +131,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
      * Gets water from the system.
      * @param amountRequested the amount of water requested from system (kg)
      * @return the amount of water actually received from system (kg)
+     * @throws Exception if error providing water.
      */
-    public double provideWater(double amountRequested) {
+    public double provideWater(double amountRequested) throws Exception {
     	double waterTaken = amountRequested;
     	double waterLeft = inventory.getAmountResourceStored(AmountResource.WATER);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
@@ -168,9 +171,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     /** 
      * Checks to see if the inventory is at full capacity with oxygen and water.
      * @return true if oxygen and water stores at full capacity
+     * @throws Exception if error checking inventory.
      */
-    public boolean isFullyLoaded() {
-   
+    public boolean isFullyLoaded() throws Exception {
         boolean result = true;
 
         double oxygen = inventory.getAmountResourceStored(AmountResource.OXYGEN);

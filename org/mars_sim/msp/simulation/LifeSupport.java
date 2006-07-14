@@ -16,11 +16,13 @@ package org.mars_sim.msp.simulation;
  */
 public interface LifeSupport {
 
-    /** Returns true if life support is working properly and is not out
-     *  of oxygen or water.
-     *  @return true if life support is OK
+    /** 
+     * Returns true if life support is working properly and is not out
+     * of oxygen or water.
+     * @return true if life support is OK
+     * @throws Exception if error checking life support.
      */
-    public boolean lifeSupportCheck();
+    public boolean lifeSupportCheck() throws Exception;
 	
     /** Gets the number of people the life support can provide for.
      *  @return the capacity of the life support system
@@ -32,14 +34,14 @@ public interface LifeSupport {
      *  @return the amount of oxgyen actually received from system (kg)
      *  @throws Exception if error providing oxygen.
      */
-    public double provideOxygen(double amountRequested);
+    public double provideOxygen(double amountRequested) throws Exception;
 
     /** Gets water from system.
      *  @param amountRequested the amount of water requested from system (kg)
      *  @return the amount of water actually received from system (kg)
      *  @throws Exception if error providing water.
      */
-    public double provideWater(double amountRequested);
+    public double provideWater(double amountRequested) throws Exception;
 
     /** Gets the air pressure of the life support system.
      *  @return air pressure (atm)

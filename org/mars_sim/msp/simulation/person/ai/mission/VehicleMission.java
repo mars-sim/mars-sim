@@ -41,6 +41,9 @@ public abstract class VehicleMission extends TravelMission {
 	public static final String TRAVELLING = "Travelling";
 	public static final String DISEMBARKING = "Disembarking";
 	
+	// Static members
+	private static final double BUFFER_DISTANCE = 50D; // Buffer distance for determining fuel requirements.
+	
 	// Data members
 	private Vehicle vehicle;
 	private VehicleOperator lastOperator; // The last operator of this vehicle in the mission.
@@ -270,7 +273,11 @@ public abstract class VehicleMission extends TravelMission {
      */
     public static double getFuelNeededForTrip(double tripDistance, double fuelEfficiency, boolean useBuffer) {
     	double result = tripDistance / fuelEfficiency;
-    	if (useBuffer) result *= Vehicle.RANGE_ERROR_MARGIN;
+    	if (useBuffer) {
+    		result *= Vehicle.RANGE_ERROR_MARGIN;
+    		result += BUFFER_DISTANCE / fuelEfficiency;
+    	}
+    	
     	return result;
     }
     
@@ -418,7 +425,12 @@ public abstract class VehicleMission extends TravelMission {
     	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
     	double averageSpeedMillisol = averageSpeed / millisolsInHour;
     	
-    	return distance / averageSpeedMillisol;
+    	double result = distance / averageSpeedMillisol;
+    	
+    	// If buffer, add one sol.
+    	if (useBuffer) result += 1000D;
+    	
+    	return result;
     }
     
     /**
@@ -531,7 +543,7 @@ public abstract class VehicleMission extends TravelMission {
     	// Check if enough resources to get to settlement.
     	double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
     	if (hasEnoughResources(getResourcesNeededForTrip(false, distance))) {
-    		System.out.println(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
+    		// System.out.println(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
     		
     		// Creating emergency destination mission event.
             HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.EMERGENCY_DESTINATION);

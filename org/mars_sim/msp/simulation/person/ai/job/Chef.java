@@ -30,7 +30,9 @@ public class Chef extends Job implements Serializable {
 		
 		// Add chef-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);	
+		jobMissionJoins.add(TravelToSettlement.class);
+		jobMissionStarts.add(RescueSalvageVehicle.class);
+		jobMissionJoins.add(RescueSalvageVehicle.class);
 	}
 
 	/**

@@ -28,6 +28,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public final static String MOVING = "Moving";
     public final static String MALFUNCTION = "Malfunction";
     public final static String MAINTENANCE = "Periodic Maintenance";
+    public final static String TOWED = "Towed";
     
     // The error margin for determining vehicle range. (actual distance / safe distance)
     public final static double RANGE_ERROR_MARGIN = 1.5D;
@@ -46,6 +47,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private ArrayList trail; // A collection of locations that make up the vehicle's trail.
     private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
     private boolean emergencyBeacon = false; // The emergency beacon for the vehicle.  True if beacon is turned on.
+    private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
 
     /**
      * Constructor to be used for testing.
@@ -129,12 +131,13 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	        else status = PARKED;
 	    }
     	else {
-	        if (malfunctionManager.hasMalfunction()) {
-	            status = MALFUNCTION;
-	        }
+	        if (malfunctionManager.hasMalfunction()) status = MALFUNCTION;
 	        else {
-	            if (speed == 0D) status = PARKED;
-	            else status = MOVING;
+	        	if (towingVehicle != null) status = TOWED;
+	        	else {
+	        		if (speed == 0D) status = PARKED;
+	        		else status = MOVING;
+	        	}
 	        }
 	    }
 
@@ -179,6 +182,23 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void setReservedForMaintenance(boolean reserved) {
         reservedForMaintenance = reserved;
+    }
+    
+    /**
+     * Sets the vehicle that is currently towing this vehicle.
+     * @param towingVehicle the vehicle
+     */
+    public void setTowingVehicle(Vehicle towingVehicle) {
+    	if (this == towingVehicle) throw new IllegalArgumentException("Vehicle cannot tow itself.");
+    	this.towingVehicle = towingVehicle;
+    }
+    
+    /**
+     * Gets the vehicle that is currently towing this vehicle.
+     * @return towing vehicle
+     */
+    public Vehicle getTowingVehicle() {
+    	return towingVehicle;
     }
 
     /** 

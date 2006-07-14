@@ -44,24 +44,29 @@ public class StudyRockSamples extends ResearchScience implements Serializable {
     public static double getProbability(Person person) {
 		double result = 0D;
 
-		Lab lab = getLocalLab(person, Skill.AREOLOGY, true, AmountResource.ROCK_SAMPLES);
-		if (lab != null) {
-			result = 25D; 
+		try {
+			Lab lab = getLocalLab(person, Skill.AREOLOGY, true, AmountResource.ROCK_SAMPLES);
+			if (lab != null) {
+				result = 25D; 
 		
-			// Check for crowding modifier.
-			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-				try {
-					Building labBuilding = ((Research) lab).getBuilding();	
-					if (labBuilding != null) {
-						result *= Task.getCrowdingProbabilityModifier(person, labBuilding);		
-						result *= Task.getRelationshipModifier(person, labBuilding);
+				// Check for crowding modifier.
+				if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+					try {
+						Building labBuilding = ((Research) lab).getBuilding();	
+						if (labBuilding != null) {
+							result *= Task.getCrowdingProbabilityModifier(person, labBuilding);		
+							result *= Task.getRelationshipModifier(person, labBuilding);
+						}
+						else result = 0D;		
 					}
-					else result = 0D;		
-				}
-				catch (BuildingException e) {
-					System.err.println("StudyRockSamples.getProbability(): " + e.getMessage());
+					catch (BuildingException e) {
+						System.err.println("StudyRockSamples.getProbability(): " + e.getMessage());
+					}
 				}
 			}
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
 		}
 	    
 		// Effort-driven task modifier.

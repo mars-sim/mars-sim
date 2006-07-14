@@ -305,7 +305,12 @@ public class MalfunctionManager implements Serializable {
         setLifeSupportModifiers(time);
 
         // Deplete resources.
-        depleteResources(time);
+        try {
+        	depleteResources(time);
+        }
+        catch(Exception e) {
+        	e.printStackTrace(System.err);
+        }
         
         // Add time passing.
 		timeSinceLastMaintenance += time;
@@ -357,8 +362,9 @@ public class MalfunctionManager implements Serializable {
     /**
      * Depletes resources due to malfunctions.
      * @param time amount of time passing (in millisols)
+     * @throws Exception if error depleting resources.
      */
-    public void depleteResources(double time) {
+    public void depleteResources(double time) throws Exception {
 
         if (hasMalfunction()) {
             Iterator i = malfunctions.iterator();

@@ -14,7 +14,6 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 
 /** 
@@ -84,31 +83,6 @@ public class Exploration extends CollectResourcesMission {
 			if (job != null) result *= job.getStartMissionProbabilityModifier(Exploration.class);	
 		}
         
-		return result;
-	}
-	
-	/**
-	 * Checks to see if any vehicles are available at a settlement.
-	 * @param settlement the settlement to check.
-	 * @return true if vehicles are available.
-	 */
-	private static boolean areVehiclesAvailable(Settlement settlement) {
-		
-		boolean result = false;
-		
-		VehicleIterator i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			
-			boolean usable = true;
-			if (vehicle.isReserved()) usable = false;
-			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
-			if (!(vehicle instanceof Rover)) usable = false;
-			// if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) usable = false;
-			
-			if (usable) result = true;    
-		}
-		
 		return result;
 	}
 	

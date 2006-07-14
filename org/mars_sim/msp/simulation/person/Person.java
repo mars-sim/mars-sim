@@ -284,7 +284,10 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	    i = lifeSupportUnits.iterator();
 	    while (i.hasNext()) {
 	        LifeSupport goodUnit = (LifeSupport) i.next();
-	        if (goodUnit.lifeSupportCheck()) return goodUnit;
+	        try {
+	        	if (goodUnit.lifeSupportCheck()) return goodUnit;
+	        }
+	        catch (Exception e) {}
 	    }
 
 	    // If no good units, just get first life support unit.
@@ -300,8 +303,9 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg)
      * @param takeFromInv is food taken from local inventory?
+     * @throws Exception if error consuming food.
      */
-    public void consumeFood(double amount, boolean takeFromInv) {
+    public void consumeFood(double amount, boolean takeFromInv) throws Exception {
     	if (takeFromInv) health.consumeFood(amount, getContainerUnit());
     	else health.consumeFood(amount);
     }

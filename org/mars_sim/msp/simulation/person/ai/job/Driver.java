@@ -42,6 +42,8 @@ public class Driver extends Job implements Serializable {
 		jobMissionJoins.add(CollectIce.class);
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
+		jobMissionStarts.add(RescueSalvageVehicle.class);
+		jobMissionJoins.add(RescueSalvageVehicle.class);
 	}
 
 	/**

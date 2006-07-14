@@ -25,13 +25,14 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private double NORMAL_TEMP = 25D; // Normal temperature (celsius)
     
-    public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 2.5D;
+    public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 3.0D;
     
     // Data members
     private int crewCapacity = 0; // The rover's capacity for crewmembers.
     private Airlock airlock; // The rover's airlock.
 	private Lab lab; // The rover's lab.
 	private SickBay sickbay; // The rover's sick bay.
+	private Vehicle towedVehicle; // The vehicle the rover is currently towing.
 	
     /** 
      * Constructs a Rover object at a given settlement
@@ -85,6 +86,23 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		try { airlock = new VehicleAirlock(this, 2); }
 		catch (Exception e) { System.out.println(e.getMessage()); }
     }
+    
+    /**
+     * Sets the vehicle this rover is currently towing.
+     * @param towedVehicle the vehicle being towed.
+     */
+    public void setTowedVehicle(Vehicle towedVehicle) {
+    	if (this == towedVehicle) throw new IllegalArgumentException("Rover cannot tow itself.");
+    	this.towedVehicle = towedVehicle;
+    }
+    
+    /**
+     * Gets the vehicle this rover is currently towing.
+     * @return towed vehicle.
+     */
+    public Vehicle getTowedVehicle() {
+    	return towedVehicle;
+    }
 
     /**
      * Gets the number of crewmembers the vehicle can carry.
@@ -122,8 +140,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     /** Returns true if life support is working properly and is not out
      *  of oxygen or water.
      *  @return true if life support is OK
+     *  @throws Exception if error checking life support.
      */
-    public boolean lifeSupportCheck() {
+    public boolean lifeSupportCheck() throws Exception {
         boolean result = true;
 
         if (inventory.getAmountResourceStored(AmountResource.OXYGEN) <= 0D) result = false;
@@ -146,8 +165,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     /** Gets oxygen from system.
      *  @param amountRequested the amount of oxygen requested from system (kg)
      *  @return the amount of oxgyen actually received from system (kg)
+     *  @throws Exception if error providing oxygen.
      */
-    public double provideOxygen(double amountRequested) {
+    public double provideOxygen(double amountRequested) throws Exception {
     	double oxygenTaken = amountRequested;
     	double oxygenLeft = inventory.getAmountResourceStored(AmountResource.OXYGEN);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
@@ -161,8 +181,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     /** Gets water from system.
      *  @param amountRequested the amount of water requested from system (kg)
      *  @return the amount of water actually received from system (kg)
+     *  @throws Exception if error providing water.
      */
-    public double provideWater(double amountRequested) {
+    public double provideWater(double amountRequested) throws Exception {
     	double waterTaken = amountRequested;
     	double waterLeft = inventory.getAmountResourceStored(AmountResource.WATER);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
@@ -287,6 +308,17 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      */
     public AmountResource getFuelType() {
     	return AmountResource.METHANE;
+    }
+    
+    /** 
+     * Sets unit's location coordinates 
+     * @param newLocation the new location of the unit
+     */
+    public void setCoordinates(Coordinates newLocation) {
+    	super.setCoordinates(newLocation);
+        
+    	// Set towed vehicle (if any) to new location.
+        if (towedVehicle != null) towedVehicle.setCoordinates(newLocation);
     }
     
     /** 

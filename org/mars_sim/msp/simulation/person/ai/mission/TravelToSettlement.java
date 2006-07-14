@@ -24,9 +24,7 @@ import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementCollection;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
-import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The TravelToSettlement class is a mission to travel from one settlement 
@@ -139,57 +137,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         return missionProbability;
     }
-    
-	/**
-	 * Checks to see if any vehicles are available at a settlement.
-	 * @param settlement the settlement to check.
-	 * @return true if vehicles are available.
-	 */
-	private static boolean areVehiclesAvailable(Settlement settlement) {
-		
-		boolean result = false;
-		
-		VehicleIterator i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			
-			boolean usable = true;
-			if (vehicle.isReserved()) usable = false;
-			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
-			if (!(vehicle instanceof Rover)) usable = false;
-			
-			if (usable) result = true;    
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Gets the available vehicle at the settlement with the greatest range.
-	 * @param settlement the settlement to check.
-	 * @return vehicle or null if none available.
-	 * @throws Exception if error finding vehicles.
-	 */
-	private static Vehicle getVehicleWithGreatestRange(Settlement settlement) throws Exception {
-		Vehicle result = null;
-
-		VehicleIterator i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			
-			boolean usable = true;
-			if (vehicle.isReserved()) usable = false;
-			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
-			if (!(vehicle instanceof Rover)) usable = false;
-			
-			if (usable) {
-				if (result == null) result = vehicle;
-				else if (vehicle.getRange() > result.getRange()) result = vehicle;
-			}
-		}
-		
-		return result;
-	}
 
     /** 
      * Determines a random destination settlement other than current one.

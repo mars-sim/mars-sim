@@ -78,6 +78,57 @@ public abstract class RoverMission extends VehicleMission {
     	// if (hasEmergency()) setEmergencyDestination(true);
     	super.performPhase(person);
     }
+    
+	/**
+	 * Gets the available vehicle at the settlement with the greatest range.
+	 * @param settlement the settlement to check.
+	 * @return vehicle or null if none available.
+	 * @throws Exception if error finding vehicles.
+	 */
+	protected static Vehicle getVehicleWithGreatestRange(Settlement settlement) throws Exception {
+		Vehicle result = null;
+
+		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			
+			boolean usable = true;
+			if (vehicle.isReserved()) usable = false;
+			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
+			if (!(vehicle instanceof Rover)) usable = false;
+			
+			if (usable) {
+				if (result == null) result = vehicle;
+				else if (vehicle.getRange() > result.getRange()) result = vehicle;
+			}
+		}
+		
+		return result;
+	}
+    
+	/**
+	 * Checks to see if any vehicles are available at a settlement.
+	 * @param settlement the settlement to check.
+	 * @return true if vehicles are available.
+	 */
+	protected static boolean areVehiclesAvailable(Settlement settlement) {
+		
+		boolean result = false;
+		
+		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			
+			boolean usable = true;
+			if (vehicle.isReserved()) usable = false;
+			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
+			if (!(vehicle instanceof Rover)) usable = false;
+			
+			if (usable) result = true;    
+		}
+		
+		return result;
+	}
 	
 	/**
 	 * Checks if vehicle is usable for this mission.
@@ -286,20 +337,19 @@ public abstract class RoverMission extends VehicleMission {
         }
         
         // Unload rover if necessary.
-        boolean roverUnloaded = UnloadVehicle.isFullyUnloaded(rover);
-        if (!roverUnloaded) {
-			// Random chance of having person unload (this allows person to do otherthings sometimes)
-			if (RandomUtil.lessThanRandPercent(50)) {
-				try {
-					assignTask(person, new UnloadVehicle(person, rover));
+        try {
+        	boolean roverUnloaded = UnloadVehicle.isFullyUnloaded(rover);
+        	if (!roverUnloaded) {
+        		// Random chance of having person unload (this allows person to do other things sometimes)
+        		if (RandomUtil.lessThanRandPercent(50)) {
+        			assignTask(person, new UnloadVehicle(person, rover));
 					return;
 				}
-				catch (Exception e) {
-					throw new MissionException(VehicleMission.DISEMBARKING, e);
-				}
 			}
-			else return;
         }
+        catch (Exception e) {
+			throw new MissionException(VehicleMission.DISEMBARKING, e);
+		}
         
         // If everyone has left the rover, end the phase.
         if (isNoOneInRover()) {

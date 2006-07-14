@@ -21,4 +21,13 @@ public class BuildingException extends Exception {
         // Use Exception constructor
         super(message);
     }
+    
+    /**
+     * Constructor with message and throwable cause.
+     * @param message
+     * @param cause
+     */
+    public BuildingException(String message, Throwable cause) {
+    	super(message, cause);
+    }
 }

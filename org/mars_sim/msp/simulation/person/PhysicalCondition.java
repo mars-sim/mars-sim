@@ -195,11 +195,13 @@ public class PhysicalCondition implements Serializable {
 	    }
     }
 
-    /** Person consumes given amount of food
-     *  @param amount amount of food to consume (in kg).
-     *  @param holder unit to get food from
+    /** 
+     * Person consumes given amount of food
+     * @param amount amount of food to consume (in kg).
+     * @param holder unit to get food from
+     * @throws Exception if error consuming food.
      */
-    public void consumeFood(double amount, Unit container) {
+    public void consumeFood(double amount, Unit container) throws Exception {
     	if (container == null) throw new IllegalArgumentException("container is null");
     	double foodEaten = amount;
         double foodAvailable = container.getInventory().getAmountResourceStored(AmountResource.FOOD);
@@ -223,24 +225,28 @@ public class PhysicalCondition implements Serializable {
 			recalculate();
     }
 
-    /** Person consumes given amount of oxygen
-     *  @param support Life support system providing oxygen.
-     *  @param amount amount of oxygen to consume (in kg)
-     *  @return new problem added.
+    /** 
+     * Person consumes given amount of oxygen
+     * @param support Life support system providing oxygen.
+     * @param amount amount of oxygen to consume (in kg)
+     * @return new problem added.
+     * @throws Exception if error consuming oxygen.
      */
-    private boolean consumeOxygen(LifeSupport support, double amount) {
+    private boolean consumeOxygen(LifeSupport support, double amount) throws Exception {
         double amountRecieved = support.provideOxygen(amount);
 
         return checkResourceConsumption(amountRecieved, amount / 2D,
                                         MIN_VALUE, getMedicalManager().getSuffocation());
     }
 
-    /** Person consumes given amount of water
-     *  @param support Life support system providing water.
-     *  @param amount amount of water to consume (in kg)
-     *  @return new problem added.
+    /** 
+     * Person consumes given amount of water
+     * @param support Life support system providing water.
+     * @param amount amount of water to consume (in kg)
+     * @return new problem added.
+     * @throws Exception if error consuming water.
      */
-    private boolean consumeWater(LifeSupport support, double amount) {
+    private boolean consumeWater(LifeSupport support, double amount) throws Exception {
         double amountReceived = support.provideWater(amount);
 
         return checkResourceConsumption(amountReceived, amount / 2D,

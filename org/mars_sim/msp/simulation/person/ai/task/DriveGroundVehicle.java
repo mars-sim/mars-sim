@@ -46,7 +46,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     	
     	// User OperateVehicle constructor
         super("Driving vehicle", person, vehicle, destination, startTripTime, 
-        		startTripDistance, STRESS_MODIFIER, true, (50D + RandomUtil.getRandomDouble(50D)));
+        		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
 
         // Set initial parameters
         description = "Driving " + vehicle.getName();
@@ -73,7 +73,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     	
         // Use OperateVehicle constuctor
     	super("Driving vehicle", person, vehicle, destination, startTripTime, 
-        		startTripDistance, STRESS_MODIFIER, true, (50D + RandomUtil.getRandomDouble(50D)));
+        		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
     	
         // Set initial parameters
         description = "Driving " + vehicle.getName();

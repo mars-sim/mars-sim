@@ -167,17 +167,22 @@ public class CollectResources extends EVAOperation implements Serializable {
 		UnitIterator i = rover.getInventory().findAllUnitsOfClass(containerType).iterator();
 		while (i.hasNext()) {
 			Unit container = i.next();
-			double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resourceType);
+			try {
+				double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resourceType);
 			
-			if (result == null) {
-				result = container;
-				mostCapacity = remainingCapacity;
-			}
-			else {
-				if (remainingCapacity > mostCapacity) {
+				if (result == null) {
 					result = container;
 					mostCapacity = remainingCapacity;
 				}
+				else {
+					if (remainingCapacity > mostCapacity) {
+						result = container;
+						mostCapacity = remainingCapacity;
+					}
+				}
+			}
+			catch (InventoryException e) {
+				e.printStackTrace(System.err);
 			}
 		}
 		

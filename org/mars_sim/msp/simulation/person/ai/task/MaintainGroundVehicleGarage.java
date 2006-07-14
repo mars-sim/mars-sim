@@ -50,33 +50,35 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         if (vehicle != null) vehicle.setReservedForMaintenance(true);
         
         // Determine the garage it's in.
-        Building building = BuildingManager.getBuilding(vehicle);
-        if (building != null) {
-        	try {
-        		garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
-        		BuildingManager.addPersonToBuilding(person, building);
+        if (vehicle != null) {
+        	Building building = BuildingManager.getBuilding(vehicle);
+        	if (building != null) {
+        		try {
+        			garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+        			BuildingManager.addPersonToBuilding(person, building);
+        		}
+        		catch (Exception e) {
+        			System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
+        		}
         	}
-        	catch (Exception e) {
-        		System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
-        	}
-        }
-        else {
-        	// If not in a garage, try to add it to a garage with empty space.
-			Settlement settlement = person.getSettlement();
-			Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
-			while (j.hasNext()) {
-				try {
-					Building garageBuilding = (Building) j.next();
-					VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
-					if (garageTemp.getCurrentVehicleNumber() < garageTemp.getVehicleCapacity()) {
-						garage = garageTemp;
-						garage.addVehicle(vehicle);
-						BuildingManager.addPersonToBuilding(person, garageBuilding);
-					} 
-				}
-				catch (Exception e) {
-					System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
-				}
+        	else {
+        		// If not in a garage, try to add it to a garage with empty space.
+        		Settlement settlement = person.getSettlement();
+        		Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+        		while (j.hasNext()) {
+        			try {
+        				Building garageBuilding = (Building) j.next();
+        				VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+        				if (garageTemp.getCurrentVehicleNumber() < garageTemp.getVehicleCapacity()) {
+        					garage = garageTemp;
+        					garage.addVehicle(vehicle);
+        					BuildingManager.addPersonToBuilding(person, garageBuilding);
+        				} 
+        			}
+        			catch (Exception e) {
+        				System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
+        			}
+        		}
 			}
         }
         

@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Unit;
@@ -167,8 +168,9 @@ public abstract class ResearchScience extends Task implements Serializable {
 	 * @param consumesResource does the research consume a resource?
 	 * @param resourceType the resource that is consumed (or null)
 	 * @return laboratory found or null if none.
+	 * @throws Exception if error getting a lab.
 	 */
-	protected static Lab getLocalLab(Person person, String science, boolean consumesResource, AmountResource resourceType) {
+	protected static Lab getLocalLab(Person person, String science, boolean consumesResource, AmountResource resourceType) throws Exception {
 		Lab result = null;
 		
 		// If research consumes a resource, determine if the resource is available.
@@ -186,8 +188,9 @@ public abstract class ResearchScience extends Task implements Serializable {
 	 * @param person the person checking.
 	 * @param resourceType the type of resource.
 	 * @return true if sufficient resource.
+	 * @throws InventoryException if error checking resource.
 	 */
-	private static boolean hasSufficientResource(Person person, AmountResource resourceType) {
+	private static boolean hasSufficientResource(Person person, AmountResource resourceType) throws InventoryException {
 		boolean result = false;
 		
 		Unit container = person.getContainerUnit();
