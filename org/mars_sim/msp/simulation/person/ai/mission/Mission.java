@@ -129,6 +129,14 @@ public abstract class Mission implements Serializable {
     public int getMinPeople() {
     	return minPeople;
     }
+    
+    /**
+     * Sets the minimum number of people required for a mission.
+     * @param minPeople minimum number of people
+     */
+    protected void setMinPeople(int minPeople) {
+    	this.minPeople = minPeople;
+    }
 
     /**
      * Gets a collection of the people in the mission.

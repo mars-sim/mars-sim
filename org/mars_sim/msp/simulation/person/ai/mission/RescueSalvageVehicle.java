@@ -39,7 +39,7 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	// Static members
-	private static final int MISSION_MIN_MEMBERS = 1;
+	private static final int MISSION_MIN_MEMBERS = 2;
 	private static final int MISSION_MAX_MEMBERS = 3;
 	private static final double BASE_RESCUE_MISSION_WEIGHT = 100D;
 	private static final double BASE_SALVAGE_MISSION_WEIGHT = 1D;
@@ -81,6 +81,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         	if (vehicleTarget != null) {
         		if (getRescuePeopleNum(vehicleTarget) > 0) {
         			rescue = true;
+        			setMinPeople(1);
         			setName("Rescue Vehicle");
         		}
         		
