@@ -19,7 +19,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  * The Rover class represents the rover type of ground vehicle.  It
  * contains information about the rover.
  */
-public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable, Medical {
+public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 
     // Static data members
     private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
