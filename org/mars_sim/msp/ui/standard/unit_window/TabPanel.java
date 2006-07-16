@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.79 2006-07-15
  * @author Scott Davis
  */
 
@@ -92,4 +92,20 @@ public abstract class TabPanel extends JScrollPane {
      * Updates the info on this panel.
      */
     public abstract void update();
+    
+    /**
+     * Gets the main desktop.
+     * @return desktop.
+     */
+    public MainDesktopPane getDesktop() {
+    	return desktop;
+    }
+ 
+    /**
+     * Gets the unit.
+     * @return unit.
+     */
+    public Unit getUnit() {
+    	return unit;
+    }
 }

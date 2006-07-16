@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleWindow.java
- * @version 2.75 2004-03-24
+ * @version 2.79 2006-07-15
  * @author Scott Davis
  */
 
@@ -43,5 +43,6 @@ public class VehicleWindow extends UnitWindow {
         	// TODO: Add sickbay tab panel.
         }
         addTabPanel(new MissionTabPanel(vehicle, desktop));
+        addTabPanel(new TowTabPanel(vehicle, desktop));
     }
 }
