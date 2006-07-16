@@ -354,7 +354,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		super.recruitPeopleForMission(startingPerson);
 		
 		// Make sure there is at least one person left at the starting settlement.
-		if (!atLeastOnePersonRemainingAtSettlement(startingSettlement)) {
+		if (!atLeastOnePersonRemainingAtSettlement(startingSettlement, startingPerson)) {
 			// Remove last person added to the mission.
 			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 			if (lastPerson != null) {

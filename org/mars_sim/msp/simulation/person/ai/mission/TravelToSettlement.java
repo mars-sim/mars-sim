@@ -106,7 +106,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	    	if (!areVehiclesAvailable(settlement)) missionPossible = false;
             
 			// At least one person left to hold down the fort.
-	    	if (!atLeastOnePersonRemainingAtSettlement(settlement)) missionPossible = false;
+	    	if (!atLeastOnePersonRemainingAtSettlement(settlement, person)) missionPossible = false;
 	    	
 	    	// Check if there are any desirable settlements within range.
 	    	try {
@@ -294,7 +294,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		super.recruitPeopleForMission(startingPerson);
 		
 		// Make sure there is at least one person left at the starting settlement.
-		if (!atLeastOnePersonRemainingAtSettlement(startingSettlement)) {
+		if (!atLeastOnePersonRemainingAtSettlement(startingSettlement, startingPerson)) {
 			// Remove last person added to the mission.
 			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 			if (lastPerson != null) {

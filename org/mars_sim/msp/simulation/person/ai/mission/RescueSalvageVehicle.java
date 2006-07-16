@@ -141,9 +141,17 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	    	}
 	    	catch (Exception e) {}
 	    	
+	    	// Check if person is last remaining person at settlement (for salvage mission but not rescue mission).
+	    	boolean rescue = false;
+	    	if (vehicleTarget != null) {
+	    		rescue = (getRescuePeopleNum(vehicleTarget) > 0);
+	    		if (rescue) {
+	    			if (!atLeastOnePersonRemainingAtSettlement(settlement, person)) missionPossible = false;
+	    		}
+	    	}
+	    	
 	    	// Determine mission probability.
 	        if (missionPossible) {
-	        	boolean rescue = (getRescuePeopleNum(vehicleTarget) > 0);
 	        	if (rescue) missionProbability = BASE_RESCUE_MISSION_WEIGHT;
 	        	else missionProbability = BASE_SALVAGE_MISSION_WEIGHT;
 	            
@@ -567,5 +575,26 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Recruits new people into the mission.
+	 * @param startingPerson the person starting the mission.
+	 */
+	protected void recruitPeopleForMission(Person startingPerson) {
+		super.recruitPeopleForMission(startingPerson);
+	
+		// Make sure there is at least one person left at the starting settlement.
+		// If salvage mission, otherwise ignore if rescue mission.
+		if (!rescue) {
+			if (!atLeastOnePersonRemainingAtSettlement(startingSettlement, startingPerson)) {
+				// Remove last person added to the mission.
+				Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
+				if (lastPerson != null) {
+					lastPerson.getMind().setMission(null);
+					if (getPeopleNumber() < getMinPeople()) endMission();
+				}
+			}
+		}
 	}
 }

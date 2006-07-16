@@ -394,16 +394,18 @@ public abstract class RoverMission extends VehicleMission {
     
 	/**
 	 * Checks to see if at least one inhabitant a settlement is remaining there.
+	 * @param settlement the settlement to check.
+	 * @param person the person checking
 	 * @return true if at least one person left at settlement.
 	 */
-	protected static boolean atLeastOnePersonRemainingAtSettlement(Settlement settlement) {
+	protected static boolean atLeastOnePersonRemainingAtSettlement(Settlement settlement, Person person) {
 		boolean result = false;
 		
 		if (settlement != null) {
 			PersonIterator i = settlement.getInhabitants().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
-				if (!inhabitant.getMind().hasActiveMission()) result = true;
+				if ((inhabitant != person) && !inhabitant.getMind().hasActiveMission()) result = true;
 			}
 		}
 		

@@ -66,7 +66,7 @@ public class Exploration extends CollectResourcesMission {
 			boolean reservableRover = areVehiclesAvailable(settlement);
 			
 			// Check if at least one person left to hold down the fort.
-			boolean remainingInhabitant = atLeastOnePersonRemainingAtSettlement(settlement);
+			boolean remainingInhabitant = atLeastOnePersonRemainingAtSettlement(settlement, person);
 			
 			// Check if there are enough specimen containers at the settlement for collecting rock samples.
 			boolean enoughContainers = 

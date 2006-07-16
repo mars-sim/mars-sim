@@ -62,7 +62,7 @@ public class CollectIce extends CollectResourcesMission {
 			boolean reservableRover = areVehiclesAvailable(settlement);
 
 			// Check if at least one person left to hold down the fort.
-			boolean remainingInhabitant = atLeastOnePersonRemainingAtSettlement(settlement);
+			boolean remainingInhabitant = atLeastOnePersonRemainingAtSettlement(settlement, person);
 			
 			// Check if there are enough bags at the settlement for collecting ice.
 			boolean enoughBags = (numCollectingContainersAvailable(settlement, Bag.class) >= REQUIRED_BAGS);
