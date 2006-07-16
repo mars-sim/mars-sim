@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard.unit_window.person;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -80,8 +81,20 @@ public class DeathTabPanel extends TabPanel implements ActionListener {
         locationLabelPanel.add(centerMapButton);
         
         // Prepare location label
-        JLabel locationLabel = new JLabel("Location: " + death.getLocationOfDeath(), JLabel.CENTER);
+        JLabel locationLabel = new JLabel("Location: ", JLabel.CENTER);
         locationLabelPanel.add(locationLabel);
+        
+        if (death.getContainerUnit() != null) {
+        	// Prepare top container button
+        	JButton topContainerButton = new JButton(death.getContainerUnit().getName());
+        	topContainerButton.addActionListener(new ActionListener() {
+        		public void actionPerformed(ActionEvent event) {
+        			DeathInfo death = ((Person) getUnit()).getPhysicalCondition().getDeathDetails();
+        			getDesktop().openUnitWindow(death.getContainerUnit());
+        		}
+        	});
+        	locationLabelPanel.add(topContainerButton);
+        }
         
         // Prepare location coordinates panel
         JPanel locationCoordsPanel = new JPanel(new GridLayout(2, 1, 0, 0));
