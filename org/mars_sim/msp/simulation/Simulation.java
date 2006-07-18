@@ -34,11 +34,11 @@ public class Simulation implements Serializable {
 	// Transient data members (aren't stored in save file)
 	private transient MalfunctionFactory malfunctionFactory; // The malfunction factory
 	private transient HistoricalEventManager eventManager; // All historical info.
-	private transient SimulationConfig simConfig; // The simulation configuration.
 	private transient Thread clockThread;
 	
 	// Intransient data members (stored in save file)
 	private Mars mars; // Planet Mars
+	private SimulationConfig simConfig; // The simulation configuration.
 	private UnitManager unitManager; // Manager for all units in simulation.
 	private MissionManager missionManager; // Mission controller
 	private RelationshipManager relationshipManager; // Manages all personal relationships.
