@@ -74,6 +74,7 @@ public class CollectIce extends CollectResourcesMission {
 					double amountNeeded = settlement.getAllAssociatedPeople().size() * 250D;
 					if (water > 0D) result = 100D * (amountNeeded / water);
 					else result = 100D * (amountNeeded / 1D);
+					if (result > 500D) result = 500D;
 				}
 				catch (InventoryException e) {
 					e.printStackTrace(System.err);
