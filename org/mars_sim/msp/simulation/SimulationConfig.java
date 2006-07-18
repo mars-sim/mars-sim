@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
  * Provides simulation configuration.
  * Provides access to other simulation subset configuration classes.
  */
-public class SimulationConfig {
+public class SimulationConfig implements Serializable {
 
 	// Configuration files to load.
 	private static final String SIMULATION_FILE = "simulation";

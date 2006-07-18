@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.simulation.vehicle;
 
+import java.io.Serializable;
 import java.util.*;
 import org.w3c.dom.*;
 
@@ -13,7 +14,7 @@ import org.w3c.dom.*;
  * Provides configuration information about vehicle units.
  * Uses a DOM document to get the information. 
  */
-public class VehicleConfig {
+public class VehicleConfig implements Serializable {
 
 	// Element names
 	private static final String ROVER = "rover";

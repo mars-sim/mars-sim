@@ -7,13 +7,14 @@
 
 package org.mars_sim.msp.simulation.mars;
 
+import java.io.Serializable;
 import org.mars_sim.msp.simulation.Coordinates;
 
 
 /** The Landmark class represents a surface landmark on virtual Mars.
  *  It contains information related to the landmark.
  */
-public class Landmark {
+public class Landmark implements Serializable {
 
     // Data members
     private String landmarkName;    // Name of the landmark

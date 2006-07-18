@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.simulation.structure;
 
+import java.io.Serializable;
 import java.util.*;
 import org.w3c.dom.*;
 
@@ -13,7 +14,7 @@ import org.w3c.dom.*;
  * Provides configuration information about settlements.
  * Uses a DOM document to get the information. 
  */
-public class SettlementConfig {
+public class SettlementConfig implements Serializable {
 	
 	// Element names
 	private static final String SETTLEMENT_TEMPLATE_LIST = 	"settlement-template-list";

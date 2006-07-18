@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation.malfunction;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,7 +22,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 /**
  * This class is a factory for Malfunction objects.
  */
-public class MalfunctionFactory {
+public class MalfunctionFactory implements Serializable {
 
     // Data members
     private Collection malfunctions;  // The possible malfunctions in the simulation.

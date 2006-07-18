@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.simulation.person;
 
+import java.io.Serializable;
 import java.util.*;
 import org.w3c.dom.*;
 
@@ -13,7 +14,7 @@ import org.w3c.dom.*;
  * Provides configuration information about people units.
  * Uses a DOM document to get the information. 
  */
-public class PersonConfig {
+public class PersonConfig implements Serializable {
 	
 	// Element names
 	private static final String PERSON_NAME_LIST = "person-name-list";

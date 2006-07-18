@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.simulation.person.medical;
 
+import java.io.Serializable;
 import java.util.*;
 import org.w3c.dom.*;
 
@@ -13,7 +14,7 @@ import org.w3c.dom.*;
  * Provides configuration information about medical complaints.
  * Uses a DOM document to get the information. 
  */
-public class MedicalConfig {
+public class MedicalConfig implements Serializable {
 	
 	// Element names
 	private static final String MEDICAL_COMPLAINT_LIST = "medical-complaint-list";

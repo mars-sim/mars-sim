@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.w3c.dom.*;
@@ -14,7 +15,7 @@ import org.w3c.dom.*;
  * Provides configuration information about greenhouse crops.
  * Uses a DOM document to get the information. 
  */
-public class CropConfig {
+public class CropConfig implements Serializable {
 
 	// Element names
 	private static final String CROP = "crop";

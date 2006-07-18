@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.simulation.mars;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.simulation.Coordinates;
@@ -15,7 +16,7 @@ import org.w3c.dom.*;
  * Provides configuration information about landmarks.
  * Uses a DOM document to get the information. 
  */
-public class LandmarkConfig {
+public class LandmarkConfig implements Serializable {
 
 	// Element names
 	private static final String LANDMARK = "landmark";

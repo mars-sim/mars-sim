@@ -32,13 +32,13 @@ public class Simulation implements Serializable {
 	private static final Simulation instance = new Simulation();
 	
 	// Transient data members (aren't stored in save file)
-	private transient MalfunctionFactory malfunctionFactory; // The malfunction factory
 	private transient HistoricalEventManager eventManager; // All historical info.
 	private transient Thread clockThread;
 	
 	// Intransient data members (stored in save file)
 	private Mars mars; // Planet Mars
 	private SimulationConfig simConfig; // The simulation configuration.
+	private MalfunctionFactory malfunctionFactory; // The malfunction factory
 	private UnitManager unitManager; // Manager for all units in simulation.
 	private MissionManager missionManager; // Mission controller
 	private RelationshipManager relationshipManager; // Manages all personal relationships.
@@ -82,11 +82,11 @@ public class Simulation implements Serializable {
 		Thread.sleep(MasterClock.TIME_PULSE_LENGTH);
 		
 		try {
-			// Initialize transient data members to reload configuration.
-			simulation.initializeTransientData();
-			
 			// Initialize intransient data members.
 			simulation.initializeIntransientData();
+			
+			// Initialize transient data members.
+			simulation.initializeTransientData();
 			
 			simulation.start();
 		}
@@ -100,8 +100,6 @@ public class Simulation implements Serializable {
 	 * @throws Exception if transient data could not be loaded.
 	 */
 	private void initializeTransientData() throws Exception {
-		simConfig = new SimulationConfig();
-		malfunctionFactory = new MalfunctionFactory(simConfig.getMalfunctionConfiguration());
 		eventManager = new HistoricalEventManager();
 	}
 	
@@ -110,6 +108,8 @@ public class Simulation implements Serializable {
 	 * @throws Exception if intransient data could not be loaded.
 	 */
 	private void initializeIntransientData() throws Exception {
+		simConfig = new SimulationConfig();
+		malfunctionFactory = new MalfunctionFactory(simConfig.getMalfunctionConfiguration());
 		mars = new Mars();
 		missionManager = new MissionManager();
 		relationshipManager = new RelationshipManager();
@@ -136,6 +136,8 @@ public class Simulation implements Serializable {
 			ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
 			
 			// Load intransient objects.
+			simConfig = (SimulationConfig) p.readObject();
+			malfunctionFactory = (MalfunctionFactory) p.readObject();
 			mars = (Mars) p.readObject();
 			mars.initializeTransientData();
 			missionManager = (MissionManager) p.readObject();
@@ -168,6 +170,8 @@ public class Simulation implements Serializable {
 		ObjectOutputStream p = new ObjectOutputStream(new FileOutputStream(file));
 			
 		// Store the intransient objects.
+		p.writeObject(simConfig);
+		p.writeObject(malfunctionFactory);
 		p.writeObject(mars);
 		p.writeObject(missionManager);
 		p.writeObject(relationshipManager);
