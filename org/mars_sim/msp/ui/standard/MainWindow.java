@@ -203,6 +203,7 @@ public class MainWindow extends JFrame implements WindowListener {
         }
         catch(Exception e) {
             System.out.println("Problem saving simulation " + e);
+            e.printStackTrace(System.err);
         }
         System.exit(0);
     }
