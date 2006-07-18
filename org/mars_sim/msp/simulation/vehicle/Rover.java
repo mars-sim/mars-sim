@@ -336,21 +336,21 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	// Check food capacity as range limit.
     	double foodConsumptionRate = config.getFoodConsumptionRate();
     	double foodCapacity = inventory.getAmountResourceCapacity(AmountResource.FOOD);
-    	double foodSols = foodCapacity / foodConsumptionRate;
+    	double foodSols = foodCapacity / (foodConsumptionRate * getCrewCapacity());
     	double foodRange = distancePerSol * foodSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (foodRange < range) range = foodRange;
     		
     	// Check water capacity as range limit.
     	double waterConsumptionRate = config.getWaterConsumptionRate();
     	double waterCapacity = inventory.getAmountResourceCapacity(AmountResource.WATER);
-    	double waterSols = waterCapacity / waterConsumptionRate;
+    	double waterSols = waterCapacity / (waterConsumptionRate * getCrewCapacity());
     	double waterRange = distancePerSol * waterSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (waterRange < range) range = waterRange;
     		
     	// Check oxygen capacity as range limit.
     	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
     	double oxygenCapacity = inventory.getAmountResourceCapacity(AmountResource.OXYGEN);
-    	double oxygenSols = oxygenCapacity / oxygenConsumptionRate;
+    	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * getCrewCapacity());
     	double oxygenRange = distancePerSol * oxygenSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (oxygenRange < range) range = oxygenRange;
     	
