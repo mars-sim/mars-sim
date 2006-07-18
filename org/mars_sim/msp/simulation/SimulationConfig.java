@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
  * Provides access to other simulation subset configuration classes.
  */
 public class SimulationConfig implements Serializable {
-
+	
 	// Configuration files to load.
 	private static final String SIMULATION_FILE = "simulation";
 	private static final String PEOPLE_FILE = "people";
@@ -43,6 +43,9 @@ public class SimulationConfig implements Serializable {
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
+	// Singleton instance
+	private static SimulationConfig instance = new SimulationConfig();
+	
 	// DOM documents
 	private Document simulationDoc;
 	
@@ -59,20 +62,42 @@ public class SimulationConfig implements Serializable {
 	/**
 	 * Constructor
 	 */
-	SimulationConfig() throws Exception {
+	private SimulationConfig() {
 		
-		// Load simulation document
-		simulationDoc = parseXMLFile(SIMULATION_FILE);
+		try {
+			// Load simulation document
+			simulationDoc = parseXMLFile(SIMULATION_FILE);
 		
-		// Load subset configuration classes.
-		personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
-		medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
-		landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARK_FILE));
-		malfunctionConfig = new MalfunctionConfig(parseXMLFile(MALFUNCTION_FILE));
-		cropConfig = new CropConfig(parseXMLFile(CROP_FILE));
-		vehicleConfig = new VehicleConfig(parseXMLFile(VEHICLE_FILE));
-		buildingConfig = new BuildingConfig(parseXMLFile(BUILDING_FILE));
-		settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE));
+			// Load subset configuration classes.
+			personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
+			medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
+			landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARK_FILE));
+			malfunctionConfig = new MalfunctionConfig(parseXMLFile(MALFUNCTION_FILE));
+			cropConfig = new CropConfig(parseXMLFile(CROP_FILE));
+			vehicleConfig = new VehicleConfig(parseXMLFile(VEHICLE_FILE));
+			buildingConfig = new BuildingConfig(parseXMLFile(BUILDING_FILE));
+			settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE));
+		}
+		catch (Exception e) {
+			System.err.println("Error creating simulation config: " + e.getMessage());
+			e.printStackTrace(System.err);
+		}
+	}
+	
+	/**
+	 * Gets a singleton instance of the simulation config.
+	 * @return SimulationConfig instance
+	 */
+	public static SimulationConfig instance() {
+		return instance;
+	}
+	
+	/**
+	 * Sets the singleton instance .
+	 * @param instance the singleton instance.
+	 */
+	public static void setInstance(SimulationConfig instance) {
+		SimulationConfig.instance = instance;
 	}
 	
 	/**

@@ -27,8 +27,7 @@ public class GroundVehicleMaintenance extends VehicleMaintenance implements Seri
     	// Call VehicleMaintenance constructor.
     	super(NAME, building);
     	
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
 		try {
 			vehicleCapacity = config.getVehicleCapacity(building.getName());

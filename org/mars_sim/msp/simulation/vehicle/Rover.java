@@ -46,8 +46,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
         super(name, description, settlement);
 		
 		// Get vehicle configuration.
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		VehicleConfig config = simConfig.getVehicleConfiguration();
+		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString("Rover");
@@ -331,7 +330,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	
     	double distancePerSol = getEstimatedTravelDistancePerSol();
     	
-    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     		
     	// Check food capacity as range limit.
     	double foodConsumptionRate = config.getFoodConsumptionRate();

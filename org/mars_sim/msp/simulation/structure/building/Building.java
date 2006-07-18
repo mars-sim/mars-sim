@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -54,8 +53,7 @@ public class Building implements Malfunctionable, Serializable {
         	functions = determineFunctions();
         	
         	// Get base power requirements.
-        	SimulationConfig simConfig = Simulation.instance().getSimConfig();
-			BuildingConfig config = simConfig.getBuildingConfiguration();
+			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 				
 			basePowerRequirement = config.getBasePowerRequirement(name);
 			basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
@@ -91,8 +89,7 @@ public class Building implements Malfunctionable, Serializable {
     private List determineFunctions() throws Exception {
     	List buildingFunctions = new ArrayList();
     	
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
     	
     	// Set power generation function.
     	if (config.hasPowerGeneration(name)) buildingFunctions.add(new PowerGeneration(this));

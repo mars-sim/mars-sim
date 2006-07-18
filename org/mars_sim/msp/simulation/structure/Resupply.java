@@ -50,8 +50,7 @@ public class Resupply implements Serializable {
 		isDelivered = false;
 		
 		// Get resupply info from the config file.
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		SettlementConfig config = simConfig.getSettlementConfiguration();
+		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
 		
 		// Get new building types.
 		newBuildings = config.getResupplyBuildingTypes(resupplyName);
@@ -141,7 +140,7 @@ public class Resupply implements Serializable {
 		PersonCollection immigrants = new PersonCollection();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		for (int x = 0; x < newImmigrantNum; x++) {
-			PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 			String gender = Person.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
 			Person immigrant = new Person(unitManager.getNewName(UnitManager.PERSON, gender), gender, settlement);

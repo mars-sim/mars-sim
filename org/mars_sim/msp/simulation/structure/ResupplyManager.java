@@ -30,8 +30,7 @@ public class ResupplyManager implements Serializable {
 		resupplies = new ArrayList();
 		
 		// Create resupply missions.
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		SettlementConfig config = simConfig.getSettlementConfiguration();
+		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
 		String templateName = settlement.getTemplate();
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		

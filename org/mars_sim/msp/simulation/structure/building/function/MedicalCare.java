@@ -32,8 +32,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		// Use Function constructor.
 		super(NAME, building);
 		
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
 		try {
 			int techLevel = config.getMedicalCareTechLevel(building.getName());

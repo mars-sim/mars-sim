@@ -8,7 +8,6 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
-import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.person.*;
@@ -37,8 +36,7 @@ public class LifeSupport extends Function implements Serializable {
 		
 		occupants = new PersonCollection();
 		
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
 		try {
 			// Set occupant capacity.

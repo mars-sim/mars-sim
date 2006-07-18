@@ -178,8 +178,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         	// If Person is dead, then skip
         	if (health.getDeathDetails() == null) {
         		
-        		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-            	PersonConfig config = simConfig.getPersonConfiguration();
+            	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             	LifeSupport support = getLifeSupport();
             	
             	// Pass the time in the physical condition first as this may result in death.

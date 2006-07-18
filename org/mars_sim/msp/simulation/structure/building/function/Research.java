@@ -32,8 +32,7 @@ public class Research extends Function implements Lab, Serializable {
 		// Use Function constructor
 		super(NAME, building);
 		
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 			
 		try {
 			techLevel = config.getResearchTechLevel(building.getName());

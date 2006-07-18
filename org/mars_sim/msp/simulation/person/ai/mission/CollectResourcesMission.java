@@ -16,6 +16,7 @@ import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.mars.Mars;
@@ -501,7 +502,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     	
     	double timeLimit = Double.MAX_VALUE;
     	
-    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 		
     	// Check food capacity as time limit.
     	double foodConsumptionRate = config.getFoodConsumptionRate();

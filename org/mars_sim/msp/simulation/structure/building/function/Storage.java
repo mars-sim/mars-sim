@@ -31,8 +31,7 @@ public class Storage extends Function implements Serializable {
 		super(NAME, building);
 		
 		try {
-			SimulationConfig simConfig = Simulation.instance().getSimConfig();
-			BuildingConfig config = simConfig.getBuildingConfiguration();
+			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 			Inventory inventory = building.getInventory();	
 			
 			// Get building resource capacity.

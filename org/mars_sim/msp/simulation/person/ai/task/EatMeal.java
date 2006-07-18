@@ -115,8 +115,7 @@ class EatMeal extends Task implements Serializable {
 		}
     	
         if (getDuration() < (getTimeCompleted() + time)) {
-        	SimulationConfig simConfig = Simulation.instance().getSimConfig();
-    		PersonConfig config = simConfig.getPersonConfiguration();
+    		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     		try {
     			person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
     			condition.setHunger(0D);

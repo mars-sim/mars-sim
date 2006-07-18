@@ -39,7 +39,7 @@ public class MasterClock implements Runnable, Serializable {
      */
     public MasterClock() throws Exception {
         // Initialize data members
-		SimulationConfig config = Simulation.instance().getSimConfig();
+		SimulationConfig config = SimulationConfig.instance();
 
         // Create a Martian clock
         marsTime = new MarsClock(config.getMarsStartDateTime());
@@ -84,7 +84,7 @@ public class MasterClock implements Runnable, Serializable {
     public double getTimePulse() throws Exception {
 
 		// Get time ratio from simulation configuration.
-		if (timeRatio == 0) setTimeRatio(Simulation.instance().getSimConfig().getSimulationTimeRatio());
+		if (timeRatio == 0) setTimeRatio(SimulationConfig.instance().getSimulationTimeRatio());
 
         double timePulse;
         if (timeRatio > 0D) {

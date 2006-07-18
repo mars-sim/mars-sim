@@ -75,8 +75,7 @@ public class UnitManager implements Serializable {
      */
     private void initializePersonNames() throws Exception {
  		try {
-			SimulationConfig simConfig = Simulation.instance().getSimConfig();
-			PersonConfig personConfig = simConfig.getPersonConfiguration();
+			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
     		List personNames = personConfig.getPersonNameList();
     		personMaleNames = new ArrayList();
     		personFemaleNames = new ArrayList();
@@ -99,8 +98,7 @@ public class UnitManager implements Serializable {
      */
     private void initializeVehicleNames() throws Exception {
         try {
-			SimulationConfig simConfig = Simulation.instance().getSimConfig();
-			VehicleConfig vehicleConfig = simConfig.getVehicleConfiguration();
+			VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
         	vehicleNames = vehicleConfig.getRoverNameList();
         }
         catch (Exception e) {
@@ -114,8 +112,7 @@ public class UnitManager implements Serializable {
      */
     private void initializeSettlementNames() throws Exception {
 		try {
-			SimulationConfig simConfig = Simulation.instance().getSimConfig();
-			SettlementConfig settlementConfig = simConfig.getSettlementConfiguration();
+			SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 			settlementNames = settlementConfig.getSettlementNameList();
 		}
 		catch (Exception e) {
@@ -191,8 +188,7 @@ public class UnitManager implements Serializable {
      */
     private void createInitialSettlements() throws Exception {
     	
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-    	SettlementConfig config = simConfig.getSettlementConfiguration();
+    	SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
 		try {
 			for (int x=0; x < config.getNumberOfInitialSettlements(); x++) {
@@ -232,8 +228,7 @@ public class UnitManager implements Serializable {
      */
     private void createInitialVehicles() throws Exception {
     	
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		SettlementConfig config = simConfig.getSettlementConfiguration();
+		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
     		SettlementIterator i = getSettlements().iterator();
@@ -258,8 +253,7 @@ public class UnitManager implements Serializable {
      */
     private void createInitialEquipment() throws Exception {
     	
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		SettlementConfig config = simConfig.getSettlementConfiguration();
+		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
     		SettlementIterator i = getSettlements().iterator();
@@ -292,7 +286,7 @@ public class UnitManager implements Serializable {
     	// Create configured people.
     	createConfiguredPeople();
     	
-    	PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		
 		// Randomly create all remaining people to fill the settlements to capacity.
@@ -321,7 +315,7 @@ public class UnitManager implements Serializable {
      * @throws Exception if error parsing XML.
      */
     private void createConfiguredPeople() throws Exception {
-    	PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
     	
 		// Create all configured people.
@@ -397,7 +391,7 @@ public class UnitManager implements Serializable {
      * @throws Exception if error parsing XML.
      */
     private void createConfiguredRelationships() throws Exception{
-    	PersonConfig personConfig = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		
 		// Create all configured people relationships.

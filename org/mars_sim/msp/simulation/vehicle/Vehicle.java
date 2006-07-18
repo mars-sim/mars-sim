@@ -104,8 +104,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    malfunctionManager.addScopeString("Vehicle");
     	
 	    // Get vehicle configuration.
-	    SimulationConfig simConfig = Simulation.instance().getSimConfig();
-	    VehicleConfig config = simConfig.getVehicleConfiguration();
+	    VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		
 	    // Set base speed to 30kph.
 	    setBaseSpeed(config.getBaseSpeed(description));

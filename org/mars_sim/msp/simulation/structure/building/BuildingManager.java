@@ -12,6 +12,7 @@ import java.util.*;
 
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -33,7 +34,7 @@ public class BuildingManager implements Serializable {
      * @throws Exception if buildings cannot be constructed.
      */
     public BuildingManager(Settlement settlement) throws Exception {
-        this(settlement, Simulation.instance().getSimConfig().getSettlementConfiguration()
+        this(settlement, SimulationConfig.instance().getSettlementConfiguration()
         		.getTemplateBuildingTypes(settlement.getTemplate()));
     }
     

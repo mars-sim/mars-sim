@@ -34,8 +34,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		// Call Function constructor.
 		super(NAME, building);
 		
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
 		try {
 			beds = config.getLivingAccommodationBeds(building.getName());

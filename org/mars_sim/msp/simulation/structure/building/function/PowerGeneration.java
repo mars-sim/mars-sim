@@ -30,8 +30,7 @@ public class PowerGeneration extends Function implements Serializable {
     	super(NAME, building);
     	
     	// Determine power sources.
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
     		
     	try {
     		powerSources = config.getPowerSources(building.getName());

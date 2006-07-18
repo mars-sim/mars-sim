@@ -41,8 +41,7 @@ public class Farming extends Function implements Serializable {
     	// Use Function constructor.
     	super(NAME, building);
     	
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
 		try {
 			cropNum = config.getCropNum(building.getName());
@@ -61,7 +60,7 @@ public class Farming extends Function implements Serializable {
 		crops = new ArrayList();
 		try {
 			Settlement settlement = building.getBuildingManager().getSettlement();
-			CropConfig cropConfig = simConfig.getCropConfiguration();
+			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			for (int x=0; x < cropNum; x++) {
 				crops.add(new Crop(Crop.getRandomCropType(cropConfig), 
 					(maxHarvest / (double) cropNum), this, settlement, false));
@@ -202,8 +201,7 @@ public class Farming extends Function implements Serializable {
 		// Add any new crops.
 		try {
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-			SimulationConfig simConfig = Simulation.instance().getSimConfig();
-			CropConfig cropConfig = simConfig.getCropConfiguration();
+			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			for (int x=0; x < newCrops; x++) {
 				crops.add(new Crop(Crop.getRandomCropType(cropConfig), 
 					(maxHarvest / (double) cropNum), this, settlement, true));

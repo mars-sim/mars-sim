@@ -527,7 +527,7 @@ public class PhysicalCondition implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getOxygenConsumptionRate() throws Exception {
-    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getOxygenConsumptionRate();
     }
     
@@ -537,7 +537,7 @@ public class PhysicalCondition implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getWaterConsumptionRate() throws Exception {
-    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getWaterConsumptionRate();
     }
     
@@ -547,7 +547,7 @@ public class PhysicalCondition implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getFoodConsumptionRate() throws Exception {
-    	PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+    	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getFoodConsumptionRate();
     }
 }

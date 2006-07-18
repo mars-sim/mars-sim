@@ -8,7 +8,6 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Airlock;
-import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.structure.building.*;
  
@@ -31,8 +30,7 @@ public class EVA extends Function implements Serializable {
 		super(NAME, building);
 		
 		try {
-			SimulationConfig simConfig = Simulation.instance().getSimConfig();
-			BuildingConfig config = simConfig.getBuildingConfiguration();
+			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 			
 			// Add a building airlock.
 			int airlockCapacity = config.getAirlockCapacity(building.getName());

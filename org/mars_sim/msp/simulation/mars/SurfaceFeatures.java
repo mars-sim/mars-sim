@@ -31,8 +31,7 @@ public class SurfaceFeatures {
         surfaceTerrain = new TerrainElevation();
 
 		try {
-			SimulationConfig simConfig = Simulation.instance().getSimConfig();
-			landmarks = simConfig.getLandmarkConfiguration().getLandmarkList();
+			landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
 		}
 		catch (Exception e) {
 			throw new Exception("Landmarks could not be loaded: " + e.getMessage());

@@ -37,7 +37,6 @@ public class Simulation implements Serializable {
 	
 	// Intransient data members (stored in save file)
 	private Mars mars; // Planet Mars
-	private SimulationConfig simConfig; // The simulation configuration.
 	private MalfunctionFactory malfunctionFactory; // The malfunction factory
 	private UnitManager unitManager; // Manager for all units in simulation.
 	private MissionManager missionManager; // Mission controller
@@ -108,8 +107,7 @@ public class Simulation implements Serializable {
 	 * @throws Exception if intransient data could not be loaded.
 	 */
 	private void initializeIntransientData() throws Exception {
-		simConfig = new SimulationConfig();
-		malfunctionFactory = new MalfunctionFactory(simConfig.getMalfunctionConfiguration());
+		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
 		mars = new Mars();
 		missionManager = new MissionManager();
 		relationshipManager = new RelationshipManager();
@@ -136,7 +134,7 @@ public class Simulation implements Serializable {
 			ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
 			
 			// Load intransient objects.
-			simConfig = (SimulationConfig) p.readObject();
+			SimulationConfig.setInstance((SimulationConfig) p.readObject());
 			malfunctionFactory = (MalfunctionFactory) p.readObject();
 			mars = (Mars) p.readObject();
 			mars.initializeTransientData();
@@ -170,7 +168,7 @@ public class Simulation implements Serializable {
 		ObjectOutputStream p = new ObjectOutputStream(new FileOutputStream(file));
 			
 		// Store the intransient objects.
-		p.writeObject(simConfig);
+		p.writeObject(SimulationConfig.instance());
 		p.writeObject(malfunctionFactory);
 		p.writeObject(mars);
 		p.writeObject(missionManager);
@@ -184,14 +182,6 @@ public class Simulation implements Serializable {
 		p.close();
 		
 		simulation.start();
-	}
-	
-	/**
-	 * Gets the simulation configuration DOM document.
-	 * @return config doc.
-	 */
-	public SimulationConfig getSimConfig() {
-		return simConfig;
 	}
 	
 	/**

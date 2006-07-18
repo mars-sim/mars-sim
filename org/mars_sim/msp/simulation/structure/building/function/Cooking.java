@@ -44,8 +44,7 @@ public class Cooking extends Function implements Serializable {
 		cookingWorkTime = 0D;
 		meals = new ArrayList();
 		
-		SimulationConfig simConfig = Simulation.instance().getSimConfig();
-		BuildingConfig config = simConfig.getBuildingConfiguration();
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
 		try {
 			this.cookCapacity = config.getCookCapacity(building.getName());
@@ -182,8 +181,7 @@ public class Cooking extends Function implements Serializable {
 			MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 			
 			try {
-				SimulationConfig simConfig = Simulation.instance().getSimConfig();
-				PersonConfig config = simConfig.getPersonConfiguration();
+				PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 				double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
 				try {
 					getBuilding().getInventory().retrieveAmountResource(AmountResource.FOOD, foodAmount);
@@ -218,17 +216,14 @@ public class Cooking extends Function implements Serializable {
 			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
 				try {
-					SimulationConfig simConfig = Simulation.instance().getSimConfig();
-					PersonConfig config = simConfig.getPersonConfiguration();
+					PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 					getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, 
 							config.getFoodConsumptionRate() * (1D / 3D));
 					i.remove();
 					// System.out.println("Cooked meal expiring at " + 
 					// 	getBuilding().getBuildingManager().getSettlement().getName());
 				}
-				catch (Exception e) {
-					System.err.println("Cooking.timePassing(): " + e.getMessage());
-				}
+				catch (Exception e) {}
 			}
 		}
 	}

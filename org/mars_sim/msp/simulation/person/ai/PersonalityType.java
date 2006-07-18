@@ -191,7 +191,7 @@ public class PersonalityType implements Serializable {
 	 * @throws Exception if personality type cannot be found or percentages don't add up to 100%.
 	 */
 	private void loadPersonalityTypes() throws Exception {
-		PersonConfig config = Simulation.instance().getSimConfig().getPersonConfiguration();
+		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 		personalityTypes = new HashMap(16);
 		
 		try {

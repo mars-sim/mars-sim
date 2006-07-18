@@ -80,7 +80,7 @@ public class MedicalManager implements Serializable {
      */
     public void initMedical() throws Exception{
         // Create the pre-defined complaints, using person configuration.
-        SimulationConfig simConfig = Simulation.instance().getSimConfig();
+        SimulationConfig simConfig = SimulationConfig.instance();
         PersonConfig personConfig = simConfig.getPersonConfiguration();
         MedicalConfig medicalConfig = simConfig.getMedicalConfiguration();
 
