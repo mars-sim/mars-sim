@@ -195,6 +195,7 @@ public class MainWindow extends JFrame implements WindowListener {
      * Exit the simulation for running and exit.
      */
     public void exitSimulation() {
+    	// System.out.println("Exiting simulation");
     	Simulation sim = Simulation.instance();
         try {
         	sim.getMasterClock().saveSimulation(null);

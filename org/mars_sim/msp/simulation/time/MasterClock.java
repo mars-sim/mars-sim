@@ -25,13 +25,13 @@ public class MasterClock implements Runnable, Serializable {
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
-    private boolean keepRunning;  // Runnable flag
+    private transient boolean keepRunning;  // Runnable flag
     private double timeRatio;     // Simulation/real-time ratio
-    private long lastTimeDiff;    // The millisecond time diff used in the last time pulse.
-    private boolean loadSimulation; // Flag for loading a new simulation.
-    private boolean saveSimulation; // Flag for saving a simulation.
-    private File file;            // The file to save or load the simulation.
-    private boolean exitProgram;  // Flag for ending the simulation program.
+    private transient long lastTimeDiff;    // The millisecond time diff used in the last time pulse.
+    private transient boolean loadSimulation; // Flag for loading a new simulation.
+    private transient boolean saveSimulation; // Flag for saving a simulation.
+    private transient File file;            // The file to save or load the simulation.
+    private transient boolean exitProgram;  // Flag for ending the simulation program.
 
     // Sleep duration in milliseconds 
     public final static int TIME_PULSE_LENGTH = 1000;
@@ -189,13 +189,14 @@ public class MasterClock implements Runnable, Serializable {
 			try {
         		if (saveSimulation) {
         			// Save the simulation to a file.
+        			saveSimulation = false;
 					Simulation.instance().saveSimulation(file);
-					saveSimulation = false;
+					
 				}
 				else if (loadSimulation) {
 					// Load the simulation from a file.
-					Simulation.instance().loadSimulation(file);
 					loadSimulation = false;
+					Simulation.instance().loadSimulation(file);
 				}
         	}
         	catch (Exception e) {
@@ -203,7 +204,10 @@ public class MasterClock implements Runnable, Serializable {
         	}
         	
         	// Exit program if exitProgram flag is true.
-        	if (exitProgram) System.exit(0);
+        	if (exitProgram) {
+        		exitProgram = false;
+        		System.exit(0);
+        	}
         }
     }
 
