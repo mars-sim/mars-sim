@@ -98,8 +98,7 @@ public class MainWindow extends JFrame implements WindowListener {
             chooser.setDialogTitle("Selected stored simulation");
             int returnVal = chooser.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-            	Simulation simulation = Simulation.instance();
-            	simulation.loadSimulation(chooser.getSelectedFile());
+            	Simulation.instance().getMasterClock().loadSimulation(chooser.getSelectedFile());
             	desktop.resetDesktop();
             }
         }
@@ -160,7 +159,7 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // Attempt a save
         try {
-        	Simulation.instance().saveSimulation(fileLocn);
+        	Simulation.instance().getMasterClock().saveSimulation(fileLocn);
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -196,16 +195,16 @@ public class MainWindow extends JFrame implements WindowListener {
      * Exit the simulation for running and exit.
      */
     public void exitSimulation() {
+    	Simulation sim = Simulation.instance();
         try {
-        	Simulation sim = Simulation.instance();
-        	sim.saveSimulation(null);
-        	sim.stop();
+        	sim.getMasterClock().saveSimulation(null);
         }
         catch(Exception e) {
             System.out.println("Problem saving simulation " + e);
             e.printStackTrace(System.err);
         }
-        System.exit(0);
+
+        sim.getMasterClock().exitProgram();
     }
     
     /**

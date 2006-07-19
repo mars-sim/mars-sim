@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.simulation.time;
 
+import java.io.File;
 import java.io.Serializable;
 
 import org.mars_sim.msp.simulation.Simulation;
@@ -27,6 +28,10 @@ public class MasterClock implements Runnable, Serializable {
     private boolean keepRunning;  // Runnable flag
     private double timeRatio;     // Simulation/real-time ratio
     private long lastTimeDiff;    // The millisecond time diff used in the last time pulse.
+    private boolean loadSimulation; // Flag for loading a new simulation.
+    private boolean saveSimulation; // Flag for saving a simulation.
+    private File file;            // The file to save or load the simulation.
+    private boolean exitProgram;  // Flag for ending the simulation program.
 
     // Sleep duration in milliseconds 
     public final static int TIME_PULSE_LENGTH = 1000;
@@ -74,6 +79,31 @@ public class MasterClock implements Runnable, Serializable {
      */
     public UpTimer getUpTimer() {
         return uptimer;
+    }
+    
+    /**
+     * Sets the load simulation flag and the file to load from.
+     * @param file the file to load from.
+     */
+    public void loadSimulation(File file) {
+    	loadSimulation = true;
+    	this.file = file;
+    }
+    
+    /**
+     * Sets the save simulation flag and the file to save to.
+     * @param file save to file or null if default file.
+     */
+    public void saveSimulation(File file) {
+    	saveSimulation = true;
+    	this.file = file;
+    }
+    
+    /**
+     * Sets the exit program flag.
+     */
+    public void exitProgram() {
+    	exitProgram = true;
     }
 
     /** 
@@ -130,29 +160,50 @@ public class MasterClock implements Runnable, Serializable {
             } 
             catch (InterruptedException e) {}
 
+            
+            
 			try {
-            	//Increment the uptimer
-            	uptimer.addTime(TIME_PULSE_LENGTH);
+				//Increment the uptimer
+				uptimer.addTime(TIME_PULSE_LENGTH);
 
-            	// Get the time pulse length in millisols.
-            	double timePulse = getTimePulse();
+				// Get the time pulse length in millisols.
+				double timePulse = getTimePulse();
 
-            	// long startTime = System.currentTimeMillis();
+				// long startTime = System.currentTimeMillis();
             	
-            	// Send simulation a clock pulse representing the time pulse length (in millisols).
-            	Simulation.instance().clockPulse(timePulse);
+				// Send simulation a clock pulse representing the time pulse length (in millisols).
+				Simulation.instance().clockPulse(timePulse);
 
-            	// long endTime = System.currentTimeMillis();
-            	// System.out.println("time: " + (endTime - startTime));
+				// long endTime = System.currentTimeMillis();
+				// System.out.println("time: " + (endTime - startTime));
         		
-            	// Add time pulse length to Earth and Mars clocks. 
-            	earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
-            	marsTime.addTime(timePulse);
+				// Add time pulse length to Earth and Mars clocks. 
+				earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
+				marsTime.addTime(timePulse);
 			}
 			catch (Exception e) {
 				e.printStackTrace(System.err);
 				stop();
 			}
+			
+			try {
+        		if (saveSimulation) {
+        			// Save the simulation to a file.
+					Simulation.instance().saveSimulation(file);
+					saveSimulation = false;
+				}
+				else if (loadSimulation) {
+					// Load the simulation from a file.
+					Simulation.instance().loadSimulation(file);
+					loadSimulation = false;
+				}
+        	}
+        	catch (Exception e) {
+        		e.printStackTrace(System.err);
+        	}
+        	
+        	// Exit program if exitProgram flag is true.
+        	if (exitProgram) System.exit(0);
         }
     }
 

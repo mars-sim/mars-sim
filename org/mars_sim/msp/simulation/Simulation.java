@@ -124,6 +124,8 @@ public class Simulation implements Serializable {
 	 * @throws Exception if simulation could not be loaded.
 	 */
 	public void loadSimulation(File file) throws Exception {
+		// System.out.println("Loading simulation from " + file);
+		
 		Simulation simulation = instance();
 		simulation.stop();
 		
@@ -159,6 +161,8 @@ public class Simulation implements Serializable {
 	 * @throws Exception if simulation could not be saved.
 	 */
 	public void saveSimulation(File file) throws Exception {
+		// System.out.println("Saving simulation to " + file);
+		
 		Simulation simulation = instance();
 		simulation.stop();
 		
