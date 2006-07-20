@@ -61,8 +61,8 @@
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="20" />
-			<equipment type="Specimen Container" number="20" />
+			<equipment type="Bag" number="40" />
+			<equipment type="Specimen Container" number="40" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -80,8 +80,8 @@
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="40" />
-			<equipment type="Specimen Container" number="40" />
+			<equipment type="Bag" number="60" />
+			<equipment type="Specimen Container" number="60" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -107,8 +107,8 @@
 			<equipment type="EVA Suit" number="24" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="40" />
-			<equipment type="Specimen Container" number="40" />
+			<equipment type="Bag" number="100" />
+			<equipment type="Specimen Container" number="100" />
 		</template>
 	
 	</settlement-template-list>
