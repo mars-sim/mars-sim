@@ -371,7 +371,7 @@ public abstract class Mission implements Serializable {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace(System.out);
+			e.printStackTrace(System.err);
 		}
 		
 		if (getPeopleNumber() < getMinPeople()) endMission();

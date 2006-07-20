@@ -143,29 +143,6 @@ public abstract class RoverMission extends VehicleMission {
 		return usable;
 	}
 	
-	/**
-	 * Compares the quality of two vehicles for use in this mission.
-	 * (This method should be added to by children)
-	 * @param firstVehicle the first vehicle to compare
-	 * @param secondVehicle the second vehicle to compare
-	 * @return -1 if the second vehicle is better than the first vehicle, 
-	 * 0 if vehicle are equal in quality,
-	 * and 1 if the first vehicle is better than the second vehicle.
-	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
-	 * @throws Exception if error comparing vehicles.
-	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
-		int result = super.compareVehicles(firstVehicle, secondVehicle);
-		
-		// Check if one can hold more crew than the other.
-		if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
-			if (((Rover) firstVehicle).getCrewCapacity() > ((Rover) secondVehicle).getCrewCapacity()) result = 1;
-			else if (((Rover) firstVehicle).getCrewCapacity() < ((Rover) secondVehicle).getCrewCapacity()) result = -1;
-		}
-		
-		return result;
-	}
-	
     /**
      * Checks that everyone in the mission is aboard the rover.
      * @return true if everyone is aboard
@@ -238,7 +215,7 @@ public abstract class RoverMission extends VehicleMission {
     		}
     		else {
     			// If person is not aboard the rover, board rover.
-    			if (!person.getLocationSituation().equals(Person.INVEHICLE)) {
+    			if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
             		settlement.getInventory().retrieveUnit(person);
             		getVehicle().getInventory().storeUnit(person);
             	}
@@ -407,6 +384,28 @@ public abstract class RoverMission extends VehicleMission {
 				Person inhabitant = i.next();
 				if ((inhabitant != person) && !inhabitant.getMind().hasActiveMission()) result = true;
 			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Checks to see if at least a minimum number of people are available for a mission at a settlement.
+	 * @param settlement the settlement to check.
+	 * @param minNum minimum number of people required.
+	 * @return true if minimum people available.
+	 */
+	protected static boolean minAvailablePeopleAtSettlement(Settlement settlement, int minNum) {
+		boolean result = false;
+		
+		if (settlement != null) {
+			int numAvailable = 0;
+			PersonIterator i = settlement.getInhabitants().iterator();
+			while (i.hasNext()) {
+				Person inhabitant = i.next();
+				if (!inhabitant.getMind().hasActiveMission()) numAvailable++;
+			}
+			if (numAvailable >= minNum) result = true;
 		}
 		
 		return result;

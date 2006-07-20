@@ -157,12 +157,7 @@ public abstract class VehicleMission extends TravelMission {
 	 */
 	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
 		if (isUsableVehicle(firstVehicle)) {
-			if (isUsableVehicle(secondVehicle)) {
-				// Vehicle with superior range should be ranked higher.
-				if (firstVehicle.getRange() > secondVehicle.getRange()) return 1;
-				else if (firstVehicle.getRange() < secondVehicle.getRange()) return -1;
-				else return 0;
-			}
+			if (isUsableVehicle(secondVehicle)) return 0;
 			else return 1;
 		}
 		else {
@@ -556,7 +551,7 @@ public abstract class VehicleMission extends TravelMission {
     	}
     	else {
     		// Set the emergency beacon on the rover and end mission.
-    		System.out.println(vehicle.getName() + " setting emergency beacon.");
+    		// System.out.println(vehicle.getName() + " setting emergency beacon.");
     		
     		// Creating mission emergency beacon event.
             HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.EMERGENCY_BEACON);

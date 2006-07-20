@@ -61,13 +61,14 @@ public class CollectIce extends CollectResourcesMission {
 			// Check if a mission-capable rover is available.
 			boolean reservableRover = areVehiclesAvailable(settlement);
 
-			// Check if at least one person left to hold down the fort.
-			boolean remainingInhabitant = atLeastOnePersonRemainingAtSettlement(settlement, person);
+			// Check if minimum number of people are available at the settlement.
+			// Plus one to hold down the fort.
+			boolean minNum = minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
 			
 			// Check if there are enough bags at the settlement for collecting ice.
 			boolean enoughBags = (numCollectingContainersAvailable(settlement, Bag.class) >= REQUIRED_BAGS);
 	    
-			if (reservableRover && remainingInhabitant && enoughBags) {
+			if (reservableRover && minNum && enoughBags) {
 				// Calculate the probability based on the water situation.
 				try {
 					double water = settlement.getInventory().getAmountResourceStored(AmountResource.WATER);

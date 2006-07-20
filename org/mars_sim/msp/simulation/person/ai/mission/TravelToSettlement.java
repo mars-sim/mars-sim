@@ -24,6 +24,7 @@ import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementCollection;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
+import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -105,8 +106,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	    	// Check if available rover.
 	    	if (!areVehiclesAvailable(settlement)) missionPossible = false;
             
-			// At least one person left to hold down the fort.
-	    	if (!atLeastOnePersonRemainingAtSettlement(settlement, person)) missionPossible = false;
+			// Check if minimum number of people are available at the settlement.
+			// Plus one to hold down the fort.
+			if (!minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1))) missionPossible = false;
 	    	
 	    	// Check if there are any desirable settlements within range.
 	    	try {
@@ -326,4 +328,33 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     		return result;
     	}
     }
+    
+	/**
+	 * Compares the quality of two vehicles for use in this mission.
+	 * (This method should be added to by children)
+	 * @param firstVehicle the first vehicle to compare
+	 * @param secondVehicle the second vehicle to compare
+	 * @return -1 if the second vehicle is better than the first vehicle, 
+	 * 0 if vehicle are equal in quality,
+	 * and 1 if the first vehicle is better than the second vehicle.
+	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
+	 * @throws Exception if error comparing vehicles.
+	 */
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
+		int result = super.compareVehicles(firstVehicle, secondVehicle);
+		
+		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
+			// Check if one can hold more crew than the other.
+			if (((Rover) firstVehicle).getCrewCapacity() > ((Rover) secondVehicle).getCrewCapacity()) result = 1;
+			else if (((Rover) firstVehicle).getCrewCapacity() < ((Rover) secondVehicle).getCrewCapacity()) result = -1;
+				
+			// Vehicle with superior range should be ranked higher.
+			if (result == 0) {
+				if (firstVehicle.getRange() > secondVehicle.getRange()) result = 1;
+				else if (firstVehicle.getRange() < secondVehicle.getRange()) result = -1;
+			}
+		}
+		
+		return result;
+	}
 }

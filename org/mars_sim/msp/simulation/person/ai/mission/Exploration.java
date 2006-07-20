@@ -65,14 +65,15 @@ public class Exploration extends CollectResourcesMission {
 			// Check if a mission-capable rover is available.
 			boolean reservableRover = areVehiclesAvailable(settlement);
 			
-			// Check if at least one person left to hold down the fort.
-			boolean remainingInhabitant = atLeastOnePersonRemainingAtSettlement(settlement, person);
+			// Check if minimum number of people are available at the settlement.
+			// Plus one to hold down the fort.
+			boolean minNum = minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
 			
 			// Check if there are enough specimen containers at the settlement for collecting rock samples.
 			boolean enoughContainers = 
 				(numCollectingContainersAvailable(settlement, SpecimenContainer.class) >= REQUIRED_SPECIMEN_CONTAINERS);
 	    
-			if (reservableRover && remainingInhabitant && enoughContainers) result = 5D;
+			if (reservableRover && minNum && enoughContainers) result = 5D;
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
