@@ -260,7 +260,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 try { 
                     window.setClosed(false); 
                 }
-                catch (Exception e) { System.out.println(e.toString()); }
+                catch (Exception e) { System.err.println(e.toString()); }
             }
             window.show();
             //bring to front if it overlaps with other windows
@@ -306,7 +306,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 tempWindow.setIcon(false);
             }
             catch(java.beans.PropertyVetoException e) {
-                System.out.println("Problem reopening " + e);
+                System.err.println("Problem reopening " + e);
             }
         }
         else {

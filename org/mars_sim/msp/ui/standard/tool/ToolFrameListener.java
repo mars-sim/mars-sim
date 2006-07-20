@@ -20,7 +20,7 @@ public class ToolFrameListener extends InternalFrameAdapter {
         JInternalFrame frame = (JInternalFrame) e.getSource();
         try { frame.setClosed(false); } 
         catch (java.beans.PropertyVetoException v) {
-            System.out.println(frame.getTitle() + " setClosed() is Vetoed!");
+            System.err.println(frame.getTitle() + " setClosed() is Vetoed!");
         }
     }
 }

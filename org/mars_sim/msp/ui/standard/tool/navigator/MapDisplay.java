@@ -311,7 +311,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         else {
         	// System.out.println("Go");
             if (mapError) {
-            	System.out.println("mapError");
+            	System.err.println("mapError");
                 // Display previous map image
                 if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
                 

@@ -71,7 +71,7 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
 
         try { mtrack.waitForAll(); }
         catch (InterruptedException e) {
-            System.out.println("NavButtonDisplay Media Tracker Error " + e);
+            System.err.println("NavButtonDisplay Media Tracker Error " + e);
         }
 
         // Set hot spots for mouse clicks

@@ -163,7 +163,7 @@ public class TimeWindow extends ToolWindow {
                     	master.setTimeRatio(ratio);
                     }
                     catch (Exception e2) {
-                    	System.out.println(e2.getMessage());
+                    	System.err.println(e2.getMessage());
                     }
                 }
         });

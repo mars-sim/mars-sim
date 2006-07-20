@@ -60,8 +60,8 @@ public abstract class CannedMarsMap implements Map {
 			surfaceColors = loadMapData(dataFile, index);
 		}
 		catch (IOException e) {
-			System.out.println("Could not find map data files.");
-			System.out.println(e.toString());
+			System.err.println("Could not find map data files.");
+			System.err.println(e.toString());
 		}
     }
 
@@ -259,7 +259,7 @@ public abstract class CannedMarsMap implements Map {
 				mt.waitForID(0);
 			} 
 			catch (InterruptedException e) {
-				System.out.println("MediaTracker interrupted " + e);
+				System.err.println("MediaTracker interrupted " + e);
 			}
 			mapImageDone = true;
 			currentCenter = new Coordinates(newCenter);

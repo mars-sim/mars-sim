@@ -201,7 +201,7 @@ public class MainWindow extends JFrame implements WindowListener {
         	sim.getMasterClock().saveSimulation(null);
         }
         catch(Exception e) {
-            System.out.println("Problem saving simulation " + e);
+            System.err.println("Problem saving simulation " + e);
             e.printStackTrace(System.err);
         }
 

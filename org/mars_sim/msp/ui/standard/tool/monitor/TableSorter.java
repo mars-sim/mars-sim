@@ -45,8 +45,8 @@ public class TableSorter extends AbstractTableModel
      * Compare two rows according to their cell values
      */
     private int compare(int row1, int row2) {
-        Comparable obj1 = (Comparable)sourceModel.getValueAt(row1, sortedColumn);
-        Object obj2 = sourceModel.getValueAt(row2, sortedColumn);
+    	Comparable obj1 = (Comparable)sourceModel.getValueAt(row1, sortedColumn);
+    	Object obj2 = sourceModel.getValueAt(row2, sortedColumn);
         int result = 0;
         if (obj1 == null) {
             result = (obj2 == null ? 0 : 1);
@@ -221,7 +221,12 @@ public class TableSorter extends AbstractTableModel
      * @return Value of cell.
      */
     public Object getValueAt(int aRow, int aColumn) {
-        return sourceModel.getValueAt(indexes[aRow], aColumn);
+    	try {
+    		return sourceModel.getValueAt(indexes[aRow], aColumn);
+    	}
+    	catch (Exception e) {
+    		return null;
+    	}
     }
 
     /**

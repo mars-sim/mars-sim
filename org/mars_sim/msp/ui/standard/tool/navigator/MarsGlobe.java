@@ -60,7 +60,7 @@ public class MarsGlobe {
         try {
             mtrack.waitForAll();
         } catch (InterruptedException e) {
-            System.out.println("Media Tracker Error " + e);
+            System.err.println("Media Tracker Error " + e);
         }
 
         // Prepare Sphere
@@ -213,7 +213,7 @@ public class MarsGlobe {
         try {
             mt.waitForID(0);
         } catch (InterruptedException e) {
-            System.out.println("Media Tracker Error " + e);
+            System.err.println("Media Tracker Error " + e);
         }
 
         // Indicate that image is complete
@@ -246,7 +246,7 @@ public class MarsGlobe {
         try {
             pg_color.grabPixels();
         } catch (InterruptedException e) {
-            System.out.println("grabber error" + e);
+            System.err.println("grabber error" + e);
         }
         if ((pg_color.status() & ImageObserver.ABORT) != 0)
             System.out.println("grabber error");

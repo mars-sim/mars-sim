@@ -92,7 +92,7 @@ class ShadingMapLayer implements MapLayer {
                 mt.waitForID(0);
             }
             catch (InterruptedException e) {
-                System.out.println("ShadingMapLayer interrupted: " + e);
+                System.err.println("ShadingMapLayer interrupted: " + e);
             }
 
             // Draw the shading image

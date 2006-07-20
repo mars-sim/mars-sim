@@ -105,7 +105,7 @@ class BarChartTab extends MonitorTab {
             // Iterate the rows and add the value from the first cell.
             for(int i = 0; i < model.getRowCount(); i++) {
                 String value = (String) model.getValueAt(i, 0);
-                if (value.length() > MAXLABEL) {
+                if ((value != null) && (value.length() > MAXLABEL)) {
                     value = value.substring(0, MAXLABEL-2) + "..";
                 }
                 categories.add(value);

@@ -125,7 +125,7 @@ public class USGSMarsMap implements Map, ActionListener {
             new PDSConnectionManager(urlCon, this);
         } 
         catch (MalformedURLException e) {
-            System.out.println("URL not valid: " + url.toString());
+            System.err.println("URL not valid: " + url.toString());
             throw new IOException("URL not valid");
         }
         catch (IOException e) {
@@ -220,7 +220,7 @@ public class USGSMarsMap implements Map, ActionListener {
         try {
             tracker.waitForID(0);
         } catch (InterruptedException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         imageDone = true;
     }
@@ -260,7 +260,7 @@ public class USGSMarsMap implements Map, ActionListener {
                 map.connectionEstablished(connection);
             }
             catch (IOException e) {
-                System.out.println("Unable to connect to: " + e.getMessage());
+                System.err.println("Unable to connect to: " + e.getMessage());
             }
         }
     }

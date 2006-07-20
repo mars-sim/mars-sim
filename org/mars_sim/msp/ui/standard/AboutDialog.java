@@ -147,7 +147,7 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
         try {
             document.insertString(0, buf.toString(), null);
         } catch (BadLocationException e) {
-            System.out.println(e.toString());
+            System.err.println(e.toString());
         }
 
         JScrollPane scrollPane = new JScrollPane(textPane);

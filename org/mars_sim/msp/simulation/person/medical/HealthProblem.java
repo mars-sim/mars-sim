@@ -67,7 +67,8 @@ public class HealthProblem implements Serializable {
                     usedAid.requestTreatment(this);
                 }
                 catch (Exception e) {
-                    System.out.println("HeathProblem: " + e.getMessage());
+                    System.err.println("HeathProblem: " + e.getMessage());
+                    e.printStackTrace(System.err);
                 }
             }
         }
@@ -169,7 +170,8 @@ public class HealthProblem implements Serializable {
             return "Treatment " + illness.getName();
         }
         else {
-            return illness.getName();
+            // return illness.getName();
+        	return toString();
         }
     }
     

@@ -217,7 +217,7 @@ public class VehicleConfig implements Serializable {
 		boolean result = false;
 		
 		Element roverElement = getRoverElement(roverType);
-		NodeList labNodes = roverElement.getElementsByTagName(SICKBAY);
+		NodeList labNodes = roverElement.getElementsByTagName(LAB);
 		if (labNodes.getLength() > 0) result = true;
 		
 		return result;

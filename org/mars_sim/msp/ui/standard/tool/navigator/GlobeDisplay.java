@@ -198,7 +198,7 @@ class GlobeDisplay extends JComponent implements Runnable {
             mt.waitForID(0);
         }
         catch (InterruptedException e) {
-            System.out.println("GlobeDisplay - ShadingMap interrupted: " + e);
+            System.err.println("GlobeDisplay - ShadingMap interrupted: " + e);
         }
 
         // Draw the shading image
