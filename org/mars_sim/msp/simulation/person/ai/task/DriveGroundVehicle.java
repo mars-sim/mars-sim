@@ -30,6 +30,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
     // Data members
     private double closestDistance; // Closest distance to destination vehicle has been so far.
+    private double obstacleDistance; // Distance travelled in obstacle avoidance path.
     private double obstacleTimeCount; // Amount of time driver has not been any closer to destination. (in millisols)
 
     /** 
@@ -46,7 +47,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     	
     	// User OperateVehicle constructor
         super("Driving vehicle", person, vehicle, destination, startTripTime, 
-        		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
+        		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
         // Set initial parameters
         description = "Driving " + vehicle.getName();
@@ -109,8 +110,15 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 */
 	protected double mobilizeVehicle(double time) throws Exception {
 		
+		// If vehicle is stuck, try winching.
+		if (((GroundVehicle) getVehicle()).isStuck() && (!WINCH_VEHICLE.equals(getPhase()))) {
+			setPhase(WINCH_VEHICLE);
+			return(time);
+		}
+		
         // If speed is less the 1 kph, change to avoiding obstacle phase.
-        if ((getVehicle().getSpeed() < 1D) && (!AVOID_OBSTACLE.equals(getPhase()))) {
+        if ((getVehicle().getSpeed() < 1D) && (!AVOID_OBSTACLE.equals(getPhase())) && 
+        		(!WINCH_VEHICLE.equals(getPhase()))) {
             setPhase(AVOID_OBSTACLE);
             return(time);
         }
@@ -134,6 +142,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
             vehicle.setStuck(true);
             setPhase(WINCH_VEHICLE);
             obstacleTimeCount = 0D;
+            obstacleDistance = 0D;
             isBackingUp = false;
             backingUpDistance = 0D;
             return time;
@@ -145,15 +154,23 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
             isBackingUp = false;
         }
 	
-        // Update vehicle direction.
-        if (isBackingUp) {
-            double reverseDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination()).getDirection() + Math.PI;
-            vehicle.setDirection(new Direction(reverseDirection));
-        }
-        else vehicle.setDirection(getObstacleAvoidanceDirection());
-
         // Update vehicle elevation.
         vehicle.setElevation(getVehicleElevation());
+        
+        // Update vehicle direction.
+        if (isBackingUp) {
+        	double backupTweakDirection = Math.PI / 10D;
+            double reverseDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination()).getDirection() + 
+            		Math.PI + backupTweakDirection;
+            vehicle.setDirection(new Direction(reverseDirection));
+        }
+        else {
+        	if (obstacleDistance == 0D) vehicle.setDirection(getObstacleAvoidanceDirection());
+        	else if (obstacleDistance > 10D) {
+        		obstacleDistance = 0D;
+        		setPhase(OperateVehicle.MOBILIZE);
+        	}
+        }
 
         // Update vehicle speed.
         if (isBackingUp) vehicle.setSpeed(getSpeed(vehicle.getDirection()) / 2D);
@@ -161,6 +178,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
         // Drive in the direction
         timeUsed = time - mobilizeVehicle(time);
+        
+        // Update obstacle distance.
+        if (!isBackingUp) obstacleDistance += vehicle.getSpeed() * timeUsed;
 
         // Update closest distance to destination.
         if (getDistanceToDestination() < closestDistance) {
@@ -237,7 +257,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         Direction resultDirection = vehicle.getDirection();
 
         for (int x=0; (x < 5) && !foundGoodPath; x++) {
-            double modAngle = (double) x * (Math.PI / 6D);
+            // double modAngle = (double) x * (Math.PI / 6D);
+        	double modAngle = Math.PI / 6D;
 
             if (sideCheck.equals("left"))
                 resultDirection.setDirection(resultDirection.getDirection() - modAngle);
@@ -247,8 +268,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
             if (getSpeed(resultDirection) > 1D) foundGoodPath = true;
         }
 
-        if (foundGoodPath) setPhase(OperateVehicle.MOBILIZE);
-        else isBackingUp = true;
+        // if (foundGoodPath) setPhase(OperateVehicle.MOBILIZE);
+        // else isBackingUp = true;
+        if (!foundGoodPath) isBackingUp = true;
 
         return resultDirection;
     }
@@ -375,7 +397,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     public void endTask() {
     	
         // System.out.println(person.getName() + " finished driving " + getVehicle().getName());
-        ((GroundVehicle) getVehicle()).setStuck(false);
+        // ((GroundVehicle) getVehicle()).setStuck(false);
     	
     	super.endTask();
     }
