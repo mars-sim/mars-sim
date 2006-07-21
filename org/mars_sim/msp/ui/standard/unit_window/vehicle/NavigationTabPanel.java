@@ -130,7 +130,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         // Prepare speed label
         speedCache = vehicle.getSpeed();
-        speedLabel = new JLabel("Speed: " + formatter.format(speedCache) + " kph.", JLabel.LEFT);
+        speedLabel = new JLabel("Speed: " + formatter.format(speedCache) + " km/h", JLabel.LEFT);
         infoLabelPanel.add(speedLabel);
         
         // Prepare elevation label if ground vehicle
@@ -301,7 +301,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Update speed label
         if (speedCache != vehicle.getSpeed()) {
             speedCache = vehicle.getSpeed();
-            speedLabel.setText("Speed: " + formatter.format(speedCache) + " kph.");
+            speedLabel.setText("Speed: " + formatter.format(speedCache) + " km/h");
         }
         
         // Update elevation label if ground vehicle.
