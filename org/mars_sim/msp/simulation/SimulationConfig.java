@@ -109,7 +109,10 @@ public class SimulationConfig implements Serializable {
 	private Document parseXMLFile(String filename) throws Exception {
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		try {
-			return builder.parse(getInputStream(filename));
+			InputStream stream = getInputStream(filename);
+			Document result = builder.parse(stream);
+			stream.close();
+			return result;
 		}
 		catch (SAXException e) {
 			throw new SAXException("XML Parsing failed on " + filename + ": " + e.getMessage());
