@@ -42,7 +42,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	private static final int MISSION_MIN_MEMBERS = 2;
 	private static final int MISSION_MAX_MEMBERS = 3;
 	private static final double BASE_RESCUE_MISSION_WEIGHT = 100D;
-	private static final double BASE_SALVAGE_MISSION_WEIGHT = 1D;
+	private static final double BASE_SALVAGE_MISSION_WEIGHT = 10D;
 	private static final double RESCUE_RESOURCE_BUFFER = 2D;
 	
 	// Mission phases
