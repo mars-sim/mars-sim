@@ -78,10 +78,13 @@ public class ExitAirlock extends Task implements Serializable {
             Inventory inv = airlock.getEntityInventory();
             EVASuit suit = getGoodEVASuit(inv);
             if (suit != null) {
-                inv.retrieveUnit(suit);
-                person.getInventory().storeUnit(suit);
-                loadEVASuit(suit);
-                hasSuit = true;
+            	try {
+            		inv.retrieveUnit(suit);
+            		person.getInventory().storeUnit(suit);
+            		loadEVASuit(suit);
+            		hasSuit = true;
+            	}
+            	catch (Exception e) {}
             }
         }
 
