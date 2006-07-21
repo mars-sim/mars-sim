@@ -216,8 +216,9 @@ public abstract class RoverMission extends VehicleMission {
     		else {
     			// If person is not aboard the rover, board rover.
     			if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
-            		settlement.getInventory().retrieveUnit(person);
-            		getVehicle().getInventory().storeUnit(person);
+    				if (person.getLocationSituation().equals(Person.INSETTLEMENT))
+    					settlement.getInventory().retrieveUnit(person);
+    				getVehicle().getInventory().storeUnit(person);
             	}
     			
     			// If rover is loaded and everyone is aboard, embark from settlement.
