@@ -11,6 +11,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.mars_sim.msp.simulation.Direction;
+import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 
@@ -109,7 +110,8 @@ public class DirectionDisplayPanel extends JPanel {
 		g.drawString("E", centerX + letterRadius - (eWidth / 2), centerY + (fontHeight / 2));
 
 		// Draw direction line if necessary
-		if (vehicle.getStatus().equals(Vehicle.MOVING)) {
+		String status = vehicle.getStatus();
+		if (status.equals(Vehicle.MOVING) || (status.equals(Rover.STUCK) && vehicle.getSpeed() > 0D)) {
             Direction direction = vehicle.getDirection();
 			double hyp = (double) (CIRCLE_RADIUS);
 			int newX = (int) Math.round(hyp * direction.getSinDirection());
