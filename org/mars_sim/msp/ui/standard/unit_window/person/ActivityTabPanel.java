@@ -218,14 +218,14 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         if (dead) missionCache = deathInfo.getMission();
         else if (mission != null) missionCache = mission.getDescription();
         else missionCache = "";
-        if (!missionCache.equals(missionTextArea.getText())) 
+        if ((missionCache != null) && !missionCache.equals(missionTextArea.getText())) 
             missionTextArea.setText(missionCache);
         
         // Update mission phase text area if necessary.
         if (dead) missionPhaseCache = deathInfo.getMissionPhase();
         else if (mission != null) missionPhaseCache = mission.getPhaseDescription();
         else missionPhaseCache = "";
-        if (!missionPhaseCache.equals(missionPhaseTextArea.getText())) 
+        if ((missionPhaseCache != null) && !missionPhaseCache.equals(missionPhaseTextArea.getText())) 
             missionPhaseTextArea.setText(missionPhaseCache);
     }
     

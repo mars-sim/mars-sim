@@ -254,10 +254,12 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     private static VehicleCollection getAllVehicleCandidates(Person person) {
 		VehicleCollection result = new VehicleCollection();
         
-		VehicleIterator vI = person.getSettlement().getParkedVehicles().iterator();
-		while (vI.hasNext()) {
-			Vehicle vehicle = vI.next();
-			if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			VehicleIterator vI = person.getSettlement().getParkedVehicles().iterator();
+			while (vI.hasNext()) {
+				Vehicle vehicle = vI.next();
+				if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
+			}
 		}
         
 		return result;
