@@ -101,6 +101,14 @@ public class SimulationConfig implements Serializable {
 	}
 	
 	/**
+	 * Reloads all of the configuration files.
+	 * @throws Exception if error loading or parsing configuration files.
+	 */
+	public static void reloadConfig() throws Exception {
+		setInstance(new SimulationConfig());
+	}
+	
+	/**
 	 * Parses an XML file into a DOM document.
 	 * @param filename the path of the file.
 	 * @return DOM document

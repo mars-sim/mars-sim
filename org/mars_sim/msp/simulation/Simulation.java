@@ -107,6 +107,7 @@ public class Simulation implements Serializable {
 	 * @throws Exception if intransient data could not be loaded.
 	 */
 	private void initializeIntransientData() throws Exception {
+		SimulationConfig.reloadConfig();
 		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
 		mars = new Mars();
 		missionManager = new MissionManager();
