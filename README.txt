@@ -1,5 +1,5 @@
 ** Mars Simulation Project **
-Copyright (C) 2005 Scott Davis
+Copyright (C) 2006 Scott Davis
 http://mars-sim.sourceforge.net/
 
 ---------------------------------------------------------------------
@@ -19,9 +19,11 @@ The MacOSX operating system contains a 1.4 JRE by default.
 For most operating systems you can simply double click on the 
 MarsProject.jar file since it is an executable jar.
 
-If that doesn't work, you can go to the scripts subdirectory and run 
-the MarsProject.bat batch file for Windows systems or the 
-MarsProject.sh script for Linux/Unix systems.
+
+You can also go to the directory containing MarsProject.jar in the
+command line and type:
+
+java -jar MarsProject.jar
 
 ---------------------------------------------------------------------
 
