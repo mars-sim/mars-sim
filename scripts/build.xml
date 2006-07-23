@@ -51,7 +51,6 @@
         <javac srcdir="${mars.src}" destdir="${mars.class}">
             <include name="org/mars_sim/msp/simulation/**/*.java" />
             <classpath>
-                <fileset dir="${mars.baseDir}" />
                 <fileset dir="${mars.jars}">
                     <include name="junit.jar" />
                     <include name="plexus-core.jar" />
@@ -67,7 +66,6 @@
         <javac srcdir="${mars.src}" destdir="${mars.class}">
             <include name="org/mars_sim/msp/ui/standard/**/*.java" />
             <classpath>
-                <fileset dir="${mars.baseDir}" />
                 <fileset dir="${mars.jars}">
                     <include name="jcommon.jar" />
                     <include name="jfreechart.jar" />
@@ -80,9 +78,6 @@
     <target name="compile-main" depends="compile-sim, compile-ui">
         <javac srcdir="${mars.src}" destdir="${mars.class}">
             <include name="org/mars_sim/msp/*.java" />
-            <classpath>
-                <fileset dir="${mars.baseDir}" />
-            </classpath>
         </javac>
     </target>
              
