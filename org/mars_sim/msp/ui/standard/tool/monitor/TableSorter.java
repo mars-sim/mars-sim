@@ -233,7 +233,7 @@ public class TableSorter extends AbstractTableModel
      * Get a list of objects from the source model. The row indexes are remapped
      * according to the sorted mappings.
      *
-     * @param rows Indexes of rows in the sorted model.
+     * @param row Indexes of rows in the sorted model.
      * @return List of objects.
      */
     public Object getObject(int row) {

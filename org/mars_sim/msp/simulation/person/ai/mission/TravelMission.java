@@ -306,7 +306,6 @@ public abstract class TravelMission extends Mission {
     /**
      * Gets the estimated time remaining for the mission.
      * @param useBuffer use a time buffer in estimation if true.
-     * @param distance the distance of the trip.
      * @return time (millisols)
      * @throws Exception
      */

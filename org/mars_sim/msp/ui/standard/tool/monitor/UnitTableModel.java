@@ -165,7 +165,7 @@ abstract public class UnitTableModel extends AbstractTableModel
 
     /**
 	 * Updates the unit table model if it is different from the source collection.
-	 * @source the source collection to check against.
+	 * @param source the source collection to check against.
 	 * @return a status string.
      */
     public String update(MspCollection source) {

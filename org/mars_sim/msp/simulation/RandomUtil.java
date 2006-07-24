@@ -20,7 +20,7 @@ public final class RandomUtil {
 	private final static Random random = new Random();
 
     /** Returns true if given number is less than a random percentage. 
-     *  @param the random percentage limit
+     *  @param randomLimit the random percentage limit
      *  @return true if random percent is less than percentage limit
      */
     public static boolean lessThanRandPercent(int randomLimit) {
@@ -30,7 +30,7 @@ public final class RandomUtil {
     }
 
     /** Returns true if given number is less than a random percentage. 
-     *  @param the random percentage limit
+     *  @param randomLimit the random percentage limit
      *  @return true if random percent is less than percentage limit
      */
     public static boolean lessThanRandPercent(double randomLimit) {

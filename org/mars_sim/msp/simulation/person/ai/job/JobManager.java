@@ -81,7 +81,7 @@ public class JobManager implements Serializable {
 	 * Gets a new job for the person.
 	 * Might be the person's current job.
 	 * @param person the person to check.
-	 * @param job the new job.
+	 * @return the new job.
 	 */
 	public Job getNewJob(Person person) {
 		

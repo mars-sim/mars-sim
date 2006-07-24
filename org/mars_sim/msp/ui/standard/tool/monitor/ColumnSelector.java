@@ -36,7 +36,7 @@ public class ColumnSelector extends JDialog {
      * Constructs the dialog with a title and columns extracted from the
      * specified model.
      *
-     * @param frame Owner of the dialog.
+     * @param owner the owner of the dialog.
      * @param model Model driving the columns.
      * @param bar Display selection for a Bar chart.
      */
@@ -106,8 +106,8 @@ public class ColumnSelector extends JDialog {
     /**
      * Create a column selector popup for use with a Bar chart.
      *
-     * @param frame Parent frame.
-     * @param model Model containign columns.
+     * @param window Parent frame.
+     * @param model Model containing columns.
      * @return Array of column indexes to display.
      */
     public static int[] createBarSelector(Frame window,
@@ -120,7 +120,7 @@ public class ColumnSelector extends JDialog {
     /**
      * Create a column selector popup for a Pie chart.
      *
-     * @param frame Parent frame.
+     * @param window Parent frame.
      * @param model Model containign columns.
      * @return Column index to use as category.
      */

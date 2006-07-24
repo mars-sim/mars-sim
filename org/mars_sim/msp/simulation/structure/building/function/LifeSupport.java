@@ -139,7 +139,7 @@ public class LifeSupport extends Function implements Serializable {
 	
 	/**
 	 * Removes a person from the building.
-	 * @param person occupant to remove from building.
+	 * @param occupant the person to remove from building.
 	 * @throws BuildingException if person is not building occupant.
 	 */
 	public void removePerson(Person occupant) throws BuildingException {

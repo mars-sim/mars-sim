@@ -41,9 +41,8 @@ public class Crop implements Serializable {
    
     /**
      * Constructor
-     * @param name - The name of the crop.
+     * @param cropType the type of crop.
      * @param maxHarvest - Maximum possible food harvest for crop. (kg)
-     * @param growingPeiod - Length of growing phase for crop. (millisols)
      * @param farm - Farm crop being grown in.
      * @param settlement - the settlement the crop is located at.
      * @param newCrop - true if this crop starts in it's planting phase.

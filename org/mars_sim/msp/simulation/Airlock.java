@@ -142,7 +142,7 @@ public abstract class Airlock implements Serializable {
     /**
      * Operates the airlock for the given amount of time.
      * Called from the unit owning the airlock.
-     * @param amount of time (in millisols)
+     * @param time amount of time (in millisols)
      */
     public void timePassing(double time) {
         if (activated) {

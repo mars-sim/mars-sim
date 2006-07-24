@@ -292,7 +292,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 	
     /**
      * Checks if a particular operator is appropriate for a vehicle.
-     * @param driver the operator to check
+     * @param operator the operator to check
      * @return true if appropriate operator for this vehicle.
      */
     public boolean isAppropriateOperator(VehicleOperator operator) {
@@ -303,7 +303,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     /**
      * Gets the resource type that this vehicle uses for fuel.
      * @return resource type as a string
-     * @see org.mars_sim.msp.simulation.Resource
      */
     public AmountResource getFuelType() {
     	return AmountResource.METHANE;

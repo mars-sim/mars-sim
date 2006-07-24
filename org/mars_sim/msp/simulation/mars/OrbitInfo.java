@@ -42,7 +42,7 @@ public class OrbitInfo implements Serializable {
 
     /** 
      * Adds time to the orbit
-     * @param time time added (millisols)
+     * @param millisols time added (millisols)
      */
     public void addTime(double millisols) {
     	

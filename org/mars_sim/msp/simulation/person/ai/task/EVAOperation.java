@@ -63,7 +63,7 @@ abstract class EVAOperation extends Task implements Serializable {
      * Perform the exit airlock phase of the task.
      *
      * @param time the time to perform this phase (in millisols)
-     * @param the airlock
+     * @param airlock the airlock
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if person cannot exit through the airlock.
      */

@@ -96,7 +96,7 @@ public interface UnitDisplayInfo {
     /**
      * Gets a sound appropriate for this unit.
      * @param unit the unit to display.
-     * @returns sound filepath for unit or empty string if none.
+     * @return sound filepath for unit or empty string if none.
      */
     public String getSound(Unit unit);
 }

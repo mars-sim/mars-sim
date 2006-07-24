@@ -128,7 +128,7 @@ public class Cooking extends Function implements Serializable {
 	
 	/**
 	 * Gets a cooked meal from this facility.
-	 * @return
+	 * @return the meal
 	 */
 	public CookedMeal getCookedMeal() {
 		CookedMeal bestMeal = null;

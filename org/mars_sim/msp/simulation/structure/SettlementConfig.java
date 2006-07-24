@@ -48,7 +48,7 @@ public class SettlementConfig implements Serializable {
 	
 	/**
 	 * Constructor
-	 * @param buildingDoc DOM document with building configuration
+	 * @param settlementDoc DOM document with building configuration
 	 */
 	public SettlementConfig(Document settlementDoc) {
 		this.settlementDoc = settlementDoc;	

@@ -52,7 +52,7 @@ public class ResourceProcess implements Serializable {
     
     /**
      * Adds a maximum input resource rate if it doesn't already exist.
-     * @param resource name
+     * @param name the resource name
      * @param rate max input resource rate (kg/sec)
      * @param ambient is resource from available from surroundings? (air)
      */
@@ -69,7 +69,7 @@ public class ResourceProcess implements Serializable {
     
     /**
      * Adds a maximum output resource rate if it doesn't already exist.
-     * @param resource name
+     * @param name the resource name
      * @param rate max output resource rate (kg/sec)
      * @param waste is resource waste material not to be stored?
      */
@@ -102,7 +102,7 @@ public class ResourceProcess implements Serializable {
     
     /**
      * Sets if the process is running or not.
-     * @return true if process is running.
+     * @param running true if process is running.
      */
     public void setProcessRunning(boolean running) {
         runningProcess = running;

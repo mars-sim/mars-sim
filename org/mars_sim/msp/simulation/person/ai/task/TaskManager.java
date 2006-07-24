@@ -58,7 +58,7 @@ public class TaskManager implements Serializable {
     
     /** 
      * Constructor
-     * @param person the person the task manager is for
+     * @param mind the mind that uses this task manager.
      */
     public TaskManager(Mind mind) {
         // Initialize data members

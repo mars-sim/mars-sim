@@ -21,7 +21,7 @@ public abstract class PowerSource implements Serializable {
 	/**
 	 * Constructor
 	 * @param type the type of power source.
-	 * @param power the max power generated.
+	 * @param maxPower the max power generated.
 	 */
 	public PowerSource(String type, double maxPower) {
 		this.type = type;

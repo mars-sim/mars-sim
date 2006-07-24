@@ -78,7 +78,7 @@ public class MissionManager implements Serializable {
     /** 
      * Gets the mission a given person is a member of.
      * If person is a member of no mission, return null.
-     * @param the given person
+     * @param person the given person
      * @return mission for that person
      */
     public Mission getMission(Person person) {

@@ -46,7 +46,7 @@ public class PhysicalCondition implements Serializable {
 
     /**
      * Constructor
-     * @param person The person requiring a physical presence.
+     * @param newPerson The person requiring a physical presence.
      */
     public PhysicalCondition(Person newPerson) {
         deathDetails = null;
@@ -198,7 +198,7 @@ public class PhysicalCondition implements Serializable {
     /** 
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg).
-     * @param holder unit to get food from
+     * @param container unit to get food from
      * @throws Exception if error consuming food.
      */
     public void consumeFood(double amount, Unit container) throws Exception {

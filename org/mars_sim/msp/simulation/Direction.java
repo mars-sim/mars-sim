@@ -28,8 +28,8 @@ public class Direction implements Cloneable, Serializable {
         this.direction = cleanDirection(direction);
     }
     
-    /** Clones this Direction object
-     *  @param this Direction object
+    /** 
+     * Clones this Direction object
      */
     public Object clone() {
         return new Direction(direction);

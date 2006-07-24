@@ -51,7 +51,7 @@ public class LegendDisplay extends JLabel {
     }
 
     /** Set USGS map legend mode
-     *  @param useUSGSMap true if using USGS map legend
+     *  @param useUSGSLegend true if using USGS map legend
      */
     public void setUSGSMode(boolean useUSGSLegend) {
     	this.useUSGSLegend = useUSGSLegend;

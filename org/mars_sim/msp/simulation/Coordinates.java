@@ -328,7 +328,6 @@ public class Coordinates implements Serializable {
     /** Converts linear rectangular XY position change to spherical coordinates
      *  @param x change in x value (in km)
      *  @param y change in y value (in km)
-     *  @param rho rho value of map used
      *  @return new spherical location
      */
     public Coordinates convertRectToSpherical(double x, double y) {

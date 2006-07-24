@@ -161,7 +161,7 @@ public class ExitAirlock extends Task implements Serializable {
     /**
      * Gets a good EVA suit from an inventory.
      *
-     * @param the inventory to check.
+     * @param inv the inventory to check.
      * @return EVA suit or null if none available.
      */
     public static EVASuit getGoodEVASuit(Inventory inv) {

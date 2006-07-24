@@ -264,7 +264,7 @@ public abstract class VehicleMission extends TravelMission {
      * @param tripDistance the distance (km) of the trip.
      * @param fuelEfficiency the vehicle's fuel efficiency (km/kg).
      * @param useBuffer use time buffers in estimation if true.
-     * @return
+     * @return amount of fuel needed for trip (kg)
      */
     public static double getFuelNeededForTrip(double tripDistance, double fuelEfficiency, boolean useBuffer) {
     	double result = tripDistance / fuelEfficiency;
