@@ -26,6 +26,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
+import org.mars_sim.msp.simulation.Simulation;
+
 /** The AboutDialog is an information window that is called from the
  *  "About The Mars Simulation Project" item in the MainWindowMenu.
  *  It provides information about the project, credit to contributors and the GPL license.
@@ -60,7 +62,7 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 
         // Create the document contents string
         StringBuffer buf = new StringBuffer();
-        buf.append("The Mars Simulation Project v2.79\n\n");
+        buf.append("The Mars Simulation Project v" + Simulation.VERSION + "\n\n");
         buf.append("Web Site: http://mars-sim.sourceforge.net\n\n");
 
         buf.append("Developers:\n");

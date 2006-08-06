@@ -20,8 +20,6 @@ import org.mars_sim.msp.simulation.*;
  */
 public class MainWindow extends JFrame implements WindowListener {
 
-    private static final String VERSION = "2.79";
-
     // Data members
     private UnitToolBar unitToolbar; // The unit tool bar
     private MainDesktopPane desktop; // The main desktop
@@ -34,7 +32,7 @@ public class MainWindow extends JFrame implements WindowListener {
     public MainWindow() {
 
         // use JFrame constructor
-        super("Mars Simulation Project (version " + VERSION + ")");
+        super("Mars Simulation Project (version " + Simulation.VERSION + ")");
 
 		// Set look and feel of UI.
 		setLookAndFeel(false);

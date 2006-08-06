@@ -22,6 +22,9 @@ import org.mars_sim.msp.simulation.time.*;
  */
 public class Simulation implements Serializable {
 
+	// Version string.
+	public final static String VERSION = "2.80";
+	
 	// Default save file.
 	public final static String DEFAULT_FILE = "default.sim";
 	
