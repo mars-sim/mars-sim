@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.78 2004-10-07
+ * @version 2.80 2006-08-11
  * @author Scott Davis
  */
 
@@ -27,6 +27,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
     private JCheckBoxMenuItem soundToolItem;      // Sound tool menu item
+    private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
     private JCheckBoxMenuItem lookAndFeelItem;    // Look and feel menu item
     private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
 
@@ -100,6 +101,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         soundToolItem = new JCheckBoxMenuItem("Sound Tool");
         soundToolItem.addActionListener(this);
         toolsMenu.add(soundToolItem);
+        
+        // Create mission tool menu item
+        missionToolItem = new JCheckBoxMenuItem("Mission Tool");
+        missionToolItem.addActionListener(this);
+        toolsMenu.add(missionToolItem);
         
 		// Create option menu
 		JMenu optionMenu = new JMenu("Option");

@@ -56,9 +56,6 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         unitCategoryNames[1] = "Settlement";
         unitCategoryNames[2] = "Vehicle";
 
-        // Initialize data members
-        this.desktop = desktop;
-
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
         mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));

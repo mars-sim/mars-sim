@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 2.78 2005-09-05
+ * @version 2.80 2006-08-11
  * @author Scott Davis
  */
 
@@ -112,6 +112,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		soundButton.addActionListener(this);
 		add(soundButton);
 		toolButtons.addElement(soundButton);
+		
+		// Add mission tool button
+		ToolButton missionButton = new ToolButton("Mission Tool", "Mission");
+		missionButton.addActionListener(this);
+		add(missionButton);
+		toolButtons.addElement(missionButton);
 	}
 
 	/** ActionListener method overriden */

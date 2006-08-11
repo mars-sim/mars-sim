@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.78 2005-09-05
+ * @version 2.80 2006-08-11
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
 import org.mars_sim.msp.ui.standard.sound.SoundConstants;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
@@ -177,32 +178,38 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         // Prepare navigator window
         NavigatorWindow navWindow = new NavigatorWindow(this);
         try { navWindow.setClosed(true); }
-        catch (java.beans.PropertyVetoException e) { }
+        catch (PropertyVetoException e) { }
         toolWindows.add(navWindow);
 
         // Prepare search tool window
         SearchWindow searchWindow = new SearchWindow(this);
         try { searchWindow.setClosed(true); }
-        catch (java.beans.PropertyVetoException e) { }
+        catch (PropertyVetoException e) { }
         toolWindows.add(searchWindow);
 
         // Prepare time tool window
         TimeWindow timeWindow = new TimeWindow(this);
         try { timeWindow.setClosed(true); }
-        catch (java.beans.PropertyVetoException e) { }
+        catch (PropertyVetoException e) { }
         toolWindows.add(timeWindow);
 
         // Prepare monitor tool window
         MonitorWindow monitorWindow = new MonitorWindow(this);
         try { monitorWindow.setClosed(true); }
-        catch (java.beans.PropertyVetoException e) { }
+        catch (PropertyVetoException e) { }
         toolWindows.add(monitorWindow);
         
         // Prepare sound tool window
         SoundWindow soundWindow = new SoundWindow(this);
         try { soundWindow.setClosed(true); }
-        catch (java.beans.PropertyVetoException e) { }
+        catch (PropertyVetoException e) { }
         toolWindows.add(soundWindow);
+        
+        // Prepare mission tool window
+        MissionWindow missionWindow = new MissionWindow(this);
+        try { missionWindow.setClosed(true); }
+        catch (PropertyVetoException e) { }
+        toolWindows.add(missionWindow);
     }
 
     /** Returns a tool window for a given tool name
