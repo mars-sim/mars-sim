@@ -25,12 +25,12 @@ public class MasterClock implements Runnable, Serializable {
     private MarsClock marsTime;   // Martian Clock
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
-    private transient boolean keepRunning;  // Runnable flag
-    private double timeRatio;     // Simulation/real-time ratio
-    private transient boolean loadSimulation; // Flag for loading a new simulation.
-    private transient boolean saveSimulation; // Flag for saving a simulation.
-    private transient File file;            // The file to save or load the simulation.
-    private transient boolean exitProgram;  // Flag for ending the simulation program.
+    private transient volatile boolean keepRunning;  // Runnable flag
+    private volatile double timeRatio;     // Simulation/real-time ratio
+    private transient volatile boolean loadSimulation; // Flag for loading a new simulation.
+    private transient volatile boolean saveSimulation; // Flag for saving a simulation.
+    private transient volatile File file;            // The file to save or load the simulation.
+    private transient volatile boolean exitProgram;  // Flag for ending the simulation program.
 
     // Sleep duration in milliseconds 
     public final static long TIME_PULSE_LENGTH = 1000L;
