@@ -28,7 +28,8 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 public class MissionManager implements Serializable {
 
     // Data members
-    private List missions; // Current missions in the simulation. 
+    private List missions; // Current missions in the simulation.
+    private transient List listeners; // Mission listeners.
     
     // Cache variables.
     private Person personCache;
@@ -45,12 +46,22 @@ public class MissionManager implements Serializable {
     public MissionManager() {
         // Initialize data members
         missions = new ArrayList();
+        listeners = new ArrayList();
         
         // Initialize cache values.
         personCache = null;
         timeCache = null;
         missionProbCache = new HashMap(potentialMissions.length);
         totalProbCache = 0D;
+    }
+    
+    /**
+     * Add a listener
+     * @param newListener The listener to add.
+     */
+    public void addListener(MissionListener newListener) {
+    	if (listeners == null) listeners = new ArrayList();
+        listeners.add(newListener);
     }
 
     /** 
@@ -97,6 +108,11 @@ public class MissionManager implements Serializable {
     public void addMission(Mission newMission) {
         if (!missions.contains(newMission)) {
             missions.add(newMission);
+            
+            // Update listeners.
+            if (listeners == null) listeners = new ArrayList();
+            Iterator i = listeners.iterator();
+            while (i.hasNext()) ((MissionListener) i.next()).addMission(newMission);
             // System.out.println("MissionManager: Added new mission - " + newMission.getName());
         }
     }
@@ -108,6 +124,11 @@ public class MissionManager implements Serializable {
     private void removeMission(Mission oldMission) {
         if (missions.contains(oldMission)) {
             missions.remove(oldMission);
+            
+            // Update listeners.
+            if (listeners == null) listeners = new ArrayList();
+            Iterator i = listeners.iterator();
+            while (i.hasNext()) ((MissionListener) i.next()).removeMission(oldMission);
             // System.out.println("MissionManager: Removed old mission - " + oldMission.getName());
         }
     } 

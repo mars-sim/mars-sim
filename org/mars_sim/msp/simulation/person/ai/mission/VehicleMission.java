@@ -48,6 +48,7 @@ public abstract class VehicleMission extends TravelMission {
 	private Vehicle vehicle;
 	private VehicleOperator lastOperator; // The last operator of this vehicle in the mission.
 	protected boolean loadedFlag = false; // True if vehicle has been loaded.
+	private double startingTravelledDistance; // Vehicle travelled distance at start of mission.
 	
     // Mission tasks tracked
     private OperateVehicle operateVehicleTask; // The current operate vehicle task.
@@ -587,4 +588,13 @@ public abstract class VehicleMission extends TravelMission {
     	
     	return result;
     }
+    
+	/**
+	 * Gets the total distance travelled during the mission so far.
+	 * @return distance (km)
+	 */
+	public double getTotalDistanceTravelled() {
+		if (vehicle != null) return vehicle.getTotalDistanceTraveled() - startingTravelledDistance;
+		else return 0D;
+	}
 }

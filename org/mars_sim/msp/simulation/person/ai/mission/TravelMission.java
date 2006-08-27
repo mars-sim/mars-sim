@@ -297,6 +297,12 @@ public abstract class TravelMission extends Mission {
 		return result;
 	}
 	
+	/**
+	 * Gets the total distance travelled during the mission so far.
+	 * @return distance (km)
+	 */
+	public abstract double getTotalDistanceTravelled();
+	
     /**
      * Gets the estimated time of arrival (ETA) for the current leg of the mission.
      * @return time (MarsClock) or null if not applicable.

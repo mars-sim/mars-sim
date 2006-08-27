@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.76 2004-06-02
+ * @version 2.76 2006-08-26
  * @author Barry Evans
  */
 
@@ -165,6 +165,7 @@ public class MonitorWindow extends ToolWindow implements Runnable {
         addTab(new TableTab(new PersonTableModel(unitManager), true));
         addTab(new TableTab(new VehicleTableModel(unitManager), true));
         addTab(new TableTab(new SettlementTableModel(unitManager), true));
+        addTab(new TableTab(new MissionTableModel(), true));
         eventsTab = new EventTab(new EventTableModel(Simulation.instance().getEventManager()));
         addTab(eventsTab);
 
@@ -177,7 +178,7 @@ public class MonitorWindow extends ToolWindow implements Runnable {
                         tabChanged();
                     }
                 }
-                );
+        );
 
         // Have to define a starting size
         setSize(new Dimension(600, 300));
