@@ -13,7 +13,9 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
+import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
+import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 
 public class MissionTableModel extends AbstractTableModel implements
 		MonitorModel, MissionListener {
@@ -22,11 +24,13 @@ public class MissionTableModel extends AbstractTableModel implements
 	private final static int TYPE = 0;               // Type column
 	private final static int DESCRIPTION = 1;        // Discription column
 	private final static int PHASE = 2;              // Phase column
-	private final static int MEMBER_NUM = 3;         // Member number column
-	private final static int NAVPOINT_NUM = 4;       // Navpoint number column
-	private final static int TRAVELLED_DISTANCE = 5; // Travelled distance column
-	private final static int REMAINING_DISTANCE = 6; // Remaining distance column
-	private final static int COLUMNCOUNT = 7;        // The number of Columns
+	private final static int VEHICLE = 3;            // Mission vehicle column
+	private final static int STARTING_SETTLEMENT = 4;// Starting settlement column
+	private final static int MEMBER_NUM = 5;         // Member number column
+	private final static int NAVPOINT_NUM = 6;       // Navpoint number column
+	private final static int TRAVELLED_DISTANCE = 7; // Travelled distance column
+	private final static int REMAINING_DISTANCE = 8; // Remaining distance column
+	private final static int COLUMNCOUNT = 9;        // The number of Columns
 	private static String columnNames[];             // Names of Columns
     private static Class columnTypes[];              // Types of Columns
 	
@@ -41,6 +45,10 @@ public class MissionTableModel extends AbstractTableModel implements
         columnTypes[DESCRIPTION] = String.class;
         columnNames[PHASE] = "Phase";
         columnTypes[PHASE] = String.class; 
+        columnNames[STARTING_SETTLEMENT] = "Starting Settlement";
+        columnTypes[STARTING_SETTLEMENT] = String.class;
+        columnNames[VEHICLE] = "Vehicle";
+        columnTypes[VEHICLE] = String.class;
         columnNames[MEMBER_NUM] = "Member Num.";
         columnTypes[MEMBER_NUM] = Integer.class;
         columnNames[NAVPOINT_NUM] = "Navpoint Num.";
@@ -182,6 +190,24 @@ public class MissionTableModel extends AbstractTableModel implements
 					result = mission.getPhaseDescription();
 				} break;
 				
+				case VEHICLE : {
+					result = "";
+					if (mission instanceof VehicleMission) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
+						if (vehicleMission.getVehicle() != null) result = vehicleMission.getVehicle().getName();
+					}
+				} break;
+				
+				case STARTING_SETTLEMENT : {
+					result = "";
+					if (mission instanceof TravelMission) {
+						NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
+						if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
+							result = nav0.getSettlement().getName();
+						}
+					}
+				} break;
+				 
 				case MEMBER_NUM : {
 					result = new Integer(mission.getPeopleNumber());
 				} break;
