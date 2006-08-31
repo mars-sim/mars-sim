@@ -60,7 +60,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
      */
     public RescueSalvageVehicle(Person startingPerson) throws MissionException {
     	// Use RoverMission constructor
-        super("Salvage Vehicle", startingPerson, MISSION_MIN_MEMBERS);   
+        super("Rescue/Salvage Vehicle", startingPerson, MISSION_MIN_MEMBERS);   
         
         if (!isDone()) {
         	startingSettlement = startingPerson.getSettlement();
@@ -82,8 +82,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         		if (getRescuePeopleNum(vehicleTarget) > 0) {
         			rescue = true;
         			setMinPeople(1);
-        			setName("Rescue Vehicle");
+        			setDescription("Rescue " + vehicleTarget.getName());
         		}
+        		else setDescription("Salvage " + vehicleTarget.getName());
         		
         		// Add navpoints for target vehicle and back home again.
         		addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));

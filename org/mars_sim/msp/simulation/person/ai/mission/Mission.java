@@ -177,6 +177,14 @@ public abstract class Mission implements Serializable {
     public String getDescription() {
         return description;
     }
+    
+    /**
+     * Sets the mission's description.
+     * @param description the new description.
+     */
+    public void setDescription(String description) {
+    	this.description = description;
+    }
 
     /** 
      * Gets the current phase of the mission.
