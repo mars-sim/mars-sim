@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import org.mars_sim.msp.ui.standard.ImageLoader;
-import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.Color;
@@ -15,8 +13,10 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.TableModelEvent;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -24,6 +24,8 @@ import javax.swing.JScrollPane;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.UIManager;
+import org.mars_sim.msp.ui.standard.ImageLoader;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -160,6 +162,31 @@ class TableTab extends MonitorTab {
             // Create scrollable table window
             table = new JTable(sortedModel) {
 
+            	/**
+            	 * Overriding table change so that selections aren't cleared when rows are deleted.
+            	 */
+            	public void tableChanged(TableModelEvent e) {
+            	
+            		if (e.getType() == TableModelEvent.DELETE) {
+            			// Store selected row objects.
+            			List selected = getSelection();
+            			
+            			// Call super implementation to remove row and clear selection.
+    					super.tableChanged(e);
+    					
+    					// Reselect rows if row objects still around.
+    					MonitorModel model = (MonitorModel) getModel();
+    					Iterator i = selected.iterator();
+    					while (i.hasNext()) {
+    						Object selectedObject = i.next();
+    						for (int x = 0; x < model.getRowCount(); x++) {
+    							if (selectedObject == model.getObject(x)) addRowSelectionInterval(x, x);
+    						}
+    					}
+            		}
+            		else super.tableChanged(e);
+            	}
+            	
                 /**
                  * Display the cell contents as a tooltip. Useful when cell
                  * contents in wider than the cell
@@ -168,28 +195,54 @@ class TableTab extends MonitorTab {
                     return getCellText(e);
                 };
             };
+            sortedModel.addTableModelListener(table);
 
-        // Get the TableColumn header to display sorted column
-        JTableHeader theHeader = table.getTableHeader();
-        TableHeaderRenderer theRenderer =
-                        new TableHeaderRenderer(theHeader.getDefaultRenderer());
-        theHeader.setDefaultRenderer(theRenderer);
+        	// Get the TableColumn header to display sorted column
+        	JTableHeader theHeader = table.getTableHeader();
+        	TableHeaderRenderer theRenderer =
+        		new TableHeaderRenderer(theHeader.getDefaultRenderer());
+        	theHeader.setDefaultRenderer(theRenderer);
 
-         // Add a mouse listener for the mouse event selecting the sorted column
-         // Not the best way but no double click is provided on Header class
-        theHeader.addMouseListener(new MouseAdapter() {
-             public void mouseClicked(MouseEvent e) {
-                // Find the column at this point
-                int column = table.getTableHeader().columnAtPoint(e.getPoint());
-                setSortColumn(column);
-                table.getTableHeader().repaint();
-             }
-        });
+         	// Add a mouse listener for the mouse event selecting the sorted column
+         	// Not the best way but no double click is provided on Header class
+        	theHeader.addMouseListener(new MouseAdapter() {
+        		public void mouseClicked(MouseEvent e) {
+        			// Find the column at this point
+        			int column = table.getTableHeader().columnAtPoint(e.getPoint());
+        			setSortColumn(column);
+        			table.getTableHeader().repaint();
+        		}
+        	});
         }
         else {
             // Simple JTable
             table = new JTable(model) {
-
+            	
+            	/**
+            	 * Overriding table change so that selections aren't cleared when rows are deleted.
+            	 */
+            	public void tableChanged(TableModelEvent e) {
+            	
+            		if (e.getType() == TableModelEvent.DELETE) {
+            			// Store selected row objects.
+            			List selected = getSelection();
+            			
+            			// Call super implementation to remove row and clear selection.
+    					super.tableChanged(e);
+    					
+    					// Reselect rows if row objects still around.
+    					MonitorModel model = (MonitorModel) getModel();
+    					Iterator i = selected.iterator();
+    					while (i.hasNext()) {
+    						Object selectedObject = i.next();
+    						for (int x = 0; x < model.getRowCount(); x++) {
+    							if (selectedObject == model.getObject(x)) addRowSelectionInterval(x, x);
+    						}
+    					}
+            		}
+            		else super.tableChanged(e);
+            	}
+            	
                 /**
                  * Display the cell contents as a tooltip. Useful when cell
                  * contents in wider than the cell

@@ -92,7 +92,7 @@ public class TableSorter extends AbstractTableModel
         if ((type == TableModelEvent.DELETE) ||
             (type == TableModelEvent.INSERT)) {
             sortModel();
-            newEvent = new TableModelEvent(this);
+            newEvent = new TableModelEvent(this, e.getFirstRow(), e.getLastRow(), e.getColumn(), e.getType());
         }
         else if ((e.getColumn() == sortedColumn) ||
                 (e.getColumn() == TableModelEvent.ALL_COLUMNS))

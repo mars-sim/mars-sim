@@ -148,6 +148,7 @@ public class MissionTableModel extends AbstractTableModel implements
      * @return A status string for the contents of the model.
      */
 	public String update() {
+		
 		if (missionCache.size() > 0) fireTableRowsUpdated(0, missionCache.size() - 1);
 		
 		return missionCache.size() + " missions";
