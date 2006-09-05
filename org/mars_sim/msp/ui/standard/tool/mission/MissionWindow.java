@@ -7,11 +7,13 @@
 
 package org.mars_sim.msp.ui.standard.tool.mission;
 
+import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
@@ -38,11 +40,19 @@ public class MissionWindow extends ToolWindow {
 
         // Create mission panel
         JPanel missionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        mainPane.add(missionPane, "North");
+        mainPane.add(missionPane, BorderLayout.NORTH);
 
         // Create mission label
         JLabel missionLabel = new JLabel("Mission Tool");
         missionPane.add(missionLabel);
+        
+        JPanel missionListPane = new JPanel(new BorderLayout());
+        missionListPane.setPreferredSize(new Dimension(200, 200));
+        mainPane.add(missionListPane, BorderLayout.CENTER);
+        
+        MissionListModel missionListModel = new MissionListModel();
+        JList missionList = new JList(missionListModel);
+        missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
         
         // Pack window
         pack();
