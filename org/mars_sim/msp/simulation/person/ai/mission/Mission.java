@@ -72,6 +72,13 @@ public abstract class Mission implements Serializable {
         // Add starting person to mission.
 		startingPerson.getMind().setMission(this);
     }
+    
+    /**
+     * Gets the string representation of this mission.
+     */
+    public String toString() {
+    	return getDescription();
+    }
 
     /** 
      * Adds a person to the mission.
