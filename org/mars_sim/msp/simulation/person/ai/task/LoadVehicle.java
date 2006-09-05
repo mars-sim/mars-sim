@@ -66,6 +66,7 @@ public class LoadVehicle extends Task implements Serializable {
     		resources = mission.getResourcesNeededForRemainingMission(true);
     		equipment = mission.getEquipmentNeededForRemainingMission(true);
     		settlement = person.getSettlement();
+    		if (settlement == null) endTask();
     		
     		// Initialize task phase
             addPhase(LOADING);
@@ -203,6 +204,11 @@ public class LoadVehicle extends Task implements Serializable {
      * @throws Exception if error in loading phase.
      */
     double loadingPhase(double time) throws Exception {
+    	
+    	if (settlement == null) {
+    		endTask();
+    		return 0D;
+    	}
     	
         // Determine load rate.
         int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
