@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
@@ -52,6 +53,7 @@ public class MissionWindow extends ToolWindow {
         
         MissionListModel missionListModel = new MissionListModel();
         JList missionList = new JList(missionListModel);
+        missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
         
         // Pack window
