@@ -11,14 +11,14 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
-import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 
 public class MissionTableModel extends AbstractTableModel implements
-		MonitorModel, MissionListener {
+		MonitorModel, MissionManagerListener {
 
 	// Column indexes
 	private final static int TYPE = 0;               // Type column

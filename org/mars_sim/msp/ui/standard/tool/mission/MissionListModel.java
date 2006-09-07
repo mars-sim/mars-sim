@@ -12,11 +12,13 @@ import javax.swing.AbstractListModel;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 
 public class MissionListModel extends AbstractListModel implements
-		MissionListener {
+		MissionManagerListener, MissionListener {
 
 	private List missions;
 	
@@ -29,6 +31,7 @@ public class MissionListModel extends AbstractListModel implements
 	public void addMission(Mission mission) {
 		if (!missions.contains(mission)) {
 			missions.add(mission);
+			mission.addListener(this);
 			fireIntervalAdded(this, missions.size() - 1, missions.size() - 1);
 		}
 	}
@@ -37,12 +40,20 @@ public class MissionListModel extends AbstractListModel implements
 		if (missions.contains(mission)) {
 			int index = missions.indexOf(mission);
 			missions.remove(mission);
+			mission.removeListener(this);
 			fireIntervalRemoved(this, index, index);
 		}
 	}
 	
-	public void update() {
-		fireContentsChanged(this, 0, missions.size());
+	/**
+	 * Catch mission update event.
+	 * @param event the mission event.
+	 */
+	public void missionUpdate(MissionEvent event) {
+		if (event.getType() == MissionEvent.DESCRIPTION) {
+			int index = missions.indexOf(event.getSource());
+			if ((index > -1) && (index < missions.size())) fireContentsChanged(this, index, index);
+		}
 	}
 
 	public int getSize() {

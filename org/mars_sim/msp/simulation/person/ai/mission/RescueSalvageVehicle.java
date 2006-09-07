@@ -267,7 +267,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		setPhaseEnded(true);
 		
 		// Set mission event.
-		HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.RENDEZVOUS);
+		HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.RENDEZVOUS);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	}
 	
@@ -309,7 +309,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     		Inventory inv = disembarkSettlement.getInventory();
     		inv.storeUnit(towedVehicle);
     		// System.out.println(towedVehicle + " salvaged at " + disembarkSettlement.getName());
-    		HistoricalEvent salvageEvent = new MissionEvent(person, this, MissionEvent.SALVAGE_VEHICLE);
+    		HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.SALVAGE_VEHICLE);
 			Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
     		
     		// Unload any crew at settlement.
@@ -322,7 +322,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         			inv.storeUnit(crewmember);
         			BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
         			// System.out.println(crewmember.getName() + " rescued.");
-        			HistoricalEvent rescueEvent = new MissionEvent(person, this, MissionEvent.RESCUE_PERSON);
+        			HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.RESCUE_PERSON);
         			Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
         		}
     		}

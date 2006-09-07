@@ -59,7 +59,7 @@ public class MissionManager implements Serializable {
      * Add a listener
      * @param newListener The listener to add.
      */
-    public void addListener(MissionListener newListener) {
+    public void addListener(MissionManagerListener newListener) {
     	if (listeners == null) listeners = new ArrayList();
         listeners.add(newListener);
     }
@@ -112,7 +112,7 @@ public class MissionManager implements Serializable {
             // Update listeners.
             if (listeners == null) listeners = new ArrayList();
             Iterator i = listeners.iterator();
-            while (i.hasNext()) ((MissionListener) i.next()).addMission(newMission);
+            while (i.hasNext()) ((MissionManagerListener) i.next()).addMission(newMission);
             // System.out.println("MissionManager: Added new mission - " + newMission.getName());
         }
     }
@@ -128,7 +128,7 @@ public class MissionManager implements Serializable {
             // Update listeners.
             if (listeners == null) listeners = new ArrayList();
             Iterator i = listeners.iterator();
-            while (i.hasNext()) ((MissionListener) i.next()).removeMission(oldMission);
+            while (i.hasNext()) ((MissionManagerListener) i.next()).removeMission(oldMission);
             // System.out.println("MissionManager: Removed old mission - " + oldMission.getName());
         }
     } 

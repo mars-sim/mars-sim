@@ -542,7 +542,7 @@ public abstract class VehicleMission extends TravelMission {
     		// System.out.println(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
     		
     		// Creating emergency destination mission event.
-            HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.EMERGENCY_DESTINATION);
+            HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_DESTINATION);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
     		
     		// Set the new destination as the travel mission's next and final navpoint.
@@ -555,7 +555,7 @@ public abstract class VehicleMission extends TravelMission {
     		// System.out.println(vehicle.getName() + " setting emergency beacon.");
     		
     		// Creating mission emergency beacon event.
-            HistoricalEvent newEvent = new MissionEvent(person, this, MissionEvent.EMERGENCY_BEACON);
+            HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_BEACON);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
     		
     		vehicle.setEmergencyBeacon(true);
