@@ -31,10 +31,10 @@ public class Barrel extends Equipment implements Container, Serializable {
 		super(TYPE, location);
 		
 		// Sets the base mass of the barrel.
-		baseMass = (capacity / 100D) * BASE_MASS;
+		setBaseMass((capacity / 100D) * BASE_MASS);
 		
 		// Set the liquid capacity.
 		if (capacity < 0D) throw new Exception("Capacity cannot be less than zero.");
-		inventory.addAmountResourcePhaseCapacity(Phase.LIQUID, capacity);
+		getInventory().addAmountResourcePhaseCapacity(Phase.LIQUID, capacity);
 	}
 }

@@ -56,7 +56,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         this.template = template;
         
 		// Set inventory total mass capacity.
-		inventory.addGeneralCapacity(Double.MAX_VALUE);
+		getInventory().addGeneralCapacity(Double.MAX_VALUE);
         
         // Initialize building manager
         buildingManager = new BuildingManager(this);
@@ -102,7 +102,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      *  @return PersonCollection of inhabitants
      */
     public PersonCollection getInhabitants() {
-        return inventory.getContainedUnits().getPeople();
+        return getInventory().getContainedUnits().getPeople();
     }
     
     /** Gets the current available population capacity
@@ -132,7 +132,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      *  @return VehicleCollection of parked vehicles
      */
     public VehicleCollection getParkedVehicles() {
-        return inventory.getContainedUnits().getVehicles();
+        return getInventory().getContainedUnits().getVehicles();
     }
 
     /** Gets the number of vehicles parked at the settlement.
@@ -150,8 +150,8 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     public boolean lifeSupportCheck() throws Exception {
         boolean result = true;
 
-        if (inventory.getAmountResourceStored(AmountResource.OXYGEN) <= 0D) result = false;
-        if (inventory.getAmountResourceStored(AmountResource.WATER) <= 0D) result = false;
+        if (getInventory().getAmountResourceStored(AmountResource.OXYGEN) <= 0D) result = false;
+        if (getInventory().getAmountResourceStored(AmountResource.WATER) <= 0D) result = false;
         if (getOxygenFlowModifier() < 100D) result = false;
         if (getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -174,11 +174,11 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public double provideOxygen(double amountRequested) throws Exception {
     	double oxygenTaken = amountRequested;
-    	double oxygenLeft = inventory.getAmountResourceStored(AmountResource.OXYGEN);
+    	double oxygenLeft = getInventory().getAmountResourceStored(AmountResource.OXYGEN);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
     	try {
-    		inventory.retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
-    		inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, oxygenTaken);
+    		getInventory().retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
+    		getInventory().storeAmountResource(AmountResource.CARBON_DIOXIDE, oxygenTaken);
     	}
     	catch (InventoryException e) {};
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
@@ -199,10 +199,10 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public double provideWater(double amountRequested) throws Exception {
     	double waterTaken = amountRequested;
-    	double waterLeft = inventory.getAmountResourceStored(AmountResource.WATER);
+    	double waterLeft = getInventory().getAmountResourceStored(AmountResource.WATER);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
     	try {
-    		inventory.retrieveAmountResource(AmountResource.WATER, waterTaken);
+    		getInventory().retrieveAmountResource(AmountResource.WATER, waterTaken);
     	}
     	catch (InventoryException e) {};
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
@@ -221,7 +221,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public double getAirPressure() {
         double result = NORMAL_AIR_PRESSURE * (getAirPressureModifier() / 100D);
-        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(location);
+        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(getCoordinates());
         if (result < ambient) return ambient;
         else return result;
     }
@@ -239,7 +239,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public double getTemperature() {
         double result = NORMAL_TEMP * (getTemperatureModifier() / 100D);
-        double ambient = Simulation.instance().getMars().getWeather().getTemperature(location);
+        double ambient = Simulation.instance().getMars().getWeather().getTemperature(getCoordinates());
         if (result < ambient) return ambient;
         else return result;
     }

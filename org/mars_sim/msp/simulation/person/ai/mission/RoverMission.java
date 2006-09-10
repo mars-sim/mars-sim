@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.79 2006-05-15
+ * @version 2.80 2006-09-08
  * @author Scott Davis
  */
 
@@ -35,8 +35,14 @@ import org.mars_sim.msp.simulation.vehicle.*;
  */
 public abstract class RoverMission extends VehicleMission {
 
+	// Mission event types
+	public static final String STARTING_SETTLEMENT_EVENT = "starting settlement";
+	
 	// Static members
 	protected static final int MIN_PEOPLE = 2;
+	
+	// Data members
+	private Settlement startingSettlement;
 
 	/**
 	 * Constructor
@@ -65,9 +71,26 @@ public abstract class RoverMission extends VehicleMission {
 	 * Gets the mission's rover if there is one.
 	 * @return vehicle or null if none.
 	 */
-	public Rover getRover() {
+	public final Rover getRover() {
 		return (Rover) getVehicle();
 	}
+	
+	/**
+	 * Sets the starting settlement.
+	 * @param startingSettlement the new starting settlement
+	 */
+    protected final void setStartingSettlement(Settlement startingSettlement) {
+    	this.startingSettlement = startingSettlement;
+    	fireMissionUpdate(STARTING_SETTLEMENT_EVENT);
+    }
+    
+    /**
+     * Gets the starting settlement.
+     * @return starting settlement
+     */
+    public final Settlement getStartingSettlement() {
+    	return startingSettlement;
+    }
 	
     /**
      * The person performs the current phase of the mission.
@@ -85,7 +108,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return vehicle or null if none available.
 	 * @throws Exception if error finding vehicles.
 	 */
-	protected static Vehicle getVehicleWithGreatestRange(Settlement settlement) throws Exception {
+	protected final static Vehicle getVehicleWithGreatestRange(Settlement settlement) throws Exception {
 		Vehicle result = null;
 
 		VehicleIterator i = settlement.getParkedVehicles().iterator();
@@ -147,7 +170,7 @@ public abstract class RoverMission extends VehicleMission {
      * Checks that everyone in the mission is aboard the rover.
      * @return true if everyone is aboard
      */
-    protected boolean isEveryoneInRover() {
+    protected final boolean isEveryoneInRover() {
         boolean result = true;
         PersonIterator i = getPeople().iterator();
         while (i.hasNext()) {
@@ -160,7 +183,7 @@ public abstract class RoverMission extends VehicleMission {
      * Checks that no one in the mission is aboard the rover.
      * @return true if no one is aboard
      */
-    protected boolean isNoOneInRover() {
+    protected final boolean isNoOneInRover() {
     	boolean result = true;
         PersonIterator i = getPeople().iterator();
         while (i.hasNext()) {
@@ -416,7 +439,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * Checks if there is only one person at the associated settlement and he/she has a serious medical problem.
 	 * @return true if serious medical problem
 	 */
-	protected boolean hasDangerousMedicalProblemAtAssociatedSettlement() {
+	protected final boolean hasDangerousMedicalProblemAtAssociatedSettlement() {
 		boolean result = false;
 		if (getAssociatedSettlement() != null) {
 			if (getAssociatedSettlement().getCurrentPopulationNum() == 1) {
@@ -431,7 +454,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * Checks if the mission has an emergency situation.
 	 * @return true if emergency.
 	 */
-	protected boolean hasEmergency() {
+	protected final boolean hasEmergency() {
 		boolean result = super.hasEmergency();
 		if (hasDangerousMedicalProblemAtAssociatedSettlement()) result = true;
 		return result;

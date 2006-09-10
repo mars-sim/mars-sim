@@ -25,10 +25,10 @@ public class Bag extends Equipment implements Container, Serializable {
 		super(TYPE, location);
 		
 		// Sets the base mass of the bag.
-		baseMass = (capacity / 100D) * BASE_MASS;
+		setBaseMass((capacity / 100D) * BASE_MASS);
 		
 		// Set the solid capacity.
 		if (capacity < 0D) throw new Exception("Capacity cannot be less than zero.");
-		inventory.addAmountResourcePhaseCapacity(Phase.SOLID, capacity);
+		getInventory().addAmountResourcePhaseCapacity(Phase.SOLID, capacity);
 	}
 }

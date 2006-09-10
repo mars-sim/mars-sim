@@ -8,23 +8,20 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.util.EventObject;
 
+/**
+ * A mission change event.
+ */
 public class MissionEvent extends EventObject {
 	
-	// Event types
-	public static final int NAME = 0;
-	public static final int DESCRIPTION = 1;
-	public static final int PHASE = 3;
-	public static final int PHASE_DESCRIPTION = 4;
-	
 	// Data members
-	private int type; // The event type.
+	private String type; // The event type.
 	
 	/**
 	 * Constructor
 	 * @param source the object throwing the event.
 	 * @param type the event type.
 	 */
-	public MissionEvent(Object source, int type) {
+	public MissionEvent(Mission source, String type) {
 		// Use EventObject constructor.
 		super(source);
 		
@@ -35,7 +32,7 @@ public class MissionEvent extends EventObject {
 	 * Gets the event type.
 	 * @return event type.
 	 */
-	public int getType() {
+	public String getType() {
 		return type;
 	}
 }

@@ -281,4 +281,14 @@ public class MissionManager implements Serializable {
     	if (currentTime.equals(timeCache) && (person == personCache)) return true;
     	return false;
     }
+    
+    /**
+     * Updates mission based on passing time.
+     * @param time amount of time passing (millisols)
+     * @throws Exception if error in updating missions
+     */
+    public void timePassing(double time) throws Exception {
+    	Iterator i = missions.iterator();
+    	while (i.hasNext()) ((Mission) i.next()).timePassing(time);
+    }
 }

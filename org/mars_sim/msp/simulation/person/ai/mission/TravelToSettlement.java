@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.79 2006-06-01
+ * @version 2.80 2006-09-08
  * @author Scott Davis
  */
 
@@ -33,6 +33,9 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class TravelToSettlement extends RoverMission implements Serializable {
 	
+	// Mission event types
+	public static final String DESTINATION_SETTLEMENT = "destination settlement";
+	
 	// Static members
 	private static final double BASE_MISSION_WEIGHT = 1D;
 	private static final double RELATIONSHIP_MODIFIER = 10D;
@@ -41,7 +44,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	private static final double RANGE_BUFFER = .8D;
 	
     // Data members
-    private Settlement startingSettlement;
     private Settlement destinationSettlement;
 
     /** 
@@ -57,17 +59,17 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         if (!isDone()) {
         	
         	// Initialize data members
-        	startingSettlement = startingPerson.getSettlement();
+        	setStartingSettlement(startingPerson.getSettlement());
 
         	// Set mission capacity.
         	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
         	
         	// Choose destination settlement.
-        	destinationSettlement = getRandomDestinationSettlement(startingPerson, startingSettlement);
-        	if (destinationSettlement != null) { 
-        		addNavpoint(new NavPoint(destinationSettlement.getCoordinates(), destinationSettlement, 
-        				destinationSettlement.getName()));
-        		setDescription("Travel To " + destinationSettlement.getName());
+        	setDestinationSettlement(getRandomDestinationSettlement(startingPerson, getStartingSettlement()));
+        	if (getDestinationSettlement() != null) { 
+        		addNavpoint(new NavPoint(getDestinationSettlement().getCoordinates(), getDestinationSettlement(), 
+        				getDestinationSettlement().getName()));
+        		setDescription("Travel To " + getDestinationSettlement().getName());
         	}
         	else endMission();
         	
@@ -85,7 +87,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + startingSettlement.getName());
+        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
         
         // System.out.println("Travel to Settlement mission");
     }
@@ -140,6 +142,23 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         }
 
         return missionProbability;
+    }
+    
+    /**
+     * Sets the destination settlement.
+     * @param destinationSettlement the new destination settlement.
+     */
+    private void setDestinationSettlement(Settlement destinationSettlement) {
+    	this.destinationSettlement = destinationSettlement;
+    	fireMissionUpdate(DESTINATION_SETTLEMENT);
+    }
+    
+    /**
+     * Gets the destination settlement.
+     * @return destination settlement
+     */
+    public final Settlement getDestinationSettlement() {
+    	return destinationSettlement;
     }
 
     /** 
@@ -241,7 +260,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	protected boolean isCapableOfMission(Person person) {
 		if (super.isCapableOfMission(person)) {
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-				if (person.getSettlement() == startingSettlement) return true;
+				if (person.getSettlement() == getStartingSettlement()) return true;
 			}
 		}
 		return false;
@@ -264,16 +283,16 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 			
 			// Add modifier for average relationship with inhabitants of destination settlement.
-			if (destinationSettlement != null) {
-				PersonCollection destinationInhabitants = destinationSettlement.getAllAssociatedPeople();
+			if (getDestinationSettlement() != null) {
+				PersonCollection destinationInhabitants = getDestinationSettlement().getAllAssociatedPeople();
 				double destinationSocialModifier = (relationshipManager.getAverageOpinionOfPeople(person, 
 						destinationInhabitants) - 50D) / 50D;
 				result += destinationSocialModifier;
 			}
 			
 			// Subtract modifier for average relationship with non-mission inhabitants of starting settlement.
-			if (startingSettlement != null) {
-				PersonCollection startingInhabitants = startingSettlement.getAllAssociatedPeople();
+			if (getStartingSettlement() != null) {
+				PersonCollection startingInhabitants = getStartingSettlement().getAllAssociatedPeople();
 				PersonIterator i = startingInhabitants.iterator();
 				while (i.hasNext()) {
 					if (hasPerson(i.next())) i.remove();
@@ -298,7 +317,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		super.recruitPeopleForMission(startingPerson);
 		
 		// Make sure there is at least one person left at the starting settlement.
-		if (!atLeastOnePersonRemainingAtSettlement(startingSettlement, startingPerson)) {
+		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
 			// Remove last person added to the mission.
 			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 			if (lastPerson != null) {
@@ -313,7 +332,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 * @return settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
-		return destinationSettlement;
+		return getDestinationSettlement();
 	}
 	
     /**

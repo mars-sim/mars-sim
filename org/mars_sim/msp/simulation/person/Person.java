@@ -77,11 +77,11 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		health = new PhysicalCondition(this);
 
 		// Set base mass of person.
-		baseMass = 70D;
+		setBaseMass(70D);
 
 		// Set inventory total mass capacity based on the person's strength.
 		int strength = attributes.getAttribute(NaturalAttributeManager.STRENGTH);
-		inventory.addGeneralCapacity(BASE_CAPACITY + strength);
+		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 		
 		// Put person in proper building.
 	    settlement.getInventory().storeUnit(this);
@@ -146,12 +146,12 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      * location of the containing unit.
      */
     public void buryBody() {
-        if (containerUnit != null) {
+        if (getContainerUnit() != null) {
         	try {
-        		containerUnit.getInventory().retrieveUnit(this);
+        		getContainerUnit().getInventory().retrieveUnit(this);
         	}
         	catch (InventoryException e) {
-        		System.err.println("Could not bury " + name);
+        		System.err.println("Could not bury " + getName());
         		e.printStackTrace(System.err);
         	}
         }
@@ -273,7 +273,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	    }
 
 	    // Get all contained units.
-        UnitIterator i = inventory.getContainedUnits().iterator();
+        UnitIterator i = getInventory().getContainedUnits().iterator();
 	    while (i.hasNext()) {
 	        Unit contained = i.next();
 	        if (contained instanceof LifeSupport) lifeSupportUnits.add(contained);

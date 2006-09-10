@@ -50,7 +50,7 @@ public class MissionListModel extends AbstractListModel implements
 	 * @param event the mission event.
 	 */
 	public void missionUpdate(MissionEvent event) {
-		if (event.getType() == MissionEvent.DESCRIPTION) {
+		if (event.getType().equals(Mission.DESCRIPTION_EVENT)) {
 			int index = missions.indexOf(event.getSource());
 			if ((index > -1) && (index < missions.size())) fireContentsChanged(this, index, index);
 		}

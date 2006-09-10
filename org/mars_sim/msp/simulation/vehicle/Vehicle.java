@@ -68,11 +68,11 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         settlement.getInventory().storeUnit(this);
 
         // Initialize vehicle data
-        this.description = description;
+        setDescription(description);
         direction = new Direction(0);
 	    trail = new ArrayList();
 	    setBaseSpeed(baseSpeed);
-	    this.baseMass = baseMass;
+	    setBaseMass(baseMass);
 	    this.fuelEfficiency = fuelEfficiency;
 	    
 	    // Initialize malfunction manager.
@@ -95,7 +95,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         settlement.getInventory().storeUnit(this);
 
         // Initialize vehicle data
-        this.description = description;
+        setDescription(description);
         direction = new Direction(0);
 	    trail = new ArrayList();
 	    
@@ -110,7 +110,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    setBaseSpeed(config.getBaseSpeed(description));
 
 	    // Set the empty mass of the rover.
-	    baseMass = config.getEmptyMass(description);
+	    setBaseMass(config.getEmptyMass(description));
 	    
 	    // Set the fuel efficiency of the rover.
 	    fuelEfficiency = config.getFuelEfficiency(getDescription());
@@ -122,8 +122,8 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public String getStatus() {
         String status = null;
 
-        if (containerUnit != null) {
-	        if (containerUnit instanceof Settlement) {
+        if (getContainerUnit() != null) {
+	        if (getContainerUnit() instanceof Settlement) {
                 if (reservedForMaintenance) status = MAINTENANCE;
 		        else status = PARKED;
 	        }
@@ -240,7 +240,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * @throws Exception if error getting range.
      */
     public double getRange() throws Exception {
-    	double fuelCapacity = inventory.getAmountResourceCapacity(getFuelType());
+    	double fuelCapacity = getInventory().getAmountResourceCapacity(getFuelType());
         return fuelCapacity * fuelEfficiency / RANGE_ERROR_MARGIN;
     }
 
@@ -353,7 +353,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     	try  {
         	if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
 	    	malfunctionManager.timePassing(time);
-	    	addToTrail(location);
+	    	addToTrail(getCoordinates());
         
         	// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
         	if (getStatus().equals(MAINTENANCE)) {

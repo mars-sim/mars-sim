@@ -25,9 +25,9 @@ public class SpecimenContainer extends Equipment implements Container, Serializa
 		super(TYPE, location);
 		
 		// Set the base mass of the container.
-		baseMass = BASE_MASS;
+		setBaseMass(BASE_MASS);
 		
 		// Set the capacity of the container.
-		inventory.addAmountResourceTypeCapacity(AmountResource.ROCK_SAMPLES, ROCK_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(AmountResource.ROCK_SAMPLES, ROCK_CAPACITY);
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionListener.java
- * @version 2.80 06-09-2006
+ * @version 2.80 2006-06-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;

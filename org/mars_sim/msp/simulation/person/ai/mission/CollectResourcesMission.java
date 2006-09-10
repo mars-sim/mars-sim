@@ -40,7 +40,6 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	final private static double EVA_COLLECTION_OVERHEAD = 20D;
 
 	// Data members
-	protected Settlement startingSettlement; // The settlement the mission starts at.
 	private AmountResource resourceType; // The type of resource to collect.
 	private double siteCollectedResources; // The amount of resources (kg) collected at a collection site.
 	private double collectingStart; // The starting amount of resources in a rover at a collection site.
@@ -76,7 +75,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
         	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
 		
 			// Initialize data members.
-			startingSettlement = startingPerson.getSettlement();
+			setStartingSettlement(startingPerson.getSettlement());
 			this.resourceType = resourceType;
 			this.siteResourceGoal = siteResourceGoal;
 			this.resourceCollectionRate = resourceCollectionRate;
@@ -95,8 +94,8 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			}
 			
 			// Add home settlement
-			addNavpoint(new NavPoint(startingSettlement.getCoordinates(), 
-					startingSettlement, startingSettlement.getName()));
+			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
+					getStartingSettlement(), getStartingSettlement().getName()));
         	
         	// Check if vehicle can carry enough supplies for the mission.
         	try {
@@ -112,7 +111,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription("Embarking from " + startingSettlement.getName());
+		setPhaseDescription("Embarking from " + getStartingSettlement().getName());
 	}
 	
     /**
@@ -159,7 +158,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	 * @param person the person currently performing the mission
 	 * @throws MissionException if problem performing collecting phase.
 	 */
-	private void collectingPhase(Person person) throws MissionException {
+	private final void collectingPhase(Person person) throws MissionException {
 		Inventory inv = getRover().getInventory();
 		double resourcesCollected = 0D;
 		double resourcesCapacity = 0D;
@@ -330,7 +329,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	 * @return settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
-		return startingSettlement;
+		return getStartingSettlement();
 	}
 	
 	/**
@@ -341,7 +340,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 	protected boolean isCapableOfMission(Person person) {
 		if (super.isCapableOfMission(person)) {
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-				if (person.getSettlement() == startingSettlement) return true;
+				if (person.getSettlement() == getStartingSettlement()) return true;
 			}
 		}
 		return false;
@@ -355,7 +354,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		super.recruitPeopleForMission(startingPerson);
 		
 		// Make sure there is at least one person left at the starting settlement.
-		if (!atLeastOnePersonRemainingAtSettlement(startingSettlement, startingPerson)) {
+		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
 			// Remove last person added to the mission.
 			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 			if (lastPerson != null) {
@@ -408,7 +407,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      * @return time (millisols)
      * @throws Exception if error estimating time.
      */
-    private double getEstimatedRemainingCollectionSiteTime(boolean useBuffer) throws Exception {
+    private final double getEstimatedRemainingCollectionSiteTime(boolean useBuffer) throws Exception {
     	double result = 0D;
     	
     	// Add estimated remaining collection time at current site if still there.
@@ -463,7 +462,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      * Gets the total number of collection sites for this mission.
      * @return number of sites.
      */
-    public int getNumCollectionSites() {
+    public final int getNumCollectionSites() {
     	return getNumberOfNavpoints() - 2;
     }
     
@@ -471,7 +470,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      * Gets the number of collection sites that have been currently visited by the mission.
      * @return number of sites.
      */
-    public int getNumCollectionSitesVisited() {
+    public final int getNumCollectionSitesVisited() {
     	int result = getCurrentNavpointIndex();
     	if (result == (getNumberOfNavpoints() - 1)) result -= 1;
     	return result;
@@ -495,7 +494,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      * @return time (millisols) limit.
      * @throws Exception if error determining time limit.
      */
-    public double getTotalTripTimeLimit(boolean useBuffer) throws Exception {
+    public final double getTotalTripTimeLimit(boolean useBuffer) throws Exception {
     	
     	int crewNum = getPeopleNumber();
     	Inventory vInv = getVehicle().getInventory();

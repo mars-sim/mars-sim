@@ -217,6 +217,7 @@ public class Simulation implements Serializable {
 	public void clockPulse(double time) {
 		try {
 			mars.timePassing(time);
+			missionManager.timePassing(time);
 			unitManager.timePassing(time);
 		}
 		catch (Exception e) {

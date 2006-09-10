@@ -6,23 +6,27 @@
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
+import org.mars_sim.msp.simulation.person.ai.mission.RoverMission;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 
 public class MissionTableModel extends AbstractTableModel implements
-		MonitorModel, MissionManagerListener {
+		MonitorModel, MissionManagerListener, MissionListener {
 
 	// Column indexes
 	private final static int TYPE = 0;               // Type column
-	private final static int DESCRIPTION = 1;        // Discription column
+	private final static int DESCRIPTION = 1;        // Description column
 	private final static int PHASE = 2;              // Phase column
 	private final static int VEHICLE = 3;            // Mission vehicle column
 	private final static int STARTING_SETTLEMENT = 4;// Starting settlement column
@@ -61,6 +65,8 @@ public class MissionTableModel extends AbstractTableModel implements
         MissionManager manager = Simulation.instance().getMissionManager();
         missionCache = manager.getMissions();
         manager.addListener(this);
+        Iterator i = missionCache.iterator();
+        while (i.hasNext()) ((Mission) i.next()).addListener(this);
     }
     
 	/**
@@ -80,6 +86,7 @@ public class MissionTableModel extends AbstractTableModel implements
 	public void addMission(Mission mission) {
 		if (!missionCache.contains(mission)) {
 			missionCache.add(mission);
+			mission.addListener(this);
 			
 			// Inform listeners of new row
             fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
@@ -94,6 +101,7 @@ public class MissionTableModel extends AbstractTableModel implements
 		if (missionCache.contains(mission)) {
 			int index = missionCache.indexOf(mission);
 			missionCache.remove(mission);
+			mission.removeListener(this);
 			
 			// Inform listeners of new row
             fireTableRowsDeleted(index, index);
@@ -149,9 +157,36 @@ public class MissionTableModel extends AbstractTableModel implements
      */
 	public String update() {
 		
-		if (missionCache.size() > 0) fireTableRowsUpdated(0, missionCache.size() - 1);
+		// if (missionCache.size() > 0) fireTableRowsUpdated(0, missionCache.size() - 1);
 		
 		return missionCache.size() + " missions";
+	}
+	
+	/**
+	 * Catch mission update event.
+	 * @param event the mission event.
+	 */
+	public void missionUpdate(MissionEvent event) {
+		int index = missionCache.indexOf(event.getSource());
+		if ((index > -1) && (index < missionCache.size())) {
+			int column1 = -1;
+			int column2 = -1;
+			
+			if (event.getType().equals(Mission.NAME_EVENT)) column1 = TYPE;
+			else if (event.getType().equals(Mission.DESCRIPTION_EVENT)) column1 = DESCRIPTION;
+			else if (event.getType().equals(Mission.PHASE_EVENT)) column1 = PHASE;
+			else if (event.getType().equals(Mission.PEOPLE_NUM_EVENT)) column1 = MEMBER_NUM;
+			else if (event.getType().equals(TravelMission.NAVPOINTS_EVENT)) column1 = NAVPOINT_NUM;
+			else if (event.getType().equals(VehicleMission.VEHICLE_EVENT)) column1 = VEHICLE;
+			else if (event.getType().equals(RoverMission.STARTING_SETTLEMENT_EVENT)) column1 = STARTING_SETTLEMENT;
+			else if (event.getType().equals(VehicleMission.DISTANCE_EVENT)) {
+				column1 = TRAVELLED_DISTANCE;
+				column2 = REMAINING_DISTANCE;
+			}
+			
+			if (column1 > -1) fireTableCellUpdated(index, column1);
+			if (column2 > -1) fireTableCellUpdated(index, column2);
+		}
 	}
 
 	public int getRowCount() {

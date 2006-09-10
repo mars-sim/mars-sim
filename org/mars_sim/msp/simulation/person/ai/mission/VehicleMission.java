@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.79 2006-06-28
+ * @version 2.80 2006-09-08
  * @author Scott Davis
  */
 
@@ -15,6 +15,9 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitEvent;
+import org.mars_sim.msp.simulation.UnitListener;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
@@ -34,7 +37,11 @@ import org.mars_sim.msp.simulation.time.MarsClock;
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
  */
-public abstract class VehicleMission extends TravelMission {
+public abstract class VehicleMission extends TravelMission implements UnitListener {
+	
+	// Mission event types
+	public static final String VEHICLE_EVENT = "vehicle";
+	public static final String OPERATOR_EVENT = "operator";
 	
 	// Mission phases
 	public static final String EMBARKING = "Embarking";
@@ -85,7 +92,7 @@ public abstract class VehicleMission extends TravelMission {
 	 * Gets the mission's vehicle if there is one.
 	 * @return vehicle or null if none.
 	 */
-	public Vehicle getVehicle() {
+	public final Vehicle getVehicle() {
 		return vehicle;
 	}
 	
@@ -94,12 +101,14 @@ public abstract class VehicleMission extends TravelMission {
 	 * @param newVehicle the vehicle to use.
 	 * @throws MissionException if vehicle cannot be used.
 	 */
-	protected void setVehicle(Vehicle newVehicle) throws MissionException {
+	protected final void setVehicle(Vehicle newVehicle) throws MissionException {
 		if (newVehicle != null) {
 			try {
 				if (isUsableVehicle(newVehicle)) {
 					vehicle = newVehicle;
 					newVehicle.setReservedForMission(true);
+					vehicle.addListener(this);
+					fireMissionUpdate(VEHICLE_EVENT);
 				}
 				throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
 			}
@@ -114,17 +123,19 @@ public abstract class VehicleMission extends TravelMission {
 	 * Checks if the mission has a vehicle.
 	 * @return true if vehicle.
 	 */
-	public boolean hasVehicle() {
+	public final boolean hasVehicle() {
 		return (vehicle != null);
 	}
 	
 	/**
 	 * Leaves the mission's vehicle and unreserves it.
 	 */
-	protected void leaveVehicle() {
+	protected final void leaveVehicle() {
 		if (hasVehicle()) {
 			vehicle.setReservedForMission(false);
+			vehicle.removeListener(this);
 			vehicle = null;
+			fireMissionUpdate(VEHICLE_EVENT);
 		}
 	}
 	
@@ -173,7 +184,7 @@ public abstract class VehicleMission extends TravelMission {
 	 * @return true if vehicle is reserved, false if unable to.
 	 * @throws Exception if error reserving vehicle.
 	 */
-	protected boolean reserveVehicle(Person person) throws Exception {
+	protected final boolean reserveVehicle(Person person) throws Exception {
 		
 		VehicleCollection bestVehicles = new VehicleCollection();
 		
@@ -210,7 +221,7 @@ public abstract class VehicleMission extends TravelMission {
 	 * @return list of available vehicles.
 	 * @throws Exception if problem determining if vehicles are usable.
 	 */
-	private VehicleCollection getAvailableVehicles(Settlement settlement) throws Exception {
+	private final VehicleCollection getAvailableVehicles(Settlement settlement) throws Exception {
 		VehicleCollection result = new VehicleCollection();
 		
 		VehicleIterator i = settlement.getParkedVehicles().iterator();
@@ -235,7 +246,7 @@ public abstract class VehicleMission extends TravelMission {
      * @return true if rover is loaded.
      * @throws Exception if error checking vehicle.
      */
-    public boolean isVehicleLoaded() throws Exception {
+    public final boolean isVehicleLoaded() throws Exception {
     	
     	return LoadVehicle.isFullyLoaded(getResourcesNeededForRemainingMission(true), 
     			getEquipmentNeededForRemainingMission(true), getVehicle());
@@ -246,7 +257,7 @@ public abstract class VehicleMission extends TravelMission {
      * @return true if vehicle is loadable.
      * @throws Exception if error checking vehicle.
      */
-    public boolean isVehicleLoadable() throws Exception {
+    public final boolean isVehicleLoadable() throws Exception {
     	
     	Map resources = getResourcesNeededForRemainingMission(true);
     	Map equipment = getEquipmentNeededForRemainingMission(true);
@@ -313,7 +324,7 @@ public abstract class VehicleMission extends TravelMission {
      * @param person the person currently performing the mission.
      * @throws MissionException if error performing phase.
      */
-    protected void performTravelPhase(Person person) throws MissionException {
+    protected final void performTravelPhase(Person person) throws MissionException {
     	
     	// Initialize travel phase if it's not.
     	// if (!TravelMission.TRAVEL_TO_NAVPOINT.equals(getTravelStatus())) startTravelToNextNode(person);
@@ -329,9 +340,8 @@ public abstract class VehicleMission extends TravelMission {
     			// If vehicle doesn't currently have an operator, set this person as the operator.
     			if (getVehicle().getOperator() == null) {
     				try {
-    					if (operateVehicleTask != null) {
+    					if (operateVehicleTask != null) 
     						operateVehicleTask = getOperateVehicleTask(person, operateVehicleTask.getTopPhase());
-    					}
     					else operateVehicleTask = getOperateVehicleTask(person, null); 
     					assignTask(person, operateVehicleTask);
     					lastOperator = person;
@@ -401,9 +411,8 @@ public abstract class VehicleMission extends TravelMission {
      * Gets the estimated time of arrival (ETA) for the current leg of the mission.
      * @return time (MarsClock) or null if not applicable.
      */
-    public MarsClock getLegETA() {
-    	if (TRAVELLING.equals(getPhase())) 
-    		return operateVehicleTask.getETA();
+    public final MarsClock getLegETA() {
+    	if (TRAVELLING.equals(getPhase())) return operateVehicleTask.getETA();
     	else return null;
     }
     
@@ -414,7 +423,7 @@ public abstract class VehicleMission extends TravelMission {
      * @return time (millisols)
      * @throws Exception
      */
-    public double getEstimatedTripTime(boolean useBuffer, double distance) throws Exception {
+    public final double getEstimatedTripTime(boolean useBuffer, double distance) throws Exception {
     	
     	// Determine average driving speed for all mission members.
     	double averageSpeed = getAverageVehicleSpeedForOperators();
@@ -443,7 +452,7 @@ public abstract class VehicleMission extends TravelMission {
      * Gets the average operating speed of the mission vehicle for all of the mission members. 
      * @return average operating speed (km/h)
      */
-    protected double getAverageVehicleSpeedForOperators() {
+    protected final double getAverageVehicleSpeedForOperators() {
     	
     	double totalSpeed = 0D;
     	PersonIterator i = getPeople().iterator();
@@ -457,7 +466,7 @@ public abstract class VehicleMission extends TravelMission {
      * @param person the vehicle operator.
      * @return average speed (km/h)
      */
-    private double getAverageVehicleSpeedForOperator(Person person) {
+    private final double getAverageVehicleSpeedForOperator(Person person) {
     	return OperateVehicle.getAverageVehicleSpeed(vehicle, person);
     }
     
@@ -492,7 +501,7 @@ public abstract class VehicleMission extends TravelMission {
      * @return true if enough resources.
      * @throws Exception if error checking resources.
      */
-    protected boolean hasEnoughResourcesForRemainingMission(boolean useBuffers) throws Exception {
+    protected final boolean hasEnoughResourcesForRemainingMission(boolean useBuffers) throws Exception {
     	return hasEnoughResources(getResourcesNeededForRemainingMission(useBuffers));
     }
     
@@ -502,7 +511,7 @@ public abstract class VehicleMission extends TravelMission {
      * @return true if enough resources.
      * @throws Exception if error checking resources.
      */
-    private boolean hasEnoughResources(Map neededResources) throws Exception {
+    private final boolean hasEnoughResources(Map neededResources) throws Exception {
     	boolean result = true;
     	
         Inventory inv = vehicle.getInventory();
@@ -531,7 +540,7 @@ public abstract class VehicleMission extends TravelMission {
      * @param person the person performing the mission.
      * @throws Exception if error determining an emergency destination.
      */
-    protected void determineEmergencyDestination(Person person) throws Exception {
+    protected final void determineEmergencyDestination(Person person) throws Exception {
     	
     	// Determine closest settlement.
     	Settlement newDestination = findClosestSettlement();
@@ -568,7 +577,7 @@ public abstract class VehicleMission extends TravelMission {
      * @return settlement
      * @throws Exception if error finding closest settlement.
      */
-    private Settlement findClosestSettlement() throws Exception {
+    private final Settlement findClosestSettlement() throws Exception {
     	Settlement result = null;
     	Coordinates location = getCurrentMissionLocation();
     	double closestDistance = Double.MAX_VALUE;
@@ -593,8 +602,31 @@ public abstract class VehicleMission extends TravelMission {
 	 * Gets the total distance travelled during the mission so far.
 	 * @return distance (km)
 	 */
-	public double getTotalDistanceTravelled() {
+	public final double getTotalDistanceTravelled() {
 		if (vehicle != null) return vehicle.getTotalDistanceTraveled() - startingTravelledDistance;
 		else return 0D;
+	}
+	
+    /** 
+     * Time passing for mission.
+     * @param time the amount of time passing (in millisols)
+     * @throws Exception if error during time passing.
+     */
+    public void timePassing(double time) throws Exception {
+    	// Add this mission as a vehicle listener (does nothing if already listening to vehicle).
+    	// Note this is needed so that mission will reattach itself as a vehicle listener after deserialization
+    	// since listener collection is transient. - Scott
+    	if (hasVehicle()) getVehicle().addListener(this);
+    }
+    
+	/**
+	 * Catch unit update event.
+	 * @param event the unit event.
+	 */
+	public void unitUpdate(UnitEvent event) {
+		if (event.getType().equals(Unit.LOCATION_EVENT)) {
+			fireMissionUpdate(DISTANCE_EVENT);
+		}
+		else if (event.getType().equals(Unit.NAME_EVENT)) fireMissionUpdate(VEHICLE_EVENT);
 	}
 }

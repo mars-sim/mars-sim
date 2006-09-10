@@ -16,7 +16,6 @@ public class MockUnit1 extends Unit {
 		// Use Unit constructor.
 		super("Mock Unit 1", new Coordinates(0D, 0D));
 		
-		baseMass = 10D;
-		inventory = new Inventory(this);
+		setBaseMass(10D);
 	}
 }

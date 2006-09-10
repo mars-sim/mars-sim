@@ -50,11 +50,11 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         malfunctionManager.setMaintenanceWorkTime(500D);
 	
         // Set the empty mass of the EVA suit in kg.
-        baseMass = BASE_MASS;
+        setBaseMass(BASE_MASS);
 	
         // Set the resource capacities of the EVA suit.
-        inventory.addAmountResourceTypeCapacity(AmountResource.OXYGEN, OXYGEN_CAPACITY);
-        inventory.addAmountResourceTypeCapacity(AmountResource.WATER, WATER_CAPACITY);
+        getInventory().addAmountResourceTypeCapacity(AmountResource.OXYGEN, OXYGEN_CAPACITY);
+        getInventory().addAmountResourceTypeCapacity(AmountResource.WATER, WATER_CAPACITY);
     }
     
     /**
@@ -74,11 +74,11 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     public boolean lifeSupportCheck() throws Exception {
         boolean result = true;
 
-        if (inventory.getAmountResourceStored(AmountResource.OXYGEN) <= 0D) {
+        if (getInventory().getAmountResourceStored(AmountResource.OXYGEN) <= 0D) {
             // System.out.println("bad oxygen");
             result = false;
         }
-        if (inventory.getAmountResourceStored(AmountResource.WATER) <= 0D) {
+        if (getInventory().getAmountResourceStored(AmountResource.WATER) <= 0D) {
             // System.out.println("bad water");	
             result = false;
         }
@@ -118,10 +118,10 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
      */
     public double provideOxygen(double amountRequested) throws Exception {
     	double oxygenTaken = amountRequested;
-    	double oxygenLeft = inventory.getAmountResourceStored(AmountResource.OXYGEN);
+    	double oxygenLeft = getInventory().getAmountResourceStored(AmountResource.OXYGEN);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
     	try {
-    		inventory.retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
+    		getInventory().retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
     	}
     	catch (InventoryException e) {};
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
@@ -135,10 +135,10 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
      */
     public double provideWater(double amountRequested) throws Exception {
     	double waterTaken = amountRequested;
-    	double waterLeft = inventory.getAmountResourceStored(AmountResource.WATER);
+    	double waterLeft = getInventory().getAmountResourceStored(AmountResource.WATER);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
     	try {
-    		inventory.retrieveAmountResource(AmountResource.WATER, waterTaken);
+    		getInventory().retrieveAmountResource(AmountResource.WATER, waterTaken);
     	}
     	catch (InventoryException e) {};
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
@@ -151,7 +151,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     public double getAirPressure() {
         double result = NORMAL_AIR_PRESSURE * 
 	        (malfunctionManager.getAirPressureModifier() / 100D);
-        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(location);
+        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(getCoordinates());
         if (result < ambient) return ambient;
         else return result;
     }
@@ -163,7 +163,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     public double getTemperature() {
         double result = NORMAL_TEMP * 
 	        (malfunctionManager.getTemperatureModifier() / 100D);
-        double ambient = Simulation.instance().getMars().getWeather().getTemperature(location);
+        double ambient = Simulation.instance().getMars().getWeather().getTemperature(getCoordinates());
         if (result < ambient) return ambient;
         else return result;
     }
@@ -176,10 +176,10 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     public boolean isFullyLoaded() throws Exception {
         boolean result = true;
 
-        double oxygen = inventory.getAmountResourceStored(AmountResource.OXYGEN);
+        double oxygen = getInventory().getAmountResourceStored(AmountResource.OXYGEN);
         if (oxygen != OXYGEN_CAPACITY) result = false;
 
-        double water = inventory.getAmountResourceStored(AmountResource.WATER);
+        double water = getInventory().getAmountResourceStored(AmountResource.WATER);
         if (water != WATER_CAPACITY) result = false;
 
         return result;
@@ -207,9 +207,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
      */
     public PersonCollection getAffectedPeople() {
         PersonCollection people = super.getAffectedPeople();
-        if (containerUnit instanceof Person) {
-            if (!people.contains((Person) containerUnit))
-                people.add((Person) containerUnit);
+        if (getContainerUnit() instanceof Person) {
+            if (!people.contains((Person) getContainerUnit()))
+                people.add((Person) getContainerUnit());
         }
 
         return people;

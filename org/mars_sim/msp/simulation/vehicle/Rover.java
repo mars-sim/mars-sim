@@ -59,16 +59,18 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		// Set crew capacity
 		crewCapacity = config.getCrewSize(description);
 
+		Inventory inv = getInventory();
+		
 		// Set inventory total mass capacity.
-		inventory.addGeneralCapacity(config.getTotalCapacity(description));
+		inv.addGeneralCapacity(config.getTotalCapacity(description));
 	
 		// Set inventory resource capacities.
-		inventory.addAmountResourceTypeCapacity(AmountResource.METHANE, config.getCargoCapacity(description, AmountResource.METHANE.getName()));
-		inventory.addAmountResourceTypeCapacity(AmountResource.OXYGEN, config.getCargoCapacity(description, AmountResource.OXYGEN.getName()));
-		inventory.addAmountResourceTypeCapacity(AmountResource.WATER, config.getCargoCapacity(description, AmountResource.WATER.getName()));
-		inventory.addAmountResourceTypeCapacity(AmountResource.FOOD, config.getCargoCapacity(description, AmountResource.FOOD.getName()));
-		inventory.addAmountResourceTypeCapacity(AmountResource.ROCK_SAMPLES, config.getCargoCapacity(description, AmountResource.ROCK_SAMPLES.getName()));
-		inventory.addAmountResourceTypeCapacity(AmountResource.ICE, config.getCargoCapacity(description, AmountResource.ICE.getName()));
+		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, config.getCargoCapacity(description, AmountResource.METHANE.getName()));
+		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, config.getCargoCapacity(description, AmountResource.OXYGEN.getName()));
+		inv.addAmountResourceTypeCapacity(AmountResource.WATER, config.getCargoCapacity(description, AmountResource.WATER.getName()));
+		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, config.getCargoCapacity(description, AmountResource.FOOD.getName()));
+		inv.addAmountResourceTypeCapacity(AmountResource.ROCK_SAMPLES, config.getCargoCapacity(description, AmountResource.ROCK_SAMPLES.getName()));
+		inv.addAmountResourceTypeCapacity(AmountResource.ICE, config.getCargoCapacity(description, AmountResource.ICE.getName()));
 	
 		// Construct sickbay.
 		if (config.hasSickbay(description)) 
@@ -124,7 +126,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @return crewmembers as PersonCollection
      */
     public PersonCollection getCrew() {
-        return inventory.getContainedUnits().getPeople();
+        return getInventory().getContainedUnits().getPeople();
     }
 
     /**
@@ -133,7 +135,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @return true if person is a crewmember
      */
     public boolean isCrewmember(Person person) {
-        return inventory.containsUnit(person);
+        return getInventory().containsUnit(person);
     }
     
     /** Returns true if life support is working properly and is not out
@@ -144,8 +146,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public boolean lifeSupportCheck() throws Exception {
         boolean result = true;
 
-        if (inventory.getAmountResourceStored(AmountResource.OXYGEN) <= 0D) result = false;
-        if (inventory.getAmountResourceStored(AmountResource.WATER) <= 0D) result = false;
+        if (getInventory().getAmountResourceStored(AmountResource.OXYGEN) <= 0D) result = false;
+        if (getInventory().getAmountResourceStored(AmountResource.WATER) <= 0D) result = false;
         if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
         if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -168,10 +170,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      */
     public double provideOxygen(double amountRequested) throws Exception {
     	double oxygenTaken = amountRequested;
-    	double oxygenLeft = inventory.getAmountResourceStored(AmountResource.OXYGEN);
+    	double oxygenLeft = getInventory().getAmountResourceStored(AmountResource.OXYGEN);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
     	try {
-    		inventory.retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
+    		getInventory().retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
     	}
     	catch (InventoryException e) {};
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
@@ -184,10 +186,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      */
     public double provideWater(double amountRequested) throws Exception {
     	double waterTaken = amountRequested;
-    	double waterLeft = inventory.getAmountResourceStored(AmountResource.WATER);
+    	double waterLeft = getInventory().getAmountResourceStored(AmountResource.WATER);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
     	try {
-    		inventory.retrieveAmountResource(AmountResource.WATER, waterTaken);
+    		getInventory().retrieveAmountResource(AmountResource.WATER, waterTaken);
     	}
     	catch (InventoryException e) {};
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
@@ -199,7 +201,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public double getAirPressure() {
         double result = NORMAL_AIR_PRESSURE * 
 	        (malfunctionManager.getAirPressureModifier() / 100D);
-        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(location);
+        double ambient = Simulation.instance().getMars().getWeather().getAirPressure(getCoordinates());
         if (result < ambient) return ambient;
         else return result;
     }
@@ -210,7 +212,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public double getTemperature() {
         double result = NORMAL_TEMP *
 	        (malfunctionManager.getTemperatureModifier() / 100D);
-        double ambient = Simulation.instance().getMars().getWeather().getTemperature(location);
+        double ambient = Simulation.instance().getMars().getWeather().getTemperature(getCoordinates());
         if (result < ambient) return ambient;
         else return result;
     }
@@ -296,7 +298,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @return true if appropriate operator for this vehicle.
      */
     public boolean isAppropriateOperator(VehicleOperator operator) {
-    	if ((operator instanceof Person) && (inventory.containsUnit((Unit) operator))) return true;
+    	if ((operator instanceof Person) && (getInventory().containsUnit((Unit) operator))) return true;
     	else return false;
     }
     
@@ -333,21 +335,21 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     		
     	// Check food capacity as range limit.
     	double foodConsumptionRate = config.getFoodConsumptionRate();
-    	double foodCapacity = inventory.getAmountResourceCapacity(AmountResource.FOOD);
+    	double foodCapacity = getInventory().getAmountResourceCapacity(AmountResource.FOOD);
     	double foodSols = foodCapacity / (foodConsumptionRate * getCrewCapacity());
     	double foodRange = distancePerSol * foodSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (foodRange < range) range = foodRange;
     		
     	// Check water capacity as range limit.
     	double waterConsumptionRate = config.getWaterConsumptionRate();
-    	double waterCapacity = inventory.getAmountResourceCapacity(AmountResource.WATER);
+    	double waterCapacity = getInventory().getAmountResourceCapacity(AmountResource.WATER);
     	double waterSols = waterCapacity / (waterConsumptionRate * getCrewCapacity());
     	double waterRange = distancePerSol * waterSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (waterRange < range) range = waterRange;
     		
     	// Check oxygen capacity as range limit.
     	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
-    	double oxygenCapacity = inventory.getAmountResourceCapacity(AmountResource.OXYGEN);
+    	double oxygenCapacity = getInventory().getAmountResourceCapacity(AmountResource.OXYGEN);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * getCrewCapacity());
     	double oxygenRange = distancePerSol * oxygenSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (oxygenRange < range) range = oxygenRange;

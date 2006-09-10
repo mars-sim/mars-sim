@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelMission.java
- * @version 2.78 2005-08-01
+ * @version 2.80 2006-09-08
  * @author Scott Davis
  */
 
@@ -19,6 +19,11 @@ import org.mars_sim.msp.simulation.time.MarsClock;
  */
 public abstract class TravelMission extends Mission {
 
+	// Mission event types
+	public static final String TRAVEL_STATUS_EVENT = "travel status";
+	public static final String NAVPOINTS_EVENT = "navpoints";
+	public static final String DISTANCE_EVENT = "distance";
+	
 	// Travel Mission status
 	public final static String AT_NAVPOINT = "At a navpoint";
 	public final static String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
@@ -63,8 +68,11 @@ public abstract class TravelMission extends Mission {
 	 * @param navPoint the new nav point location to be added.
 	 * @throws IllegalArgumentException if location is null.
 	 */
-	protected void addNavpoint(NavPoint navPoint) {
-		if (navPoint != null) navPoints.add(navPoint);
+	protected final void addNavpoint(NavPoint navPoint) {
+		if (navPoint != null) {
+			navPoints.add(navPoint);
+			fireMissionUpdate(NAVPOINTS_EVENT);
+		}
 		else throw new IllegalArgumentException("navPoint is null");
 	}
 	
@@ -74,19 +82,23 @@ public abstract class TravelMission extends Mission {
 	 * @param navPoint the new navpoint
 	 * @throws IllegalArgumentException if location is null or index < 0.
 	 */
-	protected void setNavpoint(int index, NavPoint navPoint) {
-		if ((navPoint != null) && (index >= 0)) navPoints.set(index, navPoint);
+	protected final void setNavpoint(int index, NavPoint navPoint) {
+		if ((navPoint != null) && (index >= 0)) {
+			navPoints.set(index, navPoint);
+			fireMissionUpdate(NAVPOINTS_EVENT);
+		}
 		else throw new IllegalArgumentException("navPoint is null");
 	}
 	
 	/**
 	 * Clears out any unreached nav points.
 	 */
-	protected void clearRemainingNavpoints() {
+	protected final void clearRemainingNavpoints() {
 		int index = getNextNavpointIndex();
 		int numNavpoints = getNumberOfNavpoints();
 		for (int x = index; x < numNavpoints; x++) {
 			navPoints.remove(index);
+			fireMissionUpdate(NAVPOINTS_EVENT);
 		}
 	}
 	
@@ -94,7 +106,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the last navpoint reached.
 	 * @return navpoint
 	 */
-	public NavPoint getPreviousNavpoint() {
+	public final NavPoint getPreviousNavpoint() {
 		return lastStopNavpoint;
 	}
 	
@@ -102,7 +114,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the mission's next navpoint.
 	 * @return navpoint or null if no more navpoints.
 	 */
-	public NavPoint getNextNavpoint() {
+	public final NavPoint getNextNavpoint() {
 		if (navIndex < navPoints.size()) return (NavPoint) navPoints.get(navIndex);
 		else return null;
 	}
@@ -111,7 +123,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the mission's next navpoint index.
 	 * @return navpoint index or -1 if none.
 	 */
-	public int getNextNavpointIndex() {
+	public final int getNextNavpointIndex() {
 		if (navIndex < navPoints.size()) return navIndex;
 		else return -1;
 	}
@@ -121,7 +133,7 @@ public abstract class TravelMission extends Mission {
 	 * @param newNavIndex the next navpoint index.
 	 * @throws MissionException if the new navpoint is out of range.
 	 */
-	protected void setNextNavpointIndex(int newNavIndex) throws MissionException {
+	protected final void setNextNavpointIndex(int newNavIndex) throws MissionException {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		}
@@ -134,7 +146,7 @@ public abstract class TravelMission extends Mission {
 	 * @return navpoint
 	 * @throws IllegaArgumentException if no navpoint at that index.
 	 */
-	public NavPoint getNavpoint(int index) {
+	public final NavPoint getNavpoint(int index) {
 		if ((index >= 0) && (index < getNumberOfNavpoints())) return (NavPoint) navPoints.get(index);
 		else throw new IllegalArgumentException("index: " + index + " out of bounds.");
 	}
@@ -144,7 +156,7 @@ public abstract class TravelMission extends Mission {
 	 * @param navpoint the navpoint
 	 * @return index or -1 if navpoint isn't in the trip.
 	 */
-	public int getNavpointIndex(NavPoint navpoint) {
+	public final int getNavpointIndex(NavPoint navpoint) {
 		if (navpoint == null) throw new IllegalArgumentException("navpoint is null");
 		if (navPoints.contains(navpoint)) return navPoints.indexOf(navpoint);
 		else return -1;
@@ -154,7 +166,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the number of navpoints on the trip.
 	 * @return number of navpoints
 	 */
-	public int getNumberOfNavpoints() {
+	public final int getNumberOfNavpoints() {
 		return navPoints.size();
 	}
 	
@@ -162,7 +174,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the current navpoint the mission is stopped at.
 	 * @return navpoint or null if mission is not stopped at a navpoint.
 	 */
-	public NavPoint getCurrentNavpoint() {
+	public final NavPoint getCurrentNavpoint() {
 		if (AT_NAVPOINT.equals(getTravelStatus())) {
 			if (navIndex < navPoints.size()) return (NavPoint) navPoints.get(navIndex);
 			else return null;
@@ -174,7 +186,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the index of the current navpoint the mission is stopped at.
 	 * @return index of current navpoint or -1 if mission is not stopped at a navpoint.
 	 */
-	public int getCurrentNavpointIndex() {
+	public final int getCurrentNavpointIndex() {
 		if (AT_NAVPOINT.equals(getTravelStatus())) return navIndex;
 		else return -1;
 	}
@@ -183,7 +195,7 @@ public abstract class TravelMission extends Mission {
 	 * Get the travel mission's current status.
 	 * @return travel status as a String.
 	 */
-	public String getTravelStatus() {
+	public final String getTravelStatus() {
 		return travelStatus;
 	}
 	
@@ -193,13 +205,14 @@ public abstract class TravelMission extends Mission {
 	 */
 	private void setTravelStatus(String newTravelStatus) {
 		travelStatus = newTravelStatus;
+		fireMissionUpdate(TRAVEL_STATUS_EVENT);
 	}
 	
 	/**
 	 * Starts travel to the next navpoint in the mission.
 	 * @throws MissionException if no more navpoints.
 	 */
-	protected void startTravelToNextNode() throws MissionException {
+	protected final void startTravelToNextNode() throws MissionException {
 		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
 		legStartingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
@@ -209,9 +222,8 @@ public abstract class TravelMission extends Mission {
 	 * The mission has reached the next navpoint.
 	 * @throws Exception if error determining mission location.
 	 */
-	protected void reachedNextNode() throws Exception {
+	protected final void reachedNextNode() throws Exception {
 		setTravelStatus(AT_NAVPOINT);
-		// lastStopNavpoint = new NavPoint(getCurrentMissionLocation());
 		lastStopNavpoint = getCurrentNavpoint();
 	}
 	
@@ -226,7 +238,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the starting time of the current leg of the mission.
 	 * @return starting time
 	 */
-	protected MarsClock getCurrentLegStartingTime() {
+	protected final MarsClock getCurrentLegStartingTime() {
 		if (legStartingTime != null) return (MarsClock) legStartingTime.clone();
 		else return null;
 	}
@@ -235,7 +247,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the distance of the current leg of the mission, or 0 if not in the travelling phase.
 	 * @return distance (km) 
 	 */
-	public double getCurrentLegDistance() {
+	public final double getCurrentLegDistance() {
 		if (TRAVEL_TO_NAVPOINT.equals(travelStatus)) 
 			return getPreviousNavpoint().getLocation().getDistance(getNextNavpoint().getLocation());
 		else return 0D;
@@ -246,7 +258,7 @@ public abstract class TravelMission extends Mission {
 	 * @return coordinate location.
 	 * @throws Exception if error determining location.
 	 */
-	public Coordinates getCurrentMissionLocation() throws Exception {
+	public final Coordinates getCurrentMissionLocation() throws Exception {
 		if (getPeopleNumber() > 0) return getPeople().get(0).getCoordinates();
 		throw new Exception("No people in the mission.");
 	}
@@ -256,7 +268,7 @@ public abstract class TravelMission extends Mission {
 	 * @return distance (km) or 0 if not in the travelling phase.
 	 * @throws Exception if error determining distance.
 	 */
-	public double getCurrentLegRemainingDistance() throws Exception {
+	public final double getCurrentLegRemainingDistance() throws Exception {
 		if (getTravelStatus().equals(TRAVEL_TO_NAVPOINT))
 			return getCurrentMissionLocation().getDistance(getNextNavpoint().getLocation());
 		else return 0D;
@@ -266,7 +278,7 @@ public abstract class TravelMission extends Mission {
 	 * Gets the total distance of the trip.
 	 * @return total distance (km)
 	 */
-	public double getTotalDistance() {
+	public final double getTotalDistance() {
 		double result = 0D;
 		if (navPoints.size() > 1) {
 			for (int x = 1; x < navPoints.size(); x++) {
@@ -284,7 +296,7 @@ public abstract class TravelMission extends Mission {
 	 * @return distance (km).
 	 * @throws Exception if error determining distance.
 	 */
-	public double getTotalRemainingDistance() throws Exception {
+	public final double getTotalRemainingDistance() throws Exception {
 		double result = getCurrentLegRemainingDistance();
 		
 		int index = 0;
