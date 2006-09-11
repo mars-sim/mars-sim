@@ -51,10 +51,13 @@ public class MissionWindow extends ToolWindow {
         missionListPane.setPreferredSize(new Dimension(200, 200));
         mainPane.add(missionListPane, BorderLayout.CENTER);
         
-        MissionListModel missionListModel = new MissionListModel();
-        JList missionList = new JList(missionListModel);
+        JList missionList = new JList(new MissionListModel());
         missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
+        
+        MainDetailPanel mainDetailPane = new MainDetailPanel();
+        missionList.addListSelectionListener(mainDetailPane);
+        mainPane.add(mainDetailPane, BorderLayout.EAST);
         
         // Pack window
         pack();
