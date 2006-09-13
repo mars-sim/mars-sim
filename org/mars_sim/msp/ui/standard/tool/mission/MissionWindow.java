@@ -9,11 +9,10 @@ package org.mars_sim.msp.ui.standard.tool.mission;
 
 import java.awt.Dimension;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
@@ -38,26 +37,21 @@ public class MissionWindow extends ToolWindow {
         JPanel mainPane = new JPanel(new BorderLayout());
         mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(mainPane);
-
-        // Create mission panel
-        JPanel missionPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        mainPane.add(missionPane, BorderLayout.NORTH);
-
-        // Create mission label
-        JLabel missionLabel = new JLabel("Mission Tool");
-        missionPane.add(missionLabel);
         
         JPanel missionListPane = new JPanel(new BorderLayout());
         missionListPane.setPreferredSize(new Dimension(200, 200));
-        mainPane.add(missionListPane, BorderLayout.CENTER);
+        mainPane.add(missionListPane, BorderLayout.WEST);
         
         JList missionList = new JList(new MissionListModel());
         missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
         
+        JTabbedPane infoPane = new JTabbedPane();
+        mainPane.add(infoPane, BorderLayout.EAST);
+        
         MainDetailPanel mainDetailPane = new MainDetailPanel();
         missionList.addListSelectionListener(mainDetailPane);
-        mainPane.add(mainDetailPane, BorderLayout.EAST);
+        infoPane.add("Info", mainDetailPane);
         
         // Pack window
         pack();
