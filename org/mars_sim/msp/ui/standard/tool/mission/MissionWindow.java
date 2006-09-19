@@ -49,7 +49,7 @@ public class MissionWindow extends ToolWindow {
         JTabbedPane infoPane = new JTabbedPane();
         mainPane.add(infoPane, BorderLayout.EAST);
         
-        MainDetailPanel mainDetailPane = new MainDetailPanel();
+        MainDetailPanel mainDetailPane = new MainDetailPanel(desktop);
         missionList.addListSelectionListener(mainDetailPane);
         infoPane.add("Info", mainDetailPane);
         
