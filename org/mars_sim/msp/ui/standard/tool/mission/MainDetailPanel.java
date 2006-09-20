@@ -7,6 +7,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JLabel;
@@ -29,6 +30,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 	private JLabel descriptionLabel;
 	private JLabel typeLabel;
 	private JLabel phaseLabel;
+	private JLabel minNumberLabel;
+	private JLabel currentMemberNumLabel;
 	private JLabel crewCapacityLabel;
 	private JButton vehicleButton;
 	private MainDesktopPane desktop;
@@ -44,25 +47,45 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
+		Box descriptionPane = new CustomBox();
+		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		mainPane.add(descriptionPane);
+		
 		descriptionLabel = new JLabel("Description:", SwingConstants.LEFT);
 		descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(descriptionLabel);
+		descriptionPane.add(descriptionLabel);
 		
 		typeLabel = new JLabel("Type:");
 		typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(typeLabel);
+		descriptionPane.add(typeLabel);
 		
 		phaseLabel = new JLabel("Phase:");
 		phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(phaseLabel);
+		descriptionPane.add(phaseLabel);
 		
-		crewCapacityLabel = new JLabel("Crew Capacity:");
+		Box memberPane = new CustomBox();
+		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		mainPane.add(memberPane);
+		
+		currentMemberNumLabel = new JLabel("Current Members:");
+		currentMemberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		memberPane.add(currentMemberNumLabel);
+		
+		minNumberLabel = new JLabel("Minimum Members:");
+		minNumberLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		memberPane.add(minNumberLabel);
+		
+		crewCapacityLabel = new JLabel("Maximum Members:");
 		crewCapacityLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(crewCapacityLabel);
+		memberPane.add(crewCapacityLabel);
+		
+		Box travelPane = new CustomBox();
+		travelPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		mainPane.add(travelPane);
 		
 		JPanel vehiclePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		vehiclePane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		mainPane.add(vehiclePane);
+		travelPane.add(vehiclePane);
 		
 		JLabel vehicleLabel = new JLabel("Vehicle: ");
 		vehiclePane.add(vehicleLabel);
@@ -79,6 +102,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 				}
 			}
 		});
+		
+		
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {
@@ -89,7 +114,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 			descriptionLabel.setText("Description: " + mission.getDescription());
 			typeLabel.setText("Type: " + mission.getName());
 			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
-			crewCapacityLabel.setText("Crew Capacity: " + mission.getMissionCapacity());
+			currentMemberNumLabel.setText("Current Members: " + mission.getPeopleNumber());
+			minNumberLabel.setText("Minimum Members: " + mission.getMinPeople());
+			crewCapacityLabel.setText("Maximum Members: " + mission.getMissionCapacity());
 			
 			if (mission instanceof VehicleMission) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
@@ -109,7 +136,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 			descriptionLabel.setText("Description:");
 			typeLabel.setText("Type:");
 			phaseLabel.setText("Phase:");
-			crewCapacityLabel.setText("Crew Capacity:");
+			currentMemberNumLabel.setText("Current Members:");
+			minNumberLabel.setText("Minimum Members:");
+			crewCapacityLabel.setText("Maximum Members:");
 			vehicleButton.setVisible(false);
 		}
 	}
@@ -122,8 +151,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 			descriptionLabel.setText("Description: " + mission.getDescription());
 		else if (e.getType().equals(Mission.PHASE_DESCRIPTION_EVENT))
 			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
+		else if (e.getType().equals(Mission.PEOPLE_NUM_EVENT))
+			currentMemberNumLabel.setText("Current Members: " + mission.getPeopleNumber());
+		else if (e.getType().equals(Mission.MIN_PEOPLE_EVENT))
+			minNumberLabel.setText("Minimum Members: " + mission.getMinPeople());
 		else if (e.getType().equals(Mission.CAPACITY_EVENT))
-			crewCapacityLabel.setText("Crew Capacity: " + mission.getMissionCapacity());
+			crewCapacityLabel.setText("Maximum Members: " + mission.getMissionCapacity());
 		else if (e.getType().equals(VehicleMission.VEHICLE_EVENT)) {
 			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 			if (vehicle != null) {
@@ -140,5 +173,19 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
      */
     public MainDesktopPane getDesktop() {
     	return desktop;
+    }
+    
+    private class CustomBox extends Box {
+    	
+    	private CustomBox() {
+    		super(BoxLayout.Y_AXIS);
+    		setBorder(new MarsPanelBorder());
+    	}
+    	
+    	public Dimension getMaximumSize() {
+    		Dimension result = getPreferredSize();
+    		result.width = Short.MAX_VALUE;
+    		return result;
+    	}
     }
 }
