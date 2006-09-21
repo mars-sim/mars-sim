@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ItemResource.java
- * @version 2.79 2005-11-05
+ * @version 2.80 2006-09-20
  * @author Scott Davis
  */
 
@@ -13,6 +13,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * The ItemResource class represents a type of resource that is measured in units, 
+ * such as simple tools and parts.
+ */
 public final class ItemResource implements Resource, Serializable {
 
 	// Set of all item resources.
@@ -40,6 +44,7 @@ public final class ItemResource implements Resource, Serializable {
 	private ItemResource(String name, double massPerItem) {
 		this.name = name;
 		this.massPerItem = massPerItem;
+		if (!resources.contains(this)) resources.add(this);
 	}
 	
 	/**
