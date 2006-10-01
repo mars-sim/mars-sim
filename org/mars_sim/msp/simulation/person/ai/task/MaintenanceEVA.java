@@ -296,7 +296,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			
 				if (chance < entityWeight) {
 					result = malfunctionable;
-					description = "Performing maintenance on " + result.getName();
+					setDescription("Performing maintenance on " + result.getName());
 					break;
 				}
 				else chance -= entityWeight;

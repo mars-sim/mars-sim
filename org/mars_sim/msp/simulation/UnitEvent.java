@@ -35,4 +35,11 @@ public class UnitEvent extends EventObject {
 	public String getType() {
 		return type;
 	}
+	
+	/**
+	 * Override toString() method.
+	 */
+	public String toString() {
+		return getType();
+	}
 }

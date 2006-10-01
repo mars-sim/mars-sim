@@ -41,7 +41,7 @@ public class TendGreenhouse extends Task implements Serializable {
         super("Tending Greenhouse", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
         
         // Initialize data members
-        description = "Tending Greenhouse at " + person.getSettlement().getName();
+        setDescription("Tending Greenhouse at " + person.getSettlement().getName());
         
         // Get available greenhouse if any.
         try {

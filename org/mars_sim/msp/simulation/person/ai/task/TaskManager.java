@@ -28,12 +28,14 @@ import org.mars_sim.msp.simulation.time.MarsClock;
  */
 public class TaskManager implements Serializable {
 
+	// Unit event types
+	public static final String TASK_EVENT = "task";
+	
     // Data members
     private Task currentTask; // The current task the person is doing.
     private Mind mind; // The mind of the person the task manager is responsible for.
 
     // Array of available tasks
-    
     private Class[] availableTasks = { Relax.class, TendGreenhouse.class,
                                        Maintenance.class, 
                                        MaintainGroundVehicleGarage.class,
@@ -128,6 +130,7 @@ public class TaskManager implements Serializable {
      */
     public void clearTask() {
         currentTask = null;
+        mind.getPerson().fireUnitUpdate(TASK_EVENT);
     }
 
     /** Adds a task to the stack of tasks.
@@ -136,6 +139,7 @@ public class TaskManager implements Serializable {
     public void addTask(Task newTask) {
         if (hasActiveTask()) currentTask.addSubTask(newTask);
         else currentTask = newTask;
+        mind.getPerson().fireUnitUpdate(TASK_EVENT);
     }
 
     /** 

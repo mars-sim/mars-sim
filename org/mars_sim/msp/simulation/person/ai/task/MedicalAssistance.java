@@ -63,7 +63,7 @@ public class MedicalAssistance extends Task implements Serializable {
             
             // Treat medical problem.
             Treatment treatment = problem.getIllness().getRecoveryTreatment();
-	        description = "Apply " + treatment.getName();
+	        setDescription("Apply " + treatment.getName());
             setDuration(treatment.getAdjustedDuration(skill));
             setStressModifier(STRESS_MODIFIER * treatment.getSkill());
             

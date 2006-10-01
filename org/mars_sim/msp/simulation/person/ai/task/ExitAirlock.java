@@ -43,7 +43,7 @@ public class ExitAirlock extends Task implements Serializable {
         super("Exiting airlock for EVA", person, true, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
-        description = "Exiting " + airlock.getEntityName() + " for EVA";
+        setDescription("Exiting " + airlock.getEntityName() + " for EVA");
         this.airlock = airlock;
         
         // Initialize task phase

@@ -48,7 +48,7 @@ class EatMeal extends Task implements Serializable {
         	// If cooked meal in a local kitchen available, take it to eat.
         	Cooking kitchen = getKitchenWithFood(person);
         	if (kitchen != null) meal = kitchen.getCookedMeal();
-        	if (meal != null) description = "Eating a cooked meal";
+        	if (meal != null) setDescription("Eating a cooked meal");
         }
         else if (location.equals(Person.OUTSIDE)) endTask();
         

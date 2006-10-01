@@ -153,7 +153,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
             if (manager.hasEmergencyMalfunction()) {
                 malfunction = manager.getMostSeriousEmergencyMalfunction();
                 entity = e;
-                description = "Emergency repair " + malfunction.getName() + " on " + entity;
+                setDescription("Emergency repair " + malfunction.getName() + " on " + entity);
             }
         }
     }

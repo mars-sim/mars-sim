@@ -128,7 +128,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
             MalfunctionManager manager = e.getMalfunctionManager();
             if (manager.hasNormalMalfunction()) {
                 malfunction = manager.getMostSeriousNormalMalfunction();
-            	description = "Repairing " + malfunction.getName() + " on " + e;
+            	setDescription("Repairing " + malfunction.getName() + " on " + e);
             	entity = e;
             	// Add person to building if malfunctionable is a building with life support.
             	addPersonToMalfunctionableBuilding(e);

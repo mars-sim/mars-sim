@@ -50,7 +50,7 @@ public class CookMeal extends Task implements Serializable {
 		super("Cooking", person, true, false, STRESS_MODIFIER, false, 0D);
 		
 		// Initialize data members
-		description = "Cooking " + getMealName();
+		setDescription("Cooking " + getMealName());
 		
 		// Get available kitchen if any.
 		Building kitchenBuilding = getAvailableKitchen(person);

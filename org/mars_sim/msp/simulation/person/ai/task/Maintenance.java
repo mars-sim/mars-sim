@@ -249,7 +249,7 @@ public class Maintenance extends Task implements Serializable {
 			
 				if (chance < entityWeight) {
 					result = malfunctionable;
-					description = "Performing maintenance on " + result.getName();
+					setDescription("Performing maintenance on " + result.getName());
 					if (inhabitableBuilding) BuildingManager.addPersonToBuilding(person, (Building) result); 
 					break;
 				}

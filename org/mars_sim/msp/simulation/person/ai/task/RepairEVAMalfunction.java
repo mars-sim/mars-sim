@@ -231,7 +231,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             MalfunctionManager manager = e.getMalfunctionManager();
             if (manager.hasEVAMalfunction()) {
                 malfunction = manager.getMostSeriousEVAMalfunction();
-                description = "Repairing " + malfunction.getName() + " on " + e.getName();
+                setDescription("Repairing " + malfunction.getName() + " on " + e.getName());
                 entity = e;
             }
         }

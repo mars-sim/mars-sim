@@ -60,7 +60,7 @@ public class UnloadVehicle extends Task implements Serializable {
     	else vehicle = getNonMissionVehicleNeedingUnloading(settlement);
     	
     	if (vehicle != null) {
-    		description = "Unloading " + vehicle.getName();
+    		setDescription("Unloading " + vehicle.getName());
     		
     		// Initialize task phase
             addPhase(UNLOADING);
@@ -79,7 +79,7 @@ public class UnloadVehicle extends Task implements Serializable {
     	// Use Task constructor.
         super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
-	    description = "Unloading " + vehicle.getName();
+	    setDescription("Unloading " + vehicle.getName());
         this.vehicle = vehicle;
 
         settlement = person.getSettlement();

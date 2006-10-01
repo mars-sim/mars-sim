@@ -23,17 +23,24 @@ import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
  */
 public abstract class Task implements Serializable, Comparable {
 	
+	// Unit event types
+	public static final String TASK_NAME_EVENT = "task name";
+	public static final String TASK_DESC_EVENT = "task name";
+	public static final String TASK_PHASE_EVENT = "task name";
+	public static final String TASK_ENDED_EVENT = "task ended";
+	public static final String TASK_SUBTASK_EVENT = "subtask";
+	
 	private static final double JOB_STRESS_MODIFIER = .5D;
 	private static final double SKILL_STRESS_MODIFIER = .1D;
 
     // Data members
-    protected String name;            // The name of the task
+    private String name;            // The name of the task
     protected Person person;          // The person performing the task.
     private boolean done;             // True if task is finished
     protected boolean hasDuration;    // True if task has a time duration.
     private double duration;        // The time duration (in millisols) of the task.
     private double timeCompleted;     // The current amount of time spent on the task (in millisols)
-    protected String description;     // Description of the task
+    private String description;     // Description of the task
     protected Task subTask;           // Sub-task of the current task
     private String phase;             // Phase of task completion
     protected double phaseTimeRequired;  // Amount of time required to complete current phase. (in millisols)
@@ -79,8 +86,9 @@ public abstract class Task implements Serializable, Comparable {
      */
     public void endTask() {
         done = true;
+        person.fireUnitUpdate(TASK_ENDED_EVENT);
         
-        // Create ending task event if needed.
+        // Create ending task historical event if needed.
         if (getCreateEvents()) {
         	TaskEvent endingEvent = new TaskEvent(person, this, TaskEvent.FINISH, "");
 			Simulation.instance().getEventManager().registerNewEvent(endingEvent);
@@ -102,6 +110,15 @@ public abstract class Task implements Serializable, Comparable {
         if ((subTask != null) && !subTask.isDone()) return subTask.getName();
         else return name;
     }
+    
+    /**
+     * Sets the task's name.
+     * @param name the task name.
+     */
+    protected void setName(String name) {
+    	this.name = name;
+    	person.fireUnitUpdate(TASK_NAME_EVENT);
+    }
 
     /** Returns a string that is a description of what the task is currently doing.
      *  This is mainly for user interface purposes.
@@ -112,6 +129,15 @@ public abstract class Task implements Serializable, Comparable {
     public String getDescription() {
         if ((subTask != null) && !subTask.isDone()) return subTask.getDescription();
         else return description;
+    }
+    
+    /**
+     * Sets the task's description.
+     * @param description the task description.
+     */
+    protected void setDescription(String description) {
+    	this.description = description;
+    	person.fireUnitUpdate(TASK_DESC_EVENT);
     }
 
     /** Returns a boolean whether this task should generate events
@@ -143,9 +169,12 @@ public abstract class Task implements Serializable, Comparable {
      * @param newPhase the phase to set the a task at.
      * @throws Exception if newPhase is not in the task's collection of phases.
      */
-    public void setPhase(String newPhase) throws Exception {
+    protected void setPhase(String newPhase) throws Exception {
     	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
-    	else if (phases.contains(newPhase)) phase = newPhase;
+    	else if (phases.contains(newPhase)) {
+    		phase = newPhase;
+    		person.fireUnitUpdate(TASK_PHASE_EVENT);
+    	}
     	else throw new Exception("newPhase: " + newPhase + " is not a valid phase for this task.");
     }
     
@@ -153,7 +182,7 @@ public abstract class Task implements Serializable, Comparable {
      * Adds a phase to the task's collection of phases.
      * @param newPhase the new phase to add.
      */
-    public void addPhase(String newPhase) {
+    protected void addPhase(String newPhase) {
     	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
     	else if (!phases.contains(newPhase)) phases.add(newPhase);
     }
@@ -170,7 +199,10 @@ public abstract class Task implements Serializable, Comparable {
      */
     void addSubTask(Task newSubTask) {
         if (subTask != null) subTask.addSubTask(newSubTask);
-        else subTask = newSubTask;
+        else {
+        	subTask = newSubTask;
+        	person.fireUnitUpdate(TASK_SUBTASK_EVENT);
+        }
     }
 
     /**

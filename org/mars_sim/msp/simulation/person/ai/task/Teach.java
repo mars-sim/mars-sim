@@ -44,7 +44,7 @@ public class Teach extends Task implements Serializable {
 			student = (Person) students.get(rand);
 			teachingTask = student.getMind().getTaskManager().getTask();
 			teachingTask.setTeacher(person);
-			description = "Teaching " + teachingTask.getName() + " to " + student.getName();
+			setDescription("Teaching " + teachingTask.getName() + " to " + student.getName());
 			
 			// If in settlement, move teacher to building student is in.
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {

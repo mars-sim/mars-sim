@@ -175,7 +175,7 @@ public class MissionTableModel extends AbstractTableModel implements
 			if (event.getType().equals(Mission.NAME_EVENT)) column1 = TYPE;
 			else if (event.getType().equals(Mission.DESCRIPTION_EVENT)) column1 = DESCRIPTION;
 			else if (event.getType().equals(Mission.PHASE_EVENT)) column1 = PHASE;
-			else if (event.getType().equals(Mission.PEOPLE_NUM_EVENT)) column1 = MEMBER_NUM;
+			else if (event.getType().equals(Mission.PEOPLE_EVENT)) column1 = MEMBER_NUM;
 			else if (event.getType().equals(TravelMission.NAVPOINTS_EVENT)) column1 = NAVPOINT_NUM;
 			else if (event.getType().equals(VehicleMission.VEHICLE_EVENT)) column1 = VEHICLE;
 			else if (event.getType().equals(RoverMission.STARTING_SETTLEMENT_EVENT)) column1 = STARTING_SETTLEMENT;

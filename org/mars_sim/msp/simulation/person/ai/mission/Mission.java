@@ -38,7 +38,7 @@ public abstract class Mission implements Serializable {
 	public static final String MIN_PEOPLE_EVENT = "minimum people";
 	public static final String ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
 	public static final String CAPACITY_EVENT = "capacity";
-	public static final String PEOPLE_NUM_EVENT = "people number";
+	public static final String PEOPLE_EVENT = "people number";
 	public static final String END_MISSION_EVENT = "end mission";
 	
     // Data members
@@ -131,7 +131,7 @@ public abstract class Mission implements Serializable {
             HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.JOINING);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 			
-			fireMissionUpdate(PEOPLE_NUM_EVENT);
+			fireMissionUpdate(PEOPLE_EVENT);
             // System.out.println(person.getName() + " added to mission: " + name);
         }
     }
@@ -148,7 +148,7 @@ public abstract class Mission implements Serializable {
 			HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.FINISH);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 			
-			fireMissionUpdate(PEOPLE_NUM_EVENT);
+			fireMissionUpdate(PEOPLE_EVENT);
 
             if (people.size() == 0) done = true;
             // System.out.println(person.getName() + " removed from mission: " + name);

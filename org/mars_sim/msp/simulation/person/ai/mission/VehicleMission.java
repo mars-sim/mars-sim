@@ -624,9 +624,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		if (event.getType().equals(Unit.LOCATION_EVENT)) {
-			fireMissionUpdate(DISTANCE_EVENT);
-		}
-		else if (event.getType().equals(Unit.NAME_EVENT)) fireMissionUpdate(VEHICLE_EVENT);
+		String type = event.getType();
+		if (type.equals(Unit.LOCATION_EVENT)) fireMissionUpdate(DISTANCE_EVENT);
+		else if (type.equals(Unit.NAME_EVENT)) fireMissionUpdate(VEHICLE_EVENT);
 	}
 }

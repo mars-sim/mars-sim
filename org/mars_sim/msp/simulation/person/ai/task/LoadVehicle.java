@@ -62,7 +62,7 @@ public class LoadVehicle extends Task implements Serializable {
     	VehicleMission mission = getMissionNeedingLoading();
     	if (mission != null) {
     		vehicle = mission.getVehicle();
-    		description = "Loading " + vehicle.getName();
+    		setDescription("Loading " + vehicle.getName());
     		resources = mission.getResourcesNeededForRemainingMission(true);
     		equipment = mission.getEquipmentNeededForRemainingMission(true);
     		settlement = person.getSettlement();
@@ -89,7 +89,7 @@ public class LoadVehicle extends Task implements Serializable {
     	// Use Task constructor.
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
-    	description = "Loading " + vehicle.getName();
+    	setDescription("Loading " + vehicle.getName());
         this.vehicle = vehicle;
         
         if (resources != null) this.resources = new HashMap(resources);

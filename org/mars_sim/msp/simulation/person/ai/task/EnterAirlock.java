@@ -48,7 +48,7 @@ public class EnterAirlock extends Task implements Serializable {
         super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
-        description = "Entering " + airlock.getEntityName() + " from EVA";
+        setDescription("Entering " + airlock.getEntityName() + " from EVA");
         this.airlock = airlock;
         
         // Initialize task phase
@@ -113,7 +113,7 @@ public class EnterAirlock extends Task implements Serializable {
         
         // If still no airlock, end task.
         if (airlock == null) endTask();
-        else description = "Entering " + airlock.getEntityName() + " from EVA";
+        else setDescription("Entering " + airlock.getEntityName() + " from EVA");
     }
    
     /** Returns the weighted probability that a person might perform this task.

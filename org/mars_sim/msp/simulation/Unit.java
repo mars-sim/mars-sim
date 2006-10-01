@@ -223,7 +223,7 @@ public abstract class Unit implements Serializable {
      * Fire a unit update event.
      * @param updateType the update type.
      */
-    protected final void fireUnitUpdate(String updateType) {
+    public final void fireUnitUpdate(String updateType) {
     	if (listeners == null) listeners = new ArrayList();
     	Iterator i = listeners.iterator();
     	while (i.hasNext()) ((UnitListener) i.next()).unitUpdate(new UnitEvent(this, updateType));

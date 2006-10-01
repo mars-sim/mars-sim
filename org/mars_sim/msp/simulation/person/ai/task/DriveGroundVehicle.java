@@ -50,7 +50,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
         // Set initial parameters
-        description = "Driving " + vehicle.getName();
+        setDescription("Driving " + vehicle.getName());
         closestDistance = Double.MAX_VALUE;
         obstacleTimeCount = 0D;
         addPhase(AVOID_OBSTACLE);
@@ -77,7 +77,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
     	
         // Set initial parameters
-        description = "Driving " + vehicle.getName();
+        setDescription("Driving " + vehicle.getName());
         closestDistance = Double.MAX_VALUE;
         obstacleTimeCount = 0D;
         addPhase(AVOID_OBSTACLE);
