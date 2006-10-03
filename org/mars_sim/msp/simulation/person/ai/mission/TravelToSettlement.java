@@ -145,6 +145,25 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     }
     
     /**
+     * Determines a new phase for the mission when the current phase has ended.
+     * @throws MissionException if problem setting a new phase.
+     */
+    protected void determineNewPhase() throws MissionException {
+    	if (EMBARKING.equals(getPhase())) {
+    		startTravelToNextNode();
+    		setPhase(VehicleMission.TRAVELLING);
+    		setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+    	}
+		else if (TRAVELLING.equals(getPhase())) {
+			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
+				setPhase(VehicleMission.DISEMBARKING);
+				setPhaseDescription("Disembarking at " + getCurrentNavpoint().getDescription());
+			}
+		}
+		else if (DISEMBARKING.equals(getPhase())) endMission();
+    }
+    
+    /**
      * Sets the destination settlement.
      * @param destinationSettlement the new destination settlement.
      */

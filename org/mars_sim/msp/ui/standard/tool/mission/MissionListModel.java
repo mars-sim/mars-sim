@@ -62,6 +62,6 @@ public class MissionListModel extends AbstractListModel implements
 
 	public Object getElementAt(int index) {
 		if ((index > -1) && (index < missions.size())) return missions.get(index);
-		else throw new IllegalArgumentException("index: " + index + " not in valid bounds.");
+		else return null;
 	}
 }
