@@ -36,17 +36,19 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
-public class MainDetailPanel extends JPanel implements ListSelectionListener, MissionListener {
+public class MainDetailPanel extends JPanel implements ListSelectionListener, 
+		MissionListener, UnitListener {
 
 	private Mission currentMission;
+	private Vehicle currentVehicle;
 	private JLabel descriptionLabel;
 	private JLabel typeLabel;
 	private JLabel phaseLabel;
-	private JLabel minNumberLabel;
-	private JLabel currentMemberNumLabel;
-	private JLabel crewCapacityLabel;
+	private JLabel memberNumLabel;
 	private MemberTableModel memberTableModel;
+	private JTable memberTable;
 	private JButton vehicleButton;
+	private JLabel vehicleStatusLabel;
 	private MainDesktopPane desktop;
 	
 	public MainDetailPanel(MainDesktopPane desktop) {
@@ -80,17 +82,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(memberPane);
 		
-		currentMemberNumLabel = new JLabel("Current Members:");
-		currentMemberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		memberPane.add(currentMemberNumLabel);
-		
-		minNumberLabel = new JLabel("Minimum Members:");
-		minNumberLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		memberPane.add(minNumberLabel);
-		
-		crewCapacityLabel = new JLabel("Maximum Members:");
-		crewCapacityLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		memberPane.add(crewCapacityLabel);
+		memberNumLabel = new JLabel("Mission Members:   (Min:  - Max: )");
+		memberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		memberPane.add(memberNumLabel);
 		
 		JPanel memberBottomPane = new JPanel(new BorderLayout(0, 0));
 		memberBottomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -105,10 +99,20 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
         memberTableModel = new MemberTableModel();
-        JTable memberTable = new JTable(memberTableModel);
+        memberTable = new JTable(memberTableModel);
         memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
-        memberTable.setCellSelectionEnabled(true);
+        memberTable.setRowSelectionAllowed(true);
         memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        memberTable.getSelectionModel().addListSelectionListener(
+        	new ListSelectionListener() {
+        		public void valueChanged(ListSelectionEvent e) {
+        			if (e.getValueIsAdjusting()) {
+        				int index = memberTable.getSelectedRow();
+        				Person selectedPerson = memberTableModel.getMemberAtIndex(index);
+        				if (selectedPerson != null) getDesktop().openUnitWindow(selectedPerson);
+        			}
+        		}
+        	});
         memberScrollPane.setViewportView(memberTable);
 		
 		Box travelPane = new CustomBox();
@@ -135,20 +139,25 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 			}
 		});
 		
-		
+		vehicleStatusLabel = new JLabel("Vehicle Status: ");
+		vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(vehicleStatusLabel);
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {
+		if (currentMission != null) currentMission.removeListener(this);
+		if (currentVehicle != null) currentVehicle.removeUnitListener(this);
+		
 		Mission mission = (Mission) ((JList) e.getSource()).getSelectedValue();
 		if (mission != null) {
-			if (currentMission != null) currentMission.removeListener(this);
-	
 			descriptionLabel.setText("Description: " + mission.getDescription());
 			typeLabel.setText("Type: " + mission.getName());
 			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
-			currentMemberNumLabel.setText("Current Members: " + mission.getPeopleNumber());
-			minNumberLabel.setText("Minimum Members: " + mission.getMinPeople());
-			crewCapacityLabel.setText("Maximum Members: " + mission.getMissionCapacity());
+			int memberNum = mission.getPeopleNumber();
+			int minMembers = mission.getMinPeople();
+			int maxMembers = mission.getMissionCapacity();
+			memberNumLabel.setText("Mission Members: " + memberNum + " (Min: " + minMembers + 
+					" - Max: " + maxMembers + ")");
 			memberTableModel.setMission(mission);
 			
 			if (mission instanceof VehicleMission) {
@@ -157,10 +166,21 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 				if (vehicle != null) {
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
+					vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
+					vehicle.addUnitListener(this);
+					currentVehicle = vehicle;
 				}
-				else vehicleButton.setVisible(false);
+				else {
+					vehicleButton.setVisible(false);
+					vehicleStatusLabel.setText("Vehicle Status:");
+					currentVehicle = null;
+				}
 			}
-			else vehicleButton.setVisible(false);
+			else {
+				vehicleButton.setVisible(false);
+				vehicleStatusLabel.setText("Vehicle Status:");
+				currentVehicle = null;
+			}
 			
 			mission.addListener(this);
 			currentMission = mission;
@@ -169,37 +189,59 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
 			descriptionLabel.setText("Description:");
 			typeLabel.setText("Type:");
 			phaseLabel.setText("Phase:");
-			currentMemberNumLabel.setText("Current Members:");
-			minNumberLabel.setText("Minimum Members:");
-			crewCapacityLabel.setText("Maximum Members:");
+			memberNumLabel.setText("Mission Members:   (Min:  - Max: )");
 			memberTableModel.setMission(null);
 			vehicleButton.setVisible(false);
+			vehicleStatusLabel.setText("Vehicle Status:");
+			currentMission = null;
+			currentVehicle = null;
 		}
 	}
 	
 	public void missionUpdate(MissionEvent e) {
 		Mission mission = (Mission) e.getSource();
-		if (e.getType().equals(Mission.NAME_EVENT)) 
+		String type = e.getType();
+		if (type.equals(Mission.NAME_EVENT)) 
 			typeLabel.setText("Type: " + mission.getName());
-		else if (e.getType().equals(Mission.DESCRIPTION_EVENT)) 
+		else if (type.equals(Mission.DESCRIPTION_EVENT)) 
 			descriptionLabel.setText("Description: " + mission.getDescription());
-		else if (e.getType().equals(Mission.PHASE_DESCRIPTION_EVENT))
+		else if (type.equals(Mission.PHASE_DESCRIPTION_EVENT))
 			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
-		else if (e.getType().equals(Mission.PEOPLE_EVENT)) {
-			currentMemberNumLabel.setText("Current Members: " + mission.getPeopleNumber());
+		else if (type.equals(Mission.PEOPLE_EVENT) || type.equals(Mission.MIN_PEOPLE_EVENT) || 
+				type.equals(Mission.CAPACITY_EVENT)) {
+			int memberNum = mission.getPeopleNumber();
+			int minMembers = mission.getMinPeople();
+			int maxMembers = mission.getMissionCapacity();
+			memberNumLabel.setText("Mission Members: " + memberNum + " (Min: " + minMembers + 
+					" - Max: " + maxMembers + ")");
 			memberTableModel.updateMembers();
 		}
-		else if (e.getType().equals(Mission.MIN_PEOPLE_EVENT))
-			minNumberLabel.setText("Minimum Members: " + mission.getMinPeople());
-		else if (e.getType().equals(Mission.CAPACITY_EVENT))
-			crewCapacityLabel.setText("Maximum Members: " + mission.getMissionCapacity());
-		else if (e.getType().equals(VehicleMission.VEHICLE_EVENT)) {
+		else if (type.equals(VehicleMission.VEHICLE_EVENT)) {
 			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 			if (vehicle != null) {
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
+				vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
+				vehicle.addUnitListener(this);
+				currentVehicle = vehicle;
 			}
-			else vehicleButton.setVisible(false);
+			else {
+				vehicleButton.setVisible(false);
+				vehicleStatusLabel.setText("Vehicle Status:");
+				if (currentVehicle != null) currentVehicle.removeUnitListener(this);
+				currentVehicle = null;
+			}
+		}
+	}
+	
+	/**
+	 * Catch unit update event.
+	 * @param event the unit event.
+	 */
+	public void unitUpdate(UnitEvent event) {
+		Vehicle vehicle = (Vehicle) event.getSource();
+		if (event.getType().equals(Vehicle.STATUS_EVENT)) {
+			vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
 		}
 	}
 	
@@ -207,7 +249,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
      * Gets the main desktop.
      * @return desktop.
      */
-    public MainDesktopPane getDesktop() {
+    private MainDesktopPane getDesktop() {
     	return desktop;
     }
     
@@ -281,7 +323,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
     			clearMembers();
     			members = mission.getPeople();
     			PersonIterator i = members.iterator();
-    			while (i.hasNext()) i.next().addListener(this);
+    			while (i.hasNext()) i.next().addUnitListener(this);
     			fireTableDataChanged();
     		}
     		else {
@@ -295,9 +337,14 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener, Mi
     	private void clearMembers() {
     		if (members != null) {
     			PersonIterator i = members.iterator();
-    			while (i.hasNext()) i.next().removeListener(this);
+    			while (i.hasNext()) i.next().removeUnitListener(this);
     			members.clear();
     		}
+    	}
+    	
+    	Person getMemberAtIndex(int index) {
+    		if (index < members.size()) return (Person) members.get(index);
+    		else return null;
     	}
     }
 }

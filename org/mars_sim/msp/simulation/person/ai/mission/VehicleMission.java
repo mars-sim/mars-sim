@@ -107,7 +107,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if (isUsableVehicle(newVehicle)) {
 					vehicle = newVehicle;
 					newVehicle.setReservedForMission(true);
-					vehicle.addListener(this);
+					vehicle.addUnitListener(this);
 					fireMissionUpdate(VEHICLE_EVENT);
 				}
 				throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
@@ -133,7 +133,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected final void leaveVehicle() {
 		if (hasVehicle()) {
 			vehicle.setReservedForMission(false);
-			vehicle.removeListener(this);
+			vehicle.removeUnitListener(this);
 			vehicle = null;
 			fireMissionUpdate(VEHICLE_EVENT);
 		}
@@ -616,7 +616,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	// Add this mission as a vehicle listener (does nothing if already listening to vehicle).
     	// Note this is needed so that mission will reattach itself as a vehicle listener after deserialization
     	// since listener collection is transient. - Scott
-    	if (hasVehicle()) getVehicle().addListener(this);
+    	if (hasVehicle()) getVehicle().addUnitListener(this);
     }
     
 	/**

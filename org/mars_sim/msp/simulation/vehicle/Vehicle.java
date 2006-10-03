@@ -23,6 +23,9 @@ import org.mars_sim.msp.simulation.time.MarsClock;
  */
 public abstract class Vehicle extends Unit implements Serializable, Malfunctionable {
 
+	// Unit Event Types
+	public final static String STATUS_EVENT = "Vehicle Status";
+	
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
     public final static String MOVING = "Moving";
@@ -48,6 +51,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
     private boolean emergencyBeacon = false; // The emergency beacon for the vehicle.  True if beacon is turned on.
     private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
+    private String status; // The vehicle's status.
 
     /**
      * Constructor to be used for testing.
@@ -74,6 +78,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    setBaseSpeed(baseSpeed);
 	    setBaseMass(baseMass);
 	    this.fuelEfficiency = fuelEfficiency;
+	    status = PARKED;
 	    
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this);
@@ -98,6 +103,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         setDescription(description);
         direction = new Direction(0);
 	    trail = new ArrayList();
+	    status = PARKED;
 	    
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this);
@@ -120,27 +126,29 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      *  @return the vehicle's current status
      */
     public String getStatus() {
-        String status = null;
 
-        if (getContainerUnit() != null) {
-	        if (getContainerUnit() instanceof Settlement) {
-                if (reservedForMaintenance) status = MAINTENANCE;
-		        else status = PARKED;
-	        }
-	        else status = PARKED;
-	    }
-    	else {
-	        if (malfunctionManager.hasMalfunction()) status = MALFUNCTION;
-	        else {
-	        	if (towingVehicle != null) status = TOWED;
-	        	else {
-	        		if (speed == 0D) status = PARKED;
-	        		else status = MOVING;
-	        	}
-	        }
-	    }
+    	// Update status string if necessary.
+        updateStatus();
 
         return status;
+    }
+    
+    /**
+     * Updates the vehicle's status.
+     */
+    private void updateStatus() {
+    	
+    	// Update status based on current situation.
+    	String newStatus = PARKED;
+    	if (reservedForMaintenance) newStatus = MAINTENANCE;
+    	else if (towingVehicle != null) newStatus = TOWED;
+		else if (malfunctionManager.hasMalfunction()) newStatus = MALFUNCTION;
+        else if (speed > 0D) newStatus = MOVING;
+    	
+    	if (!status.equals(newStatus)) {
+    		status = newStatus;
+    		fireUnitUpdate(STATUS_EVENT);
+    	}
     }
 
     /** 
@@ -351,6 +359,9 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void timePassing(double time) throws Exception {
     	try  {
+    		// Update status if necessary.
+    		updateStatus();
+    		
         	if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
 	    	malfunctionManager.timePassing(time);
 	    	addToTrail(getCoordinates());

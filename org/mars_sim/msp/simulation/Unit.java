@@ -202,19 +202,19 @@ public abstract class Unit implements Serializable {
     }
     
     /**
-     * Adds a listener
+     * Adds a unit listener
      * @param newListener the listener to add.
      */
-    public final void addListener(UnitListener newListener) {
+    public final void addUnitListener(UnitListener newListener) {
     	if (listeners == null) listeners = new ArrayList();
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
     /**
-     * Removes a listener
+     * Removes a unit listener
      * @param oldListener the listener to remove.
      */
-    public final void removeListener(UnitListener oldListener) {
+    public final void removeUnitListener(UnitListener oldListener) {
     	if (listeners == null) listeners = new ArrayList();
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
