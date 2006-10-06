@@ -106,6 +106,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			try {
 				if (isUsableVehicle(newVehicle)) {
 					vehicle = newVehicle;
+					startingTravelledDistance = vehicle.getTotalDistanceTraveled();
 					newVehicle.setReservedForMission(true);
 					vehicle.addUnitListener(this);
 					fireMissionUpdate(VEHICLE_EVENT);

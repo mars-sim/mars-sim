@@ -29,6 +29,7 @@ import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
@@ -49,6 +50,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private JTable memberTable;
 	private JButton vehicleButton;
 	private JLabel vehicleStatusLabel;
+	private JLabel travelledLabel;
 	private MainDesktopPane desktop;
 	
 	public MainDetailPanel(MainDesktopPane desktop) {
@@ -142,6 +144,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		vehicleStatusLabel = new JLabel("Vehicle Status: ");
 		vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehicleStatusLabel);
+		
+		travelledLabel = new JLabel("Travelled Distance:");
+		travelledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(travelledLabel);
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {
@@ -167,18 +173,24 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
+					int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
+					int totalDistance = (int) vehicleMission.getTotalDistance();
+					travelledLabel.setText("Travelled Distance: " + travelledDistance + 
+							" km of " + totalDistance + " km");
 					vehicle.addUnitListener(this);
 					currentVehicle = vehicle;
 				}
 				else {
 					vehicleButton.setVisible(false);
 					vehicleStatusLabel.setText("Vehicle Status:");
+					travelledLabel.setText("Travelled Distance:");
 					currentVehicle = null;
 				}
 			}
 			else {
 				vehicleButton.setVisible(false);
 				vehicleStatusLabel.setText("Vehicle Status:");
+				travelledLabel.setText("Travelled Distance:");
 				currentVehicle = null;
 			}
 			
@@ -193,6 +205,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			memberTableModel.setMission(null);
 			vehicleButton.setVisible(false);
 			vehicleStatusLabel.setText("Vehicle Status:");
+			travelledLabel.setText("Travelled Distance:");
 			currentMission = null;
 			currentVehicle = null;
 		}
@@ -231,6 +244,13 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 				if (currentVehicle != null) currentVehicle.removeUnitListener(this);
 				currentVehicle = null;
 			}
+		}
+		else if (type.equals(TravelMission.DISTANCE_EVENT)) {
+			VehicleMission vehicleMission = (VehicleMission) mission;
+			int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
+			int totalDistance = (int) vehicleMission.getTotalDistance();
+			travelledLabel.setText("Travelled Distance: " + travelledDistance + 
+					" km of " + totalDistance + " km");
 		}
 	}
 	
