@@ -25,6 +25,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 
 	// Unit Event Types
 	public final static String STATUS_EVENT = "Vehicle Status";
+	public final static String SPEED_EVENT = "Vehicle Speed";
 	
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
@@ -223,6 +224,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     public void setSpeed(double speed) {
     	if (speed < 0D) throw new IllegalArgumentException("Vehicle speed cannot be less than 0 km/hr: " + speed);
         this.speed = speed;
+        fireUnitUpdate(SPEED_EVENT);
     }
 
     /** 

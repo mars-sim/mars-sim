@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -50,8 +52,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private JTable memberTable;
 	private JButton vehicleButton;
 	private JLabel vehicleStatusLabel;
+	private JLabel speedLabel;
 	private JLabel travelledLabel;
 	private MainDesktopPane desktop;
+	private DecimalFormat formatter = new DecimalFormat("0.0");
 	
 	public MainDetailPanel(MainDesktopPane desktop) {
 		
@@ -141,9 +145,13 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			}
 		});
 		
-		vehicleStatusLabel = new JLabel("Vehicle Status: ");
+		vehicleStatusLabel = new JLabel("Vehicle Status:");
 		vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehicleStatusLabel);
+		
+		speedLabel = new JLabel("Vehicle Speed:");
+		speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(speedLabel);
 		
 		travelledLabel = new JLabel("Travelled Distance:");
 		travelledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -166,13 +174,16 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 					" - Max: " + maxMembers + ")");
 			memberTableModel.setMission(mission);
 			
+			boolean isVehicle = false;
 			if (mission instanceof VehicleMission) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
 				Vehicle vehicle = vehicleMission.getVehicle();
 				if (vehicle != null) {
+					isVehicle = true;
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
+					speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
 					int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
 					int totalDistance = (int) vehicleMission.getTotalDistance();
 					travelledLabel.setText("Travelled Distance: " + travelledDistance + 
@@ -180,16 +191,11 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 					vehicle.addUnitListener(this);
 					currentVehicle = vehicle;
 				}
-				else {
-					vehicleButton.setVisible(false);
-					vehicleStatusLabel.setText("Vehicle Status:");
-					travelledLabel.setText("Travelled Distance:");
-					currentVehicle = null;
-				}
 			}
-			else {
+			if (!isVehicle) {
 				vehicleButton.setVisible(false);
 				vehicleStatusLabel.setText("Vehicle Status:");
+				speedLabel.setText("Vehicle Speed:");
 				travelledLabel.setText("Travelled Distance:");
 				currentVehicle = null;
 			}
@@ -205,6 +211,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			memberTableModel.setMission(null);
 			vehicleButton.setVisible(false);
 			vehicleStatusLabel.setText("Vehicle Status:");
+			speedLabel.setText("Vehicle Speed:");
 			travelledLabel.setText("Travelled Distance:");
 			currentMission = null;
 			currentVehicle = null;
@@ -235,12 +242,14 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 				vehicleButton.setText(vehicle.getName());
 				vehicleButton.setVisible(true);
 				vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
+				speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
 				vehicle.addUnitListener(this);
 				currentVehicle = vehicle;
 			}
 			else {
 				vehicleButton.setVisible(false);
 				vehicleStatusLabel.setText("Vehicle Status:");
+				speedLabel.setText("Vehicle Speed:");
 				if (currentVehicle != null) currentVehicle.removeUnitListener(this);
 				currentVehicle = null;
 			}
@@ -259,10 +268,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
+		String type = event.getType();
 		Vehicle vehicle = (Vehicle) event.getSource();
-		if (event.getType().equals(Vehicle.STATUS_EVENT)) {
+		if (type.equals(Vehicle.STATUS_EVENT)) 
 			vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
-		}
+		else if (type.equals(Vehicle.SPEED_EVENT)) 
+			speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
 	}
 	
     /**
