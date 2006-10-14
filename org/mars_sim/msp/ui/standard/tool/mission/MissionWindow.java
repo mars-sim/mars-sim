@@ -53,6 +53,10 @@ public class MissionWindow extends ToolWindow {
         missionList.addListSelectionListener(mainDetailPane);
         infoPane.add("Info", mainDetailPane);
         
+        NavpointPanel navpointPane = new NavpointPanel();
+        missionList.addListSelectionListener(navpointPane);
+        infoPane.add("Navpoints", navpointPane);
+        
         // Pack window
         pack();
 	}

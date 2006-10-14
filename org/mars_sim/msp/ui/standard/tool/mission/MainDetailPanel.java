@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * MainDetailPanel.java
+ * @version 2.80 2006-10-09
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission;
 
 import java.awt.BorderLayout;
@@ -57,7 +64,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private MainDesktopPane desktop;
 	private DecimalFormat formatter = new DecimalFormat("0.0");
 	
-	public MainDetailPanel(MainDesktopPane desktop) {
+	MainDetailPanel(MainDesktopPane desktop) {
 		
 		this.desktop = desktop;
 		
