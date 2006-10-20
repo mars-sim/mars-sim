@@ -168,6 +168,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
                 mainWindow.getDesktop().openToolWindow("Sound Tool");
             else mainWindow.getDesktop().closeToolWindow("Sound Tool");
         }
+        
+        if (selectedItem == missionToolItem) {
+            if (missionToolItem.isSelected()) 
+                mainWindow.getDesktop().openToolWindow("Mission Tool");
+            else mainWindow.getDesktop().closeToolWindow("Mission Tool");
+        }
 
         if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
     }
@@ -184,6 +190,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             mainWindow.getDesktop().isToolWindowOpen("Monitor Tool"));
         soundToolItem.setSelected(
         	mainWindow.getDesktop().isToolWindowOpen("Sound Tool"));
+        missionToolItem.setSelected(
+        	mainWindow.getDesktop().isToolWindowOpen("Mission Tool"));
     }
 
     public void menuCanceled(MenuEvent event) {}
