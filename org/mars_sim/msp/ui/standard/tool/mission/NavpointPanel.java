@@ -11,7 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.Box;
-import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
@@ -21,6 +21,8 @@ import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+import org.mars_sim.msp.ui.standard.tool.navigator.Map;
+import org.mars_sim.msp.ui.standard.tool.navigator.SurfMarsMap;
 
 public class NavpointPanel extends JPanel implements ListSelectionListener,
 		MissionListener {
@@ -30,17 +32,28 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	NavpointPanel() {
 		
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(300, 300));
 		
 		Box mainPane = Box.createVerticalBox();
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
-		JPanel mapDisplayPanel = new JPanel(new BorderLayout(0, 0));
-		mainPane.add(mapDisplayPanel);
+		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
+		mainPane.add(mapDisplayPane);
 		
-		JLabel mapLabel = new JLabel("Map", JLabel.CENTER);
-		mapDisplayPanel.add(mapLabel);
+		MapPanel mapPane = new MapPanel();
+		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
+		
+		JButton northButton = new JButton("^");
+		mapDisplayPane.add(northButton, BorderLayout.NORTH);
+		
+		JButton westButton = new JButton("<");
+		mapDisplayPane.add(westButton, BorderLayout.WEST);
+		
+		JButton eastButton = new JButton(">");
+		mapDisplayPane.add(eastButton, BorderLayout.EAST);
+		
+		JButton southButton = new JButton("v");
+		mapDisplayPane.add(southButton, BorderLayout.SOUTH);
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {
@@ -54,7 +67,18 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	}
 
 	public void missionUpdate(MissionEvent event) {
-		// TODO Auto-generated method stub
-
+	}
+	
+	private class MapPanel extends JPanel {
+		
+		private Map map;
+		
+		MapPanel() {
+			super();
+			
+			map = new SurfMarsMap(this);
+			
+			setPreferredSize(new Dimension(300, 300));
+		}
 	}
 }
