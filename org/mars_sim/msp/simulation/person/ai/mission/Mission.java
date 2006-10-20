@@ -383,11 +383,34 @@ public abstract class Mission implements Serializable {
 	}
 	
 	/**
+	 * Checks to see if all of the people in the mission have any dangerous medical 
+	 * problems that require treatment at a settlement. 
+	 * Also any environmental problems, such as suffocation.
+	 * @return true if all have dangerous medical problems
+	 */
+	protected final boolean hasDangerousMedicalProblemsAllCrew() {
+		boolean result = true;
+		PersonIterator i = people.iterator();
+		while (i.hasNext()) {
+			if (!i.next().getPhysicalCondition().hasSeriousMedicalProblems()) result = false;
+		}
+		return result;
+	}
+	
+	/**
 	 * Checks if the mission has an emergency situation.
 	 * @return true if emergency.
 	 */
 	protected boolean hasEmergency() {
 		return hasDangerousMedicalProblems();
+	}
+	
+	/**
+	 * Checks if the mission has an emergency situation affecting all the crew.
+	 * @return true if emergency affecting all.
+	 */
+	protected boolean hasEmergencyAllCrew() {
+		return hasDangerousMedicalProblemsAllCrew();
 	}
 	
 	/**

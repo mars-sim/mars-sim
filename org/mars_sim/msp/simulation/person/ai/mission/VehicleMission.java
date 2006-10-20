@@ -372,8 +372,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	}
     	
     	try {
-    		// Check if enough resources for remaining trip.
-    		if (!hasEnoughResourcesForRemainingMission(false)) {
+    		// Check if enough resources for remaining trip 
+    		// or if there is an emergency medical problem.
+    		if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
     			// If not, determine an emergency destination.
     			determineEmergencyDestination(person);
     		}
@@ -548,7 +549,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	
     	// Check if enough resources to get to settlement.
     	double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
-    	if (hasEnoughResources(getResourcesNeededForTrip(false, distance))) {
+    	if (hasEnoughResources(getResourcesNeededForTrip(false, distance)) && !hasEmergencyAllCrew()) {
     		// System.out.println(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
     		
     		// Creating emergency destination mission event.
