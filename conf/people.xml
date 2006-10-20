@@ -232,6 +232,13 @@
 		<person-name value="Dima Stepanchuk" gender="male" />
 		<person-name value="Patrick O'Hara" gender="male" />
 		<person-name value="Chamal Perera" gender="male" />
+		<person-name value="Jim Brown" gender="male" />
+		<person-name value="Stjepan Debic" gender="male" />
+		<person-name value="Boris Debic" gender="male" />
+		<person-name value="Frank Crossman" gender="male" />
+		<person-name value="John McGowan" gender="male" />
+		<person-name value="Eric McGuire" gender="male" />
+		<person-name value="Rakesh Ramadas" gender="male" />
 		<person-name value="Erinn Thayne" gender="female" />
 		<person-name value="Janay Benko" gender="female" />
 		<person-name value="Theola Binsfeld" gender="female" />
@@ -293,7 +300,7 @@
 		<person-name value="Ellan Schadegg" gender="female" />
 		<person-name value="Carlita Voytek" gender="female" />
 		<person-name value="Paula Jenkins" gender="female" />
-		
+		<person-name value="Karen Andersen" gender="female" />
 	</person-name-list>
 	
 	<!-- List of configured people -->
