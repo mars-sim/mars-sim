@@ -264,12 +264,11 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 }
                 
                 // Set thread sleep time.
-				long sleepTime = 2000;
+				long sleepTime = 1000;
 				if (wait) sleepTime = 100;
                 
-                // Pause for 2000 milliseconds between display refreshs
+                // Pause for 1000 milliseconds between display refreshs
                 try {
-                    // Thread.sleep(2000);
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {}
                 repaint();
