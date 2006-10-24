@@ -278,7 +278,7 @@ public abstract class RoverMission extends VehicleMission {
         VehicleMaintenance garage = null;
     	
     	// If rover is not parked at settlement, park it.
-    	if (getVehicle().getSettlement() == null) {
+        if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
     		try {
     			disembarkSettlement.getInventory().storeUnit(getVehicle());
     		}
@@ -322,52 +322,56 @@ public abstract class RoverMission extends VehicleMission {
         
         // If any people are aboard the rover who aren't mission members, carry them into the settlement.
         Rover rover = (Rover) getVehicle();
-        if (isNoOneInRover() && (rover.getCrewNum() > 0)) {
-        	PersonIterator i = rover.getCrew().iterator();
-        	while (i.hasNext()) {
-        		Person crewmember = i.next();
-        		try {
-        			rover.getInventory().retrieveUnit(crewmember);
-        			disembarkSettlement.getInventory().storeUnit(crewmember);
-        			BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
-        		}
-        		catch (Exception e) {
-        			throw new MissionException(VehicleMission.DISEMBARKING, e);
+        if (rover != null) {
+        	if (isNoOneInRover() && (rover.getCrewNum() > 0)) {
+        		PersonIterator i = rover.getCrew().iterator();
+        		while (i.hasNext()) {
+        			Person crewmember = i.next();
+        			try {
+        				rover.getInventory().retrieveUnit(crewmember);
+        				disembarkSettlement.getInventory().storeUnit(crewmember);
+        				BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
+        			}
+        			catch (Exception e) {
+        				throw new MissionException(VehicleMission.DISEMBARKING, e);
+        			}
         		}
         	}
-        }
         
-        // Unload rover if necessary.
-        try {
-        	boolean roverUnloaded = UnloadVehicle.isFullyUnloaded(rover);
-        	if (!roverUnloaded) {
-        		// Random chance of having person unload (this allows person to do other things sometimes)
-        		if (RandomUtil.lessThanRandPercent(50)) {
-        			assignTask(person, new UnloadVehicle(person, rover));
-					return;
-				}
-			}
-        }
-        catch (Exception e) {
-			throw new MissionException(VehicleMission.DISEMBARKING, e);
-		}
-        
-        // If everyone has left the rover, end the phase.
-        if (isNoOneInRover()) {
-        	
-        	// If the rover is in a garage, put the rover outside.
-        	if (isRoverInAGarage()) {
-        		try {
-        			garageBuilding = BuildingManager.getBuilding(getVehicle());
-                    garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
-        			garage.removeVehicle(getVehicle());
+        	//	Unload rover if necessary.
+        	try {
+        		boolean roverUnloaded = UnloadVehicle.isFullyUnloaded(rover);
+        		if (!roverUnloaded) {
+        			// Random chance of having person unload (this allows person to do other things sometimes)
+        			if (RandomUtil.lessThanRandPercent(50)) {
+        				assignTask(person, new UnloadVehicle(person, rover));
+        				return;
+        			}
         		}
-        		catch (BuildingException e) {}
         	}
+        	catch (Exception e) {
+        		throw new MissionException(VehicleMission.DISEMBARKING, e);
+        	}
+        
+        	// If everyone has left the rover, end the phase.
+        	if (isNoOneInRover()) {
         	
-        	// Leave the vehicle.
-        	leaveVehicle();
+        		// If the rover is in a garage, put the rover outside.
+        		if (isRoverInAGarage()) {
+        			try {
+        				garageBuilding = BuildingManager.getBuilding(getVehicle());
+        				garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+        				garage.removeVehicle(getVehicle());
+        			}
+        			catch (BuildingException e) {}
+        		}
         	
+        		// Leave the vehicle.
+        		leaveVehicle();
+        		setPhaseEnded(true);
+        	}
+        }
+        else {
         	setPhaseEnded(true);
         }
     }
