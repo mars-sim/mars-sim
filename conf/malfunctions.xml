@@ -111,6 +111,16 @@
 		</medical-complaint-list>
 	</malfunction>
 	
+	<!-- Minor punctured tire on rover. -->
+	<malfunction name="Punctured Tire">
+	    <severity value="5" />
+	    <probability value="60.0" />
+	    <eva-repair-time value="10.0" />
+	    <entity-list>
+	    	<entity name="Rover" />
+	    </entity-list>
+	</malfunction>
+	
 	<!-- Flat tire on rover. -->
 	<malfunction name="Flat Tire">
 		<severity value="20" />
