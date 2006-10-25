@@ -13,9 +13,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
-
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.ui.standard.tool.navigator.Map;
@@ -28,6 +26,7 @@ public class MapPanel extends JPanel implements Runnable {
 	
 	private Map map;
 	private Thread displayThread;
+	private Thread createMapThread;
 	private Coordinates centerCoords;
 	private boolean mapError;
 	private String mapErrorMessage;
@@ -38,7 +37,6 @@ public class MapPanel extends JPanel implements Runnable {
 		super();
 		
 		map = new SurfMarsMap(this);
-	    centerCoords = null;
 		mapError = false;
 		wait = false;
 		
@@ -47,7 +45,6 @@ public class MapPanel extends JPanel implements Runnable {
 	}
 	
 	public void showMap(Coordinates newCenter) {
-		// System.out.println("showMap");
 		boolean recreateMap = false;
 		if (centerCoords == null) {
 			if (newCenter != null) {
@@ -62,19 +59,23 @@ public class MapPanel extends JPanel implements Runnable {
 		
 		if (recreateMap) {
 			wait = true;
-			mapError = false;
-    		SwingUtilities.invokeLater(
-    			new Runnable() {
-    				public void run() {
-    					try {
-    						map.drawMap(centerCoords);
-    					}
-    					catch (Exception e) {
-    						mapError = true;
-    						mapErrorMessage = e.getMessage();
-    					}
-    				}
-    			});
+			if ((createMapThread != null) && (createMapThread.isAlive()))
+				createMapThread.interrupt();
+			createMapThread = new Thread(new Runnable() {
+				public void run() {
+	    			try {
+	    				mapError = false;
+	    				map.drawMap(centerCoords);
+	    			}
+	    			catch (Exception e) {
+	    				mapError = true;
+	    				mapErrorMessage = e.getMessage();
+	    			}
+	    			wait = false;
+	    			repaint();
+	    		}
+			});
+			createMapThread.start();
 		}
 		
         updateDisplay();
@@ -109,7 +110,7 @@ public class MapPanel extends JPanel implements Runnable {
         	if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
         	String message = "Generating Map";
         	drawCenteredMessage(message, g);
-        	if (map.isImageDone() || mapError) wait = false;
+        	// if (map.isImageDone() || mapError) wait = false;
         }
         else {
         	if (mapError) {
