@@ -44,6 +44,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
     private boolean wait; // True if map is in pause mode
     private Coordinates centerCoords; // Spherical coordinates for center point of map
     private Thread showThread; // Refresh thread
+    private Thread createMapThread; // Map creation thread.
     private boolean topo; // True if in topographical mode, false if in real surface mode
     private boolean recreate; // True if surface needs to be regenerated
     private boolean labels; // True if units should display labels
@@ -239,23 +240,29 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         while (true) {
             if (recreate) {
                 // Regenerate surface if recreate is true, then display.
-                mapError = false;
-                try {
-                    if (topo) topoMap.drawMap(centerCoords);
-                    else {
-                	    if (useUSGSMap) usgsMap.drawMap(centerCoords);
-                	    else surfMap.drawMap(centerCoords);
-                    }
-                }
-                catch (Exception e) {
-                    mapError = true;
-                    mapErrorMessage = e.getMessage();
-                    wait = false;
-                }
-                
+            	if ((createMapThread != null) && (createMapThread.isAlive()))
+    				createMapThread.interrupt();
+            	createMapThread = new Thread(new Runnable() {
+    				public void run() {
+    					wait = true;
+    					mapError = false;
+    					try {
+    						if (topo) topoMap.drawMap(centerCoords);
+    						else if (useUSGSMap) usgsMap.drawMap(centerCoords);
+    						else surfMap.drawMap(centerCoords);
+    					}
+    					catch (Exception e) {
+    						mapError = true;
+    						mapErrorMessage = e.getMessage();
+    					}
+    					wait = false;
+    					repaint();
+    				}
+    			});
+            	createMapThread.start();
                 recreate = false;
-                repaint();
-            } else {
+            } 
+            else {
                 // Check if bad connection for USGS map.
                 if (useUSGSMap && ((USGSMarsMap) usgsMap).isConnectionTimeout()) {
                     mapError = true;
@@ -265,7 +272,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 
                 // Set thread sleep time.
 				long sleepTime = 1000;
-				if (wait) sleepTime = 100;
                 
                 // Pause for 1000 milliseconds between display refreshs
                 try {
@@ -282,8 +288,7 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
      */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
-        // System.out.println("paintComponent()");
+       
         // Determine map type.
         Map map = null;
         if (isTopo()) map = topoMap;
@@ -293,7 +298,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
         }
         
         if (wait) {
-        	// System.out.println("wait");
             // display previous map image.
             if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
 
@@ -303,9 +307,6 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
             
             // Draw message
             drawCenteredMessage(message, g);
-            
-            if (map.isImageDone() || mapError) wait = false;
-            // System.out.println("end wait");
         } 
         else {
         	// System.out.println("Go");
@@ -321,12 +322,12 @@ public class MapDisplay extends JComponent implements MouseListener, Runnable {
                 // Paint black background
                 g.setColor(Color.black);
                 g.fillRect(0, 0, width, height);
-
+                
                 if (map.isImageDone()) {
                     mapImage = map.getMapImage();
                     g.drawImage(mapImage, 0, 0, this);
                 }
-
+                
                 // Display day/night shading.
                 if (isSurface() && showDayNightShading) shadingLayer.displayLayer(g);
             
