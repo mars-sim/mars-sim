@@ -1,0 +1,122 @@
+/**
+ * Mars Simulation Project
+ * LandmarkMapLayer.java
+ * @version 2.80 2006-10-29
+ * @author Scott Davis
+ */
+package org.mars_sim.msp.ui.standard.tool.map;
+
+import java.awt.Component;
+import java.awt.Graphics;
+import java.util.Iterator;
+import javax.swing.Icon;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.IntPoint;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
+import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
+import org.mars_sim.msp.ui.standard.ImageLoader;
+
+/**
+ * The NavpointMapLayer is a graphics layer to display mission navpoints.
+ */
+public class NavpointMapLayer implements MapLayer {
+
+	// Static members
+	private static final String COLORED_ICON_NAME = "FlagBlue";
+	private static final String WHITE_ICON_NAME = "FlagWhite";
+	
+	// Domain members
+	private Component displayComponent;
+	private Icon navpointIconColor;
+	private Icon navpointIconWhite;
+	private Mission singleMission;
+
+	/**
+	 * Constructor
+	 * @param mapComponent the display component.
+	 */
+	public NavpointMapLayer(Component displayComponent) {
+		
+		// Initialize domain data.
+		this.displayComponent = displayComponent;
+		navpointIconColor = ImageLoader.getIcon(COLORED_ICON_NAME);
+		navpointIconWhite = ImageLoader.getIcon(WHITE_ICON_NAME);
+	}
+	
+	/**
+	 * Sets the single mission to display navpoints for.
+	 * Set to null to display all mission navpoints.
+	 * @param singleMission the mission to display navpoints for.
+	 */
+	public void setSingleMission(Mission singleMission) {
+		this.singleMission = singleMission;
+	}
+
+	/**
+     * Displays the layer on the map image.
+     * @param mapCenter the location of the center of the map.
+     * @param mapType the type of map.
+     * @param g graphics context of the map display.
+     */
+    public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
+    	if (singleMission != null) {
+    		if (singleMission instanceof TravelMission) 
+    			displayMission((TravelMission) singleMission, mapCenter, mapType, g);
+    	}
+    	else {
+    		MissionManager manager = Simulation.instance().getMissionManager();
+    		Iterator i = manager.getMissions().iterator();
+    		while (i.hasNext()) {
+    			Mission mission = (Mission) i.next();
+    			if (mission instanceof TravelMission) 
+    				displayMission((TravelMission) mission, mapCenter, mapType, g);
+    		}
+    	}
+	}
+	
+	/**
+	 * Displays the navpoints in a travel mission.
+	 * @param mission the travel mission to display.
+	 * @param mapCenter the location of the center of the map.
+	 * @param mapType the type of map.
+	 * @param g graphics context of the map display.
+	 */
+	private void displayMission(TravelMission mission, Coordinates mapCenter, String mapType, Graphics g) {
+		for (int x = 0; x < mission.getNumberOfNavpoints(); x++) {
+			NavPoint navpoint = mission.getNavpoint(x);
+			displayNavpoint(navpoint, mapCenter, mapType, g);
+		}
+	}
+	
+	/**
+	 * Displays a navpoint.
+	 * @param navpoint the navpoint to display.
+	 * @param mapCenter the location of the center of the map.
+	 * @param mapType the type of map.
+	 * @param g graphics context of the map display.
+	 */
+	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, String mapType, Graphics g) {
+		double angle = 0D;
+		if (USGSMarsMap.TYPE.equals(mapType)) angle = USGSMarsMap.HALF_MAP_ANGLE;
+		else angle = CannedMarsMap.HALF_MAP_ANGLE;
+		
+		if (mapCenter.getAngle(navpoint.getLocation()) < angle) {
+			
+			// Chose a navpoint icon based on the map type.
+			Icon navIcon = null;
+			if (TopoMarsMap.TYPE.equals(mapType)) navIcon = navpointIconWhite;
+			else navIcon = navpointIconColor;
+			
+			// Determine the draw location for the icon.
+			IntPoint location = MapUtils.getRectPosition(navpoint.getLocation(), mapCenter, mapType);
+			IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - navIcon.getIconHeight()));
+	        
+			// Draw the navpoint icon.
+	        navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
+		}
+	}
+}
