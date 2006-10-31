@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.78 2005-09-09
+ * @version 2.80 2006-10-29
  * @author Scott Davis
  */
 
@@ -9,11 +9,27 @@ package org.mars_sim.msp.ui.standard.tool.navigator;
   
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.tool.map.CannedMarsMap;
+import org.mars_sim.msp.ui.standard.tool.map.LandmarkMapLayer;
+import org.mars_sim.msp.ui.standard.tool.map.Map;
+import org.mars_sim.msp.ui.standard.tool.map.MapLayer;
+import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
+import org.mars_sim.msp.ui.standard.tool.map.NavpointMapLayer;
+import org.mars_sim.msp.ui.standard.tool.map.ShadingMapLayer;
+import org.mars_sim.msp.ui.standard.tool.map.SurfMarsMap;
+import org.mars_sim.msp.ui.standard.tool.map.TopoMarsMap;
+import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
+import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
+import org.mars_sim.msp.ui.standard.tool.map.USGSMarsMap;
+import org.mars_sim.msp.ui.standard.tool.map.VehicleTrailMapLayer;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
 
 /** 
  * The NavigatorWindow is a tool window that displays a map and a
@@ -23,7 +39,7 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 public class NavigatorWindow extends ToolWindow implements ActionListener {
 
     // Data members
-    private MapDisplay map; // map navigation
+    private MapPanel map; // map navigation
     private GlobeDisplay globeNav; // Globe navigation
     private NavButtonDisplay navButtons; // Compass navigation buttons
     private LegendDisplay legend; // Topographical and distance legend
@@ -41,6 +57,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     private JCheckBoxMenuItem trailItem; // Show vehicle trails menu item.
     private JCheckBoxMenuItem landmarkItem; // Show landmarks menu item. 
     private JCheckBoxMenuItem navpointItem; // Show navpoints menu item.
+    private MapLayer unitIconLayer;
+    private MapLayer unitLabelLayer;
+    private MapLayer shadingLayer;
+    private MapLayer trailLayer;
+    private MapLayer navpointLayer;
+    private MapLayer landmarkLayer;
+    
 
     /** Constructs a NavigatorWindow object 
      *  @param desktop the desktop pane
@@ -89,16 +112,39 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         topMainPane.add(rightTopPane);
 
         // Prepare surface map display
-        map = new MapDisplay(this, 300, 300);
         JPanel mapPane = new JPanel(new BorderLayout(0, 0));
         mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));
         rightTopPane.add(mapPane);
         JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
         mapPaneInner.setBackground(Color.black);
+        
+        map = new MapPanel();
+        map.addMouseListener(new mapClickListener());
+        
+        // Create map layers.
+        unitIconLayer = new UnitIconMapLayer(map);
+        unitLabelLayer = new UnitLabelMapLayer();
+        map.addMapLayer(unitLabelLayer);
+        shadingLayer = new ShadingMapLayer(map);
+        navpointLayer = new NavpointMapLayer(map);
+        trailLayer = new VehicleTrailMapLayer();
+        landmarkLayer = new LandmarkMapLayer();
+        
+        // Add default map layers.
+        map.addMapLayer(unitIconLayer);
+        map.addMapLayer(unitLabelLayer);
+        map.addMapLayer(navpointLayer);
+        map.addMapLayer(trailLayer);
+        map.addMapLayer(landmarkLayer);
+        
+        map.showMap(new Coordinates((Math.PI / 2D), 0D));
         mapPaneInner.add(map, BorderLayout.CENTER);
         mapPane.add(mapPaneInner, BorderLayout.CENTER);
 
+        // Create map layers.
+        unitIconLayer = new UnitIconMapLayer(map);
+        
         // Put some glue in to fill in extra space
         rightTopPane.add(Box.createVerticalStrut(5));
 
@@ -229,34 +275,45 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         }
         else if (source == topoItem) {
         	if (topoItem.isSelected()) {
-        		map.showTopo();
+        		map.setMapType(TopoMarsMap.TYPE);
         		globeNav.showTopo();
 				legend.showColor();
         		dayNightItem.setEnabled(false);
         		usgsItem.setEnabled(false);
         	}	 
         	else {
-        		map.showSurf();
+        		map.setMapType(SurfMarsMap.TYPE);
         		globeNav.showSurf();
         		legend.showMap();
         		dayNightItem.setEnabled(true);
         		usgsItem.setEnabled(true);
         	} 
         }
-        else if (source == unitLabelItem) map.setUnitLabels(unitLabelItem.isSelected());
-        else if (source == dayNightItem) {
-        	map.setDayNightTracking(dayNightItem.isSelected());
-        	globeNav.setDayNightTracking(dayNightItem.isSelected());
-        } 
         else if (source == usgsItem) {
-        	map.setUSGSMap(usgsItem.isSelected());
+        	if (usgsItem.isSelected()) map.setMapType(USGSMarsMap.TYPE);
+        	else map.setMapType(SurfMarsMap.TYPE);
         	globeNav.setUSGSMap(usgsItem.isSelected());
-			legend.setUSGSMode(usgsItem.isSelected());
+        	legend.setUSGSMode(usgsItem.isSelected());
         	topoItem.setEnabled(!usgsItem.isSelected());
         } 
-        else if (source == trailItem) map.setVehicleTrails(trailItem.isSelected());
-        else if (source == landmarkItem) map.setLandmarks(landmarkItem.isSelected());
-        else if (source == navpointItem) map.setNavpoints(navpointItem.isSelected());
+        else if (source == dayNightItem) {
+        	setMapLayer(dayNightItem.isSelected(), shadingLayer);
+        	globeNav.setDayNightTracking(dayNightItem.isSelected());
+        }
+        else if (source == unitLabelItem) setMapLayer(unitLabelItem.isSelected(), unitLabelLayer);
+        else if (source == trailItem) setMapLayer(trailItem.isSelected(), trailLayer);
+        else if (source == landmarkItem) setMapLayer(landmarkItem.isSelected(), landmarkLayer);
+        else if (source == navpointItem) setMapLayer(navpointItem.isSelected(), navpointLayer);
+    }
+    
+    /**
+     * Sets a map layer on or off.
+     * @param setMap true if map is on and false if off.
+     * @param mapLayer the map layer.
+     */
+    private void setMapLayer(boolean setMap, MapLayer mapLayer) {
+    	if (setMap) map.addMapLayer(mapLayer);
+    	else map.removeMapLayer(mapLayer);
     }
     
     /**
@@ -267,37 +324,37 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsMenu = new JPopupMenu("Map Options");
 		
 		// Create topographical map menu item.
-		topoItem = new JCheckBoxMenuItem("Topographical Mode", map.isTopo());
+		topoItem = new JCheckBoxMenuItem("Topographical Mode", TopoMarsMap.TYPE.equals(map.getMapType()));
 		topoItem.addActionListener(this);
 		optionsMenu.add(topoItem);
 		
 		// Create unit label menu item.
-		unitLabelItem = new JCheckBoxMenuItem("Show Unit Labels", map.useUnitLabels());
+		unitLabelItem = new JCheckBoxMenuItem("Show Unit Labels", map.hasMapLayer(unitLabelLayer));
 		unitLabelItem.addActionListener(this);
 		optionsMenu.add(unitLabelItem);
 		
 		// Create day/night tracking menu item.
-		dayNightItem = new JCheckBoxMenuItem("Day/Night Tracking", map.isDayNightTracking());
+		dayNightItem = new JCheckBoxMenuItem("Day/Night Tracking", map.hasMapLayer(shadingLayer));
 		dayNightItem.addActionListener(this);
 		optionsMenu.add(dayNightItem);
 		
 		// Create USGS menu item.
-		usgsItem = new JCheckBoxMenuItem("8x Surface Map Zoom", map.isUsgs());
+		usgsItem = new JCheckBoxMenuItem("8x Surface Map Zoom", USGSMarsMap.TYPE.equals(map.getMapType()));
 		usgsItem.addActionListener(this);
 		optionsMenu.add(usgsItem);
 		
 		// Create vehicle trails menu item.
-		trailItem = new JCheckBoxMenuItem("Show Vehicle Trails", map.isVehicleTrails());
+		trailItem = new JCheckBoxMenuItem("Show Vehicle Trails", map.hasMapLayer(trailLayer));
 		trailItem.addActionListener(this);
 		optionsMenu.add(trailItem);
 		
 		// Create landmarks menu item.
-		landmarkItem = new JCheckBoxMenuItem("Show Landmarks", map.isLandmarks());
+		landmarkItem = new JCheckBoxMenuItem("Show Landmarks", map.hasMapLayer(landmarkLayer));
 		landmarkItem.addActionListener(this);
 		optionsMenu.add(landmarkItem);
 		
 		// Create navpoints menu item.
-		navpointItem = new JCheckBoxMenuItem("Show Mission Navpoints", map.isNavpoints());
+		navpointItem = new JCheckBoxMenuItem("Show Mission Navpoints", map.hasMapLayer(navpointLayer));
 		navpointItem.addActionListener(this);
 		optionsMenu.add(navpointItem);
 		
@@ -312,9 +369,40 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     public void openUnitWindow(Unit unit) {
         desktop.openUnitWindow(unit);
     }
+    
+    private class mapClickListener extends MouseAdapter {
+    	public void mouseClicked(MouseEvent event) {
 
-    /** accessor for the MapDisplay */
-    public MapDisplay getMapDisplay() {
-        return map;
+    		if (map.getCenterLocation() != null) {
+    			double rho;
+    			if (USGSMarsMap.TYPE.equals(map.getMapType())) rho = USGSMarsMap.PIXEL_RHO;
+    			else rho = CannedMarsMap.PIXEL_RHO;
+
+    			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
+    					(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
+    					(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
+    			boolean unitsClicked = false;
+
+    			UnitIterator i = Simulation.instance().getUnitManager().getUnits().iterator();
+
+    			// Open window if unit is clicked on the map
+    			while (i.hasNext()) {
+    				Unit unit = i.next();
+    				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+    				if (displayInfo.isMapDisplayed(unit)) {
+    					Coordinates unitCoords = unit.getCoordinates();
+    					double clickRange = unitCoords.getDistance(clickedPosition);
+    					double unitClickRange = displayInfo.getMapClickRange();
+    					if (USGSMarsMap.TYPE.equals(map.getMapType())) unitClickRange *= .1257D;
+    					if (clickRange < unitClickRange) {
+    						openUnitWindow(unit);
+    						unitsClicked = true;
+    					}
+                    }
+                }
+    			
+    			if (!unitsClicked) updateCoords(clickedPosition);
+    		}
+        }
     }
 }
