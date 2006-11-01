@@ -118,8 +118,11 @@ public class MapPanel extends JPanel implements Runnable {
 			}
 		}
 		else if (!centerCoords.equals(newCenter)) {
-            recreateMap = true;
-            centerCoords.setCoords(newCenter);
+            if (newCenter != null) {
+            	recreateMap = true;
+            	centerCoords.setCoords(newCenter);
+            }
+            else centerCoords = null;
         }
 		
 		if (!mapType.equals(oldMapType)) {
@@ -195,12 +198,12 @@ public class MapPanel extends JPanel implements Runnable {
                 g.setColor(Color.black);
                 g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
                 
-                if (map.isImageDone()) {
-                    mapImage = map.getMapImage();
-                    g.drawImage(mapImage, 0, 0, this);
-                }  
-                
                 if (centerCoords != null) {
+                	if (map.isImageDone()) {
+                		mapImage = map.getMapImage();
+                		g.drawImage(mapImage, 0, 0, this);
+                	}  
+                
                 	// Display map layers.
                 	Iterator i = mapLayers.iterator();
                 	while (i.hasNext()) ((MapLayer) i.next()).displayLayer(centerCoords, mapType, g);
