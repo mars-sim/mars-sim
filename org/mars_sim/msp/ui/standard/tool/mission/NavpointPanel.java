@@ -8,20 +8,28 @@
 package org.mars_sim.msp.ui.standard.tool.mission;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
+import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.ui.standard.ImageLoader;
@@ -41,6 +49,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	private MapPanel mapPane;
 	private VehicleTrailMapLayer trailLayer;
 	private NavpointMapLayer navpointLayer;
+	private NavpointTableModel navpointTableModel;
 	
 	NavpointPanel() {
 		
@@ -119,6 +128,20 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 			}
 		});
 		mapDisplayPane.add(southButton, BorderLayout.SOUTH);
+		
+		JPanel navpointTablePane = new JPanel(new BorderLayout(0, 0));
+		navpointTablePane.setBorder(new MarsPanelBorder());
+		navpointTablePane.setPreferredSize(new Dimension(100, 100));
+		mainPane.add(navpointTablePane);
+		
+		JScrollPane navpointScrollPane = new JScrollPane();
+        navpointTablePane.add(navpointScrollPane, BorderLayout.CENTER);
+        
+        navpointTableModel = new NavpointTableModel();
+        JTable navpointTable = new JTable(navpointTableModel);
+        navpointTable.setRowSelectionAllowed(true);
+        navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        navpointScrollPane.setViewportView(navpointTable);
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {
@@ -131,8 +154,10 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 				if (mission.getPeopleNumber() > 0) {
 					if (mission instanceof VehicleMission) 
 						trailLayer.setSingleVehicle(((VehicleMission) mission).getVehicle());
-					if (mission instanceof TravelMission)
+					if (mission instanceof TravelMission) {
 						navpointLayer.setSingleMission((TravelMission) mission);
+						navpointTableModel.updateNavpoints();
+					}
 					mapPane.showMap(currentMission.getPeople().get(0).getCoordinates());
 				}
 			}
@@ -141,10 +166,66 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 			currentMission = null;
 			trailLayer.setSingleVehicle(null);
 			navpointLayer.setSingleMission(null);
+			navpointTableModel.updateNavpoints();
 			mapPane.showMap(null);
 		}
 	}
 
 	public void missionUpdate(MissionEvent event) {
+		String type = event.getType();
+		if (TravelMission.NAVPOINTS_EVENT.equals(type)) {
+			navpointTableModel.updateNavpoints();
+		}
+	}
+	
+	private class NavpointTableModel extends AbstractTableModel {
+		
+		private List navpoints;
+		
+		private NavpointTableModel() {
+			navpoints = new ArrayList();
+		}
+		
+		public int getRowCount() {
+            return navpoints.size();
+        }
+		
+		public int getColumnCount() {
+            return 3;
+        }
+		
+		public String getColumnName(int columnIndex) {
+            if (columnIndex == 0) return "Name";
+            else if (columnIndex == 1) return "Location";
+            else if (columnIndex == 2) return "Description";
+            else return "";
+        }
+		
+		public Object getValueAt(int row, int column) {
+            if (row < navpoints.size()) {
+            	NavPoint navpoint = (NavPoint) navpoints.get(row);
+            	if (column == 0) return "Navpoint " + (row + 1);
+            	else if (column == 1) return navpoint.getLocation().getFormattedString();
+            	else if (column == 2) return navpoint.getDescription();
+            	else return "unknown";
+            }   
+            else return "unknown";
+        }
+		
+		public void updateNavpoints() {
+			if ((currentMission != null) && (currentMission instanceof TravelMission)) {
+				navpoints.clear();
+				TravelMission travelMission = (TravelMission) currentMission;
+				for (int x=0; x < travelMission.getNumberOfNavpoints(); x++) 
+					navpoints.add(travelMission.getNavpoint(x));
+				fireTableDataChanged();
+			}
+			else {
+				if (navpoints.size() > 0) {
+					navpoints.clear();
+					fireTableDataChanged();
+				}
+			}
+		}
 	}
 }

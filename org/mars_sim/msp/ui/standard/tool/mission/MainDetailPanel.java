@@ -69,7 +69,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		this.desktop = desktop;
 		
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(300, 300));
+		// setPreferredSize(new Dimension(300, 300));
 		
 		Box mainPane = Box.createVerticalBox();
 		mainPane.setBorder(new MarsPanelBorder());
@@ -105,6 +105,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		
 		// Prepare member list panel
 		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
+		memberListPane.setPreferredSize(new Dimension(100, 100));
         memberBottomPane.add(memberListPane, BorderLayout.CENTER);
         
         // Create scroll panel for member list.
