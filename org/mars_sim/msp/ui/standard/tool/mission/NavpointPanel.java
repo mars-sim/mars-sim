@@ -50,6 +50,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	private VehicleTrailMapLayer trailLayer;
 	private NavpointMapLayer navpointLayer;
 	private NavpointTableModel navpointTableModel;
+	private JTable navpointTable;
 	
 	NavpointPanel() {
 		
@@ -138,9 +139,26 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
         navpointTablePane.add(navpointScrollPane, BorderLayout.CENTER);
         
         navpointTableModel = new NavpointTableModel();
-        JTable navpointTable = new JTable(navpointTableModel);
+        navpointTable = new JTable(navpointTableModel);
         navpointTable.setRowSelectionAllowed(true);
         navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        navpointTable.getSelectionModel().addListSelectionListener(
+            new ListSelectionListener() {
+            	public void valueChanged(ListSelectionEvent e) {
+            		if (e.getValueIsAdjusting()) {
+            			if ((currentMission != null) && (currentMission instanceof TravelMission)) {
+            				TravelMission travelMission = (TravelMission) currentMission;
+            				int index = navpointTable.getSelectedRow();
+            				if (index > -1) {
+            					NavPoint navpoint = travelMission.getNavpoint(index); 
+            					navpointLayer.setSelectedNavpoint(navpoint);
+            					mapPane.showMap(navpoint.getLocation());
+            				}
+            				else navpointLayer.setSelectedNavpoint(null);
+            			}
+            		}
+            	}
+            });
         navpointScrollPane.setViewportView(navpointTable);
 	}
 	
@@ -156,6 +174,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 						trailLayer.setSingleVehicle(((VehicleMission) mission).getVehicle());
 					if (mission instanceof TravelMission) {
 						navpointLayer.setSingleMission((TravelMission) mission);
+						navpointLayer.setSelectedNavpoint(null);
 						navpointTableModel.updateNavpoints();
 					}
 					mapPane.showMap(currentMission.getPeople().get(0).getCoordinates());
@@ -166,6 +185,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 			currentMission = null;
 			trailLayer.setSingleVehicle(null);
 			navpointLayer.setSingleMission(null);
+			navpointLayer.setSelectedNavpoint(null);
 			navpointTableModel.updateNavpoints();
 			mapPane.showMap(null);
 		}

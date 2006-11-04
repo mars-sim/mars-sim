@@ -26,14 +26,17 @@ import org.mars_sim.msp.ui.standard.ImageLoader;
 public class NavpointMapLayer implements MapLayer {
 
 	// Static members
-	private static final String COLORED_ICON_NAME = "FlagBlue";
+	private static final String BLUE_ICON_NAME = "FlagBlue";
 	private static final String WHITE_ICON_NAME = "FlagWhite";
+	private static final String GREEN_ICON_NAME = "FlagGreen";
 	
 	// Domain members
 	private Component displayComponent;
 	private Icon navpointIconColor;
 	private Icon navpointIconWhite;
+	private Icon navpointIconSelected;
 	private Mission singleMission;
+	private NavPoint selectedNavpoint;
 
 	/**
 	 * Constructor
@@ -43,8 +46,9 @@ public class NavpointMapLayer implements MapLayer {
 		
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
-		navpointIconColor = ImageLoader.getIcon(COLORED_ICON_NAME);
+		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
 		navpointIconWhite = ImageLoader.getIcon(WHITE_ICON_NAME);
+		navpointIconSelected = ImageLoader.getIcon(GREEN_ICON_NAME);
 	}
 	
 	/**
@@ -54,6 +58,14 @@ public class NavpointMapLayer implements MapLayer {
 	 */
 	public void setSingleMission(Mission singleMission) {
 		this.singleMission = singleMission;
+	}
+	
+	/**
+	 * Sets a navpoint to be selected and displayed differently than the others.
+	 * @param selectedNavpoint the selected navpoint.
+	 */
+	public void setSelectedNavpoint(NavPoint selectedNavpoint) {
+		this.selectedNavpoint = selectedNavpoint;
 	}
 
 	/**
@@ -76,6 +88,9 @@ public class NavpointMapLayer implements MapLayer {
     				displayMission((TravelMission) mission, mapCenter, mapType, g);
     		}
     	}
+    	
+    	// Make sure selected navpoint is always on top.
+    	if (selectedNavpoint != null) displayNavpoint(selectedNavpoint, mapCenter, mapType, g);
 	}
 	
 	/**
@@ -108,7 +123,8 @@ public class NavpointMapLayer implements MapLayer {
 			
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;
-			if (TopoMarsMap.TYPE.equals(mapType)) navIcon = navpointIconWhite;
+			if (navpoint == selectedNavpoint) navIcon = navpointIconSelected;
+			else if (TopoMarsMap.TYPE.equals(mapType)) navIcon = navpointIconWhite;
 			else navIcon = navpointIconColor;
 			
 			// Determine the draw location for the icon.
