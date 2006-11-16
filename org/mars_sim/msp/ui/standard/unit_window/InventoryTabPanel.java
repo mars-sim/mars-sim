@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.75 2003-09-10
+ * @version 2.80 2003-11-16
  * @author Scott Davis
  */
 
@@ -10,8 +10,11 @@ package org.mars_sim.msp.ui.standard.unit_window;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.equipment.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.ItemResource;
+import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.ui.standard.*;
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -108,9 +111,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      */
     private class ResourceTableModel extends AbstractTableModel {
         
-        Inventory inventory;
-        java.util.Map resources;
-        java.util.List keys;
+        private Inventory inventory;
+        private java.util.Map resources;
+        private java.util.List keys;
+        private DecimalFormat decFormatter = new DecimalFormat("0.0");
         
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
@@ -119,10 +123,18 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             
             try {
             	keys.addAll(inventory.getAllAmountResourcesStored());
-            	Iterator i = keys.iterator();
-            	while (i.hasNext()) {
-            		AmountResource resource = (AmountResource) i.next();
+            	Iterator iAmount = keys.iterator();
+            	while (iAmount.hasNext()) {
+            		AmountResource resource = (AmountResource) iAmount.next();
             		resources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
+            	}
+            	
+            	Set itemResources = inventory.getAllItemResourcesStored();
+            	keys.addAll(itemResources);
+            	Iterator iItem = itemResources.iterator();
+            	while (iItem.hasNext()) {
+            		ItemResource resource = (ItemResource) iItem.next();
+            		resources.put(resource, new Integer(inventory.getItemResourceNum(resource)));
             	}
             }
             catch (InventoryException e) {}
@@ -144,13 +156,21 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Resource";
-            else if (columnIndex == 1) return "Mass (kg)";
+            else if (columnIndex == 1) return "# or Mass (kg)";
             else return "unknown";
         }
         
         public Object getValueAt(int row, int column) {
             if (column == 0) return keys.get(row);
-            else if (column == 1) return resources.get(keys.get(row));
+            else if (column == 1) {
+            	Resource resource = (Resource) keys.get(row);
+            	String result = resources.get(resource).toString();
+            	if (resource instanceof AmountResource) {
+            		double amount = ((Double) resources.get(resource)).doubleValue();
+            		result = decFormatter.format(amount);
+            	}
+            	return result;
+            }
             else return "unknown";
         }
   
@@ -164,6 +184,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         			AmountResource resource = (AmountResource) i.next();
         			newResources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
         		}
+        		
+        		Set itemResources = inventory.getAllItemResourcesStored();
+        		newResourceKeys.addAll(itemResources);
+            	Iterator iItem = itemResources.iterator();
+            	while (iItem.hasNext()) {
+            		ItemResource resource = (ItemResource) iItem.next();
+            		newResources.put(resource, new Integer(inventory.getItemResourceNum(resource)));
+            	}
             
         		if (!resources.equals(newResources)) {
         			resources = newResources;
