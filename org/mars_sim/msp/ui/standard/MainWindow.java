@@ -96,8 +96,8 @@ public class MainWindow extends JFrame implements WindowListener {
             chooser.setDialogTitle("Selected stored simulation");
             int returnVal = chooser.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-            	Simulation.instance().getMasterClock().loadSimulation(chooser.getSelectedFile());
             	desktop.resetDesktop();
+            	Simulation.instance().getMasterClock().loadSimulation(chooser.getSelectedFile());
             }
         }
         catch(Exception e) {
@@ -118,8 +118,8 @@ public class MainWindow extends JFrame implements WindowListener {
 	    	    	public void run() {
 	    	    		try {
 	    	    			desktop.openAnnouncementWindow("Creating new simulation...");
-	    	    			Simulation.createNewSimulation();
 	    	    			desktop.resetDesktop();
+	    	    			Simulation.createNewSimulation();
 	    	    			desktop.disposeAnnouncementWindow();
 	    	    		}
 	    	    		catch(Exception e) {
