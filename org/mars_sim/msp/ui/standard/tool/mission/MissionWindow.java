@@ -33,6 +33,9 @@ public class MissionWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super("Mission Tool", desktop);
 		
+		// Set window resizable to false.
+        setResizable(false);
+		
 		// Create content pane
         JPanel mainPane = new JPanel(new BorderLayout());
         mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));

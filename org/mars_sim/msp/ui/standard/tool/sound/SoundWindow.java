@@ -43,6 +43,9 @@ public class SoundWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super("Sound Tool", desktop);
 		
+		// Set window resizable to false.
+        setResizable(false);
+		
 		// Initialize data members.
 		soundPlayer = desktop.getSoundPlayer();
 		

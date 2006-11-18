@@ -46,6 +46,9 @@ public class TimeWindow extends ToolWindow {
         // Use TimeWindow constructor
         super("Time Tool", desktop);
 
+        // Set window resizable to false.
+        setResizable(false);
+        
         // Initialize data members
         master = Simulation.instance().getMasterClock();
         marsTime = master.getMarsClock();

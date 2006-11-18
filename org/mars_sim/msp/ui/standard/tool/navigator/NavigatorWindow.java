@@ -72,6 +72,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
         // use ToolWindow constructor
         super("Mars Navigator", desktop);
+        
+        // Set window resizable to false.
+        setResizable(false);
 
         // Prepare content pane
         JPanel mainPane = new JPanel();
