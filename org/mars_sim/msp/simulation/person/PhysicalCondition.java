@@ -419,8 +419,10 @@ public class PhysicalCondition implements Serializable {
      * @param illness THe Compliant that makes person dead.
      */
     public void setDead(HealthProblem illness) {
-        fatigue = 0;
-        hunger = 0;
+        fatigue = 0D;
+        hunger = 0D;
+        performance = 0D;
+        stress = 0D;
         alive = false;
 
         deathDetails = new DeathInfo(person);
