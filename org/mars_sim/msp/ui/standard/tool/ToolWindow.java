@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolWindow.java
- * @version 2.73 2003-07-28
+ * @version 2.80 2006-11-21
  * @author Scott Davis
  */
 
@@ -76,4 +76,9 @@ public abstract class ToolWindow extends JInternalFrame {
      * Update window.
      */
     public void update() {}
+    
+    /**
+	 * Prepares tool window for deletion.
+	 */
+	public void destroy() {}
 }

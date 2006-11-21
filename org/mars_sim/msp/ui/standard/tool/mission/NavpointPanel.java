@@ -198,6 +198,13 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		}
 	}
 	
+	/**
+	 * Prepares navpoint panel for deletion.
+	 */
+	public void destroy() {
+		mapPane.destroy();
+	}
+	
 	private class NavpointTableModel extends AbstractTableModel {
 		
 		private List navpoints;

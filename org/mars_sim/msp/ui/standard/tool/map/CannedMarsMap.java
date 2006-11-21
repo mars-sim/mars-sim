@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CannedMarsMap.java
- * @version 2.75 2003-12-19
+ * @version 2.80 2006-11-21
  * @author Greg Whelan
  */
 
@@ -10,7 +10,8 @@ package org.mars_sim.msp.ui.standard.tool.map;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JComponent;
 import org.mars_sim.msp.simulation.*;
 
@@ -27,7 +28,7 @@ public abstract class CannedMarsMap implements Map {
 	private static final double TWO_PI = Math.PI * 2D;
     
 	// Data members
-	private ArrayList surfaceColors = null;
+	protected List surfaceColors = null;
 	private JComponent displayArea = null;
 	private Coordinates currentCenter = null;
 	private Image mapImage = null;
@@ -39,7 +40,7 @@ public abstract class CannedMarsMap implements Map {
      * @param displayArea the display component.
      * @param surfaceColors the ArrayList containing all of the cached map colors.
      */
-    public CannedMarsMap(JComponent displayArea, ArrayList surfaceColors) {
+    public CannedMarsMap(JComponent displayArea, List surfaceColors) {
     	this.displayArea = displayArea;
     	this.surfaceColors = surfaceColors;
     }
@@ -51,18 +52,21 @@ public abstract class CannedMarsMap implements Map {
      * @param dataFile the map data filename within map_data.jar.
      * @param indexFile the map index filename within map_data.jar.
      */
-    public CannedMarsMap(JComponent displayArea, String dataFile, String indexFile) {
+    public CannedMarsMap(JComponent displayArea, String dataFile, String indexFile, List mapColors) {
         this.displayArea = displayArea;
         
-        // Load data files
-		try {
-			int[] index = loadIndexData(indexFile);
-			surfaceColors = loadMapData(dataFile, index);
+        if (mapColors == null) {
+        	// Load data files
+        	try {
+        		int[] index = loadIndexData(indexFile);
+        		surfaceColors = loadMapData(dataFile, index);
+        	}
+        	catch (IOException e) {
+        		System.err.println("Could not find map data files.");
+        		System.err.println(e.toString());
+        	}
 		}
-		catch (IOException e) {
-			System.err.println("Could not find map data files.");
-			System.err.println(e.toString());
-		}
+        else surfaceColors = mapColors;
     }
 
 	/**
@@ -98,7 +102,7 @@ public abstract class CannedMarsMap implements Map {
 	 * @return array list of map data
 	 * @throws IOException if map data cannot be loaded.
 	 */
-	private ArrayList loadMapData(String filename, int[] index) throws IOException {
+	private List loadMapData(String filename, int[] index) throws IOException {
      
 		// Load map data from map_data jar file.
 		ClassLoader loader = getClass().getClassLoader();
@@ -110,7 +114,7 @@ public abstract class CannedMarsMap implements Map {
 		DataInputStream mapReader = new DataInputStream(mapBuff);
         
 		// Create map colors array list.
-		ArrayList mapColors = new ArrayList(MAP_HEIGHT);
+		List mapColors = new ArrayList(MAP_HEIGHT);
         
 		// Create an array of colors for each pixel in map height.
 		for (int x=0; x < MAP_HEIGHT; x++) {

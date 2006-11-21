@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TopoMarsMap.java
- * @version 2.76 2004-06-02
+ * @version 2.80 2006-11-21
  * @author Scott Davis
  * @author Greg Whelan
  */
@@ -20,7 +20,7 @@ public class TopoMarsMap extends CannedMarsMap {
 
 	// The map type.
 	public static final String TYPE = "topographical map";
-	
+    
     /** 
      * Constructor
      * @param displayArea the display component

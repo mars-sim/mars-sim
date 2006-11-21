@@ -438,6 +438,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             UnitWindow window = (UnitWindow) i1.next();
             window.dispose();
             mainWindow.disposeUnitButton(window.getUnit());
+            window.destroy();
         }
         
         // Dispose tool windows
@@ -445,6 +446,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         while (i2.hasNext()) {
             ToolWindow window = (ToolWindow) i2.next();
             window.dispose();
+            window.destroy();
         }
 
         // Prepare tool windows

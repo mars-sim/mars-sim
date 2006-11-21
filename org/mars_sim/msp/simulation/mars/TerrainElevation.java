@@ -30,22 +30,24 @@ public class TerrainElevation {
 	private static final double ASCRAEUS_MONS_THETA = 4.459316D;
 
 	//	Data members
-	private ArrayList topoColors = null;
+	private static ArrayList topoColors = null;
 
     /** 
      * Constructor
      */
     TerrainElevation() {
     	
-		// Load data files
-		try {
-			int[] index = loadIndexData(INDEX_FILE);
-			topoColors = loadMapData(MAP_FILE, index);
-		}
-		catch (IOException e) {
-			System.err.println("Could not find map data files.");
-			System.err.println(e.toString());
-		}
+    	if (topoColors == null) {
+    		// Load data files
+    		try {
+    			int[] index = loadIndexData(INDEX_FILE);
+    			topoColors = loadMapData(MAP_FILE, index);
+    		}
+    		catch (IOException e) {
+    			System.err.println("Could not find map data files.");
+    			System.err.println(e.toString());
+    		}
+    	}
     }
     
 	/**

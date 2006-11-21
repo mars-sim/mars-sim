@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 2.75 2003-07-25
+ * @version 2.80 2006-11-21
  * @author Scott Davis
  */
 
@@ -109,4 +109,9 @@ public abstract class UnitWindow extends JInternalFrame {
             panel.update();
         }
     }
+    
+    /**
+     * Prepares unit window for deletion.
+     */
+    public void destroy() {}
 }

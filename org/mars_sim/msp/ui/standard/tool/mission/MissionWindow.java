@@ -24,6 +24,9 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  */
 public class MissionWindow extends ToolWindow {
 
+	private JList missionList;
+	private NavpointPanel navpointPane;
+	
 	/**
 	 * Constructor
 	 * @param desktop the main desktop panel.
@@ -45,7 +48,7 @@ public class MissionWindow extends ToolWindow {
         missionListPane.setPreferredSize(new Dimension(200, 200));
         mainPane.add(missionListPane, BorderLayout.WEST);
         
-        JList missionList = new JList(new MissionListModel());
+        missionList = new JList(new MissionListModel());
         missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
         
@@ -56,11 +59,19 @@ public class MissionWindow extends ToolWindow {
         missionList.addListSelectionListener(mainDetailPane);
         infoPane.add("Info", mainDetailPane);
         
-        NavpointPanel navpointPane = new NavpointPanel();
+        navpointPane = new NavpointPanel();
         missionList.addListSelectionListener(navpointPane);
         infoPane.add("Navpoints", navpointPane);
         
         // Pack window
         pack();
+	}
+	
+	/**
+	 * Prepares tool window for deletion.
+	 */
+	public void destroy() {
+		missionList.clearSelection();
+		navpointPane.destroy();
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapPanel.java
- * @version 2.80 2006-10-29
+ * @version 2.80 2006-11-21
  * @author Scott Davis
  */
 
@@ -37,6 +37,7 @@ public class MapPanel extends JPanel implements Runnable {
 	private SurfMarsMap surfMap;
 	private TopoMarsMap topoMap;
 	private USGSMarsMap usgsMap;
+	private boolean update;
 	
 	public MapPanel() {
 		super();
@@ -50,6 +51,7 @@ public class MapPanel extends JPanel implements Runnable {
 		mapError = false;
 		wait = false;
 		mapLayers = new ArrayList();
+		update = true;
 		
 		setPreferredSize(new Dimension(300, 300));
 		setBackground(Color.BLACK);
@@ -141,6 +143,7 @@ public class MapPanel extends JPanel implements Runnable {
 	    				map.drawMap(centerCoords);
 	    			}
 	    			catch (Exception e) {
+	    				e.printStackTrace(System.err);
 	    				mapError = true;
 	    				mapErrorMessage = e.getMessage();
 	    			}
@@ -167,7 +170,7 @@ public class MapPanel extends JPanel implements Runnable {
     }
 	
 	public void run() {
-		while (true) {
+		while (update) {
         	try {
                 Thread.sleep(1000);
             } 
@@ -186,11 +189,12 @@ public class MapPanel extends JPanel implements Runnable {
         }
         else {
         	if (mapError) {
-            	System.err.println("mapError");
+            	System.err.println("mapError: " + mapErrorMessage);
                 // Display previous map image
                 if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
                 
                 // Draw error message
+                if (mapErrorMessage == null) mapErrorMessage = "Null Map"; 
                 drawCenteredMessage(mapErrorMessage, g);
             }
         	else {
@@ -237,5 +241,16 @@ public class MapPanel extends JPanel implements Runnable {
     
         // Draw message
         g.drawString(message, x, y);
+    }
+    
+    /**
+     * Prepares map panel for deletion.
+     */
+    public void destroy() {
+    	map = null;
+    	surfMap = null;
+    	topoMap = null;
+    	usgsMap = null;
+    	update = false;
     }
 }
