@@ -112,9 +112,12 @@ public class RelationshipManager implements Serializable {
 	 * @param relationshipType the type of relationship (see Relationship static members)
 	 */
 	public void addRelationship(Person person1, Person person2, String relationshipType) {
-		Relationship relationship = new Relationship(person1, person2, relationshipType);
-		relationshipGraph.addEdge(relationship, person1, person2, false);
-		count++;
+		try {
+			Relationship relationship = new Relationship(person1, person2, relationshipType);
+			relationshipGraph.addEdge(relationship, person1, person2, false);
+			count++;
+		}
+		catch (NoSuchNodeException e) {}
 	}
 	
 	/**
@@ -307,7 +310,8 @@ public class RelationshipManager implements Serializable {
 				
 				// Change the person's opinion of the other person.
 				Relationship relationship = getRelationship(person, localPerson);
-				relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
+				if (relationship != null)
+					relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
 				// System.out.println(person.getName() + " has changed opinion of " + localPerson.getName() + " by " + changeAmount);
 			}
 		}	
