@@ -447,7 +447,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         while (i2.hasNext()) {
             ToolWindow window = (ToolWindow) i2.next();
             window.dispose();
-            // window.destroy();
+            window.destroy();
         }
         toolWindows.clear();
 

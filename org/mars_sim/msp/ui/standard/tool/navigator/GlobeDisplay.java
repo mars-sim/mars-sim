@@ -45,6 +45,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     private boolean useUSGSMap;  // True if USGS surface map is to be used
     private int[] shadingArray; // Array used to generate day/night shading image
     private boolean showDayNightShading; // True if day/night shading is to be used
+    private boolean update; // True if globe should be updated.
 
     private static final double HALF_PI = (Math.PI / 2);
 
@@ -70,6 +71,7 @@ class GlobeDisplay extends JComponent implements Runnable {
 
         // Initialize global variables
         centerCoords = new Coordinates(HALF_PI, 0D);
+        update = true;
         topo = false;
         recreate = true;
         useUSGSMap = false;
@@ -117,7 +119,9 @@ class GlobeDisplay extends JComponent implements Runnable {
     }
 
     /** the run method for the runnable interface */
-    public void run() { refreshLoop(); }
+    public void run() { 
+    	while (update) refreshLoop(); 
+    }
 
     /** loop, refreshing the globe display when necessary */
     public void refreshLoop() {
@@ -299,5 +303,16 @@ class GlobeDisplay extends JComponent implements Runnable {
      */
     public void setDayNightTracking(boolean showDayNightShading) {
         this.showDayNightShading = showDayNightShading;
+    }
+    
+    /**
+     * Prepare globe for deletion.
+     *
+     */
+    public void destroy() {
+    	update = false;
+    	marsSphere = null;
+    	topoSphere = null;
+    	centerCoords = null;
     }
 }

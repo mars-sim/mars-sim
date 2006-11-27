@@ -408,4 +408,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     		}
         }
     }
+    
+    public void destroy() {
+    	map.destroy();
+    	globeNav.destroy();
+    }
 }

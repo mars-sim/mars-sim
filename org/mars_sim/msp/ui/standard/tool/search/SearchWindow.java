@@ -21,8 +21,7 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  * The SearchWindow is a tool window that allows the user to search
  * for individual units by name and category.
  */
-public class SearchWindow extends ToolWindow implements ActionListener,
-        ItemListener, MouseListener, DocumentListener {
+public class SearchWindow extends ToolWindow {
 
     // Data members
     private JComboBox searchForSelect; // Category selecter
@@ -73,7 +72,11 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         String[] categoryStrings = { "People", "Settlements", "Vehicles" };
         searchForSelect = new JComboBox(categoryStrings);
         searchForSelect.setSelectedIndex(0);
-        searchForSelect.addItemListener(this);
+        searchForSelect.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent event) {
+            	changeCategory((String) searchForSelect.getSelectedItem());
+            }
+        });
         searchForPane.add(searchForSelect);
 
         // Create select unit panel
@@ -82,7 +85,15 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Create select text field
         selectTextField = new JTextField();
-        selectTextField.getDocument().addDocumentListener(this);
+        selectTextField.getDocument().addDocumentListener(new DocumentListener() {
+        	public void changedUpdate(DocumentEvent event) {}
+            public void insertUpdate(DocumentEvent event) {
+                searchTextChange();
+            }
+            public void removeUpdate(DocumentEvent event) {
+                searchTextChange();
+            }
+        });
         selectUnitPane.add(selectTextField, "North");
 
         // Create unit list
@@ -92,7 +103,19 @@ public class SearchWindow extends ToolWindow implements ActionListener,
         while (people.hasNext()) unitListModel.addElement(people.next());
         unitList = new JList(unitListModel);
         unitList.setSelectedIndex(0);
-        unitList.addMouseListener(this);
+        unitList.addMouseListener(new MouseAdapter() {
+            public void mouseReleased(MouseEvent event) {
+                if (event.getClickCount() == 2) search();
+                else if (!lockUnitList) {
+                    // Change search text to selected name.
+                    String selectedUnitName = ((Unit) unitList.getSelectedValue()).getName();
+                    lockSearchText = true;
+                    if (!selectTextField.getText().equals(selectedUnitName))
+                        selectTextField.setText(selectedUnitName);
+                    lockSearchText = false;
+                }
+            }
+        });
         selectUnitPane.add(new JScrollPane(unitList), "Center");
     
         // Create bottom panel
@@ -123,7 +146,11 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Create search button
         JButton searchButton = new JButton("Search");
-        searchButton.addActionListener(this);
+        searchButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {
+                search();
+            }
+        });
         searchButtonPane.add(searchButton);
 
         // Pack window
@@ -168,13 +195,14 @@ public class SearchWindow extends ToolWindow implements ActionListener,
             statusLabel.setText("Enter The Name of a " + tempName);
     }
 
-    /** ItemListener method overridden */
-    public void itemStateChanged(ItemEvent event) {
-
+    /**
+     * Change the category of the unit list.
+     * @param category
+     */
+    private void changeCategory(String category) {
         // Change unitList to the appropriate category list
         unitListModel.clear();
         UnitCollection units = new UnitCollection();
-        String category = (String) searchForSelect.getSelectedItem();
         UnitManager unitManager = Simulation.instance().getUnitManager();
         if (category.equals("People"))
             units.mergePeople(unitManager.getPeople().sortByName());
@@ -192,42 +220,6 @@ public class SearchWindow extends ToolWindow implements ActionListener,
 
         // Clear statusLabel.
         statusLabel.setText(" ");
-    }
-
-    /** ActionListener method overridden */
-    public void actionPerformed(ActionEvent event) {
-        search();
-    }
-
-    // MouseListener methods overridden
-    public void mouseClicked(MouseEvent event) {}
-    public void mousePressed(MouseEvent event) {}
-    public void mouseEntered(MouseEvent event) {}
-    public void mouseExited(MouseEvent event) {}
-
-    public void mouseReleased(MouseEvent event) {
-        if(event.getClickCount() == 2) {
-            search();
-            return;
-        }
-
-        if (!lockUnitList) {
-            // Change search text to selected name.
-            String selectedUnitName = ((Unit) unitList.getSelectedValue()).getName();
-            lockSearchText = true;
-            if (!selectTextField.getText().equals(selectedUnitName))
-                selectTextField.setText(selectedUnitName);
-            lockSearchText = false;
-        }
-    }
-
-    // DocumentListener methods overridden
-    public void changedUpdate(DocumentEvent event) {}
-    public void insertUpdate(DocumentEvent event) {
-        searchTextChange();
-    }
-    public void removeUpdate(DocumentEvent event) {
-        searchTextChange();
     }
 
     /** 
