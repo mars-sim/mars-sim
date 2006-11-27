@@ -317,7 +317,10 @@ class TableTab extends MonitorTab {
     public void removeTab() {
         super.removeTab();
         table = null;
-        sortedModel = null;
+        if (sortedModel != null) {
+        	sortedModel.destroy();
+        	sortedModel = null;
+        }
     }
 
     private void setSortColumn(int index) {

@@ -122,4 +122,11 @@ class MarsCalendarDisplay extends JComponent {
              }
          }
     }
+    
+    /**
+     * Prepare for deletion.
+     */
+    public void destroy() {
+    	marsTime = null;
+    }
 }

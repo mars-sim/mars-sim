@@ -47,6 +47,7 @@ abstract class MonitorTab extends JPanel {
      * Remove this view.
      */
     public void removeTab() {
+    	model.destroy();
         model = null;
     }
 

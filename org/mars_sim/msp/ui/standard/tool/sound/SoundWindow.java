@@ -94,4 +94,11 @@ public class SoundWindow extends ToolWindow {
         // Pack window
         pack();
 	}
+	
+	/**
+	 * Prepare tool window for deletion.
+	 */
+	public void destroy() {
+		soundPlayer = null;
+	}
 }

@@ -204,7 +204,6 @@ public class MainWindow extends JFrame implements WindowListener {
             MasterClock clock = Simulation.instance().getMasterClock();
             clock.saveSimulation(fileLocn);
             while (clock.isSavingSimulation()) Thread.sleep(100L);
-            desktop.resetDesktop();
             desktop.disposeAnnouncementWindow();
 		}
 		catch(Exception e) {

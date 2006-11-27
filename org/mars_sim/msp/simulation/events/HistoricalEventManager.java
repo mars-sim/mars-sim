@@ -49,12 +49,19 @@ public class HistoricalEventManager {
     }
 
     /**
-     * Add a listener
-     *
-     * @param newListener The listener to add.
+     * Add a historical event listener
+     * @param newListener listener to add.
      */
     public void addListener(HistoricalEventListener newListener) {
-        listeners.add(newListener);
+    	if (!listeners.contains(newListener)) listeners.add(newListener);
+    }
+    
+    /**
+     * Removes a historical event listener.
+     * @param oldListener listener to remove.
+     */
+    public void removeListener(HistoricalEventListener oldListener) {
+    	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
 
     /**

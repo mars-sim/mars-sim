@@ -14,6 +14,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -45,7 +46,8 @@ public class MonitorWindow extends ToolWindow implements Runnable {
     private JTabbedPane tabsSection;
     private JLabel rowCount;
     private ArrayList tabs = new ArrayList();
-    private Thread updateThread;     // Model update thread
+    private Thread updateThread; // Model update thread
+    private boolean update;
     private EventTab eventsTab; // Tab showing historical events.
 
 
@@ -56,6 +58,8 @@ public class MonitorWindow extends ToolWindow implements Runnable {
 
         // Use TableWindow constructor
         super("Monitor Tool", desktop);
+        
+        update = true;
         
         setMaximizable(true);
 
@@ -300,14 +304,7 @@ public class MonitorWindow extends ToolWindow implements Runnable {
     public void run() {
 
         // Endless refresh loop
-        while (true) {
-
-            // Pause for 1 second between display refreshes
-            try {
-                Thread.sleep(REFRESH_PERIOD);
-            }
-            catch (InterruptedException e) {
-            }
+        while (update) {
 
             // Update window
             MonitorTab selected = getSelected();
@@ -315,6 +312,23 @@ public class MonitorWindow extends ToolWindow implements Runnable {
                 String status = selected.update();
                 rowCount.setText(status);
             }
+            
+            // Pause for 1 second between display refreshes
+            try {
+                Thread.sleep(REFRESH_PERIOD);
+            }
+            catch (InterruptedException e) {
+            }
         }
+    }
+    
+    /**
+     * Prepare tool window for deletion.
+     */
+    public void destroy() {
+    	update = false;
+    	Iterator i = tabs.iterator();
+    	while (i.hasNext()) ((MonitorTab) i.next()).removeTab();
+    	tabs.clear();
     }
 }

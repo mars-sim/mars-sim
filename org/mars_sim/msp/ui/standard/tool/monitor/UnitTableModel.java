@@ -206,4 +206,11 @@ abstract public class UnitTableModel extends AbstractTableModel
 
         return units.size() + statusSuffix;
     }
+    
+    /**
+     * Prepares the model for deletion.
+     */
+    public void destroy() {
+    	units = null;
+    }
 }

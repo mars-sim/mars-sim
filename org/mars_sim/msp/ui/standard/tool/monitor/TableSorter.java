@@ -309,4 +309,11 @@ public class TableSorter extends AbstractTableModel
         indexes[i] = indexes[j];
         indexes[j] = tmp;
     }
+    
+    /**
+     * Prepares the model for deletion.
+     */
+    public void destroy() {
+    	sourceModel = null;
+    }
 }

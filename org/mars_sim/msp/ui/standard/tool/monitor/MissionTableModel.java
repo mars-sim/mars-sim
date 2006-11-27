@@ -156,9 +156,6 @@ public class MissionTableModel extends AbstractTableModel implements
      * @return A status string for the contents of the model.
      */
 	public String update() {
-		
-		// if (missionCache.size() > 0) fireTableRowsUpdated(0, missionCache.size() - 1);
-		
 		return missionCache.size() + " missions";
 	}
 	
@@ -279,4 +276,14 @@ public class MissionTableModel extends AbstractTableModel implements
 		
 		return result;
 	}
+    
+    /**
+     * Prepares the model for deletion.
+     */
+    public void destroy() {
+    	for (int x = 0; x < missionCache.size(); x++) {
+    		removeMission((Mission) missionCache.get(0));
+    	}
+    	missionCache = null;
+    }
 }

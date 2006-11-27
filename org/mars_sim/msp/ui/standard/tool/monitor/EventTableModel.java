@@ -316,4 +316,13 @@ public class EventTableModel extends AbstractTableModel
     	displaySupply = display;
     	updateCachedEvents();
     }
+    
+    /**
+     * Prepares the model for deletion.
+     */
+    public void destroy() {
+    	manager.removeListener(this);
+    	manager = null;
+    	cachedEvents = null;
+    }
 }

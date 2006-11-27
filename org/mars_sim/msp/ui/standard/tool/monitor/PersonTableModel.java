@@ -267,4 +267,15 @@ public class PersonTableModel extends UnitTableModel {
 
         return result;
     }
+    
+    /**
+     * Prepares the model for deletion.
+     */
+    public void destroy() {
+    	super.destroy();
+    	unitManager = null;
+    	settlement = null;
+    	vehicle = null;
+    	mission = null;
+    }
 }

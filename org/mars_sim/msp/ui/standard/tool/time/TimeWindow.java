@@ -192,4 +192,15 @@ public class TimeWindow extends ToolWindow {
         southernSeasonLabel.setText("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)); 
         calendarDisplay.update();
     }
+    
+    /**
+     * Prepare tool window for deletion.
+     */
+    public void destroy() {
+    	master = null;
+    	marsTime = null;
+    	earthTime = null;
+    	uptimer = null;
+    	calendarDisplay.destroy();
+    }
 }

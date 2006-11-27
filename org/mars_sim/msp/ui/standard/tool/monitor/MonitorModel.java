@@ -39,4 +39,9 @@ interface MonitorModel extends TableModel {
      * @return A status string for the contents of the model.
      */
     public String update();
+    
+    /**
+     * Prepares the model for deletion.
+     */
+    public void destroy();
 }
