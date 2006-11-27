@@ -184,12 +184,12 @@ public class TimeWindow extends ToolWindow {
      * Update window 
      */
     public void update() {
-       martianTimeLabel.setText(marsTime.getTimeStamp());
-       earthTimeLabel.setText(earthTime.getTimeStamp());
-       uptimeLabel.setText(uptimer.getUptime());
-       martianMonthLabel.setText(marsTime.getMonthName());
-       northernSeasonLabel.setText("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE));
-       southernSeasonLabel.setText("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)); 
-       calendarDisplay.update();
+        martianTimeLabel.setText(marsTime.getTimeStamp());
+        earthTimeLabel.setText(earthTime.getTimeStamp());
+        uptimeLabel.setText(uptimer.getUptime());
+        martianMonthLabel.setText(marsTime.getMonthName());
+        northernSeasonLabel.setText("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE));
+        southernSeasonLabel.setText("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)); 
+        calendarDisplay.update();
     }
 }

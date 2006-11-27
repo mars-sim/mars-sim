@@ -13,6 +13,7 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.time.MasterClock;
 
 /** 
  * The MainWindow class is the primary UI frame for the project. It
@@ -25,6 +26,8 @@ public class MainWindow extends JFrame implements WindowListener {
     private MainDesktopPane desktop; // The main desktop
 
     private Thread newSimThread;
+    private Thread loadSimThread;
+    private Thread saveSimThread;
     
     /** 
      * Constructor
@@ -91,78 +94,124 @@ public class MainWindow extends JFrame implements WindowListener {
      * Load a previously saved simulation.
      */
     public void loadSimulation() {
-        try {
-            JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-            chooser.setDialogTitle("Selected stored simulation");
-            int returnVal = chooser.showOpenDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-            	desktop.resetDesktop();
-            	Simulation.instance().getMasterClock().loadSimulation(chooser.getSelectedFile());
-            }
+        if ((loadSimThread == null) || !loadSimThread.isAlive()) {
+        	loadSimThread = new Thread() {
+        		public void run() {
+        			loadSimulationProcess();
+        		}
+        	};
+        	loadSimThread.start();
         }
-        catch(Exception e) {
-            e.printStackTrace();
+        else {
+        	loadSimThread.interrupt();
+        }
+    }
+    
+    /**
+     * Performs the process of loading a simulation.
+     */
+    private void loadSimulationProcess() {
+    	try {
+			JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
+            chooser.setDialogTitle("Selected stored simulation");
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            	desktop.openAnnouncementWindow("Loading simulation...");
+            	MasterClock clock = Simulation.instance().getMasterClock();
+            	clock.loadSimulation(chooser.getSelectedFile());
+            	while (clock.isLoadingSimulation()) Thread.sleep(100L);
+            	desktop.resetDesktop();
+            	desktop.disposeAnnouncementWindow();
+            }
+		}
+		catch(Exception e) {
 	        JOptionPane.showMessageDialog(null, "Problem loading simulation",
 				e.toString(), JOptionPane.ERROR_MESSAGE);
+	        System.err.println("Problem loading simulation: " + e);
+	        e.printStackTrace();
 	    }
     }
 
     /**
-     * Create a new simulation to execute. This displays the new simulation
-     * dialog.
+     * Create a new simulation.
      */
     public void newSimulation() {
-	    try {
-	    	if ((newSimThread == null) || !newSimThread.isAlive()) {
-	    		newSimThread = new Thread() {
-	    	    	public void run() {
-	    	    		try {
-	    	    			desktop.openAnnouncementWindow("Creating new simulation...");
-	    	    			desktop.resetDesktop();
-	    	    			Simulation.createNewSimulation();
-	    	    			desktop.disposeAnnouncementWindow();
-	    	    		}
-	    	    		catch(Exception e) {
-	    	    			e.printStackTrace(System.err);
-	    	    		}
-	    	    	}
-	    	    };
-	    	    newSimThread.start();
-	    	}
-	    	else {
-	    		newSimThread.interrupt();
-	    	}
+	    if ((newSimThread == null) || !newSimThread.isAlive()) {
+	    	newSimThread = new Thread() {
+	        	public void run() {
+	        		newSimulationProcess();
+	        	}
+	        };
+	        newSimThread.start();
 	    }
-	    catch (Exception e) {
-	    	System.err.println("Problem creating new simulation: " + e);
+	    else {
+	    	newSimThread.interrupt();
 	    }
+    }
+    
+    /**
+     * Performs the process of creating a new simulation.
+     *
+     */
+    private void newSimulationProcess() {
+    	try {
+			desktop.openAnnouncementWindow("Creating new simulation...");
+			Simulation.createNewSimulation();
+			desktop.resetDesktop();
+			desktop.disposeAnnouncementWindow();
+		}
+		catch(Exception e) {
+			System.err.println("Problem creating new simulation: " + e);
+			e.printStackTrace(System.err);
+		}
     }
 
     /**
      * Save the current simulation. This display a FileChooser to select the
      * location to save the simulation if the default is not to be used.
      *
-     * @param useDefault Shoul dhte user be allowed to override location.
+     * @param useDefault Should the user be allowed to override location.
      */
-    public void saveSimulation(boolean useDefault) {
-        File fileLocn = null;
-
-        if (!useDefault) {
-            JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-            chooser.setDialogTitle("Selected save location");
-            int returnVal = chooser.showSaveDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) fileLocn = chooser.getSelectedFile();
-            else return;
-        }
-
-        // Attempt a save
-        try {
-        	Simulation.instance().getMasterClock().saveSimulation(fileLocn);
-        }
-        catch(Exception e) {
-            e.printStackTrace();
+    public void saveSimulation(final boolean useDefault) {
+	    if ((saveSimThread == null) || !saveSimThread.isAlive()) {
+	    	saveSimThread = new Thread() {
+	        	public void run() {
+	        		saveSimulationProcess(useDefault);
+	        	}
+	        };
+	        saveSimThread.start();
+	    }
+	    else {
+	    	saveSimThread.interrupt();
+	    }
+    }
+    
+    /**
+     * Performs the process of saving a simulation.
+     */
+    private void saveSimulationProcess(boolean useDefault) {
+    	try {
+    		File fileLocn = null;
+    		
+    		if (!useDefault) {
+    			JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
+    			chooser.setDialogTitle("Selected save location");
+    			if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) 
+    				fileLocn = chooser.getSelectedFile();
+    			else return;
+    		}
+            
+    		desktop.openAnnouncementWindow("Saving simulation...");
+            MasterClock clock = Simulation.instance().getMasterClock();
+            clock.saveSimulation(fileLocn);
+            while (clock.isSavingSimulation()) Thread.sleep(100L);
+            desktop.resetDesktop();
+            desktop.disposeAnnouncementWindow();
+		}
+		catch(Exception e) {
 	        JOptionPane.showMessageDialog(null, "Problem saving simulation",
 				e.toString(), JOptionPane.ERROR_MESSAGE);
+	        System.err.println("Problem saving simulation: " + e);
+	        e.printStackTrace();
 	    }
     }
     

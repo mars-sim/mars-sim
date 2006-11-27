@@ -86,12 +86,28 @@ public class MasterClock implements Runnable, Serializable {
     }
     
     /**
+     * Checks if in the process of loading a simulation.
+     * @return true if loading simulation.
+     */
+    public boolean isLoadingSimulation() {
+    	return loadSimulation;
+    }
+    
+    /**
      * Sets the save simulation flag and the file to save to.
      * @param file save to file or null if default file.
      */
     public void saveSimulation(File file) {
     	saveSimulation = true;
     	this.file = file;
+    }
+    
+    /**
+     * Checks if in the process of saving a simulation.
+     * @return true if saving simulation.
+     */
+    public boolean isSavingSimulation() {
+    	return saveSimulation;
     }
     
     /**
@@ -184,17 +200,19 @@ public class MasterClock implements Runnable, Serializable {
 			try {
         		if (saveSimulation) {
         			// Save the simulation to a file.
-        			saveSimulation = false;
 					Simulation.instance().saveSimulation(file);
+					saveSimulation = false;
 				}
 				else if (loadSimulation) {
 					// Load the simulation from a file.
-					loadSimulation = false;
 					Simulation.instance().loadSimulation(file);
+					loadSimulation = false;
 				}
         	}
         	catch (Exception e) {
         		e.printStackTrace(System.err);
+        		saveSimulation = false;
+        		loadSimulation = false;
         	}
         	
         	// Exit program if exitProgram flag is true.
