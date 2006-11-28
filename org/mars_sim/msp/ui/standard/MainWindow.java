@@ -79,6 +79,9 @@ public class MainWindow extends JFrame implements WindowListener {
 
         // Show frame
         setVisible(true);
+        
+        // Open up navigator tool initially.
+        desktop.openToolWindow("Mars Navigator");
     }
     
     /**
@@ -113,7 +116,7 @@ public class MainWindow extends JFrame implements WindowListener {
     private void loadSimulationProcess() {
     	try {
 			JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-            chooser.setDialogTitle("Selected stored simulation");
+            chooser.setDialogTitle("Select stored simulation");
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             	desktop.openAnnouncementWindow("Loading simulation...");
             	MasterClock clock = Simulation.instance().getMasterClock();
@@ -121,6 +124,9 @@ public class MainWindow extends JFrame implements WindowListener {
             	while (clock.isLoadingSimulation()) Thread.sleep(100L);
             	desktop.resetDesktop();
             	desktop.disposeAnnouncementWindow();
+            	
+            	// Open navigator tool after loading.
+            	desktop.openToolWindow("Mars Navigator");
             }
 		}
 		catch(Exception e) {
@@ -158,6 +164,9 @@ public class MainWindow extends JFrame implements WindowListener {
 			Simulation.createNewSimulation();
 			desktop.resetDesktop();
 			desktop.disposeAnnouncementWindow();
+			
+			// Open navigator tool after creating new simulation.
+			desktop.openToolWindow("Mars Navigator");
 		}
 		catch(Exception e) {
 			System.err.println("Problem creating new simulation: " + e);
@@ -194,7 +203,7 @@ public class MainWindow extends JFrame implements WindowListener {
     		
     		if (!useDefault) {
     			JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-    			chooser.setDialogTitle("Selected save location");
+    			chooser.setDialogTitle("Select save location");
     			if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) 
     				fileLocn = chooser.getSelectedFile();
     			else return;
