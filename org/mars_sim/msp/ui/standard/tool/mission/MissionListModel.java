@@ -64,4 +64,10 @@ public class MissionListModel extends AbstractListModel implements
 		if ((index > -1) && (index < missions.size())) return missions.get(index);
 		else return null;
 	}
+	
+	public void destroy() {
+		missions.clear();
+		missions = null;
+		Simulation.instance().getMissionManager().removeListener(this);
+	}
 }

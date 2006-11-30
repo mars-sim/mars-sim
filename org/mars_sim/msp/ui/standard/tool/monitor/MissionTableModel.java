@@ -285,5 +285,6 @@ public class MissionTableModel extends AbstractTableModel implements
     		removeMission((Mission) missionCache.get(0));
     	}
     	missionCache = null;
+    	Simulation.instance().getMissionManager().removeListener(this);
     }
 }

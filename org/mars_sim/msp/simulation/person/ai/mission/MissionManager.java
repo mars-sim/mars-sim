@@ -46,7 +46,7 @@ public class MissionManager implements Serializable {
     public MissionManager() {
         // Initialize data members
         missions = new ArrayList();
-        listeners = new ArrayList();
+        listeners = Collections.synchronizedList(new ArrayList());
         
         // Initialize cache values.
         personCache = null;
@@ -60,8 +60,17 @@ public class MissionManager implements Serializable {
      * @param newListener The listener to add.
      */
     public void addListener(MissionManagerListener newListener) {
-    	if (listeners == null) listeners = new ArrayList();
-        listeners.add(newListener);
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+        if (!listeners.contains(newListener)) listeners.add(newListener);
+    }
+    
+    /**
+     * Remove a listener
+     * @param oldListener the listener to remove.
+     */
+    public void removeListener(MissionManagerListener oldListener) {
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
 
     /** 
@@ -110,9 +119,11 @@ public class MissionManager implements Serializable {
             missions.add(newMission);
             
             // Update listeners.
-            if (listeners == null) listeners = new ArrayList();
-            Iterator i = listeners.iterator();
-            while (i.hasNext()) ((MissionManagerListener) i.next()).addMission(newMission);
+            if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+            synchronized(listeners) {
+            	Iterator i = listeners.iterator();
+            	while (i.hasNext()) ((MissionManagerListener) i.next()).addMission(newMission);
+            }
             // System.out.println("MissionManager: Added new mission - " + newMission.getName());
         }
     }
@@ -126,9 +137,11 @@ public class MissionManager implements Serializable {
             missions.remove(oldMission);
             
             // Update listeners.
-            if (listeners == null) listeners = new ArrayList();
-            Iterator i = listeners.iterator();
-            while (i.hasNext()) ((MissionManagerListener) i.next()).removeMission(oldMission);
+            if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+            synchronized(listeners) {
+            	Iterator i = listeners.iterator();
+            	while (i.hasNext()) ((MissionManagerListener) i.next()).removeMission(oldMission);
+            }
             // System.out.println("MissionManager: Removed old mission - " + oldMission.getName());
         }
     } 

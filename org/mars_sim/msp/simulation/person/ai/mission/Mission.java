@@ -8,8 +8,9 @@
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,7 @@ public abstract class Mission implements Serializable {
         phaseEnded = false;
         this.minPeople = minPeople;
         missionCapacity = Integer.MAX_VALUE;
-        listeners = new ArrayList();
+        listeners = Collections.synchronizedList(new ArrayList());
 
 		// Created mission starting event.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(startingPerson, this, MissionHistoricalEvent.START);
@@ -89,7 +90,7 @@ public abstract class Mission implements Serializable {
      * @param newListener the listener to add.
      */
     public final void addListener(MissionListener newListener) {
-    	if (listeners == null) listeners = new ArrayList();
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
@@ -98,7 +99,7 @@ public abstract class Mission implements Serializable {
      * @param oldListener the listener to remove.
      */
     public final void removeListener(MissionListener oldListener) {
-    	if (listeners == null) listeners = new ArrayList();
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
     
@@ -107,9 +108,11 @@ public abstract class Mission implements Serializable {
      * @param updateType the update type.
      */
     protected final void fireMissionUpdate(String updateType) {
-    	if (listeners == null) listeners = new ArrayList();
-    	Iterator i = listeners.iterator();
-    	while (i.hasNext()) ((MissionListener) i.next()).missionUpdate(new MissionEvent(this, updateType));
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	synchronized(listeners) {
+    		Iterator i = listeners.iterator();
+    		while (i.hasNext()) ((MissionListener) i.next()).missionUpdate(new MissionEvent(this, updateType));
+    	}
     }
     
     /**

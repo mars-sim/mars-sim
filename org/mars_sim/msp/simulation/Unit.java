@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public abstract class Unit implements Serializable {
         setContainerUnit(null);
 	    
 	    // Initialize unit listeners.
-	    listeners = new ArrayList();
+	    listeners = Collections.synchronizedList(new ArrayList());
     }
 
     /** 
@@ -215,7 +216,7 @@ public abstract class Unit implements Serializable {
      * @param oldListener the listener to remove.
      */
     public final void removeUnitListener(UnitListener oldListener) {
-    	if (listeners == null) listeners = new ArrayList();
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
     
@@ -224,8 +225,10 @@ public abstract class Unit implements Serializable {
      * @param updateType the update type.
      */
     public final void fireUnitUpdate(String updateType) {
-    	if (listeners == null) listeners = new ArrayList();
-    	Iterator i = listeners.iterator();
-    	while (i.hasNext()) ((UnitListener) i.next()).unitUpdate(new UnitEvent(this, updateType));
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	synchronized(listeners) {
+    		Iterator i = listeners.iterator();
+    		while (i.hasNext()) ((UnitListener) i.next()).unitUpdate(new UnitEvent(this, updateType));
+    	}
     }
 }

@@ -89,7 +89,7 @@ public class MasterClock implements Runnable, Serializable {
      * @param newListener the listener to add.
      */
     public final void addClockListener(ClockListener newListener) {
-    	if (listeners == null) listeners = new ArrayList();
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
@@ -98,7 +98,7 @@ public class MasterClock implements Runnable, Serializable {
      * @param oldListener the listener to remove.
      */
     public final void removeClockListener(ClockListener oldListener) {
-    	if (listeners == null) listeners = new ArrayList();
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
     

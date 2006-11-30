@@ -72,6 +72,7 @@ public class MissionWindow extends ToolWindow {
 	 */
 	public void destroy() {
 		missionList.clearSelection();
+		((MissionListModel) missionList.getModel()).destroy();
 		navpointPane.destroy();
 	}
 }
