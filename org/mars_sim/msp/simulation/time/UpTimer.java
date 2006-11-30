@@ -17,15 +17,10 @@ public class UpTimer implements Serializable {
     // Data members
     private long uptime = 0;
 
-    /** Constructs an UpTimer object */
-    public UpTimer() {
-    
-    }
-
     /**
      * This method adds a period of time to the running time of the 
      * simulation.
-     * @param period Extra time the simulation is running.
+     * @param period Extra time the simulation is running. (milliseconds)
      */
     public void addTime(long period) {
         uptime += period;
@@ -36,7 +31,6 @@ public class UpTimer implements Serializable {
      */
     public String getUptime() {
         
-
         int hoursInt = (int) ((double) uptime / 1000D / 60D / 60D);
         
         int minutesInt = (int) ((double) uptime / 1000D / 60D) - (hoursInt * 60);

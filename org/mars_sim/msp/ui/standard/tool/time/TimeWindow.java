@@ -20,7 +20,7 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  * The TimeWindow is a tool window that displays the current 
  * Martian and Earth time 
  */
-public class TimeWindow extends ToolWindow {
+public class TimeWindow extends ToolWindow implements ClockListener {
 
     private final static int RATIO_SCALE = 200;
 
@@ -51,6 +51,7 @@ public class TimeWindow extends ToolWindow {
         
         // Initialize data members
         master = Simulation.instance().getMasterClock();
+        master.addClockListener(this);
         marsTime = master.getMarsClock();
         earthTime = master.getEarthClock();
         uptimer = master.getUpTimer(); 
@@ -179,28 +180,29 @@ public class TimeWindow extends ToolWindow {
         Dimension windowSize = getSize();
         setSize(new Dimension((int)windowSize.getWidth() + 10, (int) windowSize.getHeight()));
     }
-
-    /** 
-     * Update window 
-     */
-    public void update() {
-        martianTimeLabel.setText(marsTime.getTimeStamp());
+    
+	/**
+	 * Change in time.
+	 * param time the amount of time changed. (millisols)
+	 */
+	public void clockPulse(double time) {
+		martianTimeLabel.setText(marsTime.getTimeStamp());
         earthTimeLabel.setText(earthTime.getTimeStamp());
         uptimeLabel.setText(uptimer.getUptime());
         martianMonthLabel.setText(marsTime.getMonthName());
         northernSeasonLabel.setText("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE));
         southernSeasonLabel.setText("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)); 
         calendarDisplay.update();
-    }
+	}
     
     /**
      * Prepare tool window for deletion.
      */
     public void destroy() {
+    	master.removeClockListener(this);
     	master = null;
     	marsTime = null;
     	earthTime = null;
     	uptimer = null;
-    	calendarDisplay.destroy();
     }
 }

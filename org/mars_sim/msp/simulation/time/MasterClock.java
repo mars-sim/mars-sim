@@ -9,6 +9,10 @@ package org.mars_sim.msp.simulation.time;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
@@ -31,6 +35,7 @@ public class MasterClock implements Runnable, Serializable {
     private transient volatile boolean saveSimulation; // Flag for saving a simulation.
     private transient volatile File file;            // The file to save or load the simulation.
     private transient volatile boolean exitProgram;  // Flag for ending the simulation program.
+    private transient List listeners; // Clock listeners.
 
     // Sleep duration in milliseconds 
     public final static long TIME_PULSE_LENGTH = 1000L;
@@ -53,6 +58,9 @@ public class MasterClock implements Runnable, Serializable {
 
         // Create an Uptime Timer
         uptimer = new UpTimer();
+        
+        // Create listener list.
+        listeners = Collections.synchronizedList(new ArrayList());
     }
 
     /** Returns the Martian clock
@@ -74,6 +82,24 @@ public class MasterClock implements Runnable, Serializable {
      */
     public UpTimer getUpTimer() {
         return uptimer;
+    }
+    
+    /**
+     * Adds a clock listener
+     * @param newListener the listener to add.
+     */
+    public final void addClockListener(ClockListener newListener) {
+    	if (listeners == null) listeners = new ArrayList();
+        if (!listeners.contains(newListener)) listeners.add(newListener);
+    }
+    
+    /**
+     * Removes a clock listener
+     * @param oldListener the listener to remove.
+     */
+    public final void removeClockListener(ClockListener oldListener) {
+    	if (listeners == null) listeners = new ArrayList();
+    	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
     
     /**
@@ -180,13 +206,19 @@ public class MasterClock implements Runnable, Serializable {
 				double timePulse = getTimePulse();
 
 				long startTime = System.nanoTime();
-            	
-				// Send simulation a clock pulse representing the time pulse length (in millisols).
-				Simulation.instance().clockPulse(timePulse);
         		
 				// Add time pulse length to Earth and Mars clocks. 
 				earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
 				marsTime.addTime(timePulse);
+				
+				synchronized(listeners) {
+					// Send clock pulse to listeners.
+					Iterator i = listeners.iterator();
+					while (i.hasNext()) ((ClockListener) i.next()).clockPulse(timePulse);
+				}
+				
+				// Send simulation a clock pulse representing the time pulse length (in millisols).
+				// Simulation.instance().clockPulse(timePulse);
 				
 				long endTime = System.nanoTime();
 				lastTimeDiff = (endTime - startTime) / 1000000L;

@@ -14,13 +14,14 @@ import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.medical.MedicalManager;
-import org.mars_sim.msp.simulation.time.*;
+import org.mars_sim.msp.simulation.time.ClockListener;
+import org.mars_sim.msp.simulation.time.MasterClock;
 
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
  */
-public class Simulation implements Serializable {
+public class Simulation implements ClockListener, Serializable {
 
 	// Version string.
 	public final static String VERSION = "2.80";
@@ -198,6 +199,7 @@ public class Simulation implements Serializable {
 	public void start() {
 		if (clockThread == null) {
 			clockThread = new Thread(masterClock, "Master Clock"); 
+			masterClock.addClockListener(this);
 			clockThread.start();
 		}
 	}
@@ -206,7 +208,10 @@ public class Simulation implements Serializable {
 	 * Stop the simulation.
 	 */
 	public void stop() {
-		if (masterClock != null) masterClock.stop();
+		if (masterClock != null) {
+			masterClock.stop();
+			masterClock.removeClockListener(this);
+		}
 		clockThread = null;
 	}
 	

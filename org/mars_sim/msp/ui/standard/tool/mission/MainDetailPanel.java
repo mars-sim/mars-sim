@@ -69,7 +69,6 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		this.desktop = desktop;
 		
 		setLayout(new BorderLayout());
-		// setPreferredSize(new Dimension(300, 300));
 		
 		Box mainPane = Box.createVerticalBox();
 		mainPane.setBorder(new MarsPanelBorder());
