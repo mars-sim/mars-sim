@@ -15,17 +15,19 @@ public class UnitEvent extends EventObject {
 
 	// Data members
 	private String type; // The event type.
+	private Object target; // The event target object, if any.
 	
 	/**
 	 * Constructor
 	 * @param source the object throwing the event.
 	 * @param type the type of event.
 	 */
-	public UnitEvent(Unit source, String type) {
+	public UnitEvent(Unit source, String type, Object target) {
 		// Use EventObject constructor
 		super(source);
 		
 		this.type = type;
+		this.target = target;
 	}
 	
 	/**
@@ -34,6 +36,14 @@ public class UnitEvent extends EventObject {
 	 */
 	public String getType() {
 		return type;
+	}
+	
+	/**
+	 * Gets the target object of the event.
+	 * @return target object or null if none.
+	 */
+	public Object getTarget() {
+		return target;
 	}
 	
 	/**

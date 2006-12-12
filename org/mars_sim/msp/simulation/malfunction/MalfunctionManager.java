@@ -14,12 +14,16 @@ import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.structure.building.Building;
 
 /**
  * The MalfunctionManager class manages the current malfunctions in a unit.
  */
 public class MalfunctionManager implements Serializable {
 
+	// Unit update events.
+	public static final String MALFUNCTION_EVENT = "malfunction";
+	
     private static double DEFAULT_MAINTENANCE_WORK_TIME = 1000D;
     
     // Data members
@@ -250,6 +254,14 @@ public class MalfunctionManager implements Serializable {
         Malfunction malfunction = factory.getMalfunction(scope);
         if (malfunction != null) {
             malfunctions.add(malfunction);
+            
+            try {
+            	getUnit().fireUnitUpdate(MALFUNCTION_EVENT, malfunction);
+            }
+            catch (Exception e) {
+            	e.printStackTrace(System.err);
+            }
+            
             HistoricalEvent newEvent = new MalfunctionEvent(entity, malfunction, false);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
@@ -296,6 +308,14 @@ public class MalfunctionManager implements Serializable {
             while (i.hasNext()) {
                 Malfunction item = (Malfunction)i.next();
                 malfunctions.remove(item);
+                
+                try {
+                	getUnit().fireUnitUpdate(MALFUNCTION_EVENT, item);
+                }
+                catch (Exception e) {
+                	e.printStackTrace(System.err);
+                }
+                
                 HistoricalEvent newEvent = new MalfunctionEvent(entity, item, true);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
             }
@@ -529,5 +549,17 @@ public class MalfunctionManager implements Serializable {
      */
     public double getTemperatureModifier() {
         return temperatureModifier;
+    }
+    
+    /**
+     * Gets the unit associated with this malfunctionable.
+     * @return associated unit.
+     * @throws Exception if error finding associated unit.
+     */
+    private Unit getUnit() throws Exception {
+    	if (entity instanceof Unit) return (Unit) entity;
+    	else if (entity instanceof Building) 
+    		return ((Building) entity).getBuildingManager().getSettlement();
+    	else throw new Exception("Could not find unit associated with malfunctionable.");
     }
 }

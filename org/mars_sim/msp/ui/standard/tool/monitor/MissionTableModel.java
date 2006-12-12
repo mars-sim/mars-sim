@@ -66,7 +66,7 @@ public class MissionTableModel extends AbstractTableModel implements
         missionCache = manager.getMissions();
         manager.addListener(this);
         Iterator i = missionCache.iterator();
-        while (i.hasNext()) ((Mission) i.next()).addListener(this);
+        while (i.hasNext()) ((Mission) i.next()).addMissionListener(this);
     }
     
 	/**
@@ -86,7 +86,7 @@ public class MissionTableModel extends AbstractTableModel implements
 	public void addMission(Mission mission) {
 		if (!missionCache.contains(mission)) {
 			missionCache.add(mission);
-			mission.addListener(this);
+			mission.addMissionListener(this);
 			
 			// Inform listeners of new row
             fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
@@ -101,7 +101,7 @@ public class MissionTableModel extends AbstractTableModel implements
 		if (missionCache.contains(mission)) {
 			int index = missionCache.indexOf(mission);
 			missionCache.remove(mission);
-			mission.removeListener(this);
+			mission.removeMissionListener(this);
 			
 			// Inform listeners of new row
             fireTableRowsDeleted(index, index);
@@ -169,14 +169,16 @@ public class MissionTableModel extends AbstractTableModel implements
 			int column1 = -1;
 			int column2 = -1;
 			
-			if (event.getType().equals(Mission.NAME_EVENT)) column1 = TYPE;
-			else if (event.getType().equals(Mission.DESCRIPTION_EVENT)) column1 = DESCRIPTION;
-			else if (event.getType().equals(Mission.PHASE_EVENT)) column1 = PHASE;
-			else if (event.getType().equals(Mission.PEOPLE_EVENT)) column1 = MEMBER_NUM;
-			else if (event.getType().equals(TravelMission.NAVPOINTS_EVENT)) column1 = NAVPOINT_NUM;
-			else if (event.getType().equals(VehicleMission.VEHICLE_EVENT)) column1 = VEHICLE;
-			else if (event.getType().equals(RoverMission.STARTING_SETTLEMENT_EVENT)) column1 = STARTING_SETTLEMENT;
-			else if (event.getType().equals(VehicleMission.DISTANCE_EVENT)) {
+			String eventType = event.getType();
+			if (eventType.equals(Mission.NAME_EVENT)) column1 = TYPE;
+			else if (eventType.equals(Mission.DESCRIPTION_EVENT)) column1 = DESCRIPTION;
+			else if (eventType.equals(Mission.PHASE_EVENT)) column1 = PHASE;
+			else if (eventType.equals(Mission.ADD_MEMBER_EVENT) || 
+					eventType.equals(Mission.REMOVE_MEMBER_EVENT)) column1 = MEMBER_NUM;
+			else if (eventType.equals(TravelMission.NAVPOINTS_EVENT)) column1 = NAVPOINT_NUM;
+			else if (eventType.equals(VehicleMission.VEHICLE_EVENT)) column1 = VEHICLE;
+			else if (eventType.equals(RoverMission.STARTING_SETTLEMENT_EVENT)) column1 = STARTING_SETTLEMENT;
+			else if (eventType.equals(VehicleMission.DISTANCE_EVENT)) {
 				column1 = TRAVELLED_DISTANCE;
 				column2 = REMAINING_DISTANCE;
 			}

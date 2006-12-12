@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.78 2005-08-14
+ * @version 2.80 2006-12-04
  * @author Scott Davis
  */
 
@@ -20,6 +20,10 @@ import org.mars_sim.msp.simulation.person.ai.task.*;
  */
 public class Mind implements Serializable {
 
+	// Unit events
+	public static final String JOB_EVENT = "job event";	
+	public static final String MISSION_EVENT = "mission event";	
+	
     // Data members
     private Person person; // The person owning this mind.
     private TaskManager taskManager; // The person's task manager.
@@ -77,8 +81,7 @@ public class Mind implements Serializable {
     public void takeAction(double time) throws Exception {
         
 		// Check if this person needs to get a new job or change jobs.
-        JobManager jobManager = Simulation.instance().getJobManager();
-		if (!jobLock) setJob(jobManager.getNewJob(person), false);
+		if (!jobLock) setJob(JobManager.getNewJob(person), false);
     	
         if ((mission != null) && mission.isDone()) mission = null;
         boolean activeMission = (mission != null);
@@ -146,6 +149,7 @@ public class Mind implements Serializable {
     public void setJob(Job newJob, boolean locked) {
     	job = newJob;
     	jobLock = locked;
+    	person.fireUnitUpdate(JOB_EVENT, newJob);
     }
 
     /** Returns true if person has an active mission.
@@ -177,6 +181,7 @@ public class Mind implements Serializable {
     		if (mission != null) mission.removePerson(person);
     		mission = newMission;
     		if (newMission != null) newMission.addPerson(person);
+    		person.fireUnitUpdate(MISSION_EVENT, newMission);
     	}
     }
 

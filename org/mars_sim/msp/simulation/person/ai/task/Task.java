@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.78 2005-08-14
+ * @version 2.80 2006-12-04
  * @author Scott Davis
  */
 
@@ -86,7 +86,7 @@ public abstract class Task implements Serializable, Comparable {
      */
     public void endTask() {
         done = true;
-        person.fireUnitUpdate(TASK_ENDED_EVENT);
+        person.fireUnitUpdate(TASK_ENDED_EVENT, this);
         
         // Create ending task historical event if needed.
         if (getCreateEvents()) {
@@ -117,7 +117,7 @@ public abstract class Task implements Serializable, Comparable {
      */
     protected void setName(String name) {
     	this.name = name;
-    	person.fireUnitUpdate(TASK_NAME_EVENT);
+    	person.fireUnitUpdate(TASK_NAME_EVENT, name);
     }
 
     /** Returns a string that is a description of what the task is currently doing.
@@ -137,7 +137,7 @@ public abstract class Task implements Serializable, Comparable {
      */
     protected void setDescription(String description) {
     	this.description = description;
-    	person.fireUnitUpdate(TASK_DESC_EVENT);
+    	person.fireUnitUpdate(TASK_DESC_EVENT, description);
     }
 
     /** Returns a boolean whether this task should generate events
@@ -173,7 +173,7 @@ public abstract class Task implements Serializable, Comparable {
     	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
     	else if (phases.contains(newPhase)) {
     		phase = newPhase;
-    		person.fireUnitUpdate(TASK_PHASE_EVENT);
+    		person.fireUnitUpdate(TASK_PHASE_EVENT, newPhase);
     	}
     	else throw new Exception("newPhase: " + newPhase + " is not a valid phase for this task.");
     }
@@ -201,7 +201,7 @@ public abstract class Task implements Serializable, Comparable {
         if (subTask != null) subTask.addSubTask(newSubTask);
         else {
         	subTask = newSubTask;
-        	person.fireUnitUpdate(TASK_SUBTASK_EVENT);
+        	person.fireUnitUpdate(TASK_SUBTASK_EVENT, newSubTask);
         }
     }
 

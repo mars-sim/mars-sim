@@ -9,10 +9,13 @@ package org.mars_sim.msp.ui.standard.tool.monitor;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects.
@@ -77,6 +80,10 @@ public class SettlementTableModel extends UnitTableModel {
         columnNames[ICE] = "Ice";
         columnTypes[ICE] = Integer.class;
     };
+    
+    // Data members
+    private UnitManagerListener unitManagerListener;
+    private Map resourceCache;
 
     /**
      * Constructs a SettlementTableModel model that displays all Settlements
@@ -88,6 +95,8 @@ public class SettlementTableModel extends UnitTableModel {
         super("All Settlement", " settlements", columnNames, columnTypes);
 
 		setSource(unitManager.getSettlements());
+		unitManagerListener = new LocalUnitManagerListener();
+        unitManager.addUnitManagerListener(unitManagerListener);
     }
 
     /**
@@ -99,6 +108,7 @@ public class SettlementTableModel extends UnitTableModel {
         Object result = null;
         Settlement settle = (Settlement)getUnit(rowIndex);
         BuildingManager bMgr = settle.getBuildingManager();
+        Map resourceMap = (Map) resourceCache.get(settle);
 
         // Invoke the appropriate method, switch is the best solution
         // althought disliked by some
@@ -108,43 +118,23 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-            	try {
-            		double water = settle.getInventory().getAmountResourceStored(AmountResource.WATER);
-            		result = new Integer((int) water);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.WATER);
             } break;
 
             case FOOD : {
-            	try {
-            		double food = settle.getInventory().getAmountResourceStored(AmountResource.FOOD);
-            		result = new Integer((int) food);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.FOOD);
             } break;
 
             case OXYGEN : {
-            	try {
-            		double oxygen = settle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
-            		result = new Integer((int) oxygen);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.OXYGEN);
             } break;
 
             case METHANE : {
-            	try {
-            		double methane = settle.getInventory().getAmountResourceStored(AmountResource.METHANE);
-            		result = new Integer((int) methane);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.METHANE);
             } break;
 
             case ROCK_SAMPLES : {
-            	try {
-            		double rockSamples = settle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
-            		result = new Integer((int) rockSamples);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.ROCK_SAMPLES);
 	        } break;
 
             case MALFUNCTION: {
@@ -197,35 +187,19 @@ public class SettlementTableModel extends UnitTableModel {
             } break;
 
             case HYDROGEN : {
-            	try {
-            		double hydrogen = settle.getInventory().getAmountResourceStored(AmountResource.HYDROGEN);
-            		result = new Integer((int) hydrogen);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.HYDROGEN);
             } break;
 
             case WASTE_WATER : {
-            	try {
-            		double wasteWater = settle.getInventory().getAmountResourceStored(AmountResource.WASTE_WATER);
-            		result = new Integer((int) wasteWater);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.WASTE_WATER);
             } break;
             
             case CO2 : {
-            	try {
-            		double co2 = settle.getInventory().getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
-            		result = new Integer((int) co2);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.CARBON_DIOXIDE);
             } break;
             
             case ICE : {
-            	try {
-            		double ice = settle.getInventory().getAmountResourceStored(AmountResource.ICE);
-            		result = new Integer((int) ice);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.ICE);
             } break;
         }
 
@@ -233,21 +207,150 @@ public class SettlementTableModel extends UnitTableModel {
     }
     
 	/**
+	 * Catch unit update event.
+	 * @param event the unit event.
+	 */
+	public void unitUpdate(UnitEvent event) {
+		Unit unit = (Unit) event.getSource();
+		int unitIndex = getUnitIndex(unit);
+		Object target = event.getTarget();
+		String eventType = event.getType();
+
+		int columnNum = -1;
+		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
+		else if (eventType.equals(Inventory.INVENTORY_STORING_UNIT_EVENT) || 
+				eventType.equals(Inventory.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+			if (target instanceof Person) columnNum = POPULATION;
+			else if (target instanceof Vehicle) columnNum = PARKED;
+		}
+		else if (eventType.equals(PowerGrid.GENERATED_POWER_EVENT)) columnNum = POWER;
+		else if (eventType.equals(BuildingManager.ADD_BUILDING_EVENT)) {
+			if (target instanceof Farming) columnNum = GREENHOUSES;
+		}
+		else if (eventType.equals(Farming.CROP_EVENT)) columnNum = CROPS;
+		else if (eventType.equals(MalfunctionManager.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
+		else if (eventType.equals(Inventory.INVENTORY_RESOURCE_EVENT)) {
+			int tempColumnNum = -1;
+			if (target.equals(AmountResource.OXYGEN)) tempColumnNum = OXYGEN;
+			else if (target.equals(AmountResource.HYDROGEN)) tempColumnNum = HYDROGEN;
+			else if (target.equals(AmountResource.CARBON_DIOXIDE)) tempColumnNum = CO2;
+			else if (target.equals(AmountResource.METHANE)) tempColumnNum = METHANE;
+			else if (target.equals(AmountResource.FOOD)) tempColumnNum = FOOD;
+			else if (target.equals(AmountResource.WATER)) tempColumnNum = WATER;
+			else if (target.equals(AmountResource.WASTE_WATER)) tempColumnNum = WASTE_WATER;
+			else if (target.equals(AmountResource.ROCK_SAMPLES)) tempColumnNum = ROCK_SAMPLES;
+			else if (target.equals(AmountResource.ICE)) tempColumnNum = ICE;
+			if (tempColumnNum > -1) {
+				// Only update cell if value as int has changed.
+				int currentValue = ((Integer) getValueAt(unitIndex, tempColumnNum)).intValue();
+				int newValue = getResourceStored(unit, (AmountResource) target).intValue();
+				if (currentValue != newValue) {
+					columnNum = tempColumnNum;
+					Map resourceMap = (Map) resourceCache.get(unit);
+					resourceMap.put(target, new Integer(newValue));
+				}
+			}
+		}
+			
+		if (columnNum > -1) fireTableCellUpdated(unitIndex, columnNum);
+	}
+    
+	/**
 	 * Defines the source data from this table
 	 */
 	private void setSource(SettlementCollection source) {
 		SettlementIterator iter = source.iterator();
-		while(iter.hasNext()) {
-			add(iter.next());
-		}
+		while(iter.hasNext()) addUnit(iter.next());
 	}
 	
-	/**
-	 * The Model should be updated to reflect any changes in the underlying
-	 * data.
-	 * @return A status string for the contents of the model.
-	 */
-	public String update() {
-		return update(Simulation.instance().getUnitManager().getSettlements());
-	}
+    /**
+     * Add a unit to the model.
+     * @param newUnit Unit to add to the model.
+     */
+    protected void addUnit(Unit newUnit) {
+    	if (resourceCache == null) resourceCache = new HashMap();
+    	if (!resourceCache.containsKey(newUnit)) {
+    		Map resourceMap = new HashMap(9);
+    		resourceMap.put(AmountResource.FOOD, getResourceStored(newUnit, AmountResource.FOOD));
+    		resourceMap.put(AmountResource.OXYGEN, getResourceStored(newUnit, AmountResource.OXYGEN));
+    		resourceMap.put(AmountResource.WATER, getResourceStored(newUnit, AmountResource.WATER));
+    		resourceMap.put(AmountResource.HYDROGEN, getResourceStored(newUnit, AmountResource.HYDROGEN));
+    		resourceMap.put(AmountResource.METHANE, getResourceStored(newUnit, AmountResource.METHANE));
+    		resourceMap.put(AmountResource.ROCK_SAMPLES, getResourceStored(newUnit, AmountResource.ROCK_SAMPLES));
+    		resourceMap.put(AmountResource.WASTE_WATER, getResourceStored(newUnit, AmountResource.WASTE_WATER));
+    		resourceMap.put(AmountResource.ICE, getResourceStored(newUnit, AmountResource.ICE));
+    		resourceMap.put(AmountResource.CARBON_DIOXIDE, getResourceStored(newUnit, AmountResource.CARBON_DIOXIDE));
+    		resourceCache.put(newUnit, resourceMap);
+    	}
+    	super.addUnit(newUnit);
+    }
+    
+    /**
+     * Remove a unit to the model.
+     * @param oldUnit Unit to remove from the model.
+     */
+    protected void removeUnit(Unit oldUnit) {
+    	if (resourceCache == null) resourceCache = new HashMap();
+    	if (resourceCache.containsKey(oldUnit)) {
+    		Map resourceMap = (Map) resourceCache.get(oldUnit);
+    		resourceMap.clear();
+    		resourceCache.remove(oldUnit);
+    	}
+    	super.removeUnit(oldUnit);
+    }
+    
+    /**
+     * Gets the integer amount of resources stored in a unit.
+     * @param unit the unit to check.
+     * @param resource the resource to check.
+     * @return integer amount of resource.
+     */
+    private Integer getResourceStored(Unit unit, AmountResource resource) {
+    	Integer result = null;	
+    	try {
+    		Inventory inv = unit.getInventory();
+    		result = new Integer((int) inv.getAmountResourceStored(resource));
+    	}
+    	catch (InventoryException e) {
+    		e.printStackTrace(System.err);
+    	}
+    	return result;
+    }
+	
+    /**
+     * Prepares the model for deletion.
+     */
+    public void destroy() {
+    	super.destroy();
+    	
+    	UnitManager unitManager = Simulation.instance().getUnitManager();
+    	unitManager.removeUnitManagerListener(unitManagerListener);
+    	unitManagerListener = null;
+    	
+    	resourceCache.clear();
+    	resourceCache = null;
+    }
+	
+    /**
+     * UnitManagerListener inner class.
+     */
+    private class LocalUnitManagerListener implements UnitManagerListener {
+    	
+    	/**
+    	 * Catch unit manager update event.
+    	 * @param event the unit event.
+    	 */
+    	public void unitManagerUpdate(UnitManagerEvent event) {
+    		Unit unit = event.getUnit();
+    		String eventType = event.getEventType();
+    		if (unit instanceof Settlement) {
+    			if (eventType.equals(UnitManagerEvent.ADD_UNIT)) {
+    				if (!containsUnit(unit)) addUnit(unit);
+    			}
+    			else if (eventType.equals(UnitManagerEvent.REMOVE_UNIT)) {
+    				if (containsUnit(unit)) removeUnit(unit);
+    			}
+    		}
+    	}
+    }
 }

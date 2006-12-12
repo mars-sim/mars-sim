@@ -560,6 +560,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     		clearRemainingNavpoints();
     		addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination, 
     				"emergency destination: " + newDestination.getName()));
+    		associateAllMembersWithSettlement(newDestination);
     	}
     	else {
     		// Set the emergency beacon on the rover and end mission.

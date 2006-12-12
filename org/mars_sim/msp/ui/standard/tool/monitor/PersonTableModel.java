@@ -7,9 +7,22 @@
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitEvent;
+import org.mars_sim.msp.simulation.UnitListener;
+import org.mars_sim.msp.simulation.UnitManager;
+import org.mars_sim.msp.simulation.UnitManagerEvent;
+import org.mars_sim.msp.simulation.UnitManagerListener;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
+import org.mars_sim.msp.simulation.person.ai.Mind;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
 import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
@@ -22,21 +35,21 @@ import org.mars_sim.msp.simulation.vehicle.Crewable;
 public class PersonTableModel extends UnitTableModel {
 
     // Column indexes
-    private final static int  NAME = 0;           // Person name column
-    private final static int  GENDER = 1;         // Gender column
-    private final static int  LOCATION = 2;       // Location column
-    private final static int  PERSONALITY = 3;    // Personality column
-    private final static int  HUNGER = 4;         // Hunger column
-    private final static int  FATIGUE = 5;        // Fatigue column
-	private final static int  STRESS = 6;         // Stress column
-    private final static int  PERFORMANCE = 7;    // Performance conlumn
-    private final static int  JOB = 8;            // Job column
-    private final static int  TASK = 9;           // Task column
-    private final static int  MISSION = 10;        // Mission column
-    private final static int  HEALTH = 11;         // Health column
-    private final static int  COLUMNCOUNT = 12;   // The number of Columns
-    private static String columnNames[];          // Names of Columns
-    private static Class columnTypes[];           // Types of Columns
+    private final static int NAME = 0;           // Person name column
+    private final static int GENDER = 1;         // Gender column
+    private final static int LOCATION = 2;       // Location column
+    private final static int PERSONALITY = 3;    // Personality column
+    private final static int HUNGER = 4;         // Hunger column
+    private final static int FATIGUE = 5;        // Fatigue column
+	private final static int STRESS = 6;         // Stress column
+    private final static int PERFORMANCE = 7;    // Performance conlumn
+    private final static int JOB = 8;            // Job column
+    private final static int TASK = 9;           // Task column
+    private final static int MISSION = 10;       // Mission column
+    private final static int HEALTH = 11;        // Health column
+    private final static int COLUMNCOUNT = 12;   // The number of Columns
+    private static String columnNames[];         // Names of Columns
+    private static Class columnTypes[];          // Types of Columns
     
     /**
      * The static initialisier creates the name & type arrays.
@@ -80,10 +93,13 @@ public class PersonTableModel extends UnitTableModel {
     private String sourceType; // The type of source for the people table.
     
     // List sources.
-    private UnitManager unitManager;
     private Crewable vehicle;
     private Settlement settlement;
     private Mission mission;
+    private UnitListener crewListener;
+    private UnitListener settlementListener;
+    private MissionListener missionListener;
+    private UnitManagerListener unitManagerListener;
 
     /**
      * Constructs a PersonTableModel object that displays all people in the simulation.
@@ -93,12 +109,13 @@ public class PersonTableModel extends UnitTableModel {
         super("All People", " people", columnNames, columnTypes);
 
 		sourceType = ALL_PEOPLE;
-		this.unitManager = unitManager;
         setSource(unitManager.getPeople());
+        unitManagerListener = new LocalUnitManagerListener();
+        unitManager.addUnitManagerListener(unitManagerListener);
     }
 
     /**
-     * Constructs a PersonTableModel object that displays all Person from the
+     * Constructs a PersonTableModel object that displays all people from the
      * specified vehicle.
      * @param vehicle Monitored vehicle Person objects.
      */
@@ -109,6 +126,8 @@ public class PersonTableModel extends UnitTableModel {
 		sourceType = VEHICLE_CREW;
 		this.vehicle = vehicle;
         setSource(vehicle.getCrew());
+        crewListener = new LocalCrewListener();
+        ((Unit) vehicle).addUnitListener(crewListener);
     }
     
     /**
@@ -125,10 +144,14 @@ public class PersonTableModel extends UnitTableModel {
     	if (allAssociated) {
     		sourceType = SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
     		setSource(settlement.getAllAssociatedPeople());
+    		settlementListener = new AssociatedSettlementListener();
+        	settlement.addUnitListener(settlementListener);
     	}
     	else {
 			sourceType = SETTLEMENT_INHABITANTS;
 			setSource(settlement.getInhabitants());
+			settlementListener = new InhabitantSettlementListener();
+	    	settlement.addUnitListener(settlementListener);
     	}
     }
 
@@ -144,6 +167,8 @@ public class PersonTableModel extends UnitTableModel {
 		sourceType = MISSION_PEOPLE;
 		this.mission = mission;
 	    setSource(mission.getPeople());
+	    missionListener = new LocalMissionListener();
+	    mission.addMissionListener(missionListener);
     }
 
     /**
@@ -151,16 +176,39 @@ public class PersonTableModel extends UnitTableModel {
      */
     private void setSource(PersonCollection source) {
         PersonIterator iter = source.iterator();
-        while(iter.hasNext()) {
-            add(iter.next());
-        }
+        while(iter.hasNext()) addUnit(iter.next());
     }
+	
+	/**
+	 * Catch unit update event.
+	 * @param event the unit event.
+	 */
+	public void unitUpdate(UnitEvent event) {
+		Unit unit = (Unit) event.getSource();
+		String eventType = event.getType();
+
+		int columnNum = -1;
+		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
+		else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
+		else if (eventType.equals(PhysicalCondition.HUNGER_EVENT)) columnNum = HUNGER;
+		else if (eventType.equals(PhysicalCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
+		else if (eventType.equals(PhysicalCondition.STRESS_EVENT)) columnNum = STRESS;
+		else if (eventType.equals(PhysicalCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
+		else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
+		else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
+		else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
+		else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) || 
+				eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
+			
+		fireTableCellUpdated(getUnitIndex(unit), columnNum);
+	}
     
 	/**
-	 * The Model should be updated to reflect any changes in the underlying
+	 * The model should be updated to reflect any changes in the underlying
 	 * data.
 	 * @return A status string for the contents of the model.
 	 */
+	/*
 	public String update() {
 		String statusString = "";
 		
@@ -175,6 +223,7 @@ public class PersonTableModel extends UnitTableModel {
 		
 		return statusString;
 	}
+	*/
 
     /**
      * Return the value of a Cell
@@ -273,9 +322,124 @@ public class PersonTableModel extends UnitTableModel {
      */
     public void destroy() {
     	super.destroy();
-    	unitManager = null;
-    	settlement = null;
-    	vehicle = null;
-    	mission = null;
+    	
+    	if (sourceType.equals(ALL_PEOPLE)) {
+    		UnitManager unitManager = Simulation.instance().getUnitManager();
+    		unitManager.removeUnitManagerListener(unitManagerListener);
+    		unitManagerListener = null;
+    	}
+    	else if (sourceType.equals(VEHICLE_CREW)) {
+    		((Unit) vehicle).removeUnitListener(crewListener);
+    		crewListener = null;
+    		vehicle = null;
+    	}
+    	else if (sourceType.equals(MISSION_PEOPLE)) {
+    		mission.removeMissionListener(missionListener);
+    		missionListener = null;
+    		mission = null;
+    	}
+    	else {
+    		settlement.removeUnitListener(settlementListener);
+    		settlementListener = null;
+    		settlement = null;
+    	}
+    }
+    
+    /**
+     * UnitListener inner class for crewable vehicle.
+     */
+    private class LocalCrewListener implements UnitListener {
+    	
+    	/**
+    	 * Catch unit update event.
+    	 * @param event the unit event.
+    	 */
+    	public void unitUpdate(UnitEvent event) {
+    		String eventType = event.getType();
+    		
+    		if (eventType.equals(Inventory.INVENTORY_STORING_UNIT_EVENT)) {
+    			if (event.getTarget() instanceof Person) addUnit((Unit) event.getTarget());
+    		}
+    		else if (eventType.equals(Inventory.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+    			if (event.getTarget() instanceof Person) removeUnit((Unit) event.getTarget());
+    		}
+    	}
+    }
+    
+    /**
+     * MissionListener inner class.
+     */
+    private class LocalMissionListener implements MissionListener {
+    	
+    	/**
+    	 * Catch mission update event.
+    	 * @param event the mission event.
+    	 */
+    	public void missionUpdate(MissionEvent event) {
+    		String eventType = event.getType();
+    		if (eventType.equals(Mission.ADD_MEMBER_EVENT)) addUnit((Unit) event.getTarget());
+    		else if (eventType.equals(Mission.REMOVE_MEMBER_EVENT)) removeUnit((Unit) event.getTarget());
+    	}
+    }
+    
+    /**
+     * UnitManagerListener inner class.
+     */
+    private class LocalUnitManagerListener implements UnitManagerListener {
+    	
+    	/**
+    	 * Catch unit manager update event.
+    	 * @param event the unit event.
+    	 */
+    	public void unitManagerUpdate(UnitManagerEvent event) {
+    		Unit unit = event.getUnit();
+    		String eventType = event.getEventType();
+    		if (unit instanceof Person) {
+    			if (eventType.equals(UnitManagerEvent.ADD_UNIT)) {
+    				if (!containsUnit(unit)) addUnit(unit);
+    			}
+    			else if (eventType.equals(UnitManagerEvent.REMOVE_UNIT)) {
+    				if (containsUnit(unit)) removeUnit(unit);
+    			}
+    		}
+    	}
+    }
+    
+    /**
+     * UnitListener inner class for settlements for all inhabitants list.
+     */
+    private class InhabitantSettlementListener implements UnitListener {
+    	
+    	/**
+    	 * Catch unit update event.
+    	 * @param event the unit event.
+    	 */
+    	public void unitUpdate(UnitEvent event) {
+    		String eventType = event.getType();
+    		if (eventType.equals(Inventory.INVENTORY_STORING_UNIT_EVENT)) {
+    			if (event.getTarget() instanceof Person) addUnit((Unit) event.getTarget());
+    		}
+    		else if (eventType.equals(Inventory.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+    			if (event.getTarget() instanceof Person) removeUnit((Unit) event.getTarget());
+    		}
+    	}
+    }
+    
+    /**
+     * UnitListener inner class for settlements for associated people list.
+     */
+    private class AssociatedSettlementListener implements UnitListener {
+    	
+    	/**
+    	 * Catch unit update event.
+    	 * @param event the unit event.
+    	 */
+    	public void unitUpdate(UnitEvent event) {
+    		String eventType = event.getType();
+    		if (eventType.equals(Settlement.ADD_ASSOCIATED_PERSON_EVENT)) 
+    			addUnit((Unit) event.getTarget());
+    		else if (eventType.equals(Settlement.REMOVE_ASSOCIATED_PERSON_EVENT))
+    			removeUnit((Unit) event.getTarget());
+    	}
     }
 }

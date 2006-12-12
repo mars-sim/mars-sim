@@ -139,7 +139,7 @@ public class TaskManager implements Serializable {
     public void addTask(Task newTask) {
         if (hasActiveTask()) currentTask.addSubTask(newTask);
         else currentTask = newTask;
-        mind.getPerson().fireUnitUpdate(TASK_EVENT);
+        mind.getPerson().fireUnitUpdate(TASK_EVENT, newTask);
     }
 
     /** 

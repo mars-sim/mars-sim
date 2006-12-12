@@ -75,7 +75,7 @@ public class BuildingAirlock extends Airlock {
             }
             else {
             	if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person);
-                inv.retrieveUnit(person);
+            	inv.retrieveUnit(person);
             }
         }
         else throw new Exception(person.getName() + " not in airlock of " + getEntityName());

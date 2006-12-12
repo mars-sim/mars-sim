@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 2.77 2004-09-01
+ * @version 2.80 2006-12-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -10,7 +10,6 @@ import java.io.*;
 import org.mars_sim.msp.simulation.events.HistoricalEventManager;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.simulation.mars.*;
-import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.medical.MedicalManager;
@@ -46,7 +45,6 @@ public class Simulation implements ClockListener, Serializable {
 	private MissionManager missionManager; // Mission controller
 	private RelationshipManager relationshipManager; // Manages all personal relationships.
 	private MedicalManager medicalManager; // Medical complaints
-	private JobManager jobManager; // Job manager
 	private MasterClock masterClock; // Master clock for the simulation.
 	
 	public int id = 0;
@@ -117,7 +115,6 @@ public class Simulation implements ClockListener, Serializable {
 		missionManager = new MissionManager();
 		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
-		jobManager = new JobManager();
 		masterClock = new MasterClock();
 		unitManager = new UnitManager();
 		unitManager.constructInitialUnits();
@@ -148,7 +145,6 @@ public class Simulation implements ClockListener, Serializable {
 			missionManager = (MissionManager) p.readObject();
 			relationshipManager = (RelationshipManager) p.readObject();
 			medicalManager = (MedicalManager) p.readObject();
-			jobManager = (JobManager) p.readObject();
 			unitManager = (UnitManager) p.readObject();
 			masterClock = (MasterClock) p.readObject();
 			p.close();
@@ -183,7 +179,6 @@ public class Simulation implements ClockListener, Serializable {
 		p.writeObject(missionManager);
 		p.writeObject(relationshipManager);
 		p.writeObject(medicalManager);
-		p.writeObject(jobManager);
 		p.writeObject(unitManager);
 		p.writeObject(masterClock);
 			
@@ -285,14 +280,6 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public MedicalManager getMedicalManager() {
 		return medicalManager;
-	}
-	
-	/**
-	 * Get the job manager.
-	 * @return job manager
-	 */
-	public JobManager getJobManager() {
-		return jobManager;
 	}
 	
 	/**

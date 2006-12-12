@@ -39,7 +39,8 @@ public abstract class Mission implements Serializable {
 	public static final String MIN_PEOPLE_EVENT = "minimum people";
 	public static final String ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
 	public static final String CAPACITY_EVENT = "capacity";
-	public static final String PEOPLE_EVENT = "people number";
+	public static final String ADD_MEMBER_EVENT = "remove member";
+	public static final String REMOVE_MEMBER_EVENT = "add member";
 	public static final String END_MISSION_EVENT = "end mission";
 	
     // Data members
@@ -89,7 +90,7 @@ public abstract class Mission implements Serializable {
      * Adds a listener
      * @param newListener the listener to add.
      */
-    public final void addListener(MissionListener newListener) {
+    public final void addMissionListener(MissionListener newListener) {
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
@@ -98,7 +99,7 @@ public abstract class Mission implements Serializable {
      * Removes a listener
      * @param oldListener the listener to remove.
      */
-    public final void removeListener(MissionListener oldListener) {
+    public final void removeMissionListener(MissionListener oldListener) {
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
@@ -108,10 +109,20 @@ public abstract class Mission implements Serializable {
      * @param updateType the update type.
      */
     protected final void fireMissionUpdate(String updateType) {
+    	fireMissionUpdate(updateType, null);
+    }
+    
+    /**
+     * Fire a mission update event.
+     * @param updateType the update type.
+     * @param target the event target or null if none.
+     */
+    protected final void fireMissionUpdate(String updateType, Object target) {
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
     	synchronized(listeners) {
     		Iterator i = listeners.iterator();
-    		while (i.hasNext()) ((MissionListener) i.next()).missionUpdate(new MissionEvent(this, updateType));
+    		while (i.hasNext()) ((MissionListener) i.next()).missionUpdate(
+    				new MissionEvent(this, updateType, target));
     	}
     }
     
@@ -134,7 +145,7 @@ public abstract class Mission implements Serializable {
             HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.JOINING);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 			
-			fireMissionUpdate(PEOPLE_EVENT);
+			fireMissionUpdate(ADD_MEMBER_EVENT, person);
             // System.out.println(person.getName() + " added to mission: " + name);
         }
     }
@@ -151,7 +162,7 @@ public abstract class Mission implements Serializable {
 			HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.FINISH);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 			
-			fireMissionUpdate(PEOPLE_EVENT);
+			fireMissionUpdate(REMOVE_MEMBER_EVENT, person);
 
             if (people.size() == 0) done = true;
             // System.out.println(person.getName() + " removed from mission: " + name);
@@ -189,7 +200,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setMinPeople(int minPeople) {
     	this.minPeople = minPeople;
-    	fireMissionUpdate(MIN_PEOPLE_EVENT);
+    	fireMissionUpdate(MIN_PEOPLE_EVENT, new Integer(minPeople));
     }
 
     /**
@@ -222,7 +233,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setName(String name) {
     	this.name = name;
-    	fireMissionUpdate(NAME_EVENT);
+    	fireMissionUpdate(NAME_EVENT, name);
     }
 
     /** 
@@ -239,7 +250,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setDescription(String description) {
     	this.description = description;
-    	fireMissionUpdate(DESCRIPTION_EVENT);
+    	fireMissionUpdate(DESCRIPTION_EVENT, description);
     }
 
     /** 
@@ -261,7 +272,7 @@ public abstract class Mission implements Serializable {
     		phase = newPhase;
     		setPhaseEnded(false);
     		phaseDescription = null;
-    		fireMissionUpdate(PHASE_EVENT);
+    		fireMissionUpdate(PHASE_EVENT, newPhase);
     	}
     	else throw new MissionException(getPhase(), "newPhase: " + newPhase + " is not a valid phase for this mission.");
     }
@@ -290,7 +301,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setPhaseDescription(String description) {
     	phaseDescription = description;
-    	fireMissionUpdate(PHASE_DESCRIPTION_EVENT);
+    	fireMissionUpdate(PHASE_DESCRIPTION_EVENT, description);
     }
 
     /** 
@@ -340,7 +351,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setMissionCapacity(int newCapacity) {
         missionCapacity = newCapacity;
-        fireMissionUpdate(CAPACITY_EVENT);
+        fireMissionUpdate(CAPACITY_EVENT, new Integer(newCapacity));
     }
 
     /** Finalizes the mission.
@@ -577,5 +588,14 @@ public abstract class Mission implements Serializable {
      * @throws Exception if error during time passing.
      */
     public void timePassing(double time) throws Exception {
+    }
+    
+    /**
+     * Associate all mission members with a settlement.
+     * @param settlement the associated settlement.
+     */
+    protected void associateAllMembersWithSettlement(Settlement settlement) {
+    	PersonIterator i = getPeople().iterator();
+    	while (i.hasNext()) i.next().setAssociatedSettlement(settlement);
     }
 }

@@ -42,15 +42,14 @@ public class VehicleAirlock extends Airlock {
      * @throws Exception if person is not in the airlock.
      */
     protected void exitAirlock(Person person) throws Exception {
-        Inventory inv = vehicle.getInventory();
         
         if (inAirlock(person)) {
-            if (pressurized) inv.storeUnit(person);
+            if (pressurized) vehicle.getInventory().storeUnit(person);
             else {
             	// Drop person outside.  If person, for some reason, is not in vehicle,
             	// put them outside anyway.
             	try {
-            		inv.retrieveUnit(person);
+            		vehicle.getInventory().retrieveUnit(person);
             	}
             	catch (InventoryException e) {
             		person.setContainerUnit(null);

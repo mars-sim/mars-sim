@@ -25,6 +25,9 @@ import org.mars_sim.msp.simulation.vehicle.*;
  */
 public class BuildingManager implements Serializable {
     
+	// Unit update events.
+	public static final String ADD_BUILDING_EVENT = "add building";
+	
     private Settlement settlement; // The manager's settlement.
     private List buildings; // The settlement's buildings.
     
@@ -74,7 +77,10 @@ public class BuildingManager implements Serializable {
      * @param newBuilding the building to add.
      */
     public void addBuilding(Building newBuilding) {
-        if (!buildings.contains(newBuilding)) buildings.add(newBuilding);
+        if (!buildings.contains(newBuilding)) {
+        	buildings.add(newBuilding);
+        	settlement.fireUnitUpdate(ADD_BUILDING_EVENT, newBuilding);
+        }
     }
     
     /**

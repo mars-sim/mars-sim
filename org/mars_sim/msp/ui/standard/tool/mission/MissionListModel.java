@@ -31,7 +31,7 @@ public class MissionListModel extends AbstractListModel implements
 	public void addMission(Mission mission) {
 		if (!missions.contains(mission)) {
 			missions.add(mission);
-			mission.addListener(this);
+			mission.addMissionListener(this);
 			fireIntervalAdded(this, missions.size() - 1, missions.size() - 1);
 		}
 	}
@@ -40,7 +40,7 @@ public class MissionListModel extends AbstractListModel implements
 		if (missions.contains(mission)) {
 			int index = missions.indexOf(mission);
 			missions.remove(mission);
-			mission.removeListener(this);
+			mission.removeMissionListener(this);
 			fireIntervalRemoved(this, index, index);
 		}
 	}

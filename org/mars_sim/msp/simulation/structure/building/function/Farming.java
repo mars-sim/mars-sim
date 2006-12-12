@@ -21,6 +21,9 @@ import org.mars_sim.msp.simulation.structure.building.*;
  */
 public class Farming extends Function implements Serializable {
         
+	// Unit update events
+	public static final String CROP_EVENT = "crop event";
+	
     public static final String NAME = "Farming";
     public static final double HARVEST_MULTIPLIER = 10D;
     public static final double BASE_CROP_GROWING_TIME = 90000D;
@@ -62,8 +65,10 @@ public class Farming extends Function implements Serializable {
 			Settlement settlement = building.getBuildingManager().getSettlement();
 			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			for (int x=0; x < cropNum; x++) {
-				crops.add(new Crop(Crop.getRandomCropType(cropConfig), 
-					(maxHarvest / (double) cropNum), this, settlement, false));
+				Crop crop = new Crop(Crop.getRandomCropType(cropConfig), 
+						(maxHarvest / (double) cropNum), this, settlement, false);
+				crops.add(crop);
+				building.getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
 			}
 		}
 		catch (Exception e) {
@@ -203,8 +208,10 @@ public class Farming extends Function implements Serializable {
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			for (int x=0; x < newCrops; x++) {
-				crops.add(new Crop(Crop.getRandomCropType(cropConfig), 
-					(maxHarvest / (double) cropNum), this, settlement, true));
+				Crop crop = new Crop(Crop.getRandomCropType(cropConfig), 
+						(maxHarvest / (double) cropNum), this, settlement, true);
+				crops.add(crop);
+				getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
 			}
 		}
 		catch (Exception e) {

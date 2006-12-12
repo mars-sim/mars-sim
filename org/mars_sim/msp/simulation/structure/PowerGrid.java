@@ -17,6 +17,11 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  */
 public class PowerGrid implements Serializable {
         
+	// Unit update events.
+	public static final String POWER_MODE_EVENT = "power mode";
+	public static final String GENERATED_POWER_EVENT = "generated power";
+	public static final String REQUIRED_POWER_EVENT = "required power";
+	
     // Statc data members
     public static final String POWER_UP_MODE = "Power up";
     public static final String POWER_DOWN_MODE = "Power down";
@@ -52,8 +57,11 @@ public class PowerGrid implements Serializable {
      * @param newPowerMode the new power grid mode.
      */
     public void setPowerMode(String newPowerMode) {
-    	if (POWER_UP_MODE.equals(newPowerMode)) powerMode = POWER_UP_MODE;
-    	else if (POWER_DOWN_MODE.equals(newPowerMode)) powerMode = POWER_DOWN_MODE;
+    	if (!powerMode.equals(newPowerMode)) {
+    		if (POWER_UP_MODE.equals(newPowerMode)) powerMode = POWER_UP_MODE;
+    		else if (POWER_DOWN_MODE.equals(newPowerMode)) powerMode = POWER_DOWN_MODE;
+    		settlement.fireUnitUpdate(POWER_MODE_EVENT);
+    	}
     }
     
     /**
@@ -65,11 +73,33 @@ public class PowerGrid implements Serializable {
     }
     
     /**
+     * Sets the generated power in the grid.
+     * @param newGeneratedPower the new generated power.
+     */
+    private void setGeneratedPower(double newGeneratedPower) {
+    	if (powerGenerated != newGeneratedPower) {
+    		powerGenerated = newGeneratedPower;
+    		settlement.fireUnitUpdate(GENERATED_POWER_EVENT);
+    	}
+    }
+    
+    /**
      * Gets the power required from the grid.
      * @return power in kW
      */
     public double getRequiredPower() {
         return powerRequired;
+    }
+    
+    /**
+     * Sets the required power in the grid.
+     * @param newRequiredPower the new required power.
+     */
+    private void setRequiredPower(double newRequiredPower) {
+    	if (powerRequired != newRequiredPower) {
+    		powerRequired = newRequiredPower;
+    		settlement.fireUnitUpdate(REQUIRED_POWER_EVENT);
+    	}
     }
     
     /**
@@ -89,8 +119,8 @@ public class PowerGrid implements Serializable {
     public void timePassing(double time) throws BuildingException {
         
         // Clear and recalculate power
-        powerGenerated = 0D;
-        powerRequired = 0D;
+        double tempPowerGenerated = 0D;
+        double tempPowerRequired = 0D;
         
         BuildingManager manager = settlement.getBuildingManager();
         // System.out.println(settlement.getName() + " power situation: ");
@@ -99,9 +129,10 @@ public class PowerGrid implements Serializable {
         while (iPow.hasNext()) {
         	Building building = (Building) iPow.next();
             PowerGeneration gen = (PowerGeneration) building.getFunction(PowerGeneration.NAME);
-            powerGenerated += gen.getGeneratedPower();
+            tempPowerGenerated += gen.getGeneratedPower();
             // System.out.println(((Building) gen).getName() + " generated: " + gen.getGeneratedPower());
         }
+        setGeneratedPower(tempPowerGenerated);
         // System.out.println("Total power generated: " + powerGenerated);
         List buildings = manager.getBuildings();
         
@@ -111,9 +142,10 @@ public class PowerGrid implements Serializable {
         	while (iUsed.hasNext()) {
             	Building building = (Building) iUsed.next();
             	building.setPowerMode(Building.FULL_POWER);
-            	powerRequired += building.getFullPowerRequired();
+            	tempPowerRequired += building.getFullPowerRequired();
             	// System.out.println(building.getName() + " full power used: " + building.getFullPowerRequired());
         	}
+        	setRequiredPower(tempPowerRequired);
         	// System.out.println("Total full power required: " + powerRequired);
         }
         else if (powerMode.equals(POWER_DOWN_MODE)) {
@@ -129,12 +161,12 @@ public class PowerGrid implements Serializable {
         }
         
         // Check if there is enough power generated to fully supply each building.
-        if (powerRequired <= powerGenerated) {
+        if (getRequiredPower() <= getGeneratedPower()) {
             sufficientPower = true;
         }
         else {
             sufficientPower = false;
-            double neededPower = powerRequired - powerGenerated;
+            double neededPower = getRequiredPower() - getGeneratedPower();
             
             // Reduce each building's power mode to low power until 
             // required power reduction is met.

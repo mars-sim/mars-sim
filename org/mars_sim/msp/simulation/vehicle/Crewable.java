@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crewable.java
- * @version 2.74 2002-02-28
+ * @version 2.80 2006-12-03
  * @author Scott Davis
  */
 
@@ -15,6 +15,9 @@ import org.mars_sim.msp.simulation.person.*;
  */
 public interface Crewable {
 
+	// Unit events
+	public static final String CREW_CAPACITY_EVENT = "crew capacity event";
+	
     /**
      * Gets the number of crewmembers the vehicle can carry.
      * @return capacity

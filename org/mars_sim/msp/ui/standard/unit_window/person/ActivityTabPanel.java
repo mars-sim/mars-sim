@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 import org.mars_sim.msp.simulation.person.ai.job.*;
@@ -76,10 +75,9 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         
         // Prepare job combo box
 		jobCache = mind.getJob().getName();
-        JobManager jobManager = Simulation.instance().getJobManager();
-        String[] jobNames = new String[jobManager.getJobs().size()];
-        for (int x=0; x < jobManager.getJobs().size(); x++)
-        	jobNames[x] = ((Job) jobManager.getJobs().get(x)).getName();
+        String[] jobNames = new String[JobManager.getJobs().size()];
+        for (int x=0; x < JobManager.getJobs().size(); x++)
+        	jobNames[x] = ((Job) JobManager.getJobs().get(x)).getName();
         jobComboBox = new JComboBox(jobNames);
         jobComboBox.setSelectedItem(jobCache);
         jobComboBox.addActionListener(this);
@@ -247,7 +245,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     	}
     	else if (source == jobComboBox) {
     		int jobIndex = jobComboBox.getSelectedIndex();
-    		Job job = (Job) Simulation.instance().getJobManager().getJobs().get(jobIndex);
+    		Job job = (Job) JobManager.getJobs().get(jobIndex);
     		((Person) unit).getMind().setJob(job, true);
     	}
     }

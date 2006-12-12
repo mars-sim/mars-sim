@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.78 2005-10-07
+ * @version 2.80 2006-12-03
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentCollection;
@@ -16,6 +17,7 @@ import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.*;
@@ -30,10 +32,10 @@ import org.mars_sim.msp.simulation.vehicle.*;
 public class UnitManager implements Serializable {
 
     // Static Data Members
-    public static String SETTLEMENT = "settlement";
-    public static String PERSON = "person";
-    public static String VEHICLE = "vehicle";
-    public static String EQUIPMENT = "equipment";
+    public static final String SETTLEMENT = "settlement";
+    public static final String PERSON = "person";
+    public static final String VEHICLE = "vehicle";
+    public static final String EQUIPMENT = "equipment";
     
     // Data members
     private UnitCollection units; // Collection of all units
@@ -41,6 +43,7 @@ public class UnitManager implements Serializable {
     private List vehicleNames; // List of possible vehicle names
     private List personMaleNames; // List of possible male person names
     private List personFemaleNames; // List of possible female person names
+    private transient List listeners; // List of unit manager listeners.
 
     /** 
      * Constructor
@@ -49,6 +52,7 @@ public class UnitManager implements Serializable {
    
         // Initialize unit collection
         units = new UnitCollection();
+        listeners = Collections.synchronizedList(new ArrayList());
     }
     
     /**
@@ -128,7 +132,13 @@ public class UnitManager implements Serializable {
     public void addUnit(Unit unit) {
         if (!units.contains(unit)) {
             units.add(unit);
-            units.mergeUnits(unit.getInventory().getContainedUnits());
+            UnitIterator i = unit.getInventory().getContainedUnits().iterator();
+            while (i.hasNext()) addUnit(i.next());
+            
+            // Fire unit manager event.
+            fireUnitManagerUpdate(UnitManagerEvent.ADD_UNIT, unit);
+            
+            // units.mergeUnits(unit.getInventory().getContainedUnits());
         }		
     }
     
@@ -350,7 +360,7 @@ public class UnitManager implements Serializable {
 				// Set person's job (if any).
 				String jobName = personConfig.getConfiguredPersonJob(x);
 				if (jobName != null) {
-					Job job = Simulation.instance().getJobManager().getJob(jobName);
+					Job job = JobManager.getJob(jobName);
 					person.getMind().setJob(job, true);
 				}
 				
@@ -527,5 +537,36 @@ public class UnitManager implements Serializable {
      */
     public UnitCollection getUnits() {
         return new UnitCollection(units);
+    }
+    
+    /**
+     * Adds a unit manager listener
+     * @param newListener the listener to add.
+     */
+    public final void addUnitManagerListener(UnitManagerListener newListener) {
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+        if (!listeners.contains(newListener)) listeners.add(newListener);
+    }
+    
+    /**
+     * Removes a unit manager listener
+     * @param oldListener the listener to remove.
+     */
+    public final void removeUnitManagerListener(UnitManagerListener oldListener) {
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners.contains(oldListener)) listeners.remove(oldListener);
+    }
+    
+    /**
+     * Fire a unit update event.
+     * @param updateType the update type.
+     */
+    public final void fireUnitManagerUpdate(String eventType, Unit unit) {
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	synchronized(listeners) {
+    		Iterator i = listeners.iterator();
+    		while (i.hasNext()) ((UnitManagerListener) i.next()).unitManagerUpdate(
+    				new UnitManagerEvent(this, eventType, unit));
+    	}
     }
 }

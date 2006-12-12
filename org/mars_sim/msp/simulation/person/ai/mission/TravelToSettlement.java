@@ -153,6 +153,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     		startTravelToNextNode();
     		setPhase(VehicleMission.TRAVELLING);
     		setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+    		associateAllMembersWithSettlement(destinationSettlement);
     	}
 		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
@@ -249,13 +250,12 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		double relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
 			
 		// Determine job opportunities in destination settlement relative to starting settlement.
-		JobManager jobManager = Simulation.instance().getJobManager();
 		Job currentJob = person.getMind().getJob();
-		double currentJobProspect = jobManager.getJobProspect(person, currentJob, startingSettlement, true);
+		double currentJobProspect = JobManager.getJobProspect(person, currentJob, startingSettlement, true);
 		double destinationJobProspect = 0D;
 		if (person.getMind().getJobLock()) 
-			destinationJobProspect = jobManager.getJobProspect(person, currentJob, destinationSettlement, false);
-		else destinationJobProspect = jobManager.getBestJobProspect(person, destinationSettlement, false);
+			destinationJobProspect = JobManager.getJobProspect(person, currentJob, destinationSettlement, false);
+		else destinationJobProspect = JobManager.getBestJobProspect(person, destinationSettlement, false);
 		double jobFactor = 0D;
 		if (destinationJobProspect > currentJobProspect) jobFactor = 1D;
 		else if (destinationJobProspect < currentJobProspect) jobFactor = -1D;

@@ -20,6 +20,14 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
  */
 public class PhysicalCondition implements Serializable {
 
+	// Unit events
+	public static final String FATIGUE_EVENT = "fatigue event";
+	public static final String HUNGER_EVENT = "hunger event";
+	public static final String STRESS_EVENT = "stress event";
+	public static final String PERFORMANCE_EVENT = "performance event";
+	public static final String ILLNESS_EVENT = "illness event";
+	public static final String DEATH_EVENT = "death event";
+	
     // Life support minimum and maximum values.
     private static int MIN_VALUE = 0;
     private static int MAX_VALUE = 1;
@@ -36,7 +44,7 @@ public class PhysicalCondition implements Serializable {
     // Data members
     private DeathInfo deathDetails;     // Details of persons death
     private HashMap problems;           // Injury/Illness effecting person
-    private HealthProblem serious;      // Mosr serious problem
+    private HealthProblem serious;      // Most serious problem
     private double fatigue;             // Person's fatigue level
     private double hunger;              // Person's hunger level
     private double stress;              // Person's stress level (0.0 - 100.0)
@@ -138,13 +146,7 @@ public class PhysicalCondition implements Serializable {
 
             // Add the new problems
             Iterator newIter = newProblems.iterator();
-            while(newIter.hasNext()) {
-                Complaint illness = (Complaint)newIter.next();
-                if (!problems.containsKey(illness)) {
-                    problems.put(illness, new HealthProblem(illness, person,
-                                                            person.getAccessibleAid()));
-                }
-            }
+            while(newIter.hasNext()) addMedicalComplaint((Complaint) newIter.next());
         }
 
         // Has the person died ?
@@ -154,10 +156,7 @@ public class PhysicalCondition implements Serializable {
         Complaint randomComplaint = getMedicalManager().getProbableComplaint(person);
 
         // New complaint must not exist already
-        if ((randomComplaint != null) && !problems.containsKey(randomComplaint)) {
-            problems.put(randomComplaint, new HealthProblem(randomComplaint, person,
-            	person.getAccessibleAid()));
-        }
+        addMedicalComplaint(randomComplaint);
 
         // Consume necessary oxygen and water.
         try {
@@ -171,8 +170,8 @@ public class PhysicalCondition implements Serializable {
         }
 
         // Build up fatigue & hunger for given time passing.
-        fatigue += time;
-        hunger += time;
+        setFatigue(fatigue + time);
+        setHunger(hunger + time);
         
         // If person is at maximum stress, check for mental breakdown.
         if (stress == 100.0D) checkForStressBreakdown(config, time);
@@ -187,10 +186,10 @@ public class PhysicalCondition implements Serializable {
      *  @param complaint the new medical complaint
      */
     public void addMedicalComplaint(Complaint complaint) {
-
         if ((complaint != null) && !problems.containsKey(complaint)) {
 	        HealthProblem problem = new HealthProblem(complaint, person, person.getAccessibleAid());
 	        problems.put(complaint, problem);
+	        person.fireUnitUpdate(ILLNESS_EVENT, complaint);
 	        recalculate();
 	    }
     }
@@ -271,12 +270,7 @@ public class PhysicalCondition implements Serializable {
         if ((bounds == MIN_VALUE) && (actual < required)) newProblem = true;
         if ((bounds == MAX_VALUE) && (actual > required)) newProblem = true;
 
-        if (newProblem) {
-            if (!problems.containsKey(complaint)) {
-                problems.put(complaint, new HealthProblem(complaint, person,
-                    person.getAccessibleAid()));
-            }
-        }
+        if (newProblem) addMedicalComplaint(complaint);
         else {
             //Is the person suffering from the illness, if so recovery
             // as the amount has been provided
@@ -335,6 +329,17 @@ public class PhysicalCondition implements Serializable {
     public double getPerformanceFactor() {
         return performance;
     }
+    
+    /**
+     * Sets the performance factor.
+     * @param newPerformance new performance (between 0 and 1).
+     */
+    private void setPerformanceFactor(double newPerformance) {
+    	if (newPerformance != performance) {
+    		performance = newPerformance;
+    		person.fireUnitUpdate(PERFORMANCE_EVENT);
+    	}
+    }
 
 	/**
 	 * Gets the person with this physical condition
@@ -346,10 +351,13 @@ public class PhysicalCondition implements Serializable {
 
     /**
      * Define the fatigue setting for this person
-     * @param fatigue New fatigue.
+     * @param newFatigue New fatigue.
      */
-    public void setFatigue(double fatigue) {
-        this.fatigue = fatigue;
+    public void setFatigue(double newFatigue) {
+    	if (fatigue != newFatigue) {
+    		fatigue = newFatigue;
+    		person.fireUnitUpdate(FATIGUE_EVENT);
+    	}
     }
 
     /** Gets the person's hunger level
@@ -361,10 +369,13 @@ public class PhysicalCondition implements Serializable {
 
     /**
      * Define the hunger setting for this person
-     * @param hunger New hunger.
+     * @param newHunger New hunger.
      */
-    public void setHunger(double hunger) {
-        this.hunger = hunger;
+    public void setHunger(double newHunger) {
+    	if (hunger != newHunger) {
+    		hunger = newHunger;
+    		person.fireUnitUpdate(HUNGER_EVENT);
+    	}
     }
     
     /**
@@ -380,9 +391,12 @@ public class PhysicalCondition implements Serializable {
      * @param newStress the new stress level (0.0 to 100.0)
      */
     public void setStress(double newStress) {
-    	stress = newStress;
-    	if (stress > 100D) stress = 100D;
-    	else if (stress < 0D) stress = 0D;
+    	if (stress != newStress) {
+    		stress = newStress;
+    		if (stress > 100D) stress = 100D;
+    		else if (stress < 0D) stress = 0D;
+    		person.fireUnitUpdate(STRESS_EVENT);
+    	}
     }
     
     /**
@@ -419,10 +433,10 @@ public class PhysicalCondition implements Serializable {
      * @param illness THe Compliant that makes person dead.
      */
     public void setDead(HealthProblem illness) {
-        fatigue = 0D;
-        hunger = 0D;
-        performance = 0D;
-        stress = 0D;
+        setFatigue(0D);
+        setHunger(0D);
+        setPerformanceFactor(0D);
+        setStress(0D);
         alive = false;
 
         deathDetails = new DeathInfo(person);
@@ -430,6 +444,9 @@ public class PhysicalCondition implements Serializable {
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, illness, MedicalEvent.DEATH);
 		Simulation.instance().getEventManager().registerNewEvent(event);
+		
+		// Throw unit event.
+		person.fireUnitUpdate(DEATH_EVENT);
     }
     
     /**
@@ -478,7 +495,7 @@ public class PhysicalCondition implements Serializable {
      */
     private void recalculate() {
 
-        performance = 1.0D;
+        double tempPerformance = 1.0D;
         serious = null;
 
         // Check the existing problems. find most serious & performance
@@ -487,8 +504,8 @@ public class PhysicalCondition implements Serializable {
         while(iter.hasNext()) {
             HealthProblem problem = (HealthProblem)iter.next();
             double factor = problem.getPerformanceFactor();
-            if (factor < performance) {
-                performance = factor;
+            if (factor < tempPerformance) {
+            	tempPerformance = factor;
             }
 
             if ((serious == null) || (serious.getIllness().getSeriousness() <
@@ -498,15 +515,17 @@ public class PhysicalCondition implements Serializable {
         }
         
         // High fatigue reduces performance.
-        if (fatigue > 1000D) performance -= (fatigue - 1000D) * .0003D;
+        if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
         
         // High hunger reduces performance.
-        if (hunger > 1000D) performance -= (hunger - 1000D) * .0003D;
+        if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0003D;
         
         // High stress reduces performance.
-        if (stress >= 80D) performance -= (stress - 80D) * .02D;
+        if (stress >= 80D) tempPerformance -= (stress - 80D) * .02D;
         
-        if (performance < 0D) performance = 0D;
+        if (tempPerformance < 0D) tempPerformance = 0D;
+        
+        setPerformanceFactor(tempPerformance);
     }
     
     /**

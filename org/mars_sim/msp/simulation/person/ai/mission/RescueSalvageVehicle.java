@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 2.79 2006-07-07
+ * @version 2.80 2006-12-03
  * @author Scott Davis
  */
 
@@ -319,7 +319,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				while (i.hasNext()) {
 					Person crewmember = i.next();
         			towedVehicle.getInventory().retrieveUnit(crewmember);
-        			inv.storeUnit(crewmember);
+        			disembarkSettlement.getInventory().storeUnit(crewmember);
         			BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
         			// System.out.println(crewmember.getName() + " rescued.");
         			HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.RESCUE_PERSON);

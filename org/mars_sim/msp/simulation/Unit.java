@@ -77,7 +77,7 @@ public abstract class Unit implements Serializable {
      */
     protected final void setName(String name) {
     	this.name = name;
-    	fireUnitUpdate(NAME_EVENT);
+    	fireUnitUpdate(NAME_EVENT, name);
     }
     
     /**
@@ -94,7 +94,7 @@ public abstract class Unit implements Serializable {
      */
     protected final void setDescription(String description) {
     	this.description = description;
-    	fireUnitUpdate(DESCRIPTION_EVENT);
+    	fireUnitUpdate(DESCRIPTION_EVENT, description);
     }
 
     /** 
@@ -113,7 +113,7 @@ public abstract class Unit implements Serializable {
     	if (location == null) location = new Coordinates(0D, 0D);
         location.setCoords(newLocation);
         getInventory().setCoordinates(newLocation);
-        fireUnitUpdate(LOCATION_EVENT);
+        fireUnitUpdate(LOCATION_EVENT, newLocation);
     }
 
     /** 
@@ -173,7 +173,7 @@ public abstract class Unit implements Serializable {
      */
     public void setContainerUnit(Unit containerUnit) {
         this.containerUnit = containerUnit;
-        fireUnitUpdate(CONTAINER_UNIT_EVENT);
+        fireUnitUpdate(CONTAINER_UNIT_EVENT, containerUnit);
     }
 
     /** 
@@ -207,7 +207,7 @@ public abstract class Unit implements Serializable {
      * @param newListener the listener to add.
      */
     public final void addUnitListener(UnitListener newListener) {
-    	if (listeners == null) listeners = new ArrayList();
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
@@ -225,10 +225,19 @@ public abstract class Unit implements Serializable {
      * @param updateType the update type.
      */
     public final void fireUnitUpdate(String updateType) {
+    	fireUnitUpdate(updateType, null);
+    }
+    
+    /**
+     * Fire a unit update event.
+     * @param updateType the update type.
+     * @param target the event target object or null if none.
+     */
+    public final void fireUnitUpdate(String updateType, Object target) {
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
     	synchronized(listeners) {
     		Iterator i = listeners.iterator();
-    		while (i.hasNext()) ((UnitListener) i.next()).unitUpdate(new UnitEvent(this, updateType));
+    		while (i.hasNext()) ((UnitListener) i.next()).unitUpdate(new UnitEvent(this, updateType, target));
     	}
     }
 }

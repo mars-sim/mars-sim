@@ -7,8 +7,19 @@
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
@@ -24,26 +35,26 @@ import org.mars_sim.msp.simulation.vehicle.*;
 public class VehicleTableModel extends UnitTableModel {
 
     // Column indexes
-    private final static int  NAME = 0;
-    private final static int  TYPE = 1;
-    private final static int  LOCATION = 2;
-    private final static int  DESTINATION = 3;
-    private final static int  DESTDIST = 4;
-    private final static int  MISSION = 5;
-    private final static int  CREW = 6;
-    private final static int  DRIVER = 7;
-    private final static int  STATUS = 8;
-    private final static int  BEACON = 9;
-    private final static int  RESERVED = 10;
-    private final static int  SPEED = 11;
-    private final static int  MALFUNCTION = 12;
-    private final static int  OXYGEN = 13;
-    private final static int  METHANE = 14;
-    private final static int  WATER = 15;
-    private final static int  FOOD = 16;
-    private final static int  ROCK_SAMPLES = 17;
-    private final static int  ICE = 18;
-    private final static int  COLUMNCOUNT = 19; // The number of Columns
+    private final static int NAME = 0;
+    private final static int TYPE = 1;
+    private final static int LOCATION = 2;
+    private final static int DESTINATION = 3;
+    private final static int DESTDIST = 4;
+    private final static int MISSION = 5;
+    private final static int CREW = 6;
+    private final static int DRIVER = 7;
+    private final static int STATUS = 8;
+    private final static int BEACON = 9;
+    private final static int RESERVED = 10;
+    private final static int SPEED = 11;
+    private final static int MALFUNCTION = 12;
+    private final static int OXYGEN = 13;
+    private final static int METHANE = 14;
+    private final static int WATER = 15;
+    private final static int FOOD = 16;
+    private final static int ROCK_SAMPLES = 17;
+    private final static int ICE = 18;
+    private final static int COLUMNCOUNT = 19; // The number of Columns
     private static String columnNames[]; // Names of Columns
     private static Class columnTypes[]; // Names of Columns
 
@@ -92,6 +103,11 @@ public class VehicleTableModel extends UnitTableModel {
 	    columnNames[ICE] = "Ice";
 	    columnTypes[ICE] = Integer.class;
     }
+    
+    // Data members
+    private UnitManagerListener unitManagerListener;
+    private LocalMissionManagerListener missionManagerListener;
+    private Map resourceCache;
 
     /**
      * Constructs a VehicleTableModel object. It creates the list of possible
@@ -103,6 +119,10 @@ public class VehicleTableModel extends UnitTableModel {
         super("All Vehicles", " vehicles", columnNames, columnTypes);
 
 		setSource(unitManager.getVehicles());
+		unitManagerListener = new LocalUnitManagerListener();
+        unitManager.addUnitManagerListener(unitManagerListener);
+        
+        missionManagerListener = new LocalMissionManagerListener();
     }
 
     /**
@@ -113,6 +133,7 @@ public class VehicleTableModel extends UnitTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
         Vehicle vehicle = (Vehicle)getUnit(rowIndex);
+        Map resourceMap = (Map) resourceCache.get(vehicle);
 
         // Invoke the appropriate method, switch is the best solution
         // althought disliked by some
@@ -132,43 +153,23 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
 
             case WATER : {
-            	try {
-            		double water = vehicle.getInventory().getAmountResourceStored(AmountResource.WATER);
-            		result = new Integer((int) water);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.WATER);
             } break;
 
             case FOOD : {
-            	try {
-            		double food = vehicle.getInventory().getAmountResourceStored(AmountResource.FOOD);
-            		result = new Integer((int) food);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.FOOD);
             } break;
 
             case OXYGEN : {
-            	try {
-            		double oxygen = vehicle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
-            		result = new Integer((int) oxygen);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.OXYGEN);
             } break;
 
             case METHANE : {
-            	try {
-            		double methane = vehicle.getInventory().getAmountResourceStored(AmountResource.METHANE);
-            		result = new Integer((int) methane);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.METHANE);
             } break;
 
             case ROCK_SAMPLES : {
-            	try {
-            		double rockSamples = vehicle.getInventory().getAmountResourceStored(AmountResource.ROCK_SAMPLES);
-            		result = new Integer((int) rockSamples);
-            	}
-            	catch (InventoryException e) {}
+            	result = (Integer) resourceMap.get(AmountResource.ROCK_SAMPLES);
             } break;
 
             case SPEED : {
@@ -252,11 +253,7 @@ public class VehicleTableModel extends UnitTableModel {
             } break;
             
 			case ICE : {
-				try {
-					double ice = vehicle.getInventory().getAmountResourceStored(AmountResource.ICE);
-					result = new Integer((int) ice);
-				}
-				catch (InventoryException e) {}
+				result = (Integer) resourceMap.get(AmountResource.ICE);
 			} break;
         }
 
@@ -264,23 +261,228 @@ public class VehicleTableModel extends UnitTableModel {
     }
     
 	/**
+	 * Catch unit update event.
+	 * @param event the unit event.
+	 */
+	public void unitUpdate(UnitEvent event) {
+		Unit unit = (Unit) event.getSource();
+		int unitIndex = getUnitIndex(unit);
+		Object target = event.getTarget();
+		String eventType = event.getType();
+
+		int columnNum = -1;
+		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
+		else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
+		else if (eventType.equals(Inventory.INVENTORY_STORING_UNIT_EVENT) || 
+				eventType.equals(Inventory.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+			if (target instanceof Person) columnNum = CREW;
+		}
+		else if (eventType.equals(Vehicle.OPERATOR_EVENT)) columnNum = DRIVER;
+		else if (eventType.equals(Vehicle.STATUS_EVENT)) columnNum = STATUS;
+		else if (eventType.equals(Vehicle.EMERGENCY_BEACON_EVENT)) columnNum = BEACON;
+		else if (eventType.equals(Vehicle.RESERVED_EVENT)) columnNum = RESERVED;
+		else if (eventType.equals(Vehicle.SPEED_EVENT)) columnNum = SPEED;
+		else if (eventType.equals(MalfunctionManager.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
+		else if (eventType.equals(Inventory.INVENTORY_RESOURCE_EVENT)) {
+			int tempColumnNum = -1;
+			if (target.equals(AmountResource.OXYGEN)) tempColumnNum = OXYGEN;
+			else if (target.equals(AmountResource.METHANE)) tempColumnNum = METHANE;
+			else if (target.equals(AmountResource.FOOD)) tempColumnNum = FOOD;
+			else if (target.equals(AmountResource.WATER)) tempColumnNum = WATER;
+			else if (target.equals(AmountResource.ROCK_SAMPLES)) tempColumnNum = ROCK_SAMPLES;
+			else if (target.equals(AmountResource.ICE)) tempColumnNum = ICE;
+			if (tempColumnNum > -1) {
+				// Only update cell if value as int has changed.
+				int currentValue = ((Integer) getValueAt(unitIndex, tempColumnNum)).intValue();
+				int newValue = getResourceStored(unit, (AmountResource) target).intValue();
+				if (currentValue != newValue) {
+					columnNum = tempColumnNum;
+					Map resourceMap = (Map) resourceCache.get(unit);
+					resourceMap.put(target, new Integer(newValue));
+				}
+			}
+		}
+			
+		if (columnNum > -1) fireTableCellUpdated(unitIndex, columnNum);
+	}
+    
+	/**
 	 * Defines the source data from this table
 	 */
 	private void setSource(VehicleCollection source) {
 		VehicleIterator iter = source.iterator();
-		while(iter.hasNext()) {
-			add(iter.next());
-		}
+		while(iter.hasNext()) addUnit(iter.next());
 
-		source.addMspCollectionEventListener(this);
+		// source.addMspCollectionEventListener(this);
 	}
 	
-	/**
-	 * The Model should be updated to reflect any changes in the underlying
-	 * data.
-	 * @return A status string for the contents of the model.
-	 */
-	public String update() {
-		return update(Simulation.instance().getUnitManager().getVehicles());
-	}
+    /**
+     * Add a unit to the model.
+     * @param newUnit Unit to add to the model.
+     */
+    protected void addUnit(Unit newUnit) {
+    	if (resourceCache == null) resourceCache = new HashMap();
+    	if (!resourceCache.containsKey(newUnit)) {
+    		Map resourceMap = new HashMap(6);
+    		resourceMap.put(AmountResource.FOOD, getResourceStored(newUnit, AmountResource.FOOD));
+    		resourceMap.put(AmountResource.OXYGEN, getResourceStored(newUnit, AmountResource.OXYGEN));
+    		resourceMap.put(AmountResource.WATER, getResourceStored(newUnit, AmountResource.WATER));
+    		resourceMap.put(AmountResource.METHANE, getResourceStored(newUnit, AmountResource.METHANE));
+    		resourceMap.put(AmountResource.ROCK_SAMPLES, getResourceStored(newUnit, AmountResource.ROCK_SAMPLES));
+    		resourceMap.put(AmountResource.ICE, getResourceStored(newUnit, AmountResource.ICE));
+    		resourceCache.put(newUnit, resourceMap);
+    	}
+    	super.addUnit(newUnit);
+    }
+    
+    /**
+     * Remove a unit to the model.
+     * @param oldUnit Unit to remove from the model.
+     */
+    protected void removeUnit(Unit oldUnit) {
+    	if (resourceCache == null) resourceCache = new HashMap();
+    	if (resourceCache.containsKey(oldUnit)) {
+    		Map resourceMap = (Map) resourceCache.get(oldUnit);
+    		resourceMap.clear();
+    		resourceCache.remove(oldUnit);
+    	}
+    	super.removeUnit(oldUnit);
+    }
+    
+    /**
+     * Gets the integer amount of resources stored in a unit.
+     * @param unit the unit to check.
+     * @param resource the resource to check.
+     * @return integer amount of resource.
+     */
+    private Integer getResourceStored(Unit unit, AmountResource resource) {
+    	Integer result = null;	
+    	try {
+    		Inventory inv = unit.getInventory();
+    		result = new Integer((int) inv.getAmountResourceStored(resource));
+    	}
+    	catch (InventoryException e) {
+    		e.printStackTrace(System.err);
+    	}
+    	return result;
+    }
+	
+    /**
+     * Prepares the model for deletion.
+     */
+    public void destroy() {
+    	super.destroy();
+    	
+    	UnitManager unitManager = Simulation.instance().getUnitManager();
+    	unitManager.removeUnitManagerListener(unitManagerListener);
+    	unitManagerListener = null;
+    	
+    	missionManagerListener.destroy();
+    	missionManagerListener = null;
+    	
+    	resourceCache.clear();
+    	resourceCache = null;
+    }
+	
+    /**
+     * UnitManagerListener inner class.
+     */
+    private class LocalUnitManagerListener implements UnitManagerListener {
+    	
+    	/**
+    	 * Catch unit manager update event.
+    	 * @param event the unit event.
+    	 */
+    	public void unitManagerUpdate(UnitManagerEvent event) {
+    		Unit unit = event.getUnit();
+    		String eventType = event.getEventType();
+    		if (unit instanceof Vehicle) {
+    			if (eventType.equals(UnitManagerEvent.ADD_UNIT)) {
+    				if (!containsUnit(unit)) addUnit(unit);
+    			}
+    			else if (eventType.equals(UnitManagerEvent.REMOVE_UNIT)) {
+    				if (containsUnit(unit)) removeUnit(unit);
+    			}
+    		}
+    	}
+    }
+    
+    private class LocalMissionManagerListener implements MissionManagerListener {
+    	
+    	private List missions;
+    	private MissionListener missionListener;
+    	
+    	LocalMissionManagerListener() {
+    		missionListener = new LocalMissionListener();
+    		missions = Simulation.instance().getMissionManager().getMissions();
+    		Iterator i = missions.iterator();
+    		while (i.hasNext()) addMission((Mission) i.next());
+    	}
+    	
+    	/**
+    	 * Adds a new mission.
+    	 * @param mission the new mission.
+    	 */
+    	public void addMission(Mission mission) {
+    		mission.addMissionListener(missionListener);
+    		updateVehicleMissionCell(mission);
+    	}
+    	
+    	/**
+    	 * Removes an old mission.
+    	 * @param mission the old mission.
+    	 */
+    	public void removeMission(Mission mission){
+    		mission.removeMissionListener(missionListener);
+    		updateVehicleMissionCell(mission);
+    	}
+    	
+    	private void updateVehicleMissionCell(Mission mission) {
+    		if (mission instanceof VehicleMission) {
+    			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+    			if (vehicle != null) {
+    				int unitIndex = getUnitIndex(vehicle);
+    				fireTableCellUpdated(unitIndex, MISSION);
+    			}
+    		}
+    	}
+    	
+    	/**
+    	 * Prepares for deletion.
+    	 */
+    	public void destroy() {
+    		Iterator i = missions.iterator();
+    		while (i.hasNext()) removeMission((Mission) i.next());
+    		missions = null;
+    		missionListener = null;
+    	}
+    }
+    
+    /**
+     * MissionListener inner class.
+     */
+    private class LocalMissionListener implements MissionListener {
+    	
+    	/**
+    	 * Catch mission update event.
+    	 * @param event the mission event.
+    	 */
+    	public void missionUpdate(MissionEvent event) {
+    		Mission mission = (Mission) event.getSource();
+    		String eventType = event.getType();
+    		int columnNum = -1;
+    		if (eventType.equals(TravelMission.TRAVEL_STATUS_EVENT) || 
+    				eventType.equals(TravelMission.NAVPOINTS_EVENT)) columnNum = DESTINATION;
+    		else if (eventType.equals(TravelMission.DISTANCE_EVENT)) columnNum = DESTDIST;
+    		else if (eventType.equals(VehicleMission.VEHICLE_EVENT)) columnNum = MISSION;
+    		
+    		if (columnNum > -1) {
+    			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+    			if (vehicle != null) {
+    				int unitIndex = getUnitIndex(vehicle);
+    				fireTableCellUpdated(unitIndex, columnNum);
+    			}
+    		}
+    	}
+    }
 }

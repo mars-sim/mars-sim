@@ -24,8 +24,11 @@ import org.mars_sim.msp.simulation.time.MarsClock;
 public abstract class Vehicle extends Unit implements Serializable, Malfunctionable {
 
 	// Unit Event Types
-	public final static String STATUS_EVENT = "Vehicle Status";
-	public final static String SPEED_EVENT = "Vehicle Speed";
+	public final static String STATUS_EVENT = "vehicle status";
+	public final static String SPEED_EVENT = "vehicle speed";
+	public final static String OPERATOR_EVENT = "vehicle operator";
+	public final static String EMERGENCY_BEACON_EVENT = "vehicle emergency beacon event";
+	public final static String RESERVED_EVENT = "vehicle reserved event";
 	
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
@@ -148,7 +151,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     	
     	if (!status.equals(newStatus)) {
     		status = newStatus;
-    		fireUnitUpdate(STATUS_EVENT);
+    		fireUnitUpdate(STATUS_EVENT, newStatus);
     	}
     }
 
@@ -173,7 +176,10 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * @param reserved the vehicle's reserved for mission status
      */
     public void setReservedForMission(boolean reserved) {
-        this.isReservedMission = reserved;
+    	if (isReservedMission != reserved) {
+    		isReservedMission = reserved;
+    		fireUnitUpdate(RESERVED_EVENT);
+    	}
     }
     
     /**
@@ -189,7 +195,10 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * @param reserved true if reserved for maintenance
      */
     public void setReservedForMaintenance(boolean reserved) {
-        reservedForMaintenance = reserved;
+    	if (reservedForMaintenance != reserved) {
+    		reservedForMaintenance = reserved;
+    		fireUnitUpdate(RESERVED_EVENT);
+    	}
     }
     
     /**
@@ -325,6 +334,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      */
     public void setOperator(VehicleOperator vehicleOperator) {
 	    this.vehicleOperator = vehicleOperator;
+	    fireUnitUpdate(OPERATOR_EVENT, vehicleOperator);
     }
     
     /**
@@ -475,6 +485,9 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * @param isOn true if beacon is on.
      */
     public void setEmergencyBeacon(boolean isOn) {
-    	emergencyBeacon = isOn;
+    	if (emergencyBeacon != isOn) {
+    		emergencyBeacon = isOn;
+    		fireUnitUpdate(EMERGENCY_BEACON_EVENT);
+    	}
     }
 }

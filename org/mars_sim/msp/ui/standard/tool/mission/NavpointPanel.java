@@ -164,10 +164,11 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	
 	public void valueChanged(ListSelectionEvent e) {
 		Mission mission = (Mission) ((JList) e.getSource()).getSelectedValue();
-		if ((currentMission != null) && (currentMission != mission)) currentMission.removeListener(this);
+		if ((currentMission != null) && (currentMission != mission)) 
+			currentMission.removeMissionListener(this);
 		if (mission != null) {
 			if (mission != currentMission) {
-				mission.addListener(this);
+				mission.addMissionListener(this);
 				currentMission = mission;
 				if (mission.getPeopleNumber() > 0) {
 					if (mission instanceof VehicleMission) 

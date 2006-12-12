@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.76 2004-09-10
+ * @version 2.80 2006-12-03
  * @author Scott Davis
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.simulation.structure;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -22,7 +21,11 @@ import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
  * It contains information related to the state of the settlement.
  */
 public class Settlement extends Structure implements org.mars_sim.msp.simulation.LifeSupport {
-
+	
+	// Unit update events.
+	public static final String ADD_ASSOCIATED_PERSON_EVENT = "add associated person";
+	public static final String REMOVE_ASSOCIATED_PERSON_EVENT = "remove associated person";
+	
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
 
@@ -126,7 +129,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
             count++;
         }
         return personArray;
-    }    
+    }
 
     /** Gets a collection of vehicles parked at the settlement.
      *  @return VehicleCollection of parked vehicles
@@ -390,6 +393,15 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * @return collection of associated people.
      */
     public PersonCollection getAllAssociatedPeople() {
+    	PersonCollection result = new PersonCollection();
+    	
+    	PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
+    	while (i.hasNext()) {
+    		Person person = i.next();
+    		if (person.getAssociatedSettlement() == this) result.add(person);
+    	}
+    	
+    	/*
 		PersonCollection result = new PersonCollection(getInhabitants());
     	
 		// Check all missions for the settlement.
@@ -414,6 +426,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 				}
 			}
 		}
+		*/
     	
     	return result;
     }

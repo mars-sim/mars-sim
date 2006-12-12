@@ -28,6 +28,11 @@ import org.mars_sim.msp.simulation.resource.ResourceException;
  */
 public class Inventory implements Serializable {
 	
+	// Unit events
+	public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
+	public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
+	public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
+	
     // Data members
     private Unit owner; // The unit that owns this inventory. 
     private UnitCollection containedUnits = null; // Collection of units in inventory.
@@ -322,6 +327,8 @@ public class Inventory implements Serializable {
     					}
     				}
     				
+    				if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+    				
     				if (remainingAmount <= 0D) clearAmountResourceStoredCache();
     				else throw new InventoryException(resource.getName() + 
     						" could not be totally stored. Remaining: " + remainingAmount);
@@ -367,6 +374,8 @@ public class Inventory implements Serializable {
     	    			remainingAmount -= retrieveAmount;
     	    		}
     			}
+    			
+    			if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
     			
     			if (remainingAmount <= 0D) clearAmountResourceStoredCache();
     			else throw new InventoryException(resource.getName() + 
@@ -524,6 +533,8 @@ public class Inventory implements Serializable {
     		if (containedItemResources == null) containedItemResources = new HashMap();
     		int totalNum = number + getItemResourceNum(resource);
     		containedItemResources.put(resource, new Integer(totalNum));
+    		
+    		if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
     	}
     	else throw new InventoryException("Could not store item resources.");
     }
@@ -560,6 +571,8 @@ public class Inventory implements Serializable {
 	    			remainingNum -= retrieveNum;
 	    		}
 			}
+			if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+			
         	if (remainingNum > 0) throw new InventoryException(resource.getName() + 
         			" could not be totally retrieved. Remaining: " + remainingNum);
     	}
@@ -722,7 +735,10 @@ public class Inventory implements Serializable {
         	if (containedUnits == null) containedUnits = new UnitCollection();
             containedUnits.add(unit);
             unit.setContainerUnit(owner);
-            if (owner != null) unit.setCoordinates(owner.getCoordinates());
+            if (owner != null) {
+            	unit.setCoordinates(owner.getCoordinates());
+            	owner.fireUnitUpdate(INVENTORY_STORING_UNIT_EVENT, unit);
+            }
         }
         else throw new InventoryException("Unit: " + unit + " could not be stored.");
     }
@@ -737,6 +753,7 @@ public class Inventory implements Serializable {
     	if (containsUnit(unit)) {
     		if (containedUnits.contains(unit)) {
     			containedUnits.remove(unit);
+    			if (owner != null) owner.fireUnitUpdate(INVENTORY_RETRIEVING_UNIT_EVENT, unit);
     			retrieved = true;
     		}
     	}

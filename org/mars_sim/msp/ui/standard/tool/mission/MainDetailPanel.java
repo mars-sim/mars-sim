@@ -166,7 +166,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {
-		if (currentMission != null) currentMission.removeListener(this);
+		if (currentMission != null) currentMission.removeMissionListener(this);
 		if (currentVehicle != null) currentVehicle.removeUnitListener(this);
 		
 		Mission mission = (Mission) ((JList) e.getSource()).getSelectedValue();
@@ -207,7 +207,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 				currentVehicle = null;
 			}
 			
-			mission.addListener(this);
+			mission.addMissionListener(this);
 			currentMission = mission;
 		}
 		else {
@@ -234,8 +234,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			descriptionLabel.setText("Description: " + mission.getDescription());
 		else if (type.equals(Mission.PHASE_DESCRIPTION_EVENT))
 			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
-		else if (type.equals(Mission.PEOPLE_EVENT) || type.equals(Mission.MIN_PEOPLE_EVENT) || 
-				type.equals(Mission.CAPACITY_EVENT)) {
+		else if (type.equals(Mission.ADD_MEMBER_EVENT) || type.equals(Mission.REMOVE_MEMBER_EVENT) || 
+				type.equals(Mission.MIN_PEOPLE_EVENT) || type.equals(Mission.CAPACITY_EVENT)) {
 			int memberNum = mission.getPeopleNumber();
 			int minMembers = mission.getMinPeople();
 			int maxMembers = mission.getMissionCapacity();

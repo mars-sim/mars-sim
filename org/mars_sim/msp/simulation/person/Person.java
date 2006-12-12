@@ -24,6 +24,9 @@ import org.mars_sim.msp.simulation.vehicle.*;
  */
 public class Person extends Unit implements VehicleOperator, Serializable {
 
+	// Unit update events
+	public final static String ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
+	
     /**
      * Status string used when Person resides in settlement
      */
@@ -56,6 +59,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     private PhysicalCondition health; // Person's physical
     private boolean isBuried; // True if person is dead and buried.
     private String gender; // The gender of the person (male or female).
+    private Settlement associatedSettlement; // The settlement the person is currently associated with.
 
     /** 
      * Constructs a Person object at a given settlement
@@ -84,8 +88,9 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 		
 		// Put person in proper building.
-	    settlement.getInventory().storeUnit(this);
+		settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
+        associatedSettlement = settlement;
     }
 
     /** Returns a string for the person's relative location "In
@@ -146,9 +151,10 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      * location of the containing unit.
      */
     public void buryBody() {
-        if (getContainerUnit() != null) {
+    	Unit containerUnit = getContainerUnit();
+        if (containerUnit != null) {
         	try {
-        		getContainerUnit().getInventory().retrieveUnit(this);
+        		containerUnit.getInventory().retrieveUnit(this);
         	}
         	catch (InventoryException e) {
         		System.err.println("Could not bury " + getName());
@@ -156,6 +162,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         	}
         }
 	    isBuried = true;
+	    setAssociatedSettlement(null);
     }
 
     /**
@@ -360,5 +367,29 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	 */
 	public String getOperatorName() {
 		return getName();
+	}
+	
+	/**
+	 * Gets the settlement the person is currently associated with.
+	 * @return associated settlement or null if none.
+	 */
+	public Settlement getAssociatedSettlement() {
+		return associatedSettlement;
+	}
+	
+	/**
+	 * Sets the associated settlement for a person.
+	 * @param newSettlement the new associated settlement or null if none.
+	 */
+	public void setAssociatedSettlement(Settlement newSettlement) {
+		if (associatedSettlement != newSettlement) {
+			Settlement oldSettlement = associatedSettlement;
+			associatedSettlement = newSettlement;
+			fireUnitUpdate(ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
+			if (oldSettlement != null) 
+				oldSettlement.fireUnitUpdate(Settlement.REMOVE_ASSOCIATED_PERSON_EVENT, this);
+			if (newSettlement != null) 
+				newSettlement.fireUnitUpdate(Settlement.ADD_ASSOCIATED_PERSON_EVENT, this);
+		}
 	}
 }
