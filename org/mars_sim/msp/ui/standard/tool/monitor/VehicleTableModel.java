@@ -312,8 +312,6 @@ public class VehicleTableModel extends UnitTableModel {
 	private void setSource(VehicleCollection source) {
 		VehicleIterator iter = source.iterator();
 		while(iter.hasNext()) addUnit(iter.next());
-
-		// source.addMspCollectionEventListener(this);
 	}
 	
     /**

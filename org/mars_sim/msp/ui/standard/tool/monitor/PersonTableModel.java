@@ -200,7 +200,7 @@ public class PersonTableModel extends UnitTableModel {
 		else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) || 
 				eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
 			
-		fireTableCellUpdated(getUnitIndex(unit), columnNum);
+		if (columnNum > -1) fireTableCellUpdated(getUnitIndex(unit), columnNum);
 	}
     
 	/**

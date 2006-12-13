@@ -110,17 +110,6 @@ abstract public class UnitTableModel extends AbstractTableModel
     protected int getUnitNumber() {
     	return units.size();
     }
-    
-    /**
-     * Source collection has changed
-     */
-    /*
-    public void collectionModified(MspCollectionEvent event) {
-        if (event.getType().equals(MspCollectionEvent.CLEAR)) clear();
-        else if (event.getType().equals(MspCollectionEvent.ADD)) addUnit(event.getTrigger());
-        else if (event.getType().equals(MspCollectionEvent.REMOVE)) removeUnit(event.getTrigger());
-    }
-    */
 
     /**
      * Return the number of columns
