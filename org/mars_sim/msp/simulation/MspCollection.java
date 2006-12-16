@@ -17,7 +17,7 @@ import java.util.*;
 public abstract class MspCollection implements java.io.Serializable {
 
     // Data members
-    private transient Collection listeners = null; // Collection of MspCollectionEventListeners.
+    // private transient Collection listeners = null; // Collection of MspCollectionEventListeners.
 
     // We can replace this with another type of collection if we need to.
     private List elements;  // Used internally to hold elements.
@@ -35,10 +35,12 @@ public abstract class MspCollection implements java.io.Serializable {
      * Adds a MspCollectionEventListener to this collection's listeners.
      * @param listener the new listener
      */
+    /*
     public void addMspCollectionEventListener(MspCollectionEventListener listener) {
         if (listeners == null) listeners = new ArrayList();
         if (!listeners.contains(listener)) listeners.add(listener);
     }
+    */
 
     /** Ensures that this collection contains the specified element.
      *  @param o element whose presence in this collection is to be ensured
@@ -46,7 +48,7 @@ public abstract class MspCollection implements java.io.Serializable {
      */
     public boolean add(Unit o) {
         boolean result = elements.add(o);
-	    fireMspCollectionEvent(MspCollectionEvent.ADD, o);
+	    // fireMspCollectionEvent(MspCollectionEvent.ADD, o);
         return result;
     }
 
@@ -92,7 +94,7 @@ public abstract class MspCollection implements java.io.Serializable {
      */
     public boolean remove(Unit o) {
         boolean result = elements.remove(o);
-	    fireMspCollectionEvent(MspCollectionEvent.REMOVE, o);
+	    // fireMspCollectionEvent(MspCollectionEvent.REMOVE, o);
         return result;
     }
 
@@ -122,25 +124,28 @@ public abstract class MspCollection implements java.io.Serializable {
     /** Removes all of the elements from this collection. */
     public void clear() {
         elements.clear();
-	    fireMspCollectionEvent(MspCollectionEvent.CLEAR, null);
+	    // fireMspCollectionEvent(MspCollectionEvent.CLEAR, null);
     }
 
     /**
      * Removes a MspCollectionEventListener from this collection's listeners.
      * @param listener the listener to be removed.
      */
+    /*
     public void removeMspCollectionEventListener(MspCollectionEventListener listener) {
         if (listeners.contains(listener)) listeners.remove(listener);
         if (listeners.size() == 0) {
             listeners = null;
         }
     }
+    */
 
     /**
      * Fires a MspCollectionEvent to all the listeners.
      * @param eventType The event to be fired.
      * @param target Object triggering the event, this may be null.
      */
+    /*
     protected void fireMspCollectionEvent(String eventType, Unit target) {
         if (listeners != null) {
             MspCollectionEvent event = new MspCollectionEvent(this, eventType,
@@ -151,6 +156,7 @@ public abstract class MspCollection implements java.io.Serializable {
 	        }
 	    }
     }
+    */
     
  	/**
  	 * Checks if an object is a MSP collection with identical contents.
