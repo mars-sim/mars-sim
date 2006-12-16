@@ -313,6 +313,5 @@ class BarChartTab extends MonitorTab {
         chart = null;
         barModel.setModel(null);
         barModel = null;
-        super.removeTab();
     }
 }

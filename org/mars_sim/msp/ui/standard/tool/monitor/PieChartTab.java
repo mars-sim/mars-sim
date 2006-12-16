@@ -301,6 +301,5 @@ class PieChartTab extends MonitorTab {
         chart = null;
         pieModel.setModel(null);
         pieModel = null;
-        super.removeTab();
     }
 }
