@@ -32,16 +32,14 @@ interface MonitorModel extends TableModel {
      * order.
      */
     public boolean getOrdered();
-
-    /**
-     * The Model should be updated to reflect any changes in the underlying
-     * data.
-     * @return A status string for the contents of the model.
-     */
-    public String update();
     
     /**
      * Prepares the model for deletion.
      */
     public void destroy();
+    
+    /**
+     * Gets the model count string.
+     */
+    public String getCountString();
 }

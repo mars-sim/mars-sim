@@ -138,7 +138,7 @@ public class PersonTableModel extends UnitTableModel {
      */
     public PersonTableModel(Settlement settlement, boolean allAssociated) {
     	super(settlement.getName() + (allAssociated ? " - All Associated People" : "-People"), 
-				(allAssociated ? "associated people" : "residents"), columnNames, columnTypes);
+				(allAssociated ? " associated people" : " residents"), columnNames, columnTypes);
     			
     	this.settlement = settlement;
     	if (allAssociated) {
@@ -202,28 +202,6 @@ public class PersonTableModel extends UnitTableModel {
 			
 		if (columnNum > -1) fireTableCellUpdated(getUnitIndex(unit), columnNum);
 	}
-    
-	/**
-	 * The model should be updated to reflect any changes in the underlying
-	 * data.
-	 * @return A status string for the contents of the model.
-	 */
-	/*
-	public String update() {
-		String statusString = "";
-		
-		if (sourceType.equals(ALL_PEOPLE)) statusString = update(unitManager.getPeople());
-		else if (sourceType.equals(VEHICLE_CREW)) statusString = update(vehicle.getCrew());
-		else if (sourceType.equals(SETTLEMENT_INHABITANTS)) statusString = update(settlement.getInhabitants());
-		else if (sourceType.equals(SETTLEMENT_ALL_ASSOCIATED_PEOPLE)) statusString = update(settlement.getAllAssociatedPeople());
-		else if (sourceType.equals(MISSION_PEOPLE)) {
-			if (mission != null) statusString = update(mission.getPeople());
-			else statusString = update(null);
-		} 
-		
-		return statusString;
-	}
-	*/
 
     /**
      * Return the value of a Cell

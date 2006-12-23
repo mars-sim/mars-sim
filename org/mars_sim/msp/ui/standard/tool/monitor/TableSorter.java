@@ -250,15 +250,12 @@ public class TableSorter extends AbstractTableModel
     public void setValueAt(Object aValue, int aRow, int aColumn) {
         sourceModel.setValueAt(aValue, indexes[aRow], aColumn);
     }
-
+    
     /**
-     * The sorting model has no data so pass the update request to the
-     * source model.
-     *
-     * @return Status of the soruce model.
+     * Gets the model count string.
      */
-    public String update() {
-        return sourceModel.update();
+    public String getCountString() {
+    	return sourceModel.getCountString();
     }
 
     /**

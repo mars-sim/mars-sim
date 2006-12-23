@@ -23,7 +23,6 @@ import org.mars_sim.msp.ui.standard.*;
 abstract class MonitorTab extends JPanel {
     
     private MonitorModel model;    // Mode providing the data
-    // private String name;
     private Icon icon;
     private boolean mandatory;
 
@@ -90,13 +89,12 @@ abstract class MonitorTab extends JPanel {
      * @return List of objects selected in this tab.
      */
     abstract protected List getSelection();
-
+    
     /**
-     * Update the selected model.
-     * @return A status string.
+     * Gets the tab count string.
      */
-    public String update() {
-        return model.update();
+    public String getCountString() {
+    	return model.getCountString();
     }
 
     /**

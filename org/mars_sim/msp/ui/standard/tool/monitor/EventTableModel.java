@@ -201,13 +201,12 @@ public class EventTableModel extends AbstractTableModel
 
         return result;
     }
-
+    
     /**
-     * This table needs to perform no actions during the update.
-     * @return A status string.
+     * Gets the model count string.
      */
-    public String update() {
-        return cachedEvents.size() + " events";
+    public String getCountString() {
+    	return cachedEvents.size() + " events";
     }
 
     /**

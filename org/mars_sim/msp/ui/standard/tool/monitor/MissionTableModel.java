@@ -149,15 +149,13 @@ public class MissionTableModel extends AbstractTableModel implements
 	public boolean getOrdered() {
 		return false;
 	}
-
-	/**
-     * The Model should be updated to reflect any changes in the underlying
-     * data.
-     * @return A status string for the contents of the model.
+	
+    /**
+     * Gets the model count string.
      */
-	public String update() {
-		return missionCache.size() + " missions";
-	}
+    public String getCountString() {
+    	return missionCache.size() + " missions";
+    }
 	
 	/**
 	 * Catch mission update event.

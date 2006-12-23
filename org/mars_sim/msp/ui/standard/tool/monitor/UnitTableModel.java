@@ -195,54 +195,11 @@ abstract public class UnitTableModel extends AbstractTableModel
     public Object getObject(int row) {
         return units.get(row);
     }
-
-    /**
-	 * Updates the unit table model if it is different from the source collection.
-	 * @param source the source collection to check against.
-	 * @return a status string.
-     */
-    /*
-    public String update(MspCollection source) {
-
-		// If the source is null, clear out the table.
-		if (source == null) {
-			// fireTableRowsDeleted(0, units.size() - 1);
-			clear();
-		}
-		else {
-			// Check if model is different from source collection.
-			if (!units.equals(source)) {
-				
-				// Remove old units.
-				UnitCollection removeUnits = new UnitCollection();
-				UnitIterator i = units.iterator();
-				while (i.hasNext()) {
-					Unit unit = i.next();
-					if (!source.contains(unit)) removeUnits.add(unit);
-				}
-				UnitIterator k = removeUnits.iterator();
-				while (k.hasNext()) removeUnit(k.next());
-				
-				// Add new units.
-				Iterator j = source.getIterator();
-				while (j.hasNext()) {
-					Unit unit = (Unit) j.next();
-					if (!units.contains(unit)) addUnit(unit);
-				}
-			}
-		}
-
-        // Just signal that all the cells have changed, this will refresh
-        // displayed cells.
-        if (getUnitNumber() > 0) {
-            fireTableRowsUpdated(0, getUnitNumber() - 1);
-        }
-
-        return getUnitNumber() + statusSuffix;
-    }
-    */
     
-    public String update() {
+    /**
+     * Gets the model count string.
+     */
+    public String getCountString() {
     	return getUnitNumber() + statusSuffix;
     }
     

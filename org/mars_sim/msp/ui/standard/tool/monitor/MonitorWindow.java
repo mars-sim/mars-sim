@@ -26,6 +26,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
@@ -36,19 +38,16 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 /** The MonitorWindow is a tool window that displays a selection of tables
  *  each of which monitor a set of Units.
  */
-public class MonitorWindow extends ToolWindow implements Runnable {
+public class MonitorWindow extends ToolWindow implements TableModelListener {
 
     final private static int STATUSHEIGHT = 17;
-    final private static int REFRESH_PERIOD = 3000;
-
 
     // Data members
     private JTabbedPane tabsSection;
     private JLabel rowCount;
     private ArrayList tabs = new ArrayList();
-    private Thread updateThread; // Model update thread
-    private boolean update;
     private EventTab eventsTab; // Tab showing historical events.
+    private MonitorTab oldTab = null;
 
 
     /** Constructs a TableWindow object
@@ -58,8 +57,6 @@ public class MonitorWindow extends ToolWindow implements Runnable {
 
         // Use TableWindow constructor
         super("Monitor Tool", desktop);
-        
-        update = true;
         
         setMaximizable(true);
 
@@ -186,9 +183,6 @@ public class MonitorWindow extends ToolWindow implements Runnable {
 
         // Have to define a starting size
         setSize(new Dimension(600, 300));
-
-        // Start a thread to keep the displayed model updated
-        start();
     }
 
     /**
@@ -243,15 +237,32 @@ public class MonitorWindow extends ToolWindow implements Runnable {
     private void tabChanged() {
         MonitorTab selected = getSelected();
         if (selected != null) {
-            String status = selected.update();
+            String status = selected.getCountString();
             rowCount.setText(status);
+            if (oldTab != null) {
+            	MonitorModel model = oldTab.getModel();
+            	if (model != null) oldTab.getModel().removeTableModelListener(this);
+            }
+            selected.getModel().addTableModelListener(this);
+            oldTab = selected;
         }
+    }
+    
+    public void tableChanged(TableModelEvent e) {
+    	if (e.getType() != TableModelEvent.UPDATE) {
+    		MonitorTab selected = getSelected();
+    		if (selected != null) {
+    			String status = selected.getCountString();
+    			rowCount.setText(status);
+    		}
+    	}
     }
 
     private void addTab(MonitorTab newTab) {
         tabs.add(newTab);
         tabsSection.addTab(newTab.getName(), newTab.getIcon(), newTab);
         tabsSection.setSelectedIndex(tabs.size()-1);
+        tabChanged();
     }
 
     private void removeTab(MonitorTab oldTab) {
@@ -262,6 +273,7 @@ public class MonitorWindow extends ToolWindow implements Runnable {
         if (getSelected() == oldTab) {
             tabsSection.setSelectedIndex(0);
         }
+        tabChanged();
     }
 
     private void centerMap() {
@@ -292,41 +304,10 @@ public class MonitorWindow extends ToolWindow implements Runnable {
     	 }
     }
     
-    /** Starts display update thread, and creates a new one if necessary */
-    public void start() {
-        if ((updateThread == null) || (!updateThread.isAlive())) {
-            updateThread = new Thread(this, "monitor window");
-            updateThread.start();
-        }
-    }
-
-    /** Update thread runner */
-    public void run() {
-
-        // Endless refresh loop
-        while (update) {
-
-            // Update window
-            MonitorTab selected = getSelected();
-            if (selected != null) {
-                String status = selected.update();
-                rowCount.setText(status);
-            }
-            
-            // Pause for 1 second between display refreshes
-            try {
-                Thread.sleep(REFRESH_PERIOD);
-            }
-            catch (InterruptedException e) {
-            }
-        }
-    }
-    
     /**
      * Prepare tool window for deletion.
      */
     public void destroy() {
-    	update = false;
     	Iterator i = tabs.iterator();
     	while (i.hasNext()) ((MonitorTab) i.next()).removeTab();
     	tabs.clear();
