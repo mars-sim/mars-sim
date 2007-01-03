@@ -40,6 +40,9 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  */
 public class MonitorWindow extends ToolWindow implements TableModelListener {
 
+	// Tool name
+	public static final String NAME = "Monitor Tool";
+	
     final private static int STATUSHEIGHT = 17;
 
     // Data members
@@ -56,7 +59,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
     public MonitorWindow(MainDesktopPane desktop) {
 
         // Use TableWindow constructor
-        super("Monitor Tool", desktop);
+        super(NAME, desktop);
         
         setMaximizable(true);
 

@@ -22,6 +22,9 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  */
 public class TimeWindow extends ToolWindow implements ClockListener {
 
+	// Tool name
+	public static final String NAME = "Time Tool";		
+	
     private final static int RATIO_SCALE = 200;
 
     // Data members
@@ -44,7 +47,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
     public TimeWindow(MainDesktopPane desktop) {
 
         // Use TimeWindow constructor
-        super("Time Tool", desktop);
+        super(NAME, desktop);
 
         // Set window resizable to false.
         setResizable(false);

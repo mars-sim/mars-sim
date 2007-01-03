@@ -23,6 +23,9 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  */
 public class SearchWindow extends ToolWindow {
 
+	// Tool name
+	public static final String NAME = "Search Tool";
+	
     // Data members
     private JComboBox searchForSelect; // Category selecter
     private JList unitList; // List of selectable units
@@ -43,7 +46,7 @@ public class SearchWindow extends ToolWindow {
     public SearchWindow(MainDesktopPane desktop) {
 
         // Use ToolWindow constructor
-        super("Search Tool", desktop);
+        super(NAME, desktop);
 
         // Initialize locks
         lockUnitList = false;

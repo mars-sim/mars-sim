@@ -24,6 +24,9 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  */
 public class MissionWindow extends ToolWindow {
 
+	// Tool name
+	public static final String NAME = "Mission Tool";	
+	
 	private JList missionList;
 	private NavpointPanel navpointPane;
 	
@@ -34,7 +37,7 @@ public class MissionWindow extends ToolWindow {
 	public MissionWindow(MainDesktopPane desktop) {
 		
 		// Use ToolWindow constructor
-		super("Mission Tool", desktop);
+		super(NAME, desktop);
 		
 		// Set window resizable to false.
         setResizable(false);

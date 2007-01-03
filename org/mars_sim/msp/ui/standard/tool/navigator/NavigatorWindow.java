@@ -37,6 +37,9 @@ import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
  * interface component that presents the simulation to the user.
  */
 public class NavigatorWindow extends ToolWindow implements ActionListener {
+	
+	// Tool name
+	public static final String NAME = "Mars Navigator";
 
     // Data members
     private MapPanel map; // map navigation
@@ -71,7 +74,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     public NavigatorWindow(MainDesktopPane desktop) {
 
         // use ToolWindow constructor
-        super("Mars Navigator", desktop);
+        super(NAME, desktop);
         
         // Set window resizable to false.
         setResizable(false);

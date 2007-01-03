@@ -14,6 +14,7 @@ import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.time.MasterClock;
+import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 
 /** 
  * The MainWindow class is the primary UI frame for the project. It
@@ -81,7 +82,7 @@ public class MainWindow extends JFrame implements WindowListener {
         setVisible(true);
         
         // Open up navigator tool initially.
-        desktop.openToolWindow("Mars Navigator");
+        desktop.openToolWindow(NavigatorWindow.NAME);
     }
     
     /**
@@ -126,7 +127,7 @@ public class MainWindow extends JFrame implements WindowListener {
             	desktop.disposeAnnouncementWindow();
             	
             	// Open navigator tool after loading.
-            	desktop.openToolWindow("Mars Navigator");
+            	desktop.openToolWindow(NavigatorWindow.NAME);
             }
 		}
 		catch(Exception e) {
@@ -166,7 +167,7 @@ public class MainWindow extends JFrame implements WindowListener {
 			desktop.disposeAnnouncementWindow();
 			
 			// Open navigator tool after creating new simulation.
-			desktop.openToolWindow("Mars Navigator");
+			desktop.openToolWindow(NavigatorWindow.NAME);
 		}
 		catch(Exception e) {
 			System.err.println("Problem creating new simulation: " + e);

@@ -231,15 +231,18 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      *  @param model the new model to display
      */
     public void addModel(UnitTableModel model) {
-        ((MonitorWindow) getToolWindow("Monitor Tool")).displayModel(model);
+        ((MonitorWindow) getToolWindow(MonitorWindow.NAME)).displayModel(model);
     }
 
-    /** Centers the map and the globe on given coordinates
-     *  @param targetLocation the new center location
+    /** 
+     * Centers the map and the globe on given coordinates.
+     * Also opens the map tool if it's closed.
+     * @param targetLocation the new center location
      */
     public void centerMapGlobe(Coordinates targetLocation) {
-        ((NavigatorWindow) getToolWindow("Mars Navigator")).
+        ((NavigatorWindow) getToolWindow(NavigatorWindow.NAME)).
             updateCoords(targetLocation);
+        openToolWindow(NavigatorWindow.NAME);
     }
 
     /** Return true if tool window is open

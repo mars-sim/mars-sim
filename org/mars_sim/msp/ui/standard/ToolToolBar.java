@@ -12,6 +12,13 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
+import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
+import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
+import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
+
 /** The ToolToolBar class is a UI toolbar for holding tool buttons.
  *  The should only be one instance and is contained in the MainWindow instance.
  */
@@ -84,37 +91,37 @@ public class ToolToolBar extends JToolBar implements ActionListener {
         addSeparator();
 
 		// Add Mars navigator button
-		ToolButton navButton = new ToolButton("Mars Navigator", "Planet");
+		ToolButton navButton = new ToolButton(NavigatorWindow.NAME, "Planet");
 		navButton.addActionListener(this);
 		add(navButton);
 		toolButtons.addElement(navButton);
 
 		// Add search tool button
-		ToolButton searchButton = new ToolButton("Search Tool", "Find");
+		ToolButton searchButton = new ToolButton(SearchWindow.NAME, "Find");
 		searchButton.addActionListener(this);
 		add(searchButton);
 		toolButtons.addElement(searchButton);
 
 		// Add time tool button
-		ToolButton timeButton = new ToolButton("Time Tool", "Time");
+		ToolButton timeButton = new ToolButton(TimeWindow.NAME, "Time");
 		timeButton.addActionListener(this);
 		add(timeButton);
 		toolButtons.addElement(timeButton);
 
 		// Add monitor tool button
-		ToolButton monitorButton = new ToolButton("Monitor Tool", "Monitor");
+		ToolButton monitorButton = new ToolButton(MonitorWindow.NAME, "Monitor");
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);
 		
 		// Add sound tool button
-		ToolButton soundButton = new ToolButton("Sound Tool", "Sound");
+		ToolButton soundButton = new ToolButton(SoundWindow.NAME, "Sound");
 		soundButton.addActionListener(this);
 		add(soundButton);
 		toolButtons.addElement(soundButton);
 		
 		// Add mission tool button
-		ToolButton missionButton = new ToolButton("Mission Tool", "Mission");
+		ToolButton missionButton = new ToolButton(MissionWindow.NAME, "Mission");
 		missionButton.addActionListener(this);
 		add(missionButton);
 		toolButtons.addElement(missionButton);

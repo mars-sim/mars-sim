@@ -30,6 +30,9 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  */
 public class SoundWindow extends ToolWindow {
 
+	// Tool name
+	public static final String NAME = "Sound Tool";	
+	
 	// Data members
 	private AudioPlayer soundPlayer;
 	private JCheckBox muteCheck;
@@ -41,7 +44,7 @@ public class SoundWindow extends ToolWindow {
 	 */
 	public SoundWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
-		super("Sound Tool", desktop);
+		super(NAME, desktop);
 		
 		// Set window resizable to false.
         setResizable(false);

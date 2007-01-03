@@ -11,6 +11,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
+import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
+import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
+import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
+
 /** The MainWindowMenu class is the menu for the main window.
  */
 public class MainWindowMenu extends JMenuBar implements ActionListener, MenuListener {
@@ -78,32 +85,32 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         add(toolsMenu);
 
         // Create Mars navigator menu item
-        marsNavigatorItem = new JCheckBoxMenuItem("Mars Navigator");
+        marsNavigatorItem = new JCheckBoxMenuItem(NavigatorWindow.NAME);
         marsNavigatorItem.addActionListener(this);
         toolsMenu.add(marsNavigatorItem);
 
         // Create search tool menu item
-        searchToolItem = new JCheckBoxMenuItem("Search Tool");
+        searchToolItem = new JCheckBoxMenuItem(SearchWindow.NAME);
         searchToolItem.addActionListener(this);
         toolsMenu.add(searchToolItem);
 
         // Create time tool menu item
-        timeToolItem = new JCheckBoxMenuItem("Time Tool");
+        timeToolItem = new JCheckBoxMenuItem(TimeWindow.NAME);
         timeToolItem.addActionListener(this);
         toolsMenu.add(timeToolItem);
 
         // Create monitor tool menu item
-        monitorToolItem = new JCheckBoxMenuItem("Monitor Tool");
+        monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.NAME);
         monitorToolItem.addActionListener(this);
         toolsMenu.add(monitorToolItem);
 
         // Create sound tool menu item
-        soundToolItem = new JCheckBoxMenuItem("Sound Tool");
+        soundToolItem = new JCheckBoxMenuItem(SoundWindow.NAME);
         soundToolItem.addActionListener(this);
         toolsMenu.add(soundToolItem);
         
         // Create mission tool menu item
-        missionToolItem = new JCheckBoxMenuItem("Mission Tool");
+        missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME);
         missionToolItem.addActionListener(this);
         toolsMenu.add(missionToolItem);
         
@@ -141,38 +148,38 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
         if (selectedItem == marsNavigatorItem) {
             if (marsNavigatorItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow("Mars Navigator");
-            else mainWindow.getDesktop().closeToolWindow("Mars Navigator");
+                mainWindow.getDesktop().openToolWindow(NavigatorWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(NavigatorWindow.NAME);
         }
 
         if (selectedItem == searchToolItem) {
             if (searchToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow("Search Tool");
-            else mainWindow.getDesktop().closeToolWindow("Search Tool");
+                mainWindow.getDesktop().openToolWindow(SearchWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(SearchWindow.NAME);
         }
 
         if (selectedItem == timeToolItem) {
             if (timeToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow("Time Tool");
-            else mainWindow.getDesktop().closeToolWindow("Time Tool");
+                mainWindow.getDesktop().openToolWindow(TimeWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(TimeWindow.NAME);
         }
 
         if (selectedItem == monitorToolItem) {
             if (monitorToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow("Monitor Tool");
-            else mainWindow.getDesktop().closeToolWindow("Monitor Tool");
+                mainWindow.getDesktop().openToolWindow(MonitorWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(MonitorWindow.NAME);
         }
         
         if (selectedItem == soundToolItem) {
             if (soundToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow("Sound Tool");
-            else mainWindow.getDesktop().closeToolWindow("Sound Tool");
+                mainWindow.getDesktop().openToolWindow(SoundWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(SoundWindow.NAME);
         }
         
         if (selectedItem == missionToolItem) {
             if (missionToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow("Mission Tool");
-            else mainWindow.getDesktop().closeToolWindow("Mission Tool");
+                mainWindow.getDesktop().openToolWindow(MissionWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(MissionWindow.NAME);
         }
 
         if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
@@ -181,17 +188,17 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     // MenuListener method overriding
     public void menuSelected(MenuEvent event) {
         marsNavigatorItem.setSelected(
-            mainWindow.getDesktop().isToolWindowOpen("Mars Navigator"));
+            mainWindow.getDesktop().isToolWindowOpen(NavigatorWindow.NAME));
         searchToolItem.setSelected(
-            mainWindow.getDesktop().isToolWindowOpen("Search Tool"));
+            mainWindow.getDesktop().isToolWindowOpen(SearchWindow.NAME));
         timeToolItem.setSelected(
-            mainWindow.getDesktop().isToolWindowOpen("Time Tool"));
+            mainWindow.getDesktop().isToolWindowOpen(TimeWindow.NAME));
         monitorToolItem.setSelected(
-            mainWindow.getDesktop().isToolWindowOpen("Monitor Tool"));
+            mainWindow.getDesktop().isToolWindowOpen(MonitorWindow.NAME));
         soundToolItem.setSelected(
-        	mainWindow.getDesktop().isToolWindowOpen("Sound Tool"));
+        	mainWindow.getDesktop().isToolWindowOpen(SoundWindow.NAME));
         missionToolItem.setSelected(
-        	mainWindow.getDesktop().isToolWindowOpen("Mission Tool"));
+        	mainWindow.getDesktop().isToolWindowOpen(MissionWindow.NAME));
     }
 
     public void menuCanceled(MenuEvent event) {}
