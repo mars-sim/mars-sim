@@ -155,7 +155,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         }
 	
         // Update vehicle elevation.
-        vehicle.setElevation(getVehicleElevation());
+        updateVehicleElevationAltitude();
         
         // Update vehicle direction.
         if (isBackingUp) {
@@ -216,7 +216,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         vehicle.setDirection(vehicle.getCoordinates().getDirectionToPoint(getDestination()));
 
         // Update vehicle elevation.
-        vehicle.setElevation(getVehicleElevation());
+        updateVehicleElevationAltitude();
 
         // If speed given the terrain would be better than 1kph, return to normal driving.
         // Otherwise, set speed to .2kph for winching speed.
@@ -274,6 +274,14 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
         return resultDirection;
     }
+    
+	/**
+	 * Update vehicle with its current elevation or altitude.
+	 */
+	protected void updateVehicleElevationAltitude() {
+        // Update vehicle elevation.
+		((GroundVehicle) getVehicle()).setElevation(getVehicleElevation());
+	}
     
     /** 
      * Determine vehicle speed for a given direction.

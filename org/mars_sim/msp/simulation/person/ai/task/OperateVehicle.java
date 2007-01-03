@@ -141,6 +141,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		
         // Find current direction and update vehicle.
         vehicle.setDirection(vehicle.getCoordinates().getDirectionToPoint(getDestination()));
+        
+        // Find current elevation/altitude and update vehicle.
+        updateVehicleElevationAltitude();
 
         // Update vehicle speed.
         double speed = getSpeed(vehicle.getDirection());
@@ -201,6 +204,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             vehicle.setCoordinates(getDestination());
             vehicle.setSpeed(0D);
             vehicle.setOperator(null);
+            updateVehicleElevationAltitude();
             endTask();
             result = time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
         }
@@ -218,6 +222,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
         return result;
 	}
+	
+	/**
+	 * Update vehicle with its current elevation or altitude.
+	 */
+	abstract protected void updateVehicleElevationAltitude();
 	
     /** 
      * Determines the ETA (Estimated Time of Arrival) to the destination.

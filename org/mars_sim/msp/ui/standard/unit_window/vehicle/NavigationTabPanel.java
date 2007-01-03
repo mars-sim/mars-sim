@@ -307,9 +307,11 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Update elevation label if ground vehicle.
         if (vehicle instanceof GroundVehicle) {
             GroundVehicle gVehicle = (GroundVehicle) vehicle;
-            if (elevationCache != gVehicle.getElevation()) {
-                elevationCache = gVehicle.getElevation();
+            double currentElevation = gVehicle.getElevation();
+            if (elevationCache != currentElevation) {
+                elevationCache = currentElevation;
                 elevationLabel.setText("Elevation: " + formatter.format(elevationCache) + " km.");
+                System.out.println("Elevation update: " + elevationCache);
             }
         }
         
