@@ -311,7 +311,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             if (elevationCache != currentElevation) {
                 elevationCache = currentElevation;
                 elevationLabel.setText("Elevation: " + formatter.format(elevationCache) + " km.");
-                System.out.println("Elevation update: " + elevationCache);
             }
         }
         
