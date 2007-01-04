@@ -125,7 +125,7 @@ public class Inventory implements Serializable {
      * @return true if storage capacity.
      * @throws InventoryException if error checking capacity.
      */
-    public boolean hasAmountResourceCapacity(AmountResource resource, double amount) throws InventoryException {
+    public synchronized boolean hasAmountResourceCapacity(AmountResource resource, double amount) throws InventoryException {
     	try {
     		boolean result = false;
     		if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
@@ -160,7 +160,7 @@ public class Inventory implements Serializable {
      * @return capacity amount (kg).
      * @throws InventoryException if error determining capacity.
      */
-    public double getAmountResourceCapacity(AmountResource resource) throws InventoryException {
+    public synchronized double getAmountResourceCapacity(AmountResource resource) throws InventoryException {
     	try {
     		double result = 0D;
     		if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) 
@@ -192,7 +192,7 @@ public class Inventory implements Serializable {
      * @return stored amount (kg).
      * @throws InventoryException if error getting amount stored.
      */
-    public double getAmountResourceStored(AmountResource resource) throws InventoryException {
+    public synchronized double getAmountResourceStored(AmountResource resource) throws InventoryException {
     	try {
     		double result = 0D;
     		if ((amountResourceStoredCache != null) && amountResourceStoredCache.containsKey(resource)) 
@@ -218,7 +218,7 @@ public class Inventory implements Serializable {
      * @return set of amount resources.
      * @throws InventoryException if error getting all amount resources.
      */
-    public Set getAllAmountResourcesStored() throws InventoryException {
+    public synchronized Set getAllAmountResourcesStored() throws InventoryException {
     	try {
     		if (allStoredAmountResourcesCache != null) return new HashSet(allStoredAmountResourcesCache);
     		else {
@@ -266,7 +266,7 @@ public class Inventory implements Serializable {
      * @return remaining capacity amount (kg).
      * throws InventoryException if error getting remaining capacity.
      */
-    public double getAmountResourceRemainingCapacity(AmountResource resource) throws InventoryException {
+    public synchronized double getAmountResourceRemainingCapacity(AmountResource resource) throws InventoryException {
     	try {
     		double result = 0D;
     		if ((amountResourceRemainingCache != null) && amountResourceRemainingCache.containsKey(resource))
