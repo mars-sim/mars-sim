@@ -196,7 +196,38 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
      * @param model The new model to display.
      */
     public void displayModel(UnitTableModel model) {
-        addTab(new TableTab(model, false));
+    	if (containsModel(model)) tabsSection.setSelectedIndex(getModelIndex(model));
+    	else addTab(new TableTab(model, false));
+    }
+    
+    /**
+     * Checks if a monitor tab contains this model.
+     * @param model the model to check for.
+     * @return true if a tab contains the model.
+     */
+    public boolean containsModel(UnitTableModel model) {
+    	boolean result = false;
+    	Iterator i = tabs.iterator();
+    	while (i.hasNext()) {
+    		MonitorTab tab = (MonitorTab) i.next();
+    		if (tab.getModel().equals(model)) result = true;
+    	}
+    	return result;
+    }
+    
+    /**
+     * Gets the index of the monitor tab with the model.
+     * @param model the model to check for.
+     * @return tab index or -1 if none.
+     */
+    public int getModelIndex(UnitTableModel model) {
+    	int result = -1;
+    	Iterator i = tabs.iterator();
+    	while (i.hasNext()) {
+    		MonitorTab tab = (MonitorTab) i.next();
+    		if (tab.getModel().equals(model)) result = tabs.indexOf(tab);
+    	}
+    	return result;
     }
 
     /**

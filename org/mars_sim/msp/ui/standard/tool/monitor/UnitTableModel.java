@@ -108,7 +108,8 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return number of units.
      */
     protected int getUnitNumber() {
-    	return units.size();
+    	if (units != null) return units.size();
+    	else return 0;
     }
 
     /**
@@ -183,7 +184,7 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return the row index or -1 if not in table model.
      */
     protected int getUnitIndex(Unit unit) {
-    	if (units.contains(unit)) return units.indexOf(unit);
+    	if ((units != null) && units.contains(unit)) return units.indexOf(unit);
     	else return -1;
     }
 
@@ -209,5 +210,22 @@ abstract public class UnitTableModel extends AbstractTableModel
     public void destroy() {
     	clear();
     	units = null;
+    }
+    
+    public boolean equals(Object o) {
+    	boolean result = true;
+    	
+    	if (o instanceof UnitTableModel) {
+    		UnitTableModel oModel = (UnitTableModel) o;
+    		
+    		if (!units.equals(oModel.units)) result = false;
+    		
+    		if (!name.equals(oModel.name)) result = false;
+    		
+    		if (!statusSuffix.equals(oModel.statusSuffix)) result = false;
+    	}
+    	else result = false;
+    	
+    	return result;
     }
 }

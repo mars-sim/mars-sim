@@ -232,6 +232,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      */
     public void addModel(UnitTableModel model) {
         ((MonitorWindow) getToolWindow(MonitorWindow.NAME)).displayModel(model);
+        openToolWindow(MonitorWindow.NAME);
     }
 
     /** 

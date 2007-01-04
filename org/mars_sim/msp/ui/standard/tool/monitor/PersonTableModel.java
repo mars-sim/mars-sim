@@ -323,6 +323,17 @@ public class PersonTableModel extends UnitTableModel {
     	}
     }
     
+    public boolean equals(Object o) {
+    	boolean result = super.equals(o);
+    	
+    	if (o instanceof PersonTableModel) {
+    		PersonTableModel oModel = (PersonTableModel) o;
+    		if (!sourceType.equals(oModel.sourceType)) result = false;
+    	}
+    	
+    	return result;
+    }
+    
     /**
      * UnitListener inner class for crewable vehicle.
      */

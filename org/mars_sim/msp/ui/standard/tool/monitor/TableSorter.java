@@ -109,7 +109,7 @@ public class TableSorter extends AbstractTableModel
         if (newEvent == null) {
             int firstRow = e.getFirstRow();
             int lastRow = e.getLastRow();
-            if (e.getFirstRow() == e.getLastRow()) {
+            if ((e.getFirstRow() == e.getLastRow()) && (e.getFirstRow() != -1)) {
                 // Just one row changed so adjust the index
                 firstRow = indexes[e.getFirstRow()];
                 lastRow = indexes[e.getFirstRow()];
@@ -117,7 +117,7 @@ public class TableSorter extends AbstractTableModel
             }
             else {
                 firstRow = 0;
-                lastRow = sourceModel.getRowCount();
+                if (sourceModel != null) lastRow = sourceModel.getRowCount();
             }
             newEvent = new TableModelEvent(this, firstRow, lastRow,
                                                     e.getColumn());
@@ -206,11 +206,13 @@ public class TableSorter extends AbstractTableModel
     }
 
     public String getName() {
-        return sourceModel.getName();
+        if (sourceModel != null) return sourceModel.getName();
+        else return "";
     }
 
     public int getRowCount() {
-        return sourceModel.getRowCount();
+        if (sourceModel != null) return sourceModel.getRowCount();
+        else return 0;
     }
 
     /**
@@ -311,6 +313,6 @@ public class TableSorter extends AbstractTableModel
      * Prepares the model for deletion.
      */
     public void destroy() {
-    	sourceModel = null;
+    	// sourceModel = null;
     }
 }
