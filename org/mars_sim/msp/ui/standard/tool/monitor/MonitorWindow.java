@@ -110,7 +110,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         // Create buttons based on selection
         JButton mapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         mapButton.setMargin(new Insets(3, 4, 4, 4));
-        mapButton.setToolTipText("Center map on selected unit");
+        mapButton.setToolTipText("Locate selected unit in Mars navigator");
         mapButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             centerMap();

@@ -135,6 +135,7 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
         JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
         monitorButton.setMargin(new Insets(1, 1, 1, 1));
         monitorButton.addActionListener(this);
+        monitorButton.setToolTipText("Open tab in monitor tool for this mission.");
         memberListPanel.add(monitorButton);
     }
 	

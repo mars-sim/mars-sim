@@ -151,7 +151,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         // Prepare mission monitor button
         monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
         monitorButton.setMargin(new Insets(1, 1, 1, 1));
-        monitorButton.setToolTipText("Open Monitor tab for this mission.");
+        monitorButton.setToolTipText("Open tab in monitor tool for this mission.");
         monitorButton.addActionListener(this);
         JPanel monitorButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         monitorButtonPanel.add(monitorButton);

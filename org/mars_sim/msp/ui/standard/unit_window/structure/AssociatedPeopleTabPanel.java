@@ -72,6 +72,7 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
 		JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.addActionListener(this);
+		monitorButton.setToolTipText("Open tab in monitor tool");
 		populationDisplayPanel.add(monitorButton);		
 	}
 
