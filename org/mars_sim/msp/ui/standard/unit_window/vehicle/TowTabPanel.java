@@ -102,7 +102,7 @@ public class TowTabPanel extends TabPanel {
 	 */
 	private void addTowingButton() {
         try {
-            Component lastComponent = towingLabelPanel.getComponent(2);
+            Component lastComponent = towingLabelPanel.getComponent(1);
             if (lastComponent == towingTextLabel) {
             	towingLabelPanel.remove(towingTextLabel);
             	towingLabelPanel.add(towingButton);
@@ -118,7 +118,7 @@ public class TowTabPanel extends TabPanel {
 	 */
 	private void addTowingTextLabel() {
         try {
-            Component lastComponent = towingLabelPanel.getComponent(2); 
+            Component lastComponent = towingLabelPanel.getComponent(1); 
             if (lastComponent == towingButton) {
             	towingLabelPanel.remove(towingButton);
             	towingLabelPanel.add(towingTextLabel);
@@ -134,7 +134,7 @@ public class TowTabPanel extends TabPanel {
 	 */
 	private void addTowedButton() {
         try {
-            Component lastComponent = towedLabelPanel.getComponent(2);
+            Component lastComponent = towedLabelPanel.getComponent(1);
             if (lastComponent == towedTextLabel) {
             	towedLabelPanel.remove(towedTextLabel);
             	towedLabelPanel.add(towedButton);
@@ -150,7 +150,7 @@ public class TowTabPanel extends TabPanel {
 	 */
 	private void addTowedTextLabel() {
         try {
-            Component lastComponent = towedLabelPanel.getComponent(2); 
+            Component lastComponent = towedLabelPanel.getComponent(1); 
             if (lastComponent == towedButton) {
             	towedLabelPanel.remove(towedButton);
             	towedLabelPanel.add(towedTextLabel);
