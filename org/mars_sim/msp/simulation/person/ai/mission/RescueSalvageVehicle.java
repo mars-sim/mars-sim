@@ -394,15 +394,19 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     	// Check for vehicles with crew needing rescue first.
     	if (vehiclesNeedingRescue.size() > 0) {
     		Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), vehiclesNeedingRescue);
-    		double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
-    		if (vehicleRange <= range) result = vehicle;
+    		if (vehicle != null) {
+    			double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
+    			if (vehicleRange <= range) result = vehicle;
+    		}
     	}
     	
     	// Check for vehicles needing salvage next.
     	if ((result == null) && (emergencyBeaconVehicles.size() > 0)) {
     		Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), emergencyBeaconVehicles);
-    		double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
-    		if (vehicleRange <= range) result = vehicle;
+    		if (vehicle != null) {
+    			double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
+    			if (vehicleRange <= range) result = vehicle;
+    		}
     	}
     	
     	return result;

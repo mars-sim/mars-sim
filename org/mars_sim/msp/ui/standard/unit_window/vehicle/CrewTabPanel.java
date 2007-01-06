@@ -134,8 +134,10 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
     public void mouseClicked(MouseEvent event) {
 
         // If double-click, open person window.
-        if (event.getClickCount() >= 2) 
-            desktop.openUnitWindow((Person) crewList.getSelectedValue());
+        if (event.getClickCount() >= 2) {
+        	Person person = (Person) crewList.getSelectedValue();
+        	if (person != null) desktop.openUnitWindow(person);
+        }
     }
 
     public void mousePressed(MouseEvent event) {}
