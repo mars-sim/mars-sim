@@ -65,6 +65,16 @@ public class MissionListModel extends AbstractListModel implements
 		else return null;
 	}
 	
+	public boolean containsMission(Mission mission) {
+		if ((missions != null) && missions.contains(mission)) return true;
+		else return false;
+	}
+	
+	public int getMissionIndex(Mission mission) {
+		if (containsMission(mission)) return missions.indexOf(mission);
+		else return -1;
+	}
+	
 	public void destroy() {
 		missions.clear();
 		missions = null;

@@ -16,6 +16,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
@@ -68,6 +69,15 @@ public class MissionWindow extends ToolWindow {
         
         // Pack window
         pack();
+	}
+	
+	/**
+	 * Selects a mission for display.
+	 * @param mission the mission to select.
+	 */
+	public void selectMission(Mission mission) {
+		MissionListModel model = (MissionListModel) missionList.getModel();
+		if (model.containsMission(mission)) missionList.setSelectedValue(mission, true);
 	}
 	
 	/**

@@ -18,6 +18,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
 import org.mars_sim.msp.simulation.person.medical.DeathInfo;
 import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
@@ -33,6 +34,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     private JLabel jobLabel;
     private JComboBox jobComboBox;
     private JButton monitorButton;
+    private JButton missionButton;
     
     // Data cache
     private String jobCache = "";
@@ -127,13 +129,18 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         taskPhasePanel.add(new JScrollPane(taskPhaseTextArea), BorderLayout.CENTER);
         
         // Prepare mission top panel
-        JPanel missionTopPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        // JPanel missionTopPanel = new JPanel(new BorderLayout(0, 0));
+        JPanel missionTopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         missionTopPanel.setBorder(new MarsPanelBorder());
         activityPanel.add(missionTopPanel);
         
+        // Prepare mission left panel
+        JPanel missionLeftPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        missionTopPanel.add(missionLeftPanel, BorderLayout.CENTER);
+        
         // Prepare mission panel
         JPanel missionPanel = new JPanel(new BorderLayout(0, 0));
-        missionTopPanel.add(missionPanel);
+        missionLeftPanel.add(missionPanel);
         
         // Prepare mission label
         JLabel missionLabel = new JLabel("Mission", JLabel.CENTER);
@@ -148,18 +155,9 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         missionTextArea.setEditable(false);
         missionPanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
         
-        // Prepare mission monitor button
-        monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
-        monitorButton.setMargin(new Insets(1, 1, 1, 1));
-        monitorButton.setToolTipText("Open tab in monitor tool for this mission.");
-        monitorButton.addActionListener(this);
-        JPanel monitorButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        monitorButtonPanel.add(monitorButton);
-        missionPanel.add(monitorButtonPanel, BorderLayout.EAST);
-        
         // Prepare mission phase panel
         JPanel missionPhasePanel = new JPanel(new BorderLayout(0, 0));
-        missionTopPanel.add(missionPhasePanel);
+        missionLeftPanel.add(missionPhasePanel);
         
         // Prepare mission phase label
         JLabel missionPhaseLabel = new JLabel("Mission Phase", JLabel.CENTER);
@@ -173,6 +171,30 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         missionPhaseTextArea.setLineWrap(true);
         missionPhaseTextArea.setEditable(false);
         missionPhasePanel.add(new JScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
+        
+        // Prepare mission right panel.
+        // JPanel missionRightPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // missionTopPanel.add(missionRightPanel, BorderLayout.EAST);
+        
+        // Prepare mission button panel.
+        JPanel missionButtonPanel = new JPanel(new GridLayout(2, 1, 0, 2));
+        // missionButtonPanel.setBorder(new MarsPanelBorder());
+        // missionRightPanel.add(missionButtonPanel);
+        missionTopPanel.add(missionButtonPanel);
+        
+        // Prepare mission tool button.
+        missionButton = new JButton(ImageLoader.getIcon("Mission"));
+        missionButton.setMargin(new Insets(1, 1, 1, 1));
+        missionButton.setToolTipText("Open mission in mission tool.");
+        missionButton.addActionListener(this);
+        missionButtonPanel.add(missionButton);
+        
+        // Prepare mission monitor button
+        monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
+        monitorButton.setMargin(new Insets(1, 1, 1, 1));
+        monitorButton.setToolTipText("Open tab in monitor tool for this mission.");
+        monitorButton.addActionListener(this);
+        missionButtonPanel.add(monitorButton);
     }
     
     /**
@@ -235,12 +257,17 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     public void actionPerformed(ActionEvent event) {
     	Object source = event.getSource();
     	
-    	if (source == monitorButton) {
+    	if ((source == missionButton) || (source == monitorButton)) {
         	Person person = (Person) unit;
         	if (!person.getPhysicalCondition().isDead()) {
             	Mind mind = person.getMind();
-            	if (mind.hasActiveMission()) 
-                	desktop.addModel(new PersonTableModel(mind.getMission()));
+            	if (mind.hasActiveMission()) {
+            		if (source == missionButton) {
+            			((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(mind.getMission());
+                    	getDesktop().openToolWindow(MissionWindow.NAME);
+            		}
+            		else if (source == monitorButton) desktop.addModel(new PersonTableModel(mind.getMission()));
+            	}
         	}
     	}
     	else if (source == jobComboBox) {

@@ -34,6 +34,7 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
@@ -112,6 +113,7 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
         
         // Prepare member list panel
         JPanel memberListPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        memberListPanel.setBorder(new MarsPanelBorder());
         missionBottomPanel.add(memberListPanel, BorderLayout.SOUTH);
         
         // Create scroll panel for member list.
@@ -131,12 +133,38 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
         memberList.addMouseListener(this);
         memberScrollPanel.setViewportView(memberList);
         
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 2));
+        buttonPanel.setBorder(new MarsPanelBorder());
+        memberListPanel.add(buttonPanel);
+        
+        // Create mission tool button
+        JButton missionButton = new JButton(ImageLoader.getIcon("Mission"));
+        missionButton.setMargin(new Insets(1, 1, 1, 1));
+        missionButton.setToolTipText("Open mission in mission tool.");
+        missionButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+                Vehicle vehicle = (Vehicle) unit;
+                Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+                if (mission != null) {
+                	((MissionWindow) getDesktop().getToolWindow(MissionWindow.NAME)).selectMission(mission);
+                	getDesktop().openToolWindow(MissionWindow.NAME);
+                }
+        	}
+        });
+        buttonPanel.add(missionButton);
+        
         // Create member monitor button
         JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
         monitorButton.setMargin(new Insets(1, 1, 1, 1));
-        monitorButton.addActionListener(this);
         monitorButton.setToolTipText("Open tab in monitor tool for this mission.");
-        memberListPanel.add(monitorButton);
+        monitorButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+                Vehicle vehicle = (Vehicle) unit;
+                Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+                if (mission != null) getDesktop().addModel(new PersonTableModel(mission));
+        	}
+        });
+        buttonPanel.add(monitorButton);
     }
 	
     /**
