@@ -51,6 +51,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
     private ArrayList tabs = new ArrayList();
     private EventTab eventsTab; // Tab showing historical events.
     private MonitorTab oldTab = null;
+    private JButton mapButton;
+    private JButton detailsButton;
+    private JButton missionButton;
+    private JButton filterButton;
 
 
     /** Constructs a TableWindow object
@@ -108,7 +112,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         toolbar.addSeparator();
 
         // Create buttons based on selection
-        JButton mapButton = new JButton(ImageLoader.getIcon("CenterMap"));
+        mapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         mapButton.setMargin(new Insets(3, 4, 4, 4));
         mapButton.setToolTipText("Locate selected unit in Mars navigator.");
         mapButton.addActionListener(new ActionListener() {
@@ -118,7 +122,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
                 });
         toolbar.add(mapButton);
 
-        JButton detailsButton = new JButton(ImageLoader.getIcon("ShowDetails"));
+        detailsButton = new JButton(ImageLoader.getIcon("ShowDetails"));
         detailsButton.setToolTipText("Open unit dialog for selected unit.");
         detailsButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
@@ -127,7 +131,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
                     });
         toolbar.add(detailsButton);
         
-        JButton missionButton = new JButton(ImageLoader.getIcon("Mission"));
+        missionButton = new JButton(ImageLoader.getIcon("Mission"));
         missionButton.setToolTipText("Open selected mission in mission tool.");
         missionButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
@@ -147,7 +151,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         toolbar.add(propsButton);
         toolbar.addSeparator();
 
-		JButton filterButton = new JButton(ImageLoader.getIcon("CategoryFilter"));
+		filterButton = new JButton(ImageLoader.getIcon("CategoryFilter"));
 		filterButton.setToolTipText("Filter historical events by category.");
 		filterButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -175,9 +179,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
 
         // Add the default table tabs
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        addTab(new TableTab(new PersonTableModel(unitManager), true, false));
-        addTab(new TableTab(new VehicleTableModel(unitManager), true, false));
-        addTab(new TableTab(new SettlementTableModel(unitManager), true, false));
+        addTab(new UnitTab(new PersonTableModel(unitManager), true));
+        addTab(new UnitTab(new VehicleTableModel(unitManager), true));
+        addTab(new UnitTab(new SettlementTableModel(unitManager), true));
         addTab(new MissionTab());
         eventsTab = new EventTab(new EventTableModel(Simulation.instance().getEventManager()));
         addTab(eventsTab);
@@ -206,7 +210,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
      */
     public void displayModel(UnitTableModel model) {
     	if (containsModel(model)) tabsSection.setSelectedIndex(getModelIndex(model));
-    	else addTab(new TableTab(model, false, false));
+    	else addTab(new UnitTab(model, false));
     }
     
     /**
@@ -288,6 +292,26 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
             }
             selected.getModel().addTableModelListener(this);
             oldTab = selected;
+            
+            // Enable/disable buttons based on selected tab.
+            mapButton.setEnabled(false);
+            detailsButton.setEnabled(false);
+            missionButton.setEnabled(false);
+            filterButton.setEnabled(false);
+            
+            if (selected instanceof UnitTab) {
+            	mapButton.setEnabled(true);
+            	detailsButton.setEnabled(true);
+            }
+            else if (selected instanceof MissionTab) {
+            	mapButton.setEnabled(true);
+            	missionButton.setEnabled(true);
+            }
+            else if (selected instanceof EventTab) {
+            	mapButton.setEnabled(true);
+            	detailsButton.setEnabled(true);
+            	filterButton.setEnabled(true);
+            }
         }
     }
     

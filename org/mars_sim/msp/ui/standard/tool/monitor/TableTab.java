@@ -33,7 +33,7 @@ import org.mars_sim.msp.ui.standard.MainDesktopPane;
  * displays the contents of a UnitTableModel in a JTable window. It supports
  * the selection and deletion of rows.
  */
-class TableTab extends MonitorTab {
+abstract class TableTab extends MonitorTab {
 
     /**
      * This class provides a fixed image icon that is drawn using a Graphics

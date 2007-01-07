@@ -6,6 +6,9 @@
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
@@ -33,5 +36,19 @@ public class MissionTab extends TableTab {
     		((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission((Mission) selected);
         	desktop.openToolWindow(MissionWindow.NAME);
     	}
+    }
+    
+    /**
+     * Center the map on the first selected row.
+     * @param desktop Main window of application.
+     */
+    public void centerMap(MainDesktopPane desktop) {
+        List rows = getSelection();
+        Iterator it = rows.iterator();
+        if (it.hasNext()) {
+            Mission mission = (Mission) it.next();
+            if (mission.getPeopleNumber() > 0) 
+            	desktop.centerMapGlobe(mission.getPeople().get(0).getCoordinates());
+        }
     }
 }

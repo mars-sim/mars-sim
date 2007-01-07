@@ -8,7 +8,9 @@ package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.util.*;
 import javax.swing.table.AbstractTableModel;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.events.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -154,7 +156,12 @@ public class EventTableModel extends AbstractTableModel
     public Object getObject(int row) {
     	HistoricalEvent event = (HistoricalEvent) cachedEvents.get(row);
     	Object result = null;
-    	if (event != null) result = event.getSource();
+    	if (event != null) {
+    		Object source = event.getSource();
+    		if (source instanceof Unit) result = source;
+    		else if (source instanceof Building) 
+    			result = ((Building) source).getBuildingManager().getSettlement();
+    	}
     	return result;
     }
 
