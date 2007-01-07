@@ -14,8 +14,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -41,13 +41,14 @@ import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 /**
  * Tab panel displaying vehicle mission info.
  */
-public class MissionTabPanel extends TabPanel implements MouseListener,
-		ActionListener {
+public class MissionTabPanel extends TabPanel {
 
 	private JTextArea missionTextArea;
     private JTextArea missionPhaseTextArea;
     private DefaultListModel memberListModel;
     private JList memberList;
+    private JButton missionButton;
+    private JButton monitorButton;
     
 	// Cache
 	private String missionCache = "";
@@ -130,7 +131,14 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
         
         // Create member list
         memberList = new JList(memberListModel);
-        memberList.addMouseListener(this);
+        // memberList.addMouseListener(this);
+        memberList.addMouseListener(new MouseAdapter() {
+        	public void mouseClicked(MouseEvent arg0) {
+        		// If double-click, open person dialog.
+                if (arg0.getClickCount() >= 2) 
+                    getDesktop().openUnitWindow((Person) memberList.getSelectedValue());
+        	}
+        });
         memberScrollPanel.setViewportView(memberList);
         
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 2));
@@ -151,6 +159,7 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
                 }
         	}
         });
+        missionButton.setEnabled(mission != null);
         buttonPanel.add(missionButton);
         
         // Create member monitor button
@@ -164,6 +173,7 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
                 if (mission != null) getDesktop().addModel(new PersonTableModel(mission));
         	}
         });
+        monitorButton.setEnabled(mission != null);
         buttonPanel.add(monitorButton);
     }
 	
@@ -195,23 +205,9 @@ public class MissionTabPanel extends TabPanel implements MouseListener,
             PersonIterator i = memberCache.iterator();
             while (i.hasNext()) memberListModel.addElement(i.next());
         }
-	}
-
-	public void mouseClicked(MouseEvent arg0) {
-		// If double-click, open person window.
-        if (arg0.getClickCount() >= 2) 
-            desktop.openUnitWindow((Person) memberList.getSelectedValue());
-	}
-
-	public void mousePressed(MouseEvent arg0) {}
-	public void mouseReleased(MouseEvent arg0) {}
-	public void mouseEntered(MouseEvent arg0) {}
-	public void mouseExited(MouseEvent arg0) {}
-
-	public void actionPerformed(ActionEvent arg0) {
-		// If the mission monitor button was pressed, create tab in monitor tool.
-        Vehicle vehicle = (Vehicle) unit;
-        Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-        if (mission != null) desktop.addModel(new PersonTableModel(mission));
+        
+        // Update mission and monitor buttons.
+        missionButton.setEnabled(mission != null);
+        monitorButton.setEnabled(mission != null);
 	}
 }

@@ -129,7 +129,6 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         taskPhasePanel.add(new JScrollPane(taskPhaseTextArea), BorderLayout.CENTER);
         
         // Prepare mission top panel
-        // JPanel missionTopPanel = new JPanel(new BorderLayout(0, 0));
         JPanel missionTopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         missionTopPanel.setBorder(new MarsPanelBorder());
         activityPanel.add(missionTopPanel);
@@ -172,14 +171,8 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         missionPhaseTextArea.setEditable(false);
         missionPhasePanel.add(new JScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
         
-        // Prepare mission right panel.
-        // JPanel missionRightPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        // missionTopPanel.add(missionRightPanel, BorderLayout.EAST);
-        
         // Prepare mission button panel.
         JPanel missionButtonPanel = new JPanel(new GridLayout(2, 1, 0, 2));
-        // missionButtonPanel.setBorder(new MarsPanelBorder());
-        // missionRightPanel.add(missionButtonPanel);
         missionTopPanel.add(missionButtonPanel);
         
         // Prepare mission tool button.
@@ -187,6 +180,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         missionButton.setMargin(new Insets(1, 1, 1, 1));
         missionButton.setToolTipText("Open mission in mission tool.");
         missionButton.addActionListener(this);
+        missionButton.setEnabled(mind.getMission() != null);
         missionButtonPanel.add(missionButton);
         
         // Prepare mission monitor button
@@ -194,6 +188,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         monitorButton.setMargin(new Insets(1, 1, 1, 1));
         monitorButton.setToolTipText("Open tab in monitor tool for this mission.");
         monitorButton.addActionListener(this);
+        monitorButton.setEnabled(mind.getMission() != null);
         missionButtonPanel.add(monitorButton);
     }
     
@@ -247,6 +242,10 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         else missionPhaseCache = "";
         if ((missionPhaseCache != null) && !missionPhaseCache.equals(missionPhaseTextArea.getText())) 
             missionPhaseTextArea.setText(missionPhaseCache);
+        
+        // Update mission and monitor buttons.
+        missionButton.setEnabled(mission != null);
+        monitorButton.setEnabled(mission != null);
     }
     
     /** 
