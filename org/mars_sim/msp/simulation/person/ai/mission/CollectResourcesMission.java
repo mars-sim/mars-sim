@@ -131,7 +131,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			}
 			else {
 				setPhase(COLLECT_RESOURCES);
-				setPhaseDescription("Collection resources at " + getCurrentNavpoint().getDescription());
+				setPhaseDescription("Collecting resources at " + getCurrentNavpoint().getDescription());
 				collectionSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 			}
 		}
