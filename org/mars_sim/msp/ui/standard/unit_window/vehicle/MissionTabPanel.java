@@ -146,7 +146,7 @@ public class MissionTabPanel extends TabPanel {
         memberListPanel.add(buttonPanel);
         
         // Create mission tool button
-        JButton missionButton = new JButton(ImageLoader.getIcon("Mission"));
+        missionButton = new JButton(ImageLoader.getIcon("Mission"));
         missionButton.setMargin(new Insets(1, 1, 1, 1));
         missionButton.setToolTipText("Open mission in mission tool.");
         missionButton.addActionListener(new ActionListener() {
@@ -163,7 +163,7 @@ public class MissionTabPanel extends TabPanel {
         buttonPanel.add(missionButton);
         
         // Create member monitor button
-        JButton monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
+        monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
         monitorButton.setMargin(new Insets(1, 1, 1, 1));
         monitorButton.setToolTipText("Open tab in monitor tool for this mission.");
         monitorButton.addActionListener(new ActionListener() {
