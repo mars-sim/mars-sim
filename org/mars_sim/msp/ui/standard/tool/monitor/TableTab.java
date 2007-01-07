@@ -21,6 +21,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.UIManager;
@@ -142,8 +143,9 @@ class TableTab extends MonitorTab {
      * Create a Jtable within a tab displaying the specified model.
      * @param model The model of Units to display.
      * @param mandatory Is this table view mandatory.
+     * @param singleSelection Does this table only allow single selection?
      */
-    public TableTab(MonitorModel model, boolean mandatory) {
+    public TableTab(MonitorModel model, boolean mandatory, boolean singleSelection) {
         super(model, mandatory, TABLEICON);
 
         // Can not create icons until UIManager is up and running
@@ -252,6 +254,9 @@ class TableTab extends MonitorTab {
                 };
             };
         }
+        
+        // Set single selection mode if necessary.
+        if (singleSelection) table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);

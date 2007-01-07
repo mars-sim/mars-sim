@@ -76,7 +76,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
 
         // Create graph button
         JButton pieButton = new JButton(PieChartTab.PIEICON);
-        pieButton.setToolTipText("Create a Pie chart of a single column");
+        pieButton.setToolTipText("Create a Pie chart of a single column.");
         pieButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             createPieChart();
@@ -86,7 +86,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         toolbar.add(pieButton);
 
         JButton barButton = new JButton(BarChartTab.BARICON);
-        barButton.setToolTipText("Create a Bar chart of multiple columns");
+        barButton.setToolTipText("Create a Bar chart of multiple columns.");
         barButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             createBarChart();
@@ -95,7 +95,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         toolbar.add(barButton);
 
         JButton tabRemove = new JButton(ImageLoader.getIcon("TabRemove"));
-        tabRemove.setToolTipText("Remove selected tab");
+        tabRemove.setToolTipText("Remove selected tab.");
         tabRemove.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             MonitorTab selected = getSelected();
@@ -110,7 +110,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         // Create buttons based on selection
         JButton mapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         mapButton.setMargin(new Insets(3, 4, 4, 4));
-        mapButton.setToolTipText("Locate selected unit in Mars navigator");
+        mapButton.setToolTipText("Locate selected unit in Mars navigator.");
         mapButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             centerMap();
@@ -119,17 +119,26 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         toolbar.add(mapButton);
 
         JButton detailsButton = new JButton(ImageLoader.getIcon("ShowDetails"));
-        detailsButton.setToolTipText("Show details dialog");
+        detailsButton.setToolTipText("Open unit dialog for selected unit.");
         detailsButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             displayDetails();
                         }
                     });
         toolbar.add(detailsButton);
+        
+        JButton missionButton = new JButton(ImageLoader.getIcon("Mission"));
+        missionButton.setToolTipText("Open selected mission in mission tool.");
+        missionButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            displayMission();
+                        }
+                    });
+        toolbar.add(missionButton);
         toolbar.addSeparator();
 
         JButton propsButton = new JButton(ImageLoader.getIcon("Preferences"));
-        propsButton.setToolTipText("Change the displayed columns");
+        propsButton.setToolTipText("Change the displayed columns.");
         propsButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             displayProps();
@@ -139,7 +148,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         toolbar.addSeparator();
 
 		JButton filterButton = new JButton(ImageLoader.getIcon("CategoryFilter"));
-		filterButton.setToolTipText("Filter events by category");
+		filterButton.setToolTipText("Filter historical events by category.");
 		filterButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							filterCategories();
@@ -166,10 +175,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
 
         // Add the default table tabs
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        addTab(new TableTab(new PersonTableModel(unitManager), true));
-        addTab(new TableTab(new VehicleTableModel(unitManager), true));
-        addTab(new TableTab(new SettlementTableModel(unitManager), true));
-        addTab(new TableTab(new MissionTableModel(), true));
+        addTab(new TableTab(new PersonTableModel(unitManager), true, false));
+        addTab(new TableTab(new VehicleTableModel(unitManager), true, false));
+        addTab(new TableTab(new SettlementTableModel(unitManager), true, false));
+        addTab(new MissionTab());
         eventsTab = new EventTab(new EventTableModel(Simulation.instance().getEventManager()));
         addTab(eventsTab);
 
@@ -197,7 +206,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
      */
     public void displayModel(UnitTableModel model) {
     	if (containsModel(model)) tabsSection.setSelectedIndex(getModelIndex(model));
-    	else addTab(new TableTab(model, false));
+    	else addTab(new TableTab(model, false, false));
     }
     
     /**
@@ -322,6 +331,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         if (selected != null) {
             selected.displayDetails(desktop);
         }
+    }
+    
+    private void displayMission() {
+    	MonitorTab selected = getSelected();
+    	if ((selected instanceof MissionTab) && (selected != null)) {
+    		((MissionTab) selected).displayMission(desktop);
+    	}
     }
 
     private void displayProps() {

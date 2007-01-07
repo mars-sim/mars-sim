@@ -16,7 +16,7 @@ public class EventTab extends TableTab {
 	public EventTab(EventTableModel model) {
 		
 		// Use TableTab constructor
-		super(model, true);
+		super(model, true, false);
 	}
 
 	void filterCategories(MainDesktopPane desktop) {

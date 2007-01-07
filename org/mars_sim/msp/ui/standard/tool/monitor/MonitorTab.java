@@ -54,13 +54,11 @@ abstract class MonitorTab extends JPanel {
      * Display details for selected rows
      */
     public void displayDetails(MainDesktopPane desktop) {
-        
         List rows = getSelection();
         Iterator it = rows.iterator();
         while(it.hasNext()) {
-            Object unit = it.next();
-            if (unit instanceof Unit) 
-                desktop.openUnitWindow((Unit) unit);
+            Object selected = it.next();
+            if (selected instanceof Unit) desktop.openUnitWindow((Unit) selected);
         }
     }
 
