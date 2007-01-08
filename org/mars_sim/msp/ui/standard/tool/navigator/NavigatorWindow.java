@@ -300,6 +300,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         	else map.setMapType(SurfMarsMap.TYPE);
         	globeNav.setUSGSMap(usgsItem.isSelected());
         	legend.setUSGSMode(usgsItem.isSelected());
+        	legend.showMap();
         	topoItem.setEnabled(!usgsItem.isSelected());
         } 
         else if (source == dayNightItem) {
