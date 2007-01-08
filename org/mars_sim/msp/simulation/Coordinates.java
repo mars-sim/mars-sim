@@ -192,9 +192,12 @@ public class Coordinates implements Serializable {
         double temp2 = sinPhi * otherCoords.getSinPhi();
         double temp3 = Math.cos(Math.abs(theta - otherCoords.getTheta()));
         double temp4 = temp1 + (temp2 * temp3);
-        double angle = Math.acos(temp4);
+        
+        // Make sure temp4 is in valid -1 to 1 range.
+        if (temp4 > 1D) temp4 = 1D;
+        else if (temp4 < -1D) temp4 = -1D;
 
-        return angle;
+        return Math.acos(temp4);
     }
 
     /** Returns the distance in kilometers between this location and
