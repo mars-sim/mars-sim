@@ -180,30 +180,33 @@ public class EventTableModel extends AbstractTableModel
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
-        HistoricalEvent event = (HistoricalEvent) cachedEvents.get(rowIndex);
+        
+        if (rowIndex < cachedEvents.size()) {
+        	HistoricalEvent event = (HistoricalEvent) cachedEvents.get(rowIndex);
 
-        // Invoke the appropriate method, switch is the best solution
-        // althought disliked by some
-        switch (columnIndex) {
-            case TIMESTAMP : {
-                result = event.getTimestamp().getTimeStamp();
-            } break;
+        	// Invoke the appropriate method, switch is the best solution
+        	// althought disliked by some
+        	switch (columnIndex) {
+            	case TIMESTAMP : {
+            		result = event.getTimestamp().getTimeStamp();
+            	} break;
 
-			case CATEGORY: {
-				result = event.getCategory();
-			} break;
+            	case CATEGORY: {
+            		result = event.getCategory();
+            	} break;
 			
-            case ACTOR: {
-                result = event.getSource();
-            } break;
+            	case ACTOR: {
+            		result = event.getSource();
+            	} break;
 
-            case DESC : {
-                result = event.getDescription();
-            } break;
+            	case DESC : {
+            		result = event.getDescription();
+            	} break;
 
-            case TYPE : {
-                result = event.getType();
-            } break;
+            	case TYPE : {
+            		result = event.getType();
+            	} break;
+        	}
         }
 
         return result;

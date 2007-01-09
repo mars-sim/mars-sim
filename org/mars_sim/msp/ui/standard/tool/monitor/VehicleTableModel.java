@@ -132,129 +132,132 @@ public class VehicleTableModel extends UnitTableModel {
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
-        Vehicle vehicle = (Vehicle)getUnit(rowIndex);
-        Map resourceMap = (Map) resourceCache.get(vehicle);
+        
+        if (rowIndex < getUnitNumber()) {
+        	Vehicle vehicle = (Vehicle)getUnit(rowIndex);
+        	Map resourceMap = (Map) resourceCache.get(vehicle);
 
-        // Invoke the appropriate method, switch is the best solution
-        // althought disliked by some
-        switch (columnIndex) {
-            case NAME : {
-                result = vehicle.getName();
-            } break;
+        	// Invoke the appropriate method, switch is the best solution
+        	// althought disliked by some
+        	switch (columnIndex) {
+            	case NAME : {
+            		result = vehicle.getName();
+            	} break;
 
-            case TYPE : {
-            	result = vehicle.getDescription();
-            } break;
+            	case TYPE : {
+            		result = vehicle.getDescription();
+            	} break;
             
-            case CREW : {
-		        if (vehicle instanceof Crewable)
-		            result = new Integer(((Crewable) vehicle).getCrewNum());
-		        else result = new Integer(0);
-            } break;
+            	case CREW : {
+            		if (vehicle instanceof Crewable)
+            			result = new Integer(((Crewable) vehicle).getCrewNum());
+            		else result = new Integer(0);
+            	} break;
 
-            case WATER : {
-            	result = (Integer) resourceMap.get(AmountResource.WATER);
-            } break;
+            	case WATER : {
+            		result = (Integer) resourceMap.get(AmountResource.WATER);
+            	} break;
 
-            case FOOD : {
-            	result = (Integer) resourceMap.get(AmountResource.FOOD);
-            } break;
+            	case FOOD : {
+            		result = (Integer) resourceMap.get(AmountResource.FOOD);
+            	} break;
 
-            case OXYGEN : {
-            	result = (Integer) resourceMap.get(AmountResource.OXYGEN);
-            } break;
+            	case OXYGEN : {
+            		result = (Integer) resourceMap.get(AmountResource.OXYGEN);
+            	} break;
 
-            case METHANE : {
-            	result = (Integer) resourceMap.get(AmountResource.METHANE);
-            } break;
+            	case METHANE : {
+            		result = (Integer) resourceMap.get(AmountResource.METHANE);
+            	} break;
 
-            case ROCK_SAMPLES : {
-            	result = (Integer) resourceMap.get(AmountResource.ROCK_SAMPLES);
-            } break;
+            	case ROCK_SAMPLES : {
+            		result = (Integer) resourceMap.get(AmountResource.ROCK_SAMPLES);
+            	} break;
 
-            case SPEED : {
-                result = new Integer(new Float(vehicle.getSpeed()).intValue());
-            } break;
+            	case SPEED : {
+            		result = new Integer(new Float(vehicle.getSpeed()).intValue());
+            	} break;
 
-            case DRIVER : {
-                if (vehicle.getOperator() != null) {
-                	result = vehicle.getOperator().getOperatorName();
-                }
-                else {
-                    result = null;
-                }
-            } break;
-
-            // Status is a combination of Mechical failure and maintenance
-            case STATUS : {
-                result = vehicle.getStatus();
-            } break;
-            
-            case BEACON : {
-            	if (vehicle.isEmergencyBeacon()) result = "on";
-            	else result = "off";
-            } break;
-            
-            case RESERVED : {
-            	if (vehicle.isReserved()) result = "true";
-            	else result = "false";
-            } break;
-
-            case MALFUNCTION: {
-                Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
-                if (failure != null) result = failure.getName();
-            } break;
-
-            case LOCATION : {
-                Settlement settle = vehicle.getSettlement();
-                if (settle != null) {
-                    result = settle.getName();
-                }
-                else {
-                    result = vehicle.getCoordinates().getFormattedString();
-                }
-            } break;
-
-            case DESTINATION : {
-            	result = null;
-            	VehicleMission mission = (VehicleMission) 
-						Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            	if (mission != null) {
-            		if (mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-            			NavPoint destination = mission.getNextNavpoint();
-            			if (destination.isSettlementAtNavpoint()) result = destination.getSettlement().getName();
-            			else result = destination.getLocation().getFormattedString();
+            	case DRIVER : {
+            		if (vehicle.getOperator() != null) {
+            			result = vehicle.getOperator().getOperatorName();
             		}
-            	}
-            } break;
+            		else {
+            			result = null;
+            		}
+            	} break;
 
-            case DESTDIST : {
-            	VehicleMission mission = (VehicleMission) 
-						Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            	if (mission != null) {
-            		try {
-            			result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
-            		}
-            		catch (Exception e) {
-            			System.err.println("Error getting current leg remaining distance.");
-            			e.printStackTrace(System.err);
-            		}
-            	}
-            	else result = null;
-            } break;
+            	// Status is a combination of Mechical failure and maintenance
+            	case STATUS : {
+            		result = vehicle.getStatus();
+            	} break;
             
-            case MISSION : {
-            	VehicleMission mission = (VehicleMission) 
+            	case BEACON : {
+            		if (vehicle.isEmergencyBeacon()) result = "on";
+            		else result = "off";
+            	} break;
+            
+            	case RESERVED : {
+            		if (vehicle.isReserved()) result = "true";
+            		else result = "false";
+            	} break;
+
+            	case MALFUNCTION: {
+            		Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
+            		if (failure != null) result = failure.getName();
+            	} break;
+
+            	case LOCATION : {
+            		Settlement settle = vehicle.getSettlement();
+            		if (settle != null) {
+            			result = settle.getName();
+            		}
+            		else {
+            			result = vehicle.getCoordinates().getFormattedString();
+            		}
+            	} break;
+
+            	case DESTINATION : {
+            		result = null;
+            		VehicleMission mission = (VehicleMission) 
             			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            	if (mission != null) {
-            		result = mission.getName();
-            	}
-            	else result = null;
-            } break;
+            		if (mission != null) {
+            			if (mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+            				NavPoint destination = mission.getNextNavpoint();
+            				if (destination.isSettlementAtNavpoint()) result = destination.getSettlement().getName();
+            				else result = destination.getLocation().getFormattedString();
+            			}
+            		}
+            	} break;
+
+            	case DESTDIST : {
+            		VehicleMission mission = (VehicleMission) 
+            			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            		if (mission != null) {
+            			try {
+            				result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
+            			}
+            			catch (Exception e) {
+            				System.err.println("Error getting current leg remaining distance.");
+            				e.printStackTrace(System.err);
+            			}
+            		}
+            		else result = null;
+            	} break;
             
-			case ICE : {
-				result = (Integer) resourceMap.get(AmountResource.ICE);
-			} break;
+            	case MISSION : {
+            		VehicleMission mission = (VehicleMission) 
+            			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            		if (mission != null) {
+            			result = mission.getName();
+            		}
+            		else result = null;
+            	} break;
+            
+            	case ICE : {
+            		result = (Integer) resourceMap.get(AmountResource.ICE);
+            	} break;
+        	}
         }
 
         return result;

@@ -106,101 +106,104 @@ public class SettlementTableModel extends UnitTableModel {
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
-        Settlement settle = (Settlement)getUnit(rowIndex);
-        BuildingManager bMgr = settle.getBuildingManager();
-        Map resourceMap = (Map) resourceCache.get(settle);
+        
+        if (rowIndex < getUnitNumber()) {
+        	Settlement settle = (Settlement)getUnit(rowIndex);
+        	BuildingManager bMgr = settle.getBuildingManager();
+        	Map resourceMap = (Map) resourceCache.get(settle);
 
-        // Invoke the appropriate method, switch is the best solution
-        // althought disliked by some
-        switch (columnIndex) {
-            case NAME : {
-                result = settle.getName();
-            } break;
+        	// Invoke the appropriate method, switch is the best solution
+        	// althought disliked by some
+        	switch (columnIndex) {
+            	case NAME : {
+            		result = settle.getName();
+            	} break;
 
-            case WATER : {
-            	result = (Integer) resourceMap.get(AmountResource.WATER);
-            } break;
+            	case WATER : {
+            		result = (Integer) resourceMap.get(AmountResource.WATER);
+            	} break;
 
-            case FOOD : {
-            	result = (Integer) resourceMap.get(AmountResource.FOOD);
-            } break;
+            	case FOOD : {
+            		result = (Integer) resourceMap.get(AmountResource.FOOD);
+            	} break;
 
-            case OXYGEN : {
-            	result = (Integer) resourceMap.get(AmountResource.OXYGEN);
-            } break;
+            	case OXYGEN : {
+            		result = (Integer) resourceMap.get(AmountResource.OXYGEN);
+            	} break;
 
-            case METHANE : {
-            	result = (Integer) resourceMap.get(AmountResource.METHANE);
-            } break;
+            	case METHANE : {
+            		result = (Integer) resourceMap.get(AmountResource.METHANE);
+            	} break;
 
-            case ROCK_SAMPLES : {
-            	result = (Integer) resourceMap.get(AmountResource.ROCK_SAMPLES);
-	        } break;
+            	case ROCK_SAMPLES : {
+            		result = (Integer) resourceMap.get(AmountResource.ROCK_SAMPLES);
+            	} break;
 
-            case MALFUNCTION: {
-                int severity = 0;
-                Malfunction malfunction = settle.getMalfunctionManager().getMostSeriousMalfunction();
-                if (malfunction != null) severity = malfunction.getSeverity();
-                Iterator i = settle.getBuildingManager().getBuildings().iterator();
-                while (i.hasNext()) {
-                    Building building = (Building) i.next();
-                    Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
-                    if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
-                        malfunction = tempMalfunction;
-                        severity = tempMalfunction.getSeverity();
-                    }
-                }
-                if (malfunction != null) result = malfunction.getName();
-            } break;
+            	case MALFUNCTION: {
+            		int severity = 0;
+            		Malfunction malfunction = settle.getMalfunctionManager().getMostSeriousMalfunction();
+            		if (malfunction != null) severity = malfunction.getSeverity();
+            		Iterator i = settle.getBuildingManager().getBuildings().iterator();
+            		while (i.hasNext()) {
+            			Building building = (Building) i.next();
+            			Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
+            			if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
+            				malfunction = tempMalfunction;
+            				severity = tempMalfunction.getSeverity();
+            			}
+            		}
+            		if (malfunction != null) result = malfunction.getName();
+            	} break;
 
-            case POPULATION : {
-                result = new Integer(settle.getCurrentPopulationNum());
-            } break;
+            	case POPULATION : {
+            		result = new Integer(settle.getCurrentPopulationNum());
+            	} break;
 
-            case PARKED : {
-                result = new Integer(settle.getParkedVehicleNum());
-            } break;
+            	case PARKED : {
+            		result = new Integer(settle.getParkedVehicleNum());
+            	} break;
             
-            case POWER : {
-                result = new Integer((int) settle.getPowerGrid().getGeneratedPower());
-            } break;
+            	case POWER : {
+            		result = new Integer((int) settle.getPowerGrid().getGeneratedPower());
+            	} break;
 
-            case GREENHOUSES : {
-                int greenhouses = bMgr.getBuildings(Farming.NAME).size();
-                result = new Integer(greenhouses);
-            } break;
+            	case GREENHOUSES : {
+            		int greenhouses = bMgr.getBuildings(Farming.NAME).size();
+            		result = new Integer(greenhouses);
+            	} break;
 
-            case CROPS : {
-                int crops = 0;
-                List greenhouses = bMgr.getBuildings(Farming.NAME);
-                Iterator i = greenhouses.iterator();
-                while (i.hasNext()) {
-                	try {
-                		Building greenhouse = (Building) i.next();
-                    	Farming farm = (Farming) greenhouse.getFunction(Farming.NAME);
-                    	crops += farm.getCrops().size();
-                	}
-                	catch (Exception e) {}
-                }
+            	case CROPS : {
+            		int crops = 0;
+            		List greenhouses = bMgr.getBuildings(Farming.NAME);
+            		Iterator i = greenhouses.iterator();
+            		while (i.hasNext()) {
+            			try {
+            				Building greenhouse = (Building) i.next();
+            				Farming farm = (Farming) greenhouse.getFunction(Farming.NAME);
+            				crops += farm.getCrops().size();
+            			}
+            			catch (Exception e) {}
+            		}
                 
-                result = new Integer(crops);
-            } break;
+            		result = new Integer(crops);
+            	} break;
 
-            case HYDROGEN : {
-            	result = (Integer) resourceMap.get(AmountResource.HYDROGEN);
-            } break;
+            	case HYDROGEN : {
+            		result = (Integer) resourceMap.get(AmountResource.HYDROGEN);
+            	} break;
 
-            case WASTE_WATER : {
-            	result = (Integer) resourceMap.get(AmountResource.WASTE_WATER);
-            } break;
+            	case WASTE_WATER : {
+            		result = (Integer) resourceMap.get(AmountResource.WASTE_WATER);
+            	} break;
             
-            case CO2 : {
-            	result = (Integer) resourceMap.get(AmountResource.CARBON_DIOXIDE);
-            } break;
+            	case CO2 : {
+            		result = (Integer) resourceMap.get(AmountResource.CARBON_DIOXIDE);
+            	} break;
             
-            case ICE : {
-            	result = (Integer) resourceMap.get(AmountResource.ICE);
-            } break;
+            	case ICE : {
+            		result = (Integer) resourceMap.get(AmountResource.ICE);
+            	} break;
+        	}
         }
 
         return result;

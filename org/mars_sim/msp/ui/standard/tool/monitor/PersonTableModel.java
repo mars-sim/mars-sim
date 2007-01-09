@@ -210,86 +210,89 @@ public class PersonTableModel extends UnitTableModel {
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object result = null;
-        Person person = (Person)getUnit(rowIndex);
+        
+        if (rowIndex < getUnitNumber()) {
+        	Person person = (Person)getUnit(rowIndex);
+        	
+        	// Invoke the appropriate method, switch is the best solution
+        	// although disliked by some
+        	switch (columnIndex) {
+            	case NAME : {
+            		result = person.getName();
+            	} break;
 
-        // Invoke the appropriate method, switch is the best solution
-        // although disliked by some
-        switch (columnIndex) {
-            case NAME : {
-                result = person.getName();
-            } break;
-
-			case GENDER : {
-				String genderStr = person.getGender().substring(0, 1).toUpperCase() +
-					person.getGender().substring(1);
-				result = genderStr;
-			} break;
+            	case GENDER : {
+            		String genderStr = person.getGender().substring(0, 1).toUpperCase() +
+						person.getGender().substring(1);
+            		result = genderStr;
+            	} break;
 			
-			case PERSONALITY : {
-				result = person.getMind().getPersonalityType().getTypeString();
-			} break;
+            	case PERSONALITY : {
+            		result = person.getMind().getPersonalityType().getTypeString();
+            	} break;
 
-            case HUNGER : {
-                double hunger = person.getPhysicalCondition().getHunger();
-                result = new Integer(new Float(hunger).intValue());
-            } break;
+            	case HUNGER : {
+            		double hunger = person.getPhysicalCondition().getHunger();
+            		result = new Integer(new Float(hunger).intValue());
+            	} break;
 
-            case FATIGUE : {
-                double fatigue = person.getPhysicalCondition().getFatigue();
-                result = new Integer(new Float(fatigue).intValue());
-            } break;
+            	case FATIGUE : {
+            		double fatigue = person.getPhysicalCondition().getFatigue();
+            		result = new Integer(new Float(fatigue).intValue());
+            	} break;
             
-            case STRESS : {
-            	double stress = person.getPhysicalCondition().getStress();
-            	result = new Integer(new Double(stress).intValue()); 
-            } break;
+            	case STRESS : {
+            		double stress = person.getPhysicalCondition().getStress();
+            		result = new Integer(new Double(stress).intValue()); 
+            	} break;
 
-            case PERFORMANCE : {
-                double performance = person.getPhysicalCondition().getPerformanceFactor();
-                result = new Integer(new Float(performance * 100D).intValue());
-            } break;
+            	case PERFORMANCE : {
+            		double performance = person.getPhysicalCondition().getPerformanceFactor();
+            		result = new Integer(new Float(performance * 100D).intValue());
+            	} break;
 
-            case HEALTH : {
-                result = person.getPhysicalCondition().getHealthSituation();
-            } break;
+            	case HEALTH : {
+            		result = person.getPhysicalCondition().getHealthSituation();
+            	} break;
 
-            case LOCATION : {
-                String locationSituation = person.getLocationSituation();
-                if (locationSituation.equals(Person.INSETTLEMENT)) {
-                    if (person.getSettlement() != null) result = person.getSettlement().getName();
-                }
-                else if (locationSituation.equals(Person.INVEHICLE)) {
-                    if (person.getVehicle() != null) result = person.getVehicle().getName();
-                }
-                else result = locationSituation;
-            } break;
+            	case LOCATION : {
+            		String locationSituation = person.getLocationSituation();
+            		if (locationSituation.equals(Person.INSETTLEMENT)) {
+            			if (person.getSettlement() != null) result = person.getSettlement().getName();
+            		}
+            		else if (locationSituation.equals(Person.INVEHICLE)) {
+            			if (person.getVehicle() != null) result = person.getVehicle().getName();
+            		}
+            		else result = locationSituation;
+            	} break;
             
-            case JOB : {
-            	// If person is dead, get job from deathinfo.
-            	if (person.getPhysicalCondition().isDead()) 
-            		result = person.getPhysicalCondition().getDeathDetails().getJob();
-     			else {
-     				if (person.getMind().getJob() != null) result = person.getMind().getJob().getName();
-     				else result = null;
-            	} 
-            } break;
+            	case JOB : {
+            		// If person is dead, get job from deathinfo.
+            		if (person.getPhysicalCondition().isDead()) 
+            			result = person.getPhysicalCondition().getDeathDetails().getJob();
+            		else {
+            			if (person.getMind().getJob() != null) result = person.getMind().getJob().getName();
+            			else result = null;
+            		} 
+            	} break;
 
-            case TASK : {
-                // If the Person is dead, there is no Task Manager
-                TaskManager mgr = person.getMind().getTaskManager();
-                result = ((mgr != null)? mgr.getTaskName() : null);
-            } break;
+            	case TASK : {
+            		// If the Person is dead, there is no Task Manager
+            		TaskManager mgr = person.getMind().getTaskManager();
+            		result = ((mgr != null)? mgr.getTaskName() : null);
+            	} break;
 
-            case MISSION : {
-                Mission mission = person.getMind().getMission();
-                if (mission != null) {
-                    StringBuffer cellValue = new StringBuffer();
-                    cellValue.append(mission.getName());
-                    // cellValue.append(" - ");
-                    // cellValue.append(mission.getPhase());
-                    result = cellValue.toString();
-                }
-            } break;
+            	case MISSION : {
+            		Mission mission = person.getMind().getMission();
+            		if (mission != null) {
+            			StringBuffer cellValue = new StringBuffer();
+            			cellValue.append(mission.getName());
+            			// cellValue.append(" - ");
+            			// cellValue.append(mission.getPhase());
+            			result = cellValue.toString();
+            		}
+            	} break;
+        	}
         }
 
         return result;
