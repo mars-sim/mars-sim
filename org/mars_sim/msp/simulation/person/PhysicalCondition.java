@@ -153,7 +153,7 @@ public class PhysicalCondition implements Serializable {
         if (isDead()) return false;
 
         // See if a random illness happens.
-        Complaint randomComplaint = getMedicalManager().getProbableComplaint(person);
+        Complaint randomComplaint = getMedicalManager().getProbableComplaint(person, time);
 
         // New complaint must not exist already
         addMedicalComplaint(randomComplaint);

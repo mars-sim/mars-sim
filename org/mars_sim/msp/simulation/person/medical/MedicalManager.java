@@ -206,13 +206,17 @@ public class MedicalManager implements Serializable {
      * rating. The physical characteristics of the Person are taken into account.
      *
      * @param person The person that may have a complaint.
+     * @param time the time passing (millisols).
      * @return Possible Complaint, this maybe null.
      */
-    public Complaint getProbableComplaint(Person person) {
+    public Complaint getProbableComplaint(Person person, double time) {
         Complaint complaint = null;
 
         // Get a random number from 0 to the total probability weight.
-        int r = RandomUtil.getRandomInt(Complaint.MAXPROBABILITY);
+        double r = RandomUtil.getRandomDouble(Complaint.MAXPROBABILITY);
+        
+        // Take into account the time passing (compared to one sol).
+        r *= (1000D / time);
 
         // Get the list of possible Complaints, find all Medical complaints
         // that have a probability higher that the calculated, i.e.

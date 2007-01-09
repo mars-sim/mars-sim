@@ -21,9 +21,9 @@ public class Complaint implements Serializable {
 
     /**
      * The maximum probability rating. This allows the complaint to be specifed
-     * to 1/100 th of a percentage.
+     * to 1/10th of a percentage.
      */
-    public final static int MAXPROBABILITY = 100000;
+    public final static double MAXPROBABILITY = 10000D;
 
 
     private String name;                    // Identifying name
