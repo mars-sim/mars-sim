@@ -147,9 +147,12 @@ public class Mind implements Serializable {
      * @param locked is the job locked so another can't be chosen?
      */
     public void setJob(Job newJob, boolean locked) {
-    	job = newJob;
+    	
     	jobLock = locked;
-    	person.fireUnitUpdate(JOB_EVENT, newJob);
+    	if (!job.equals(newJob)) {
+    		job = newJob;
+    		person.fireUnitUpdate(JOB_EVENT, newJob);
+    	}
     }
 
     /** Returns true if person has an active mission.
