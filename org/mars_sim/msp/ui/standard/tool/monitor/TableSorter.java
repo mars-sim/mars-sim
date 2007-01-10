@@ -78,7 +78,7 @@ public class TableSorter extends AbstractTableModel
             indexes[row] = row;
         }
     }
-
+    
     /**
      * Fired when there are changed to the source table. If any rows have been
      * deleted/inserted or a change to the sorted column, then re-sort

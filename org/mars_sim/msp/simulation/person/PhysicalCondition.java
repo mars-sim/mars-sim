@@ -125,6 +125,8 @@ public class PhysicalCondition implements Serializable {
     boolean timePassing(double time, LifeSupport support,
                         PersonConfig config) {
         
+    	boolean illnessEvent = false;
+    	
         // Check the existing problems
         if (!problems.isEmpty()) {
             List newProblems = new ArrayList();
@@ -140,13 +142,19 @@ public class PhysicalCondition implements Serializable {
 
                 if (problem.getCured() || (next != null)) iter.remove();
 
+                // Throw update event if illness is cured.
+                if (problem.getCured()) illnessEvent = true;
+                
                 // If a new problem, check it doesn't exist already
                 if (next != null) newProblems.add(next);
             }
-
+            
             // Add the new problems
             Iterator newIter = newProblems.iterator();
-            while(newIter.hasNext()) addMedicalComplaint((Complaint) newIter.next());
+            while(newIter.hasNext()) {
+            	addMedicalComplaint((Complaint) newIter.next());
+            	illnessEvent = true;
+            }
         }
 
         // Has the person died ?
@@ -157,6 +165,7 @@ public class PhysicalCondition implements Serializable {
 
         // New complaint must not exist already
         addMedicalComplaint(randomComplaint);
+        if (randomComplaint != null) illnessEvent = true;
 
         // Consume necessary oxygen and water.
         try {
@@ -179,6 +188,8 @@ public class PhysicalCondition implements Serializable {
 		// Calculate performance and most serious illness.
         recalculate();
 
+        if (illnessEvent) person.fireUnitUpdate(ILLNESS_EVENT);
+        
         return (!isDead());
     }
 
@@ -189,7 +200,6 @@ public class PhysicalCondition implements Serializable {
         if ((complaint != null) && !problems.containsKey(complaint)) {
 	        HealthProblem problem = new HealthProblem(complaint, person, person.getAccessibleAid());
 	        problems.put(complaint, problem);
-	        person.fireUnitUpdate(ILLNESS_EVENT, complaint);
 	        recalculate();
 	    }
     }
@@ -270,12 +280,18 @@ public class PhysicalCondition implements Serializable {
         if ((bounds == MIN_VALUE) && (actual < required)) newProblem = true;
         if ((bounds == MAX_VALUE) && (actual > required)) newProblem = true;
 
-        if (newProblem) addMedicalComplaint(complaint);
+        if (newProblem) {
+        	addMedicalComplaint(complaint);
+        	person.fireUnitUpdate(ILLNESS_EVENT);
+        }
         else {
             //Is the person suffering from the illness, if so recovery
             // as the amount has been provided
             HealthProblem illness = (HealthProblem)problems.get(complaint);
-            if (illness != null) illness.startRecovery();
+            if (illness != null) {
+            	illness.startRecovery();
+            	person.fireUnitUpdate(ILLNESS_EVENT);
+            }
         }
         return newProblem;
     }
@@ -417,6 +433,7 @@ public class PhysicalCondition implements Serializable {
 					Complaint anxietyAttack = getMedicalManager().getComplaintByName(ANXIETY_ATTACK);
 					if (anxietyAttack != null) {
 						addMedicalComplaint(anxietyAttack);
+						person.fireUnitUpdate(ILLNESS_EVENT);
 						// System.out.println(person.getName() + " has an anxiety attack.");
 					}
 					else System.err.println("Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");

@@ -512,8 +512,10 @@ public class MalfunctionManager implements Serializable {
                 PersonIterator i2 = people.iterator();
                 while (i2.hasNext()) {
                     Person person = i2.next();
-                    if (RandomUtil.lessThanRandPercent(probability))
-                    person.getPhysicalCondition().addMedicalComplaint(complaint);
+                    if (RandomUtil.lessThanRandPercent(probability)) {
+                    	person.getPhysicalCondition().addMedicalComplaint(complaint);
+                    	person.fireUnitUpdate(PhysicalCondition.ILLNESS_EVENT);
+                    }
                 }
             }
         }

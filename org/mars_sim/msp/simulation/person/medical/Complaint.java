@@ -43,10 +43,10 @@ public class Complaint implements Serializable {
      * @param seriousness How serious is this complaint.
      * @param degrade The time it takes before this complaint advances, if this
      * value is zero, then the Person can shelf heel themselves. This value is
-     * in millisols.
+     * in sols.
      * @param recovery The time is takes for a Person to recover. If this value
      * is zero it means the complaint results in death unless treated. This
-     * value is in millisols.
+     * value is in sols.
      * @param probability The probability of this illness occuring, this can be
      * between 0 and MAXPROBABILITY.
      * @param performance The percentage that a Persons performance is decreased.

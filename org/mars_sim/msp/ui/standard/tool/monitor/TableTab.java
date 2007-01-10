@@ -182,7 +182,7 @@ abstract class TableTab extends MonitorTab {
     					while (i.hasNext()) {
     						Object selectedObject = i.next();
     						for (int x = 0; x < model.getRowCount(); x++) {
-    							if (selectedObject == model.getObject(x)) addRowSelectionInterval(x, x);
+    							if (selectedObject.equals(model.getObject(x))) addRowSelectionInterval(x, x);
     						}
     					}
             		}

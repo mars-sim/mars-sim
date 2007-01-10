@@ -82,6 +82,7 @@ public class HealthProblem implements Serializable {
      */
     private void setState(int newState) {
     	state = newState;
+    	sufferer.fireUnitUpdate(PhysicalCondition.ILLNESS_EVENT, illness);
 		// System.out.println(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
     }
     
@@ -115,7 +116,8 @@ public class HealthProblem implements Serializable {
      * @return Percentage value.
      */
     private int getHealthRating() {
-        return (int)((timePassed * 100D) / duration);
+        if (duration > 0) return (int)((timePassed * 100D) / duration);
+        else return 100;
     }
 
     /**
