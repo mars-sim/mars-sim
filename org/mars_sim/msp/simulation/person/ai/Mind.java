@@ -149,7 +149,7 @@ public class Mind implements Serializable {
     public void setJob(Job newJob, boolean locked) {
     	
     	jobLock = locked;
-    	if (!job.equals(newJob)) {
+    	if (!newJob.equals(job)) {
     		job = newJob;
     		person.fireUnitUpdate(JOB_EVENT, newJob);
     	}
