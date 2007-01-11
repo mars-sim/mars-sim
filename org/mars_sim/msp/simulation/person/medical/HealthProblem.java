@@ -115,7 +115,7 @@ public class HealthProblem implements Serializable {
      * illness.
      * @return Percentage value.
      */
-    private int getHealthRating() {
+    public int getHealthRating() {
         if (duration > 0) return (int)((timePassed * 100D) / duration);
         else return 100;
     }
@@ -165,6 +165,7 @@ public class HealthProblem implements Serializable {
      * @return Name of the complaint prefixed by the status.
      */
     public String getSituation() {
+    	/*
         if (getState() == RECOVERING) {
             return "Recovering " + illness.getName();
         }
@@ -174,7 +175,8 @@ public class HealthProblem implements Serializable {
         else {
             // return illness.getName();
         	return toString();
-        }
+        }*/
+    	return toString();
     }
     
     /**

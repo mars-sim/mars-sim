@@ -205,7 +205,11 @@ public class HealthTabPanel extends TabPanel {
             
             if (problem != null) {
                 if (column == 0) return problem.getIllness().getName();
-                else if (column == 1) return problem.getStateString();
+                else if (column == 1) {
+                	String conditionStr = problem.getStateString();
+                	if (!condition.isDead()) conditionStr += " (" + problem.getHealthRating() + "%)";
+                	return conditionStr;
+                }
                 else return "unknown";
             }
             else return "unknown";

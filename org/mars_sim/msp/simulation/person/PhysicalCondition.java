@@ -129,6 +129,9 @@ public class PhysicalCondition implements Serializable {
     	
         // Check the existing problems
         if (!problems.isEmpty()) {
+        	// Throw illness event if any problems already exist.
+        	illnessEvent = true;
+        	
             List newProblems = new ArrayList();
 
             Iterator iter = problems.values().iterator();
@@ -141,9 +144,6 @@ public class PhysicalCondition implements Serializable {
                 Complaint next = problem.timePassing(time, this);
 
                 if (problem.getCured() || (next != null)) iter.remove();
-
-                // Throw update event if illness is cured.
-                if (problem.getCured()) illnessEvent = true;
                 
                 // If a new problem, check it doesn't exist already
                 if (next != null) newProblems.add(next);
