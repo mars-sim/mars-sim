@@ -240,7 +240,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	
 		// System.out.println(getVehicle().getName() + " rendezvous with " + vehicleTarget.getName());
 		
-		// If rescuing vehicle crew, load rescue life support resources into vehicle.
+		// If rescuing vehicle crew, load rescue life support resources into vehicle (if possible).
 		if (rescue) {
 			try {
 				Map rescueResources = determineRescueResourcesNeeded(true);
@@ -248,8 +248,13 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				while (i.hasNext()) {
 					AmountResource resource = (AmountResource) i.next();
 					double amount = ((Double) rescueResources.get(resource)).doubleValue();
-					getRover().getInventory().retrieveAmountResource(resource, amount);
-					vehicleTarget.getInventory().storeAmountResource(resource, amount);
+					Inventory roverInv = getRover().getInventory();
+					Inventory targetInv = vehicleTarget.getInventory();
+					double amountNeeded = amount - targetInv.getAmountResourceStored(resource);
+					if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource) > amountNeeded)) {
+						roverInv.retrieveAmountResource(resource, amountNeeded);
+						targetInv.storeAmountResource(resource, amountNeeded);
+					}
 				}
 			}
 			catch (Exception e) {
