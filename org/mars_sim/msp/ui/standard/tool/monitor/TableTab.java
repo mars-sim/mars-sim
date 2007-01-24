@@ -290,7 +290,8 @@ abstract class TableTab extends MonitorTab {
         int indexes[] = table.getSelectedRows();
         ArrayList selectedRows = new ArrayList();
         for(int i = 0; i < indexes.length; i++) {
-            selectedRows.add(target.getObject(indexes[i]));
+        	Object selected = target.getObject(indexes[i]);
+        	if (selected != null) selectedRows.add(selected);
         }
 
         return selectedRows;

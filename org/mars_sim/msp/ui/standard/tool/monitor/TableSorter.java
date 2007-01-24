@@ -239,7 +239,9 @@ public class TableSorter extends AbstractTableModel
      * @return List of objects.
      */
     public Object getObject(int row) {
-        return sourceModel.getObject(indexes[row]);
+    	if (row < indexes.length)
+    		return sourceModel.getObject(indexes[row]);
+    	else return null;
     }
 
     /**
