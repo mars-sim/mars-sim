@@ -224,6 +224,22 @@ public class MainWindow extends JFrame implements WindowListener {
 	    }
     }
     
+    /**
+     * Pauses the simulation and opens an announcement window.
+     */
+    public void pauseSimulation() {
+    	desktop.openAnnouncementWindow("Pausing simulation");
+    	Simulation.instance().getMasterClock().setPaused(true);
+    }
+    
+    /**
+     * Closes the announcement window and unpauses the simulation.
+     */
+    public void unpauseSimulation() {
+    	Simulation.instance().getMasterClock().setPaused(false);
+    	desktop.disposeAnnouncementWindow();
+    }
+    
     /** 
      * Create a new unit button in toolbar.
      *

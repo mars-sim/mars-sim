@@ -30,6 +30,7 @@ public class MasterClock implements Runnable, Serializable {
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
     private transient volatile boolean keepRunning;  // Runnable flag
+    private transient volatile boolean isPaused; // Pausing clock.
     private volatile double timeRatio;     // Simulation/real-time ratio
     private transient volatile boolean loadSimulation; // Flag for loading a new simulation.
     private transient volatile boolean saveSimulation; // Flag for saving a simulation.
@@ -193,41 +194,40 @@ public class MasterClock implements Runnable, Serializable {
         	long pauseTime = TIME_PULSE_LENGTH - lastTimeDiff;
         	if (pauseTime < 10L) pauseTime = 10L;
         	
-            try {
-                Thread.sleep(pauseTime);
-            } 
-            catch (InterruptedException e) {}
+        	try {
+        		Thread.sleep(pauseTime);
+        	} 
+        	catch (InterruptedException e) {}
             
-			try {
-				//Increment the uptimer
-				uptimer.addTime(TIME_PULSE_LENGTH);
+        	if (!isPaused()) {
+        		try {
+        			//Increment the uptimer
+        			uptimer.addTime(TIME_PULSE_LENGTH);
 
-				// Get the time pulse length in millisols.
-				double timePulse = getTimePulse();
+        			// Get the time pulse length in millisols.
+        			double timePulse = getTimePulse();
 
-				long startTime = System.nanoTime();
+        			long startTime = System.nanoTime();
         		
-				// Add time pulse length to Earth and Mars clocks. 
-				earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
-				marsTime.addTime(timePulse);
+        			// Add time pulse length to Earth and Mars clocks. 
+        			earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
+        			marsTime.addTime(timePulse);
 				
-				synchronized(listeners) {
-					// Send clock pulse to listeners.
-					Iterator i = listeners.iterator();
-					while (i.hasNext()) ((ClockListener) i.next()).clockPulse(timePulse);
-				}
+        			synchronized(listeners) {
+        				// Send clock pulse to listeners.
+        				Iterator i = listeners.iterator();
+        				while (i.hasNext()) ((ClockListener) i.next()).clockPulse(timePulse);
+        			}
 				
-				// Send simulation a clock pulse representing the time pulse length (in millisols).
-				// Simulation.instance().clockPulse(timePulse);
-				
-				long endTime = System.nanoTime();
-				lastTimeDiff = (endTime - startTime) / 1000000L;
-				// System.out.println("time: " + lastTimeDiff);
-			}
-			catch (Exception e) {
-				e.printStackTrace(System.err);
-				stop();
-			}
+        			long endTime = System.nanoTime();
+        			lastTimeDiff = (endTime - startTime) / 1000000L;
+        			// System.out.println("time: " + lastTimeDiff);
+        		}
+        		catch (Exception e) {
+        			e.printStackTrace(System.err);
+        			stop();
+        		}
+        	}
 			
 			try {
         		if (saveSimulation) {
@@ -260,5 +260,21 @@ public class MasterClock implements Runnable, Serializable {
      */
     public void stop() {
         keepRunning = false;
+    }
+    
+    /**
+     * Set if the simulation is paused or not.
+     * @param isPaused true if simulation is paused.
+     */
+    public void setPaused(boolean isPaused) {
+    	this.isPaused = isPaused;
+    }
+    
+    /**
+     * Checks if the simulation is paused or not.
+     * @return true if paused.
+     */
+    public boolean isPaused() {
+    	return isPaused;
     }
 }
