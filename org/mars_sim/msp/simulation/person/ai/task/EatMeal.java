@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.*;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
@@ -81,7 +82,11 @@ class EatMeal extends Task implements Serializable {
 		}
 		
 		// Check if there's a cooked meal at a local kitchen.
-		if (getKitchenWithFood(person) != null) result *= 5;
+		if (getKitchenWithFood(person) != null) result *= 5D;
+		else {
+			// Check if there is food available to eat.
+			if (!isFoodAvailable(person)) result = 0D;
+		}
 	
         return result;
     }
@@ -189,6 +194,26 @@ class EatMeal extends Task implements Serializable {
 		}
     	
     	return result;
+    }
+    
+    /**
+     * Checks if there is food available for the person.
+     * @param person the person to check.
+     * @return true if food is available.
+     */
+    private static boolean isFoodAvailable(Person person) {
+    	boolean result = false;
+		Unit containerUnit = person.getContainerUnit();
+		if (containerUnit != null) {
+			try {
+				Inventory inv = containerUnit.getInventory();
+				if (inv.getAmountResourceStored(AmountResource.FOOD) > 0D) result = true;;
+			}
+			catch (InventoryException e) {
+				e.printStackTrace(System.err);
+			}
+		}
+		return result;
     }
     
 	/**
