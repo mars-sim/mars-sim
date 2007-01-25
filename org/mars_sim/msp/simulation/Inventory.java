@@ -327,11 +327,11 @@ public class Inventory implements Serializable {
     					}
     				}
     				
-    				if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
-    				
     				if (remainingAmount <= 0D) clearAmountResourceStoredCache();
     				else throw new InventoryException(resource.getName() + 
     						" could not be totally stored. Remaining: " + remainingAmount);
+    				
+    				if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
     			}
     			else throw new InventoryException("Insufficiant capacity to store " + resource.getName() + ", capacity: " + 
     					getAmountResourceRemainingCapacity(resource) + ", attempted: " + amount);
@@ -375,11 +375,11 @@ public class Inventory implements Serializable {
     	    		}
     			}
     			
-    			if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
-    			
     			if (remainingAmount <= 0D) clearAmountResourceStoredCache();
     			else throw new InventoryException(resource.getName() + 
             			" could not be totally retrieved. Remaining: " + remainingAmount);
+    			
+    			if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
         	}
         	else throw new InventoryException("Insufficiant stored amount to retrieve " + resource.getName() + 
         			", stored: " + getAmountResourceStored(resource) + ", attempted: " + amount);
