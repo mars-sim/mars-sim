@@ -123,21 +123,9 @@ public class MissionWindow extends ToolWindow {
 		// Pause simulation.
 		desktop.getMainWindow().pauseSimulation();
 		
-		System.out.println("Creating new mission.");
-		CreateMissionWizard wizard = new CreateMissionWizard();
-		desktop.add(wizard, 0);
-		
-		int Xloc = (desktop.getWidth() - wizard.getWidth()) / 2;
-		int Yloc = (desktop.getHeight() - wizard.getHeight()) / 2;
-        wizard.setLocation(Xloc, Yloc);
-		
-		try {
-			wizard.setSelected(true);
-		}
-		catch (java.beans.PropertyVetoException e) {}
-		
-		wizard.moveToFront();
-		
+		// Create new mission wizard.
+		new CreateMissionWizard(desktop.getMainWindow());
+        
 		// Unpause simulation.
 		desktop.getMainWindow().unpauseSimulation();
 	}
