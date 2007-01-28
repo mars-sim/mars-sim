@@ -82,9 +82,11 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 		buf.append("  Kyur Thadeshwar - Java Programming\n");
 		buf.append("  Kent Primrose - Java Programming, JUnit tests\n");
 		buf.append("  Dima Stephanchuk - Java Programmer, sound\n");
-		buf.append("  Paula Jenkins - Voice Actress\n\n");
+		buf.append("  Paula Jenkins - Voice Actress\n");
+		buf.append("  Daniel Ferenc - Parts (repair/maintenance)\n\n");
 
         buf.append("Testing and Recommendations:\n");
+        buf.append("  Karen Andersen\n");
         buf.append("  Trey Monty\n");
         buf.append("  Rik Declercq\n");
         buf.append("  Claude David\n");
