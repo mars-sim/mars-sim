@@ -33,6 +33,9 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class TravelToSettlement extends RoverMission implements Serializable {
 	
+	// Default description.
+	public static final String DEFAULT_DESCRIPTION = "Travel To Settlement";
+	
 	// Mission event types
 	public static final String DESTINATION_SETTLEMENT = "destination settlement";
 	
@@ -54,7 +57,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      */
     public TravelToSettlement(Person startingPerson) throws MissionException {
     	// Use RoverMission constructor
-        super("Travel To Settlement", startingPerson);
+        super(DEFAULT_DESCRIPTION, startingPerson);
         
         if (!isDone()) {
         	

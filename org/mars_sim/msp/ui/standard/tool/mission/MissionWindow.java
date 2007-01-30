@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.tool.mission.create_wizard.CreateMissionWizard;
 
 /**
  * Window for the mission tool.

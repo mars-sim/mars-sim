@@ -22,6 +22,9 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class Exploration extends CollectResourcesMission {
 
+	// Default description.
+	public static final String DEFAULT_DESCRIPTION = "Exploration";
+	
 	// Amount of rock samples to be gathered at a given site (kg). 
 	private static final double SITE_GOAL = 40D;
 	
@@ -29,7 +32,7 @@ public class Exploration extends CollectResourcesMission {
 	private static final double COLLECTION_RATE = .1D;
 	
 	// Number of specimen containers required for the mission. 
-	private static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
+	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
 	
 	//	Number of collection sites.
 	private static final int NUM_SITES = 5;
@@ -45,7 +48,7 @@ public class Exploration extends CollectResourcesMission {
 	public Exploration(Person startingPerson) throws MissionException {
 		
 		// Use CollectResourcesMission constructor.
-		super("Exploration", startingPerson, AmountResource.ROCK_SAMPLES, 
+		super(DEFAULT_DESCRIPTION, startingPerson, AmountResource.ROCK_SAMPLES, 
 			SITE_GOAL, COLLECTION_RATE, SpecimenContainer.class, 
 			REQUIRED_SPECIMEN_CONTAINERS, NUM_SITES, MIN_PEOPLE);
 	}

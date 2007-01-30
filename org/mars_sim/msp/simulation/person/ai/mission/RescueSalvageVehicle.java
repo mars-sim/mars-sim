@@ -38,6 +38,9 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  */
 public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
+	// Default description.
+	public static final String DEFAULT_DESCRIPTION = "Rescue/Salvage Vehicle";
+	
 	// Static members
 	private static final int MISSION_MIN_MEMBERS = 2;
 	private static final int MISSION_MAX_MEMBERS = 3;
@@ -60,7 +63,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
      */
     public RescueSalvageVehicle(Person startingPerson) throws MissionException {
     	// Use RoverMission constructor
-        super("Rescue/Salvage Vehicle", startingPerson, MISSION_MIN_MEMBERS);   
+        super(DEFAULT_DESCRIPTION, startingPerson, MISSION_MIN_MEMBERS);   
         
         if (!isDone()) {
         	startingSettlement = startingPerson.getSettlement();

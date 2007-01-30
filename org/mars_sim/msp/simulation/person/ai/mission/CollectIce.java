@@ -19,11 +19,14 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  */
 public class CollectIce extends CollectResourcesMission {
 
+	// Default description.
+	public static final String DEFAULT_DESCRIPTION = "Ice Prospecting";
+	
 	// Amount of ice to be gathered at a given site (kg). 
 	private static final double SITE_GOAL = 1000D;
 	
 	// Number of bags required for the mission. 
-	private static final int REQUIRED_BAGS = 20;
+	public static final int REQUIRED_BAGS = 20;
 	
 	// Collection rate of ice during EVA (kg/millisol).
 	private static final double COLLECTION_RATE = 1D;
@@ -42,7 +45,7 @@ public class CollectIce extends CollectResourcesMission {
 	public CollectIce(Person startingPerson) throws MissionException {
 		
 		// Use CollectResourcesMission constructor.
-		super("Ice Prospecting", startingPerson, AmountResource.ICE, SITE_GOAL, COLLECTION_RATE, 
+		super(DEFAULT_DESCRIPTION, startingPerson, AmountResource.ICE, SITE_GOAL, COLLECTION_RATE, 
 				Bag.class, REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 	
