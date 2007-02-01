@@ -2,10 +2,7 @@ package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,8 +11,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
@@ -29,6 +24,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementCollection;
+import org.mars_sim.msp.simulation.structure.SettlementIterator;
 
 class StartingSettlementPanel extends WizardPanel {
 
@@ -58,8 +54,8 @@ class StartingSettlementPanel extends WizardPanel {
         
         settlementTableModel = new SettlementTableModel();
         settlementTable = new JTable(settlementTableModel);
-        settlementTable.getColumnModel().getColumn(0).setPreferredWidth(50);
-        settlementTable.setDefaultRenderer(Object.class, new LocalRenderer());
+        settlementTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
         settlementTable.setRowSelectionAllowed(true);
         settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         settlementTable.getSelectionModel().addListSelectionListener(
@@ -93,7 +89,7 @@ class StartingSettlementPanel extends WizardPanel {
 
 	void commitChanges() {
 		int selectedIndex = settlementTable.getSelectedRow();
-		Settlement selectedSettlement = settlementTableModel.getSettlement(selectedIndex);
+		Settlement selectedSettlement = (Settlement) settlementTableModel.getUnit(selectedIndex);
 		getWizard().missionBean.setStartingSettlement(selectedSettlement);
 	}
 
@@ -103,20 +99,20 @@ class StartingSettlementPanel extends WizardPanel {
 	}
 	
 	void updatePanel() {
-		settlementTableModel.updateTableColumns();
+		settlementTableModel.updateTable();
 	}
 	
-    private class SettlementTableModel extends AbstractTableModel {
-    	
-    	SettlementCollection settlements;
-    	List columns;
+    private class SettlementTableModel extends UnitTableModel {
     	
     	private SettlementTableModel() {
+    		// Use UnitTableModel constructor.
+    		super();
     		
     		UnitManager manager = Simulation.instance().getUnitManager();
-    		settlements = manager.getSettlements().sortByName();
+    		SettlementCollection settlements = manager.getSettlements().sortByName();
+    		SettlementIterator i = settlements.iterator();
+    		while (i.hasNext()) units.add(i.next());
     		
-    		columns = new ArrayList();
     		columns.add("Name");
     		columns.add("Pop.");
     		columns.add("Rovers");
@@ -127,23 +123,11 @@ class StartingSettlementPanel extends WizardPanel {
     		columns.add("EVA Suits");
     	}
     	
-    	public int getRowCount() {
-            return settlements.size();
-        }
-    	
-    	public int getColumnCount() {
-            return columns.size();
-        }
-    	
-    	public String getColumnName(int columnIndex) {
-    		return (String) columns.get(columnIndex);
-        }
-    	
     	public Object getValueAt(int row, int column) {
     		Object result = "unknown";
     		
-            if (row < settlements.size()) {
-            	Settlement settlement = (Settlement) settlements.get(row);
+            if (row < units.size()) {
+            	Settlement settlement = (Settlement) getUnit(row);
             	Inventory inv = settlement.getInventory();
             	if (column == 0) 
             		result = settlement.getName();
@@ -178,14 +162,7 @@ class StartingSettlementPanel extends WizardPanel {
             return result;
         }
     	
-    	Settlement getSettlement(int row) {
-    		Settlement result = null;
-    		if ((row > -1) && (row < getRowCount())) 
-    			result = (Settlement) settlements.get(row);
-    		return result;
-    	}
-    	
-    	void updateTableColumns() {
+    	void updateTable() {
     		if (columns.size() == 9) columns.remove(8);
     		String type = getWizard().missionBean.getType();
     		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) columns.add("Specimen Containers");
@@ -195,7 +172,7 @@ class StartingSettlementPanel extends WizardPanel {
     	
     	boolean isFailureCell(int row, int column) {
     		boolean result = false;
-    		Settlement settlement = (Settlement) settlements.get(row);
+    		Settlement settlement = (Settlement) getUnit(row);
     		Inventory inv = settlement.getInventory();
     		
     		try {
@@ -231,27 +208,6 @@ class StartingSettlementPanel extends WizardPanel {
     			}
     		}
     		catch (InventoryException e) {}
-    		
-    		return result;
-    	}
-    	
-    	boolean isFailureRow(int row) {
-    		boolean result = false;
-    		for (int x = 0; x < getColumnCount(); x++) {
-    			if (isFailureCell(row, x)) result = true;
-    		}
-    		return result;
-    	}
-    }
-    
-    private class LocalRenderer extends DefaultTableCellRenderer {
-    	
-    	public Component getTableCellRendererComponent(JTable table, Object value, 
-    			boolean isSelected, boolean hasFocus, int row, int column) {
-    		
-    		Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-    		if (settlementTableModel.isFailureCell(row, column)) setBackground(Color.RED);
-    		else if (!isSelected) setBackground(Color.WHITE);
     		
     		return result;
     	}

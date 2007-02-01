@@ -2,9 +2,6 @@ package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -13,14 +10,13 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 class VehiclePanel extends WizardPanel {
 
@@ -50,8 +46,8 @@ class VehiclePanel extends WizardPanel {
         
         vehicleTableModel = new VehicleTableModel();
         vehicleTable = new JTable(vehicleTableModel);
-        vehicleTable.getColumnModel().getColumn(0).setPreferredWidth(50);
-        vehicleTable.setDefaultRenderer(Object.class, new LocalRenderer());
+        vehicleTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         vehicleTable.getSelectionModel().addListSelectionListener(
@@ -85,7 +81,7 @@ class VehiclePanel extends WizardPanel {
 
 	void commitChanges() {
 		int selectedIndex = vehicleTable.getSelectedRow();
-		Rover selectedVehicle = vehicleTableModel.getVehicle(selectedIndex);
+		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
 		getWizard().missionBean.setVehicle(selectedVehicle);
 	}
 
@@ -95,19 +91,15 @@ class VehiclePanel extends WizardPanel {
 	}
 
 	void updatePanel() {
-		vehicleTableModel.updateVehicleList();
+		vehicleTableModel.updateTable();
 	}
 	
-    private class VehicleTableModel extends AbstractTableModel {
-    	
-    	VehicleCollection vehicles;
-    	List columns;
+    private class VehicleTableModel extends UnitTableModel {
     	
     	private VehicleTableModel() {
+    		// Use UnitTableModel constructor.
+    		super();
     		
-    		vehicles = new VehicleCollection();
-    		
-    		columns = new ArrayList();
     		columns.add("Name");
     		columns.add("Type");
     		columns.add("Crew Cap.");
@@ -118,23 +110,11 @@ class VehiclePanel extends WizardPanel {
     		columns.add("Status");
     	}
     	
-    	public int getRowCount() {
-            return vehicles.size();
-        }
-    	
-    	public int getColumnCount() {
-            return columns.size();
-        }
-    	
-    	public String getColumnName(int columnIndex) {
-    		return (String) columns.get(columnIndex);
-        }
-    	
     	public Object getValueAt(int row, int column) {
     		Object result = "unknown";
     		
-            if (row < vehicles.size()) {
-            	Rover vehicle = (Rover) vehicles.get(row);
+            if (row < units.size()) {
+            	Rover vehicle = (Rover) getUnit(row);
             	Inventory inv = vehicle.getInventory();
             	
             	try {
@@ -161,45 +141,20 @@ class VehiclePanel extends WizardPanel {
             return result;
         }
     	
-    	Rover getVehicle(int row) {
-    		Rover result = null;
-    		if ((row > -1) && (row < getRowCount())) 
-    			result = (Rover) vehicles.get(row);
-    		return result;
-    	}
-    	
-    	void updateVehicleList() {
+    	void updateTable() {
+    		units.clear();
     		Settlement startingSettlement = getWizard().missionBean.getStartingSettlement();
-    		vehicles = startingSettlement.getParkedVehicles().sortByName();
+    		VehicleCollection vehicles = startingSettlement.getParkedVehicles().sortByName();
+    		VehicleIterator i = vehicles.iterator();
+    		while (i.hasNext()) units.add(i.next());
     		fireTableDataChanged();
     	}
     	
     	boolean isFailureCell(int row, int column) {
     		boolean result = false;
-    		Rover vehicle = (Rover) vehicles.get(row);
+    		Rover vehicle = (Rover) getUnit(row);
     		
     		if (column == 7) if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
-    		
-    		return result;
-    	}
-    	
-    	boolean isFailureRow(int row) {
-    		boolean result = false;
-    		for (int x = 0; x < getColumnCount(); x++) {
-    			if (isFailureCell(row, x)) result = true;
-    		}
-    		return result;
-    	}
-    }
-    
-    private class LocalRenderer extends DefaultTableCellRenderer {
-    	
-    	public Component getTableCellRendererComponent(JTable table, Object value, 
-    			boolean isSelected, boolean hasFocus, int row, int column) {
-    		
-    		Component result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-    		if (vehicleTableModel.isFailureCell(row, column)) setBackground(Color.RED);
-    		else if (!isSelected) setBackground(Color.WHITE);
     		
     		return result;
     	}
