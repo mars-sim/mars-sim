@@ -5,8 +5,10 @@ import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
-public class MissionDataBean {
+class MissionDataBean {
 
 	// Mission type strings.
 	final static String TRAVEL_MISSION = "Travel to Settlement";
@@ -17,6 +19,8 @@ public class MissionDataBean {
 	// Data members.
 	private String type;
 	private String description;
+	private Settlement startingSettlement;
+	private Vehicle vehicle;
 	
 	void createMission() throws MissionException {
 		
@@ -50,5 +54,21 @@ public class MissionDataBean {
 	
 	void setDescription(String description) {
 		this.description = description;
+	}
+	
+	Settlement getStartingSettlement() {
+		return startingSettlement;
+	}
+	
+	void setStartingSettlement(Settlement startingSettlement) {
+		this.startingSettlement = startingSettlement;
+	}
+	
+	Vehicle getVehicle() {
+		return vehicle;
+	}
+	
+	void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
 	}
 }

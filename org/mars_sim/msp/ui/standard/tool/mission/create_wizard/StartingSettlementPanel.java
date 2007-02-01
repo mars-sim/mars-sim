@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,9 +29,8 @@ import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 
-public class StartingSettlementPanel extends WizardPanel {
+class StartingSettlementPanel extends WizardPanel {
 
 	private final static String NAME = "Starting Settlement";
 	
@@ -94,12 +92,14 @@ public class StartingSettlementPanel extends WizardPanel {
 	}
 
 	void commitChanges() {
-		// TODO Auto-generated method stub
-
+		int selectedIndex = settlementTable.getSelectedRow();
+		Settlement selectedSettlement = settlementTableModel.getSettlement(selectedIndex);
+		getWizard().missionBean.setStartingSettlement(selectedSettlement);
 	}
 
 	void clearInfo() {
 		settlementTable.clearSelection();
+		errorMessageLabel.setText(" ");
 	}
 	
 	void updatePanel() {
