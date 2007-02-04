@@ -300,7 +300,6 @@
 		<person-name value="Ellan Schadegg" gender="female" />
 		<person-name value="Carlita Voytek" gender="female" />
 		<person-name value="Paula Jenkins" gender="female" />
-		<person-name value="Karen Andersen" gender="female" />
 	</person-name-list>
 	
 	<!-- List of configured people -->
@@ -313,7 +312,7 @@
 		<!-- settlement: the person's starting settlement. Must be a named settlement -->
 		<!--   configured in settlements.xml.  (optional) -->
 		<!-- job: the person's permanent job. (optional) -->
-		<person name="Trey Monty" gender="male" personality-type="ISTJ" settlement="Alpha Base" job="Engineer">
+		<person name="Karen Andersen" gender="female" personality-type="ISTJ" settlement="Alpha Base" job="Engineer">
 		
 			<!-- List of configured natural attributes. (optional) -->
 			<natural-attribute-list>
