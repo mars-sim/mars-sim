@@ -12,6 +12,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -81,7 +83,7 @@ class VehiclePanel extends WizardPanel {
 	void commitChanges() {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
-		getWizard().getMissionData().setVehicle(selectedVehicle);
+		getWizard().getMissionData().setRover(selectedVehicle);
 	}
 
 	void clearInfo() {
@@ -107,6 +109,7 @@ class VehiclePanel extends WizardPanel {
     		columns.add("Sick Bay");
     		columns.add("Cargo Cap.");
     		columns.add("Status");
+    		columns.add("Mission");
     	}
     	
     	public Object getValueAt(int row, int column) {
@@ -133,6 +136,11 @@ class VehiclePanel extends WizardPanel {
             			result = new Integer((int) inv.getGeneralCapacity());
             		else if (column == 7)
             			result = vehicle.getStatus();
+            		else if (column == 8) {
+            			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            			if (mission != null) result = mission.getDescription();
+            			else result = "None";
+            		}
             	}
             	catch (Exception e) {}
             }
@@ -153,7 +161,13 @@ class VehiclePanel extends WizardPanel {
     		boolean result = false;
     		Rover vehicle = (Rover) getUnit(row);
     		
-    		if (column == 7) if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
+    		if (column == 7) {
+    			if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
+    		}
+    		else if (column == 8) {
+    			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+    			if (mission != null) result = true;
+    		}
     		
     		return result;
     	}

@@ -81,11 +81,33 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		
 		// Reserve a vehicle.
 		try {
-			if (!reserveVehicle(startingPerson)) endMission();
+			if (!reserveVehicle(startingPerson)) endMission("No reservable vehicles.");
 		}
 		catch (Exception e) {
 			throw new MissionException("Constructor", e);
 		}
+	}
+	
+    /**
+     * Constructor with vehicle.
+     * @param name the name of the mission.
+     * @param startingPerson the person starting the mission
+     * @param minPeople the minimum number of mission members allowed
+     * @param vehicle the vehicle to use on the mission.
+     * @throws MissionException if error constructing mission.
+     */
+	protected VehicleMission(String name, Person startingPerson, int minPeople, 
+			Vehicle vehicle) throws MissionException {
+		// Use TravelMission constructor.
+		super(name, startingPerson, minPeople);
+		
+		// Add mission phases.
+		addPhase(EMBARKING);
+		addPhase(TRAVELLING);
+		addPhase(DISEMBARKING);
+		
+		// Set the vehicle.
+		setVehicle(vehicle);
 	}
 	
 	/**
@@ -111,7 +133,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					vehicle.addUnitListener(this);
 					fireMissionUpdate(VEHICLE_EVENT);
 				}
-				throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
+				else throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
 			}
 			catch (Exception e) {
 				throw new MissionException(getPhase(), "Problem determining if vehicle is usable.");
@@ -236,10 +258,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 	/** 
 	 * Finalizes the mission 
+	 * @param reasion the reason of ending the mission.
 	 */
-	protected void endMission() {
+	protected void endMission(String reason) {
 		leaveVehicle();
-		super.endMission();
+		super.endMission(reason);
 	}	
 	
     /** 
@@ -305,7 +328,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				setPhaseDescription("Disembarking at " + getCurrentNavpoint().getDescription());
 			}
 		}
-		else if (DISEMBARKING.equals(getPhase())) endMission();
+		else if (DISEMBARKING.equals(getPhase())) endMission("Successfully disembarked.");
     }
     
     /**
@@ -571,7 +594,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
     		
     		vehicle.setEmergencyBeacon(true);
-    		endMission();
+    		endMission("Not enough resources to continue.");
     	}
     }
     

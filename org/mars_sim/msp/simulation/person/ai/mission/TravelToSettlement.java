@@ -74,14 +74,14 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         				getDestinationSettlement().getName()));
         		setDescription("Travel To " + getDestinationSettlement().getName());
         	}
-        	else endMission();
+        	else endMission("Destination is null.");
         	
         	// Recruit additional people to mission.
         	if (!isDone()) recruitPeopleForMission(startingPerson);
         	
         	// Check if vehicle can carry enough supplies for the mission.
         	try {
-        		if (hasVehicle() && !isVehicleLoadable()) endMission();
+        		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable.");
         	}
         	catch (Exception e) {
         		throw new MissionException(null, e);
@@ -93,6 +93,50 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         setPhaseDescription("Embarking from " + getStartingSettlement().getName());
         
         // System.out.println("Travel to Settlement mission");
+    }
+    
+    /**
+     * Constructor with explicit data.
+     * @param members collection of mission members.
+     * @param startingSettlement the starting settlement.
+     * @param destinationSettlement the destination settlement.
+     * @param rover the rover to use.
+     * @param description the mission's description.
+     * @throws MissionException if error constructing mission.
+     */
+    public TravelToSettlement(PersonCollection members, Settlement startingSettlement, 
+    		Settlement destinationSettlement, Rover rover, String description) throws MissionException {
+    	// Use RoverMission constructor.
+    	super(description, (Person) members.get(0), 1, rover);
+    	
+    	// Initialize data members
+    	setStartingSettlement(startingSettlement);
+    	
+    	// Sets the mission capacity.
+    	setMissionCapacity(getRover().getCrewCapacity());
+    	
+    	// Set mission destination.
+    	setDestinationSettlement(destinationSettlement);
+    	addNavpoint(new NavPoint(getDestinationSettlement().getCoordinates(), getDestinationSettlement(), 
+    		getDestinationSettlement().getName()));
+    	
+    	// Add mission members.
+    	PersonIterator i = members.iterator();
+    	while (i.hasNext()) i.next().getMind().setMission(this);
+    	
+        // Set initial phase
+        setPhase(VehicleMission.EMBARKING);
+        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+    	
+    	// Check if vehicle can carry enough supplies for the mission.
+    	try {
+    		if (hasVehicle() && !isVehicleLoadable()) {
+    			endMission("Vehicle is not loadable.");
+    		}
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(null, e);
+    	}
     }
 
     /** 
@@ -164,7 +208,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 				setPhaseDescription("Disembarking at " + getCurrentNavpoint().getDescription());
 			}
 		}
-		else if (DISEMBARKING.equals(getPhase())) endMission();
+		else if (DISEMBARKING.equals(getPhase())) endMission("Successfully disembarked.");
     }
     
     /**
@@ -344,7 +388,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
-				if (getPeopleNumber() < getMinPeople()) endMission();
+				if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");
 			}
 		}
 	}

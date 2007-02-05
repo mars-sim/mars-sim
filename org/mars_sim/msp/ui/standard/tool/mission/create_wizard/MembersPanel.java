@@ -219,7 +219,7 @@ class MembersPanel extends WizardPanel {
 	}
 	
 	int getRemainingRoverCapacity() {
-		int roverCapacity = ((Crewable) getWizard().getMissionData().getVehicle()).getCrewCapacity();
+		int roverCapacity = ((Crewable) getWizard().getMissionData().getRover()).getCrewCapacity();
 		int memberNum = membersTableModel.getRowCount();
 		return roverCapacity - memberNum;
 	}
@@ -276,7 +276,13 @@ class MembersPanel extends WizardPanel {
     	boolean isFailureCell(int row, int column) {
     		boolean result = false;
     		
-    		// Add failure cells if necessary.
+    		if (row < units.size()) {
+    			Person person = (Person) getUnit(row);
+    			
+    			if (column == 2) {
+    				if (person.getMind().getMission() != null) return true;
+    			}
+    		}
     		
     		return result;
     	}

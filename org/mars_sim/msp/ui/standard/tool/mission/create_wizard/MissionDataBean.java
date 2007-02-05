@@ -1,12 +1,17 @@
 package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+
 
 class MissionDataBean {
 
@@ -20,13 +25,25 @@ class MissionDataBean {
 	private String type;
 	private String description;
 	private Settlement startingSettlement;
-	private Vehicle vehicle;
+	private Rover rover;
 	private PersonCollection members;
 	private Settlement destinationSettlement;
 	
 	void createMission() {
-		// TODO
 		System.out.println("Creating new mission.");
+		
+		try {
+			Mission mission = null;
+			if (TRAVEL_MISSION.equals(type)) 
+				mission = new TravelToSettlement(members, startingSettlement, destinationSettlement, rover, description);
+		
+			MissionManager manager = Simulation.instance().getMissionManager();
+			manager.addMission(mission);
+			System.out.println("Mission created successfully.");
+		}
+		catch (MissionException e) {
+			e.printStackTrace(System.err);
+		}
 	}
 	
 	static final String[] getMissionTypes() {
@@ -67,12 +84,12 @@ class MissionDataBean {
 		this.startingSettlement = startingSettlement;
 	}
 	
-	Vehicle getVehicle() {
-		return vehicle;
+	Rover getRover() {
+		return rover;
 	}
 	
-	void setVehicle(Vehicle vehicle) {
-		this.vehicle = vehicle;
+	void setRover(Rover rover) {
+		this.rover = rover;
 	}
 	
 	PersonCollection getMembers() {

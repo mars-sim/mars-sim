@@ -99,7 +99,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
         	
         	// Check if vehicle can carry enough supplies for the mission.
         	try {
-        		if (hasVehicle() && !isVehicleLoadable()) endMission();
+        		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable.");
         	}
         	catch (Exception e) {
         		throw new MissionException(null, e);
@@ -140,7 +140,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
 		}
-		else if (DISEMBARKING.equals(getPhase())) endMission();
+		else if (DISEMBARKING.equals(getPhase())) endMission("Successfully disembarked.");
     }
 	
     /**
@@ -359,7 +359,7 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
-				if (getPeopleNumber() < getMinPeople()) endMission();
+				if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");
 			}
 		}
 	}

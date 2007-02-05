@@ -56,7 +56,7 @@ public abstract class RoverMission extends VehicleMission {
 	}
 	
 	/**
-	 * Constructor
+	 * Constructor with min people
 	 * @param name the name of the mission.
 	 * @param startingPerson the person starting the mission.
 	 * @param minPeople the minimum number of people required for mission.
@@ -65,6 +65,20 @@ public abstract class RoverMission extends VehicleMission {
 	protected RoverMission(String name, Person startingPerson, int minPeople) throws MissionException { 
 		// Use VehicleMission constructor.
 		super(name, startingPerson, minPeople);
+	}
+	
+	/**
+	 * Constructor with min people and rover.
+	 * @param name the name of the mission.
+	 * @param startingPerson the person starting the mission.
+	 * @param minPeople the minimum number of people required for mission.
+	 * @param rover the rover to use on the mission.
+	 * @throws MissionException if error constructing mission.
+	 */
+	protected RoverMission(String name, Person startingPerson, int minPeople, 
+			Rover rover) throws MissionException {
+		// Use VehicleMission constructor.
+		super(name, startingPerson, minPeople, rover);
 	}
 	
 	/**
@@ -233,7 +247,7 @@ public abstract class RoverMission extends VehicleMission {
     								getEquipmentNeededForRemainingMission(true)));
     					}
         			}
-    				else endMission();
+    				else endMission("Vehicle is not loadable.");
     			}
     		}
     		else {

@@ -98,7 +98,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
             	
             	// Check if vehicle can carry enough supplies for the mission.
             	try {
-            		if (hasVehicle() && !isVehicleLoadable()) endMission();
+            		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable.");
             	}
             	catch (Exception e) {
             		throw new MissionException(null, e);
@@ -111,7 +111,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
                 setPhase(VehicleMission.EMBARKING);
                 setPhaseDescription("Embarking from " + startingSettlement.getName());
         	}
-        	else endMission();
+        	else endMission("No vehicle target.");
         }
     }
     
@@ -221,7 +221,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
 		}
-		else if (DISEMBARKING.equals(getPhase())) endMission();
+		else if (DISEMBARKING.equals(getPhase())) endMission("Successfully disembarked.");
     }
     
     /**
@@ -610,7 +610,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 				if (lastPerson != null) {
 					lastPerson.getMind().setMission(null);
-					if (getPeopleNumber() < getMinPeople()) endMission();
+					if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");
 				}
 			}
 		}

@@ -354,14 +354,17 @@ public abstract class Mission implements Serializable {
         fireMissionUpdate(CAPACITY_EVENT, new Integer(newCapacity));
     }
 
-    /** Finalizes the mission.
-     *  Mission can override this to perform necessary finalizing operations.
+    /** 
+     * Finalizes the mission.
+     * String reason Reason for ending mission.
+     * Mission can override this to perform necessary finalizing operations.
      */
-    protected void endMission() {
+    protected void endMission(String reason) {
         done = true;
         fireMissionUpdate(END_MISSION_EVENT);
         Object p[] = people.toArray();
         for(int i = 0; i < p.length; i++) removePerson((Person) p[i]);
+        System.out.println(getDescription() + " ending due to " + reason);
     }
 
     /**
@@ -476,7 +479,7 @@ public abstract class Mission implements Serializable {
 			e.printStackTrace(System.err);
 		}
 		
-		if (getPeopleNumber() < getMinPeople()) endMission();
+		if (getPeopleNumber() < getMinPeople()) endMission("Not enough members");
 	}
 	
 	/**
