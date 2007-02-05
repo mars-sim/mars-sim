@@ -74,7 +74,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		descriptionInfoLabel.setEnabled(enableDescription);
 		descriptionLabel.setEnabled(enableDescription);
 		descriptionField.setEnabled(enableDescription);
-		getWizard().nextButton.setEnabled(enableDescription);
+		getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, enableDescription);
 	}
 	
 	String getPanelName() {
@@ -82,8 +82,9 @@ class TypePanel extends WizardPanel implements ItemListener {
 	}
 	
 	void commitChanges() {
-		getWizard().missionBean.setType((String) typeSelect.getSelectedItem());
-		getWizard().missionBean.setDescription(descriptionField.getText());
+		getWizard().getMissionData().setType((String) typeSelect.getSelectedItem());
+		getWizard().getMissionData().setDescription(descriptionField.getText());
+		getWizard().setFinalWizardPanels();
 	}
 	
 	void clearInfo() {

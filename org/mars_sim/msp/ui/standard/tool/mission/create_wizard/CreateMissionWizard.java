@@ -24,14 +24,19 @@ import org.mars_sim.msp.ui.standard.MarsPanelBorder;
  */
 public class CreateMissionWizard extends JDialog {
 	
+	// Static members.
+	final static String PREVIOUS_BUTTON = "previous button";
+	final static String NEXT_BUTTON = "next button";
+	final static String FINAL_BUTTON = "final button";
+	
 	// Data members
-	JPanel infoPane;
-	JButton prevButton;
-	JButton nextButton;
-	JButton finalButton;
-	MissionDataBean missionBean;
-	List wizardPanels;
-	int displayPanelIndex;
+	private JPanel infoPane;
+	private JButton prevButton;
+	private JButton nextButton;
+	private JButton finalButton;
+	private MissionDataBean missionBean;
+	private List wizardPanels;
+	private int displayPanelIndex;
 	
 	/**
 	 * Constructor
@@ -52,21 +57,10 @@ public class CreateMissionWizard extends JDialog {
 		wizardPanels = new ArrayList();
 		displayPanelIndex = 0;
 		
-		WizardPanel typePane = new TypePanel(this);
-		wizardPanels.add(typePane);
-		infoPane.add(typePane, typePane.getPanelName());
-		
-		WizardPanel startingSettlementPane = new StartingSettlementPanel(this);
-		wizardPanels.add(startingSettlementPane);
-		infoPane.add(startingSettlementPane, startingSettlementPane.getPanelName());
-		
-		WizardPanel vehiclePane = new VehiclePanel(this);
-		wizardPanels.add(vehiclePane);
-		infoPane.add(vehiclePane, vehiclePane.getPanelName());
-		
-		WizardPanel membersPane = new MembersPanel(this);
-		wizardPanels.add(membersPane);
-		infoPane.add(membersPane, membersPane.getPanelName());
+		addWizardPanel(new TypePanel(this));
+		addWizardPanel(new StartingSettlementPanel(this));
+		addWizardPanel(new VehiclePanel(this));
+		addWizardPanel(new MembersPanel(this));
 		
 		// Create bottom button panel.
 		JPanel bottomButtonPane = new JPanel();
@@ -137,5 +131,35 @@ public class CreateMissionWizard extends JDialog {
 	
 	private WizardPanel getCurrentWizardPanel() {
 		return (WizardPanel) wizardPanels.get(displayPanelIndex);
+	}
+	
+	void setFinalWizardPanels() {
+		// Remove old final panels if any.
+		for (int x = 4; x < wizardPanels.size(); x++) wizardPanels.remove(x);
+		
+		// Add mission type appropriate final panels.
+		if (missionBean.getType().equals(MissionDataBean.TRAVEL_MISSION)) 
+			addWizardPanel(new DestinationSettlementPanel(this));
+		//else if (missionBean.getType().equals(MissionDataBean.RESCUE_MISSION))
+		//	addWizardPanel(new DestinationVehiclePanel(this));
+		//else if (missionBean.getType().equals(MissionDataBean.EXPLORATION_MISSION))
+		//	addWizardPanel(new NavpointsPanel(this));
+		//else if (missionBean.getType().equals(MissionDataBean.ICE_MISSION))
+		//	addWizardPanel(new CollectionSitePanel(this));
+	}
+	
+	private void addWizardPanel(WizardPanel newWizardPanel) {
+		wizardPanels.add(newWizardPanel);
+		infoPane.add(newWizardPanel, newWizardPanel.getPanelName());
+	}
+	
+	MissionDataBean getMissionData() {
+		return missionBean;
+	}
+	
+	void setButtonEnabled(String buttonType, boolean enabled) {
+		if (PREVIOUS_BUTTON.equals(buttonType)) prevButton.setEnabled(enabled);
+		else if (NEXT_BUTTON.equals(buttonType)) nextButton.setEnabled(enabled);
+		else if (FINAL_BUTTON.equals(buttonType)) finalButton.setEnabled(enabled);
 	}
 }

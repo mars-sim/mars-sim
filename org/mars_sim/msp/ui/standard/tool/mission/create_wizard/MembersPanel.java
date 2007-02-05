@@ -199,7 +199,7 @@ class MembersPanel extends WizardPanel {
 		PersonCollection people = new PersonCollection();
 		for (int x = 0; x < membersTableModel.getRowCount(); x++) 
 			people.add(membersTableModel.getUnit(x));
-		getWizard().missionBean.setMembers(people);
+		getWizard().getMissionData().setMembers(people);
 	}
 
 	void clearInfo() {
@@ -219,7 +219,7 @@ class MembersPanel extends WizardPanel {
 	}
 	
 	int getRemainingRoverCapacity() {
-		int roverCapacity = ((Crewable) getWizard().missionBean.getVehicle()).getCrewCapacity();
+		int roverCapacity = ((Crewable) getWizard().getMissionData().getVehicle()).getCrewCapacity();
 		int memberNum = membersTableModel.getRowCount();
 		return roverCapacity - memberNum;
 	}
@@ -266,7 +266,7 @@ class MembersPanel extends WizardPanel {
     	
     	void updateTable() {
     		units.clear();
-    		Settlement startingSettlement = getWizard().missionBean.getStartingSettlement();
+    		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
     		PersonCollection people = startingSettlement.getInhabitants().sortByName();
     		PersonIterator i = people.iterator();
     		while (i.hasNext()) units.add(i.next());
@@ -359,8 +359,8 @@ class MembersPanel extends WizardPanel {
     		units = units.sortByName();
     		fireTableDataChanged();
     		
-    		if (units.size() > 0) getWizard().nextButton.setEnabled(true);
-    		else getWizard().nextButton.setEnabled(false);
+    		if (units.size() > 0) getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
+    		else getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
     	}
     	
     	void removePeople(PersonCollection people) {
@@ -371,8 +371,8 @@ class MembersPanel extends WizardPanel {
     		}
     		fireTableDataChanged();
     		
-    		if (units.size() > 0) getWizard().nextButton.setEnabled(true);
-    		else getWizard().nextButton.setEnabled(false);
+    		if (units.size() > 0) getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
+    		else getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
     	}
     }
 }

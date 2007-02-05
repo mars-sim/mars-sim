@@ -66,11 +66,11 @@ class StartingSettlementPanel extends WizardPanel {
         				if (index > -1) {
         					if (settlementTableModel.isFailureRow(index)) {
         						errorMessageLabel.setText("Settlement cannot start the mission (see red cells).");
-        						getWizard().nextButton.setEnabled(false);
+        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
         					}
         					else {
         						errorMessageLabel.setText(" ");
-        						getWizard().nextButton.setEnabled(true);
+        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
         					}
         				}
         			}
@@ -90,7 +90,7 @@ class StartingSettlementPanel extends WizardPanel {
 	void commitChanges() {
 		int selectedIndex = settlementTable.getSelectedRow();
 		Settlement selectedSettlement = (Settlement) settlementTableModel.getUnit(selectedIndex);
-		getWizard().missionBean.setStartingSettlement(selectedSettlement);
+		getWizard().getMissionData().setStartingSettlement(selectedSettlement);
 	}
 
 	void clearInfo() {
@@ -148,7 +148,7 @@ class StartingSettlementPanel extends WizardPanel {
             			else if (column == 7) 
             				result = new Integer(inv.findNumUnitsOfClass(EVASuit.class));
             			else if (column == 8) {
-            				String type = getWizard().missionBean.getType();
+            				String type = getWizard().getMissionData().getType();
             				if (type.equals(MissionDataBean.EXPLORATION_MISSION))
             					result = new Integer(inv.findNumUnitsOfClass(SpecimenContainer.class));
             				else if (type.equals(MissionDataBean.ICE_MISSION))
@@ -164,7 +164,7 @@ class StartingSettlementPanel extends WizardPanel {
     	
     	void updateTable() {
     		if (columns.size() == 9) columns.remove(8);
-    		String type = getWizard().missionBean.getType();
+    		String type = getWizard().getMissionData().getType();
     		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) columns.add("Specimen Containers");
     		else if (type.equals(MissionDataBean.ICE_MISSION)) columns.add("Bags");
     		fireTableStructureChanged();
@@ -198,7 +198,7 @@ class StartingSettlementPanel extends WizardPanel {
     				if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
     			}
     			else if (column == 8) {
-    				String type = getWizard().missionBean.getType();
+    				String type = getWizard().getMissionData().getType();
     				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
     					if (inv.findNumUnitsOfClass(SpecimenContainer.class) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
     				}

@@ -3,7 +3,6 @@ package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
-import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -23,9 +22,11 @@ class MissionDataBean {
 	private Settlement startingSettlement;
 	private Vehicle vehicle;
 	private PersonCollection members;
+	private Settlement destinationSettlement;
 	
-	void createMission() throws MissionException {
-		
+	void createMission() {
+		// TODO
+		System.out.println("Creating new mission.");
 	}
 	
 	static final String[] getMissionTypes() {
@@ -80,5 +81,13 @@ class MissionDataBean {
 	
 	void setMembers(PersonCollection members) {
 		this.members = members;
+	}
+	
+	Settlement getDestinationSettlement() {
+		return destinationSettlement;
+	}
+	
+	void setDestinationSettlement(Settlement destinationSettlement) {
+		this.destinationSettlement = destinationSettlement;
 	}
 }

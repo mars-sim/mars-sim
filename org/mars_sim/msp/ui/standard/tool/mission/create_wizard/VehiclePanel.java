@@ -57,11 +57,11 @@ class VehiclePanel extends WizardPanel {
         				if (index > -1) {
         					if (vehicleTableModel.isFailureRow(index)) {
         						errorMessageLabel.setText("Rover cannot be used on the mission (see red cells).");
-        						getWizard().nextButton.setEnabled(false);
+        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
         					}
         					else {
         						errorMessageLabel.setText(" ");
-        						getWizard().nextButton.setEnabled(true);
+        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
         					}
         				}
         			}
@@ -81,7 +81,7 @@ class VehiclePanel extends WizardPanel {
 	void commitChanges() {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
-		getWizard().missionBean.setVehicle(selectedVehicle);
+		getWizard().getMissionData().setVehicle(selectedVehicle);
 	}
 
 	void clearInfo() {
@@ -142,7 +142,7 @@ class VehiclePanel extends WizardPanel {
     	
     	void updateTable() {
     		units.clear();
-    		Settlement startingSettlement = getWizard().missionBean.getStartingSettlement();
+    		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
     		VehicleCollection vehicles = startingSettlement.getParkedVehicles().sortByName();
     		VehicleIterator i = vehicles.iterator();
     		while (i.hasNext()) units.add(i.next());
