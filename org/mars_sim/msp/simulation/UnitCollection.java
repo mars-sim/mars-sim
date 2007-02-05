@@ -181,4 +181,30 @@ public class UnitCollection extends MspCollection implements Serializable {
         }
         return equipment;
     }
+    
+    /** 
+     * Sort by name
+     * @return unit collection sorted by name
+     */
+    public UnitCollection sortByName() {
+        UnitCollection sortedUnits = new UnitCollection();
+        UnitIterator outer = iterator();
+        while (outer.hasNext()) {
+            outer.next();
+            String leastName = "ZZZZZZZZZZZZZZZZZZZ";
+            Unit leastUnit = null;
+            UnitIterator inner = iterator();
+            while (inner.hasNext()) {
+                Unit tempUnit = inner.next();
+                String name = tempUnit.getName();
+                if ((name.compareTo(leastName) < 0) && !sortedUnits.contains(tempUnit)) {
+                    leastName = name;
+                    leastUnit = tempUnit;
+                }
+            }
+            sortedUnits.add(leastUnit);
+        }
+
+        return sortedUnits;
+    }
 }

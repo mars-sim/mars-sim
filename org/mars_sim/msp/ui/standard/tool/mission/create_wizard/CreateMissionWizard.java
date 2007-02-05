@@ -64,6 +64,10 @@ public class CreateMissionWizard extends JDialog {
 		wizardPanels.add(vehiclePane);
 		infoPane.add(vehiclePane, vehiclePane.getPanelName());
 		
+		WizardPanel membersPane = new MembersPanel(this);
+		wizardPanels.add(membersPane);
+		infoPane.add(membersPane, membersPane.getPanelName());
+		
 		// Create bottom button panel.
 		JPanel bottomButtonPane = new JPanel();
 		add(bottomButtonPane, BorderLayout.SOUTH);

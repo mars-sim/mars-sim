@@ -37,7 +37,6 @@ class VehiclePanel extends WizardPanel {
 		add(selectVehicleLabel, BorderLayout.NORTH);
 		
 		JPanel vehiclePane = new JPanel(new BorderLayout(0, 0));
-		// vehiclePane.setPreferredSize(new Dimension(500, 200));
 		add(vehiclePane, BorderLayout.CENTER);
 		
         // Create scroll panel for vehicle list.

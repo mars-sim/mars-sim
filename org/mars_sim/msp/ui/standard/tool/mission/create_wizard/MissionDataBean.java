@@ -1,5 +1,6 @@
 package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
+import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
@@ -21,6 +22,7 @@ class MissionDataBean {
 	private String description;
 	private Settlement startingSettlement;
 	private Vehicle vehicle;
+	private PersonCollection members;
 	
 	void createMission() throws MissionException {
 		
@@ -70,5 +72,13 @@ class MissionDataBean {
 	
 	void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
+	}
+	
+	PersonCollection getMembers() {
+		return members;
+	}
+	
+	void setMembers(PersonCollection members) {
+		this.members = members;
 	}
 }
