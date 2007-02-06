@@ -247,7 +247,7 @@ public abstract class RoverMission extends VehicleMission {
     								getEquipmentNeededForRemainingMission(true)));
     					}
         			}
-    				else endMission("Vehicle is not loadable.");
+    				else endMission("Vehicle is not loadable (RoverMission).");
     			}
     		}
     		else {

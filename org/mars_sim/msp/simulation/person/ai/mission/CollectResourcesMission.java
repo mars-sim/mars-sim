@@ -96,10 +96,10 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
 					getStartingSettlement(), getStartingSettlement().getName()));
-        	
+			
         	// Check if vehicle can carry enough supplies for the mission.
         	try {
-        		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable.");
+        		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (CollectingResourcesMission)");
         	}
         	catch (Exception e) {
         		throw new MissionException(null, e);
@@ -263,14 +263,14 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
         
     		// Determine the first collection site.
     		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-    		double limit = roverRange / 4D;
+    		double limit = range / 4D;
     		double siteDistance = RandomUtil.getRandomDouble(limit);
     		Coordinates newLocation = startingLocation.getNewLocation(direction, siteDistance);
     		unorderedSites.add(newLocation);
     		Coordinates currentLocation = newLocation;
         
     		// Determine remaining collection sites.
-    		double remainingRange = (roverRange / 2D) - siteDistance;
+    		double remainingRange = (range / 2D) - siteDistance;
     		for (int x=1; x < numSites; x++) {
     			double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
     			if (remainingRange > currentDistanceToSettlement) {

@@ -466,8 +466,12 @@ public class LoadVehicle extends Task implements Serializable {
      */
     private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, Class equipmentType) throws Exception {
     	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
-    	// Leave one EVA suit per remaining person at settlement.
-    	if (equipmentType == EVASuit.class) return remainingPeopleNum;
+    	// Leave one EVA suit for every four remaining people at settlement (min 1).
+    	if (equipmentType == EVASuit.class) {
+    		int minSuits = remainingPeopleNum / 4;
+    		if (minSuits == 0) minSuits = 1;
+    		return minSuits;
+    	}
     	else return 0;
     }
     
@@ -494,7 +498,11 @@ public class LoadVehicle extends Task implements Serializable {
     		Resource resource = (Resource) iR.next();
     		if (resource instanceof AmountResource) {
     			double amount = ((Double) resources.get(resource)).doubleValue();
-    			if (vInv.getAmountResourceCapacity((AmountResource) resource) < amount) sufficientCapacity = false;
+    			if (vInv.getAmountResourceCapacity((AmountResource) resource) < amount) {
+    				double capacity = vInv.getAmountResourceCapacity((AmountResource) resource);
+    				System.out.println(resource.getName() + " needed: " + amount + " capacity: " + capacity);
+    				sufficientCapacity = false;
+    			}
     		}
     		else if (resource instanceof ItemResource) {
     			int num = ((Integer) resources.get(resource)).intValue();

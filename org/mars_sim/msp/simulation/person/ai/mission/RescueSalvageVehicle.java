@@ -98,7 +98,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
             	
             	// Check if vehicle can carry enough supplies for the mission.
             	try {
-            		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable.");
+            		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (RescueSalvageVehicle)");
             	}
             	catch (Exception e) {
             		throw new MissionException(null, e);
