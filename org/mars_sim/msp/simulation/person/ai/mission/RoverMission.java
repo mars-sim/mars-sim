@@ -7,12 +7,10 @@
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
@@ -509,12 +507,5 @@ public abstract class RoverMission extends VehicleMission {
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
-    	Map result = new HashMap();
-    	
-    	// Include one EVA suit per person on mission.
-    	result.put(EVASuit.class, new Integer(getPeopleNumber()));
-    	
-    	return result;
-    }
+    public abstract Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception;
 }

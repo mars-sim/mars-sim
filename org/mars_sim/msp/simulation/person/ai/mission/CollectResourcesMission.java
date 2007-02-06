@@ -19,6 +19,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
@@ -441,17 +442,17 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     	
     	// Determine life support supplies needed for trip.
     	double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-    	if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	// if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (result.containsKey(AmountResource.OXYGEN)) oxygenAmount += ((Double) result.get(AmountResource.OXYGEN)).doubleValue();
     	result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
     		
     	double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-    	if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	// if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (result.containsKey(AmountResource.WATER)) waterAmount += ((Double) result.get(AmountResource.WATER)).doubleValue();
     	result.put(AmountResource.WATER, new Double(waterAmount));
     		
     	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-    	if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	// if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (result.containsKey(AmountResource.FOOD)) foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
     	result.put(AmountResource.FOOD, new Double(foodAmount));
     	
@@ -537,8 +538,11 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
-    		Map result = super.getEquipmentNeededForRemainingMission(useBuffer);
+    		Map result = new HashMap();
     	
+        	// Include one EVA suit per person on mission.
+        	result.put(EVASuit.class, new Integer(getPeopleNumber()));
+    		
     		// Include required number of containers.
     		result.put(containerType, new Integer(containerNum));
     	

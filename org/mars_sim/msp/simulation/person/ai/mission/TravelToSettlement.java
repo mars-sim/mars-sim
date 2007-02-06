@@ -14,6 +14,7 @@ import java.util.Map;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.PersonIterator;
@@ -410,7 +411,11 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
-    		Map result = super.getEquipmentNeededForRemainingMission(useBuffer);
+    		Map result = new HashMap();
+    		
+    		// Include two EVA suits.
+        	result.put(EVASuit.class, new Integer(2));
+    		
     		equipmentNeededCache = result;
     		return result;
     	}

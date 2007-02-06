@@ -396,13 +396,21 @@ public class LoadVehicle extends Task implements Serializable {
         		double amountNeeded = ((Double) resources.get(resource)).doubleValue();
         		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, (AmountResource) resource, tripTime);
         		double totalNeeded = amountNeeded + remainingSettlementAmount;
-        		if (inv.getAmountResourceStored((AmountResource) resource) < totalNeeded) enoughSupplies = false;
+        		if (inv.getAmountResourceStored((AmountResource) resource) < totalNeeded) {
+        			double stored = inv.getAmountResourceStored((AmountResource) resource);
+        			System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			enoughSupplies = false;
+        		}
         	}
         	else if (resource instanceof ItemResource) {
         		int numNeeded = ((Integer) resources.get(resource)).intValue();
         		int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, (ItemResource) resource);
         		int totalNeeded = numNeeded + remainingSettlementNum;
-        		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) enoughSupplies = false;
+        		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
+        			int stored = inv.getItemResourceNum((ItemResource) resource);
+        			System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			enoughSupplies = false;
+        		}
         	}
         	else throw new Exception("Unknown resource type: " + resource);
         }
@@ -414,7 +422,11 @@ public class LoadVehicle extends Task implements Serializable {
         	int numNeeded = ((Integer) equipment.get(equipmentType)).intValue();
         	int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
     		int totalNeeded = numNeeded + remainingSettlementNum;
-        	if (inv.findNumUnitsOfClass(equipmentType) < totalNeeded) enoughSupplies = false;
+        	if (inv.findNumUnitsOfClass(equipmentType) < totalNeeded) {
+        		int stored = inv.findNumUnitsOfClass(equipmentType);
+        		System.out.println(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
+        		enoughSupplies = false;
+        	}
         }
 
         return enoughSupplies;
