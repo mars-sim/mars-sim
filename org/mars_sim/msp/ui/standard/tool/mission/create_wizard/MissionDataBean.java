@@ -28,6 +28,7 @@ class MissionDataBean {
 	private Rover rover;
 	private PersonCollection members;
 	private Settlement destinationSettlement;
+	private Rover rescueRover;
 	
 	void createMission() {
 		System.out.println("Creating new mission.");
@@ -36,6 +37,14 @@ class MissionDataBean {
 			Mission mission = null;
 			if (TRAVEL_MISSION.equals(type)) 
 				mission = new TravelToSettlement(members, startingSettlement, destinationSettlement, rover, description);
+			else if (RESCUE_MISSION.equals(type))
+				mission = new RescueSalvageVehicle(members, startingSettlement, rescueRover, rover, description);
+			else if (ICE_MISSION.equals(type)) {
+				// TODO: add mission constructor.
+			}
+			else if (EXPLORATION_MISSION.equals(type)) {
+				// TODO: add mission constructor.
+			}
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
 			manager.addMission(mission);
@@ -106,5 +115,13 @@ class MissionDataBean {
 	
 	void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
+	}
+	
+	Rover getRescueRover() {
+		return rescueRover;
+	}
+	
+	void setRescueRover(Rover rescueRover) {
+		this.rescueRover = rescueRover;
 	}
 }

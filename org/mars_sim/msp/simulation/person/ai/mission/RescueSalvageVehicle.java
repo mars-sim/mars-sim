@@ -18,6 +18,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.job.Driver;
@@ -114,6 +115,49 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         	}
         	else endMission("No vehicle target.");
         }
+    }
+    
+    /**
+     * Constructor with explicit data.
+     * @param members collection of mission members.
+     * @param startingSettlement the starting settlement.
+     * @param vehicleTarget the vehicle to rescue/salvage.
+     * @param rover the rover to use.
+     * @param description the mission's description.
+     * @throws MissionException if error constructing mission.
+     */
+    public RescueSalvageVehicle(PersonCollection members, Settlement startingSettlement, 
+    		Vehicle vehicleTarget, Rover rover, String description) throws MissionException {
+    	
+       	// Use RoverMission constructor.
+    	super(description, (Person) members.get(0), 1, rover);
+    	
+    	setStartingSettlement(startingSettlement);
+    	this.vehicleTarget = vehicleTarget;
+    	setMissionCapacity(getRover().getCrewCapacity());
+    	
+		// Add navpoints for target vehicle and back home again.
+		addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
+		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
+		
+    	// Add mission members.
+    	PersonIterator i = members.iterator();
+    	while (i.hasNext()) i.next().getMind().setMission(this);
+    	
+		// Add rendezvous phase.
+		addPhase(RENDEZVOUS);
+    	
+    	// Set initial phase
+        setPhase(VehicleMission.EMBARKING);
+        setPhaseDescription("Embarking from " + startingSettlement.getName());
+        
+    	// Check if vehicle can carry enough supplies for the mission.
+    	try {
+    		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (RescueSalvageVehicle)");
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(null, e);
+    	}
     }
     
     /** 
