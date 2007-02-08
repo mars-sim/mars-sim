@@ -284,6 +284,15 @@ public class LoadVehicle extends Task implements Serializable {
 			}
 			else endTask();
 		}
+		else if (amountAlreadyLoaded > amountNeededTotal) {
+			// In case vehicle wasn't fully unloaded first.
+			double amountToRemove = amountAlreadyLoaded - amountNeededTotal;
+			try {
+				vInv.retrieveAmountResource(resource, amountToRemove);
+				sInv.storeAmountResource(resource, amountToRemove);
+			}
+			catch (Exception e) {}
+		}
 		
 		//  Return remaining amount that can be loaded by person this time period.
 		return amountLoading;
@@ -317,6 +326,15 @@ public class LoadVehicle extends Task implements Serializable {
 				if (amountLoading < 0D) amountLoading = 0D;
 			}
 			else endTask();
+		}
+		else if (numAlreadyLoaded > numNeededTotal) {
+			// In case vehicle wasn't fully unloaded first.
+			int numToRemove = numAlreadyLoaded - numNeededTotal;
+			try {
+				vInv.retrieveItemResources(resource, numToRemove);
+				sInv.storeItemResources(resource, numToRemove);
+			}
+			catch (Exception e) {}
 		}
 		
 		// Return remaining amount that can be loaded by person this time period.
@@ -356,6 +374,16 @@ public class LoadVehicle extends Task implements Serializable {
         		}
         		else endTask();
         	}
+    		else if (numAlreadyLoaded > numNeededTotal) {
+    			// In case vehicle wasn't fully unloaded first.
+    			int numToRemove = numAlreadyLoaded - numNeededTotal;
+    			UnitCollection units = vInv.findAllUnitsOfClass(equipmentType);
+    			for (int x = 0; x < numToRemove; x++) {
+    				Equipment eq = (Equipment) units.get(x);
+    				vInv.retrieveUnit(eq);
+    				sInv.storeUnit(eq);
+    			}
+    		}
         }
         
 		// Return remaining amount that can be loaded by person this time period.

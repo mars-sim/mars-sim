@@ -260,7 +260,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * Finalizes the mission 
 	 * @param reasion the reason of ending the mission.
 	 */
-	protected void endMission(String reason) {
+	public void endMission(String reason) {
+		
+		// Set emergency beacon if vehicle is not at settlement.
+		if (hasVehicle()) {
+			if (getVehicle().getSettlement() == null) setEmergencyBeacon(null, getVehicle(), true);
+		}
+		
 		leaveVehicle();
 		super.endMission(reason);
 	}	
@@ -588,17 +594,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     				"emergency destination: " + newDestination.getName()));
     		associateAllMembersWithSettlement(newDestination);
     	}
-    	else {
-    		// Set the emergency beacon on the rover and end mission.
-    		// System.out.println(vehicle.getName() + " setting emergency beacon.");
-    		
-    		// Creating mission emergency beacon event.
-            HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_BEACON);
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-    		
-    		vehicle.setEmergencyBeacon(true);
-    		endMission("Not enough resources to continue.");
-    	}
+    	else endMission("Not enough resources to continue.");
+    }
+    
+    public void setEmergencyBeacon(Person person, Vehicle vehicle, boolean beaconOn) {
+		// Creating mission emergency beacon event.
+        HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_BEACON);
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		
+		vehicle.setEmergencyBeacon(beaconOn);
     }
     
     /**

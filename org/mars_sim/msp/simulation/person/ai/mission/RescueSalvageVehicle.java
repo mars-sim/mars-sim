@@ -48,13 +48,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	private static final int MISSION_MAX_MEMBERS = 3;
 	private static final double BASE_RESCUE_MISSION_WEIGHT = 100D;
 	private static final double BASE_SALVAGE_MISSION_WEIGHT = 10D;
-	private static final double RESCUE_RESOURCE_BUFFER = 2D;
+	private static final double RESCUE_RESOURCE_BUFFER = 1D;
 	
 	// Mission phases
 	final protected static String RENDEZVOUS = "Rendezvous with vehicle";
 	
 	// Data members
-    private Settlement startingSettlement;
     private Vehicle vehicleTarget;
     private boolean rescue = false;
     
@@ -68,12 +67,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         super(DEFAULT_DESCRIPTION, startingPerson, MISSION_MIN_MEMBERS);   
         
         if (!isDone()) {
-        	startingSettlement = startingPerson.getSettlement();
+        	setStartingSettlement(startingPerson.getSettlement());
         	setMissionCapacity(MISSION_MAX_MEMBERS);
         	
         	try {
         		if (hasVehicle()) {
-        			vehicleTarget = vehicleTarget = findAvailableBeaconVehicle(startingSettlement, getVehicle().getRange());
+        			vehicleTarget = vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
         			int capacity = getRover().getCrewCapacity();
         			if (capacity < MISSION_MAX_MEMBERS) setMissionCapacity(capacity);
         		}
@@ -93,7 +92,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         		
         		// Add navpoints for target vehicle and back home again.
         		addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
-        		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
+        		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(), getStartingSettlement().getName()));
         		
         		// Recruit additional people to mission.
             	if (!isDone()) recruitPeopleForMission(startingPerson);
@@ -111,7 +110,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
             	
             	// Set initial phase
                 setPhase(VehicleMission.EMBARKING);
-                setPhaseDescription("Embarking from " + startingSettlement.getName());
+                setPhaseDescription("Embarking from " + getStartingSettlement().getName());
         	}
         	else endMission("No vehicle target.");
         }
@@ -135,6 +134,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     	setStartingSettlement(startingSettlement);
     	this.vehicleTarget = vehicleTarget;
     	setMissionCapacity(getRover().getCrewCapacity());
+    	
+    	if (getRescuePeopleNum(vehicleTarget) > 0) rescue = true;
     	
 		// Add navpoints for target vehicle and back home again.
 		addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
@@ -311,7 +312,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		}
 		
 		// Turn off vehicle's emergency beacon.
-		vehicleTarget.setEmergencyBeacon(false);
+		setEmergencyBeacon(person, vehicleTarget, false);
 		
 		// Hook vehicle up for towing.
 		getRover().setTowedVehicle(vehicleTarget);
@@ -397,7 +398,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		Map result = new HashMap(3);
 		
     	// Determine estimate time for trip.
-		double distance = vehicleTarget.getCoordinates().getDistance(startingSettlement.getCoordinates());
+		double distance = vehicleTarget.getCoordinates().getDistance(getStartingSettlement().getCoordinates());
     	double time = getEstimatedTripTime(true, distance);
     	double timeSols = time / 1000D;
     	
@@ -427,6 +428,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
      */
     private static Vehicle findAvailableBeaconVehicle(Settlement settlement, double range) {
     	Vehicle result = null;
+    	double halfRange = range / 2D;
     	
     	VehicleCollection emergencyBeaconVehicles = new VehicleCollection();
     	VehicleCollection vehiclesNeedingRescue = new VehicleCollection();
@@ -449,7 +451,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     		Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), vehiclesNeedingRescue);
     		if (vehicle != null) {
     			double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
-    			if (vehicleRange <= range) result = vehicle;
+    			if (vehicleRange <= halfRange) result = vehicle;
     		}
     	}
     	
@@ -458,7 +460,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     		Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), emergencyBeaconVehicles);
     		if (vehicle != null) {
     			double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
-    			if (vehicleRange <= range) result = vehicle;
+    			if (vehicleRange <= halfRange) result = vehicle;
     		}
     	}
     	
@@ -527,7 +529,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * @return settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
-		return startingSettlement;
+		return getStartingSettlement();
 	}
 	
     /**
@@ -604,7 +606,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	protected boolean isCapableOfMission(Person person) {
 		if (super.isCapableOfMission(person)) {
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-				if (person.getSettlement() == startingSettlement) return true;
+				if (person.getSettlement() == getStartingSettlement()) return true;
 			}
 		}
 		return false;
@@ -654,7 +656,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// Make sure there is at least one person left at the starting settlement.
 		// If salvage mission, otherwise ignore if rescue mission.
 		if (!rescue) {
-			if (!atLeastOnePersonRemainingAtSettlement(startingSettlement, startingPerson)) {
+			if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
 				// Remove last person added to the mission.
 				Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
 				if (lastPerson != null) {

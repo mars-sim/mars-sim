@@ -359,7 +359,7 @@ public abstract class Mission implements Serializable {
      * String reason Reason for ending mission.
      * Mission can override this to perform necessary finalizing operations.
      */
-    protected void endMission(String reason) {
+    public void endMission(String reason) {
         done = true;
         fireMissionUpdate(END_MISSION_EVENT);
         Object p[] = people.toArray();

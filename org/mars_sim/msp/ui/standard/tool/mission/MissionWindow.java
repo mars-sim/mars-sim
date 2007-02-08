@@ -23,7 +23,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.RoverMission;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.tool.mission.create_wizard.CreateMissionWizard;
@@ -104,6 +110,23 @@ public class MissionWindow extends ToolWindow {
             	});
         buttonPane.add(editButton);
         
+        final JButton endButton = new JButton("End Mission");
+        endButton.setEnabled(false);
+        endButton.addActionListener(
+        		new ActionListener() {
+        			public void actionPerformed(ActionEvent e) {
+        				Mission mission = (Mission) missionList.getSelectedValue();
+        				if (mission != null) endMission(mission);
+        			}
+        		});
+        missionList.addListSelectionListener(
+            	new ListSelectionListener() {
+            		public void valueChanged(ListSelectionEvent e) {
+            			endButton.setEnabled(missionList.getSelectedValue() != null);
+            		}
+            	});
+        buttonPane.add(endButton);
+        
         // Pack window
         pack();
 	}
@@ -137,6 +160,35 @@ public class MissionWindow extends ToolWindow {
 	 */
 	private void editMission(Mission mission) {
 		System.out.println("Editing mission: " + mission.getName());
+	}
+	
+	private void endMission(Mission mission) {
+		System.out.println("End mission: " + mission.getName());
+		
+		// If vehicle is parked at a settlement, have all people exit vehicle.
+		if (mission instanceof RoverMission) {
+			RoverMission roverMission = (RoverMission) mission;
+			if (roverMission.hasVehicle()) {
+				Rover rover = roverMission.getRover();
+				Settlement settlement = rover.getSettlement();
+				if (settlement != null) {
+					PersonIterator i = rover.getCrew().iterator();
+					while (i.hasNext()) {
+	        			Person crewmember = i.next();
+	        			try {
+	        				rover.getInventory().retrieveUnit(crewmember);
+	        				settlement.getInventory().storeUnit(crewmember);
+	        				BuildingManager.addToRandomBuilding(crewmember, settlement);
+	        			}
+	        			catch (Exception e) {
+	        				e.printStackTrace(System.err);
+	        			}
+					}
+				}
+			}
+		}
+		
+		mission.endMission("User ending mission.");
 	}
 	
 	/**
