@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation;
 import java.io.Serializable;
 import java.text.ParseException;
 
+import org.mars_sim.msp.simulation.mars.Mars;
+
 /** Spherical Coordinates. Represents a location on virtual Mars in
  *  spherical coordinates. It provides some useful methods involving
  *  those coordinates, as well as some static methods for general
@@ -28,9 +30,6 @@ public class Coordinates implements Serializable {
 
     // Half the map circumference in pixels.
     private static final double HALF_CIRCUM_PIXELS = 1440D;
-    
-    // Radius of Mars in Km.
-    public static final double MARS_RADIUS_KM = 3393D;
     
     // 2 x PI
     private static final double TWO_PI = 2.0D * Math.PI;
@@ -207,7 +206,7 @@ public class Coordinates implements Serializable {
      */
     public double getDistance(Coordinates otherCoords) {
 
-        double rho = MARS_RADIUS_KM;
+        double rho = Mars.MARS_RADIUS_KM;
         double angle = getAngle(otherCoords);
 
         return rho * angle;

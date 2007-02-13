@@ -115,6 +115,64 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 		setPhaseDescription("Embarking from " + getStartingSettlement().getName());
 	}
 	
+	/**
+	 * Constructor with explicit data
+	 * @param missionName The name of the mission.
+	 * @param members collection of mission members.
+	 * @param startingSettlement the starting settlement.
+	 * @param resourceType The type of resource.
+	 * @param siteResourceGoal The goal amount of resources to collect at a site (kg) (or 0 if none).
+	 * @param resourceCollectionRate The resource collection rate for a person (kg/millisol).
+	 * @param containerType The type of container needed for the mission or null if none.
+	 * @param containerNum The number of containers needed for the mission.
+	 * @param numSites The number of collection sites.
+	 * @param minPeople The mimimum number of people for the mission.
+	 * @param rover the rover to use.
+	 * @param iceCollectionSites the sites to collect ice.
+	 * @throws MissionException if problem constructing mission.
+	 */
+	CollectResourcesMission(String missionName, PersonCollection members, Settlement startingSettlement, 
+			AmountResource resourceType, double siteResourceGoal, double resourceCollectionRate, Class containerType, 
+			int containerNum, int numSites, int minPeople, Rover rover, List collectionSites) throws MissionException {
+		
+		// Use RoverMission constructor
+		super(missionName, (Person) members.get(0), minPeople, rover);
+		
+		setStartingSettlement(startingSettlement);
+		setMissionCapacity(getRover().getCrewCapacity());
+		this.resourceType = resourceType;
+		this.siteResourceGoal = siteResourceGoal;
+		this.resourceCollectionRate = resourceCollectionRate;
+		this.containerType = containerType;
+		this.containerNum = containerNum;
+		
+		// Set collection navpoints.
+		for (int x = 0; x < collectionSites.size(); x++) 
+			addNavpoint(new NavPoint((Coordinates) collectionSites.get(x), getCollectionSiteDescription(x + 1)));
+		
+		// Add home navpoint.
+		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
+		
+    	// Add mission members.
+    	PersonIterator i = members.iterator();
+    	while (i.hasNext()) i.next().getMind().setMission(this);
+    	
+		// Add collecting phase.
+		addPhase(COLLECT_RESOURCES);
+		
+		// Set initial mission phase.
+		setPhase(VehicleMission.EMBARKING);
+		setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+
+       	// Check if vehicle can carry enough supplies for the mission.
+       	try {
+       		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (CollectingResourcesMission)");
+       	}
+       	catch (Exception e) {
+       		throw new MissionException(null, e);
+       	}
+	}
+	
     /**
      * Determines a new phase for the mission when the current phase has ended.
      * @throws MissionException if problem setting a new phase.

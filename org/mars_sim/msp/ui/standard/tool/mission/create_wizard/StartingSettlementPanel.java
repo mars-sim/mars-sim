@@ -2,8 +2,12 @@ package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,6 +29,7 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementCollection;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 class StartingSettlementPanel extends WizardPanel {
 
@@ -39,14 +44,18 @@ class StartingSettlementPanel extends WizardPanel {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
-		setLayout(new BorderLayout(0, 0));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setBorder(new MarsPanelBorder());
 		
 		JLabel selectSettlementLabel = new JLabel("Select a starting settlement.", JLabel.CENTER);
-		add(selectSettlementLabel, BorderLayout.NORTH);
+		selectSettlementLabel.setFont(selectSettlementLabel.getFont().deriveFont(Font.BOLD));
+		selectSettlementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(selectSettlementLabel);
 		
 		JPanel settlementPane = new JPanel(new BorderLayout(0, 0));
-		settlementPane.setPreferredSize(new Dimension(500, 200));
-		add(settlementPane, BorderLayout.CENTER);
+		settlementPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
+		settlementPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(settlementPane);
 		
         // Create scroll panel for settlement list.
         JScrollPane settlementScrollPane = new JScrollPane();
@@ -54,7 +63,6 @@ class StartingSettlementPanel extends WizardPanel {
         
         settlementTableModel = new SettlementTableModel();
         settlementTable = new JTable(settlementTableModel);
-        settlementTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
         settlementTable.setRowSelectionAllowed(true);
         settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -76,11 +84,16 @@ class StartingSettlementPanel extends WizardPanel {
         			}
         		}
         	});
+        settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
         settlementScrollPane.setViewportView(settlementTable);
 		
 		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
 		errorMessageLabel.setForeground(Color.RED);
-		add(errorMessageLabel, BorderLayout.SOUTH);
+		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
+		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(errorMessageLabel);
+		
+		add(Box.createVerticalGlue());
 	}
 	
 	String getPanelName() {
@@ -100,6 +113,7 @@ class StartingSettlementPanel extends WizardPanel {
 	
 	void updatePanel() {
 		settlementTableModel.updateTable();
+		settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
 	}
 	
     private class SettlementTableModel extends UnitTableModel {

@@ -1,5 +1,9 @@
 package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
@@ -29,6 +33,7 @@ class MissionDataBean {
 	private PersonCollection members;
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
+	private Coordinates iceCollectionSite;
 	
 	void createMission() {
 		System.out.println("Creating new mission.");
@@ -40,7 +45,9 @@ class MissionDataBean {
 			else if (RESCUE_MISSION.equals(type))
 				mission = new RescueSalvageVehicle(members, startingSettlement, rescueRover, rover, description);
 			else if (ICE_MISSION.equals(type)) {
-				// TODO: add mission constructor.
+				List collectionSites = new ArrayList(1);
+				collectionSites.add(iceCollectionSite);
+				mission = new CollectIce(members, startingSettlement, collectionSites, rover, description);
 			}
 			else if (EXPLORATION_MISSION.equals(type)) {
 				// TODO: add mission constructor.
@@ -123,5 +130,13 @@ class MissionDataBean {
 	
 	void setRescueRover(Rover rescueRover) {
 		this.rescueRover = rescueRover;
+	}
+	
+	Coordinates getIceCollectionSite() {
+		return iceCollectionSite;
+	}
+	
+	void setIceCollectionSite(Coordinates iceCollectionSite) {
+		this.iceCollectionSite = iceCollectionSite;
 	}
 }

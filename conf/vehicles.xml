@@ -51,12 +51,12 @@
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 2000.0 -->
-			<capacity resource="Rock Samples" value="2000.0" />
+			<!-- <capacity resource="Rock Samples" value="2000.0" /> -->
 
 			<!-- The ice cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
 			<!-- Default: 2000.0 -->
-			<capacity resource="Ice" value="2000.0" />
+			<!-- <capacity resource="Ice" value="2000.0" /> -->
 
 		</cargo>
 
@@ -76,17 +76,16 @@
 
 	<!-- Transport rover -->
 	<!-- A rover for transporting people from one settlement to another. -->
-	<!-- Note: This rover type is not available in version 2.75. -->
 	<rover type="Transport Rover">
 		<fuel-efficiency value="2.0" />
 		<base-speed value="30.0" />
 		<empty-mass value="10000.0" />
 		<crew-size value="8" />
-		<cargo total-capacity="12000.0">
-			<capacity resource="Methane" value="3750.0" />
-			<capacity resource="Oxygen" value="1000.0" />
-			<capacity resource="Water" value="4000.0" />
-			<capacity resource="Food" value="787.5" />            
+		<cargo total-capacity="7000.0">
+			<capacity resource="Methane" value="2000.0" />
+			<capacity resource="Oxygen" value="350.0" />
+			<capacity resource="Water" value="1400.0" />
+			<capacity resource="Food" value="525.0" />            
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 	</rover>

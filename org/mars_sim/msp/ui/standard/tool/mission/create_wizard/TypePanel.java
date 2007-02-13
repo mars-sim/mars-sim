@@ -1,7 +1,9 @@
 package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.Box;
@@ -10,6 +12,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 class TypePanel extends WizardPanel implements ItemListener {
 
@@ -25,8 +29,10 @@ class TypePanel extends WizardPanel implements ItemListener {
 		super(wizard);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setBorder(new MarsPanelBorder());
 		
 		JLabel typeInfoLabel = new JLabel("Select mission type.");
+		typeInfoLabel.setFont(typeInfoLabel.getFont().deriveFont(Font.BOLD));
 		typeInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(typeInfoLabel);
 		
@@ -44,10 +50,12 @@ class TypePanel extends WizardPanel implements ItemListener {
 		typeSelect = new JComboBox(displayMissionTypes);
 		typeSelect.addItemListener(this);
 		typePane.add(typeSelect);
+		typePane.setMaximumSize(new Dimension(Short.MAX_VALUE, typeSelect.getPreferredSize().height));
 		
 		add(Box.createVerticalStrut(10));
 		
 		descriptionInfoLabel = new JLabel("Edit mission description (optional).");
+		descriptionInfoLabel.setFont(descriptionInfoLabel.getFont().deriveFont(Font.BOLD));
 		descriptionInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionInfoLabel.setEnabled(false);
 		add(descriptionInfoLabel);
@@ -63,6 +71,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		descriptionField = new JTextField(20);
 		descriptionField.setEnabled(false);
 		descriptionPane.add(descriptionField);
+		descriptionPane.setMaximumSize(new Dimension(Short.MAX_VALUE, descriptionField.getPreferredSize().height));
 		
 		add(Box.createVerticalGlue());
 	}

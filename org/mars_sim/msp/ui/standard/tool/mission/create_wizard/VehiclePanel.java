@@ -2,7 +2,12 @@ package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -19,6 +24,7 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 class VehiclePanel extends WizardPanel {
 
@@ -33,13 +39,18 @@ class VehiclePanel extends WizardPanel {
 		// User WizardPanel constructor.
 		super(wizard);
 		
-		setLayout(new BorderLayout(0, 0));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setBorder(new MarsPanelBorder());
 		
 		JLabel selectVehicleLabel = new JLabel("Select a rover for the mission.", JLabel.CENTER);
-		add(selectVehicleLabel, BorderLayout.NORTH);
+		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
+		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(selectVehicleLabel);
 		
 		JPanel vehiclePane = new JPanel(new BorderLayout(0, 0));
-		add(vehiclePane, BorderLayout.CENTER);
+		vehiclePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
+		vehiclePane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(vehiclePane);
 		
         // Create scroll panel for vehicle list.
         JScrollPane vehicleScrollPane = new JScrollPane();
@@ -47,7 +58,6 @@ class VehiclePanel extends WizardPanel {
         
         vehicleTableModel = new VehicleTableModel();
         vehicleTable = new JTable(vehicleTableModel);
-        vehicleTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
         vehicleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -69,11 +79,16 @@ class VehiclePanel extends WizardPanel {
         			}
         		}
         	});
+        vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
         vehicleScrollPane.setViewportView(vehicleTable);
 		
 		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
+		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
 		errorMessageLabel.setForeground(Color.RED);
-		add(errorMessageLabel, BorderLayout.SOUTH);
+		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(errorMessageLabel);
+		
+		add(Box.createVerticalGlue());
 	}
 	
 	String getPanelName() {
@@ -93,6 +108,7 @@ class VehiclePanel extends WizardPanel {
 
 	void updatePanel() {
 		vehicleTableModel.updateTable();
+		vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
 	}
 	
     private class VehicleTableModel extends UnitTableModel {

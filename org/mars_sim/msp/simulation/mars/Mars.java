@@ -12,6 +12,9 @@ import java.io.Serializable;
  * Mars represents the planet Mars in the simulation.
  */
 public class Mars implements Serializable {
+	
+	// Mars average radius in km.
+	public static final double MARS_RADIUS_KM = 3393D;
 
     // Transient Data members
     private transient SurfaceFeatures surfaceFeatures; // Surface features

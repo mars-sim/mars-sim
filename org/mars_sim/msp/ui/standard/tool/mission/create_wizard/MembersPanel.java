@@ -26,6 +26,7 @@ import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 class MembersPanel extends WizardPanel {
 
@@ -46,6 +47,7 @@ class MembersPanel extends WizardPanel {
 		super(wizard);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setBorder(new MarsPanelBorder());
 		
 		JLabel selectMembersLabel = new JLabel("Select members for the mission.", JLabel.CENTER);
 		selectMembersLabel.setFont(selectMembersLabel.getFont().deriveFont(Font.BOLD));
@@ -67,7 +69,6 @@ class MembersPanel extends WizardPanel {
         
         peopleTableModel = new PeopleTableModel();
         peopleTable = new JTable(peopleTableModel);
-        peopleTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         peopleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(peopleTableModel));
         peopleTable.setRowSelectionAllowed(true);
         peopleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -172,7 +173,6 @@ class MembersPanel extends WizardPanel {
         
         membersTableModel = new MembersTableModel();
         membersTable = new JTable(membersTableModel);
-        membersTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         membersTable.setRowSelectionAllowed(true);
         membersTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         membersTable.getSelectionModel().addListSelectionListener(

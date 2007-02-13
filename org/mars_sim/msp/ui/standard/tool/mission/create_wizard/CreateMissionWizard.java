@@ -142,10 +142,10 @@ public class CreateMissionWizard extends JDialog {
 			addWizardPanel(new DestinationSettlementPanel(this));
 		else if (missionBean.getType().equals(MissionDataBean.RESCUE_MISSION)) 
 			addWizardPanel(new RendezvousVehiclePanel(this));
+		else if (missionBean.getType().equals(MissionDataBean.ICE_MISSION))
+			addWizardPanel(new ProspectingSitePanel(this));
 		//else if (missionBean.getType().equals(MissionDataBean.EXPLORATION_MISSION))
 		//	addWizardPanel(new NavpointsPanel(this));
-		//else if (missionBean.getType().equals(MissionDataBean.ICE_MISSION))
-		//	addWizardPanel(new CollectionSitePanel(this));
 	}
 	
 	private void addWizardPanel(WizardPanel newWizardPanel) {
