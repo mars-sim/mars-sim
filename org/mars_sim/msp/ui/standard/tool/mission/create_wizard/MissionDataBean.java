@@ -34,6 +34,7 @@ class MissionDataBean {
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
 	private Coordinates iceCollectionSite;
+	private Coordinates[] explorationSites;
 	
 	void createMission() {
 		System.out.println("Creating new mission.");
@@ -138,5 +139,13 @@ class MissionDataBean {
 	
 	void setIceCollectionSite(Coordinates iceCollectionSite) {
 		this.iceCollectionSite = iceCollectionSite;
+	}
+	
+	Coordinates[] getExplorationSites() {
+		return explorationSites;
+	}
+	
+	void setExplorationSites(Coordinates[] explorationSites) {
+		this.explorationSites = explorationSites;
 	}
 }
