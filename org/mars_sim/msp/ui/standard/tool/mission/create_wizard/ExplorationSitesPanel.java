@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -57,25 +58,31 @@ class ExplorationSitesPanel extends WizardPanel {
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(titleLabel);
 		
+		JPanel centerPane = new JPanel(new BorderLayout(0, 0));
+		centerPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		centerPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 350));
+		add(centerPane);
+		
+		JPanel mapMainPane = new JPanel(new BorderLayout(0, 0));
+		centerPane.add(mapMainPane, BorderLayout.WEST);
+		
 		mapPane = new MapPanel();
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
 		mapPane.addMapLayer(circleLayer = new CenteredCircleLayer(Color.GREEN));
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane));
+		mapPane.setBorder(new MarsPanelBorder());
 		// mapPane.addMouseListener(new NavpointMouseListener());
 		// mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
-		mapPane.setMaximumSize(mapPane.getPreferredSize());
-		mapPane.setMinimumSize(mapPane.getPreferredSize());
-		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(mapPane);
+		mapMainPane.add(mapPane, BorderLayout.NORTH);
 		
-		add(Box.createVerticalStrut(10));
+		JLabel instructionLabel = new JLabel("Drag navpoint flags to the desired exploration sites.", JLabel.CENTER);
+		instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.BOLD));
+		mapMainPane.add(instructionLabel, BorderLayout.SOUTH);
 		
 		JPanel sitePane = new JPanel(new BorderLayout(0, 0));
-		sitePane.setMaximumSize(new Dimension(400, 100));
-		sitePane.setPreferredSize(sitePane.getMaximumSize());
 		sitePane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(sitePane);
+		centerPane.add(sitePane, BorderLayout.CENTER);
 		
         // Create scroll panel for site list.
         JScrollPane siteScrollPane = new JScrollPane();
@@ -88,12 +95,11 @@ class ExplorationSitesPanel extends WizardPanel {
         siteListPane.setLayout(new BoxLayout(siteListPane, BoxLayout.Y_AXIS));
         siteListMainPane.add(siteListPane, BorderLayout.NORTH);
         
-        add(Box.createVerticalStrut(10));
-		
-		JLabel instructionLabel = new JLabel("Drag navpoint flags to the desired exploration sites.");
-		instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.BOLD));
-		instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(instructionLabel);
+        JPanel addButtonPane = new JPanel(new FlowLayout());
+        sitePane.add(addButtonPane, BorderLayout.SOUTH);
+        
+        JButton addButton = new JButton("Add Site");
+        addButtonPane.add(addButton);
 		
 		add(Box.createVerticalGlue());
 	}
@@ -112,11 +118,11 @@ class ExplorationSitesPanel extends WizardPanel {
 	}
 
 	void updatePanel() {
+		Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
+		
 		siteListPane.add(new SitePanel(0, new Coordinates(0D, 0D)));
-		siteListPane.add(new SitePanel(1, new Coordinates(Math.PI / 2D, 0D)));
-		siteListPane.add(new SitePanel(2, new Coordinates(Math.PI / 2D, Math.PI)));
-		siteListPane.add(new SitePanel(3, new Coordinates(Math.PI / 2D, Math.PI / 3D)));
-		siteListPane.add(new SitePanel(4, new Coordinates(Math.PI / 3D, Math.PI)));
+		
+		mapPane.showMap(center);
 	}
 	
 	private class SitePanel extends JPanel {
@@ -134,7 +140,7 @@ class ExplorationSitesPanel extends WizardPanel {
 			this.site = site;
 			
 			setLayout(new GridLayout(1, 3));
-			setBorder(new EtchedBorder());
+			setBorder(new MarsPanelBorder());
 			
 			siteNumLabel = new JLabel(" Site " + (siteNum + 1));
 			add(siteNumLabel);
