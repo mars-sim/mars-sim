@@ -7,8 +7,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,18 +16,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.EtchedBorder;
-import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.IntPoint;
-import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.UnitCollection;
-import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.map.CenteredCircleLayer;
 import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
@@ -57,6 +48,8 @@ class ExplorationSitesPanel extends WizardPanel {
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(titleLabel);
+		
+		add(Box.createVerticalStrut(10));
 		
 		JPanel centerPane = new JPanel(new BorderLayout(0, 0));
 		centerPane.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -99,6 +92,13 @@ class ExplorationSitesPanel extends WizardPanel {
         sitePane.add(addButtonPane, BorderLayout.SOUTH);
         
         JButton addButton = new JButton("Add Site");
+        addButton.addActionListener(
+        		new ActionListener() {
+    				public void actionPerformed(ActionEvent e) {
+    					siteListPane.add(new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation()));
+    					validate();
+    				}
+    			});
         addButtonPane.add(addButton);
 		
 		add(Box.createVerticalGlue());
@@ -125,6 +125,17 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapPane.showMap(center);
 	}
 	
+	private Coordinates getNewSiteLocation() {
+		return new Coordinates(Math.PI / 2D, Math.PI / 2D);
+	}
+	
+	private void updateSiteNumbers() {
+		for (int x = 0; x < siteListPane.getComponentCount(); x++) {
+			SitePanel sitePane = (SitePanel) siteListPane.getComponent(x);
+			sitePane.setSiteNum(x);
+		}
+	}
+	
 	private class SitePanel extends JPanel {
 		
 		private Coordinates site;
@@ -148,13 +159,29 @@ class ExplorationSitesPanel extends WizardPanel {
 			siteLocationLabel = new JLabel(site.getFormattedString());
 			add(siteLocationLabel);
 			
-			JButton removeButton = new JButton("Remove");
-			add(removeButton);
+			if (siteNum > 0) {
+				JButton removeButton = new JButton("Remove");
+				removeButton.addActionListener(
+						new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								setVisible(false);
+								siteListPane.remove(getSiteNum());
+								updateSiteNumbers();
+								siteListPane.validate();
+							}
+						});
+				add(removeButton);
+			}
+			else add(new JPanel());
 		}
 		
 		void setSiteNum(int siteNum) {
 			this.siteNum = siteNum;
 			siteNumLabel.setText(" Site " + (siteNum + 1));
+		}
+		
+		int getSiteNum() {
+			return siteNum;
 		}
 		
 		void setLocation(Coordinates site) {
