@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import java.util.List;
+
 import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
@@ -52,6 +54,24 @@ public class Exploration extends CollectResourcesMission {
 			SITE_GOAL, COLLECTION_RATE, SpecimenContainer.class, 
 			REQUIRED_SPECIMEN_CONTAINERS, NUM_SITES, MIN_PEOPLE);
 	}
+	
+    /**
+     * Constructor with explicit data.
+     * @param members collection of mission members.
+     * @param startingSettlement the starting settlement.
+     * @param explorationSites the sites to explore.
+     * @param rover the rover to use.
+     * @param description the mission's description.
+     * @throws MissionException if error constructing mission.
+     */
+    public Exploration(PersonCollection members, Settlement startingSettlement, 
+    		List explorationSites, Rover rover, String description) throws MissionException {
+    	
+       	// Use CollectResourcesMission constructor.
+    	super(description, members, startingSettlement, AmountResource.ROCK_SAMPLES, 
+    			SITE_GOAL, COLLECTION_RATE, SpecimenContainer.class, REQUIRED_SPECIMEN_CONTAINERS, 
+    			explorationSites.size(), 1, rover, explorationSites);
+    }
 
 	/** 
 	 * Gets the weighted probability that a given person would start this mission.

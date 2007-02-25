@@ -109,8 +109,15 @@ class ExplorationSitesPanel extends WizardPanel {
 	}
 
 	void commitChanges() {
-		// TODO Auto-generated method stub
-
+		// Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
+		// IntPoint navpointPixel = navLayer.getDisplayPosition();
+		// Coordinates navpoint = center.convertRectToSpherical(navpointPixel.getiX() - 150, navpointPixel.getiY() - 150);
+		int siteNum = siteListPane.getComponentCount();
+		Coordinates[] sites = new Coordinates[siteNum];
+		for (int x = 0; x < siteNum; x++) 
+			sites[x] = ((SitePanel) siteListPane.getComponent(x)).getSite();
+		getWizard().getMissionData().setExplorationSites(sites);
+		getWizard().getMissionData().createMission();
 	}
 
 	void clearInfo() {
@@ -119,10 +126,9 @@ class ExplorationSitesPanel extends WizardPanel {
 
 	void updatePanel() {
 		Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-		
 		siteListPane.add(new SitePanel(0, new Coordinates(0D, 0D)));
-		
 		mapPane.showMap(center);
+		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
 	}
 	
 	private Coordinates getNewSiteLocation() {

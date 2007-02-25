@@ -51,7 +51,9 @@ class MissionDataBean {
 				mission = new CollectIce(members, startingSettlement, collectionSites, rover, description);
 			}
 			else if (EXPLORATION_MISSION.equals(type)) {
-				// TODO: add mission constructor.
+				List collectionSites = new ArrayList(explorationSites.length);
+				for (int x = 0; x < explorationSites.length; x++) collectionSites.add(explorationSites[x]);
+				mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 			}
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
