@@ -31,10 +31,10 @@ class ExplorationSitesPanel extends WizardPanel {
 	private final static String NAME = "Exploration Sites";
 
 	private MapPanel mapPane;
-	private CenteredCircleLayer circleLayer;
+	// private CenteredCircleLayer circleLayer;
 	private NavpointEditLayer navLayer;
-	private boolean navSelected;
-	private IntPoint navOffset;
+	// private boolean navSelected;
+	// private IntPoint navOffset;
 	private JPanel siteListPane;
 	
 	ExplorationSitesPanel(CreateMissionWizard wizard) {
@@ -62,7 +62,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapPane = new MapPanel();
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
-		mapPane.addMapLayer(circleLayer = new CenteredCircleLayer(Color.GREEN));
+		// mapPane.addMapLayer(circleLayer = new CenteredCircleLayer(Color.GREEN));
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane));
 		mapPane.setBorder(new MarsPanelBorder());
 		// mapPane.addMouseListener(new NavpointMouseListener());

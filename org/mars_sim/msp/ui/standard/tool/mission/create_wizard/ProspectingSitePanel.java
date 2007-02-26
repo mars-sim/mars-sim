@@ -78,7 +78,7 @@ class ProspectingSitePanel extends WizardPanel {
 
 	void commitChanges() {
 		Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-		IntPoint navpointPixel = navLayer.getDisplayPosition();
+		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = center.convertRectToSpherical(navpointPixel.getiX() - 150, navpointPixel.getiY() - 150);
 		getWizard().getMissionData().setIceCollectionSite(navpoint);
 		getWizard().getMissionData().createMission();
@@ -86,6 +86,7 @@ class ProspectingSitePanel extends WizardPanel {
 
 	void clearInfo() {
 		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
+		navLayer.clearNavpointPositions();
 	}
 
 	void updatePanel() {
@@ -96,7 +97,7 @@ class ProspectingSitePanel extends WizardPanel {
 			circleLayer.setRadius(pixelRange);
 			navLayer.setRadiusLimit(pixelRange);
 			IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
-			navLayer.setDisplayPosition(initialNavpointPos);
+			navLayer.addNavpointPosition(initialNavpointPos);
 			Coordinates initialNavpoint = center.convertRectToSpherical(0, (-1 * (pixelRange / 2)));
 			locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
 			mapPane.showMap(center);
@@ -116,23 +117,25 @@ class ProspectingSitePanel extends WizardPanel {
 	private class NavpointMouseListener extends MouseAdapter {
 	
 		public void mousePressed(MouseEvent event) {
-			if (navLayer.isOverNavIcon(event.getX(), event.getY())) {
+			if (navLayer.overNavIcon(event.getX(), event.getY()) == 0) {
 				navSelected = true;
-				navLayer.selectIcon(true);
+				navLayer.selectNavpoint(0);
 				navOffset = determineOffset(event.getX(), event.getY());
+				circleLayer.setDisplayCircle(true);
 				mapPane.repaint();
 			}
 		}
 		
 		private IntPoint determineOffset(int x, int y) {
-			int xOffset = navLayer.getDisplayPosition().getiX() - x;
-			int yOffset = navLayer.getDisplayPosition().getiY() - y;
+			int xOffset = navLayer.getNavpointPosition(0).getiX() - x;
+			int yOffset = navLayer.getNavpointPosition(0).getiY() - y;
 			return new IntPoint(xOffset, yOffset);
 		}
 	
 		public void mouseReleased(MouseEvent event) {
 			navSelected = false;
-			navLayer.selectIcon(false);
+			navLayer.clearSelectedNavpoint();
+			circleLayer.setDisplayCircle(false);
 			mapPane.repaint();
 		}
 	}
@@ -143,10 +146,10 @@ class ProspectingSitePanel extends WizardPanel {
 			if (navSelected) {
 				int displayX = event.getPoint().x + navOffset.getiX();
 				int displayY = event.getPoint().y + navOffset.getiY();
-				navLayer.setDisplayPosition(new IntPoint(displayX, displayY));
+				navLayer.setNavpointPosition(0, new IntPoint(displayX, displayY));
 				
 				// Note: display position in nav layer might not have changed.
-				IntPoint displayPos = navLayer.getDisplayPosition();
+				IntPoint displayPos = navLayer.getNavpointPosition(0);
 				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
 				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, displayPos.getiY() - 150);
 				locationLabel.setText("Location: " + navpoint.getFormattedString());
