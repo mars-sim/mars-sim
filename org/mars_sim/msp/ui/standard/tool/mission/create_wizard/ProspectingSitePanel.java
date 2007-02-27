@@ -77,9 +77,9 @@ class ProspectingSitePanel extends WizardPanel {
 	}
 
 	void commitChanges() {
-		Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
-		Coordinates navpoint = center.convertRectToSpherical(navpointPixel.getiX() - 150, navpointPixel.getiY() - 150);
+		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
+				navpointPixel.getiY() - 150);
 		getWizard().getMissionData().setIceCollectionSite(navpoint);
 		getWizard().getMissionData().createMission();
 	}
@@ -91,20 +91,23 @@ class ProspectingSitePanel extends WizardPanel {
 
 	void updatePanel() {
 		try {
-			Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
 			double range = getWizard().getMissionData().getRover().getRange() / 2D;
 			int pixelRange = convertRadiusToMapPixels(range);
 			circleLayer.setRadius(pixelRange);
 			navLayer.setRadiusLimit(pixelRange);
 			IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
 			navLayer.addNavpointPosition(initialNavpointPos);
-			Coordinates initialNavpoint = center.convertRectToSpherical(0, (-1 * (pixelRange / 2)));
+			Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)));
 			locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
-			mapPane.showMap(center);
+			mapPane.showMap(getCenterCoords());
 		}
 		catch (Exception e) {}
 		
 		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
+	}
+	
+	private Coordinates getCenterCoords() {
+		return getWizard().getMissionData().getStartingSettlement().getCoordinates();
 	}
 	
 	private int convertRadiusToMapPixels(double radius) {

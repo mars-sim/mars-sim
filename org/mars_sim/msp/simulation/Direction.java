@@ -55,6 +55,13 @@ public class Direction implements Cloneable, Serializable {
     	return (int) (direction * 1000D);
     }
     
+    /**
+     * Gets the string value of the object.
+     */
+    public String toString() {
+    	return "" + direction;
+    }
+    
     /** Returns direction in radians
      *  0 = North, clockwise
      *  @return direction in radians

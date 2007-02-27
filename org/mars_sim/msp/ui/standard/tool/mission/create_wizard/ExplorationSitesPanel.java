@@ -1,7 +1,6 @@
 package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -18,11 +17,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.IntPoint;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.map.CenteredCircleLayer;
 import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
+import org.mars_sim.msp.ui.standard.tool.map.MapUtils;
 import org.mars_sim.msp.ui.standard.tool.map.NavpointEditLayer;
+import org.mars_sim.msp.ui.standard.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
 
@@ -95,7 +97,10 @@ class ExplorationSitesPanel extends WizardPanel {
         addButton.addActionListener(
         		new ActionListener() {
     				public void actionPerformed(ActionEvent e) {
-    					siteListPane.add(new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation()));
+    					SitePanel sitePane = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
+    					siteListPane.add(sitePane);
+    					navLayer.addNavpointPosition(MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+    					mapPane.repaint();
     					validate();
     				}
     			});
@@ -112,11 +117,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		// Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
 		// IntPoint navpointPixel = navLayer.getDisplayPosition();
 		// Coordinates navpoint = center.convertRectToSpherical(navpointPixel.getiX() - 150, navpointPixel.getiY() - 150);
-		int siteNum = siteListPane.getComponentCount();
-		Coordinates[] sites = new Coordinates[siteNum];
-		for (int x = 0; x < siteNum; x++) 
-			sites[x] = ((SitePanel) siteListPane.getComponent(x)).getSite();
-		getWizard().getMissionData().setExplorationSites(sites);
+		getWizard().getMissionData().setExplorationSites(getSites());
 		getWizard().getMissionData().createMission();
 	}
 
@@ -125,21 +126,87 @@ class ExplorationSitesPanel extends WizardPanel {
 	}
 
 	void updatePanel() {
-		Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-		siteListPane.add(new SitePanel(0, new Coordinates(0D, 0D)));
-		mapPane.showMap(center);
-		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
+		try {
+			double range = getWizard().getMissionData().getRover().getRange() / 2D;
+			// int pixelRange = convertRadiusToMapPixels(range);
+			// navLayer.setRadiusLimit(pixelRange);
+			Coordinates startingSite = getCenterCoords().getNewLocation(new Direction(0D), range / 2D);
+			SitePanel startingSitePane = new SitePanel(0, startingSite);
+			siteListPane.add(startingSitePane);
+			navLayer.addNavpointPosition(MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+			mapPane.showMap(getCenterCoords());
+			getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
+		}
+		catch (Exception e) {}
 	}
 	
 	private Coordinates getNewSiteLocation() {
-		return new Coordinates(Math.PI / 2D, Math.PI / 2D);
+		Coordinates result = null;
+		
+		try {
+			double range = getWizard().getMissionData().getRover().getRange();
+			double distance = getDistance();
+			Coordinates[] sites = getSites();
+			Coordinates lastSite = sites[sites.length - 1];
+			result = determineNewSiteLocation(lastSite, getCenterCoords(), (range - distance));
+		}
+		catch (Exception e) {}
+		
+		return result;
+	}
+	
+	private double getDistance() {
+		double result = 0D;
+		Coordinates[] sites = getSites();
+		
+		result += getCenterCoords().getDistance(sites[0]);
+		
+		for (int x = 1; x < sites.length; x++) 
+			result += sites[x - 1].getDistance(sites[x]);
+		
+		result += sites[sites.length - 1].getDistance(getCenterCoords());
+		
+		return result;
+	}
+	
+	private Coordinates[] getSites() {
+		Coordinates[] result = new Coordinates[siteListPane.getComponentCount()];
+		for (int x = 0; x < siteListPane.getComponentCount(); x++) 
+			result[x] = ((SitePanel) siteListPane.getComponent(x)).getSite();
+		
+		return result;
 	}
 	
 	private void updateSiteNumbers() {
+		navLayer.clearNavpointPositions();
 		for (int x = 0; x < siteListPane.getComponentCount(); x++) {
 			SitePanel sitePane = (SitePanel) siteListPane.getComponent(x);
 			sitePane.setSiteNum(x);
+			navLayer.addNavpointPosition(MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
 		}
+		mapPane.repaint();
+	}
+	
+	private Coordinates getCenterCoords() {
+		return getWizard().getMissionData().getStartingSettlement().getCoordinates();
+	}
+	
+	private int convertRadiusToMapPixels(double radius) {
+		Coordinates center = new Coordinates((Math.PI / 2D), 0D);
+		Coordinates startPosition = center.getNewLocation(new Direction(0D), radius);
+		IntPoint startPoint = MapUtils.getRectPosition(startPosition, center, SurfMarsMap.TYPE);
+		return 150 - startPoint.getiY();
+	}
+	
+	private Coordinates determineNewSiteLocation(Coordinates prevNav, Coordinates nextNav, double range) {
+		double fociDistance = prevNav.getDistance(nextNav);
+		double distanceFromCenterOfAxis = Math.sqrt(Math.pow((range / 2D), 2D) - Math.pow((fociDistance / 2D), 2D));
+		double initialDistanceFromAxis = distanceFromCenterOfAxis / 2D;
+		double initialDistanceFromFoci = Math.sqrt(Math.pow((fociDistance / 2D), 2D) + Math.pow(initialDistanceFromAxis, 2D));
+		Direction initialDirectionFromFoci = new Direction(Math.asin(initialDistanceFromAxis / initialDistanceFromFoci)); 
+		Direction fociDirection = prevNav.getDirectionToPoint(nextNav);
+		Direction directionToNewSite = new Direction(fociDirection.getDirection() - initialDirectionFromFoci.getDirection());
+		return prevNav.getNewLocation(directionToNewSite, initialDistanceFromFoci);
 	}
 	
 	private class SitePanel extends JPanel {

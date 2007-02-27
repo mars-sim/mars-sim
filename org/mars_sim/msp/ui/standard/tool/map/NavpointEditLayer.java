@@ -92,12 +92,13 @@ public class NavpointEditLayer implements MapLayer {
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 		
 		// Draw the path lines.
-		for (int x = 0; x < navpointPositions.size(); x ++) {
+		for (int x = 0; x < navpointPositions.size(); x++) {
 			g.setColor(Color.GREEN);
 			IntPoint currentPosition = (IntPoint) navpointPositions.get(x);
 			if ((x == 0) || (x == (navpointPositions.size() - 1))) 
 				g.drawLine(currentPosition.getiX(), currentPosition.getiY(), 150, 150);
-			else {
+			
+			if (x != 0) {
 				IntPoint prevPosition = (IntPoint) navpointPositions.get(x - 1);
 				g.drawLine(currentPosition.getiX(), currentPosition.getiY(), prevPosition.getiX(), prevPosition.getiY());
 			}
