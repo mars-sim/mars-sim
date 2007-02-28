@@ -32,13 +32,13 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
  * The CollectResourcesMission class is a mission to travel in a rover to several
  * random locations around a settlement and collect resources of a given type.
  */
-abstract class CollectResourcesMission extends RoverMission implements Serializable {
+public abstract class CollectResourcesMission extends RoverMission implements Serializable {
 
 	// Mission phases
 	final protected static String COLLECT_RESOURCES = "Collecting Resources";
 	
 	// Estimated collection time multiplyer for EVA.
-	final private static double EVA_COLLECTION_OVERHEAD = 20D;
+	final public static double EVA_COLLECTION_OVERHEAD = 20D;
 
 	// Data members
 	private AmountResource resourceType; // The type of resource to collect.
@@ -88,7 +88,8 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
 			
 			// Determine collection sites
 			try {
-				if (hasVehicle()) determineCollectionSites(getVehicle().getRange(), getTotalTripTimeLimit(true), numSites);
+				if (hasVehicle()) determineCollectionSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(), 
+						getPeopleNumber(), true), numSites);
 			}
 			catch (Exception e) {
 				throw new MissionException(null, e);
@@ -541,10 +542,9 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      * @return time (millisols)
      */
     protected double getEstimatedTimeAtCollectionSite(boolean useBuffer) {
-    	double timePerPerson =  siteResourceGoal / resourceCollectionRate;
+    	double timePerPerson = siteResourceGoal / resourceCollectionRate;
     	if (useBuffer) timePerPerson *= EVA_COLLECTION_OVERHEAD;
-    	double result =  timePerPerson / getPeopleNumber();
-    	return result;
+    	return timePerPerson / getPeopleNumber();
     }
     
     /**
@@ -553,10 +553,9 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
      * @return time (millisols) limit.
      * @throws Exception if error determining time limit.
      */
-    public final double getTotalTripTimeLimit(boolean useBuffer) throws Exception {
+    public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) throws Exception {
     	
-    	int crewNum = getPeopleNumber();
-    	Inventory vInv = getVehicle().getInventory();
+    	Inventory vInv = rover.getInventory();
     	
     	double timeLimit = Double.MAX_VALUE;
     	
@@ -565,19 +564,19 @@ abstract class CollectResourcesMission extends RoverMission implements Serializa
     	// Check food capacity as time limit.
     	double foodConsumptionRate = config.getFoodConsumptionRate();
     	double foodCapacity = vInv.getAmountResourceCapacity(AmountResource.FOOD);
-    	double foodTimeLimit = foodCapacity / (foodConsumptionRate * crewNum);
+    	double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
     	if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
     		
     	// Check water capacity as time limit.
     	double waterConsumptionRate = config.getWaterConsumptionRate();
     	double waterCapacity = vInv.getAmountResourceCapacity(AmountResource.WATER);
-    	double waterTimeLimit = waterCapacity / (waterConsumptionRate * crewNum);
+    	double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
     	if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
     		
     	// Check oxygen capacity as time limit.
     	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
     	double oxygenCapacity = vInv.getAmountResourceCapacity(AmountResource.OXYGEN);
-    	double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * crewNum);
+    	double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
     	if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
     	
     	// Convert timeLimit into millisols and use error margin.

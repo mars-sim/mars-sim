@@ -28,10 +28,10 @@ public class Exploration extends CollectResourcesMission {
 	public static final String DEFAULT_DESCRIPTION = "Exploration";
 	
 	// Amount of rock samples to be gathered at a given site (kg). 
-	private static final double SITE_GOAL = 40D;
+	public static final double SITE_GOAL = 40D;
 	
 	// Collection rate of rock samples during EVA (kg/millisol).
-	private static final double COLLECTION_RATE = .1D;
+	public static final double COLLECTION_RATE = .1D;
 	
 	// Number of specimen containers required for the mission. 
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;

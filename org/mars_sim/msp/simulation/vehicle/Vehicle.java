@@ -464,7 +464,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * Gets the estimated distance traveled in one sol.
      * @return distance traveled (km)
      */
-    protected double getEstimatedTravelDistancePerSol() {
+    public double getEstimatedTravelDistancePerSol() {
     	// Get estimated average speed (km / hr).
     	double estSpeed = getBaseSpeed() / 2D;
     	

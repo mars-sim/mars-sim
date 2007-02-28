@@ -19,6 +19,9 @@ import javax.swing.JScrollPane;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.IntPoint;
+import org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission;
+import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.map.CenteredCircleLayer;
 import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
@@ -38,6 +41,10 @@ class ExplorationSitesPanel extends WizardPanel {
 	// private boolean navSelected;
 	// private IntPoint navOffset;
 	private JPanel siteListPane;
+	private JButton addButton;
+	private double range;
+	private double missionTimeLimit;
+	private double timePerSite;
 	
 	ExplorationSitesPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
@@ -93,7 +100,7 @@ class ExplorationSitesPanel extends WizardPanel {
         JPanel addButtonPane = new JPanel(new FlowLayout());
         sitePane.add(addButtonPane, BorderLayout.SOUTH);
         
-        JButton addButton = new JButton("Add Site");
+        addButton = new JButton("Add Site");
         addButton.addActionListener(
         		new ActionListener() {
     				public void actionPerformed(ActionEvent e) {
@@ -101,6 +108,7 @@ class ExplorationSitesPanel extends WizardPanel {
     					siteListPane.add(sitePane);
     					navLayer.addNavpointPosition(MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
     					mapPane.repaint();
+    					addButton.setEnabled(canAddMoreSites());
     					validate();
     				}
     			});
@@ -123,36 +131,87 @@ class ExplorationSitesPanel extends WizardPanel {
 
 	void clearInfo() {
 		siteListPane.removeAll();
+		navLayer.clearNavpointPositions();
+		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
 	}
 
 	void updatePanel() {
-		try {
-			double range = getWizard().getMissionData().getRover().getRange() / 2D;
-			// int pixelRange = convertRadiusToMapPixels(range);
-			// navLayer.setRadiusLimit(pixelRange);
-			Coordinates startingSite = getCenterCoords().getNewLocation(new Direction(0D), range / 2D);
-			SitePanel startingSitePane = new SitePanel(0, startingSite);
-			siteListPane.add(startingSitePane);
-			navLayer.addNavpointPosition(MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
-			mapPane.showMap(getCenterCoords());
-			getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
-		}
-		catch (Exception e) {}
+		range = getRange();
+		missionTimeLimit = getMissionTimeLimit();
+		timePerSite = getTimePerSite();
+		
+		// int pixelRange = convertRadiusToMapPixels(range / 2D);
+		// navLayer.setRadiusLimit(pixelRange);
+		Coordinates startingSite = getCenterCoords().getNewLocation(new Direction(0D), range / 4D);
+		SitePanel startingSitePane = new SitePanel(0, startingSite);
+		siteListPane.add(startingSitePane);
+		navLayer.addNavpointPosition(MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+		mapPane.showMap(getCenterCoords());
+		addButton.setEnabled(canAddMoreSites());
+		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
+	}
+	
+	private boolean canAddMoreSites() {
+		return (missionTimeLimit > (getTotalMissionTime() + getTimePerSite()));
 	}
 	
 	private Coordinates getNewSiteLocation() {
 		Coordinates result = null;
 		
-		try {
-			double range = getWizard().getMissionData().getRover().getRange();
-			double distance = getDistance();
-			Coordinates[] sites = getSites();
-			Coordinates lastSite = sites[sites.length - 1];
-			result = determineNewSiteLocation(lastSite, getCenterCoords(), (range - distance));
-		}
-		catch (Exception e) {}
+		Coordinates[] sites = getSites();
+		Coordinates lastSite = sites[sites.length - 1];
+		result = determineNewSiteLocation(lastSite, getCenterCoords(), getRemainingRange(true));
 		
 		return result;
+	}
+	
+	private double getRemainingRange(boolean newSite) {
+		double travelTime = missionTimeLimit - getTotalSiteTime();
+		if (newSite) travelTime -= timePerSite;
+		Rover rover = getWizard().getMissionData().getRover();
+		double timeRange = (travelTime / 1000D) * rover.getEstimatedTravelDistancePerSol();
+		double realRange = range;
+		if (timeRange < range) realRange = timeRange;
+		return realRange - getDistance();
+	}
+	
+	private double getRange() {
+		try {
+			return getWizard().getMissionData().getRover().getRange();
+		}
+		catch (Exception e) {
+			return 0D;
+		}
+	}
+	
+	private double getMissionTimeLimit() {
+		Rover rover = getWizard().getMissionData().getRover();
+		int memberNum = getWizard().getMissionData().getMembers().size();
+		try {
+			return CollectResourcesMission.getTotalTripTimeLimit(rover, memberNum, true);
+		}
+		catch (Exception e) {
+			return 0D;
+		}
+	}
+	
+	private double getTimePerSite() {
+    	double timePerPerson = (Exploration.SITE_GOAL / Exploration.COLLECTION_RATE) * 
+    			CollectResourcesMission.EVA_COLLECTION_OVERHEAD;
+    	return timePerPerson / getWizard().getMissionData().getMembers().size();
+	}
+	
+	private double getTotalSiteTime() {
+		return timePerSite * siteListPane.getComponentCount();
+	}
+	
+	private double getTravelTime() {
+		Rover rover = getWizard().getMissionData().getRover();
+		return getDistance() / (rover.getEstimatedTravelDistancePerSol() / 1000D);
+	}
+	
+	private double getTotalMissionTime() {
+		return getTravelTime() + getTotalSiteTime();
 	}
 	
 	private double getDistance() {
