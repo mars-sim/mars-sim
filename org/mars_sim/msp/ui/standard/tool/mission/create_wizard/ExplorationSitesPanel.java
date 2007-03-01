@@ -8,6 +8,9 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,8 +41,8 @@ class ExplorationSitesPanel extends WizardPanel {
 	private MapPanel mapPane;
 	// private CenteredCircleLayer circleLayer;
 	private NavpointEditLayer navLayer;
-	// private boolean navSelected;
-	// private IntPoint navOffset;
+	private int navSelected;
+	private IntPoint navOffset;
 	private JPanel siteListPane;
 	private JButton addButton;
 	private double range;
@@ -74,8 +77,8 @@ class ExplorationSitesPanel extends WizardPanel {
 		// mapPane.addMapLayer(circleLayer = new CenteredCircleLayer(Color.GREEN));
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane));
 		mapPane.setBorder(new MarsPanelBorder());
-		// mapPane.addMouseListener(new NavpointMouseListener());
-		// mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
+		mapPane.addMouseListener(new NavpointMouseListener());
+		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
 		mapMainPane.add(mapPane, BorderLayout.NORTH);
 		
 		JLabel instructionLabel = new JLabel("Drag navpoint flags to the desired exploration sites.", JLabel.CENTER);
@@ -140,8 +143,6 @@ class ExplorationSitesPanel extends WizardPanel {
 		missionTimeLimit = getMissionTimeLimit();
 		timePerSite = getTimePerSite();
 		
-		// int pixelRange = convertRadiusToMapPixels(range / 2D);
-		// navLayer.setRadiusLimit(pixelRange);
 		Coordinates startingSite = getCenterCoords().getNewLocation(new Direction(0D), range / 4D);
 		SitePanel startingSitePane = new SitePanel(0, startingSite);
 		siteListPane.add(startingSitePane);
@@ -323,6 +324,82 @@ class ExplorationSitesPanel extends WizardPanel {
 		
 		Coordinates getSite() {
 			return site;
+		}
+	}
+	
+	private class NavpointMouseListener extends MouseAdapter {
+		
+		public void mousePressed(MouseEvent event) {
+			navSelected = navLayer.overNavIcon(event.getX(), event.getY());
+			if (navSelected > -1) {
+				navLayer.selectNavpoint(navSelected);
+				navOffset = determineOffset(event.getX(), event.getY());
+				// circleLayer.setDisplayCircle(true);
+				mapPane.repaint();
+			}
+		}
+		
+		private IntPoint determineOffset(int x, int y) {
+			int xOffset = navLayer.getNavpointPosition(navSelected).getiX() - x;
+			int yOffset = navLayer.getNavpointPosition(navSelected).getiY() - y;
+			return new IntPoint(xOffset, yOffset);
+		}
+	
+		public void mouseReleased(MouseEvent event) {
+			navSelected = -1;
+			navLayer.clearSelectedNavpoint();
+			// circleLayer.setDisplayCircle(false);
+			mapPane.repaint();
+		}
+	}
+	
+	private class NavpointMouseMotionListener extends MouseMotionAdapter {
+		
+		public void mouseDragged(MouseEvent event) {
+			if (navSelected > -1) {
+				int displayX = event.getPoint().x + navOffset.getiX();
+				int displayY = event.getPoint().y + navOffset.getiY();
+				IntPoint displayPos = new IntPoint(displayX, displayY);
+				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
+				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, displayPos.getiY() - 150);
+				
+				if (withinBounds(displayPos, navpoint)) {
+					navLayer.setNavpointPosition(navSelected, new IntPoint(displayX, displayY));
+					
+					SitePanel selectedSitePane = (SitePanel) siteListPane.getComponent(navSelected);
+					selectedSitePane.setLocation(navpoint);
+					addButton.setEnabled(canAddMoreSites());
+					mapPane.repaint();
+				}
+			}
+		}
+		
+		private boolean withinBounds(IntPoint position, Coordinates location) {
+			boolean result = true;
+			
+			if (!navLayer.withinDisplayEdges(position)) result = false;
+			
+			if (getRemainingRange(false) < getDistanceDiff(location)) result = false;
+			
+			return result;
+		}
+		
+		private double getDistanceDiff(Coordinates newSite) {
+			Coordinates prevNavpoint = null;
+			if (navSelected > 0) prevNavpoint = ((SitePanel) siteListPane.getComponent(navSelected - 1)).getSite();
+			else prevNavpoint = getCenterCoords();
+			
+			Coordinates nextNavpoint = null;
+			if (navSelected < (siteListPane.getComponentCount() - 1)) 
+				nextNavpoint = ((SitePanel) siteListPane.getComponent(navSelected + 1)).getSite();
+			else nextNavpoint = getCenterCoords();
+			
+			Coordinates currentSite = ((SitePanel) siteListPane.getComponent(navSelected)).getSite();
+			double currentSiteDistance = prevNavpoint.getDistance(currentSite) + currentSite.getDistance(nextNavpoint);
+			
+			double newSiteDistance = prevNavpoint.getDistance(newSite) + newSite.getDistance(nextNavpoint);
+			
+			return newSiteDistance - currentSiteDistance;
 		}
 	}
 }

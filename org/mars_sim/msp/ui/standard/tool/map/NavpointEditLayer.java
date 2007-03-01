@@ -20,7 +20,6 @@ public class NavpointEditLayer implements MapLayer {
 	
 	private List navpointPositions;
 	private int selectedNavpoint;
-	private int radiusLimit;
 	private Component displayComponent;
 	private Icon navpointIconColor;
 	private Icon navpointIconSelected;
@@ -31,7 +30,6 @@ public class NavpointEditLayer implements MapLayer {
 		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIcon(GREEN_ICON_NAME);
 		selectedNavpoint = -1;
-		radiusLimit = Integer.MAX_VALUE;
 	}
 	
 	public void addNavpointPosition(IntPoint newNavpointPosition) {
@@ -47,20 +45,13 @@ public class NavpointEditLayer implements MapLayer {
 	}
 	
 	public void setNavpointPosition(int index, IntPoint newNavpointPosition) {
-		if ((newNavpointPosition.getiX() > -1) && (newNavpointPosition.getiX() < (300 - navpointIconColor.getIconWidth()))) {
-			if ((newNavpointPosition.getiY() >= navpointIconColor.getIconHeight()) && (newNavpointPosition.getiY() < 300)) {
-				if (withinRadiusLimit(newNavpointPosition)) navpointPositions.set(index, newNavpointPosition);
-			}
-		}
+		navpointPositions.set(index, newNavpointPosition);
 	}
 	
-	private boolean withinRadiusLimit(IntPoint position) {
-		int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) + Math.pow(150D - position.getY(), 2D)));
-		return (radius <= radiusLimit);
-	}
-	
-	public void setRadiusLimit(int radiusLimit) {
-		this.radiusLimit = radiusLimit;
+	public boolean withinDisplayEdges(IntPoint newNavpointPosition) {
+		boolean withinXBounds = ((newNavpointPosition.getiX() > -1) && (newNavpointPosition.getiX() < (300 - navpointIconColor.getIconWidth())));
+		boolean withinYBounds = ((newNavpointPosition.getiY() >= navpointIconColor.getIconHeight()) && (newNavpointPosition.getiY() < 300));
+		return withinXBounds && withinYBounds;
 	}
 	
 	public void selectNavpoint(int index) {

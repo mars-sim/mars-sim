@@ -33,6 +33,7 @@ class ProspectingSitePanel extends WizardPanel {
 	private boolean navSelected;
 	private IntPoint navOffset;
 	private JLabel locationLabel;
+	private int pixelRange;
 	
 	ProspectingSitePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
@@ -92,9 +93,8 @@ class ProspectingSitePanel extends WizardPanel {
 	void updatePanel() {
 		try {
 			double range = getWizard().getMissionData().getRover().getRange() / 2D;
-			int pixelRange = convertRadiusToMapPixels(range);
+			pixelRange = convertRadiusToMapPixels(range);
 			circleLayer.setRadius(pixelRange);
-			navLayer.setRadiusLimit(pixelRange);
 			IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
 			navLayer.addNavpointPosition(initialNavpointPos);
 			Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)));
@@ -149,16 +149,27 @@ class ProspectingSitePanel extends WizardPanel {
 			if (navSelected) {
 				int displayX = event.getPoint().x + navOffset.getiX();
 				int displayY = event.getPoint().y + navOffset.getiY();
-				navLayer.setNavpointPosition(0, new IntPoint(displayX, displayY));
+				IntPoint displayPos = new IntPoint(displayX, displayY);
+				if (withinBounds(displayPos)) {
+					navLayer.setNavpointPosition(0, displayPos);
+					Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
+					Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, displayPos.getiY() - 150);
+					locationLabel.setText("Location: " + navpoint.getFormattedString());
 				
-				// Note: display position in nav layer might not have changed.
-				IntPoint displayPos = navLayer.getNavpointPosition(0);
-				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, displayPos.getiY() - 150);
-				locationLabel.setText("Location: " + navpoint.getFormattedString());
-				
-				mapPane.repaint();
+					mapPane.repaint();
+				}
 			}
+		}
+		
+		private boolean withinBounds(IntPoint position) {
+			boolean result = true;
+			
+			if (!navLayer.withinDisplayEdges(position)) result = false;
+			
+			int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) + Math.pow(150D - position.getY(), 2D)));
+			if (radius > pixelRange) result = false;
+			
+			return result;
 		}
 	}
 }
