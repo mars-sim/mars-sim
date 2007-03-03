@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard.tool.map;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.IntPoint;
+import org.mars_sim.msp.simulation.mars.Mars;
 
 /**
  * Static class for map utilities. 
@@ -38,5 +39,13 @@ public class MapUtils {
         int low_edge = halfMap - 150;
 
         return Coordinates.findRectPosition(coords, mapCenter, rho, halfMap, low_edge);
+    }
+    
+    public static int getPixelDistance(double distance, String mapType) {
+        int mapWidth = 0;        
+        if (USGSMarsMap.TYPE.equals(mapType)) mapWidth = USGSMarsMap.MAP_WIDTH;
+        else mapWidth = CannedMarsMap.MAP_WIDTH;
+        double distancePerPixel = Mars.MARS_CIRCUMFERENCE / mapWidth;
+        return (int) Math.round(distance / distancePerPixel);
     }
 }

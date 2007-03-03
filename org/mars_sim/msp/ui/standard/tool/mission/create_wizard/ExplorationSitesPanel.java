@@ -1,6 +1,7 @@
 package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -26,7 +27,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
-import org.mars_sim.msp.ui.standard.tool.map.CenteredCircleLayer;
+import org.mars_sim.msp.ui.standard.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
 import org.mars_sim.msp.ui.standard.tool.map.MapUtils;
 import org.mars_sim.msp.ui.standard.tool.map.NavpointEditLayer;
@@ -37,9 +38,11 @@ import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
 class ExplorationSitesPanel extends WizardPanel {
 
 	private final static String NAME = "Exploration Sites";
+	
+	private final static double RANGE_MODIFIER = .95D;
 
 	private MapPanel mapPane;
-	// private CenteredCircleLayer circleLayer;
+	private EllipseLayer ellipseLayer;
 	private NavpointEditLayer navLayer;
 	private int navSelected;
 	private IntPoint navOffset;
@@ -74,7 +77,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapPane = new MapPanel();
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
-		// mapPane.addMapLayer(circleLayer = new CenteredCircleLayer(Color.GREEN));
+		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane));
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());
@@ -125,9 +128,6 @@ class ExplorationSitesPanel extends WizardPanel {
 	}
 
 	void commitChanges() {
-		// Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-		// IntPoint navpointPixel = navLayer.getDisplayPosition();
-		// Coordinates navpoint = center.convertRectToSpherical(navpointPixel.getiX() - 150, navpointPixel.getiY() - 150);
 		getWizard().getMissionData().setExplorationSites(getSites());
 		getWizard().getMissionData().createMission();
 	}
@@ -158,11 +158,9 @@ class ExplorationSitesPanel extends WizardPanel {
 	
 	private Coordinates getNewSiteLocation() {
 		Coordinates result = null;
-		
 		Coordinates[] sites = getSites();
 		Coordinates lastSite = sites[sites.length - 1];
 		result = determineNewSiteLocation(lastSite, getCenterCoords(), getRemainingRange(true));
-		
 		return result;
 	}
 	
@@ -178,7 +176,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	
 	private double getRange() {
 		try {
-			return getWizard().getMissionData().getRover().getRange();
+			return getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
 		}
 		catch (Exception e) {
 			return 0D;
@@ -251,16 +249,9 @@ class ExplorationSitesPanel extends WizardPanel {
 		return getWizard().getMissionData().getStartingSettlement().getCoordinates();
 	}
 	
-	private int convertRadiusToMapPixels(double radius) {
-		Coordinates center = new Coordinates((Math.PI / 2D), 0D);
-		Coordinates startPosition = center.getNewLocation(new Direction(0D), radius);
-		IntPoint startPoint = MapUtils.getRectPosition(startPosition, center, SurfMarsMap.TYPE);
-		return 150 - startPoint.getiY();
-	}
-	
 	private Coordinates determineNewSiteLocation(Coordinates prevNav, Coordinates nextNav, double range) {
 		double fociDistance = prevNav.getDistance(nextNav);
-		double distanceFromCenterOfAxis = Math.sqrt(Math.pow((range / 2D), 2D) - Math.pow((fociDistance / 2D), 2D));
+		double distanceFromCenterOfAxis = Math.sqrt(Math.pow(((range + fociDistance) / 2D), 2D) - Math.pow((fociDistance / 2D), 2D));
 		double initialDistanceFromAxis = distanceFromCenterOfAxis / 2D;
 		double initialDistanceFromFoci = Math.sqrt(Math.pow((fociDistance / 2D), 2D) + Math.pow(initialDistanceFromAxis, 2D));
 		Direction initialDirectionFromFoci = new Direction(Math.asin(initialDistanceFromAxis / initialDistanceFromFoci)); 
@@ -334,7 +325,12 @@ class ExplorationSitesPanel extends WizardPanel {
 			if (navSelected > -1) {
 				navLayer.selectNavpoint(navSelected);
 				navOffset = determineOffset(event.getX(), event.getY());
-				// circleLayer.setDisplayCircle(true);
+				
+				IntPoint prevNavpoint = MapUtils.getRectPosition(getPreviousNavpoint(), getCenterCoords(), SurfMarsMap.TYPE);
+				IntPoint nextNavpoint = MapUtils.getRectPosition(getNextNavpoint(), getCenterCoords(), SurfMarsMap.TYPE);
+				int radiusPixels = convertDistanceToMapPixels(getRadius());
+				ellipseLayer.setEllipseDetails(prevNavpoint, nextNavpoint, radiusPixels);
+				ellipseLayer.setDisplayEllipse(true);
 				mapPane.repaint();
 			}
 		}
@@ -344,11 +340,24 @@ class ExplorationSitesPanel extends WizardPanel {
 			int yOffset = navLayer.getNavpointPosition(navSelected).getiY() - y;
 			return new IntPoint(xOffset, yOffset);
 		}
+		
+		private double getRadius() {
+			Coordinates currentNavpoint = getCurrentNavpoint();
+			Coordinates prevNavpoint = getPreviousNavpoint();
+			Coordinates nextNavpoint = getNextNavpoint();
+			double currentDistance = prevNavpoint.getDistance(currentNavpoint) + currentNavpoint.getDistance(nextNavpoint);
+			double straightDistance = prevNavpoint.getDistance(nextNavpoint);
+			return currentDistance - straightDistance + getRemainingRange(false);
+		}
+		
+		private int convertDistanceToMapPixels(double distance) {
+			return MapUtils.getPixelDistance(distance, SurfMarsMap.TYPE);
+		}
 	
 		public void mouseReleased(MouseEvent event) {
 			navSelected = -1;
 			navLayer.clearSelectedNavpoint();
-			// circleLayer.setDisplayCircle(false);
+			ellipseLayer.setDisplayEllipse(false);
 			mapPane.repaint();
 		}
 	}
@@ -365,7 +374,6 @@ class ExplorationSitesPanel extends WizardPanel {
 				
 				if (withinBounds(displayPos, navpoint)) {
 					navLayer.setNavpointPosition(navSelected, new IntPoint(displayX, displayY));
-					
 					SitePanel selectedSitePane = (SitePanel) siteListPane.getComponent(navSelected);
 					selectedSitePane.setLocation(navpoint);
 					addButton.setEnabled(canAddMoreSites());
@@ -376,30 +384,40 @@ class ExplorationSitesPanel extends WizardPanel {
 		
 		private boolean withinBounds(IntPoint position, Coordinates location) {
 			boolean result = true;
-			
 			if (!navLayer.withinDisplayEdges(position)) result = false;
-			
 			if (getRemainingRange(false) < getDistanceDiff(location)) result = false;
-			
 			return result;
 		}
 		
 		private double getDistanceDiff(Coordinates newSite) {
-			Coordinates prevNavpoint = null;
-			if (navSelected > 0) prevNavpoint = ((SitePanel) siteListPane.getComponent(navSelected - 1)).getSite();
-			else prevNavpoint = getCenterCoords();
+			Coordinates prevNavpoint = getPreviousNavpoint();
+			Coordinates nextNavpoint = getNextNavpoint();
 			
-			Coordinates nextNavpoint = null;
-			if (navSelected < (siteListPane.getComponentCount() - 1)) 
-				nextNavpoint = ((SitePanel) siteListPane.getComponent(navSelected + 1)).getSite();
-			else nextNavpoint = getCenterCoords();
-			
-			Coordinates currentSite = ((SitePanel) siteListPane.getComponent(navSelected)).getSite();
+			Coordinates currentSite = getCurrentNavpoint();
 			double currentSiteDistance = prevNavpoint.getDistance(currentSite) + currentSite.getDistance(nextNavpoint);
 			
 			double newSiteDistance = prevNavpoint.getDistance(newSite) + newSite.getDistance(nextNavpoint);
 			
 			return newSiteDistance - currentSiteDistance;
 		}
+	}
+	
+	private Coordinates getPreviousNavpoint() {
+		Coordinates prevNavpoint = null;
+		if (navSelected > 0) prevNavpoint = ((SitePanel) siteListPane.getComponent(navSelected - 1)).getSite();
+		else prevNavpoint = getCenterCoords();
+		return prevNavpoint;
+	}
+	
+	private Coordinates getNextNavpoint() {
+		Coordinates nextNavpoint = null;
+		if (navSelected < (siteListPane.getComponentCount() - 1)) 
+			nextNavpoint = ((SitePanel) siteListPane.getComponent(navSelected + 1)).getSite();
+		else nextNavpoint = getCenterCoords();
+		return nextNavpoint;
+	}
+	
+	private Coordinates getCurrentNavpoint() {
+		return ((SitePanel) siteListPane.getComponent(navSelected)).getSite();
 	}
 }

@@ -12,10 +12,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 
 import org.mars_sim.msp.simulation.Coordinates;
-import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.IntPoint;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
-import org.mars_sim.msp.ui.standard.tool.map.CenteredCircleLayer;
+import org.mars_sim.msp.ui.standard.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
 import org.mars_sim.msp.ui.standard.tool.map.MapUtils;
 import org.mars_sim.msp.ui.standard.tool.map.NavpointEditLayer;
@@ -27,8 +26,10 @@ class ProspectingSitePanel extends WizardPanel {
 
 	private final static String NAME = "Prospecting Site";
 	
+	private final static double RANGE_MODIFIER = .95D;
+	
 	private MapPanel mapPane;
-	private CenteredCircleLayer circleLayer;
+	private EllipseLayer ellipseLayer;
 	private NavpointEditLayer navLayer;
 	private boolean navSelected;
 	private IntPoint navOffset;
@@ -50,7 +51,7 @@ class ProspectingSitePanel extends WizardPanel {
 		mapPane = new MapPanel();
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
-		mapPane.addMapLayer(circleLayer = new CenteredCircleLayer(Color.GREEN));
+		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));
 		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane));
 		mapPane.addMouseListener(new NavpointMouseListener());
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
@@ -92,9 +93,9 @@ class ProspectingSitePanel extends WizardPanel {
 
 	void updatePanel() {
 		try {
-			double range = getWizard().getMissionData().getRover().getRange() / 2D;
+			double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
 			pixelRange = convertRadiusToMapPixels(range);
-			circleLayer.setRadius(pixelRange);
+			ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
 			IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
 			navLayer.addNavpointPosition(initialNavpointPos);
 			Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)));
@@ -111,10 +112,7 @@ class ProspectingSitePanel extends WizardPanel {
 	}
 	
 	private int convertRadiusToMapPixels(double radius) {
-		Coordinates center = new Coordinates((Math.PI / 2D), 0D);
-		Coordinates startPosition = center.getNewLocation(new Direction(0D), radius);
-		IntPoint startPoint = MapUtils.getRectPosition(startPosition, center, SurfMarsMap.TYPE);
-		return 150 - startPoint.getiY();
+		return MapUtils.getPixelDistance(radius, SurfMarsMap.TYPE);
 	}
 	
 	private class NavpointMouseListener extends MouseAdapter {
@@ -124,7 +122,7 @@ class ProspectingSitePanel extends WizardPanel {
 				navSelected = true;
 				navLayer.selectNavpoint(0);
 				navOffset = determineOffset(event.getX(), event.getY());
-				circleLayer.setDisplayCircle(true);
+				ellipseLayer.setDisplayEllipse(true);
 				mapPane.repaint();
 			}
 		}
@@ -138,7 +136,7 @@ class ProspectingSitePanel extends WizardPanel {
 		public void mouseReleased(MouseEvent event) {
 			navSelected = false;
 			navLayer.clearSelectedNavpoint();
-			circleLayer.setDisplayCircle(false);
+			ellipseLayer.setDisplayEllipse(false);
 			mapPane.repaint();
 		}
 	}

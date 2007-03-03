@@ -15,6 +15,8 @@ public class Mars implements Serializable {
 	
 	// Mars average radius in km.
 	public static final double MARS_RADIUS_KM = 3393D;
+	
+	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2D * Math.PI;
 
     // Transient Data members
     private transient SurfaceFeatures surfaceFeatures; // Surface features
