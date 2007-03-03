@@ -2,6 +2,7 @@ package org.mars_sim.msp.ui.standard.tool.map;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -25,13 +26,15 @@ public class NavpointEditLayer implements MapLayer {
 	private Component displayComponent;
 	private Icon navpointIconColor;
 	private Icon navpointIconSelected;
+	private boolean drawNavNumbers;
 	
-	public NavpointEditLayer(Component displayComponent) {
+	public NavpointEditLayer(Component displayComponent, boolean drawNavNumbers) {
 		this.displayComponent = displayComponent;
 		navpointPositions = new ArrayList();
 		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIcon(GREEN_ICON_NAME);
 		selectedNavpoint = -1;
+		this.drawNavNumbers = drawNavNumbers;
 	}
 	
 	public void addNavpointPosition(IntPoint newNavpointPosition) {
@@ -89,18 +92,18 @@ public class NavpointEditLayer implements MapLayer {
 		
 		// Draw the path lines.
 		for (int x = 0; x < navpointPositions.size(); x++) {
-			g.setColor(Color.GREEN);
+			g2d.setColor(Color.GREEN);
 			IntPoint currentPosition = (IntPoint) navpointPositions.get(x);
 			if ((x == 0) || (x == (navpointPositions.size() - 1))) 
-				g.drawLine(currentPosition.getiX(), currentPosition.getiY(), 150, 150);
+				g2d.drawLine(currentPosition.getiX(), currentPosition.getiY(), 150, 150);
 			
 			if (x != 0) {
 				IntPoint prevPosition = (IntPoint) navpointPositions.get(x - 1);
-				g.drawLine(currentPosition.getiX(), currentPosition.getiY(), prevPosition.getiX(), prevPosition.getiY());
+				g2d.drawLine(currentPosition.getiX(), currentPosition.getiY(), prevPosition.getiX(), prevPosition.getiY());
 			}
 		}
 
-		// Draw navpoint icons.
+		// Draw navpoint icons and numbers.
 		for (int x = 0; x < navpointPositions.size(); x ++) {
 			IntPoint currentPosition = (IntPoint) navpointPositions.get(x);
 			
@@ -113,7 +116,13 @@ public class NavpointEditLayer implements MapLayer {
 			IntPoint drawLocation = new IntPoint(currentPosition.getiX(), (currentPosition.getiY() - navIcon.getIconHeight()));
 			
 			// Draw the navpoint icon.
-	        navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
+	        navIcon.paintIcon(displayComponent, g2d, drawLocation.getiX(), drawLocation.getiY());
+	        
+	        if (drawNavNumbers) {
+	        	g2d.setColor(Color.WHITE);
+	        	g2d.setFont(new Font("SansSerif", Font.PLAIN, 9));
+	        	g2d.drawString("" + (x + 1), (currentPosition.getiX() + 5), (currentPosition.getiY() + 5));
+	        }
 		}
 	}
 }

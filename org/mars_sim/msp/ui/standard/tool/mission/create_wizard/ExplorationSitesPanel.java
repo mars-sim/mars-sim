@@ -78,7 +78,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));
-		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane));
+		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, true));
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
