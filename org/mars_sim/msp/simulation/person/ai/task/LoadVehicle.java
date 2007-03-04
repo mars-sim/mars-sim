@@ -425,8 +425,8 @@ public class LoadVehicle extends Task implements Serializable {
         		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, (AmountResource) resource, tripTime);
         		double totalNeeded = amountNeeded + remainingSettlementAmount;
         		if (inv.getAmountResourceStored((AmountResource) resource) < totalNeeded) {
-        			double stored = inv.getAmountResourceStored((AmountResource) resource);
-        			System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			// double stored = inv.getAmountResourceStored((AmountResource) resource);
+        			// System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
         		}
         	}
@@ -435,8 +435,8 @@ public class LoadVehicle extends Task implements Serializable {
         		int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, (ItemResource) resource);
         		int totalNeeded = numNeeded + remainingSettlementNum;
         		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
-        			int stored = inv.getItemResourceNum((ItemResource) resource);
-        			System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			// int stored = inv.getItemResourceNum((ItemResource) resource);
+        			// System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
         		}
         	}
@@ -451,8 +451,8 @@ public class LoadVehicle extends Task implements Serializable {
         	int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
     		int totalNeeded = numNeeded + remainingSettlementNum;
         	if (inv.findNumUnitsOfClass(equipmentType) < totalNeeded) {
-        		int stored = inv.findNumUnitsOfClass(equipmentType);
-        		System.out.println(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
+        		// int stored = inv.findNumUnitsOfClass(equipmentType);
+        		// System.out.println(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
         		enoughSupplies = false;
         	}
         }
@@ -539,8 +539,8 @@ public class LoadVehicle extends Task implements Serializable {
     		if (resource instanceof AmountResource) {
     			double amount = ((Double) resources.get(resource)).doubleValue();
     			if (vInv.getAmountResourceCapacity((AmountResource) resource) < amount) {
-    				double capacity = vInv.getAmountResourceCapacity((AmountResource) resource);
-    				System.out.println(resource.getName() + " needed: " + amount + " capacity: " + capacity);
+    				// double capacity = vInv.getAmountResourceCapacity((AmountResource) resource);
+    				// System.out.println(resource.getName() + " needed: " + amount + " capacity: " + capacity);
     				sufficientCapacity = false;
     			}
     		}

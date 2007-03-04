@@ -90,6 +90,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		
 		JPanel sitePane = new JPanel(new BorderLayout(0, 0));
 		sitePane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		sitePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 300));
 		centerPane.add(sitePane, BorderLayout.CENTER);
 		
         // Create scroll panel for site list.
@@ -120,6 +121,7 @@ class ExplorationSitesPanel extends WizardPanel {
     			});
         addButtonPane.add(addButton);
 		
+        add(Box.createVerticalStrut(85));
 		add(Box.createVerticalGlue());
 	}
 	

@@ -105,7 +105,7 @@ public class MissionWindow extends ToolWindow {
         missionList.addListSelectionListener(
             	new ListSelectionListener() {
             		public void valueChanged(ListSelectionEvent e) {
-            			editButton.setEnabled(missionList.getSelectedValue() != null);
+            			// editButton.setEnabled(missionList.getSelectedValue() != null);
             		}
             	});
         buttonPane.add(editButton);
@@ -163,7 +163,7 @@ public class MissionWindow extends ToolWindow {
 	}
 	
 	private void endMission(Mission mission) {
-		System.out.println("End mission: " + mission.getName());
+		// System.out.println("End mission: " + mission.getName());
 		
 		// If vehicle is parked at a settlement, have all people exit vehicle.
 		if (mission instanceof RoverMission) {

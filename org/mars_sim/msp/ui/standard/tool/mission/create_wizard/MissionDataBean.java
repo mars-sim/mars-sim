@@ -37,8 +37,6 @@ class MissionDataBean {
 	private Coordinates[] explorationSites;
 	
 	void createMission() {
-		System.out.println("Creating new mission.");
-		
 		try {
 			Mission mission = null;
 			if (TRAVEL_MISSION.equals(type)) 
@@ -58,7 +56,6 @@ class MissionDataBean {
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
 			manager.addMission(mission);
-			System.out.println("Mission created successfully.");
 		}
 		catch (MissionException e) {
 			e.printStackTrace(System.err);

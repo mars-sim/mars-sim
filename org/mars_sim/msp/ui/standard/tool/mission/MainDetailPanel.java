@@ -60,6 +60,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private JButton vehicleButton;
 	private JLabel vehicleStatusLabel;
 	private JLabel speedLabel;
+	private JLabel distanceNextNavLabel;
 	private JLabel travelledLabel;
 	private MainDesktopPane desktop;
 	private DecimalFormat formatter = new DecimalFormat("0.0");
@@ -160,6 +161,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(speedLabel);
 		
+		distanceNextNavLabel = new JLabel("Distance to Next Navpoint:");
+		distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(distanceNextNavLabel);
+		
 		travelledLabel = new JLabel("Travelled Distance:");
 		travelledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(travelledLabel);
@@ -191,6 +196,11 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 					vehicleButton.setVisible(true);
 					vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
 					speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
+					try {
+						int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
+						distanceNextNavLabel.setText("Distance to Next Navpoint: " + distanceNextNav + " km");
+					}
+					catch (Exception e2) {}
 					int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
 					int totalDistance = (int) vehicleMission.getTotalDistance();
 					travelledLabel.setText("Travelled Distance: " + travelledDistance + 
@@ -203,6 +213,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 				vehicleButton.setVisible(false);
 				vehicleStatusLabel.setText("Vehicle Status:");
 				speedLabel.setText("Vehicle Speed:");
+				distanceNextNavLabel.setText("Distance to Next Navpoint:");
 				travelledLabel.setText("Travelled Distance:");
 				currentVehicle = null;
 			}
@@ -219,6 +230,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			vehicleButton.setVisible(false);
 			vehicleStatusLabel.setText("Vehicle Status:");
 			speedLabel.setText("Vehicle Speed:");
+			distanceNextNavLabel.setText("Distance to Next Navpoint:");
 			travelledLabel.setText("Travelled Distance:");
 			currentMission = null;
 			currentVehicle = null;
@@ -263,6 +275,11 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		}
 		else if (type.equals(TravelMission.DISTANCE_EVENT)) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
+			try {
+				int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
+				distanceNextNavLabel.setText("Distance to Next Navpoint: " + distanceNextNav + " km");
+			}
+			catch (Exception e2) {}
 			int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
 			int totalDistance = (int) vehicleMission.getTotalDistance();
 			travelledLabel.setText("Travelled Distance: " + travelledDistance + 
