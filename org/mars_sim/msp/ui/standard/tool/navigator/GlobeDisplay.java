@@ -162,7 +162,7 @@ class GlobeDisplay extends JComponent implements Runnable {
             g.drawImage(globe.getGlobeImage(), 0, 0, this);
         }
 
-        if (!topo && showDayNightShading) drawShading(g);
+        if (showDayNightShading) drawShading(g);
 
         drawUnits(g);
         drawCrossHair(g);

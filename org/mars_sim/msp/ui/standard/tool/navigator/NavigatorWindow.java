@@ -284,14 +284,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         		map.setMapType(TopoMarsMap.TYPE);
         		globeNav.showTopo();
 				legend.showColor();
-        		dayNightItem.setEnabled(false);
         		usgsItem.setEnabled(false);
         	}	 
         	else {
         		map.setMapType(SurfMarsMap.TYPE);
         		globeNav.showSurf();
         		legend.showMap();
-        		dayNightItem.setEnabled(true);
         		usgsItem.setEnabled(true);
         	} 
         }
