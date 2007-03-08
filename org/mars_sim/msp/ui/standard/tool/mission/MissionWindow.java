@@ -32,7 +32,7 @@ import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
-import org.mars_sim.msp.ui.standard.tool.mission.create_wizard.CreateMissionWizard;
+import org.mars_sim.msp.ui.standard.tool.mission.create.CreateMissionWizard;
 
 /**
  * Window for the mission tool.

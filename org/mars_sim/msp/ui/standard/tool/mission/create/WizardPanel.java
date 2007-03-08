@@ -1,6 +1,7 @@
-package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
+package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import javax.swing.JPanel;
+
 
 abstract class WizardPanel extends JPanel {
 

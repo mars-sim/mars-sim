@@ -1,10 +1,11 @@
-package org.mars_sim.msp.ui.standard.tool.mission.create_wizard;
+package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -19,6 +20,10 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
+import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -26,23 +31,23 @@ import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
-class VehiclePanel extends WizardPanel {
+class RendezvousVehiclePanel extends WizardPanel {
 
-	private final static String NAME = "Rover";
+	private final static String NAME = "Rendezvous Vehicle";
 	
 	// Data members.
 	private VehicleTableModel vehicleTableModel;
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
 	
-	VehiclePanel(CreateMissionWizard wizard) {
-		// User WizardPanel constructor.
+	RendezvousVehiclePanel(CreateMissionWizard wizard) {
+		// Use WizardPanel constructor.
 		super(wizard);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(new MarsPanelBorder());
 		
-		JLabel selectVehicleLabel = new JLabel("Select a rover for the mission.", JLabel.CENTER);
+		JLabel selectVehicleLabel = new JLabel("Select a rover to rescue/salvage.", JLabel.CENTER);
 		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
 		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectVehicleLabel);
@@ -68,18 +73,17 @@ class VehiclePanel extends WizardPanel {
         				int index = vehicleTable.getSelectedRow();
         				if (index > -1) {
         					if (vehicleTableModel.isFailureRow(index)) {
-        						errorMessageLabel.setText("Rover cannot be used on the mission (see red cells).");
-        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
+        						errorMessageLabel.setText("Rover cannot be rescued/salvaged (see red cells).");
+        						getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
         					}
         					else {
         						errorMessageLabel.setText(" ");
-        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
+        						getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
         					}
         				}
         			}
         		}
         	});
-        vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
         vehicleScrollPane.setViewportView(vehicleTable);
 		
 		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
@@ -98,7 +102,8 @@ class VehiclePanel extends WizardPanel {
 	void commitChanges() {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
-		getWizard().getMissionData().setRover(selectedVehicle);
+		getWizard().getMissionData().setRescueRover(selectedVehicle);
+		getWizard().getMissionData().createMission();
 	}
 
 	void clearInfo() {
@@ -118,14 +123,12 @@ class VehiclePanel extends WizardPanel {
     		super();
     		
     		columns.add("Name");
-    		columns.add("Type");
-    		columns.add("Crew Cap.");
-    		columns.add("Range");
-    		columns.add("Lab");
-    		columns.add("Sick Bay");
-    		columns.add("Cargo Cap.");
-    		columns.add("Status");
-    		columns.add("Mission");
+    		columns.add("Distance");
+    		columns.add("Crew");
+    		columns.add("Oxygen");
+    		columns.add("Water");
+    		columns.add("Food");
+    		columns.add("Rescuing Rover");
     	}
     	
     	public Object getValueAt(int row, int column) {
@@ -138,26 +141,25 @@ class VehiclePanel extends WizardPanel {
             	try {
             		if (column == 0) 
             			result = vehicle.getName();
-            		else if (column == 1) 
-            			result = vehicle.getDescription();
-            		else if (column == 2) 
-            			result = new Integer(vehicle.getCrewCapacity());
-            		else if (column == 3) 
-            			result = new Integer((int) vehicle.getRange());
-            		else if (column == 4)
-            			result = new Boolean(vehicle.hasLab());
-            		else if (column == 5)
-            			result = new Boolean(vehicle.hasSickBay());
-            		else if (column == 6)
-            			result = new Integer((int) inv.getGeneralCapacity());
-            		else if (column == 7)
-            			result = vehicle.getStatus();
-            		else if (column == 8) {
-            			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            			if (mission != null) result = mission.getDescription();
-            			else result = "None";
+            		else if (column == 1) {
+                		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
+                		double distance = startingSettlement.getCoordinates().getDistance(vehicle.getCoordinates());
+                		return new Integer((int) distance);
             		}
-            	}
+            		else if (column == 2) 
+            			result = new Integer(vehicle.getCrewNum());
+            		else if (column == 3) 
+            			result = new Integer((int) inv.getAmountResourceStored(AmountResource.OXYGEN));
+                	else if (column == 4) 
+                		result = new Integer((int) inv.getAmountResourceStored(AmountResource.WATER));
+                	else if (column == 5) 
+                		result = new Integer((int) inv.getAmountResourceStored(AmountResource.FOOD));
+                	else if (column == 6) {
+                		Vehicle rescueVehicle = getRescueVehicle(vehicle);
+                		if (rescueVehicle != null) return rescueVehicle.getName();
+                		else return "None";
+                	}
+    			}
             	catch (Exception e) {}
             }
             
@@ -166,23 +168,71 @@ class VehiclePanel extends WizardPanel {
     	
     	void updateTable() {
     		units.clear();
+    		
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		VehicleCollection vehicles = startingSettlement.getParkedVehicles().sortByName();
-    		VehicleIterator i = vehicles.iterator();
-    		while (i.hasNext()) units.add(i.next());
+    		VehicleCollection emergencyVehicles = getEmergencyBeaconVehicles();
+    		
+    		// Sort by distance from starting settlement.
+    		while (emergencyVehicles.size() > 0) {
+    			Vehicle closestVehicle = null;
+    			double closestDistance = Double.MAX_VALUE;
+    			VehicleIterator i = emergencyVehicles.iterator();
+    			while (i.hasNext()) {
+    				Vehicle vehicle = i.next();
+    				double distance = startingSettlement.getCoordinates().getDistance(vehicle.getCoordinates());
+    				if (distance < closestDistance) {
+    					closestDistance = distance;
+    					closestVehicle = vehicle;
+    				}
+    			}
+    			units.add(closestVehicle);
+    			emergencyVehicles.remove(closestVehicle);
+    		}
+    		
     		fireTableDataChanged();
+    	}
+    	
+    	private VehicleCollection getEmergencyBeaconVehicles() {
+    		VehicleCollection result = new VehicleCollection();
+        	VehicleIterator i = Simulation.instance().getUnitManager().getVehicles().iterator();
+        	while (i.hasNext()) {
+        		Vehicle vehicle = i.next();
+        		if (vehicle.isEmergencyBeacon()) result.add(vehicle);
+        	}
+        	return result;
+    	}
+    	
+    	private Vehicle getRescueVehicle(Vehicle emergencyVehicle) {
+    		Vehicle result = null;
+    		
+    	   	MissionManager manager = Simulation.instance().getMissionManager();
+        	Iterator i = manager.getMissions().iterator();
+        	while (i.hasNext()) {
+        		Mission mission = (Mission) i.next();
+        		if (mission instanceof RescueSalvageVehicle) {
+        			Vehicle vehicleTarget = ((RescueSalvageVehicle) mission).getVehicleTarget();
+        			if (emergencyVehicle == vehicleTarget) result = ((VehicleMission) mission).getVehicle();
+        		}
+        	}
+    		
+    		return result;
     	}
     	
     	boolean isFailureCell(int row, int column) {
     		boolean result = false;
     		Rover vehicle = (Rover) getUnit(row);
     		
-    		if (column == 7) {
-    			if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
+    		if (column == 1) {
+    			try {
+    				Vehicle missionVehicle = getWizard().getMissionData().getRover();
+    				Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
+    				double distance = startingSettlement.getCoordinates().getDistance(vehicle.getCoordinates());
+    				if (distance > missionVehicle.getRange()) result = true;
+    			}
+    			catch (Exception e) {}
     		}
-    		else if (column == 8) {
-    			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-    			if (mission != null) result = true;
+    		else if (column == 6) {
+    			if (getRescueVehicle(vehicle) != null) result = true;
     		}
     		
     		return result;
