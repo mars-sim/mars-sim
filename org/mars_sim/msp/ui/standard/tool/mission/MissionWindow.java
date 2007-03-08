@@ -33,6 +33,7 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.tool.mission.create.CreateMissionWizard;
+import org.mars_sim.msp.ui.standard.tool.mission.edit.EditMissionDialog;
 
 /**
  * Window for the mission tool.
@@ -105,7 +106,7 @@ public class MissionWindow extends ToolWindow {
         missionList.addListSelectionListener(
             	new ListSelectionListener() {
             		public void valueChanged(ListSelectionEvent e) {
-            			// editButton.setEnabled(missionList.getSelectedValue() != null);
+            			editButton.setEnabled(missionList.getSelectedValue() != null);
             		}
             	});
         buttonPane.add(editButton);
@@ -159,13 +160,30 @@ public class MissionWindow extends ToolWindow {
 	 * @param mission the mission to edit.
 	 */
 	private void editMission(Mission mission) {
-		System.out.println("Editing mission: " + mission.getName());
+		// Pause simulation.
+		desktop.getMainWindow().pauseSimulation();
+		
+		// Create new mission wizard.
+		new EditMissionDialog(desktop.getMainWindow(), mission);
+        
+		// Unpause simulation.
+		desktop.getMainWindow().unpauseSimulation();
 	}
 	
 	private void endMission(Mission mission) {
 		// System.out.println("End mission: " + mission.getName());
 		
 		// If vehicle is parked at a settlement, have all people exit vehicle.
+		exitVehicleAtSettlement(mission);
+		
+		mission.endMission("User ending mission.");
+	}
+	
+	/**
+	 * If vehicle is parked at a settlement, have all people exit vehicle.
+	 * @param mission the mission to check.
+	 */
+	private void exitVehicleAtSettlement(Mission mission) {
 		if (mission instanceof RoverMission) {
 			RoverMission roverMission = (RoverMission) mission;
 			if (roverMission.hasVehicle()) {
@@ -187,8 +205,6 @@ public class MissionWindow extends ToolWindow {
 				}
 			}
 		}
-		
-		mission.endMission("User ending mission.");
 	}
 	
 	/**
