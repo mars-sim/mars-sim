@@ -16,6 +16,8 @@ import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 public class EditMissionDialog extends JDialog {
 
 	private Mission mission;
+	private InfoPanel infoPane;
+	private NavpointPanel navpointPane;
 	
 	public EditMissionDialog(Frame owner, Mission mission) {
 		// Use JDialog constructor
@@ -28,16 +30,23 @@ public class EditMissionDialog extends JDialog {
         JTabbedPane tabPane = new JTabbedPane();
         add(tabPane, BorderLayout.CENTER);
         
-        JPanel infoPane = new InfoPanel(mission);
+        infoPane = new InfoPanel(mission);
         tabPane.add("Info", infoPane);
         
-        JPanel navpointPane = new NavpointPanel(mission);
+        navpointPane = new NavpointPanel(mission);
         tabPane.add("Navpoints", navpointPane);
         
         JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         add(buttonPane, BorderLayout.SOUTH);
         
         JButton modifyButton = new JButton("Modify");
+        modifyButton.addActionListener(
+        		new ActionListener() {
+        			public void actionPerformed(ActionEvent e) {
+        				modifyMission();
+        				setVisible(false);
+        			}
+				});
         buttonPane.add(modifyButton);
         
         JButton cancelButton = new JButton("Cancel");
@@ -49,10 +58,15 @@ public class EditMissionDialog extends JDialog {
 				});
         buttonPane.add(cancelButton);
 		
-		// Finish and display wizard.
+		// Finish and display dialog.
 		pack();
 		setLocationRelativeTo(owner);
 		setResizable(false);
 		setVisible(true);
+	}
+	
+	private void modifyMission() {
+		// Set the mission description.
+		mission.setDescription(infoPane.descriptionField.getText());
 	}
 }

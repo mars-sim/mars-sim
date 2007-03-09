@@ -248,9 +248,11 @@ public abstract class Mission implements Serializable {
      * Sets the mission's description.
      * @param description the new description.
      */
-    protected final void setDescription(String description) {
-    	this.description = description;
-    	fireMissionUpdate(DESCRIPTION_EVENT, description);
+    public final void setDescription(String description) {
+    	if (!this.description.equals(description)) {
+    		this.description = description;
+    		fireMissionUpdate(DESCRIPTION_EVENT, description);
+    	}
     }
 
     /** 
