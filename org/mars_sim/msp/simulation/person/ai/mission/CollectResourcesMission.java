@@ -35,7 +35,7 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
 public abstract class CollectResourcesMission extends RoverMission implements Serializable {
 
 	// Mission phases
-	final protected static String COLLECT_RESOURCES = "Collecting Resources";
+	final public static String COLLECT_RESOURCES = "Collecting Resources";
 	
 	// Estimated collection time multiplyer for EVA.
 	final public static double EVA_COLLECTION_OVERHEAD = 20D;

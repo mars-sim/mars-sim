@@ -133,17 +133,19 @@ public class UnloadVehicle extends Task implements Serializable {
     private static Vehicle getNonMissionVehicleNeedingUnloading(Settlement settlement) {
     	Vehicle result = null;
     	
-    	VehicleIterator i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			try {
-				if (!vehicle.isReserved() && (vehicle.getInventory().getTotalInventoryMass() > 0D)) 
-					result = vehicle;
-			}
-			catch(InventoryException e) {
-				e.printStackTrace(System.err);
-			}
-		}
+    	if (settlement != null) {
+    		VehicleIterator i = settlement.getParkedVehicles().iterator();
+    		while (i.hasNext()) {
+    			Vehicle vehicle = i.next();
+    			try {
+    				if (!vehicle.isReserved() && (vehicle.getInventory().getTotalInventoryMass() > 0D)) 
+    					result = vehicle;
+    			}
+    			catch(InventoryException e) {
+    				e.printStackTrace(System.err);
+    			}
+    		}
+    	}
     	
     	return result;
     }

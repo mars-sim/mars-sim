@@ -610,7 +610,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return settlement
      * @throws Exception if error finding closest settlement.
      */
-    private final Settlement findClosestSettlement() throws Exception {
+    public final Settlement findClosestSettlement() throws Exception {
     	Settlement result = null;
     	Coordinates location = getCurrentMissionLocation();
     	double closestDistance = Double.MAX_VALUE;
@@ -618,13 +618,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().iterator();
     	while (i.hasNext()) {
     		Settlement settlement = i.next();
-    		if (result == null) result = settlement;
-    		else {
-    			double distance = settlement.getCoordinates().getDistance(location);
-    			if (distance < closestDistance) {
-    				result = settlement;
-    				closestDistance = distance;
-    			}
+    		double distance = settlement.getCoordinates().getDistance(location);
+    		if (distance < closestDistance) {
+    			result = settlement;
+    			closestDistance = distance;
     		}
     	}
     	

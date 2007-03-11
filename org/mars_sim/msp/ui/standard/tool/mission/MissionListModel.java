@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.ui.standard.tool.mission;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.AbstractListModel;
 
@@ -23,8 +25,13 @@ public class MissionListModel extends AbstractListModel implements
 	private List missions;
 	
 	public MissionListModel() {
+		missions = new ArrayList();
+		
 		MissionManager manager = Simulation.instance().getMissionManager();
-		missions = manager.getMissions();
+		List managerMissions = manager.getMissions();
+		Iterator i = managerMissions.iterator();
+		while (i.hasNext()) addMission((Mission) i.next());
+		
 		manager.addListener(this);
 	}
 	
