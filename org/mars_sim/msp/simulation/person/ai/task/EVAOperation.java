@@ -37,6 +37,7 @@ abstract class EVAOperation extends Task implements Serializable {
     // Data members
     protected boolean exitedAirlock;  // Person has exited the airlock.
     protected boolean enteredAirlock; // Person has entered the airlock.
+    private boolean endEVA;           // Flag for ending EVA operation externally. 
 	
     /** 
      * Constructor
@@ -57,6 +58,10 @@ abstract class EVAOperation extends Task implements Serializable {
         
         // Set initial phase.
         setPhase(EXIT_AIRLOCK);
+    }
+    
+    public void endEVA() {
+    	endEVA = true;
     }
 
     /**
@@ -121,6 +126,9 @@ abstract class EVAOperation extends Task implements Serializable {
     protected boolean shouldEndEVAOperation() {
 
         boolean result = false;
+        
+        // Check end EVA flag.
+        if (endEVA) result = true;
         
         // Check if it is night time. 
         Mars mars = Simulation.instance().getMars();

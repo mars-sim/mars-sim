@@ -94,7 +94,7 @@ public class MissionWindow extends ToolWindow {
         		});
         buttonPane.add(createButton);
         
-        final JButton editButton = new JButton("Edit Mission");
+        final JButton editButton = new JButton("Modify Mission");
         editButton.setEnabled(false);
         editButton.addActionListener(
         		new ActionListener() {

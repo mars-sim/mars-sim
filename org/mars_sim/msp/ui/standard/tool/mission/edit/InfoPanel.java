@@ -18,6 +18,12 @@ import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 public class InfoPanel extends JPanel {
 
+	// Action text
+	final static String ACTION_NONE = "None";
+	final static String ACTION_CONTINUE = "End EVA and Continue to Next Site";
+	final static String ACTION_HOME = "Return to Home Settlement and End Mission";
+	final static String ACTION_NEAREST = "Go to Nearest Settlement and End Mission";
+	
 	// Data members.
 	JTextField descriptionField;
 	JComboBox actionDropDown;
@@ -53,21 +59,21 @@ public class InfoPanel extends JPanel {
 	
 	private Vector getActions(Mission mission) {
 		Vector actions = new Vector();
-		actions.add("None");
+		actions.add(ACTION_NONE);
 		
 		String phase = mission.getPhase();
 		
 		if (phase.equals(CollectResourcesMission.COLLECT_RESOURCES)) {
 			CollectResourcesMission collectResourcesMission = (CollectResourcesMission) mission;
 			if (collectResourcesMission.getNumCollectionSites() > collectResourcesMission.getNumCollectionSitesVisited())
-				actions.add("End EVA and Continue to Next Site");
+				actions.add(ACTION_CONTINUE);
 		}
 		
 		if (mission instanceof TravelMission) {
 			TravelMission travelMission = (TravelMission) mission;
 			int nextNavpointIndex = travelMission.getNextNavpointIndex();
 			if ((nextNavpointIndex > -1) && (nextNavpointIndex < (travelMission.getNumberOfNavpoints() - 1)))
-				actions.add("Return to Home Settlement and End Mission");
+				actions.add(ACTION_HOME);
 		}
 		
 		if (mission instanceof VehicleMission) {
@@ -75,7 +81,7 @@ public class InfoPanel extends JPanel {
 			try {
 				Settlement closestSettlement = vehicleMission.findClosestSettlement();
 				if (!closestSettlement.equals(vehicleMission.getAssociatedSettlement())) 
-					actions.add("Go to Nearest Settlement and End Mission");
+					actions.add(ACTION_NEAREST);
 			}
 			catch (Exception e) {}
 		}

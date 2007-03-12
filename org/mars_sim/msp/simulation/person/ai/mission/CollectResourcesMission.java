@@ -49,6 +49,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private Class containerType; // The type of container needed for the mission or null if none.
 	private int containerNum; // The number of containers needed for the mission.
 	private MarsClock collectionSiteStartTime; // The start time at the current collection site.
+	private boolean endCollectingSite; // External flag for ending collection at the current site.
 
 	/**
 	 * Constructor
@@ -212,6 +213,18 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     	super.performPhase(person);
     	if (COLLECT_RESOURCES.equals(getPhase())) collectingPhase(person);
     }
+    
+    public void endCollectingAtSite() {
+    	endCollectingSite = true;
+    	
+    	// End each member's collection task.
+    	PersonIterator i = getPeople().iterator();
+    	while (i.hasNext()) {
+    		Task task = i.next().getMind().getTaskManager().getTask();
+    		if (task instanceof CollectResources) 
+    			((CollectResources) task).endEVA();
+    	}
+    }
 	
 	/** 
 	 * Performs the collecting phase of the mission.
@@ -235,6 +248,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 		if (isEveryoneInRover()) {
 
+			// Check if end collecting flag is set.
+			if (endCollectingSite) {
+				endCollectingSite = false;
+				setPhaseEnded(true);
+			}
+			
 			// Check if rover capacity for resources is met, then end this phase.
 			if (resourcesCollected >= resourcesCapacity) setPhaseEnded(true);
 
@@ -277,7 +296,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		}
 
 		if (!getPhaseEnded()) {
-			if (siteCollectedResources < siteResourceGoal) {
+			if ((siteCollectedResources < siteResourceGoal) && !endCollectingSite) {
 				// If person can collect resources, start him/her on that task.
 				if (CollectResources.canCollectResources(person, getRover())) {
 					try {

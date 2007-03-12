@@ -11,6 +11,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 
 public class EditMissionDialog extends JDialog {
@@ -68,5 +69,21 @@ public class EditMissionDialog extends JDialog {
 	private void modifyMission() {
 		// Set the mission description.
 		mission.setDescription(infoPane.descriptionField.getText());
+		
+		// Change the mission's action.
+		setAction((String) infoPane.actionDropDown.getSelectedItem());
+	}
+	
+	private void setAction(String action) {
+		if (action.equals(InfoPanel.ACTION_CONTINUE)) {
+			if (mission instanceof CollectResourcesMission) 
+				((CollectResourcesMission) mission).endCollectingAtSite();
+		}
+		else if (action.equals(InfoPanel.ACTION_HOME)) {
+			// TODO: Home code
+		}
+		else if (action.equals(InfoPanel.ACTION_NEAREST)) {
+			// TODO: Nearest code
+		}
 	}
 }
