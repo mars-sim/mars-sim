@@ -359,9 +359,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      */
     protected final void performTravelPhase(Person person) throws MissionException {
     	
-    	// Initialize travel phase if it's not.
-    	// if (!TravelMission.TRAVEL_TO_NAVPOINT.equals(getTravelStatus())) startTravelToNextNode(person);
-    	
     	NavPoint destination = getNextNavpoint();
     	
     	// If vehicle has not reached destination and isn't broken down, travel to destination.
@@ -385,8 +382,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     			}
     			else {
     				// If emergency, make sure current operate vehicle task is pointed home.
-    				if (!operateVehicleTask.getDestination().equals(destination.getLocation())) 
+    				if (!operateVehicleTask.getDestination().equals(destination.getLocation())) {
     					operateVehicleTask.setDestination(destination.getLocation());
+    					setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+    				}
     			}
     		}
     		else lastOperator = null;
@@ -597,12 +596,26 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	else endMission("Not enough resources to continue.");
     }
     
+    /**
+     * Sets the vehicle's emergency beacon on or off.
+     * @param person the person performing the mission.
+     * @param vehicle the vehicle on the mission.
+     * @param beaconOn true if beacon is on, false if not.
+     */
     public void setEmergencyBeacon(Person person, Vehicle vehicle, boolean beaconOn) {
 		// Creating mission emergency beacon event.
         HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_BEACON);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		
 		vehicle.setEmergencyBeacon(beaconOn);
+    }
+    
+    /**
+     * Update mission to the next navpoint destination.
+     */
+    public void updateTravelDestination() {
+    	if (operateVehicleTask != null) operateVehicleTask.setDestination(getNextNavpoint().getLocation());
+		setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
     }
     
     /**

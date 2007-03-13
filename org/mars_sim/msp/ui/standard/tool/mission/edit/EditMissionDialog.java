@@ -13,6 +13,9 @@ import javax.swing.JTabbedPane;
 
 import org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
+import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 
 public class EditMissionDialog extends JDialog {
 
@@ -76,14 +79,28 @@ public class EditMissionDialog extends JDialog {
 	
 	private void setAction(String action) {
 		if (action.equals(InfoPanel.ACTION_CONTINUE)) {
-			if (mission instanceof CollectResourcesMission) 
-				((CollectResourcesMission) mission).endCollectingAtSite();
+			endCollectionPhase();
 		}
 		else if (action.equals(InfoPanel.ACTION_HOME)) {
-			// TODO: Home code
+			if (mission instanceof TravelMission) {
+				TravelMission travelMission = (TravelMission) mission;
+				try {
+					int offset = 2;
+					if (travelMission.getPhase().equals(VehicleMission.TRAVELLING)) offset = 1;
+					travelMission.setNextNavpointIndex(travelMission.getNumberOfNavpoints() - offset);
+					travelMission.updateTravelDestination();
+					endCollectionPhase();
+				}
+				catch (MissionException e) {}
+			}
 		}
 		else if (action.equals(InfoPanel.ACTION_NEAREST)) {
 			// TODO: Nearest code
 		}
+	}
+	
+	private void endCollectionPhase() {
+		if (mission instanceof CollectResourcesMission) 
+			((CollectResourcesMission) mission).endCollectingAtSite();
 	}
 }

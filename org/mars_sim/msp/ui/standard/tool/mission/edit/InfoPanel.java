@@ -72,16 +72,20 @@ public class InfoPanel extends JPanel {
 		if (mission instanceof TravelMission) {
 			TravelMission travelMission = (TravelMission) mission;
 			int nextNavpointIndex = travelMission.getNextNavpointIndex();
-			if ((nextNavpointIndex > -1) && (nextNavpointIndex < (travelMission.getNumberOfNavpoints() - 1)))
-				actions.add(ACTION_HOME);
+			if ((nextNavpointIndex > -1) && (nextNavpointIndex < (travelMission.getNumberOfNavpoints() - 1))) {
+				if (!mission.getPhase().equals(VehicleMission.EMBARKING))
+					actions.add(ACTION_HOME);
+			}
 		}
 		
 		if (mission instanceof VehicleMission) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
 			try {
 				Settlement closestSettlement = vehicleMission.findClosestSettlement();
-				if (!closestSettlement.equals(vehicleMission.getAssociatedSettlement())) 
-					actions.add(ACTION_NEAREST);
+				if (!closestSettlement.equals(vehicleMission.getAssociatedSettlement())) {
+					if (!mission.getPhase().equals(VehicleMission.EMBARKING))
+						actions.add(ACTION_NEAREST);
+				}
 			}
 			catch (Exception e) {}
 		}

@@ -133,7 +133,7 @@ public abstract class TravelMission extends Mission {
 	 * @param newNavIndex the next navpoint index.
 	 * @throws MissionException if the new navpoint is out of range.
 	 */
-	protected final void setNextNavpointIndex(int newNavIndex) throws MissionException {
+	public final void setNextNavpointIndex(int newNavIndex) throws MissionException {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		}
@@ -337,4 +337,9 @@ public abstract class TravelMission extends Mission {
      * @throws Exception
      */
     public abstract double getEstimatedTripTime(boolean useBuffer, double distance) throws Exception;
+    
+    /**
+     * Update mission to the next navpoint destination.
+     */
+    public abstract void updateTravelDestination();
 }

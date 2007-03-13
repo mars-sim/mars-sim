@@ -315,6 +315,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			// If the rover is full of resources, head home.
 			if (siteCollectedResources >= resourcesCapacity) {
 				setNextNavpointIndex(getNumberOfNavpoints() - 2);
+				updateTravelDestination();
 				siteCollectedResources = 0D;
 				setPhaseEnded(true);
 			}
