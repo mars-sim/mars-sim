@@ -14,8 +14,10 @@ import javax.swing.JTabbedPane;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
+import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 public class EditMissionDialog extends JDialog {
 
@@ -82,25 +84,47 @@ public class EditMissionDialog extends JDialog {
 			endCollectionPhase();
 		}
 		else if (action.equals(InfoPanel.ACTION_HOME)) {
-			if (mission instanceof TravelMission) {
-				TravelMission travelMission = (TravelMission) mission;
-				try {
-					int offset = 2;
-					if (travelMission.getPhase().equals(VehicleMission.TRAVELLING)) offset = 1;
-					travelMission.setNextNavpointIndex(travelMission.getNumberOfNavpoints() - offset);
-					travelMission.updateTravelDestination();
-					endCollectionPhase();
-				}
-				catch (MissionException e) {}
-			}
+			returnHome();
 		}
 		else if (action.equals(InfoPanel.ACTION_NEAREST)) {
-			// TODO: Nearest code
+			goToNearestSettlement();
 		}
 	}
 	
 	private void endCollectionPhase() {
 		if (mission instanceof CollectResourcesMission) 
 			((CollectResourcesMission) mission).endCollectingAtSite();
+	}
+	
+	private void returnHome() {
+		if (mission instanceof TravelMission) {
+			TravelMission travelMission = (TravelMission) mission;
+			try {
+				int offset = 2;
+				if (travelMission.getPhase().equals(VehicleMission.TRAVELLING)) offset = 1;
+				travelMission.setNextNavpointIndex(travelMission.getNumberOfNavpoints() - offset);
+				travelMission.updateTravelDestination();
+				endCollectionPhase();
+			}
+			catch (MissionException e) {}
+		}
+	}
+	
+	private void goToNearestSettlement() {
+		if (mission instanceof VehicleMission) {
+			VehicleMission vehicleMission = (VehicleMission) mission;
+			try {
+				Settlement nearestSettlement = vehicleMission.findClosestSettlement();
+				if (nearestSettlement != null) {
+					vehicleMission.clearRemainingNavpoints();
+		    		vehicleMission.addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement, 
+		    				nearestSettlement.getName()));
+		    		vehicleMission.associateAllMembersWithSettlement(nearestSettlement);
+		    		vehicleMission.updateTravelDestination();
+		    		endCollectionPhase();
+				}
+			}
+			catch (Exception e) {}
+		}
 	}
 }

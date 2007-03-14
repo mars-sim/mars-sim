@@ -82,7 +82,7 @@ public class InfoPanel extends JPanel {
 			VehicleMission vehicleMission = (VehicleMission) mission;
 			try {
 				Settlement closestSettlement = vehicleMission.findClosestSettlement();
-				if (!closestSettlement.equals(vehicleMission.getAssociatedSettlement())) {
+				if ((closestSettlement != null) && !closestSettlement.equals(vehicleMission.getAssociatedSettlement())) {
 					if (!mission.getPhase().equals(VehicleMission.EMBARKING))
 						actions.add(ACTION_NEAREST);
 				}

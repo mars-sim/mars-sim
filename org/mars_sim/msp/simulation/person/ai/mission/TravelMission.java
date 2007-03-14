@@ -68,7 +68,7 @@ public abstract class TravelMission extends Mission {
 	 * @param navPoint the new nav point location to be added.
 	 * @throws IllegalArgumentException if location is null.
 	 */
-	protected final void addNavpoint(NavPoint navPoint) {
+	public final void addNavpoint(NavPoint navPoint) {
 		if (navPoint != null) {
 			navPoints.add(navPoint);
 			fireMissionUpdate(NAVPOINTS_EVENT);
@@ -93,7 +93,7 @@ public abstract class TravelMission extends Mission {
 	/**
 	 * Clears out any unreached nav points.
 	 */
-	protected final void clearRemainingNavpoints() {
+	public final void clearRemainingNavpoints() {
 		int index = getNextNavpointIndex();
 		int numNavpoints = getNumberOfNavpoints();
 		for (int x = index; x < numNavpoints; x++) {

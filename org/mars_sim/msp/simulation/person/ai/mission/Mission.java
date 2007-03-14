@@ -599,7 +599,7 @@ public abstract class Mission implements Serializable {
      * Associate all mission members with a settlement.
      * @param settlement the associated settlement.
      */
-    protected void associateAllMembersWithSettlement(Settlement settlement) {
+    public void associateAllMembersWithSettlement(Settlement settlement) {
     	PersonIterator i = getPeople().iterator();
     	while (i.hasNext()) i.next().setAssociatedSettlement(settlement);
     }
