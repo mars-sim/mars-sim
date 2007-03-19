@@ -21,6 +21,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
@@ -93,11 +94,12 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         mainPanel.add(topInfoPanel, BorderLayout.NORTH);
         
         // Prepare driver panel
-        JPanel driverPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel driverPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         topInfoPanel.add(driverPanel, BorderLayout.NORTH);
             
         // Prepare driver label
         JLabel driverLabel = new JLabel("Driver: ", JLabel.LEFT);
+        driverLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
         driverPanel.add(driverLabel);
             
         // Prepare driver button and add it if vehicle has driver.

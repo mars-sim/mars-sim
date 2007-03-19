@@ -9,7 +9,6 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.time.MarsClock;
@@ -251,16 +250,6 @@ public abstract class TravelMission extends Mission {
 		if (TRAVEL_TO_NAVPOINT.equals(travelStatus)) 
 			return getPreviousNavpoint().getLocation().getDistance(getNextNavpoint().getLocation());
 		else return 0D;
-	}
-	
-	/**
-	 * Gets the current location of the mission.
-	 * @return coordinate location.
-	 * @throws Exception if error determining location.
-	 */
-	public final Coordinates getCurrentMissionLocation() throws Exception {
-		if (getPeopleNumber() > 0) return getPeople().get(0).getCoordinates();
-		throw new Exception("No people in the mission.");
 	}
 	
 	/**

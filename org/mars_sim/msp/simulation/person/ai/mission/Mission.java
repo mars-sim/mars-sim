@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
@@ -164,7 +165,7 @@ public abstract class Mission implements Serializable {
 			
 			fireMissionUpdate(REMOVE_MEMBER_EVENT, person);
 
-            if (people.size() == 0) done = true;
+            if (people.size() == 0) endMission("Not enough members.");
             // System.out.println(person.getName() + " removed from mission: " + name);
         }
     }
@@ -603,4 +604,14 @@ public abstract class Mission implements Serializable {
     	PersonIterator i = getPeople().iterator();
     	while (i.hasNext()) i.next().setAssociatedSettlement(settlement);
     }
+    
+	/**
+	 * Gets the current location of the mission.
+	 * @return coordinate location.
+	 * @throws Exception if error determining location.
+	 */
+	public final Coordinates getCurrentMissionLocation() throws Exception {
+		if (getPeopleNumber() > 0) return getPeople().get(0).getCoordinates();
+		throw new Exception("No people in the mission.");
+	}
 }
