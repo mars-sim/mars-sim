@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * AddMembersDialog.java
+ * @version 2.80 2007-03-21
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission.edit;
 
 import java.awt.BorderLayout;
@@ -23,27 +30,44 @@ import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
+/**
+ * A dialog window for adding members to the mission for the mission tool.
+ */
 class AddMembersDialog extends JDialog {
 	
+	// Data members.
 	Mission mission;
 	DefaultListModel memberListModel;
 	DefaultListModel availableListModel;
 	JList availableList;
 	JButton addButton;
 	
+	/**
+	 * Constructor
+	 * @param owner the owner dialog.
+	 * @param mission the mission to add to.
+	 * @param memberListModel the member list model in the edit mission dialog.
+	 * @param availablePeople the available people to add.
+	 */
 	public AddMembersDialog(Dialog owner, Mission mission, DefaultListModel memberListModel, PersonCollection availablePeople) {
 		// Use JDialog constructor
 		super(owner, "Add Members", true);
 		
+		// Initialize data members.
 		this.mission = mission;
 		this.memberListModel = memberListModel;
 		
+		// Set the layout.
 		setLayout(new BorderLayout(5, 5));
+		
+		// Set the border.
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
 		
+		// Create the header label.
 		JLabel headerLabel = new JLabel("Select available people to add to the mission.");
 		add(headerLabel, BorderLayout.NORTH);
 		
+		// Create the available people panel.
 		JPanel availablePeoplePane = new JPanel(new BorderLayout(0, 0));
 		add(availablePeoplePane, BorderLayout.CENTER);
 		
@@ -62,30 +86,36 @@ class AddMembersDialog extends JDialog {
         availableList.addListSelectionListener(
         		new ListSelectionListener() {
         			public void valueChanged(ListSelectionEvent e) {
+        				// Enable the add button if there are available people.
         				addButton.setEnabled(availableList.getSelectedValues().length > 0);
         			}
         		}
         	);
         availableScrollPane.setViewportView(availableList);
 		
+        // Create button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		add(buttonPane, BorderLayout.SOUTH);
 		
+		// Create add button.
 		addButton = new JButton("Add");
 		addButton.setEnabled(availableList.getSelectedValues().length > 0);
 		addButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Add people to the edit mission dialog and dispose this dialog.
         				addPeople();
         				dispose();
         			}
 				});
 		buttonPane.add(addButton);
 		
+		// Create cancel button.
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Dispose the dialog.
         				dispose();
         			}
 				});
@@ -98,6 +128,9 @@ class AddMembersDialog extends JDialog {
 		setVisible(true);
 	}
 	
+	/**
+	 * Add people to edit mission dialog.
+	 */
 	private void addPeople() {
 		int[] selectedIndexes = availableList.getSelectedIndices();
 		for (int x = 0; x < selectedIndexes.length; x++) {

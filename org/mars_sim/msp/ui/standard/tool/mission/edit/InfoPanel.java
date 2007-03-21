@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * InfoDialog.java
+ * @version 2.80 2007-03-21
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission.edit;
 
 import java.awt.BorderLayout;
@@ -35,6 +42,9 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
+/**
+ * The mission info panel for the edit mission dialog.
+ */
 public class InfoPanel extends JPanel {
 
 	// Action text
@@ -53,46 +63,62 @@ public class InfoPanel extends JPanel {
 	JButton addMembersButton;
 	JButton removeMembersButton;
 	
+	/**
+	 * Constructor
+	 * @param mission the mission to edit.
+	 * @param parent the parent dialog.
+	 */
 	InfoPanel(Mission mission, Dialog parent) {
-		// Use JPanel constructor.
-		super();
 		
+		// Data members
 		this.mission = mission;
 		this.parent = parent;
 		
+		// Sets the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		// Sets the border.
 		setBorder(new MarsPanelBorder());
 		
+		// Create the description panel.
 		JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(descriptionPane);
 		
+		// Create the description label.
 		JLabel descriptionLabel = new JLabel("Description: ");
 		descriptionPane.add(descriptionLabel);
 		
+		// Create the description text field.
 		descriptionField = new JTextField(mission.getDescription(), 20);
 		descriptionPane.add(descriptionField);
 		
+		// Create the action panel.
 		JPanel actionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		actionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(actionPane);
 		
+		// Create the action label.
 		JLabel actionLabel = new JLabel("Action: ");
 		actionPane.add(actionLabel);
 		
+		// Create the action drop down box.
 		actionDropDown = new JComboBox(getActions(mission));
 		actionDropDown.setEnabled(actionDropDown.getItemCount() > 1);
 		actionPane.add(actionDropDown);
 		
+		// Create the members panel.
 		JPanel membersPane = new JPanel(new BorderLayout());
 		membersPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		membersPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(membersPane);
 		
+		// Create the members label.
 		JLabel membersLabel = new JLabel("Members: ");
 		membersLabel.setVerticalAlignment(JLabel.TOP);
 		membersPane.add(membersLabel, BorderLayout.WEST);
 		
+		// Create the member list panel.
 		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
 		membersPane.add(memberListPane, BorderLayout.CENTER);
 		
@@ -111,48 +137,63 @@ public class InfoPanel extends JPanel {
         memberList.addListSelectionListener(
         		new ListSelectionListener() {
         			public void valueChanged(ListSelectionEvent e) {
+        				// Enable remove members button if there are members in the list.
         				removeMembersButton.setEnabled(memberList.getSelectedValues().length > 0);
         			}
         		}
         	);
         memberScrollPane.setViewportView(memberList);
         
+        // Create the member button panel.
         JPanel memberButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
         memberListPane.add(memberButtonPane, BorderLayout.SOUTH);
         
+        // Create the add members button.
         addMembersButton = new JButton("Add Members");
         addMembersButton.setEnabled(canAddMembers());
         addMembersButton.addActionListener(
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Open the add member dialog.
         				addMembers();
         			}
         		});
         memberButtonPane.add(addMembersButton);
         
+        // Create the remove members button.
         removeMembersButton = new JButton("Remove Members");
         removeMembersButton.setEnabled(false);
         removeMembersButton.addActionListener(
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Remove selected members from the list.
         				removeMembers();
         			}
         		});
         memberButtonPane.add(removeMembersButton);
 	}
 	
+	/**
+	 * Checks if members can be added to the mission.
+	 * @return true if members can be added.
+	 */
 	private boolean canAddMembers() {
 		boolean roomInMission = (memberListModel.size() < mission.getMissionCapacity());
 		boolean availablePeople = (getAvailablePeople().size() > 0);
 		return (roomInMission && availablePeople);
 	}
 	
+	/**
+	 * Open the add members dialog.
+	 */
 	private void addMembers() {
-		// Open add member dialog.
 		new AddMembersDialog(parent, mission, memberListModel, getAvailablePeople());
 		addMembersButton.setEnabled(canAddMembers());
 	}
 	
+	/**
+	 * Remove selected members from the list.
+	 */
 	private void removeMembers() {
 		int[] selectedIndexes = memberList.getSelectedIndices();
 		Object[] selectedPeople = new Object[selectedIndexes.length];
@@ -163,18 +204,25 @@ public class InfoPanel extends JPanel {
 		addMembersButton.setEnabled(canAddMembers());
 	}
 	
+	/**
+	 * Gets a vector of possible actions for the mission.
+	 * @param mission the mission 
+	 * @return vector of actions.
+	 */
 	private Vector getActions(Mission mission) {
 		Vector actions = new Vector();
 		actions.add(ACTION_NONE);
 		
 		String phase = mission.getPhase();
 		
+		// Check if continue action can be added.
 		if (phase.equals(CollectResourcesMission.COLLECT_RESOURCES)) {
 			CollectResourcesMission collectResourcesMission = (CollectResourcesMission) mission;
 			if (collectResourcesMission.getNumCollectionSites() > collectResourcesMission.getNumCollectionSitesVisited())
 				actions.add(ACTION_CONTINUE);
 		}
 		
+		// Check if go home action can be added.
 		if (mission instanceof TravelMission) {
 			TravelMission travelMission = (TravelMission) mission;
 			int nextNavpointIndex = travelMission.getNextNavpointIndex();
@@ -184,6 +232,7 @@ public class InfoPanel extends JPanel {
 			}
 		}
 		
+		// Check if nearest settlement action can be added.
 		if (mission instanceof VehicleMission) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
 			try {
@@ -199,9 +248,14 @@ public class InfoPanel extends JPanel {
 		return actions;
 	}
 	
+	/**
+	 * Gets a collection of people available to be added to the mission.
+	 * @return collection of available people.
+	 */
 	private PersonCollection getAvailablePeople() {
 		PersonCollection result = new PersonCollection();
 	
+		// Add people in the settlement or rover.
 		if (mission instanceof RoverMission) {
 			Rover rover = ((RoverMission) mission).getRover();
 			String phase = mission.getPhase();

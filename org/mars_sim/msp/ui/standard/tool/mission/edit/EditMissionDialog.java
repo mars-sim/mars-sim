@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * EditMissionDialog.java
+ * @version 2.80 2007-03-21
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission.edit;
 
 import java.awt.BorderLayout;
@@ -21,40 +28,59 @@ import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
+/**
+ * The edit mission dialog for the mission tool.
+ */
 public class EditMissionDialog extends JDialog {
 
+	// Private members
 	private Mission mission;
 	private InfoPanel infoPane;
 	
+	/**
+	 * Constructor
+	 * @param owner the owner frame.
+	 * @param mission the mission to edit.
+	 */
 	public EditMissionDialog(Frame owner, Mission mission) {
 		// Use JDialog constructor
 		super(owner, "Edit Mission", true);
 	
+		// Initialize data members.
 		this.mission = mission;
 		
+		// Set the layout.
 		setLayout(new BorderLayout(0, 0));
+		
+		// Set the border.
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
         
+		// Create the info panel.
         infoPane = new InfoPanel(mission, this);
         add(infoPane, BorderLayout.CENTER);
         
+        // Create the button panel.
         JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         add(buttonPane, BorderLayout.SOUTH);
         
+        // Create the modify button.
         JButton modifyButton = new JButton("Modify");
         modifyButton.addActionListener(
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Commit the mission modification and close dialog.
         				modifyMission();
-        				setVisible(false);
+        				dispose();
         			}
 				});
         buttonPane.add(modifyButton);
         
+        // Create the cancel button.
         JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Close the dialog.
         				dispose();
         			}
 				});
@@ -67,6 +93,9 @@ public class EditMissionDialog extends JDialog {
 		setVisible(true);
 	}
 	
+	/**
+	 * Commit the modification of the mission.
+	 */
 	private void modifyMission() {
 		// Set the mission description.
 		mission.setDescription(infoPane.descriptionField.getText());
@@ -78,17 +107,27 @@ public class EditMissionDialog extends JDialog {
 		setMissionMembers();
 	}
 	
+	/**
+	 * Sets the mission action.
+	 * @param action the action string.
+	 */
 	private void setAction(String action) {
 		if (action.equals(InfoPanel.ACTION_CONTINUE)) endCollectionPhase();
 		else if (action.equals(InfoPanel.ACTION_HOME)) returnHome();
 		else if (action.equals(InfoPanel.ACTION_NEAREST)) goToNearestSettlement();
 	}
 	
+	/**
+	 * End the mission collection phase at the current site.
+	 */
 	private void endCollectionPhase() {
 		if (mission instanceof CollectResourcesMission) 
 			((CollectResourcesMission) mission).endCollectingAtSite();
 	}
 	
+	/**
+	 * Have the mission return home and end collection phase if necessary.
+	 */
 	private void returnHome() {
 		if (mission instanceof TravelMission) {
 			TravelMission travelMission = (TravelMission) mission;
@@ -103,6 +142,9 @@ public class EditMissionDialog extends JDialog {
 		}
 	}
 	
+	/**
+	 * Go to the nearest settlement and end collection phase if necessary.
+	 */
 	private void goToNearestSettlement() {
 		if (mission instanceof VehicleMission) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
@@ -121,6 +163,9 @@ public class EditMissionDialog extends JDialog {
 		}
 	}
 	
+	/**
+	 * Sets the mission members.
+	 */
 	private void setMissionMembers() {
 		// Add new members.
 		for (int x = 0; x < infoPane.memberListModel.size(); x++) {
