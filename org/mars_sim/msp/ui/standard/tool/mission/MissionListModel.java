@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionListModel.java
- * @version 2.80 2006-08-04
+ * @version 2.80 2007-03-20
  * @author Scott Davis
  */
 
@@ -19,22 +19,35 @@ import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 
+/**
+ * List model for the mission list.
+ */
 public class MissionListModel extends AbstractListModel implements
 		MissionManagerListener, MissionListener {
 
+	// Private members.
 	private List missions;
 	
+	/**
+	 * Constructor
+	 */
 	public MissionListModel() {
 		missions = new ArrayList();
 		
+		// Add all current missions.
 		MissionManager manager = Simulation.instance().getMissionManager();
 		List managerMissions = manager.getMissions();
 		Iterator i = managerMissions.iterator();
 		while (i.hasNext()) addMission((Mission) i.next());
 		
+		// Add list as mission manager listener.
 		manager.addListener(this);
 	}
 	
+	/**
+	 * Adds a mission to this list.
+	 * @param mission the mission to add.
+	 */
 	public void addMission(Mission mission) {
 		if (!missions.contains(mission)) {
 			missions.add(mission);
@@ -43,6 +56,10 @@ public class MissionListModel extends AbstractListModel implements
 		}
 	}
 
+	/**
+	 * Removes a mission from this list.
+	 * @param mission mission to remove.
+	 */
 	public void removeMission(Mission mission) {
 		if (missions.contains(mission)) {
 			int index = missions.indexOf(mission);
@@ -63,25 +80,47 @@ public class MissionListModel extends AbstractListModel implements
 		}
 	}
 
+	/**
+	 * Gets the list size.
+	 * @return size.
+	 */
 	public int getSize() {
 		return missions.size();
 	}
 
+	/**
+	 * Gets the list element at a given index.
+	 * @param index the index.
+	 * @return the object at the index or null if one.
+	 */
 	public Object getElementAt(int index) {
 		if ((index > -1) && (index < missions.size())) return missions.get(index);
 		else return null;
 	}
 	
+	/**
+	 * Checks if the list contains a given mission.
+	 * @param mission the mission to check for.
+	 * @return true if list contains the mission.
+	 */
 	public boolean containsMission(Mission mission) {
 		if ((missions != null) && missions.contains(mission)) return true;
 		else return false;
 	}
 	
+	/**
+	 * Gets the index a given mission is at.
+	 * @param mission the mission to check for.
+	 * @return the index for the mission or -1 if not in list.
+	 */
 	public int getMissionIndex(Mission mission) {
 		if (containsMission(mission)) return missions.indexOf(mission);
 		else return -1;
 	}
 	
+	/**
+	 * Prepares the list for deletion.
+	 */
 	public void destroy() {
 		missions.clear();
 		missions = null;

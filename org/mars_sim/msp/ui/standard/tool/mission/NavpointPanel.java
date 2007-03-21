@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 2.80 2006-10-31
+ * @version 2.80 2007-03-20
  * @author Scott Davis
  */
 
@@ -41,10 +41,13 @@ import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.VehicleTrailMapLayer;
 
-
+/**
+ * Tab panel for displaying a mission's navpoints.
+ */
 public class NavpointPanel extends JPanel implements ListSelectionListener,
 		MissionListener {
 
+	// Private members.
 	private Mission currentMission;
 	private MapPanel mapPane;
 	private VehicleTrailMapLayer trailLayer;
@@ -52,17 +55,24 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	private NavpointTableModel navpointTableModel;
 	private JTable navpointTable;
 	
+	/**
+	 * Constructor
+	 */
 	NavpointPanel() {
 		
+		// Set the layout.
 		setLayout(new BorderLayout());
 		
+		// Create the main panel.
 		Box mainPane = Box.createVerticalBox();
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
+		// Create the map display panel.
 		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));
 		mainPane.add(mapDisplayPane);
 		
+		// Create the map panel.
 		mapPane = new MapPanel();
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
@@ -72,9 +82,11 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		mapPane.addMapLayer(navpointLayer);
 		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
 		
+		// Create the north button.
 		JButton northButton = new JButton(ImageLoader.getIcon("NavpointNorth"));
 		northButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Recenter the map to the north by a half map.
 				Coordinates centerCoords = mapPane.getCenterLocation();
 				if (centerCoords != null) {
 					double phi = centerCoords.getPhi();
@@ -86,10 +98,12 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		});
 		mapDisplayPane.add(northButton, BorderLayout.NORTH);
 		
+		// Create the west button.
 		JButton westButton = new JButton(ImageLoader.getIcon("NavpointWest"));
 		westButton.setMargin(new Insets(1, 1, 1, 1));
 		westButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Recenter the map to the west by a half map.
 				Coordinates centerCoords = mapPane.getCenterLocation();
 				if (centerCoords != null) {
 					double theta = centerCoords.getTheta();
@@ -101,10 +115,12 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		});
 		mapDisplayPane.add(westButton, BorderLayout.WEST);
 		
+		// Create the east button.
 		JButton eastButton = new JButton(ImageLoader.getIcon("NavpointEast"));
 		eastButton.setMargin(new Insets(1, 1, 1, 1));
 		eastButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Recenter the map to the east by a half map.
 				Coordinates centerCoords = mapPane.getCenterLocation();
 				if (centerCoords != null) {
 					double theta = centerCoords.getTheta();
@@ -116,9 +132,11 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		});
 		mapDisplayPane.add(eastButton, BorderLayout.EAST);
 		
+		// Create the south button.
 		JButton southButton = new JButton(ImageLoader.getIcon("NavpointSouth"));
 		southButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Recenter the map to the south by a half map.
 				Coordinates centerCoords = mapPane.getCenterLocation();
 				if (centerCoords != null) {
 					double phi = centerCoords.getPhi();
@@ -130,15 +148,20 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		});
 		mapDisplayPane.add(southButton, BorderLayout.SOUTH);
 		
+		// Create the navpoint table panel.
 		JPanel navpointTablePane = new JPanel(new BorderLayout(0, 0));
 		navpointTablePane.setBorder(new MarsPanelBorder());
 		navpointTablePane.setPreferredSize(new Dimension(100, 100));
 		mainPane.add(navpointTablePane);
 		
+		// Create the navpoint scroll panel.
 		JScrollPane navpointScrollPane = new JScrollPane();
         navpointTablePane.add(navpointScrollPane, BorderLayout.CENTER);
         
+        // Create the navpoint table model.
         navpointTableModel = new NavpointTableModel();
+        
+        // Create the navpoint table.
         navpointTable = new JTable(navpointTableModel);
         navpointTable.setRowSelectionAllowed(true);
         navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -146,6 +169,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
             new ListSelectionListener() {
             	public void valueChanged(ListSelectionEvent e) {
             		if (e.getValueIsAdjusting()) {
+            			// Recenter map on selected navpoint.
             			if ((currentMission != null) && (currentMission instanceof TravelMission)) {
             				TravelMission travelMission = (TravelMission) currentMission;
             				int index = navpointTable.getSelectedRow();
@@ -162,13 +186,23 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
         navpointScrollPane.setViewportView(navpointTable);
 	}
 	
+	/**
+	 * Implemented from ListSelectionListener.
+	 * Note: this is called when a mission is selected on MissionWindow's mission list.
+	 */
 	public void valueChanged(ListSelectionEvent e) {
 		Mission mission = (Mission) ((JList) e.getSource()).getSelectedValue();
+		
+		// Remove this as previous mission listener.
 		if ((currentMission != null) && (currentMission != mission)) 
 			currentMission.removeMissionListener(this);
+		
 		if (mission != null) {
 			if (mission != currentMission) {
+				// Add this as listener for new mission.
 				mission.addMissionListener(this);
+				
+				// Update map and info for new mission.
 				currentMission = mission;
 				if (mission.getPeopleNumber() > 0) {
 					if (mission instanceof VehicleMission) 
@@ -183,6 +217,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 			}
 		}
 		else {
+			// Clear map and info.
 			currentMission = null;
 			trailLayer.setSingleVehicle(null);
 			navpointLayer.setSingleMission(null);
@@ -192,9 +227,14 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		}
 	}
 
+	/**
+	 * Catch mission update event.
+	 * @param event the mission event.
+	 */
 	public void missionUpdate(MissionEvent event) {
 		String type = event.getType();
 		if (TravelMission.NAVPOINTS_EVENT.equals(type)) {
+			// Update mission navpoints.
 			navpointTableModel.updateNavpoints();
 		}
 	}
@@ -206,22 +246,43 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		mapPane.destroy();
 	}
 	
+	/**
+	 * Navpoint table model.
+	 * Inner class
+	 */
 	private class NavpointTableModel extends AbstractTableModel {
 		
+		// Private members.
 		private List navpoints;
 		
+		/**
+		 * Constructor.
+		 */
 		private NavpointTableModel() {
 			navpoints = new ArrayList();
 		}
 		
+		/**
+		 * Returns the number of rows in the model.
+		 * @return number of rows.
+		 */
 		public int getRowCount() {
             return navpoints.size();
         }
 		
+		/**
+		 * Returns the number of columns in the model.
+		 * @return number of columns.
+		 */
 		public int getColumnCount() {
             return 3;
         }
 		
+		/**
+		 * Returns the name of the column at columnIndex.
+		 * @param columnIndex the index of the column.
+		 * @return the name of the column.
+		 */
 		public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Name";
             else if (columnIndex == 1) return "Location";
@@ -229,6 +290,12 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
             else return "";
         }
 		
+		/**
+		 * Returns the value for the cell at columnIndex and rowIndex.
+		 * @param row the row index.
+		 * @param column the column index.
+		 * @return the value object.
+		 */
 		public Object getValueAt(int row, int column) {
             if (row < navpoints.size()) {
             	NavPoint navpoint = (NavPoint) navpoints.get(row);
@@ -240,6 +307,9 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
             else return "unknown";
         }
 		
+		/**
+		 * Updates the navpoints for the table.
+		 */
 		public void updateNavpoints() {
 			if ((currentMission != null) && (currentMission instanceof TravelMission)) {
 				navpoints.clear();

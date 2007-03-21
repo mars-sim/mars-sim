@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 2.80 2006-10-09
+ * @version 2.80 2007-03-19
  * @author Scott Davis
  */
 
@@ -46,9 +46,13 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
+/**
+ * The tab panel for showing mission details.
+ */
 public class MainDetailPanel extends JPanel implements ListSelectionListener, 
 		MissionListener, UnitListener {
 
+	// Private members
 	private Mission currentMission;
 	private Vehicle currentVehicle;
 	private JLabel descriptionLabel;
@@ -65,40 +69,56 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private MainDesktopPane desktop;
 	private DecimalFormat formatter = new DecimalFormat("0.0");
 	
+	/**
+	 * Constructor
+	 * @param desktop the main desktop panel.
+	 */
 	MainDetailPanel(MainDesktopPane desktop) {
+		// User JPanel constructor.
+		super();
 		
+		// Initialize data members.
 		this.desktop = desktop;
 		
+		// Set the layout.
 		setLayout(new BorderLayout());
 		
+		// Create the main panel.
 		Box mainPane = Box.createVerticalBox();
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
+		// Create the description panel.
 		Box descriptionPane = new CustomBox();
 		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(descriptionPane);
 		
+		// Create the description label.
 		descriptionLabel = new JLabel("Description:", SwingConstants.LEFT);
 		descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(descriptionLabel);
 		
+		// Create the type label.
 		typeLabel = new JLabel("Type:");
 		typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(typeLabel);
 		
+		// Create the phase label.
 		phaseLabel = new JLabel("Phase:");
 		phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(phaseLabel);
 		
+		// Create the member panel.
 		Box memberPane = new CustomBox();
 		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(memberPane);
 		
+		// Create the member number label.
 		memberNumLabel = new JLabel("Mission Members:   (Min:  - Max: )");
 		memberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		memberPane.add(memberNumLabel);
 		
+		// Create member bottom panel.
 		JPanel memberBottomPane = new JPanel(new BorderLayout(0, 0));
 		memberBottomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		memberPane.add(memberBottomPane);
@@ -112,7 +132,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         JScrollPane memberScrollPane = new JScrollPane();
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
+        // Create member table model.
         memberTableModel = new MemberTableModel();
+        
+        // Create member table.
         memberTable = new JTable(memberTableModel);
         memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
         memberTable.setRowSelectionAllowed(true);
@@ -121,6 +144,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         	new ListSelectionListener() {
         		public void valueChanged(ListSelectionEvent e) {
         			if (e.getValueIsAdjusting()) {
+        				// Open window for selected person.
         				int index = memberTable.getSelectedRow();
         				Person selectedPerson = memberTableModel.getMemberAtIndex(index);
         				if (selectedPerson != null) getDesktop().openUnitWindow(selectedPerson);
@@ -129,23 +153,28 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         	});
         memberScrollPane.setViewportView(memberTable);
 		
+        // Create the travel panel.
 		Box travelPane = new CustomBox();
 		travelPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(travelPane);
 		
+		// Create the vehicle panel.
 		JPanel vehiclePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		vehiclePane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehiclePane);
 		
+		// Create the vehicle label.
 		JLabel vehicleLabel = new JLabel("Vehicle: ");
 		vehiclePane.add(vehicleLabel);
 		
+		// Create the vehicle panel.
 		vehicleButton = new JButton("   ");
 		vehiclePane.add(vehicleButton);
 		vehicleButton.setVisible(false);
 		vehicleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (currentMission instanceof VehicleMission) {
+					// Open window for vehicle.
 					VehicleMission vehicleMission = (VehicleMission) currentMission;
 					Vehicle vehicle = vehicleMission.getVehicle();
 					if (vehicle != null) getDesktop().openUnitWindow(vehicle);
@@ -153,29 +182,41 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			}
 		});
 		
+		// Create the vehicle status label.
 		vehicleStatusLabel = new JLabel("Vehicle Status:");
 		vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehicleStatusLabel);
 		
+		// Create the speed label.
 		speedLabel = new JLabel("Vehicle Speed:");
 		speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(speedLabel);
 		
+		// Create the distance next navpoint label.
 		distanceNextNavLabel = new JLabel("Distance to Next Navpoint:");
 		distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(distanceNextNavLabel);
 		
+		// Create the travelled distance label.
 		travelledLabel = new JLabel("Travelled Distance:");
 		travelledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(travelledLabel);
 	}
 	
+	/**
+	 * Implemented from ListSelectionListener.
+	 * Note: this is called when a mission is selected on MissionWindow's mission list.
+	 */
 	public void valueChanged(ListSelectionEvent e) {
+		// Remove mission and unit listeners.
 		if (currentMission != null) currentMission.removeMissionListener(this);
 		if (currentVehicle != null) currentVehicle.removeUnitListener(this);
 		
+		// Get the selected mission.
 		Mission mission = (Mission) ((JList) e.getSource()).getSelectedValue();
+		
 		if (mission != null) {
+			// Update mission info in UI.
 			descriptionLabel.setText("Description: " + mission.getDescription());
 			typeLabel.setText("Type: " + mission.getName());
 			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
@@ -185,7 +226,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			memberNumLabel.setText("Mission Members: " + memberNum + " (Min: " + minMembers + 
 					" - Max: " + maxMembers + ")");
 			memberTableModel.setMission(mission);
-			
+		
+			// Update mission vehicle info in UI.
 			boolean isVehicle = false;
 			if (mission instanceof VehicleMission) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
@@ -210,6 +252,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 				}
 			}
 			if (!isVehicle) {
+				// Clear vehicle info.
 				vehicleButton.setVisible(false);
 				vehicleStatusLabel.setText("Vehicle Status:");
 				speedLabel.setText("Vehicle Speed:");
@@ -218,10 +261,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 				currentVehicle = null;
 			}
 			
+			// Add mission listener.
 			mission.addMissionListener(this);
 			currentMission = mission;
 		}
 		else {
+			// Clear mission info in UI.
 			descriptionLabel.setText("Description:");
 			typeLabel.setText("Type:");
 			phaseLabel.setText("Phase:");
@@ -237,9 +282,14 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		}
 	}
 	
+	/**
+	 * Mission event update.
+	 */
 	public void missionUpdate(MissionEvent e) {
 		Mission mission = (Mission) e.getSource();
 		String type = e.getType();
+		
+		// Update UI based on mission event type.
 		if (type.equals(Mission.NAME_EVENT)) 
 			typeLabel.setText("Type: " + mission.getName());
 		else if (type.equals(Mission.DESCRIPTION_EVENT)) 
@@ -292,6 +342,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
+		// Update vehicle info in UI based on event type.
 		String type = event.getType();
 		Vehicle vehicle = (Vehicle) event.getSource();
 		if (type.equals(Vehicle.STATUS_EVENT)) 
@@ -308,13 +359,23 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	return desktop;
     }
     
+    /**
+     * A custom box container inner class.
+     */
     private class CustomBox extends Box {
     	
+    	/**
+    	 * Constructor
+    	 */
     	private CustomBox() {
     		super(BoxLayout.Y_AXIS);
     		setBorder(new MarsPanelBorder());
     	}
     	
+    	/**
+    	 * Gets the maximum size for the component.
+    	 * @return dimension.
+    	 */
     	public Dimension getMaximumSize() {
     		Dimension result = getPreferredSize();
     		result.width = Short.MAX_VALUE;
@@ -322,30 +383,56 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	}
     }
     
+    /**
+     * Table model for mission members.
+     */
     private class MemberTableModel extends AbstractTableModel implements UnitListener {
     	
+    	// Private members.
     	Mission mission;
     	PersonCollection members;
     	
+    	/**
+    	 * Constructor
+    	 */
     	private MemberTableModel() {
     		mission = null;
     		members = new PersonCollection();
     	}
     	
+    	/**
+    	 * Gets the row count.
+    	 * @return row count.
+    	 */
     	public int getRowCount() {
             return members.size();
         }
     	
+    	/**
+    	 * Gets the column count.
+    	 * @return column count.
+    	 */
     	public int getColumnCount() {
             return 2;
         }
     	
+    	/**
+    	 * Gets the column name at a given index.
+    	 * @param columnIndex the column's index.
+    	 * @return the column name.
+    	 */
     	public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Name";
             else if (columnIndex == 1) return "Task";
             else return "unknown";
         }
     	
+    	/**
+    	 * Gets the value at a given row and column.
+    	 * @param row the table row.
+    	 * @param column the table column.
+    	 * @return the value.
+    	 */
     	public Object getValueAt(int row, int column) {
             if (row < members.size()) {
             	Person person = (Person) members.get(row);
@@ -355,6 +442,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
             else return "unknown";
         }
     	
+    	/**
+    	 * Sets the mission for this table model.
+    	 * @param newMission the new mission.
+    	 */
     	void setMission(Mission newMission) {
     		this.mission = newMission;
     		updateMembers();
@@ -373,6 +464,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     			fireTableCellUpdated(index, 1);
     	}
     	
+    	/**
+    	 * Update mission members.
+    	 */
     	void updateMembers() {
     		if (mission != null) {
     			clearMembers();
@@ -389,6 +483,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     		}
     	}
     	
+    	/**
+    	 * Clear all members from the table.
+    	 */
     	private void clearMembers() {
     		if (members != null) {
     			PersonIterator i = members.iterator();
@@ -397,6 +494,11 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     		}
     	}
     	
+    	/**
+    	 * Gets the mission member at a given index.
+    	 * @param index the index.
+    	 * @return the mission member.
+    	 */
     	Person getMemberAtIndex(int index) {
     		if (index < members.size()) return (Person) members.get(index);
     		else return null;

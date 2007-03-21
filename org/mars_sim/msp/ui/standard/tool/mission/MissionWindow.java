@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionWindow.java
- * @version 2.80 2006-08-11
+ * @version 2.80 2007-03-20
  * @author Scott Davis
  */
 
@@ -42,7 +42,8 @@ public class MissionWindow extends ToolWindow {
 
 	// Tool name
 	public static final String NAME = "Mission Tool";	
-	
+
+	// Private members
 	private JList missionList;
 	private NavpointPanel navpointPane;
 	
@@ -58,47 +59,57 @@ public class MissionWindow extends ToolWindow {
 		// Set window resizable to false.
         setResizable(false);
 		
-		// Create content pane
+		// Create content panel.
         JPanel mainPane = new JPanel(new BorderLayout());
         mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(mainPane);
         
+        // Create the mission list panel.
         JPanel missionListPane = new JPanel(new BorderLayout());
         missionListPane.setPreferredSize(new Dimension(200, 200));
         mainPane.add(missionListPane, BorderLayout.WEST);
         
+        // Create the mission list.
         missionList = new JList(new MissionListModel());
         missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
         
+        // Create the info tab panel.
         JTabbedPane infoPane = new JTabbedPane();
         mainPane.add(infoPane, BorderLayout.EAST);
         
+        // Create the main detail panel.
         MainDetailPanel mainDetailPane = new MainDetailPanel(desktop);
         missionList.addListSelectionListener(mainDetailPane);
         infoPane.add("Info", mainDetailPane);
         
+        // Create the navpoint panel.
         navpointPane = new NavpointPanel();
         missionList.addListSelectionListener(navpointPane);
         infoPane.add("Navpoints", navpointPane);
         
+        // Create the button panel.
         JPanel buttonPane = new JPanel(new FlowLayout());
         mainPane.add(buttonPane, BorderLayout.SOUTH);
         
+        // Create the create mission button.
         JButton createButton = new JButton("Create New Mission");
         createButton.addActionListener( 
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Create new mission.
         				createNewMission();
         			}
         		});
         buttonPane.add(createButton);
         
+        // Create the edit mission button.
         final JButton editButton = new JButton("Modify Mission");
         editButton.setEnabled(false);
         editButton.addActionListener(
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Edit the mission.
         				Mission mission = (Mission) missionList.getSelectedValue();
         				if (mission != null) editMission(mission);
         			}
@@ -106,16 +117,19 @@ public class MissionWindow extends ToolWindow {
         missionList.addListSelectionListener(
             	new ListSelectionListener() {
             		public void valueChanged(ListSelectionEvent e) {
+            			// Enable button is mission is selected in list.
             			editButton.setEnabled(missionList.getSelectedValue() != null);
             		}
             	});
         buttonPane.add(editButton);
         
+        // Create the end mission button.
         final JButton endButton = new JButton("End Mission");
         endButton.setEnabled(false);
         endButton.addActionListener(
         		new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// End the mission.
         				Mission mission = (Mission) missionList.getSelectedValue();
         				if (mission != null) endMission(mission);
         			}
@@ -170,6 +184,10 @@ public class MissionWindow extends ToolWindow {
 		desktop.getMainWindow().unpauseSimulation();
 	}
 	
+	/**
+	 * Ends the mission.
+	 * @param mission the mission to end.
+	 */
 	private void endMission(Mission mission) {
 		// System.out.println("End mission: " + mission.getName());
 		
