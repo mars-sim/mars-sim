@@ -99,9 +99,7 @@ public class TableSorter extends AbstractTableModel
         {
             // If the model has been resorted, flag all changes
             if (sortModel()) {
-                newEvent = new TableModelEvent(this, 0,
-                                               sourceModel.getRowCount(),
-                                               e.getColumn());
+            	newEvent = new TableModelEvent(this, 0, sourceModel.getRowCount());
             }
         }
 
