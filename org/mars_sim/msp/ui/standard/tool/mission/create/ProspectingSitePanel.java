@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * ProspectingSitePanel.java
+ * @version 2.80 2007-03-22
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.awt.Color;
@@ -22,12 +29,18 @@ import org.mars_sim.msp.ui.standard.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
 
+/**
+ * A wizard panel for the ice prospecting site.
+ */
 class ProspectingSitePanel extends WizardPanel {
 
+	// Wizard panel name.
 	private final static String NAME = "Prospecting Site";
 	
+	// Range modifier.
 	private final static double RANGE_MODIFIER = .95D;
 	
+	// Data members.
 	private MapPanel mapPane;
 	private EllipseLayer ellipseLayer;
 	private NavpointEditLayer navLayer;
@@ -36,18 +49,27 @@ class ProspectingSitePanel extends WizardPanel {
 	private JLabel locationLabel;
 	private int pixelRange;
 	
+	/**
+	 * Constructor
+	 * @param wizard the create mission wizard.
+	 */
 	ProspectingSitePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
+		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		// Set the border.
 		setBorder(new MarsPanelBorder());
 		
+		// Create the title label.
 		JLabel titleLabel = new JLabel("Choose ice collection site.");
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(titleLabel);
 		
+		// Create the map panel.
 		mapPane = new MapPanel();
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
@@ -59,25 +81,36 @@ class ProspectingSitePanel extends WizardPanel {
 		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(mapPane);
 		
+		// Create the location label.
 		locationLabel = new JLabel("Location: ", JLabel.CENTER);
 		locationLabel.setFont(locationLabel.getFont().deriveFont(Font.BOLD));
 		locationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(locationLabel);
 		
+		// Create a vertical strut to add some UI space.
 		add(Box.createVerticalStrut(10));
 		
+		// Create the instruction label.
 		JLabel instructionLabel = new JLabel("Drag navpoint flag to desired ice collection site.");
 		instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.BOLD));
 		instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(instructionLabel);
 		
+		// Create verticle glue.
 		add(Box.createVerticalGlue());
 	}
 	
+	/**
+	 * Gets the wizard panel name.
+	 * @return panel name.
+	 */
 	String getPanelName() {
 		return NAME;
 	}
 
+	/**
+	 * Commits changes from this wizard panel.
+	 */
 	void commitChanges() {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
@@ -86,11 +119,17 @@ class ProspectingSitePanel extends WizardPanel {
 		getWizard().getMissionData().createMission();
 	}
 
+	/**
+	 * Clear information on the wizard panel.
+	 */
 	void clearInfo() {
 		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
 		navLayer.clearNavpointPositions();
 	}
 
+	/**
+	 * Updates the wizard panel information.
+	 */
 	void updatePanel() {
 		try {
 			double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
@@ -107,18 +146,35 @@ class ProspectingSitePanel extends WizardPanel {
 		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
 	}
 	
+	/**
+	 * Gets the center coordinates.
+	 * @return center coordinates.
+	 */
 	private Coordinates getCenterCoords() {
 		return getWizard().getMissionData().getStartingSettlement().getCoordinates();
 	}
 	
+	/**
+	 * Converts radius (km) into pixel range on map.
+	 * @param radius the radius (km).
+	 * @return pixel radius.
+	 */
 	private int convertRadiusToMapPixels(double radius) {
 		return MapUtils.getPixelDistance(radius, SurfMarsMap.TYPE);
 	}
 	
+	/**
+	 * Inner class for listening to mouse events on the navpoint display.
+	 */
 	private class NavpointMouseListener extends MouseAdapter {
 	
+		/**
+		 * Invoked when a mouse button has been pressed on a component.
+		 * @param event the mouse event.
+		 */
 		public void mousePressed(MouseEvent event) {
 			if (navLayer.overNavIcon(event.getX(), event.getY()) == 0) {
+				// Select navpoint flag.
 				navSelected = true;
 				navLayer.selectNavpoint(0);
 				navOffset = determineOffset(event.getX(), event.getY());
@@ -127,12 +183,22 @@ class ProspectingSitePanel extends WizardPanel {
 			}
 		}
 		
+		/**
+		 * Gets the pixel offset from the currently selected navpoint.
+		 * @param x the x coordinate selected.
+		 * @param y the y coordinate selected.
+		 * @return the pixel offset.
+		 */
 		private IntPoint determineOffset(int x, int y) {
 			int xOffset = navLayer.getNavpointPosition(0).getiX() - x;
 			int yOffset = navLayer.getNavpointPosition(0).getiY() - y;
 			return new IntPoint(xOffset, yOffset);
 		}
 	
+		/**
+		 * Invoked when a mouse button has been released on a component.
+		 * @param event the mouse event.
+		 */
 		public void mouseReleased(MouseEvent event) {
 			navSelected = false;
 			navLayer.clearSelectedNavpoint();
@@ -141,10 +207,18 @@ class ProspectingSitePanel extends WizardPanel {
 		}
 	}
 	
+	/**
+	 * Inner class for listening to mouse movement on the navpoint display.
+	 */
 	private class NavpointMouseMotionListener extends MouseMotionAdapter {
 		
+		/**
+		 * Invoked when a mouse button is pressed on a component and then dragged.
+		 * @param event the mouse event.
+		 */
 		public void mouseDragged(MouseEvent event) {
 			if (navSelected) {
+				// Drag navpoint flag.
 				int displayX = event.getPoint().x + navOffset.getiX();
 				int displayY = event.getPoint().y + navOffset.getiY();
 				IntPoint displayPos = new IntPoint(displayX, displayY);
@@ -159,6 +233,11 @@ class ProspectingSitePanel extends WizardPanel {
 			}
 		}
 		
+		/**
+		 * Checks if mouse location is within range boundries and edge of map display. 
+		 * @param position the mouse location.
+		 * @return true if within boundries.
+		 */
 		private boolean withinBounds(IntPoint position) {
 			boolean result = true;
 			

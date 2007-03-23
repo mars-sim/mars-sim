@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * VehiclePanel.java
+ * @version 2.80 2007-03-23
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.awt.BorderLayout;
@@ -26,8 +33,12 @@ import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
+/**
+ * A wizard panel for selecting the mission vehicle.
+ */
 class VehiclePanel extends WizardPanel {
 
+	// The wizard panel name.
 	private final static String NAME = "Rover";
 	
 	// Data members.
@@ -35,18 +46,27 @@ class VehiclePanel extends WizardPanel {
 	private JTable vehicleTable;
 	private JLabel errorMessageLabel;
 	
+	/**
+	 * Constructor
+	 * @param wizard the create mission wizard.
+	 */
 	VehiclePanel(CreateMissionWizard wizard) {
 		// User WizardPanel constructor.
 		super(wizard);
 		
+		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		// Set the border.
 		setBorder(new MarsPanelBorder());
 		
+		// Create the select vehicle label.
 		JLabel selectVehicleLabel = new JLabel("Select a rover for the mission.", JLabel.CENTER);
 		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
 		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectVehicleLabel);
 		
+		// Create the vehicle panel.
 		JPanel vehiclePane = new JPanel(new BorderLayout(0, 0));
 		vehiclePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
 		vehiclePane.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -56,7 +76,10 @@ class VehiclePanel extends WizardPanel {
         JScrollPane vehicleScrollPane = new JScrollPane();
         vehiclePane.add(vehicleScrollPane, BorderLayout.CENTER);
         
+        // Create the vehicle table model.
         vehicleTableModel = new VehicleTableModel();
+        
+        // Create the vehicle table.
         vehicleTable = new JTable(vehicleTableModel);
         vehicleTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(vehicleTableModel));
         vehicleTable.setRowSelectionAllowed(true);
@@ -65,13 +88,17 @@ class VehiclePanel extends WizardPanel {
         	new ListSelectionListener() {
         		public void valueChanged(ListSelectionEvent e) {
         			if (e.getValueIsAdjusting()) {
+        				// Get the selected vehicle index.
         				int index = vehicleTable.getSelectedRow();
         				if (index > -1) {
+        					// Check if selected row has a failure cell.
         					if (vehicleTableModel.isFailureRow(index)) {
+        						// Set the error message and disable the next button.
         						errorMessageLabel.setText("Rover cannot be used on the mission (see red cells).");
         						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
         					}
         					else {
+        						// Clear the error message and enable the next button.
         						errorMessageLabel.setText(" ");
         						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
         					}
@@ -82,41 +109,63 @@ class VehiclePanel extends WizardPanel {
         vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
         vehicleScrollPane.setViewportView(vehicleTable);
 		
+        // Create the error message label.
 		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(errorMessageLabel);
 		
+		// Add a vertical glue.
 		add(Box.createVerticalGlue());
 	}
 	
+	/**
+	 * Gets the wizard panel name.
+	 * @return panel name.
+	 */
 	String getPanelName() {
 		return NAME;
 	}
 
+	/**
+	 * Commits changes from this wizard panel.
+	 */
 	void commitChanges() {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
 		getWizard().getMissionData().setRover(selectedVehicle);
 	}
 
+	/**
+	 * Clear information on the wizard panel.
+	 */
 	void clearInfo() {
 		vehicleTable.clearSelection();
 		errorMessageLabel.setText(" ");
 	}
 
+	/**
+	 * Updates the wizard panel information.
+	 */
 	void updatePanel() {
 		vehicleTableModel.updateTable();
 		vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
 	}
 	
+	/**
+	 * A table model for vehicles.
+	 */
     private class VehicleTableModel extends UnitTableModel {
     	
+    	/**
+    	 * Constructor
+    	 */
     	private VehicleTableModel() {
     		// Use UnitTableModel constructor.
     		super();
     		
+    		// Add columns.
     		columns.add("Name");
     		columns.add("Type");
     		columns.add("Crew Cap.");
@@ -128,6 +177,12 @@ class VehiclePanel extends WizardPanel {
     		columns.add("Mission");
     	}
     	
+    	/**
+    	 * Returns the value for the cell at columnIndex and rowIndex.
+    	 * @param row the row whose value is to be queried
+    	 * @param column the column whose value is to be queried
+    	 * @return the value Object at the specified cell
+    	 */
     	public Object getValueAt(int row, int column) {
     		Object result = "unknown";
     		
@@ -164,6 +219,9 @@ class VehiclePanel extends WizardPanel {
             return result;
         }
     	
+    	/**
+    	 * Updates the table data.
+    	 */
     	void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
@@ -173,6 +231,12 @@ class VehiclePanel extends WizardPanel {
     		fireTableDataChanged();
     	}
     	
+    	/**
+    	 * Checks if a table cell is a failure cell.
+    	 * @param row the table row.
+    	 * @param column the table column.
+    	 * @return true if cell is a failure cell.
+    	 */
     	boolean isFailureCell(int row, int column) {
     		boolean result = false;
     		Rover vehicle = (Rover) getUnit(row);

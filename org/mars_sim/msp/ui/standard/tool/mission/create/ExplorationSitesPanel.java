@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * ExplorationSitesPanel.java
+ * @version 2.80 2007-03-22
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.awt.BorderLayout;
@@ -35,12 +42,18 @@ import org.mars_sim.msp.ui.standard.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
 
+/**
+ * This is a wizard panel for selecting exploration sites for the mission.
+ */
 class ExplorationSitesPanel extends WizardPanel {
 
+	// Wizard panel name.
 	private final static String NAME = "Exploration Sites";
 	
+	// Range modifier.
 	private final static double RANGE_MODIFIER = .95D;
 
+	// Data members.
 	private MapPanel mapPane;
 	private EllipseLayer ellipseLayer;
 	private NavpointEditLayer navLayer;
@@ -52,28 +65,40 @@ class ExplorationSitesPanel extends WizardPanel {
 	private double missionTimeLimit;
 	private double timePerSite;
 	
+	/**
+	 * Constructor
+	 * @param wizard the create mission wizard.
+	 */
 	ExplorationSitesPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
+		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		// Set the border.
 		setBorder(new MarsPanelBorder());
 		
+		// Creates the title label.
 		JLabel titleLabel = new JLabel("Choose the exploration sites.");
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(titleLabel);
 		
+		// Add a vertical strut 
 		add(Box.createVerticalStrut(10));
 		
+		// Create the center panel.
 		JPanel centerPane = new JPanel(new BorderLayout(0, 0));
 		centerPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		centerPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 350));
 		add(centerPane);
 		
+		// Create the map main panel.
 		JPanel mapMainPane = new JPanel(new BorderLayout(0, 0));
 		centerPane.add(mapMainPane, BorderLayout.WEST);
 		
+		// Create the map panel.
 		mapPane = new MapPanel();
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
@@ -84,10 +109,12 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
 		mapMainPane.add(mapPane, BorderLayout.NORTH);
 		
+		// Create the instruction label.
 		JLabel instructionLabel = new JLabel("Drag navpoint flags to the desired exploration sites.", JLabel.CENTER);
 		instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.BOLD));
 		mapMainPane.add(instructionLabel, BorderLayout.SOUTH);
 		
+		// Create the site panel.
 		JPanel sitePane = new JPanel(new BorderLayout(0, 0));
 		sitePane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sitePane.setMaximumSize(new Dimension(Short.MAX_VALUE, 300));
@@ -97,20 +124,25 @@ class ExplorationSitesPanel extends WizardPanel {
         JScrollPane siteScrollPane = new JScrollPane();
         sitePane.add(siteScrollPane, BorderLayout.CENTER);
         
+        // Create the site list main panel.
         JPanel siteListMainPane = new JPanel(new BorderLayout(0, 0));
         siteScrollPane.setViewportView(siteListMainPane);
         
+        // Create the site list panel.
         siteListPane = new JPanel();
         siteListPane.setLayout(new BoxLayout(siteListPane, BoxLayout.Y_AXIS));
         siteListMainPane.add(siteListPane, BorderLayout.NORTH);
         
+        // Create the add button panel.
         JPanel addButtonPane = new JPanel(new FlowLayout());
         sitePane.add(addButtonPane, BorderLayout.SOUTH);
         
+        // Create the add button.
         addButton = new JButton("Add Site");
         addButton.addActionListener(
         		new ActionListener() {
     				public void actionPerformed(ActionEvent e) {
+    					// Add a new exploration site to the mission.
     					SitePanel sitePane = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
     					siteListPane.add(sitePane);
     					navLayer.addNavpointPosition(MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
@@ -121,25 +153,39 @@ class ExplorationSitesPanel extends WizardPanel {
     			});
         addButtonPane.add(addButton);
 		
+        // Create a verticle strut to manage layout.
         add(Box.createVerticalStrut(85));
 		add(Box.createVerticalGlue());
 	}
 	
+	/**
+	 * Gets the wizard panel name.
+	 * @return panel name.
+	 */
 	String getPanelName() {
 		return NAME;
 	}
 
+	/**
+	 * Commits changes from this wizard panel.
+	 */
 	void commitChanges() {
 		getWizard().getMissionData().setExplorationSites(getSites());
 		getWizard().getMissionData().createMission();
 	}
 
+	/**
+	 * Clear information on the wizard panel.
+	 */
 	void clearInfo() {
 		siteListPane.removeAll();
 		navLayer.clearNavpointPositions();
 		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
 	}
 
+	/**
+	 * Updates the wizard panel information.
+	 */
 	void updatePanel() {
 		range = getRange();
 		missionTimeLimit = getMissionTimeLimit();
@@ -154,10 +200,18 @@ class ExplorationSitesPanel extends WizardPanel {
 		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
 	}
 	
+	/**
+	 * Checks if mission can add more exporation sites.
+	 * @return true if can add more sites.
+	 */
 	private boolean canAddMoreSites() {
 		return (missionTimeLimit > (getTotalMissionTime() + getTimePerSite()));
 	}
 	
+	/**
+	 * Gets a new exploration site default location.
+	 * @return site location.
+	 */
 	private Coordinates getNewSiteLocation() {
 		Coordinates result = null;
 		Coordinates[] sites = getSites();
@@ -166,6 +220,11 @@ class ExplorationSitesPanel extends WizardPanel {
 		return result;
 	}
 	
+	/**
+	 * Gets the remaining mission range.
+	 * @param newSite true if needing to add additional exploration site.
+	 * @return range (km).
+	 */
 	private double getRemainingRange(boolean newSite) {
 		double travelTime = missionTimeLimit - getTotalSiteTime();
 		if (newSite) travelTime -= timePerSite;
@@ -176,8 +235,13 @@ class ExplorationSitesPanel extends WizardPanel {
 		return realRange - getDistance();
 	}
 	
+	/**
+	 * Gets the rover range.
+	 * @return rover range.
+	 */
 	private double getRange() {
 		try {
+			// Use range modifier.
 			return getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
 		}
 		catch (Exception e) {
@@ -185,6 +249,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		}
 	}
 	
+	/**
+	 * Gets the mission time limit.
+	 * @return time limit (millisols)
+	 */
 	private double getMissionTimeLimit() {
 		Rover rover = getWizard().getMissionData().getRover();
 		int memberNum = getWizard().getMissionData().getMembers().size();
@@ -196,25 +264,45 @@ class ExplorationSitesPanel extends WizardPanel {
 		}
 	}
 	
+	/**
+	 * Gets the estimated time required per exploration site.
+	 * @return time (millisols)
+	 */
 	private double getTimePerSite() {
     	double timePerPerson = (Exploration.SITE_GOAL / Exploration.COLLECTION_RATE) * 
     			CollectResourcesMission.EVA_COLLECTION_OVERHEAD;
     	return timePerPerson / getWizard().getMissionData().getMembers().size();
 	}
 	
+	/**
+	 * Gets the total estimated time required for all exploration sites in mission.
+	 * @return time (millisols)
+	 */
 	private double getTotalSiteTime() {
 		return timePerSite * siteListPane.getComponentCount();
 	}
 	
+	/**
+	 * Gets the estimated time spent travelling on the mission.
+	 * @return time (millisols)
+	 */
 	private double getTravelTime() {
 		Rover rover = getWizard().getMissionData().getRover();
 		return getDistance() / (rover.getEstimatedTravelDistancePerSol() / 1000D);
 	}
 	
+	/**
+	 * Gets the total estimated mission time.
+	 * @return time (millisols)
+	 */
 	private double getTotalMissionTime() {
 		return getTravelTime() + getTotalSiteTime();
 	}
 	
+	/**
+	 * Gets the total distance travelled in the mission.
+	 * @return distance (km)
+	 */
 	private double getDistance() {
 		double result = 0D;
 		Coordinates[] sites = getSites();
@@ -229,6 +317,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		return result;
 	}
 	
+	/**
+	 * Gets the mission exploration sites.
+	 * @return array of sites
+	 */
 	private Coordinates[] getSites() {
 		Coordinates[] result = new Coordinates[siteListPane.getComponentCount()];
 		for (int x = 0; x < siteListPane.getComponentCount(); x++) 
@@ -237,6 +329,9 @@ class ExplorationSitesPanel extends WizardPanel {
 		return result;
 	}
 	
+	/**
+	 * Updates the exploration site numbers.
+	 */
 	private void updateSiteNumbers() {
 		navLayer.clearNavpointPositions();
 		for (int x = 0; x < siteListPane.getComponentCount(); x++) {
@@ -247,10 +342,21 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapPane.repaint();
 	}
 	
+	/**
+	 * Gets the center coordinates for the mission.
+	 * @return center coordinates.
+	 */
 	private Coordinates getCenterCoords() {
 		return getWizard().getMissionData().getStartingSettlement().getCoordinates();
 	}
 	
+	/**
+	 * Gets a new exploration site location.
+	 * @param prevNav the previous site.
+	 * @param nextNav the next site.
+	 * @param range the remaining range (km) in the mission.
+	 * @return new site location.
+	 */
 	private Coordinates determineNewSiteLocation(Coordinates prevNav, Coordinates nextNav, double range) {
 		double fociDistance = prevNav.getDistance(nextNav);
 		double distanceFromCenterOfAxis = Math.sqrt(Math.pow(((range + fociDistance) / 2D), 2D) - Math.pow((fociDistance / 2D), 2D));
@@ -262,34 +368,51 @@ class ExplorationSitesPanel extends WizardPanel {
 		return prevNav.getNewLocation(directionToNewSite, initialDistanceFromFoci);
 	}
 	
+	/**
+	 * Inner class for an exploration site panel.
+	 */
 	private class SitePanel extends JPanel {
 		
+		// Private members.
 		private Coordinates site;
 		private int siteNum;
 		private JLabel siteNumLabel;
 		private JLabel siteLocationLabel;
 		
+		/**
+		 * Constructor
+		 * @param siteNum the exploration site's number.
+		 * @param site the exploration site coordinates.
+		 */
 		SitePanel(int siteNum, Coordinates site) {
 			// Use JPanel constructor.
 			super();
 		
+			// Initialize data members.
 			this.siteNum = siteNum;
 			this.site = site;
 			
+			// Set the layout.
 			setLayout(new GridLayout(1, 3));
+			
+			// Set the border.
 			setBorder(new MarsPanelBorder());
 			
+			// Create the site number label.
 			siteNumLabel = new JLabel(" Site " + (siteNum + 1));
 			add(siteNumLabel);
 			
+			// Create the site location label.
 			siteLocationLabel = new JLabel(site.getFormattedString());
 			add(siteLocationLabel);
 			
 			if (siteNum > 0) {
+				// Create the remove button.
 				JButton removeButton = new JButton("Remove");
 				removeButton.addActionListener(
 						new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
+								// Remove this site panel from the site list.
 								setVisible(false);
 								siteListPane.remove(getSiteNum());
 								updateSiteNumbers();
@@ -301,30 +424,55 @@ class ExplorationSitesPanel extends WizardPanel {
 			else add(new JPanel());
 		}
 		
+		/**
+		 * Sets the exploration site's number.
+		 * @param siteNum site number.
+		 */
 		void setSiteNum(int siteNum) {
 			this.siteNum = siteNum;
 			siteNumLabel.setText(" Site " + (siteNum + 1));
 		}
 		
+		/**
+		 * Gets the exploration site's number.
+		 * @return site number.
+		 */
 		int getSiteNum() {
 			return siteNum;
 		}
 		
+		/**
+		 * Sets the exploration site location.
+		 * @param site location.
+		 */
 		void setLocation(Coordinates site) {
 			this.site = site;
 			siteLocationLabel.setText(site.getFormattedString());
 		}
 		
+		/**
+		 * Gets the exploration site's location.
+		 * @return location.
+		 */
 		Coordinates getSite() {
 			return site;
 		}
 	}
 	
+	/**
+	 * Inner class for listening to mouse events on the navpoint display.
+	 */
 	private class NavpointMouseListener extends MouseAdapter {
 		
+		/**
+		 * Invoked when a mouse button has been pressed on a component.
+		 * @param event the mouse event.
+		 */
 		public void mousePressed(MouseEvent event) {
+			// Checks which navpoint flag was selected if any.
 			navSelected = navLayer.overNavIcon(event.getX(), event.getY());
 			if (navSelected > -1) {
+				// Selects the navpoint based on the flag the user selected and updates panel info.
 				navLayer.selectNavpoint(navSelected);
 				navOffset = determineOffset(event.getX(), event.getY());
 				
@@ -337,12 +485,22 @@ class ExplorationSitesPanel extends WizardPanel {
 			}
 		}
 		
+		/**
+		 * Gets the pixel offset from the currently selected navpoint.
+		 * @param x the x coordinate selected.
+		 * @param y the y coordinate selected.
+		 * @return the pixel offset.
+		 */
 		private IntPoint determineOffset(int x, int y) {
 			int xOffset = navLayer.getNavpointPosition(navSelected).getiX() - x;
 			int yOffset = navLayer.getNavpointPosition(navSelected).getiY() - y;
 			return new IntPoint(xOffset, yOffset);
 		}
 		
+		/**
+		 * Gets the radius for the currently selected navpoint based on remaining mission range.
+		 * @return radius (km)
+		 */
 		private double getRadius() {
 			Coordinates currentNavpoint = getCurrentNavpoint();
 			Coordinates prevNavpoint = getPreviousNavpoint();
@@ -352,10 +510,19 @@ class ExplorationSitesPanel extends WizardPanel {
 			return currentDistance - straightDistance + getRemainingRange(false);
 		}
 		
+		/**
+		 * Converts distance (km) into pixel range on map.
+		 * @param distance the distance (km).
+		 * @return pixel range.
+		 */
 		private int convertDistanceToMapPixels(double distance) {
 			return MapUtils.getPixelDistance(distance, SurfMarsMap.TYPE);
 		}
 	
+		/**
+		 * Invoked when a mouse button has been released on a component.
+		 * @param event the mouse event.
+		 */
 		public void mouseReleased(MouseEvent event) {
 			navSelected = -1;
 			navLayer.clearSelectedNavpoint();
@@ -364,16 +531,25 @@ class ExplorationSitesPanel extends WizardPanel {
 		}
 	}
 	
+	/**
+	 * Inner class for listening to mouse movement on the navpoint display.
+	 */
 	private class NavpointMouseMotionListener extends MouseMotionAdapter {
 		
+		/**
+		 * Invoked when a mouse button is pressed on a component and then dragged.
+		 * @param event the mouse event.
+		 */
 		public void mouseDragged(MouseEvent event) {
 			if (navSelected > -1) {
+				// Drag navpoint flag if selected.
 				int displayX = event.getPoint().x + navOffset.getiX();
 				int displayY = event.getPoint().y + navOffset.getiY();
 				IntPoint displayPos = new IntPoint(displayX, displayY);
 				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
 				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, displayPos.getiY() - 150);
 				
+				// Only drag navpoint flag if within ellipse range bounds.
 				if (withinBounds(displayPos, navpoint)) {
 					navLayer.setNavpointPosition(navSelected, new IntPoint(displayX, displayY));
 					SitePanel selectedSitePane = (SitePanel) siteListPane.getComponent(navSelected);
@@ -384,6 +560,12 @@ class ExplorationSitesPanel extends WizardPanel {
 			}
 		}
 		
+		/**
+		 * Checks if mouse location is within range boundries and edge of map display. 
+		 * @param position the mouse location.
+		 * @param location the navpoint location.
+		 * @return true if within boundries.
+		 */
 		private boolean withinBounds(IntPoint position, Coordinates location) {
 			boolean result = true;
 			if (!navLayer.withinDisplayEdges(position)) result = false;
@@ -391,6 +573,11 @@ class ExplorationSitesPanel extends WizardPanel {
 			return result;
 		}
 		
+		/**
+		 * Gets the distance difference between a new location and the current selected site location.
+		 * @param newSite the new location.
+		 * @return distance difference (km).
+		 */
 		private double getDistanceDiff(Coordinates newSite) {
 			Coordinates prevNavpoint = getPreviousNavpoint();
 			Coordinates nextNavpoint = getNextNavpoint();
@@ -404,6 +591,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		}
 	}
 	
+	/**
+	 * Gets the previous navpoint from the selected navpoint.
+	 * @return previous navpoint.
+	 */
 	private Coordinates getPreviousNavpoint() {
 		Coordinates prevNavpoint = null;
 		if (navSelected > 0) prevNavpoint = ((SitePanel) siteListPane.getComponent(navSelected - 1)).getSite();
@@ -411,6 +602,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		return prevNavpoint;
 	}
 	
+	/**
+	 * Gets the next navpoint after the selected navpoint.
+	 * @return next navpoint.
+	 */
 	private Coordinates getNextNavpoint() {
 		Coordinates nextNavpoint = null;
 		if (navSelected < (siteListPane.getComponentCount() - 1)) 

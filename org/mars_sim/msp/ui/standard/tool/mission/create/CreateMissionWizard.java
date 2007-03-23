@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 2.80 2007-01-25
+ * @version 2.80 2007-03-21
  * @author Scott Davis
  */
 
@@ -54,9 +54,11 @@ public class CreateMissionWizard extends JDialog {
 		infoPane.setBorder(new MarsPanelBorder());
 		add(infoPane, BorderLayout.CENTER);
 		
+		// Create wizard panels list.
 		wizardPanels = new ArrayList();
 		displayPanelIndex = 0;
 		
+		// Create initial set of wizard panels.
 		addWizardPanel(new TypePanel(this));
 		addWizardPanel(new StartingSettlementPanel(this));
 		addWizardPanel(new VehiclePanel(this));
@@ -71,6 +73,7 @@ public class CreateMissionWizard extends JDialog {
 		prevButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						// Go to previous wizard panel.
 						getCurrentWizardPanel().clearInfo();
 						displayPanelIndex--;
 						CardLayout layout = (CardLayout) infoPane.getLayout();
@@ -87,6 +90,7 @@ public class CreateMissionWizard extends JDialog {
 		nextButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						// Go to next wizard panel.
 						getCurrentWizardPanel().commitChanges();
 						displayPanelIndex++;
 						CardLayout layout = (CardLayout) infoPane.getLayout();
@@ -105,8 +109,9 @@ public class CreateMissionWizard extends JDialog {
 		finalButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						// Create mission and dispose this dialog.
 						getCurrentWizardPanel().commitChanges();
-						setVisible(false);
+						dispose();
 					}
 				});
 		finalButton.setEnabled(false);
@@ -117,7 +122,8 @@ public class CreateMissionWizard extends JDialog {
 		cancelButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
-        				setVisible(false);
+        				// Dispose this dialog.
+        				dispose();
         			}
 				});
 		bottomButtonPane.add(cancelButton);
@@ -129,10 +135,17 @@ public class CreateMissionWizard extends JDialog {
 		setVisible(true);
 	}
 	
+	/**
+	 * Gets the current displayed wizard panel.
+	 * @return wizard panel.
+	 */
 	private WizardPanel getCurrentWizardPanel() {
 		return (WizardPanel) wizardPanels.get(displayPanelIndex);
 	}
 	
+	/**
+	 * Sets the final wizard panel for the mission type.
+	 */
 	void setFinalWizardPanels() {
 		// Remove old final panels if any.
 		for (int x = 4; x < wizardPanels.size(); x++) wizardPanels.remove(x);
@@ -148,15 +161,28 @@ public class CreateMissionWizard extends JDialog {
 			addWizardPanel(new ExplorationSitesPanel(this));
 	}
 	
+	/**
+	 * Adds a wizard panel to the list.
+	 * @param newWizardPanel the wizard panel to add.
+	 */
 	private void addWizardPanel(WizardPanel newWizardPanel) {
 		wizardPanels.add(newWizardPanel);
 		infoPane.add(newWizardPanel, newWizardPanel.getPanelName());
 	}
 	
+	/** 
+	 * Get the mission data bean.
+	 * @return mission data bean.
+	 */
 	MissionDataBean getMissionData() {
 		return missionBean;
 	}
 	
+	/**
+	 * Enables a button.
+	 * @param buttonType the type of button.
+	 * @param enabled true if button is enabled.
+	 */
 	void setButtonEnabled(String buttonType, boolean enabled) {
 		if (PREVIOUS_BUTTON.equals(buttonType)) prevButton.setEnabled(enabled);
 		else if (NEXT_BUTTON.equals(buttonType)) nextButton.setEnabled(enabled);

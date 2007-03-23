@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * MissionDataBean.java
+ * @version 2.80 2007-03-22
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.util.ArrayList;
@@ -16,7 +23,9 @@ import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
-
+/**
+ * Mission data holder bean.
+ */
 class MissionDataBean {
 
 	// Mission type strings.
@@ -36,6 +45,9 @@ class MissionDataBean {
 	private Coordinates iceCollectionSite;
 	private Coordinates[] explorationSites;
 	
+	/**
+	 * Creates a mission from the mission data.
+	 */
 	void createMission() {
 		try {
 			Mission mission = null;
@@ -62,11 +74,20 @@ class MissionDataBean {
 		}
 	}
 	
+	/**
+	 * Gets mission types.
+	 * @return array of mission type strings.
+	 */
 	static final String[] getMissionTypes() {
 		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, RESCUE_MISSION };
 		return result;
 	}
 	
+	/**
+	 * Gets mission description based on a mission type.
+	 * @param missionType the mission type.
+	 * @return the mission description.
+	 */
 	static final String getMissionDescription(String missionType) {
 		String result = "";
 		if (missionType.equals(TRAVEL_MISSION)) result = TravelToSettlement.DEFAULT_DESCRIPTION;
@@ -76,74 +97,146 @@ class MissionDataBean {
 		return result;
 	}
 	
+	/**
+	 * Gets the mission type.
+	 * @return type.
+	 */
 	String getType() {
 		return type;
 	}
 	
+	/**
+	 * Sets the mission type.
+	 * @param type the mission type.
+	 */
 	void setType(String type) {
 		this.type = type;
 	}
 	
+	/**
+	 * Gets the mission description.
+	 * @return description.
+	 */
 	String getDescription() {
 		return description;
 	}
 	
+	/**
+	 * Sets the mission description.
+	 * @param description the mission description.
+	 */
 	void setDescription(String description) {
 		this.description = description;
 	}
 	
+	/**
+	 * Gets the starting settlement.
+	 * @return settlement.
+	 */
 	Settlement getStartingSettlement() {
 		return startingSettlement;
 	}
 	
+	/**
+	 * Sets the starting settlement.
+	 * @param startingSettlement starting settlement.
+	 */
 	void setStartingSettlement(Settlement startingSettlement) {
 		this.startingSettlement = startingSettlement;
 	}
 	
+	/**
+	 * Gets the rover.
+	 * @return rover.
+	 */
 	Rover getRover() {
 		return rover;
 	}
 	
+	/**
+	 * Sets the rover.
+	 * @param rover the rover.
+	 */
 	void setRover(Rover rover) {
 		this.rover = rover;
 	}
 	
+	/**
+	 * Gets the mission members.
+	 * @return the members.
+	 */
 	PersonCollection getMembers() {
 		return members;
 	}
 	
+	/**
+	 * Sets the mission members.
+	 * @param members the members.
+	 */
 	void setMembers(PersonCollection members) {
 		this.members = members;
 	}
 	
+	/**
+	 * Gets the destination settlement.
+	 * @return destination settlement.
+	 */
 	Settlement getDestinationSettlement() {
 		return destinationSettlement;
 	}
 	
+	/**
+	 * Sets the destination settlement.
+	 * @param destinationSettlement the destination settlement.
+	 */
 	void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
 	}
 	
+	/**
+	 * Gets the rescue rover.
+	 * @return the rescue rover.
+	 */
 	Rover getRescueRover() {
 		return rescueRover;
 	}
 	
+	/**
+	 * Sets the rescue rover.
+	 * @param rescueRover the rescue rover.
+	 */
 	void setRescueRover(Rover rescueRover) {
 		this.rescueRover = rescueRover;
 	}
 	
+	/**
+	 * Gets the ice collection site.
+	 * @return ice collection site.
+	 */
 	Coordinates getIceCollectionSite() {
 		return iceCollectionSite;
 	}
 	
+	/**
+	 * Sets the ice collection site.
+	 * @param iceCollectionSite the ice collection site.
+	 */
 	void setIceCollectionSite(Coordinates iceCollectionSite) {
 		this.iceCollectionSite = iceCollectionSite;
 	}
-	
+
+	/**
+	 * Gets the exploration sites.
+	 * @return exploration sites.
+	 */
 	Coordinates[] getExplorationSites() {
 		return explorationSites;
 	}
-	
+
+	/**
+	 * Sets the exploration sites.
+	 * @param explorationSites the exploration sites.
+	 */
 	void setExplorationSites(Coordinates[] explorationSites) {
 		this.explorationSites = explorationSites;
 	}

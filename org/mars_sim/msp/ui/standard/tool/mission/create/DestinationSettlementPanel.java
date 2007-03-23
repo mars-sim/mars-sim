@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * DestinationSettlementPanel.java
+ * @version 2.80 2007-03-22
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.awt.BorderLayout;
@@ -22,9 +29,12 @@ import org.mars_sim.msp.simulation.structure.SettlementCollection;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
-
+/**
+ * This is a wizard panel for selecting the mission destination settlement.
+ */
 class DestinationSettlementPanel extends WizardPanel {
 
+	// Wizard panel name.
 	private final static String NAME = "Destination Settlement";
 	
 	// Data members.
@@ -32,18 +42,27 @@ class DestinationSettlementPanel extends WizardPanel {
 	private JTable settlementTable;
 	private JLabel errorMessageLabel;
 	
+	/**
+	 * Constructor
+	 * @param wizard the create mission wizard.
+	 */
 	DestinationSettlementPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
+		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		// Set the border.
 		setBorder(new MarsPanelBorder());
 		
+		// Create the select settlement label.
 		JLabel selectSettlementLabel = new JLabel("Select a destination settlement.", JLabel.CENTER);
 		selectSettlementLabel.setFont(selectSettlementLabel.getFont().deriveFont(Font.BOLD));
 		selectSettlementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectSettlementLabel);
 		
+		// Create the settlement panel.
 		JPanel settlementPane = new JPanel(new BorderLayout(0, 0));
 		settlementPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
 		settlementPane.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -53,7 +72,10 @@ class DestinationSettlementPanel extends WizardPanel {
         JScrollPane settlementScrollPane = new JScrollPane();
         settlementPane.add(settlementScrollPane, BorderLayout.CENTER);
         
+        // Create the settlement table model.
         settlementTableModel = new SettlementTableModel();
+        
+        // Create the settlement table.
         settlementTable = new JTable(settlementTableModel);
         settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
         settlementTable.setRowSelectionAllowed(true);
@@ -65,10 +87,12 @@ class DestinationSettlementPanel extends WizardPanel {
         				int index = settlementTable.getSelectedRow();
         				if (index > -1) {
         					if (settlementTableModel.isFailureRow(index)) {
+        						// If selected row is a failure row, display warning and disable final button.
         						errorMessageLabel.setText("Selected destination settlement is not within rover range.");
         						getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
         					}
         					else {
+        						// If selected row is valid, clear warning and enable final button.
         						errorMessageLabel.setText(" ");
         						getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
         					}
@@ -79,19 +103,28 @@ class DestinationSettlementPanel extends WizardPanel {
         settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
         settlementScrollPane.setViewportView(settlementTable);
 		
+        // Create error message label.
 		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(errorMessageLabel);
 		
+		// Create a verticle glue for the remainder of the panel.
 		add(Box.createVerticalGlue());
 	}
 	
+	/**
+	 * Gets the wizard panel name.
+	 * @return panel name.
+	 */
 	String getPanelName() {
 		return NAME;
 	}
 
+	/**
+	 * Commits changes from this wizard panel.
+	 */
 	void commitChanges() {
 		int selectedIndex = settlementTable.getSelectedRow();
 		Settlement selectedSettlement = (Settlement) settlementTableModel.getUnit(selectedIndex);
@@ -99,18 +132,30 @@ class DestinationSettlementPanel extends WizardPanel {
 		getWizard().getMissionData().createMission();
 	}
 
+	/**
+	 * Clear information on the wizard panel.
+	 */
 	void clearInfo() {
 		settlementTable.clearSelection();
 		errorMessageLabel.setText(" ");
 	}
 
+	/**
+	 * Updates the wizard panel information.
+	 */
 	void updatePanel() {
 		settlementTableModel.updateTable();
 		settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
 	}
 	
+	/**
+	 * A table model for settlements.
+	 */
     private class SettlementTableModel extends UnitTableModel {
     	
+    	/**
+    	 * Constructor
+    	 */
     	private SettlementTableModel() {
     		// Use UnitTableModel constructor.
     		super();
@@ -121,6 +166,12 @@ class DestinationSettlementPanel extends WizardPanel {
     		columns.add("Pop. Capacity");
     	}
     	
+    	/**
+    	 * Returns the value for the cell at columnIndex and rowIndex.
+    	 * @param row the row whose value is to be queried
+    	 * @param column the column whose value is to be queried
+    	 * @return the value Object at the specified cell
+    	 */
     	public Object getValueAt(int row, int column) {
     		Object result = "unknown";
     		
@@ -144,12 +195,16 @@ class DestinationSettlementPanel extends WizardPanel {
             return result;
         }
     	
+    	/**
+    	 * Updates the table data.
+    	 */
     	void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();    		
     		SettlementCollection settlements = Simulation.instance().getUnitManager().getSettlements();
     		settlements.remove(startingSettlement);
     		
+    		// Add all settlements sorted by distance from mission starting point.
     		while (settlements.size() > 0) {
     			double smallestDistance = Double.MAX_VALUE;
     			Settlement smallestDistanceSettlement = null;
@@ -169,6 +224,12 @@ class DestinationSettlementPanel extends WizardPanel {
     		fireTableDataChanged();
     	}
     	
+    	/**
+    	 * Checks if a table cell is a failure cell.
+    	 * @param row the table row.
+    	 * @param column the table column.
+    	 * @return true if cell is a failure cell.
+    	 */
     	boolean isFailureCell(int row, int column) {
     		boolean result = false;
     		Settlement settlement = (Settlement) getUnit(row);
