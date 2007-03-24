@@ -26,6 +26,7 @@ public class PersonConfig implements Serializable {
 	private static final String OXYGEN_DEPRIVATION_TIME = "oxygen-deprivation-time";
 	private static final String WATER_DEPRIVATION_TIME = "water-deprivation-time";
 	private static final String FOOD_DEPRIVATION_TIME = "food-deprivation-time";
+	private static final String STARVATION_START_TIME = "starvation-start-time";
 	private static final String MIN_AIR_PRESSURE = "min-air-pressure";
 	private static final String DECOMPRESSION_TIME = "decompression-time";
 	private static final String MIN_TEMPERATURE = "min-temperature";
@@ -180,6 +181,19 @@ public class PersonConfig implements Serializable {
 		String foodTimeStr = foodTimeElement.getAttribute("value");
 		double foodTime = Double.parseDouble(foodTimeStr);
 		return foodTime;
+	}
+	
+	/**
+	 * Gets the starvation start time.
+	 * @return starvation time in sols.
+	 * @throws Exception if starvation start time could not be found.
+	 */
+	public double getStarvationStartTime() throws Exception {
+		Element root = personDoc.getDocumentElement();
+		Element starvationTimeElement = (Element) root.getElementsByTagName(STARVATION_START_TIME).item(0);
+		String starvationTimeStr = starvationTimeElement.getAttribute("value");
+		double starvationTime = Double.parseDouble(starvationTimeStr);
+		return starvationTime;
 	}
 	
 	/**

@@ -26,6 +26,10 @@
 	<!-- Number of sols a person can survive without food -->
 	<!-- Default: 21.0 -->
 	<food-deprivation-time value="21.0" />
+	
+	<!-- Number of sols a person can go without food before starvation sets in -->
+	<!-- Default: 3.0 -->
+	<starvation-start-time value="3.0" />
 
 	<!-- Minimum air pressure (atm) a person can withstand without harm -->
 	<!-- Default: .25 -->

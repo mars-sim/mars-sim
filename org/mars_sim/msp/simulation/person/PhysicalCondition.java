@@ -214,10 +214,11 @@ public class PhysicalCondition implements Serializable {
     	if (container == null) throw new IllegalArgumentException("container is null");
     	double foodEaten = amount;
         double foodAvailable = container.getInventory().getAmountResourceStored(AmountResource.FOOD);
+        if (foodAvailable == 0D) throw new Exception("No food available.");
         if (foodEaten > foodAvailable) foodEaten = foodAvailable;
         try {
         	container.getInventory().retrieveAmountResource(AmountResource.FOOD, foodEaten);
-        	if (checkResourceConsumption(foodEaten, amount, MIN_VALUE, getMedicalManager().getStarvation())) recalculate();
+        	// if (checkResourceConsumption(foodEaten, amount, MIN_VALUE, getMedicalManager().getStarvation())) recalculate();
         }
         catch (InventoryException e) {
         	System.err.println(person.getName() + " could not retrieve food.");
@@ -230,8 +231,8 @@ public class PhysicalCondition implements Serializable {
      * @param amount the amount of food to consume (in kg).
      */
     public void consumeFood(double amount) {
-		if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation())) 
-			recalculate();
+		// if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation())) 
+		// 	recalculate();
     }
 
     /** 
@@ -390,6 +391,31 @@ public class PhysicalCondition implements Serializable {
     public void setHunger(double newHunger) {
     	if (hunger != newHunger) {
     		hunger = newHunger;
+    		
+    		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+    		double starvationTime = 0D;
+    		try {
+    			starvationTime = personConfig.getStarvationStartTime() * 1000D;
+    		}
+    		catch (Exception e) {
+    			e.printStackTrace(System.err);
+    		}
+    		
+    		Complaint starvation = getMedicalManager().getStarvation();
+    		if (hunger > starvationTime) {
+    			if (!problems.containsKey(starvation)) {
+    				addMedicalComplaint(starvation);
+    	        	person.fireUnitUpdate(ILLNESS_EVENT);
+    			}
+    		}
+    		else if (hunger == 0D) {
+                HealthProblem illness = (HealthProblem) problems.get(starvation);
+                if (illness != null) {
+                	illness.startRecovery();
+                	person.fireUnitUpdate(ILLNESS_EVENT);
+                }
+    		}
+    		
     		person.fireUnitUpdate(HUNGER_EVENT);
     	}
     }
@@ -535,7 +561,7 @@ public class PhysicalCondition implements Serializable {
         if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
         
         // High hunger reduces performance.
-        if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0003D;
+        if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
         
         // High stress reduces performance.
         if (stress >= 80D) tempPerformance -= (stress - 80D) * .02D;

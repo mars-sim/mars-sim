@@ -89,7 +89,8 @@ public class MedicalManager implements Serializable {
         	// Quite serious, 70, and has a 80% performance factor.
         	// Zero recovery as death will result if unchecked.
         	starvation = createEnvironmentComplaint(STARVATION, 70,
-				personConfig.getFoodDeprivationTime() * 1000D, 80);
+				(personConfig.getFoodDeprivationTime() - 
+						personConfig.getStarvationStartTime()) * 1000D, 80);
 
         	// Most serious complaint, 100, and has a 25% performance factor, i.e.
         	// Person can be nothing.

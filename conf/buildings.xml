@@ -114,7 +114,7 @@
 				<!-- amount: the amount (kg) of the resource. -->
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
-				<resource-initial resource="Food" amount="500.0" />
+				<resource-initial resource="Food" amount="500.0" /> 
 			</storage>
 			
 			<!-- The building if capable of producing electrical power. -->

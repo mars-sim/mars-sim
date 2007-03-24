@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Cooking;
 
@@ -87,9 +88,15 @@ public class CookMeal extends Task implements Serializable {
 					// Crowding modifier.
 					result *= Task.getCrowdingProbabilityModifier(person, kitchenBuilding);
 					result *= Task.getRelationshipModifier(person, kitchenBuilding);
+					
+					// Check if there is enough food available to cook.
+					PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+					double foodRequired = config.getFoodConsumptionRate() * (1D / 3D);
+					double foodAvailable = person.getSettlement().getInventory().getAmountResourceStored(AmountResource.FOOD);
+					if (foodAvailable < foodRequired) result = 0D;
 				}
 			}
-			catch (BuildingException e) {
+			catch (Exception e) {
 				System.err.println("CookMeal.getProbability(): " + e.getMessage());
 			}
         
