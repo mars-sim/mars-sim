@@ -41,7 +41,9 @@ public class TendGreenhouse extends Task implements Serializable {
         super("Tending Greenhouse", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
         
         // Initialize data members
-        setDescription("Tending Greenhouse at " + person.getSettlement().getName());
+        if (person.getSettlement() != null)
+        	setDescription("Tending Greenhouse at " + person.getSettlement().getName());
+        else endTask();
         
         // Get available greenhouse if any.
         try {
@@ -74,7 +76,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			// See if there is an available greenhouse.
         	Building farmingBuilding = getAvailableGreenhouse(person);
         	if (farmingBuilding != null) {
-        		result = 150D;
+        		result = 200D;
         		
         		// Crowding modifier.
         		result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
