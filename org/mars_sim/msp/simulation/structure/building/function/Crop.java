@@ -191,66 +191,67 @@ public class Crop implements Serializable {
      */
     public void timePassing(double time) throws Exception {
         
-        if (phase.equals(GROWING)) {
-            growingTimeCompleted += time;
-            if (growingTimeCompleted > cropType.getGrowingTime()) {
-                phase = HARVESTING;
-                currentPhaseWorkCompleted = 0D;
-            }
-            else {
-                // Modify actual harvest amount based on daily tending work.
-                int newSol = Simulation.instance().getMasterClock().getMarsClock().getSolOfMonth();
-                if (newSol != currentSol) {
-                    double maxDailyHarvest = maxHarvest / (cropType.getGrowingTime() / 1000D);
-                    double dailyWorkCompleted = currentPhaseWorkCompleted / dailyTendingWorkRequired;
-                    actualHarvest += (maxDailyHarvest * (dailyWorkCompleted - .5D));
-                    currentSol = newSol;
-                    currentPhaseWorkCompleted = 0D;
-                }
+    	if (time > 0D) {
+    		if (phase.equals(GROWING)) {
+    			growingTimeCompleted += time;
+    			if (growingTimeCompleted > cropType.getGrowingTime()) {
+    				phase = HARVESTING;
+    				currentPhaseWorkCompleted = 0D;
+    			}
+    			else {
+    				// Modify actual harvest amount based on daily tending work.
+    				int newSol = Simulation.instance().getMasterClock().getMarsClock().getSolOfMonth();
+    				if (newSol != currentSol) {
+    					double maxDailyHarvest = maxHarvest / (cropType.getGrowingTime() / 1000D);
+    					double dailyWorkCompleted = currentPhaseWorkCompleted / dailyTendingWorkRequired;
+    					actualHarvest += (maxDailyHarvest * (dailyWorkCompleted - .5D));
+    					currentSol = newSol;
+    					currentPhaseWorkCompleted = 0D;
+    				}
                 
-                double maxPeriodHarvest = maxHarvest * (time / cropType.getGrowingTime());
-                double harvestModifier = 1D;
+    				double maxPeriodHarvest = maxHarvest * (time / cropType.getGrowingTime());
+    				double harvestModifier = 1D;
                 
-                // Determine harvest modifier by amount of sunlight.
-                SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                double sunlight = (double) surface.getSurfaceSunlight(settlement.getCoordinates());
-                harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
+    				// Determine harvest modifier by amount of sunlight.
+    				SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+    				double sunlight = (double) surface.getSurfaceSunlight(settlement.getCoordinates());
+    				harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
                     
-                Inventory inv = settlement.getInventory();
+                	Inventory inv = settlement.getInventory();
                 	
-                // Determine harvest modifier by amount of waste water available.
-                double wasteWaterRequired = maxPeriodHarvest * 5D;
-                double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
-                double wasteWaterUsed = wasteWaterRequired;
-                if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
-                try {
-                	
-                	inv.retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
-                	inv.storeAmountResource(AmountResource.WATER, wasteWaterUsed * .8D);
-                }
-                catch (Exception e) {}
-                harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
+                	// Determine harvest modifier by amount of waste water available.
+                	double wasteWaterRequired = maxPeriodHarvest * 5D;
+                	double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
+                	double wasteWaterUsed = wasteWaterRequired;
+                	if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
+                	try {
+                		inv.retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
+                		inv.storeAmountResource(AmountResource.WATER, wasteWaterUsed * .8D);
+                	}
+                	catch (Exception e) {}
+                	harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
                     
-                // Determine harvest modifier by amount of carbon dioxide available.
-                double carbonDioxideRequired = maxPeriodHarvest * 2D;
-                double carbonDioxideAvailable = inv.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
-                double carbonDioxideUsed = carbonDioxideRequired;
-                if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
-                try {
-                	inv.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideUsed);
-                	inv.storeAmountResource(AmountResource.OXYGEN, carbonDioxideUsed * .9D);
-                }
-                catch (Exception e) {}
-                harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);
-                    
-                // Modifiy harvest amount.
-                actualHarvest += maxPeriodHarvest * harvestModifier;
+                	// Determine harvest modifier by amount of carbon dioxide available.
+                	double carbonDioxideRequired = maxPeriodHarvest * 2D;
+                	double carbonDioxideAvailable = inv.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
+                	double carbonDioxideUsed = carbonDioxideRequired;
+                	if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
+                	try {
+                		inv.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideUsed);
+                		inv.storeAmountResource(AmountResource.OXYGEN, carbonDioxideUsed * .9D);
+                	}
+                	catch (Exception e) {}
+                	harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);   
                 
-                // Check if crop is dying if it's 20% along on it's growing time and its condition is less than 10% normal.
-                if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) && (getCondition() < .1D)) {
-                	phase = FINISHED;
-                	// System.out.println("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
-                }
+                	// Modifiy harvest amount.
+                	actualHarvest += maxPeriodHarvest * harvestModifier;
+                
+                	// Check if crop is dying if it's 20% along on it's growing time and its condition is less than 10% normal.
+                	if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) && (getCondition() < .1D)) {
+                		phase = FINISHED;
+                		// System.out.println("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
+                	}
+    			}
             }
         }
     }

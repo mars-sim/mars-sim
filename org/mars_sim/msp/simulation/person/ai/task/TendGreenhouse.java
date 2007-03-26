@@ -38,7 +38,7 @@ public class TendGreenhouse extends Task implements Serializable {
      */
     public TendGreenhouse(Person person) throws Exception {
         // Use Task constructor
-        super("Tending Greenhouse", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
+        super("Tending Greenhouse", person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
         
         // Initialize data members
         if (person.getSettlement() != null)
@@ -88,7 +88,7 @@ public class TendGreenhouse extends Task implements Serializable {
         }
         
         // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
+        // result *= person.getPerformanceRating();
 
 		// Job modifier.
         Job job = person.getMind().getJob();

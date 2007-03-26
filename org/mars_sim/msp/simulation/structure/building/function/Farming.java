@@ -26,7 +26,6 @@ public class Farming extends Function implements Serializable {
 	
     public static final String NAME = "Farming";
     public static final double HARVEST_MULTIPLIER = 10D;
-    public static final double BASE_CROP_GROWING_TIME = 90000D;
     
     private int cropNum;
     private double powerGrowingCrop;
