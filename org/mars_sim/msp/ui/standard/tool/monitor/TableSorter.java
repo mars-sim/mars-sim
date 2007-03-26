@@ -55,7 +55,10 @@ public class TableSorter extends AbstractTableModel
             result = -1;
         }
         else {
-            result = obj1.compareTo(obj2);
+        	try {
+        		result = obj1.compareTo(obj2);
+        	}
+        	catch (ClassCastException e) {}
         }
         if (result != 0) {
             return sortAscending ? result : -result;
