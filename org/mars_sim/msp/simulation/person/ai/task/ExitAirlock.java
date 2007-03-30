@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 2.79 2006-06-13
+ * @version 2.80 2007-03-29
  * @author Scott Davis
  */
 
@@ -73,6 +73,8 @@ public class ExitAirlock extends Task implements Serializable {
      */
     private double exitingAirlockPhase(double time) throws Exception {
     	
+    	double remainingTime = time;
+    	
         // Get an EVA suit from entity inventory.
         if (!hasSuit) {
             Inventory inv = airlock.getEntityInventory();
@@ -94,28 +96,31 @@ public class ExitAirlock extends Task implements Serializable {
             endTask();
             return time;
         }
-
-        // If person is in airlock, wait around.
-        if (airlock.inAirlock(person)) {
-            // Make sure airlock is activated.
-            airlock.activateAirlock();
-        }
-        else {
-            // If person is in entity, try to enter airlock.
-            if (!person.getLocationSituation().equals(Person.OUTSIDE)) {
-                if (airlock.isInnerDoorOpen()) airlock.enterAirlock(person, true);
-                else airlock.requestOpenDoor();
-            }
-            else {
-                // If person is outside, end task.
-                endTask();
-            }
-        }
+        
+        // Check if person isn't outside.
+    	if (!person.getLocationSituation().equals(Person.OUTSIDE)) {
+    		if (!airlock.inAirlock(person)) {
+    			// If airlock inner door isn't open, activate airlock to depressurize it.
+    			if (!airlock.isInnerDoorOpen()) 
+    				remainingTime = airlock.addActivationTime(remainingTime);
+    			
+    			// If airlock inner door is now open, enter airlock.
+    			if (airlock.isInnerDoorOpen()) 
+    				airlock.enterAirlock(person, true);
+    		}
+    	}
+    	
+    	// If person is in airlock, add activation time.
+		if (airlock.inAirlock(person)) 
+    		remainingTime = airlock.addActivationTime(remainingTime);
+    	
+    	// If person is inside, put stuff away and end task.
+    	if (person.getLocationSituation().equals(Person.OUTSIDE)) endTask();
         
 		// Add experience
-        addExperience(time);
+        addExperience(time - remainingTime);
 
-        return 0D;
+        return remainingTime;
     }
     
 	/**

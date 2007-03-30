@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.79 2006-06-13
+ * @version 2.80 2007-03-29
  * @author Scott Davis
  */
 
@@ -148,28 +148,34 @@ public class EnterAirlock extends Task implements Serializable {
      * @throws Exception
      */
     private double enteringAirlockPhase(double time) throws Exception {
-        // If person is in airlock, wait around.
-        if (airlock.inAirlock(person)) {
-            // Make sure airlock is activated.
-            airlock.activateAirlock();
-        }
-        else {
-            // If person is outside, try to enter airlock.
-            if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-                if (airlock.isOuterDoorOpen()) airlock.enterAirlock(person, false);
-            	else airlock.requestOpenDoor();
-            }
-            else {
-                // If person is inside, put stuff away and end task.
-                putAwayEVASuit();
-            	endTask();
-            }
-        }
+    	double remainingTime = time;
+    	
+    	if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+    		if (!airlock.inAirlock(person)) {
+    			// If airlock outer door isn't open, activate airlock to depressurize it.
+    			if (!airlock.isOuterDoorOpen()) 
+    				remainingTime = airlock.addActivationTime(remainingTime);
+    			
+    			// If airlock outer door is now open, enter airlock.
+    			if (airlock.isOuterDoorOpen()) 
+    				airlock.enterAirlock(person, false);
+    		}
+    	}
+    	
+    	// If person is in airlock, add activation time.
+		if (airlock.inAirlock(person)) 
+    		remainingTime = airlock.addActivationTime(remainingTime);
+    	
+    	// If person is inside, put stuff away and end task.
+    	if (!person.getLocationSituation().equals(Person.OUTSIDE)) {  
+            putAwayEVASuit();
+        	endTask();
+    	}
         
 		// Add experience
-        addExperience(time);
+        addExperience(time - remainingTime);
 
-        return 0D;
+        return remainingTime;
     }
     
 	/**

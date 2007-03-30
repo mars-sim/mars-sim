@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 2.77 2004-10-01
+ * @version 2.80 2007-03-29
  * @author Scott Davis
  */
 
@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 public abstract class Airlock implements Serializable {
 
-    private static final double CYCLE_TIME = 10D; // Pressurize/depressurize time (millisols)
+    private static final double CYCLE_TIME = 5D; // Pressurize/depressurize time (millisols)
     
     // Data members
     private boolean activated;     // True if airlock is activated.
@@ -25,6 +25,7 @@ public abstract class Airlock implements Serializable {
     private int capacity;          // Number of people who can use the airlock at once;
     private double activationTime; // Amount of time airlock has been activated. (in millisols)
     private PersonCollection occupants; // People currently in airlock.
+    private double operationalTime;
     
     /**
      * Constructs an airlock object for a unit.
@@ -40,15 +41,6 @@ public abstract class Airlock implements Serializable {
         pressurized = true;
         innerDoorOpen = true;
         occupants = new PersonCollection();
-    }
-
-    /**
-     * Requests that the unoccupied airlock activate and open the door opposite to 
-     * the one currently open when finished.  
-     * Does nothing if airlock is currently occupied.
-     */
-    public void requestOpenDoor() {
-        if (occupants.size() == 0) activateAirlock();
     }
 
     /**
@@ -88,6 +80,37 @@ public abstract class Airlock implements Serializable {
         }
 
         return result;
+    }
+    
+    /**
+     * Activate the airlock for a period of time.
+     * @param time activation time (millisols)
+     * @return time remaining after activation (millisols)
+     */
+    public double addActivationTime(double time) {
+    	double remainingTime = 0D;
+    	
+    	activateAirlock();
+    	
+    	if (operationalTime < time) {
+    		remainingTime = time - operationalTime;
+    		time = operationalTime;
+    	}
+    	
+    	activationTime += time;
+        
+    	if (activationTime >= CYCLE_TIME) {
+        	double extraCycleTime = activationTime - CYCLE_TIME;
+        	remainingTime += extraCycleTime;
+        	operationalTime += extraCycleTime - time;
+        	deactivateAirlock();
+        }
+    	else {
+    		operationalTime -= time;
+    		remainingTime = 0D;
+    	}
+    	
+    	return remainingTime;
     }
 
     /**
@@ -145,9 +168,24 @@ public abstract class Airlock implements Serializable {
      * @param time amount of time (in millisols)
      */
     public void timePassing(double time) {
+    	operationalTime = time;
+    	
         if (activated) {
+        	// Check if somehow activated with no occupants or
+        	// if all occupants are dead.
+        	if (occupants.size() == 0) deactivateAirlock();
+        	else {
+        		boolean allDead = true;
+        		PersonIterator i = occupants.iterator();
+        		while (i.hasNext()) {
+        			if (!i.next().getPhysicalCondition().isDead()) allDead = false;
+        		}
+        		if (allDead) deactivateAirlock();
+        	}
+        	/*
             activationTime += time;
             if (activationTime >= CYCLE_TIME) deactivateAirlock();
+            */
         }
     }
 
