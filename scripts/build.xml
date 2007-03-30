@@ -139,7 +139,7 @@
     <target name="test">
         <junit printsummary="true" fork="yes" haltonfailure="yes">
         	<test name="org.mars_sim.msp.simulation.AllJUnitTests" />
-        	<formatter type="plain" usefile="false" />
+        	<formatter type="plain" usefile="false" /> 
             <classpath refid="test.classpath" />
         </junit>
     </target>
@@ -154,8 +154,8 @@
             version="false"
             use="true"
             overview="${mars.scripts}/overview.html"
-            windowtitle="Mars Simulation Project v 2.79 API Specification"
-            doctitle="Mars Simulation Project v 2.79 &lt;br>API Specification"> 
+            windowtitle="Mars Simulation Project v 2.80 API Specification"
+            doctitle="Mars Simulation Project v 2.80 &lt;br>API Specification"> 
             <classpath>
                 <fileset dir="${mars.jars}">
                     <include name="jcommon.jar" />
