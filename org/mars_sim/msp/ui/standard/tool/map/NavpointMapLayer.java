@@ -40,7 +40,7 @@ public class NavpointMapLayer implements MapLayer {
 
 	/**
 	 * Constructor
-	 * @param mapComponent the display component.
+	 * @param displayComponent the display component.
 	 */
 	public NavpointMapLayer(Component displayComponent) {
 		

@@ -559,7 +559,8 @@ public class UnitManager implements Serializable {
     
     /**
      * Fire a unit update event.
-     * @param updateType the update type.
+     * @param eventType the event type.
+     * @param unit the unit causing the event.
      */
     public final void fireUnitManagerUpdate(String eventType, Unit unit) {
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());

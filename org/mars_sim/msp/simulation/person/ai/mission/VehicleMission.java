@@ -258,7 +258,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 	/** 
 	 * Finalizes the mission 
-	 * @param reasion the reason of ending the mission.
+	 * @param reason the reason of ending the mission.
 	 */
 	public void endMission(String reason) {
 		
