@@ -18,7 +18,6 @@ build: Compiles the source code and builds the JAR files.
 
 clean-build: Deletes all the old class and JAR files and builds the project.
 
-test: Performs a unit test on the project.  As of version 2.75, all unit tests
-      are just stubbed out.
+test: Performs a unit test on the project.
       
 document: Creates JavaDoc documentation for the project in the docs directory.
