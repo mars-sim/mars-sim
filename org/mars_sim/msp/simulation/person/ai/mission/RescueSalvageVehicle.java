@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 2.80 2006-12-03
+ * @version 2.80 2007-03-29
  * @author Scott Davis
  */
 
@@ -333,7 +333,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
      */
     protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) 
     		throws MissionException {
-    	super.performDisembarkToSettlementPhase(person, disembarkSettlement);
     	
     	// Put towed vehicle and crew in settlement if necessary.
     	try {
@@ -342,6 +341,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     	catch (Exception e) {
     		throw new MissionException(VehicleMission.DISEMBARKING, e);
         }
+    	
+    	super.performDisembarkToSettlementPhase(person, disembarkSettlement);
     }
     
     /**
