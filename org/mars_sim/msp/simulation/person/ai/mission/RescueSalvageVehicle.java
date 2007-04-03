@@ -72,7 +72,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         	
         	try {
         		if (hasVehicle()) {
-        			vehicleTarget = vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
+        			vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
         			int capacity = getRover().getCrewCapacity();
         			if (capacity < MISSION_MAX_MEMBERS) setMissionCapacity(capacity);
         		}
