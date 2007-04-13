@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
 /** 
@@ -32,6 +33,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     // Data members
     protected BuildingManager buildingManager; // The settlement's building manager.
     protected ResupplyManager resupplyManager; // The settlement's resupply manager.
+    protected GoodsManager goodsManager; // The settlement's goods manager.
     protected PowerGrid powerGrid; // The settlement's building power grid.
     private String template; // The settlement template name.
     
@@ -66,6 +68,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         
         // Initialize resupply manager
         resupplyManager = new ResupplyManager(this);
+        
+        // Initialize goods manager.
+        goodsManager = new GoodsManager(this);
        
         // Initialize power grid
         powerGrid = new PowerGrid(this);
@@ -290,6 +295,8 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         	
         	buildingManager.timePassing(time);
         	
+        	goodsManager.timePassing(time);
+        	
         	if (getCurrentPopulationNum() > 0) malfunctionManager.activeTimePassing(time);
         	malfunctionManager.timePassing(time);
         }
@@ -343,6 +350,14 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public ResupplyManager getResupplyManager() {
     	return resupplyManager;
+    }
+    
+    /**
+     * Gets the settlement's goods manager.
+     * @return goods manager
+     */
+    public GoodsManager getGoodsManager() {
+    	return goodsManager;
     }
     
     /**
@@ -400,33 +415,6 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     		Person person = i.next();
     		if (person.getAssociatedSettlement() == this) result.add(person);
     	}
-    	
-    	/*
-		PersonCollection result = new PersonCollection(getInhabitants());
-    	
-		// Check all missions for the settlement.
-		List missions = Simulation.instance().getMissionManager().getMissionsForSettlement(this);
-		Iterator j = missions.iterator();
-		while (j.hasNext()) {
-			Mission mission = (Mission) j.next();
-			PersonIterator k = mission.getPeople().iterator();
-			while (k.hasNext()) {
-				Person person = k.next();
-				if (!result.contains(person)) result.add(person);
-			}
-		}
-		
-		// Check all people who are outside the settlement and not on missions.
-		PersonIterator l = Simulation.instance().getUnitManager().getPeople().iterator();
-		while (l.hasNext()) {
-			Person person = l.next();
-			if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-				if (!person.getMind().hasActiveMission()) {
-					if (person.getCoordinates().equals(getCoordinates())) result.add(person);
-				}
-			}
-		}
-		*/
     	
     	return result;
     }
