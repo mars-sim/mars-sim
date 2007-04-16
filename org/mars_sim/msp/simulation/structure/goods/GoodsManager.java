@@ -10,8 +10,8 @@ package org.mars_sim.msp.simulation.structure.goods;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -40,7 +40,7 @@ public class GoodsManager implements Serializable {
 	 * Populates the goods map with empty values.
 	 */
 	private void populateGoodsValues() {
-		List goods = GoodsUtil.getGoodsList();
+		Set goods = GoodsUtil.getGoodsSet();
 		goodsValues = new HashMap(goods.size());
 		Iterator i = goods.iterator();
 		while (i.hasNext()) goodsValues.put(i.next(), new Double(0D));

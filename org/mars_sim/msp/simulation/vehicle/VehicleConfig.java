@@ -48,6 +48,22 @@ public class VehicleConfig implements Serializable {
 	}
 	
 	/**
+	 * Returns a set of all rover types.
+	 * @return set of rover types as strings.
+	 * @throws Exception if error retrieving rover types.
+	 */
+	public Set getRoverTypes() throws Exception {
+		Element root = roverDoc.getDocumentElement();
+		NodeList roverNodes = root.getElementsByTagName(ROVER);
+		Set types = new HashSet(roverNodes.getLength());
+		for (int x=0; x < roverNodes.getLength(); x++) {
+			Element roverElement = (Element) roverNodes.item(x);
+			types.add(roverElement.getAttribute(TYPE));
+		}
+		return types;
+	}
+	
+	/**
 	 * Gets a rover DOM element for a particular rover type.
 	 * @param roverType the rover type
 	 * @return rover element

@@ -20,15 +20,32 @@ public class Good implements Serializable{
 	private Object object;
 	
 	/**
-	 * Constructor
+	 * Constructor with object.
 	 * @param name the name of the good.
-	 * @param classType the good's class.
 	 * @param object the good's object if any.
 	 */
-	Good(String name, Class classType, Object object) {
-		this.name = name;
-		this.classType = classType;
-		this.object = object;
+	Good(String name, Object object) {
+		if (name != null) this.name = name;
+		else throw new IllegalArgumentException("name cannot be null.");
+			
+		if (object != null) {
+			this.object = object;
+			this.classType = object.getClass();
+		}
+		else throw new IllegalArgumentException("object cannot be null.");
+	}
+	
+	/**
+	 * Constructor with class.
+	 * @param name the name of the good.
+	 * @param classType the goods class.
+	 */
+	Good(String name, Class classType) {
+		if (name != null) this.name = name;
+		else throw new IllegalArgumentException("name cannot be null.");
+		
+		if (classType != null) this.classType = classType;
+		else throw new IllegalArgumentException("classType cannot be null.");
 	}
 	
 	/**
@@ -61,5 +78,34 @@ public class Good implements Serializable{
 	 */
 	public String toString() {
 		return getName();
+	}
+	
+	/**
+	 * Checks if an object is equal to this object.
+	 * @param object the object to compare.
+	 * @return true if equal
+	 */
+	public boolean equals(Object object) {
+		boolean result = true;
+		if (object instanceof Good) {
+			Good good = (Good) object;
+			if (!getName().equals(good.getName())) result = false;
+			if (!getClassType().equals(good.getClassType())) result = false;
+			if (getObject() != null) {
+				if (!getObject().equals(good.getObject())) result = false;
+			}
+		}
+		else result = false;
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the hash code value.
+	 */
+	public int hashCode() {
+		int hashCode = getClass().hashCode();
+		if (getObject() != null) hashCode *= getObject().hashCode();
+		return hashCode;
 	}
 }
