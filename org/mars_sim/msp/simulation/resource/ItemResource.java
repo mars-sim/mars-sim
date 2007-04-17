@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ItemResource.java
- * @version 2.80 2006-09-20
+ * @version 2.81 2007-04-16
  * @author Scott Davis
  */
 
@@ -68,6 +68,26 @@ public final class ItemResource implements Resource, Serializable {
 	 */
 	public double getMassPerItem() {
 		return massPerItem;
+	}
+	
+	/**
+	 * Checks if an object is equal to this object.
+	 * @return true if equal
+	 */
+	public boolean equals(Object object) {
+		if (object instanceof ItemResource) {
+			ItemResource otherObject = (ItemResource) object;
+			if ((name.equals(otherObject.getName())) && (massPerItem == otherObject.getMassPerItem()))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets the hash code value.
+	 */
+	public int hashCode() {
+		return (name.hashCode() * new Double(massPerItem).hashCode());
 	}
 	
 	/**

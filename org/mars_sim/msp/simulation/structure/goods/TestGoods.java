@@ -24,26 +24,27 @@ public class TestGoods extends TestCase {
 	}
 	
 	public void testGoodsListContainsWater() {
-		Set goodsList = GoodsUtil.getGoodsSet();
 		Good waterGood = GoodsUtil.getResourceGood(AmountResource.WATER);
-		assertTrue("Goods list contains water", goodsList.contains(waterGood));
+		assertTrue("Goods list contains water", GoodsUtil.containsGood(waterGood));
 	}
 	
 	public void testGoodsListContainsHammer() {
-		Set goodsList = GoodsUtil.getGoodsSet();
 		Good hammerGood = GoodsUtil.getResourceGood(ItemResource.HAMMER);
-		assertTrue("Goods list contains hammer", goodsList.contains(hammerGood));
+		assertTrue("Goods list contains hammer", GoodsUtil.containsGood(hammerGood));
 	}
 	
 	public void testGoodsListContainsBag() {
-		Set goodsList = GoodsUtil.getGoodsSet();
 		Good bagGood = GoodsUtil.getEquipmentGood(Bag.class);
-		assertTrue("Goods list contains bag", goodsList.contains(bagGood));
+		assertTrue("Goods list contains bag", GoodsUtil.containsGood(bagGood));
 	}
 	
 	public void testGoodsListContainsExplorerRover() {
-		Set goodsList = GoodsUtil.getGoodsSet();
 		Good explorerRoverGood = GoodsUtil.getVehicleGood("Transport Rover");
-		assertTrue("Goods list contains explorer rover", goodsList.contains(explorerRoverGood));
+		assertTrue("Goods list contains explorer rover", GoodsUtil.containsGood(explorerRoverGood));
+	}
+	
+	public void testGoodsListDoesntContainFalseRover() {
+		Good falseRoverGood = GoodsUtil.getVehicleGood("False Rover");
+		assertTrue("Goods list doesn't contain false rover", !GoodsUtil.containsGood(falseRoverGood));
 	}
 }

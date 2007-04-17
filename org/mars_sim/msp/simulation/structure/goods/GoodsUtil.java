@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsUtil.java
- * @version 2.81 2007-04-11
+ * @version 2.81 2007-04-16
  * @author Scott Davis
  */
 
@@ -93,6 +93,16 @@ public class GoodsUtil {
 		if ((vehicleType != null) && !vehicleType.trim().equals("")) 
 			return new Good(vehicleType, Rover.class);
 		else throw new IllegalArgumentException("vehicleType cannot be blank or null.");
+	}
+	
+	/**
+	 * Checks if a good is valid in the simulation.
+	 * @param good the good to check.
+	 * @return true if good is valid.
+	 */
+	public static boolean containsGood(Good good) {
+		if (good != null) return goodsSet.contains(good);
+		else throw new IllegalArgumentException("good cannot be null.");
 	}
 	
 	/**

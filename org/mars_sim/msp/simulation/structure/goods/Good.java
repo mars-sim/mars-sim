@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Good.java
- * @version 2.81 2007-04-13
+ * @version 2.81 2007-04-16
  * @author Scott Davis
  */
 
@@ -104,7 +104,7 @@ public class Good implements Serializable{
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-		int hashCode = getClass().hashCode();
+		int hashCode = getName().hashCode() * getClass().hashCode();
 		if (getObject() != null) hashCode *= getObject().hashCode();
 		return hashCode;
 	}
