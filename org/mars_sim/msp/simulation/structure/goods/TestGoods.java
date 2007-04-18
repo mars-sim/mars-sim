@@ -1,6 +1,6 @@
 package org.mars_sim.msp.simulation.structure.goods;
 
-import java.util.Set;
+import java.util.List;
 
 import junit.framework.TestCase;
 import org.mars_sim.msp.simulation.equipment.Bag;
@@ -14,12 +14,12 @@ public class TestGoods extends TestCase {
 	}
 	
 	public void testGoodsListNotNull() {
-		Set goodsList = GoodsUtil.getGoodsSet();
+		List goodsList = GoodsUtil.getGoodsList();
 		assertTrue("Goods list not null", (goodsList != null));
 	}
 	
 	public void testGoodsListNotZero() {
-		Set goodsList = GoodsUtil.getGoodsSet();
+		List goodsList = GoodsUtil.getGoodsList();
 		assertTrue("Goods list not zero", (goodsList.size() > 0));
 	}
 	

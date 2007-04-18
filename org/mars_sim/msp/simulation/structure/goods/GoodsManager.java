@@ -10,8 +10,8 @@ package org.mars_sim.msp.simulation.structure.goods;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -20,6 +20,9 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  */
 public class GoodsManager implements Serializable {
 
+	// Unit update events.
+	public static final String GOODS_VALUE_EVENT = "goods values";
+	
 	// Data members
 	private Settlement settlement;
 	private Map goodsValues;
@@ -40,7 +43,7 @@ public class GoodsManager implements Serializable {
 	 * Populates the goods map with empty values.
 	 */
 	private void populateGoodsValues() {
-		Set goods = GoodsUtil.getGoodsSet();
+		List goods = GoodsUtil.getGoodsList();
 		goodsValues = new HashMap(goods.size());
 		Iterator i = goods.iterator();
 		while (i.hasNext()) goodsValues.put(i.next(), new Double(0D));
@@ -62,9 +65,8 @@ public class GoodsManager implements Serializable {
 	 */
 	private void updateGoodsValues() {
 		Iterator i = goodsValues.keySet().iterator();
-		while (i.hasNext()) {
-			updateGoodValue((Good) i.next());
-		}
+		while (i.hasNext()) updateGoodValue((Good) i.next());
+		settlement.fireUnitUpdate(GOODS_VALUE_EVENT);
 	}
 	
 	/**

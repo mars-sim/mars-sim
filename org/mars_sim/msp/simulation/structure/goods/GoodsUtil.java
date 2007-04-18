@@ -7,11 +7,10 @@
 
 package org.mars_sim.msp.simulation.structure.goods;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
-
-import org.apache.commons.collections.set.ListOrderedSet;
+import java.util.List;
 
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.Bag;
@@ -30,9 +29,8 @@ import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
  */
 public class GoodsUtil {
 
-	// Note: This is set who's elements are ordered by when
-	// they are added to the set.
-	private static ListOrderedSet goodsSet;
+	// Data members
+	private static List goodsList;
 	
 	/**
 	 * Private constructor for utility class.
@@ -40,17 +38,17 @@ public class GoodsUtil {
 	private GoodsUtil() {}
 	
 	/**
-	 * Gets an ordered set of all goods in the simulation.
+	 * Gets a list of all goods in the simulation.
 	 * @return list of goods
 	 */
-	public static Set getGoodsSet() {
+	public static List getGoodsList() {
 		
-		if (goodsSet == null) {
-			goodsSet = new ListOrderedSet();
+		if (goodsList == null) {
+			goodsList = new ArrayList();
 			populateGoodsList();
 		}
 		
-		return Collections.unmodifiableSet(goodsSet);
+		return Collections.unmodifiableList(goodsList);
 	}
 	
 	/**
@@ -72,7 +70,7 @@ public class GoodsUtil {
 		if (equipmentClass != null) {
 			Good result = null;
 			
-			Iterator i = goodsSet.iterator();
+			Iterator i = goodsList.iterator();
 			while (i.hasNext()) {
 				Good good = (Good) i.next();
 				if (good.getClassType() == equipmentClass) 
@@ -101,7 +99,7 @@ public class GoodsUtil {
 	 * @return true if good is valid.
 	 */
 	public static boolean containsGood(Good good) {
-		if (good != null) return goodsSet.contains(good);
+		if (good != null) return goodsList.contains(good);
 		else throw new IllegalArgumentException("good cannot be null.");
 	}
 	
@@ -129,7 +127,7 @@ public class GoodsUtil {
 		Iterator i = AmountResource.getAmountResources().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = (AmountResource) i.next();
-			goodsSet.add(new Good(resource.getName(), resource));
+			goodsList.add(new Good(resource.getName(), resource));
 		}
 	}
 	
@@ -140,7 +138,7 @@ public class GoodsUtil {
 		Iterator i = ItemResource.getItemResources().iterator();
 		while (i.hasNext()) {
 			ItemResource resource = (ItemResource) i.next();
-			goodsSet.add(new Good(resource.getName(), resource));
+			goodsList.add(new Good(resource.getName(), resource));
 		}
 	}
 	
@@ -148,11 +146,11 @@ public class GoodsUtil {
 	 * Populates the goods list with all equipment.
 	 */
 	private static void populateEquipment() {
-		goodsSet.add(new Good(EVASuit.TYPE, EVASuit.class));
-		goodsSet.add(new Good(Bag.TYPE, Bag.class));
-		goodsSet.add(new Good(Barrel.TYPE, Barrel.class));
-		goodsSet.add(new Good(GasCanister.TYPE, GasCanister.class));
-		goodsSet.add(new Good(SpecimenContainer.TYPE, SpecimenContainer.class));
+		goodsList.add(new Good(EVASuit.TYPE, EVASuit.class));
+		goodsList.add(new Good(Bag.TYPE, Bag.class));
+		goodsList.add(new Good(Barrel.TYPE, Barrel.class));
+		goodsList.add(new Good(GasCanister.TYPE, GasCanister.class));
+		goodsList.add(new Good(SpecimenContainer.TYPE, SpecimenContainer.class));
 	}
 	
 	/**
@@ -163,7 +161,7 @@ public class GoodsUtil {
 		
 		try {
 			Iterator i = config.getRoverTypes().iterator();
-			while (i.hasNext()) goodsSet.add(new Good((String) i.next(), Rover.class));
+			while (i.hasNext()) goodsList.add(new Good((String) i.next(), Rover.class));
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);

@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.standard.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -86,15 +87,15 @@ public class GoodsTabPanel extends TabPanel {
     	
     	// Data members
     	GoodsManager manager;
-    	Object[] goods;
+    	List goods;
     	
     	private GoodsTableModel(GoodsManager manager) {
     		this.manager = manager;
-    		goods = GoodsUtil.getGoodsSet().toArray();
+    		goods = GoodsUtil.getGoodsList();
     	}
     	
         public int getRowCount() {
-            return goods.length;
+            return goods.size();
         }
         
         public int getColumnCount() {
@@ -116,7 +117,7 @@ public class GoodsTabPanel extends TabPanel {
         
         public Object getValueAt(int row, int column) {
         	if (row < getRowCount()) {
-        		Good good = (Good) goods[row];
+        		Good good = (Good) goods.get(row);
         		if (column == 0) return good.getName();
         		else if (column == 1) return manager.getGoodValue(good);
         		else return "unknown";

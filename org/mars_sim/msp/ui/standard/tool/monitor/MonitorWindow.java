@@ -185,6 +185,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         addTab(new MissionTab());
         eventsTab = new EventTab(new EventTableModel(Simulation.instance().getEventManager()));
         addTab(eventsTab);
+        addTab(new TradeTab());
 
         tabsSection.setSelectedIndex(0);
         tabChanged();
