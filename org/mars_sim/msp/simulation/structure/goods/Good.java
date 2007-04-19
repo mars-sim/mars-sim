@@ -25,7 +25,7 @@ public class Good implements Serializable{
 	 * @param object the good's object if any.
 	 */
 	Good(String name, Object object) {
-		if (name != null) this.name = name;
+		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 			
 		if (object != null) {
@@ -41,7 +41,7 @@ public class Good implements Serializable{
 	 * @param classType the goods class.
 	 */
 	Good(String name, Class classType) {
-		if (name != null) this.name = name;
+		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 		
 		if (classType != null) this.classType = classType;

@@ -134,7 +134,7 @@ abstract class TableTab extends MonitorTab {
     private static Icon descendingIcon = null;
     private final static Icon TABLEICON = ImageLoader.getIcon("Table");
 
-    private JTable table;                   // Table component
+    protected JTable table;                 // Table component
     private TableSorter sortedModel;        // Sortable modle proxy
     private boolean sortAscending = true;   // Constructor will flip this
     private int sortedColumn = 0;           // Sort column is defined

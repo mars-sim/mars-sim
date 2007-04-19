@@ -16,8 +16,8 @@ import java.io.Serializable;
 public class MarsClock implements Serializable {
 
     // Martian calendar static members
-    private static final int SOLS_IN_ORBIT_NON_LEAPYEAR = 668;
-    private static final int SOLS_IN_ORBIT_LEAPYEAR = 669;
+    public static final int SOLS_IN_ORBIT_NON_LEAPYEAR = 668;
+    public static final int SOLS_IN_ORBIT_LEAPYEAR = 669;
     private static final int MONTHS_IN_ORBIT = 24;
     private static final int SOLS_IN_MONTH_SHORT = 27;
     private static final int SOLS_IN_MONTH_LONG = 28;

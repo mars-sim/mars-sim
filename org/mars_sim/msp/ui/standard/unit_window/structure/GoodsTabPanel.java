@@ -69,7 +69,7 @@ public class GoodsTabPanel extends TabPanel {
         // Prepare goods table.
         JTable goodsTable = new JTable(goodsTableModel);
         goodsTable.setCellSelectionEnabled(false);
-        goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
+        goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
         goodsTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         goodsTablePanel.add(goodsTable.getTableHeader(), BorderLayout.NORTH);
         goodsTablePanel.add(goodsTable, BorderLayout.CENTER);

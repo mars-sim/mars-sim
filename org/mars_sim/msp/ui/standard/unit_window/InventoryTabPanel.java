@@ -67,7 +67,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
         resourcesTable.setCellSelectionEnabled(false);
-        resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
+        resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
         resourcesPanel.setViewportView(resourcesTable);
         
         // Create equipment panel
