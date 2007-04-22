@@ -100,12 +100,8 @@ public class GoodsManager implements Serializable {
 			double value = 0D;
 			
 			// Determine all amount resource good values.
-			if (good.getClassType() == AmountResource.class) {
-				if (good.getObject().equals(AmountResource.OXYGEN)) value = determineOxygenValue();
-				else if (good.getObject().equals(AmountResource.WATER)) value = determineWaterValue();
-				else if (good.getObject().equals(AmountResource.FOOD)) value = determineFoodValue();
-				// TODO: determine all amount resource values.
-			}
+			if (good.getClassType() == AmountResource.class) 
+				value = determineAmountResourceGoodValue((AmountResource) good.getObject());
 			
 			// TODO: determine all item resource values.
 			
@@ -119,50 +115,49 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Determine oxygen good value.
-	 * @return value (value points)
-	 * @throws Exception if error determining oxygen good value.
+	 * Determines the value of an amount resource.
+	 * @param resource the amount resource.
+	 * @return value (value points / kg)
+	 * @throws Exception if error determining resource value.
 	 */
-	private double determineOxygenValue() throws Exception {
-		double supply = getAmountOfResourceForSettlement(AmountResource.OXYGEN) + 1D;
-		int numPeople = settlement.getAllAssociatedPeople().size();
-		double amountNeededSol = SimulationConfig.instance().getPersonConfiguration().getOxygenConsumptionRate();
-		double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-		double demand = numPeople * amountNeededOrbit;
+	private double determineAmountResourceGoodValue(AmountResource resource) throws Exception {
+		double supply = getAmountOfResourceForSettlement(resource) + 1D;
+		double demand = 0D;
+		
+		// Add life support demand if applicable.
+		demand += getLifeSupportDemand(resource);
+		
+		// TODO: Add vehicle demand if applicable.
+		
+		// TODO: Add resource process demand.
+		
+		// TODO: Add crops demand.
 		
 		return demand / supply;
 	}
 	
 	/**
-	 * Determine water good value.
-	 * @return value (value points)
-	 * @throws Exception if error determining water good value.
+	 * Gets the life support demand for an amount resource.
+	 * @param resource the resource to check.
+	 * @return demand (kg)
+	 * @throws Exception if error getting life support demand.
 	 */
-	private double determineWaterValue() throws Exception {
-		double supply = getAmountOfResourceForSettlement(AmountResource.WATER) + 1D;
-		int numPeople = settlement.getAllAssociatedPeople().size();
-		double amountNeededSol = SimulationConfig.instance().getPersonConfiguration().getWaterConsumptionRate();
-		double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-		double demand = numPeople * amountNeededOrbit;
-		
-		return demand / supply;
+	private double getLifeSupportDemand(AmountResource resource) throws Exception {
+		if (resource.isLifeSupport()) {
+			double amountNeededSol = SimulationConfig.instance().getPersonConfiguration().getOxygenConsumptionRate();
+			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+			int numPeople = settlement.getAllAssociatedPeople().size();
+			return numPeople * amountNeededOrbit;
+		}
+		else return 0D;
 	}
 	
 	/**
-	 * Determine food good value.
-	 * @return value (value points)
-	 * @throws Exception if error determining food good value.
+	 * Gets the amount of an amount resource for a settlement.
+	 * @param resource the resource to check.
+	 * @return amount (kg) of resource for the settlement.
+	 * @throws InventoryException if error getting the amount of the resource.
 	 */
-	private double determineFoodValue() throws Exception {
-		double supply = getAmountOfResourceForSettlement(AmountResource.FOOD) + 1D;
-		int numPeople = settlement.getAllAssociatedPeople().size();
-		double amountNeededSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
-		double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-		double demand = numPeople * amountNeededOrbit;
-		
-		return demand / supply;
-	}
-	
 	private double getAmountOfResourceForSettlement(AmountResource resource) throws InventoryException {
 		double amount = 0D;
 		

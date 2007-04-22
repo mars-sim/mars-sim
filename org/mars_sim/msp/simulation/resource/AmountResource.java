@@ -23,13 +23,13 @@ public final class AmountResource implements Resource, Serializable {
     private static final Set resources = new HashSet(10);
 	
 	// Amount resources
-    public static final AmountResource WATER = new AmountResource("water", Phase.LIQUID);
-    public static final AmountResource OXYGEN = new AmountResource("oxygen", Phase.GAS);
+    public static final AmountResource WATER = new AmountResource("water", Phase.LIQUID, true);
+    public static final AmountResource OXYGEN = new AmountResource("oxygen", Phase.GAS, true);
     public static final AmountResource HYDROGEN = new AmountResource("hydrogen", Phase.GAS);
     public static final AmountResource METHANE = new AmountResource("methane", Phase.GAS);
     public static final AmountResource CARBON_DIOXIDE = new AmountResource("carbon dioxide", Phase.GAS);
     public static final AmountResource CARBON_MONOXIDE = new AmountResource("carbon monoxide", Phase.GAS);
-    public static final AmountResource FOOD = new AmountResource("food", Phase.SOLID);
+    public static final AmountResource FOOD = new AmountResource("food", Phase.SOLID, true);
     public static final AmountResource ROCK_SAMPLES = new AmountResource("rock samples", Phase.SOLID);
     public static final AmountResource WASTE_WATER = new AmountResource("waste water", Phase.LIQUID);
     public static final AmountResource ICE = new AmountResource("ice", Phase.SOLID);
@@ -37,6 +37,7 @@ public final class AmountResource implements Resource, Serializable {
 	// Data members
 	private String name;
 	private Phase phase;
+	private boolean lifeSupport;
 	
 	/**
 	 * Default private constructor
@@ -49,8 +50,19 @@ public final class AmountResource implements Resource, Serializable {
 	 * @param phase the material phase of the resource.
 	 */
 	private AmountResource(String name, Phase phase) {
+		this(name, phase, false);
+	}
+	
+	/**
+	 * Private constructor with life support parameter.
+	 * @param name the resource's name
+	 * @param phase the material phase of the resource.
+	 * @param lifeSupport true if life support resource.
+	 */
+	private AmountResource(String name, Phase phase, boolean lifeSupport) {
 		this.name = name;
 		this.phase = phase;
+		this.lifeSupport = lifeSupport;
 		resources.add(this);
 	}
 	
@@ -75,6 +87,14 @@ public final class AmountResource implements Resource, Serializable {
 	 */
 	public Phase getPhase() {
 		return phase;
+	}
+	
+	/**
+	 * Checks if life support resource.
+	 * @return true if life support resource.
+	 */
+	public boolean isLifeSupport() {
+		return lifeSupport;
 	}
 	
 	/**
