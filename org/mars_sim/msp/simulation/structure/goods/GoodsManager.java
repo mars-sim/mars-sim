@@ -24,6 +24,8 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /**
  * A manager for goods values at a settlement.
@@ -127,7 +129,8 @@ public class GoodsManager implements Serializable {
 		// Add life support demand if applicable.
 		demand += getLifeSupportDemand(resource);
 		
-		// TODO: Add vehicle demand if applicable.
+		// Add vehicle demand if applicable.
+		demand += getVehicleDemand(resource);
 		
 		// TODO: Add resource process demand.
 		
@@ -150,6 +153,45 @@ public class GoodsManager implements Serializable {
 			return numPeople * amountNeededOrbit;
 		}
 		else return 0D;
+	}
+	
+	/**
+	 * Gets vehicle demand for an amount resource.
+	 * @param resource the resource to check.
+	 * @return demand (kg) for the resource.
+	 * @throws Exception if error getting resource demand.
+	 */
+	private double getVehicleDemand(AmountResource resource) throws Exception {
+		double demand = 0D;
+		if (resource.isLifeSupport() || resource.equals(AmountResource.METHANE)) {
+			VehicleIterator i = getAssociatedVehicles().iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				demand += vehicle.getInventory().getAmountResourceCapacity(resource);
+			}
+		}
+		return demand;
+	}
+	
+	/**
+	 * Gets all vehicles associated with the settlement.
+	 * @return collection of vehicles.
+	 */
+	private VehicleCollection getAssociatedVehicles() {
+		// Start with parked vehicles at settlement.
+		VehicleCollection vehicles = settlement.getParkedVehicles();
+		
+		// Add associated vehicles out on missions.
+		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			Mission mission = (Mission) i.next();
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				if (!vehicles.contains(vehicle)) vehicles.add(vehicle);
+			}
+		}
+		
+		return vehicles;
 	}
 	
 	/**
