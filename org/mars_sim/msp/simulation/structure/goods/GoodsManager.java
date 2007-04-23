@@ -1,17 +1,19 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.81 2007-04-16
+ * @version 2.81 2007-04-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure.goods;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Simulation;
@@ -22,6 +24,10 @@ import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
@@ -123,6 +129,8 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error determining resource value.
 	 */
 	private double determineAmountResourceGoodValue(AmountResource resource) throws Exception {
+		double value = 0D;
+		
 		double supply = getAmountOfResourceForSettlement(resource) + 1D;
 		double demand = 0D;
 		
@@ -132,11 +140,15 @@ public class GoodsManager implements Serializable {
 		// Add vehicle demand if applicable.
 		demand += getVehicleDemand(resource);
 		
-		// TODO: Add resource process demand.
-		
 		// TODO: Add crops demand.
 		
-		return demand / supply;
+		value = demand / supply;
+		
+		// Use resource processing value if higher.
+		double resourceProcessingValue = getResourceProcessingValue(resource);
+		if (resourceProcessingValue > value) value = resourceProcessingValue;
+		
+		return value;
 	}
 	
 	/**
@@ -192,6 +204,83 @@ public class GoodsManager implements Serializable {
 		}
 		
 		return vehicles;
+	}
+	
+	/**
+	 * Gets the value of a resource from all resource processes.
+	 * @param resource the amount resource.
+	 * @return value (value points / kg)
+	 * @throws Exception if error getting value.
+	 */
+	private double getResourceProcessingValue(AmountResource resource) throws Exception {
+		double value = 0D;
+		
+		// Get all resource processes at settlement.
+		Iterator i = getResourceProcesses().iterator();
+		while (i.hasNext()) {
+			ResourceProcess process = (ResourceProcess) i.next();
+			double processValue = getResourceProcessValue(process, resource);
+			if (processValue > value) value = processValue;
+		}
+		
+		return value;
+	}
+	
+	/**
+	 * Gets the value of a resource from a resource process.
+	 * @param process the resource process.
+	 * @param resource the amount resource.
+	 * @return value (value points / kg)
+	 */
+	private double getResourceProcessValue(ResourceProcess process, AmountResource resource) {
+		double value = 0D;
+		
+		Set inputResources = process.getInputResources();
+		Set outputResources = process.getOutputResources();
+		
+		if (inputResources.contains(resource)) {
+			double outputValue = 0D;
+			Iterator i = outputResources.iterator();
+			while (i.hasNext()) {
+				AmountResource output = (AmountResource) i.next();
+				double outputRate = process.getMaxOutputResourceRate(output); 
+				outputValue += (getGoodValue(new Good(output.getName(), output)) * outputRate);
+			}
+			
+			double otherInputValue = 0D;
+			Iterator j = inputResources.iterator();
+			while (j.hasNext()) {
+				AmountResource input = (AmountResource) j.next();
+				double inputRate = process.getMaxInputResourceRate(input);
+				if (!input.equals(resource)) 
+					otherInputValue += (getGoodValue(new Good(input.getName(), input)) * inputRate);
+			}
+			
+			double totalValue = outputValue - otherInputValue;
+			double resourceInputRate = process.getMaxInputResourceRate(resource);
+			
+			if (resourceInputRate > 0D) value = totalValue / resourceInputRate;
+		}
+		
+		return value;
+	}
+	
+	/**
+	 * Get all resource processes at settlement.
+	 * @return list of resource processes.
+	 * @throws BuildingException if error getting processes.
+	 */
+	private List getResourceProcesses() throws BuildingException {
+		List processes = new ArrayList(0);
+		Iterator i = settlement.getBuildingManager().getBuildings().iterator();
+		while (i.hasNext()) {
+			Building building = (Building) i.next();
+			if (building.hasFunction(ResourceProcessing.NAME)) {
+				ResourceProcessing processing = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
+				processes.addAll(processing.getProcesses());
+			}
+		}
+		return processes;
 	}
 	
 	/**

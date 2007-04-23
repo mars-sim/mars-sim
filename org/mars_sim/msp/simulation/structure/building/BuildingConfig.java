@@ -1,14 +1,17 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.78 2004-11-10
+ * @version 2.81 2007-04-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
 import java.util.*;
+
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.function.*;
+
 import org.w3c.dom.*;
 
 /**
@@ -375,7 +378,8 @@ public class BuildingConfig implements Serializable {
 			NodeList inputNodes = processElement.getElementsByTagName(INPUT);
 			for (int y=0; y < inputNodes.getLength(); y++) {
 				Element inputElement = (Element) inputNodes.item(y);
-				String resource = inputElement.getAttribute(RESOURCE).toLowerCase();
+				String resourceName = inputElement.getAttribute(RESOURCE).toLowerCase();
+				AmountResource resource = AmountResource.findAmountResource(resourceName);
 				double rate = Double.parseDouble(inputElement.getAttribute(RATE));
 				boolean ambient = Boolean.valueOf(inputElement.getAttribute(AMBIENT)).booleanValue();
 				process.addMaxInputResourceRate(resource, rate, ambient);
@@ -385,7 +389,8 @@ public class BuildingConfig implements Serializable {
 			NodeList outputNodes = processElement.getElementsByTagName(OUTPUT);
 			for (int y=0; y < outputNodes.getLength(); y++) {
 				Element outputElement = (Element) outputNodes.item(y);
-				String resource = outputElement.getAttribute(RESOURCE).toLowerCase();
+				String resourceName = outputElement.getAttribute(RESOURCE).toLowerCase();
+				AmountResource resource = AmountResource.findAmountResource(resourceName);
 				double rate = Double.parseDouble(outputElement.getAttribute(RATE));
 				boolean ambient = Boolean.valueOf(outputElement.getAttribute(AMBIENT)).booleanValue();
 				process.addMaxOutputResourceRate(resource, rate, ambient);
