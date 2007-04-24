@@ -238,13 +238,14 @@ public class GoodsManager implements Serializable {
 		Set inputResources = process.getInputResources();
 		Set outputResources = process.getOutputResources();
 		
-		if (inputResources.contains(resource)) {
+		if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
 			double outputValue = 0D;
 			Iterator i = outputResources.iterator();
 			while (i.hasNext()) {
 				AmountResource output = (AmountResource) i.next();
 				double outputRate = process.getMaxOutputResourceRate(output); 
-				outputValue += (getGoodValue(new Good(output.getName(), output)) * outputRate);
+				if (!process.isWasteOutputResource(resource))
+					outputValue += (getGoodValue(new Good(output.getName(), output)) * outputRate);
 			}
 			
 			double otherInputValue = 0D;
@@ -252,7 +253,7 @@ public class GoodsManager implements Serializable {
 			while (j.hasNext()) {
 				AmountResource input = (AmountResource) j.next();
 				double inputRate = process.getMaxInputResourceRate(input);
-				if (!input.equals(resource)) 
+				if (!input.equals(resource) && !process.isAmbientInputResource(input)) 
 					otherInputValue += (getGoodValue(new Good(input.getName(), input)) * inputRate);
 			}
 			

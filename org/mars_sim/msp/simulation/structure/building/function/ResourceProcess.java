@@ -133,6 +133,15 @@ public class ResourceProcess implements Serializable {
     }
     
     /**
+     * Checks if resource is an ambient input.
+     * @param resource the resource to check.
+     * @return true if ambient resource.
+     */
+    public boolean isAmbientInputResource(AmountResource resource) {
+    	return maxAmbientInputResourceRates.containsKey(resource);
+    }
+    
+    /**
      * Gets the set of output resources.
      * @return set of resources.
      */
@@ -154,6 +163,15 @@ public class ResourceProcess implements Serializable {
         else if (maxWasteOutputResourceRates.containsKey(resource))
             result = ((Double) maxWasteOutputResourceRates.get(resource)).doubleValue();
         return result;
+    }
+    
+    /**
+     * Checks if resource is a waste output.
+     * @param resource the resource to check.
+     * @return true if waste output.
+     */
+    public boolean isWasteOutputResource(AmountResource resource) {
+    	return maxWasteOutputResourceRates.containsKey(resource);
     }
     
     /**
