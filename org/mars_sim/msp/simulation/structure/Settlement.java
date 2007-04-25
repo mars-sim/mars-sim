@@ -301,6 +301,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         	malfunctionManager.timePassing(time);
         }
         catch (Exception e) {
+        	e.printStackTrace(System.err);
         	throw new Exception("Settlement " + getName() + " timePassing(): " + e.getMessage());
         }
     }

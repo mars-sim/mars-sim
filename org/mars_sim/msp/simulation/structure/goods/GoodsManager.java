@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.81 2007-04-23
+ * @version 2.81 2007-04-25
  * @author Scott Davis
  */
 
@@ -26,6 +26,8 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.function.Crop;
+import org.mars_sim.msp.simulation.structure.building.function.Farming;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.simulation.time.MarsClock;
@@ -140,7 +142,12 @@ public class GoodsManager implements Serializable {
 		// Add vehicle demand if applicable.
 		demand += getVehicleDemand(resource);
 		
-		// TODO: Add crops demand.
+		// Add farming demand.
+		demand += getFarmingDemand(resource);
+		
+		// Limit demand by storage capacity.
+		double capacity = settlement.getInventory().getAmountResourceCapacity(resource);
+		if (demand > capacity) demand = capacity;
 		
 		value = demand / supply;
 		
@@ -177,10 +184,7 @@ public class GoodsManager implements Serializable {
 		double demand = 0D;
 		if (resource.isLifeSupport() || resource.equals(AmountResource.METHANE)) {
 			VehicleIterator i = getAssociatedVehicles().iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				demand += vehicle.getInventory().getAmountResourceCapacity(resource);
-			}
+			while (i.hasNext()) demand += i.next().getInventory().getAmountResourceCapacity(resource);
 		}
 		return demand;
 	}
@@ -199,11 +203,42 @@ public class GoodsManager implements Serializable {
 			Mission mission = (Mission) i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if (!vehicles.contains(vehicle)) vehicles.add(vehicle);
+				if ((vehicle != null) && !vehicles.contains(vehicle)) vehicles.add(vehicle);
 			}
 		}
 		
 		return vehicles;
+	}
+	
+	/**
+	 * Gets the farming demand for the resource.
+	 * @param resource the resource to check.
+	 * @return demand (kg) for the resource.
+	 * @throws Exception if error determining demand.
+	 */
+	private double getFarmingDemand(AmountResource resource) throws Exception {
+		double demand = 0D;
+		if (resource.equals(AmountResource.WASTE_WATER) || resource.equals(AmountResource.CARBON_DIOXIDE)) {
+			double foodValue = getGoodValue(new Good(AmountResource.FOOD.getName(), AmountResource.FOOD));
+			
+			Iterator i = settlement.getBuildingManager().getBuildings().iterator();
+			while (i.hasNext()) {
+				Building building = (Building) i.next();
+				if (building.hasFunction(Farming.NAME)) {
+					Farming farm = (Farming) building.getFunction(Farming.NAME);
+					
+					double amountNeeded = 0D;
+					if (resource.equals(AmountResource.WASTE_WATER)) 
+						amountNeeded = Crop.WASTE_WATER_NEEDED;
+					else if (resource.equals(AmountResource.CARBON_DIOXIDE))
+						amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
+					
+					demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
+				}
+			}
+		}
+		
+		return demand;
 	}
 	
 	/**

@@ -15,6 +15,7 @@ import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.time.MarsClock;
  
 /**
  * The Farming class is a building function for greenhouse farming.
@@ -62,10 +63,9 @@ public class Farming extends Function implements Serializable {
 		crops = new ArrayList();
 		try {
 			Settlement settlement = building.getBuildingManager().getSettlement();
-			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			for (int x=0; x < cropNum; x++) {
-				Crop crop = new Crop(Crop.getRandomCropType(cropConfig), 
-						(maxHarvest / (double) cropNum), this, settlement, false);
+				Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
+						this, settlement, false);
 				crops.add(crop);
 				building.getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
 			}
@@ -205,10 +205,9 @@ public class Farming extends Function implements Serializable {
 		// Add any new crops.
 		try {
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-			CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 			for (int x=0; x < newCrops; x++) {
-				Crop crop = new Crop(Crop.getRandomCropType(cropConfig), 
-						(maxHarvest / (double) cropNum), this, settlement, true);
+				Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
+						this, settlement, true);
 				crops.add(crop);
 				getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
 			}
@@ -263,5 +262,17 @@ public class Farming extends Function implements Serializable {
 	 */
 	public double getGrowingArea() {
 		return growingArea;
+	}
+	
+	/**
+	 * Gets the estimated maximum harvest for one orbit.
+	 * @return max harvest (kg)
+	 * @throws Exception if error determining harvest.
+	 */
+	public double getEstimatedHarvestPerOrbit() throws Exception {
+		double aveGrowingTime = Crop.getAverageCropGrowingTime();
+		int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime;
+		return maxHarvest * aveGrowingCyclesPerOrbit;
 	}
 }

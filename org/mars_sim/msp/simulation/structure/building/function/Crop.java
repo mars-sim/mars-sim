@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.mars.*;
@@ -19,6 +20,10 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  */
 public class Crop implements Serializable {
     
+	// Static members
+	public static final double WASTE_WATER_NEEDED = 5D; // Amount of waste water needed / harvest mass.
+	public static final double CARBON_DIOXIDE_NEEDED = 2D; // Amount of carbon dioxide needed /harvest mass.
+	
     // Crop phases
     public static final String PLANTING = "Planting";
     public static final String GROWING = "Growing";
@@ -220,7 +225,7 @@ public class Crop implements Serializable {
                 	Inventory inv = settlement.getInventory();
                 	
                 	// Determine harvest modifier by amount of waste water available.
-                	double wasteWaterRequired = maxPeriodHarvest * 5D;
+                	double wasteWaterRequired = maxPeriodHarvest * WASTE_WATER_NEEDED;
                 	double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
                 	double wasteWaterUsed = wasteWaterRequired;
                 	if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
@@ -232,7 +237,7 @@ public class Crop implements Serializable {
                 	harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
                     
                 	// Determine harvest modifier by amount of carbon dioxide available.
-                	double carbonDioxideRequired = maxPeriodHarvest * 2D;
+                	double carbonDioxideRequired = maxPeriodHarvest * CARBON_DIOXIDE_NEEDED;
                 	double carbonDioxideAvailable = inv.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
                 	double carbonDioxideUsed = carbonDioxideRequired;
                 	if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
@@ -246,7 +251,8 @@ public class Crop implements Serializable {
                 	// Modifiy harvest amount.
                 	actualHarvest += maxPeriodHarvest * harvestModifier;
                 
-                	// Check if crop is dying if it's 20% along on it's growing time and its condition is less than 10% normal.
+                	// Check if crop is dying if it's at least 25% along on it's growing time and its condition 
+                	// is less than 10% normal.
                 	if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) && (getCondition() < .1D)) {
                 		phase = FINISHED;
                 		// System.out.println("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
@@ -258,14 +264,27 @@ public class Crop implements Serializable {
     
     /**
      * Gets a random crop type.
-     * @param cropConfig the crop configuration.
      * @return crop type
      * @throws Exception if crops could not be found.
      */
-    public static CropType getRandomCropType(CropConfig cropConfig) throws Exception {
-    	
+    public static CropType getRandomCropType() throws Exception {
+    	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
     	List cropTypes = cropConfig.getCropList();    
         int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
         return (CropType) cropTypes.get(r);
+    }
+    
+    /**
+     * Gets the average growing time for a crop.
+     * @return average growing time (millisols)
+     * @throws Exception if error reading crop config.
+     */
+    public static double getAverageCropGrowingTime() throws Exception {
+    	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+    	double totalGrowingTime = 0D;
+    	List cropTypes = cropConfig.getCropList();  
+    	Iterator i = cropTypes.iterator();
+    	while (i.hasNext()) totalGrowingTime += ((CropType) i.next()).getGrowingTime();
+    	return totalGrowingTime / cropTypes.size();
     }
 }
