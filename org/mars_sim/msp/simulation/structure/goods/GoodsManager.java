@@ -23,6 +23,7 @@ import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -113,7 +114,9 @@ public class GoodsManager implements Serializable {
 			if (good.getClassType() == AmountResource.class) 
 				value = determineAmountResourceGoodValue((AmountResource) good.getObject());
 			
-			// TODO: determine all item resource values.
+			// Determine all item resource values.
+			if (good.getClassType() == ItemResource.class)
+				value = determineItemResourceGoodValue((ItemResource) good.getObject());
 			
 			// TODO: determine all equipment values.
 			
@@ -338,7 +341,7 @@ public class GoodsManager implements Serializable {
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) {
-					amount += vehicle.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
+					amount += vehicle.getInventory().getAmountResourceStored(resource);
 				}
 			}
 		}
@@ -348,7 +351,63 @@ public class GoodsManager implements Serializable {
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-				amount += person.getInventory().getAmountResourceStored(AmountResource.OXYGEN);
+				amount += person.getInventory().getAmountResourceStored(resource);
+			}
+		}
+		
+		return amount;
+	}
+	
+	/**
+	 * Determines the value of an item resource.
+	 * @param resource the resource to check.
+	 * @return value (Value Points / kg)
+	 * @throws Exception if error determining value.
+	 */
+	private double determineItemResourceGoodValue(ItemResource resource) throws Exception {
+		double value = 0D;
+	
+		double supply = getAmountOfResourceForSettlement(resource) + 1D;
+		double demand = 0D;
+		
+		// TODO: Determine demand.
+		
+		value = demand / supply;
+		
+		return value;
+	}
+	
+	/**
+	 * Gets the amount (mass) of an item resource for a settlement.
+	 * @param resource the resource to check.
+	 * @return amount (kg) of resource for the settlement.
+	 * @throws InventoryException if error getting the amount of the resource.
+	 */
+	private double getAmountOfResourceForSettlement(ItemResource resource) throws InventoryException {
+		double amount = 0D;
+		double mass = resource.getMassPerItem();
+		
+		// Get amount of resource in settlement storage.
+		amount += settlement.getInventory().getItemResourceNum(resource) * mass;
+		
+		// Get amount of resource out on mission vehicles.
+		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			Mission mission = (Mission) i.next();
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) {
+					amount += vehicle.getInventory().getItemResourceNum(resource) * mass;
+				}
+			}
+		}
+		
+		// Get amount of resource carried by people on EVA.
+		PersonIterator j = settlement.getAllAssociatedPeople().iterator();
+		while (j.hasNext()) {
+			Person person = j.next();
+			if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+				amount += person.getInventory().getItemResourceNum(resource) * mass;
 			}
 		}
 		
