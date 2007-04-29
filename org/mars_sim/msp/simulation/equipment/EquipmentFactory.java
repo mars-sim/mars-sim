@@ -1,9 +1,8 @@
 /**
  * Mars Simulation Project
  * EquipmentFactory.java
- * @version 2.79 2006-01-11
+ * @version 2.81 2007-04-26
  * @author Scott Davis
- *  
  */
 
 package org.mars_sim.msp.simulation.equipment;
@@ -20,13 +19,35 @@ public final class EquipmentFactory {
 	 */
 	private EquipmentFactory() {}
 	
+	/**
+	 * Gets an equipment instance from an equipment type string.
+	 * @param type the equipment type string.
+	 * @param location the location of the equipment.
+	 * @return the equipment instance.
+	 * @throws Exception if error creating equipment instance.
+	 */
 	public static Equipment getEquipment(String type, Coordinates location) throws Exception {
-		
 		if (Bag.TYPE.equals(type)) return new Bag(location, 50D);
 		else if (Barrel.TYPE.equals(type)) return new Barrel(location, 200D);
 		else if (EVASuit.TYPE.equals(type)) return new EVASuit(location);
 		else if (GasCanister.TYPE.equals(type)) return new GasCanister(location, 50D);
 		else if (SpecimenContainer.TYPE.equals(type)) return new SpecimenContainer(location);
 		else throw new Exception("Equipment: " + type + " could not be constructed.");
+	}
+	
+	/**
+	 * Gets an equipment instance from an equipment class.
+	 * @param equipmentClass the equipment class to use..
+	 * @param location the location of the equipment.
+	 * @return the equipment instance.
+	 * @throws Exception if error creating equipment instance.
+	 */
+	public static Equipment getEquipment(Class equipmentClass, Coordinates location) throws Exception {
+		if (Bag.class.equals(equipmentClass)) return new Bag(location, 50D);
+		else if (Barrel.class.equals(equipmentClass)) return new Barrel(location, 200D);
+		else if (EVASuit.class.equals(equipmentClass)) return new EVASuit(location);
+		else if (GasCanister.class.equals(equipmentClass)) return new GasCanister(location, 50D);
+		else if (SpecimenContainer.class.equals(equipmentClass)) return new SpecimenContainer(location);
+		else throw new Exception("Equipment: " + equipmentClass + " could not be constructed.");
 	}
 }

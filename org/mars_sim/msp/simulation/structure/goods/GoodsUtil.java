@@ -57,7 +57,12 @@ public class GoodsUtil {
 	 * @return good for the resource.
 	 */
 	public static Good getResourceGood(Resource resource) {
-		if (resource != null) return new Good(resource.getName(), resource);
+		if (resource != null) {
+			String category = null;
+			if (resource instanceof AmountResource) category = Good.AMOUNT_RESOURCE;
+			else if (resource instanceof ItemResource) category = Good.ITEM_RESOURCE;
+			return new Good(resource.getName(), resource, category);
+		}
 		else throw new IllegalArgumentException("resource cannot be null");
 	}
 	
@@ -74,7 +79,7 @@ public class GoodsUtil {
 			while (i.hasNext()) {
 				Good good = (Good) i.next();
 				if (good.getClassType() == equipmentClass) 
-					result = new Good(good.getName(), equipmentClass);
+					result = new Good(good.getName(), equipmentClass, Good.EQUIPMENT);
 			}
 			
 			return result;
@@ -89,7 +94,7 @@ public class GoodsUtil {
 	 */
 	public static Good getVehicleGood(String vehicleType) {
 		if ((vehicleType != null) && !vehicleType.trim().equals("")) 
-			return new Good(vehicleType, Rover.class);
+			return new Good(vehicleType, Rover.class, Good.VEHICLE);
 		else throw new IllegalArgumentException("vehicleType cannot be blank or null.");
 	}
 	
@@ -125,10 +130,7 @@ public class GoodsUtil {
 	 */
 	private static void populateAmountResources() {
 		Iterator i = AmountResource.getAmountResources().iterator();
-		while (i.hasNext()) {
-			AmountResource resource = (AmountResource) i.next();
-			goodsList.add(new Good(resource.getName(), resource));
-		}
+		while (i.hasNext()) goodsList.add(getResourceGood((AmountResource) i.next()));
 	}
 	
 	/**
@@ -136,21 +138,18 @@ public class GoodsUtil {
 	 */
 	private static void populateItemResources() {
 		Iterator i = ItemResource.getItemResources().iterator();
-		while (i.hasNext()) {
-			ItemResource resource = (ItemResource) i.next();
-			goodsList.add(new Good(resource.getName(), resource));
-		}
+		while (i.hasNext()) goodsList.add(getResourceGood((ItemResource) i.next()));
 	}
 	
 	/**
 	 * Populates the goods list with all equipment.
 	 */
 	private static void populateEquipment() {
-		goodsList.add(new Good(EVASuit.TYPE, EVASuit.class));
-		goodsList.add(new Good(Bag.TYPE, Bag.class));
-		goodsList.add(new Good(Barrel.TYPE, Barrel.class));
-		goodsList.add(new Good(GasCanister.TYPE, GasCanister.class));
-		goodsList.add(new Good(SpecimenContainer.TYPE, SpecimenContainer.class));
+		goodsList.add(new Good(EVASuit.TYPE, EVASuit.class, Good.EQUIPMENT));
+		goodsList.add(new Good(Bag.TYPE, Bag.class, Good.EQUIPMENT));
+		goodsList.add(new Good(Barrel.TYPE, Barrel.class, Good.EQUIPMENT));
+		goodsList.add(new Good(GasCanister.TYPE, GasCanister.class, Good.EQUIPMENT));
+		goodsList.add(new Good(SpecimenContainer.TYPE, SpecimenContainer.class, Good.EQUIPMENT));
 	}
 	
 	/**
@@ -161,7 +160,7 @@ public class GoodsUtil {
 		
 		try {
 			Iterator i = config.getRoverTypes().iterator();
-			while (i.hasNext()) goodsList.add(new Good((String) i.next(), Rover.class));
+			while (i.hasNext()) goodsList.add(getVehicleGood((String) i.next()));
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);

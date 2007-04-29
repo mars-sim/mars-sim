@@ -8,13 +8,17 @@
 package org.mars_sim.msp.simulation.structure;
 
 import java.util.*;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
 /** 
@@ -416,6 +420,26 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     		Person person = i.next();
     		if (person.getAssociatedSettlement() == this) result.add(person);
     	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets all vehicles associated with this settlement, even if they are out on missions.
+     * @return collection of associated vehicles.
+     */
+    public VehicleCollection getAllAssociatedVehicles() {
+    	VehicleCollection result = getParkedVehicles();
+    	
+    	// Also add vehicle mission vehicles not parked at settlement.
+		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(this).iterator();
+		while (i.hasNext()) {
+			Mission mission = (Mission) i.next();
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				if ((vehicle != null) && !this.equals(vehicle.getSettlement())) result.add(vehicle);
+			}
+		}
     	
     	return result;
     }

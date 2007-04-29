@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Good.java
- * @version 2.81 2007-04-16
+ * @version 2.81 2007-04-26
  * @author Scott Davis
  */
 
@@ -14,17 +14,27 @@ import java.io.Serializable;
  */
 public class Good implements Serializable{
 
+	// Good categories.
+	public static final String AMOUNT_RESOURCE = "amount resource";
+	public static final String ITEM_RESOURCE = "item resource";
+	public static final String EQUIPMENT = "equipment";
+	public static final String VEHICLE = "vehicle";
+	
 	// Data members
 	private String name;
 	private Class classType;
 	private Object object;
+	private String category;
 	
 	/**
 	 * Constructor with object.
 	 * @param name the name of the good.
 	 * @param object the good's object if any.
+	 * @param category the good's category.
 	 */
-	Good(String name, Object object) {
+	Good(String name, Object object, String category) {
+		
+		
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 			
@@ -33,19 +43,42 @@ public class Good implements Serializable{
 			this.classType = object.getClass();
 		}
 		else throw new IllegalArgumentException("object cannot be null.");
+		
+		if (isValidCategory(category)) this.category = category;
+		else throw new IllegalArgumentException("category: " + category + " not valid.");
 	}
 	
 	/**
 	 * Constructor with class.
 	 * @param name the name of the good.
-	 * @param classType the goods class.
+	 * @param classType the good's class.
+	 * @param category the good's category.
 	 */
-	Good(String name, Class classType) {
+	Good(String name, Class classType, String category) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 		
 		if (classType != null) this.classType = classType;
 		else throw new IllegalArgumentException("classType cannot be null.");
+		
+		if (isValidCategory(category)) this.category = category;
+		else throw new IllegalArgumentException("category: " + category + " not valid.");
+	}
+	
+	/**
+	 * Checks if a category string is valid.
+	 * @param category the category string to check.
+	 * @return true if valid category.
+	 */
+	private static boolean isValidCategory(String category) {
+		boolean result = false;
+		
+		if (AMOUNT_RESOURCE.equals(category)) result = true;
+		else if (ITEM_RESOURCE.equals(category)) result = true;
+		else if (EQUIPMENT.equals(category)) result = true;
+		else if (VEHICLE.equals(category)) result = true;
+		
+		return result;
 	}
 	
 	/**
@@ -73,6 +106,14 @@ public class Good implements Serializable{
 	}
 	
 	/**
+	 * Gets the good's category string.
+	 * @return category.
+	 */
+	public String getCategory() {
+		return category;
+	}
+	
+	/**
 	 * Gets a string representation of the good.
 	 * @return string.
 	 */
@@ -94,6 +135,7 @@ public class Good implements Serializable{
 			if (getObject() != null) {
 				if (!getObject().equals(good.getObject())) result = false;
 			}
+			if (!category.equals(good.getCategory())) result = false;
 		}
 		else result = false;
 		
@@ -106,6 +148,7 @@ public class Good implements Serializable{
 	public int hashCode() {
 		int hashCode = getName().hashCode() * getClass().hashCode();
 		if (getObject() != null) hashCode *= getObject().hashCode();
+		hashCode *= getCategory().hashCode();
 		return hashCode;
 	}
 }
