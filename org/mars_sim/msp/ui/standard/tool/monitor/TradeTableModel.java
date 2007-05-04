@@ -94,10 +94,15 @@ public class TradeTableModel extends AbstractTableModel implements
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == 0) return ((Good) goodsList.get(rowIndex)).getName();
 		else {
-			Settlement settlement = (Settlement) settlements.get(columnIndex - 1);
-			Good good = (Good) goodsList.get(rowIndex);
-			double result = settlement.getGoodsManager().getGoodValuePerMass(good);
-			return new Double(result);
+			try {
+				Settlement settlement = (Settlement) settlements.get(columnIndex - 1);
+				Good good = (Good) goodsList.get(rowIndex);
+				double result = settlement.getGoodsManager().getGoodValuePerItem(good);
+				return new Double(result);
+			}
+			catch (Exception e) {
+				return null;
+			}
 		}
 	}
 }
