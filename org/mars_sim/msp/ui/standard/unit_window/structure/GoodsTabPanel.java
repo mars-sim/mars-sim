@@ -111,7 +111,7 @@ public class GoodsTabPanel extends TabPanel {
         
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Good";
-            else if (columnIndex == 1) return "Value (VP)";
+            else if (columnIndex == 1) return "Value (VP/kg)";
             else return "unknown";
         }
         
@@ -119,7 +119,7 @@ public class GoodsTabPanel extends TabPanel {
         	if (row < getRowCount()) {
         		Good good = (Good) goods.get(row);
         		if (column == 0) return good.getName();
-        		else if (column == 1) return manager.getGoodValue(good);
+        		else if (column == 1) return manager.getGoodValuePerMass(good);
         		else return "unknown";
             }
         	else return "";

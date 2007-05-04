@@ -27,6 +27,7 @@ import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.job.Areologist;
+import org.mars_sim.msp.simulation.person.ai.job.Driver;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
@@ -43,6 +44,7 @@ import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessin
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /**
@@ -81,14 +83,48 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the value of a good.
+	 * Gets the value per mass of a good.
 	 * @param good the good to check value for.
-	 * @return the value (value points).
+	 * @return the value per mass (value points / kg).
 	 */
-	public double getGoodValue(Good good) {
+	public double getGoodValuePerMass(Good good) {
 		if (goodsValues.containsKey(good)) 
 			return ((Double) goodsValues.get(good)).doubleValue();
 		else throw new IllegalArgumentException("Good: " + good + " not valid.");
+	}
+	
+	/**
+	 * Gets the value per item of a good.
+	 * @param good the good to check.
+	 * @return value (VP)
+	 * @throws Exception if error getting value.
+	 */
+	public double getGoodValuePerItem(Good good) throws Exception {
+		if (goodsValues.containsKey(good)) 
+			return getGoodValuePerMass(good) * getGoodMassPerItem(good);
+		else throw new IllegalArgumentException("Good: " + good + " not valid.");
+	}
+	
+	/**
+	 * Gets the mass per item for a good.
+	 * @param good the good to check.
+	 * @return mass (kg) per item (or 1kg for amount resources).
+	 * @throws Exception if error getting mass per item.
+	 */
+	private double getGoodMassPerItem(Good good) throws Exception {
+		double result = 0D;
+		
+		if (Good.AMOUNT_RESOURCE.equals(good.getCategory())) result = 1D;
+		else if (Good.ITEM_RESOURCE.equals(good.getCategory())) 
+			result = ((ItemResource) good.getObject()).getMassPerItem();
+		else if (Good.EQUIPMENT.equals(good.getCategory())) 
+			result = EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0, 0)).getMass();
+		else if (Good.VEHICLE.equals(good.getCategory())) {
+			VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+			result = config.getEmptyMass(good.getName());
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -131,7 +167,9 @@ public class GoodsManager implements Serializable {
 			if (Good.EQUIPMENT.equals(good.getCategory()))
 				value = determineEquipmentGoodValue(good.getClassType());
 			
-			// TODO: determine all vehicle values.
+			// Determine all vehicle values.
+			if (Good.VEHICLE.equals(good.getCategory()))
+				value = determineVehicleGoodValue(good.getName());
 			
 			goodsValues.put(good, new Double(value));
 		}
@@ -233,7 +271,7 @@ public class GoodsManager implements Serializable {
 	private double getFarmingDemand(AmountResource resource) throws Exception {
 		double demand = 0D;
 		if (resource.equals(AmountResource.WASTE_WATER) || resource.equals(AmountResource.CARBON_DIOXIDE)) {
-			double foodValue = getGoodValue(GoodsUtil.getResourceGood(AmountResource.FOOD));
+			double foodValue = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.FOOD));
 			
 			Iterator i = settlement.getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
@@ -294,7 +332,7 @@ public class GoodsManager implements Serializable {
 				AmountResource output = (AmountResource) i.next();
 				double outputRate = process.getMaxOutputResourceRate(output); 
 				if (!process.isWasteOutputResource(resource))
-					outputValue += (getGoodValue(GoodsUtil.getResourceGood(output)) * outputRate);
+					outputValue += (getGoodValuePerMass(GoodsUtil.getResourceGood(output)) * outputRate);
 			}
 			
 			double otherInputValue = 0D;
@@ -303,7 +341,7 @@ public class GoodsManager implements Serializable {
 				AmountResource input = (AmountResource) j.next();
 				double inputRate = process.getMaxInputResourceRate(input);
 				if (!input.equals(resource) && !process.isAmbientInputResource(input)) 
-					otherInputValue += (getGoodValue(GoodsUtil.getResourceGood(input)) * inputRate);
+					otherInputValue += (getGoodValuePerMass(GoodsUtil.getResourceGood(input)) * inputRate);
 			}
 			
 			double totalValue = outputValue - otherInputValue;
@@ -376,7 +414,7 @@ public class GoodsManager implements Serializable {
 	private double determineItemResourceGoodValue(ItemResource resource) throws Exception {
 		double value = 0D;
 	
-		double supply = getAmountOfResourceForSettlement(resource) + 1D;
+		double supply = getNumberOfResourceForSettlement(resource) + 1D;
 		double demand = 0D;
 		
 		// TODO: Determine demand.
@@ -387,38 +425,37 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the amount (mass) of an item resource for a settlement.
+	 * Gets the number of an item resource for a settlement.
 	 * @param resource the resource to check.
-	 * @return amount (kg) of resource for the settlement.
-	 * @throws InventoryException if error getting the amount of the resource.
+	 * @return number of resource for the settlement.
+	 * @throws InventoryException if error getting the number of the resource.
 	 */
-	private double getAmountOfResourceForSettlement(ItemResource resource) throws InventoryException {
-		double amount = 0D;
-		double mass = resource.getMassPerItem();
+	private double getNumberOfResourceForSettlement(ItemResource resource) throws InventoryException {
+		double number = 0D;
 		
-		// Get amount of resource in settlement storage.
-		amount += settlement.getInventory().getItemResourceNum(resource) * mass;
+		// Get number of resources in settlement storage.
+		number += settlement.getInventory().getItemResourceNum(resource);
 		
-		// Get amount of resource out on mission vehicles.
+		// Get number of resources out on mission vehicles.
 		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = (Mission) i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
-					amount += vehicle.getInventory().getItemResourceNum(resource) * mass;
+					number += vehicle.getInventory().getItemResourceNum(resource);
 			}
 		}
 		
-		// Get amount of resource carried by people on EVA.
+		// Get number of resources carried by people on EVA.
 		PersonIterator j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.getLocationSituation().equals(Person.OUTSIDE)) 
-				amount += person.getInventory().getItemResourceNum(resource) * mass;
+				number += person.getInventory().getItemResourceNum(resource);
 		}
 		
-		return amount;
+		return number;
 	}
 	
 	/**
@@ -431,7 +468,7 @@ public class GoodsManager implements Serializable {
 		double value = 0D;
 		
 		// Determine supply amount.
-		double supply = getAmountOfEquipmentForSettlement(equipmentClass);
+		double supply = getNumberOfEquipmentForSettlement(equipmentClass) + 1D;
 		
 		//Determine demand amount.
 		double demand = determineEquipmentDemand(equipmentClass);
@@ -444,39 +481,36 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Determines the demand for a type of equipment.
 	 * @param equipmentClass the equipment class.
-	 * @return demand (kg).
+	 * @return demand number.
 	 * @throws Exception if error getting demand.
 	 */
 	private double determineEquipmentDemand(Class equipmentClass) throws Exception {
-		int numDemand = 0;
-		
-		// Gets the mass per item based on an example instance of the equipment class.
-		double mass = EquipmentFactory.getEquipment(equipmentClass, new Coordinates(0, 0)).getMass();
+		double numDemand = 0D;
 		
 		// Determine number of EVA suits that are needed
-		if (EVASuit.class.equals(equipmentClass)) numDemand += 2 * settlement.getAllAssociatedPeople().size();
+		if (EVASuit.class.equals(equipmentClass)) numDemand += 2D * settlement.getAllAssociatedPeople().size();
 		
 		// Determine the number of containers that are needed.
-		if (Container.class.isAssignableFrom(equipmentClass)) numDemand = 10;
+		if (Container.class.isAssignableFrom(equipmentClass)) numDemand = 10D;
 		
 		int areologistNum = getAreologistNum();
 		
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
-			double iceValue = getGoodValue(GoodsUtil.getResourceGood(AmountResource.ICE));
-			numDemand +=  CollectIce.REQUIRED_BAGS * areologistNum * Math.round(iceValue);
+			double iceValue = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
+			numDemand +=  CollectIce.REQUIRED_BAGS * areologistNum * iceValue;
 		}
 		
 		// Determine number of specimen containers that are needed.
 		if (SpecimenContainer.class.equals(equipmentClass)) 
 			numDemand +=  Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistNum;
 		
-		return numDemand * mass;
+		return numDemand;
 	}
 	
 	/**
 	 * Gets the number of areologists associated with the settlement.
-	 * @return number of areologists
+	 * @return number of areologists.
 	 */
 	private int getAreologistNum() {
 		int result = 0;
@@ -488,39 +522,109 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the amount (mass) of an equipment for a settlement.
-	 * @param equipmentClass the equipmentType to check.
-	 * @return amount (kg) of equipment for the settlement.
-	 * @throws Exception if error getting the amount of the equipment.
+	 * Gets the number of drivers associated with the settlement.
+	 * @return number of drivers.
 	 */
-	private double getAmountOfEquipmentForSettlement(Class equipmentClass) throws Exception {
-		double amount = 0D;
+	private int getDriverNum() {
+		int result = 0;
+		PersonIterator i = settlement.getAllAssociatedPeople().iterator();
+		while (i.hasNext()) {
+			if (i.next().getMind().getJob() instanceof Driver) result ++;
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets the number of equipment for a settlement.
+	 * @param equipmentClass the equipmentType to check.
+	 * @return number of equipment for the settlement.
+	 * @throws Exception if error getting the number of the equipment.
+	 */
+	private double getNumberOfEquipmentForSettlement(Class equipmentClass) throws Exception {
+		double number = 0D;
 		
-		// Gets the mass per item based on an example instance of the equipment class.
-		double mass = EquipmentFactory.getEquipment(equipmentClass, new Coordinates(0, 0)).getMass();
+		// Get number of the equipment in settlement storage.
+		number += settlement.getInventory().findNumUnitsOfClass(equipmentClass);
 		
-		// Get amount of the equipment in settlement storage.
-		amount += settlement.getInventory().findNumUnitsOfClass(equipmentClass) * mass;
-		
-		// Get amount of resource out on mission vehicles.
+		// Get number of resource out on mission vehicles.
 		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = (Mission) i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
-					amount += vehicle.getInventory().findNumUnitsOfClass(equipmentClass) * mass;
+					number += vehicle.getInventory().findNumUnitsOfClass(equipmentClass);
 			}
 		}
 		
-		// Get amount of resource carried by people on EVA.
+		// Get number of resource carried by people on EVA.
 		PersonIterator j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.getLocationSituation().equals(Person.OUTSIDE)) 
-				amount += person.getInventory().findNumUnitsOfClass(equipmentClass) * mass;
+				number += person.getInventory().findNumUnitsOfClass(equipmentClass);
 		}
 		
-		return amount;
+		return number;
+	}
+	
+	/**
+	 * Determines the value of a vehicle good.
+	 * @param vehicleType the vehicle type.
+	 * @return the value (value points / kg).
+	 * @throws Exception if error determining vehicle value.
+	 */
+	private double determineVehicleGoodValue(String vehicleType) throws Exception {
+		double value = 0D;
+		
+		// Determine supply amount.
+		double supply = getNumberOfVehiclesForSettlement(vehicleType) + 1D;
+		
+		//Determine demand amount.
+		double demand = determineVehicleDemand(vehicleType);
+		
+		value = demand / supply;
+		
+		return value;
+	}
+	
+	/**
+	 * Gets the number of the vehicle for the settlement.
+	 * @param vehicleType the vehicle type.
+	 * @return the number of vehicles.
+	 * @throws Exception if error getting the amount.
+	 */
+	private double getNumberOfVehiclesForSettlement(String vehicleType) throws Exception {
+		double number = 0D;
+		
+		VehicleIterator i = settlement.getAllAssociatedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) number += 1D;
+		}
+		
+		return number;
+	}
+	
+	/**
+	 * Determine the number vehicles needed by the settlement.
+	 * @param vehicleType the vehicle type.
+	 * @return the number needed.
+	 * @throws Exception if error determining demand.
+	 */
+	private double determineVehicleDemand(String vehicleType) throws Exception {
+		double demand = 0D;
+		
+		if (vehicleType.equals("explorer rover")) {
+			demand += getAreologistNum() / 2D;
+			demand += getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
+		}
+		else if (vehicleType.equals("transport rover")) {
+			demand += getDriverNum() / 2D;
+			demand *= ((double) settlement.getAllAssociatedPeople().size() / 
+					(double) settlement.getPopulationCapacity());
+		}
+		
+		return demand;
 	}
 }

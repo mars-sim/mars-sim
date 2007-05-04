@@ -96,7 +96,7 @@ public class TradeTableModel extends AbstractTableModel implements
 		else {
 			Settlement settlement = (Settlement) settlements.get(columnIndex - 1);
 			Good good = (Good) goodsList.get(rowIndex);
-			double result = settlement.getGoodsManager().getGoodValue(good);
+			double result = settlement.getGoodsManager().getGoodValuePerMass(good);
 			return new Double(result);
 		}
 	}

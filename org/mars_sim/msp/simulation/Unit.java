@@ -193,6 +193,14 @@ public abstract class Unit implements Serializable {
     	this.baseMass = baseMass;
     	fireUnitUpdate(MASS_EVENT);
     }
+    
+    /**
+     * Gets the base mass of the unit.
+     * @return base mass (kg).
+     */
+    public double getBaseMass() {
+    	return baseMass;
+    }
 
     /**
      * String representation of this Unit.

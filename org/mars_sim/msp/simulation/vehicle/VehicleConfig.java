@@ -77,7 +77,7 @@ public class VehicleConfig implements Serializable {
 		for (int x=0; x < roverNodes.getLength(); x++) {
 			Element roverElement = (Element) roverNodes.item(x);
 			String type = roverElement.getAttribute(TYPE);
-			if (roverType.equals(type)) result = roverElement;
+			if (roverType.equalsIgnoreCase(type)) result = roverElement;
 		}
 		
 		if (result == null) throw new Exception("Rover type: " + roverType + 
