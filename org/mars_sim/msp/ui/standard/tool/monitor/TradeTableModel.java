@@ -6,6 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitEvent;
 import org.mars_sim.msp.simulation.UnitListener;
+import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementCollection;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
@@ -70,7 +71,8 @@ public class TradeTableModel extends AbstractTableModel implements
      */
     public String getColumnName(int columnIndex) {
     	if (columnIndex == 0) return "Trade Good";
-    	else return settlements.get(columnIndex - 1).getName();
+    	else if (columnIndex == 1) return "Category";
+    	else return settlements.get(columnIndex - 2).getName();
     }
     
     /**
@@ -79,12 +81,12 @@ public class TradeTableModel extends AbstractTableModel implements
      * @return Class of specified column.
      */
     public Class getColumnClass(int columnIndex) {
-    	if (columnIndex == 0) return String.class;
+    	if (columnIndex < 2) return String.class;
     	else return Double.class;
     }
 	
 	public int getColumnCount() {
-		return settlements.size() + 1;
+		return settlements.size() + 2;
 	}
 
 	public int getRowCount() {
@@ -93,9 +95,10 @@ public class TradeTableModel extends AbstractTableModel implements
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == 0) return ((Good) goodsList.get(rowIndex)).getName();
+		else if (columnIndex == 1) return (getGoodCategory((Good) goodsList.get(rowIndex)));
 		else {
 			try {
-				Settlement settlement = (Settlement) settlements.get(columnIndex - 1);
+				Settlement settlement = (Settlement) settlements.get(columnIndex - 2);
 				Good good = (Good) goodsList.get(rowIndex);
 				double result = settlement.getGoodsManager().getGoodValuePerItem(good);
 				return new Double(result);
@@ -104,5 +107,17 @@ public class TradeTableModel extends AbstractTableModel implements
 				return null;
 			}
 		}
+	}
+	
+	public String getGoodCategory(Good good) {
+		String result = good.getCategory();
+		
+		if (result.equals("amount resource")) result = "resource";
+		else if (result.equals("item resource")) result = "part";
+		else if (result.equals("equipment")) {
+			if (Container.class.isAssignableFrom(good.getClassType())) result = "container";
+		}
+		
+		return result;
 	}
 }

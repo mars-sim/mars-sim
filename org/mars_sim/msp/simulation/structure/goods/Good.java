@@ -33,8 +33,6 @@ public class Good implements Serializable{
 	 * @param category the good's category.
 	 */
 	Good(String name, Object object, String category) {
-		
-		
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 			
