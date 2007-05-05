@@ -147,6 +147,28 @@ public class SettlementConfig implements Serializable {
 	}
 	
 	/**
+	 * Gets the resource types in a settlement template.
+	 * @param templateName the name of the settlement template.
+	 * @return map of resource types and amounts.
+	 * @throws Exception if there isn't a settlement template with this name or
+	 * if there is an XML parsing error.
+	 */
+	public Map getTemplateResources(String templateName) throws Exception {
+		Map result = new HashMap();
+		
+		Element templateElement = getSettlementTemplateElement(templateName);
+		NodeList resourceNodes = templateElement.getElementsByTagName(RESOURCE);
+		for (int x=0; x < resourceNodes.getLength(); x++) {
+			Element resourceElement = (Element) resourceNodes.item(x);
+			String type = resourceElement.getAttribute(TYPE);
+			Double amount = new Double(resourceElement.getAttribute(AMOUNT));
+			result.put(type, amount);
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Gets the number of resupplies for a settlement template.
 	 * @param templateName the name of the settlement template.
 	 * @return number of resupplies

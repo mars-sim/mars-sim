@@ -38,6 +38,11 @@
 			<equipment type="Bag" number="20" />
 			<equipment type="Specimen Container" number="20" />
 			
+			<!-- Resources -->
+			<!-- type: the type of resource (see resources.txt) -->
+			<!-- amount: the amount of the resource (kg) -->
+			<resource type="waste water" amount="100.0" />
+			
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
 				
@@ -63,6 +68,8 @@
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="40" />
 			<equipment type="Specimen Container" number="40" />
+			<resource type="waste water" amount="200.0" />
+			<resource type="carbon dioxide" amount="100.0" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -82,6 +89,8 @@
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="60" />
 			<equipment type="Specimen Container" number="60" />
+			<resource type="waste water" amount="300.0" />
+			<resource type="carbon dioxide" amount="200.0" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -109,6 +118,8 @@
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="100" />
 			<equipment type="Specimen Container" number="100" />
+			<resource type="waste water" amount="1000.0" />
+			<resource type="carbon dioxide" amount="500.0" />
 		</template>
 	
 	</settlement-template-list>

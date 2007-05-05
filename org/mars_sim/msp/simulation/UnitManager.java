@@ -20,6 +20,7 @@ import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.vehicle.*;
 
@@ -70,6 +71,7 @@ public class UnitManager implements Serializable {
         createInitialSettlements();
         createInitialVehicles();
         createInitialEquipment();
+        createInitialResources();
         createInitialPeople();
     }
 
@@ -279,6 +281,37 @@ public class UnitManager implements Serializable {
     					settlement.getInventory().storeUnit(equipment);
     					if (!(equipment instanceof Container)) addUnit(equipment);
     				}
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		throw new Exception("Equipment could not be created: " + e.getMessage());
+    	}
+    }
+    
+    /**
+     * Creates the initial resources at a settlement.
+     * Note: This is in addition to any initial resources set in buildings.
+     * @throws Exception if error storing resources.
+     */
+    private void createInitialResources() throws Exception {
+    	
+		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
+    	
+    	try {
+    		SettlementIterator i = getSettlements().iterator();
+    		while (i.hasNext()) {
+    			Settlement settlement = i.next();
+    			Map resourceMap = config.getTemplateResources(settlement.getTemplate());
+    			Iterator j = resourceMap.keySet().iterator();
+    			while (j.hasNext()) {
+    				String type = (String) j.next();
+    				double amount = ((Double) resourceMap.get(type)).doubleValue();
+    				AmountResource resource = AmountResource.findAmountResource(type);
+    				Inventory inv = settlement.getInventory();
+    				double capacity = inv.getAmountResourceRemainingCapacity(resource);
+    				if (amount > capacity) amount = capacity;
+    				inv.storeAmountResource(resource, amount);
     			}
     		}
     	}
