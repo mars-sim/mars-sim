@@ -51,7 +51,8 @@ public class TaskManager implements Serializable {
                                        ResearchMedicine.class,
                                        Teach.class, CookMeal.class,
                                        MaintenanceEVA.class,
-                                       LoadVehicle.class, UnloadVehicle.class};
+                                       LoadVehicle.class, UnloadVehicle.class,
+                                       ToggleResourceProcess.class };
     
     // Cache variables.
     private MarsClock timeCache;
@@ -256,8 +257,9 @@ public class TaskManager implements Serializable {
     			Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
     			taskProbCache.put(probabilityClass, probability);
     			totalProbCache += probability.doubleValue();
-    		} catch (Exception e) {
-    			System.err.println("TaskManager.getTotalTaskProbability(): " + e.toString());
+    		} 
+    		catch (Exception e) {
+    			e.printStackTrace(System.err);
     		}
     	}
     	

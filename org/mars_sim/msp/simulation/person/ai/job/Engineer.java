@@ -34,6 +34,7 @@ public class Engineer extends Job implements Serializable {
 		jobTasks.add(RepairEVAMalfunction.class);
 		jobTasks.add(EnterAirlock.class);
 		jobTasks.add(ExitAirlock.class);
+		jobTasks.add(ToggleResourceProcess.class);
 		
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

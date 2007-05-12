@@ -145,9 +145,9 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		evaExperience *= getTeachingExperienceModifier();
 		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
 		
-		// If phase is maintenance vehicle, add experience to mechanics skill.
+		// If phase is maintenance, add experience to mechanics skill.
 		if (MAINTAIN.equals(getPhase())) {
-			// 1 base experience point per 100 millisols of collection time spent.
+			// 1 base experience point per 100 millisols of time spent.
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;

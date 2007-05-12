@@ -20,6 +20,9 @@ import org.mars_sim.msp.simulation.time.*;
  */
 public class ResourceProcess implements Serializable {
     
+	// The work time required to toggle this process on or off. 
+	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
+	
     private String name;
     private Map maxInputResourceRates;
     private Map maxAmbientInputResourceRates;
@@ -27,6 +30,7 @@ public class ResourceProcess implements Serializable {
     private Map maxWasteOutputResourceRates;
     private boolean runningProcess;
     private double currentProductionLevel;
+    private double toggleRunningWorkTime;
     
     /**
      * Constructor
@@ -101,11 +105,17 @@ public class ResourceProcess implements Serializable {
     }
     
     /**
-     * Sets if the process is running or not.
-     * @param running true if process is running.
+     * Adds work time to toggling the process on or off.
+     * @param time the amount (millisols) of time to add.
      */
-    public void setProcessRunning(boolean running) {
-        runningProcess = running;
+    public void addToggleWorkTime(double time) {
+    	toggleRunningWorkTime += time;
+    	if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
+    		toggleRunningWorkTime = 0D;
+    		runningProcess = !runningProcess;
+    		// if (runningProcess) System.out.println(name + " turned on.");
+    		// else System.out.println(name + " turned off.");
+    	}
     }
     
     /**

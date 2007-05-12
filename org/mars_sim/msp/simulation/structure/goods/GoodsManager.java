@@ -350,7 +350,7 @@ public class GoodsManager implements Serializable {
 			if (resourceInputRate > 0D) value = totalValue / resourceInputRate;
 		}
 		
-		return value;
+		return value / 2D;
 	}
 	
 	/**
