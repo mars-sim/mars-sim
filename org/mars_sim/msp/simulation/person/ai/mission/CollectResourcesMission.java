@@ -215,6 +215,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     }
     
     public void endCollectingAtSite() {
+    	System.out.println("Collecting phase ended due to external trigger.");
     	endCollectingSite = true;
     	
     	// End each member's collection task.
@@ -317,7 +318,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				setNextNavpointIndex(getNumberOfNavpoints() - 2);
 				updateTravelDestination();
 				siteCollectedResources = 0D;
-				setPhaseEnded(true);
 			}
 		}
 	}

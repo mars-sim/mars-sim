@@ -735,9 +735,15 @@ public class Inventory implements Serializable {
         	if (containedUnits == null) containedUnits = new UnitCollection();
             containedUnits.add(unit);
             unit.setContainerUnit(owner);
+            clearAmountResourceCapacityCache();
+        	clearAmountResourceStoredCache();
             if (owner != null) {
             	unit.setCoordinates(owner.getCoordinates());
-            	owner.fireUnitUpdate(INVENTORY_STORING_UNIT_EVENT, unit);
+            	owner.fireUnitUpdate(INVENTORY_STORING_UNIT_EVENT, unit); 
+            	Iterator i = unit.getInventory().getAllAmountResourcesStored().iterator();
+            	while (i.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, (AmountResource) i.next());
+            	Iterator j = unit.getInventory().getAllItemResourcesStored().iterator();
+            	while (j.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, (ItemResource) j.next());
             }
         }
         else throw new InventoryException("Unit: " + unit + " could not be stored.");
@@ -753,7 +759,15 @@ public class Inventory implements Serializable {
     	if (containsUnit(unit)) {
     		if (containedUnits.contains(unit)) {
     			containedUnits.remove(unit);
-    			if (owner != null) owner.fireUnitUpdate(INVENTORY_RETRIEVING_UNIT_EVENT, unit);
+    			clearAmountResourceCapacityCache();
+            	clearAmountResourceStoredCache();
+    			if (owner != null) {
+    				owner.fireUnitUpdate(INVENTORY_RETRIEVING_UNIT_EVENT, unit);
+    				Iterator i = unit.getInventory().getAllAmountResourcesStored().iterator();
+    				while (i.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, (AmountResource) i.next());
+    				Iterator j = unit.getInventory().getAllItemResourcesStored().iterator();
+    				while (j.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, (ItemResource) j.next());
+    			}
     			retrieved = true;
     		}
     	}
