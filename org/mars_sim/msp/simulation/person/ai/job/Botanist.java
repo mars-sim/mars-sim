@@ -33,7 +33,7 @@ public class Botanist extends Job implements Serializable {
 		jobTasks.add(TendGreenhouse.class);
 		
 		// Add botanist-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
+		// jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);	
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
