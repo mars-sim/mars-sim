@@ -35,14 +35,15 @@ public class ResourceProcess implements Serializable {
     /**
      * Constructor
      * @param name the name of the process.
+     * @param defaultOn true of process is on by default, false if off by default. 
      */
-    public ResourceProcess(String name) {
+    public ResourceProcess(String name, boolean defaultOn) {
         this.name = name;
         maxInputResourceRates = new HashMap();
         maxAmbientInputResourceRates = new HashMap();
         maxOutputResourceRates = new HashMap();
         maxWasteOutputResourceRates = new HashMap();
-        runningProcess = true;
+        runningProcess = defaultOn;
         currentProductionLevel = 1D;
     }
     

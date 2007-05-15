@@ -65,6 +65,7 @@ public class BuildingConfig implements Serializable {
 	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
 	private static final String VEHICLE_CAPACITY = "vehicle-capacity";
 	private static final String COOKING = "cooking";
+	private static final String DEFAULT = "default";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -372,7 +373,12 @@ public class BuildingConfig implements Serializable {
 		NodeList resourceProcessNodes = resourceProcessingElement.getElementsByTagName(PROCESS);
 		for (int x=0; x < resourceProcessNodes.getLength(); x++) {
 			Element processElement = (Element) resourceProcessNodes.item(x);
-			ResourceProcess process = new ResourceProcess(processElement.getAttribute(NAME));
+			
+			String defaultString = processElement.getAttribute(DEFAULT);
+			boolean defaultOn = true;
+			if (defaultString.equals("off")) defaultOn = false;
+			
+			ResourceProcess process = new ResourceProcess(processElement.getAttribute(NAME), defaultOn);
 			
 			// Get input resources.
 			NodeList inputNodes = processElement.getElementsByTagName(INPUT);

@@ -60,7 +60,7 @@
 			<resource-processing power-down-level=".5">
 				
 				<!-- Water recycliing process for cleaning waste water. -->
-				<process name="Water Recycling">
+				<process name="Water Recycling" default="off">
 				
 					<!-- Waste water influx. -->
 					<!-- resource: the resource added to the process. -->
@@ -80,14 +80,14 @@
 				</process>
 				
 				<!-- Carbon scrubbing process for cleaning carbon dioxide from the air. -->
-				<process name="Carbon Scrubbing">
+				<process name="Carbon Scrubbing" default="off">
 					<input resource="Carbon Dioxide" rate=".000067" ambient="false" />
 					<output resource="Oxygen" rate=".00005" ambient="false" />
 				</process>
 				
 				<!-- Ice melting and filtration process for melting collected ice and filtering -->
 				<!-- it into the settlement's water inventory. -->
-				<process name="Ice Melting/Filtration">
+				<process name="Ice Melting/Filtration" default="off">
 					<input resource="Ice" rate=".01" ambient="false" />
 					<output resource="Water" rate=".005" ambient="false" />
 				</process>
@@ -156,7 +156,7 @@
 				<resource-storage resource="Food" capacity="500.0" />
 			</storage>
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump">
+				<process name="Carbon Dioxide Pump" default="on">
 					<input resource="Carbon Dioxide" rate=".001" ambient="true" />
 					<output resource="Carbon Dioxide" rate=".001" ambient="false" />
 				</process>
@@ -181,18 +181,18 @@
 		<power-required base-power="10.0" base-power-down-power="5.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sebatier">
+				<process name="Sebatier" default="on">
 					<input resource="Carbon Dioxide" rate=".0011" ambient="true" />
 					<input resource="Hydrogen" rate=".0002" ambient="false" />
 					<output resource="Methane" rate=".0004" ambient="false" />
 					<output resource="Water" rate=".0009" ambient="false" />
 				</process>
-				<process name="Water Electrolysis">
+				<process name="Water Electrolysis" default="off">
 					<input resource="Water" rate=".0001" ambient="false" />
 					<output resource="Hydrogen" rate=".000011" ambient="false" />
 					<output resource="Oxygen" rate=".000089" ambient="false" />
 				</process>
-				<process name="CO2 Reduction">
+				<process name="CO2 Reduction" default="on">
 					<input resource="Carbon Dioxide" rate=".000825" ambient="true" />
 					<output resource="Oxygen" rate=".0003" ambient="false" />
 					<output resource="Carbon Monoxide" rate=".000525" ambient="true" />
@@ -217,18 +217,18 @@
 		<power-required base-power="10.0" base-power-down-power="5.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sebatier">
+				<process name="Sebatier" default="on">
 					<input resource="Carbon Dioxide" rate=".0011" ambient="true" />
 					<input resource="Hydrogen" rate=".0002" ambient="false" />
 					<output resource="Methane" rate=".0004" ambient="false" />
 					<output resource="Water" rate=".0009" ambient="false" />
 				</process>
-				<process name="Water Electrolysis">
+				<process name="Water Electrolysis" default="off">
 					<input resource="Water" rate=".0001" ambient="false" />
 					<output resource="Hydrogen" rate=".000011" ambient="false" />
 					<output resource="Oxygen" rate=".000089" ambient="false" />
 				</process>
-				<process name="CO2 Reduction">
+				<process name="CO2 Reduction" default="on">
 					<input resource="Carbon Dioxide" rate=".000825" ambient="true" />
 					<output resource="Oxygen" rate=".0003" ambient="false" />
 					<output resource="Carbon Monoxide" rate=".000525" ambient="true" />
@@ -264,31 +264,31 @@
 		<power-required base-power="50.0" base-power-down-power="10.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sebatier">
+				<process name="Sebatier" default="on">
 					<input resource="Carbon Dioxide" rate=".001" ambient="true" />
 					<input resource="Hydrogen" rate=".002" ambient="false" />
 					<output resource="Methane" rate=".004" ambient="false" />
 					<output resource="Water" rate=".009" ambient="false" />
 				</process>
-				<process name="Water Electrolysis">
+				<process name="Water Electrolysis" default="off">
 					<input resource="Water" rate=".001" ambient="false" />
 					<output resource="Hydrogen" rate=".00011" ambient="false" />
 					<output resource="Oxygen" rate=".00089" ambient="false" />
 				</process>
-				<process name="CO2 Reduction">
+				<process name="CO2 Reduction" default="on">
 					<input resource="Carbon Dioxide" rate=".00825" ambient="true" />
 					<output resource="Oxygen" rate=".003" ambient="false" />
 					<output resource="Carbon Monoxide" rate=".00525" ambient="true" />
 				</process>
-				<process name="Water Recycling">
+				<process name="Water Recycling" default="off">
 					<input resource="Waste Water" rate=".002" ambient="false" />
 					<output resource="Water" rate=".00017" ambient="false" />
 				</process>
-				<process name="Carbon Scrubbing">
+				<process name="Carbon Scrubbing" default="off">
 					<input resource="Carbon Dioxide" rate=".00067" ambient="false" />
 					<output resource="Oxygen" rate=".0005" ambient="false" />
 				</process>
-				<process name="Ice Melting/Filtration">
+				<process name="Ice Melting/Filtration" default="off">
 					<input resource="Ice" rate=".01" ambient="false" />
 					<output resource="Water" rate=".005" ambient="false" />
 				</process>
@@ -362,7 +362,7 @@
 				<resource-storage resource="Food" capacity="500.0" />
 			</storage>	
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump">
+				<process name="Carbon Dioxide Pump" default="on">
 					<input resource="Carbon Dioxide" rate=".002" ambient="true" />
 					<output resource="Carbon Dioxide" rate=".002" ambient="false" />
 				</process>
