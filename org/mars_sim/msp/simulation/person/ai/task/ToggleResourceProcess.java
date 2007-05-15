@@ -412,10 +412,10 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
         // Check if process has already been completed.
         if (process.isProcessRunning() == toggleOn) {
         	endTask();
-        	Settlement settlement = building.getBuildingManager().getSettlement();
-        	String toggle = "off";
-        	if (toggleOn) toggle = "on";
-        	System.out.println(person.getName() + " turning " + toggle + " " + process.getProcessName() + " at " + settlement.getName() + ": " + building.getName());
+        	// Settlement settlement = building.getBuildingManager().getSettlement();
+        	// String toggle = "off";
+        	// if (toggleOn) toggle = "on";
+        	// System.out.println(person.getName() + " turning " + toggle + " " + process.getProcessName() + " at " + settlement.getName() + ": " + building.getName());
         }
             
         // Check if an accident happens during toggle process.
