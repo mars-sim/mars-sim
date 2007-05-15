@@ -289,7 +289,7 @@ public class SettlementTableModel extends UnitTableModel {
     }
     
     /**
-     * Remove a unit to the model.
+     * Remove a unit from the model.
      * @param oldUnit Unit to remove from the model.
      */
     protected void removeUnit(Unit oldUnit) {

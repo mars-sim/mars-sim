@@ -90,12 +90,20 @@ public class TableSorter extends AbstractTableModel
         // boolean resort = false;
         TableModelEvent newEvent = null;
         int type = e.getType();
+        
+        // Determine the first and low rows.
+        int firstRow = e.getFirstRow();
+        int lastRow = e.getLastRow();
+        for (int x = 0; x < indexes.length; x++) {
+        	if (indexes[x] == e.getFirstRow()) firstRow = x;
+        	if (indexes[x] == e.getLastRow()) lastRow = x;
+        }
 
         // Decide whether to resort
         if ((type == TableModelEvent.DELETE) ||
             (type == TableModelEvent.INSERT)) {
             sortModel();
-            newEvent = new TableModelEvent(this, e.getFirstRow(), e.getLastRow(), e.getColumn(), e.getType());
+            newEvent = new TableModelEvent(this, firstRow, lastRow, e.getColumn(), e.getType());
         }
         else if ((e.getColumn() == sortedColumn) ||
                 (e.getColumn() == TableModelEvent.ALL_COLUMNS))
@@ -108,20 +116,11 @@ public class TableSorter extends AbstractTableModel
 
         // Fallback position, reconstruct new event by applying changes.
         if (newEvent == null) {
-            int firstRow = e.getFirstRow();
-            int lastRow = e.getLastRow();
-            if ((e.getFirstRow() == e.getLastRow()) && (e.getFirstRow() != -1)) {
-                // Just one row changed so adjust the index
-                firstRow = indexes[e.getFirstRow()];
-                lastRow = indexes[e.getFirstRow()];
-
-            }
-            else {
+            if ((firstRow == -1) || (firstRow != lastRow)) {
                 firstRow = 0;
                 if (sourceModel != null) lastRow = sourceModel.getRowCount();
             }
-            newEvent = new TableModelEvent(this, firstRow, lastRow,
-                                                    e.getColumn());
+            newEvent = new TableModelEvent(this, firstRow, lastRow, e.getColumn());
         }
 
         fireTableChanged(newEvent);
