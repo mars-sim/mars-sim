@@ -97,7 +97,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
     				ResourceProcess process = getResourceProcess(building);
     				isEVA = !building.hasFunction(LifeSupport.NAME);
     				double diff = getResourcesValueDiff(settlement, process);
-    				double baseProb = diff * 1000D;
+    				double baseProb = diff * 10000D;
     				if (baseProb > 100D) baseProb = 100D;
     				result += baseProb;
     				
