@@ -35,6 +35,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Crop;
@@ -170,6 +171,10 @@ public class GoodsManager implements Serializable {
 			// Determine all vehicle values.
 			if (Good.VEHICLE.equals(good.getCategory()))
 				value = determineVehicleGoodValue(good.getName());
+			
+			// Determine trade value.
+			double tradeValue = determineTradeValue(good);
+			if (tradeValue > value) value = tradeValue;
 			
 			goodsValues.put(good, new Double(value));
 		}
@@ -580,7 +585,7 @@ public class GoodsManager implements Serializable {
 		// Determine supply amount.
 		double supply = getNumberOfVehiclesForSettlement(vehicleType) + 1D;
 		
-		//Determine demand amount.
+		// Determine demand amount.
 		double demand = determineVehicleDemand(vehicleType);
 		
 		value = demand / supply;
@@ -626,5 +631,28 @@ public class GoodsManager implements Serializable {
 		}
 		
 		return demand;
+	}
+	
+	/**
+	 * Determines the trade value for a good at a settlement.
+	 * @param good the good.
+	 * @return the trade value (VP/kg).
+	 * @throws Exception if error determining trade value.
+	 */
+	private double determineTradeValue(Good good) throws Exception {
+		double bestTradeValue = 0D;
+		
+		SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().iterator();
+		while (i.hasNext()) {
+			Settlement tempSettlement = i.next();
+			if (tempSettlement != settlement) {
+				double baseValue = tempSettlement.getGoodsManager().getGoodValuePerMass(good);
+				double distance = settlement.getCoordinates().getDistance(tempSettlement.getCoordinates());
+				double tradeValue = baseValue / (1D + (distance / 1000D));
+				if (tradeValue > bestTradeValue) bestTradeValue = tradeValue;
+			}
+		}
+		
+		return bestTradeValue;
 	}
 }
