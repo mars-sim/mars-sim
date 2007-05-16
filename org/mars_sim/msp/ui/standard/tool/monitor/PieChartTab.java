@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * PieChartView.java
- * @version 2.75 2003-11-27
+ * @version 2.81 2007-05-15
  * @author Barry Evans
  */
 
@@ -53,7 +53,7 @@ class PieChartTab extends MonitorTab {
 
         public TablePieDataset(TableModel model, int column) {
             this.column = column;
-            dataMap = new LinkedHashMap();
+            dataMap = new LinkedHashMap(model.getRowCount());
             setModel(model);
         }
 
@@ -65,9 +65,11 @@ class PieChartTab extends MonitorTab {
             
             int rows = model.getRowCount();
 
-            // Clear the data map.
-            Iterator iter = dataMap.keySet().iterator();
-            while (iter.hasNext()) dataMap.put(iter.next(), new Integer(0));
+            Map tempMap = new LinkedHashMap(dataMap);
+            
+            // Clear the temp map.
+            Iterator iter = tempMap.keySet().iterator();
+            while (iter.hasNext()) tempMap.put(iter.next(), new Integer(0));
                 
 
             // Add category values and categories.
@@ -78,23 +80,20 @@ class PieChartTab extends MonitorTab {
                 else if (!(category instanceof String)) category = category.toString();
                 if (((String) category).trim().equals("")) category = "None";
 
-                Integer value = (Integer) dataMap.get(category);
+                Integer value = (Integer) tempMap.get(category);
                 int count = 1;
-                if (value != null) {
-                    count = value.intValue() + 1;
-                }
+                if (value != null) count = value.intValue() + 1;
 
                 // Put updated value in data map.
-                dataMap.put(category, new Integer(count));
+                tempMap.put(category, new Integer(count));
             }    
             
-            /*
-            System.out.println("");
-            Iterator i2 = dataMap.keySet().iterator();
-            while (i2.hasNext()) System.out.println("'" + i2.next() + "'");        
-            */
-            
-            fireDatasetChanged();
+            if (!dataMap.equals(tempMap)) {
+            	dataMap.clear();
+            	dataMap = tempMap;
+            	fireDatasetChanged();
+            }
+            else tempMap.clear();
         }
         
 

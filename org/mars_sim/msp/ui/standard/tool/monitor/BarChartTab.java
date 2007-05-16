@@ -226,8 +226,16 @@ class BarChartTab extends MonitorTab {
             if ((e.getType() == TableModelEvent.INSERT) ||
                 (e.getType() == TableModelEvent.DELETE)) {
                 loadCategories();
+                fireDatasetChanged();
             }
-            fireDatasetChanged();
+            else if (e.getColumn() == TableModelEvent.ALL_COLUMNS) fireDatasetChanged();
+            else {
+            	boolean dataChanged = false;
+            	for (int x=0; x < columns.length; x++) {
+            		if (columns[x] == e.getColumn()) dataChanged = true;
+            	}
+            	if (dataChanged) fireDatasetChanged();
+            }
         }
     }
 
