@@ -53,7 +53,7 @@ class PieChartTab extends MonitorTab {
 
         public TablePieDataset(TableModel model, int column) {
             this.column = column;
-            dataMap = new LinkedHashMap(model.getRowCount());
+            dataMap = Collections.synchronizedMap(new LinkedHashMap(model.getRowCount()));
             setModel(model);
         }
 
@@ -65,7 +65,7 @@ class PieChartTab extends MonitorTab {
             
             int rows = model.getRowCount();
 
-            Map tempMap = new LinkedHashMap(dataMap);
+            Map tempMap = Collections.synchronizedMap(new LinkedHashMap(dataMap));
             
             // Clear the temp map.
             Iterator iter = tempMap.keySet().iterator();
