@@ -16,7 +16,7 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
  */
 public class SpecimenContainer extends Equipment implements Container, Serializable {
 
-	public static final String TYPE = "Specimen Container";
+	public static final String TYPE = "Specimen Box";
 	private static final double BASE_MASS = .5D; // Base mass of the container (kg).
 	private static final double ROCK_CAPACITY = 10D; // Rock sample capacity (kg).
 	
