@@ -13,8 +13,11 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
+import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 
 /** 
  * The TendGreenhouse class is a task for tending the greenhouse in a settlement.
@@ -72,23 +75,30 @@ public class TendGreenhouse extends Task implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
         
-        try {
-			// See if there is an available greenhouse.
-        	Building farmingBuilding = getAvailableGreenhouse(person);
-        	if (farmingBuilding != null) {
-        		result = 200D;
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        	try {
+        		// See if there is an available greenhouse.
+        		Building farmingBuilding = getAvailableGreenhouse(person);
+        		if (farmingBuilding != null) {
+        			result = 50D;
         		
-        		// Crowding modifier.
-        		result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
-				result *= Task.getRelationshipModifier(person, farmingBuilding);
+        			// Crowding modifier.
+        			result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
+        			result *= Task.getRelationshipModifier(person, farmingBuilding);
+        		}
         	}
-        }
-        catch (BuildingException e) {
-        	System.err.println("TendGreenhouse.getProbability(): " + e.getMessage());
+        	catch (BuildingException e) {
+        		System.err.println("TendGreenhouse.getProbability(): " + e.getMessage());
+        	}
+        	
+            // Food value modifier.
+            GoodsManager manager = person.getSettlement().getGoodsManager();
+            double foodValue = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.FOOD));
+            result *= foodValue;
         }
         
         // Effort-driven task modifier.
-        // result *= person.getPerformanceRating();
+        result *= person.getPerformanceRating();
 
 		// Job modifier.
         Job job = person.getMind().getJob();
