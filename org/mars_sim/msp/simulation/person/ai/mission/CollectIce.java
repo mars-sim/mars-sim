@@ -10,10 +10,13 @@ import java.util.List;
 
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.equipment.Bag;
+import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
+import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /** 
@@ -76,44 +79,16 @@ public class CollectIce extends CollectResourcesMission {
 	 */
 	public static double getNewMissionProbability(Person person) {
 
-		double result = 0D;
-
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			Settlement settlement = person.getSettlement();
-	    
-			// Check if a mission-capable rover is available.
-			boolean reservableRover = areVehiclesAvailable(settlement);
-
-			// Check if minimum number of people are available at the settlement.
-			// Plus one to hold down the fort.
-			boolean minNum = minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
-			
-			// Check if there are enough bags at the settlement for collecting ice.
-			boolean enoughBags = (numCollectingContainersAvailable(settlement, Bag.class) >= REQUIRED_BAGS);
-	    
-			if (reservableRover && minNum && enoughBags) {
-				// Calculate the probability based on the water situation.
-				try {
-					double water = settlement.getInventory().getAmountResourceStored(AmountResource.WATER);
-					double amountNeeded = settlement.getAllAssociatedPeople().size() * 250D;
-					if (water > 0D) result = 100D * (amountNeeded / water);
-					else result = 100D * (amountNeeded / 1D);
-					if (result > 500D) result = 500D;
-				}
-				catch (InventoryException e) {
-					e.printStackTrace(System.err);
-				}
-			} 
-			
-			// Crowding modifier
-			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-			if (crowding > 0) result *= (crowding + 1);	
-			
-			// Job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) result *= job.getStartMissionProbabilityModifier(CollectIce.class);			
+		double result = CollectResourcesMission.getNewMissionProbability(person, Bag.class, 
+				REQUIRED_BAGS, MIN_PEOPLE, CollectIce.class);
+		
+		if (result > 0D) {
+			// Factor the value of ice at the settlement.
+			GoodsManager manager = person.getSettlement().getGoodsManager();
+			double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
+			result *= value * 10D;
 		}
-        
+		
 		return result;
 	}
 	

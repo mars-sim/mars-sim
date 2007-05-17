@@ -22,6 +22,7 @@ import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -173,6 +174,46 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
        	catch (Exception e) {
        		throw new MissionException(null, e);
        	}
+	}
+	
+	/** 
+	 * Gets the weighted probability that a given person would start this mission.
+	 * @param person the given person
+	 * @param containerType = the required container class.
+	 * @param containerNum = the number of containers required.
+	 * @param minPeople = the minimum number of people required.
+	 * @param missionType the mission class.
+	 * @return the weighted probability
+	 */
+	public static double getNewMissionProbability(Person person, Class containerType, int containerNum, 
+			int minPeople, Class missionType) {
+		double result = 0D;
+		
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			Settlement settlement = person.getSettlement();
+	    
+			// Check if a mission-capable rover is available.
+			boolean reservableRover = areVehiclesAvailable(settlement);
+			
+			// Check if minimum number of people are available at the settlement.
+			// Plus one to hold down the fort.
+			boolean minNum = minAvailablePeopleAtSettlement(settlement, (minPeople + 1));
+			
+			// Check if there are enough specimen containers at the settlement for collecting rock samples.
+			boolean enoughContainers = (numCollectingContainersAvailable(settlement, containerType) >= containerNum);
+	    
+			if (reservableRover && minNum && enoughContainers) result = 5D;
+			
+			// Crowding modifier
+			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+			if (crowding > 0) result *= (crowding + 1);		
+			
+			// Job modifier.
+			Job job = person.getMind().getJob();
+			if (job != null) result *= job.getStartMissionProbabilityModifier(missionType);	
+		}
+		
+		return result;
 	}
 	
     /**

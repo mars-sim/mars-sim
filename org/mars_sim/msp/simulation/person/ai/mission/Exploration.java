@@ -80,34 +80,8 @@ public class Exploration extends CollectResourcesMission {
 	 */
 	public static double getNewMissionProbability(Person person) {
 
-		double result = 0D;
-
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			Settlement settlement = person.getSettlement();
-	    
-			// Check if a mission-capable rover is available.
-			boolean reservableRover = areVehiclesAvailable(settlement);
-			
-			// Check if minimum number of people are available at the settlement.
-			// Plus one to hold down the fort.
-			boolean minNum = minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
-			
-			// Check if there are enough specimen containers at the settlement for collecting rock samples.
-			boolean enoughContainers = 
-				(numCollectingContainersAvailable(settlement, SpecimenContainer.class) >= REQUIRED_SPECIMEN_CONTAINERS);
-	    
-			if (reservableRover && minNum && enoughContainers) result = 5D;
-			
-			// Crowding modifier
-			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-			if (crowding > 0) result *= (crowding + 1);		
-			
-			// Job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) result *= job.getStartMissionProbabilityModifier(Exploration.class);	
-		}
-        
-		return result;
+		return CollectResourcesMission.getNewMissionProbability(person, SpecimenContainer.class, 
+				REQUIRED_SPECIMEN_CONTAINERS, MIN_PEOPLE, Exploration.class);
 	}
 	
 	/**
