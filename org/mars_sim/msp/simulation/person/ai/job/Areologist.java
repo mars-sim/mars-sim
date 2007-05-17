@@ -17,6 +17,8 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
+import org.mars_sim.msp.simulation.structure.goods.Good;
+import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /** 
@@ -124,6 +126,11 @@ public class Areologist extends Job implements Serializable {
 				}
 			}
 		}
+		
+		// Add ice value at settlement X 10.
+		Good iceGood = GoodsUtil.getResourceGood(AmountResource.ICE);
+		double iceValue = settlement.getGoodsManager().getGoodValuePerMass(iceGood);
+		result += iceValue * 10D;
 		
 		return result;	
 	}
