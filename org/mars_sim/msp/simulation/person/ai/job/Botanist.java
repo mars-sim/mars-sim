@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Botanist.java
- * @version 2.78 2005-08-22
+ * @version 2.81 2007-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -12,9 +12,12 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.goods.Good;
+import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 
 /** 
  * The Botanist class represents a job for a botanist.
@@ -85,19 +88,24 @@ public class Botanist extends Job implements Serializable {
 			}
 		}
 		
-		// Add (growing area in greenhouses) / 10
+		// Add (growing area in greenhouses) / 50
 		List greenhouseBuildings = settlement.getBuildingManager().getBuildings(Farming.NAME);
 		Iterator j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = (Building) j.next();
 			try {
 				Farming farm = (Farming) building.getFunction(Farming.NAME);
-				result += (farm.getGrowingArea() / 10D);
+				result += (farm.getGrowingArea() / 50D);
 			}
 			catch (BuildingException e) {
 				System.err.println("Botanist.getSetltementNeed(): " + e.getMessage());
 			}
 		}
+		
+		// Multiply by food value at settlement.
+		Good foodGood = GoodsUtil.getResourceGood(AmountResource.FOOD);
+		double foodValue = settlement.getGoodsManager().getGoodValuePerMass(foodGood);
+		result *= foodValue;
 		
 		return result;	
 	}	
