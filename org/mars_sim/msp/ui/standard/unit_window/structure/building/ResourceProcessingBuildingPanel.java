@@ -11,7 +11,6 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,6 +24,7 @@ import org.mars_sim.msp.ui.standard.*;
  */
 public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
     
+	// Data members
 	private ResourceProcessing processor;
 	private List processLabels;
 	private ImageIcon greenDot;
