@@ -38,7 +38,7 @@ public class MaintenanceTabPanel extends TabPanel {
     private BoundedRangeModel progressBarModel; // The progress bar model.
     private int lastCompletedTime; // The time since last completed maintenance.
     private Collection malfunctionPanels; // List of malfunction panels.
-    private Collection malfunctionCache; // List of malfunctions in building.
+    private Collection malfunctionCache; // List of malfunctions.
     private JPanel malfunctionListPanel; // Malfunction list panel.
     
     /**

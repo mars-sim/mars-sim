@@ -188,7 +188,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
         
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
-		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
+		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
         
 		if (finishedMaintenance || malfunction || shouldEndEVAOperation()) {
 			setPhase(ENTER_AIRLOCK);
@@ -264,19 +264,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		
 		// Total probabilities for all malfunctionable entities in person's local.
 		Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-		while (i.hasNext()) {
-			Malfunctionable e = (Malfunctionable) i.next();
-			boolean isStructure = (e instanceof Structure);
-			boolean uninhabitableBuilding = false;
-			if (e instanceof Building) 
-				uninhabitableBuilding = !((Building) e).hasFunction(LifeSupport.NAME);
-			MalfunctionManager manager = e.getMalfunctionManager();
-			boolean hasMalfunction = manager.hasMalfunction();
-			if ((isStructure || uninhabitableBuilding) && !hasMalfunction) {
-				double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
-				totalProbabilityWeight += entityWeight;
-			}
-		}
+		while (i.hasNext()) totalProbabilityWeight += getProbability((Malfunctionable) i.next());
 		
 		// Randomly determine a malfunctionable entity.
 		double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);
@@ -285,24 +273,34 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		i = MalfunctionFactory.getMalfunctionables(person).iterator();
 		while (i.hasNext()) {
 			Malfunctionable malfunctionable = (Malfunctionable) i.next();
-			boolean isStructure = (malfunctionable instanceof Structure);
-			boolean uninhabitableBuilding = false;
-			if (malfunctionable instanceof Building) 
-				uninhabitableBuilding = !((Building) malfunctionable).hasFunction(LifeSupport.NAME);
-			MalfunctionManager manager = malfunctionable.getMalfunctionManager();
-			boolean hasMalfunction = manager.hasMalfunction();
-			if ((isStructure || uninhabitableBuilding) && !hasMalfunction) {
-				double entityWeight = manager.getEffectiveTimeSinceLastMaintenance();
-			
-				if (chance < entityWeight) {
-					result = malfunctionable;
-					setDescription("Performing maintenance on " + result.getName());
-					break;
-				}
-				else chance -= entityWeight;
+			double entityWeight = getProbability(malfunctionable);
+			if (chance < entityWeight) {
+				result = malfunctionable;
+				setDescription("Performing maintenance on " + result.getName());
+				break;
 			}
+			else chance -= entityWeight;
 		}
     	
+		return result;
+	}
+	
+	/**
+	 * Gets the probability weight for a malfunctionable.
+	 * @param malfunctionable the malfunctionable.
+	 * @return the probability weight.
+	 */
+	private double getProbability(Malfunctionable malfunctionable) {
+		double result = 0D;
+		boolean isStructure = (malfunctionable instanceof Structure);
+		boolean uninhabitableBuilding = false;
+		if (malfunctionable instanceof Building) 
+			uninhabitableBuilding = !((Building) malfunctionable).hasFunction(LifeSupport.NAME);
+		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
+		boolean hasMalfunction = manager.hasMalfunction();
+		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		boolean minTime = (effectiveTime >= 1000D); 
+		if ((isStructure || uninhabitableBuilding) && !hasMalfunction && minTime) result = effectiveTime;
 		return result;
 	}
 

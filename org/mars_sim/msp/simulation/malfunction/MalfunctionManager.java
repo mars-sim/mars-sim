@@ -484,11 +484,11 @@ public class MalfunctionManager implements Serializable {
      * @param time (in millisols)
      */
     public void addMaintenanceWorkTime(double time) {
-        maintenanceTimeCompleted += time;
-        if (maintenanceTimeCompleted >= maintenanceWorkTime) {
-            maintenanceTimeCompleted = 0D;
-            timeSinceLastMaintenance = 0D;
-            effectiveTimeSinceLastMaintenance = 0D;
+    	maintenanceTimeCompleted += time;
+    	if (maintenanceTimeCompleted >= maintenanceWorkTime) {
+    		maintenanceTimeCompleted = 0D;
+    		timeSinceLastMaintenance = 0D;
+    		effectiveTimeSinceLastMaintenance = 0D;
         }
     }
 

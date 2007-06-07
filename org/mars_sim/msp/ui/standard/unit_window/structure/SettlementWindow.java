@@ -1,15 +1,17 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 2.81 2007-04-16
+ * @version 2.81 2007-05-25
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.unit_window.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.unit_window.InventoryTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 
 /**
  * The SettlementWindow is the window for displaying a settlement.
@@ -36,5 +38,6 @@ public class SettlementWindow extends UnitWindow {
         addTabPanel(new BuildingsTabPanel(unit, desktop));
         addTabPanel(new GoodsTabPanel(unit, desktop));
         addTabPanel(new ResourceProcessesTabPanel(unit, desktop));
+        addTabPanel(new MaintenanceTabPanel(unit, desktop));
     }
 }

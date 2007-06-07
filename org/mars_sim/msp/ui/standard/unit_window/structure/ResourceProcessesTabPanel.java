@@ -28,6 +28,9 @@ import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
+/**
+ * A tab panel for displaying all of the resource processes in a settlement.
+ */
 public class ResourceProcessesTabPanel extends TabPanel {
 
 	// Data members
@@ -68,6 +71,9 @@ public class ResourceProcessesTabPanel extends TabPanel {
         populateProcessList();
     }
     
+    /**
+     * Populates the process list panel with all building processes.
+     */
     private void populateProcessList() {
     	// Clear the list.
     	processListPanel.removeAll();
@@ -112,12 +118,21 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		}
 	}
 	
+	/**
+	 * An internal class for a resource process label.
+	 */
 	private class ResourceProcessLabel extends JLabel {
 		
+		// Data members.
 		private ResourceProcess process;
 		private ImageIcon greenDot;
 		private ImageIcon redDot;
 		
+		/**
+		 * Constructor
+		 * @param process the resource process.
+		 * @param building the building the process is in.
+		 */
 		ResourceProcessLabel(ResourceProcess process, Building building) {
 			// Use JLabel constructor.
 			super();
@@ -140,6 +155,9 @@ public class ResourceProcessesTabPanel extends TabPanel {
 			}
 		}
 		
+		/**
+		 * Update the label.
+		 */
 		void update() {
 			if (process.isProcessRunning()) {
 				setIcon(greenDot);
