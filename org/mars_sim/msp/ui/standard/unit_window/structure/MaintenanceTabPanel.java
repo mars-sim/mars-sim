@@ -1,26 +1,30 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 2.81 2007-06-06
+ * @version 2.81 2007-06-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoundedRangeModel;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
@@ -34,6 +38,7 @@ public class MaintenanceTabPanel extends TabPanel {
 	private List buildingsList;
 	private JScrollPane maintenanceScrollPanel;
 	private JPanel maintenanceListPanel;
+	private List malfunctionsList;
 	private JScrollPane malfunctionsScrollPanel;
 	private JPanel malfunctionsListPanel;
 	
@@ -85,17 +90,27 @@ public class MaintenanceTabPanel extends TabPanel {
 		malfunctionsScrollPanel.setPreferredSize(new Dimension(200, 75));
         malfunctionsPanel.add(malfunctionsScrollPanel, BorderLayout.CENTER);  
 		
+        // Prepare malfunctions outer list panel.
+        JPanel malfunctionsOuterListPanel = new JPanel(new BorderLayout(0, 0));
+        malfunctionsOuterListPanel.setBorder(new MarsPanelBorder());
+        malfunctionsScrollPanel.setViewportView(malfunctionsOuterListPanel);
+        
         // Prepare malfunctions list panel.
-        malfunctionsListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
-        malfunctionsListPanel.setBorder(new MarsPanelBorder());
-        malfunctionsScrollPanel.setViewportView(malfunctionsListPanel);
-        // populateProcessList();
+        malfunctionsListPanel = new JPanel();
+        malfunctionsListPanel.setLayout(new BoxLayout(malfunctionsListPanel, BoxLayout.Y_AXIS));
+        malfunctionsOuterListPanel.add(malfunctionsListPanel, BorderLayout.NORTH);
+        
+        populateMalfunctionsList();
     }
     
+    /**
+     * Populates the maintenance list.
+     */
     private void populateMaintenanceList() {
     	// Clear the list.
     	maintenanceListPanel.removeAll();
     	
+    	// Populate the list.
     	buildingsList = settlement.getBuildingManager().getBuildings();
     	Iterator i = buildingsList.iterator();
     	while (i.hasNext()) {
@@ -104,36 +119,85 @@ public class MaintenanceTabPanel extends TabPanel {
     		maintenanceListPanel.add(panel);
     	}
     }
+    
+    /**
+     * Populates the malfunctions list.
+     */
+    private void populateMalfunctionsList() {
+    	// Clear the list.
+    	malfunctionsListPanel.removeAll();
+    	
+    	// Populate the list.
+    	if (malfunctionsList == null) malfunctionsList = new ArrayList();
+    	else malfunctionsList.clear();
+    	Iterator i = settlement.getBuildingManager().getBuildings().iterator();
+    	while (i.hasNext()) {
+    		Building building = (Building) i.next();
+    		Iterator j = building.getMalfunctionManager().getMalfunctions().iterator();
+    		while (j.hasNext()) {
+    			Malfunction malfunction = (Malfunction) j.next();
+    			malfunctionsList.add(malfunction);
+    			JPanel panel = new BuildingMalfunctionPanel(malfunction, building);
+    			malfunctionsListPanel.add(panel);
+    		}
+    	}
+    }
 	
-	@Override
+	/**
+	 * Update the tab panel.
+	 */
 	public void update() {
 		
 		// Check if building list has changed.
-		Settlement settlement = (Settlement) unit;
-		List tempBuildings = settlement.getBuildingManager().getBuildings();
+		List tempBuildings = ((Settlement) unit).getBuildingManager().getBuildings();
 		if (!tempBuildings.equals(buildingsList)) {
 			// Populate maintenance list.
-			buildingsList = tempBuildings;
 			populateMaintenanceList();
 			maintenanceScrollPanel.validate();
 		}
 		else {
 			// Update all building maintenance panels.
 			Component[] components = maintenanceListPanel.getComponents();
-			for (int x = 0; x < components.length; x++) {
-				BuildingMaintenancePanel panel = (BuildingMaintenancePanel) components[x];
-				panel.update();
-			}
+			for (int x = 0; x < components.length; x++) ((BuildingMaintenancePanel) components[x]).update();
+		}
+		
+		// Create temporary malfunctions list.
+		List tempMalfunctions = new ArrayList();
+		Iterator i = tempBuildings.iterator();
+		while (i.hasNext()) {
+    		Iterator j = ((Building) i.next()).getMalfunctionManager().getMalfunctions().iterator();
+    		while (j.hasNext()) malfunctionsList.add(j.next());
+		}
+		
+		// Check if malfunctions list has changed.
+		if (!tempMalfunctions.equals(malfunctionsList)) {
+			// Populate malfunctions list.
+			populateMalfunctionsList();
+			malfunctionsListPanel.validate();
+			malfunctionsScrollPanel.validate();
+		}
+		else {
+			// Update all building malfunction panels.
+			Component[] components = malfunctionsListPanel.getComponents();
+			for (int x = 0; x < components.length; x++) ((BuildingMalfunctionPanel) components[x]).update();
 		}
 	}
 	
+	/**
+	 * Inner class for the building maintenance panel.
+	 */
 	private class BuildingMaintenancePanel extends JPanel {
 		
+		// Data members 
 		private MalfunctionManager manager;
 		private int lastCompletedCache;
 		private BoundedRangeModel progressBarModel;
 		private JLabel lastLabel;
 		
+		/**
+		 * Constructor
+		 * @param building the building to display. 
+		 */
 		BuildingMaintenancePanel(Building building) {
 			// User JPanel constructor.
 			super();
@@ -153,6 +217,7 @@ public class MaintenanceTabPanel extends TabPanel {
 			lastLabel = new JLabel("Last Completed: " + lastCompletedCache + " sols", JLabel.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);
 			
+			// Prepare progress bar panel.
 			JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 			mainPanel.add(progressBarPanel, BorderLayout.CENTER);
 			
@@ -173,7 +238,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		/**
 		 * Update this panel.
 		 */
-		private void update() {
+		void update() {
 			// Update progress bar.
 			double completed = manager.getMaintenanceWorkTimeCompleted();
 	        double total = manager.getMaintenanceWorkTime();
@@ -186,6 +251,89 @@ public class MaintenanceTabPanel extends TabPanel {
 	        	lastCompletedCache = lastCompleted;
 	        	lastLabel.setText("Last Completed: " + lastCompletedCache + " sols");
 	        }
+		}
+	}
+	
+	/**
+	 * Inner class for building malfunction panel.
+	 */
+	private class BuildingMalfunctionPanel extends JPanel {
+		
+		// Data members.
+		private Malfunction malfunction;
+		private JLabel malfunctionLabel;
+		private BoundedRangeModel progressBarModel;
+		
+		/**
+		 * Constructor
+		 * @param malfunction the malfunction for the panel.
+		 * @param building the building the malfunction is in.
+		 */
+		BuildingMalfunctionPanel(Malfunction malfunction, Building building) {
+			// Use JPanel constructor
+			super();
+			
+			// Initialize data members
+			this.malfunction = malfunction;
+			
+			// Set layout and border.
+			setLayout(new GridLayout(3, 1, 0, 0));
+			setBorder(new MarsPanelBorder());
+			
+			// Prepare the building label.
+			JLabel buildingLabel = new JLabel(building.getName(), JLabel.LEFT);
+			add(buildingLabel);
+			
+			// Prepare the malfunction label.
+			malfunctionLabel = new JLabel(malfunction.getName(), JLabel.LEFT);
+	        if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
+	        	malfunctionLabel.setText(malfunction.getName() + " - Emergency");
+	        	malfunctionLabel.setForeground(Color.red);
+	        }
+			add(malfunctionLabel);
+			
+			// Progress bar panel.
+			JPanel progressBarPanel = new JPanel(new BorderLayout(0, 0));
+			add(progressBarPanel, BorderLayout.CENTER);
+			
+	        // Prepare progress bar.
+	        JProgressBar progressBar = new JProgressBar();
+	        progressBarModel = progressBar.getModel();
+	        progressBar.setStringPainted(true);
+	        progressBarPanel.add(progressBar, BorderLayout.CENTER);
+	        
+	        // Set initial value for repair progress bar.
+	        double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime() 
+	            + malfunction.getEVAWorkTime();
+	        double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + 
+	            malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
+	        int percentComplete = 0;
+	        if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
+	        progressBarModel.setValue(percentComplete);
+		}
+		
+		/**
+		 * Update the panel.
+		 */
+		void update() {
+	        // Update name label.
+	        if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
+	        	malfunctionLabel.setText(malfunction.getName() + " - Emergency");
+	        	malfunctionLabel.setForeground(Color.red);
+	        }
+	        else {
+	        	malfunctionLabel.setText(malfunction.getName());
+	        	malfunctionLabel.setForeground(Color.black);
+	        }
+	        
+	        // Update progress bar.
+	        double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime() 
+	            + malfunction.getEVAWorkTime();
+	        double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + 
+	            malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
+	        int percentComplete = 0;
+	        if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
+	        progressBarModel.setValue(percentComplete);
 		}
 	}
 }

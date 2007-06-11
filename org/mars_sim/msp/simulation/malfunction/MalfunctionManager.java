@@ -141,10 +141,10 @@ public class MalfunctionManager implements Serializable {
     }
 
     /**
-     * Gets a collection of the unit's current malfunctions.
-     * @return malfunction collection
+     * Gets a list of the unit's current malfunctions.
+     * @return malfunction list
      */
-    public Collection getMalfunctions() {
+    public List getMalfunctions() {
         return new ArrayList(malfunctions);
     }
 

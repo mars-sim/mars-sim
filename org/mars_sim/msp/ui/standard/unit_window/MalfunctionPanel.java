@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionPanel.java
- * @version 2.75 2003-06-02
+ * @version 2.81 2007-06-10
  * @author Scott Davis
  */
 
@@ -21,10 +21,9 @@ public class MalfunctionPanel extends JPanel {
     private Malfunction malfunction; // The malfunction.
     private JLabel nameLabel; // The name label.
     private BoundedRangeModel repairBarModel; // The repair bar model.
-
+    
     /** 
-     * Constructs a MalfunctionPanel object.
-     *
+     * Constructs a MalfunctionPanel object with a name prefex..
      * @param malfunction the malfunction to display 
      */
     public MalfunctionPanel(Malfunction malfunction) {
