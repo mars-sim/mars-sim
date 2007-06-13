@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JobManager.java
- * @version 2.78 2005-08-06
+ * @version 2.81 2007-06-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -17,7 +17,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 public final class JobManager implements Serializable {
 	
 	// Data members
-	private static List jobs; // List of the jobs in the simulation. 
+	private static List<Job> jobs; // List of the jobs in the simulation. 
 
 	/**
 	 * Private constructor for static utility class.
@@ -28,22 +28,23 @@ public final class JobManager implements Serializable {
 	 * Initialize job list.
 	 */
 	private static void loadJobs() {
-		jobs = new ArrayList();
+		jobs = new ArrayList<Job>();
 		jobs.add(new Botanist());
 		jobs.add(new Areologist());
 		jobs.add(new Doctor());
 		jobs.add(new Engineer());
 		jobs.add(new Driver());
 		jobs.add(new Chef());
+		jobs.add(new Trader());
 	}
 	
 	/**
 	 * Gets a list of available jobs in the simulation.
 	 * @return list of jobs
 	 */
-	public static List getJobs() {
+	public static List<Job> getJobs() {
 		if (jobs == null) loadJobs();
-		return new ArrayList(jobs);
+		return new ArrayList<Job>(jobs);
 	}
 	
 	/**
@@ -53,9 +54,9 @@ public final class JobManager implements Serializable {
 	 */
 	public static Job getJob(String jobName) {
 		Job result = null;
-		Iterator i = getJobs().iterator();
+		Iterator<Job> i = getJobs().iterator();
 		while (i.hasNext()) {
-			Job job = (Job) i.next();
+			Job job = i.next();
 			if (job.getName().equals(jobName)) result = job;
 		}
 		return result;
@@ -102,9 +103,9 @@ public final class JobManager implements Serializable {
 		Job newJob = null;
 		double newJobProspect = Integer.MIN_VALUE;					
 		if (settlement != null) {
-			Iterator i = getJobs().iterator();
+			Iterator<Job> i = getJobs().iterator();
 			while (i.hasNext()) {
-				Job job = (Job) i.next();
+				Job job = i.next();
 				double jobProspect = getJobProspect(person, job, settlement, true);
 				if (jobProspect >= newJobProspect) {
 					newJob = job;
@@ -146,9 +147,9 @@ public final class JobManager implements Serializable {
 	 */
 	public static double getBestJobProspect(Person person, Settlement settlement, boolean isHomeSettlement) {
 		double bestProspect = Double.MIN_VALUE;
-		Iterator i = getJobs().iterator();
+		Iterator<Job> i = getJobs().iterator();
 		while (i.hasNext()) {
-			Job job = (Job) i.next();
+			Job job = i.next();
 			double prospect = getJobProspect(person, job, settlement, isHomeSettlement);
 			if (prospect > bestProspect) bestProspect = prospect;
 		}

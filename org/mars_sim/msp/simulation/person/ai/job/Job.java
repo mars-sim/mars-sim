@@ -27,9 +27,9 @@ public abstract class Job implements Serializable {
 
 	// Domain members
 	private String name; // Name of the job.
-	protected List jobTasks; // List of tasks related to the job.
-	protected List jobMissionStarts; // List of missions to be started by a person with this job.
-	protected List jobMissionJoins; // List of missions to be joined by a person with this job.
+	protected List<Class> jobTasks; // List of tasks related to the job.
+	protected List<Class> jobMissionStarts; // List of missions to be started by a person with this job.
+	protected List<Class> jobMissionJoins; // List of missions to be joined by a person with this job.
 
 	/**
 	 * Constructor
@@ -37,9 +37,9 @@ public abstract class Job implements Serializable {
 	 */
 	public Job(String name) {
 		this.name = name;
-		jobTasks = new ArrayList();
-		jobMissionStarts = new ArrayList();
-		jobMissionJoins = new ArrayList();
+		jobTasks = new ArrayList<Class>();
+		jobMissionStarts = new ArrayList<Class>();
+		jobMissionJoins = new ArrayList<Class>();
 	}
 	
 	/**

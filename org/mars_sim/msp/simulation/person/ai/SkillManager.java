@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.78 2004-11-15
+ * @version 2.81 2007-06-12
  * @author Scott Davis
  */
 
@@ -19,16 +19,17 @@ public class SkillManager implements Serializable {
 
     // Data members
     private Person person; // The person owning the SkillManager
-    private Hashtable skills; // A list of the person's skills keyed by name.
+    private Hashtable<String, Skill> skills; // A list of the person's skills keyed by name.
 
     /** Constructs a new SkillManager object */
     SkillManager(Person person) {
         this.person = person;
-        skills = new Hashtable();
+        skills = new Hashtable<String, Skill>();
 
         // Add starting skills randomly for person.
         String[] startingSkills = { Skill.DRIVING, Skill.BOTANY, Skill.MECHANICS,
-                                    Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL, Skill.COOKING };
+                                    Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL, 
+                                    Skill.COOKING, Skill.TRADING };
 
         for (int x = 0; x < startingSkills.length; x++) {
             int skillLevel = getInitialSkillLevel(0, 50);
@@ -86,7 +87,7 @@ public class SkillManager implements Serializable {
     public int getSkillLevel(String skillName) {
         int result = 0;
         if (skills.containsKey(skillName))
-            result = ((Skill) skills.get(skillName)).getLevel();
+            result = skills.get(skillName).getLevel();
 
         return result;
     }
@@ -111,7 +112,7 @@ public class SkillManager implements Serializable {
      */
     public void addNewSkill(Skill newSkill) {
         String skillName = newSkill.getName();
-        if (hasSkill(skillName)) ((Skill) skills.get(skillName)).setLevel(newSkill.getLevel());
+        if (hasSkill(skillName)) skills.get(skillName).setLevel(newSkill.getLevel());
         else skills.put(newSkill.getName(), newSkill);
     }
 
@@ -124,7 +125,7 @@ public class SkillManager implements Serializable {
     	
     	// int initialSkill = getSkillLevel(skillName);
     	
-        if (hasSkill(skillName)) ((Skill) skills.get(skillName)).addExperience(experiencePoints);
+        if (hasSkill(skillName)) skills.get(skillName).addExperience(experiencePoints);
         else {
             addNewSkill(new Skill(skillName));
             addExperience(skillName, experiencePoints);
