@@ -365,8 +365,8 @@ public class BuildingConfig implements Serializable {
 	 * @return a list of resource processes.
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
-	public List getResourceProcesses(String buildingName) throws Exception {
-		List resourceProcesses = new ArrayList();
+	public List<ResourceProcess> getResourceProcesses(String buildingName) throws Exception {
+		List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element resourceProcessingElement = (Element) functionsElement.getElementsByTagName(RESOURCE_PROCESSING).item(0);

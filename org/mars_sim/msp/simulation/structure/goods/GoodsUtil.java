@@ -12,10 +12,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.equipment.Barrel;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
+import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.equipment.GasCanister;
 import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -30,7 +32,7 @@ import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 public class GoodsUtil {
 
 	// Data members
-	private static List goodsList;
+	private static List<Good> goodsList;
 	
 	/**
 	 * Private constructor for utility class.
@@ -41,10 +43,10 @@ public class GoodsUtil {
 	 * Gets a list of all goods in the simulation.
 	 * @return list of goods
 	 */
-	public static List getGoodsList() {
+	public static List<Good> getGoodsList() {
 		
 		if (goodsList == null) {
-			goodsList = new ArrayList();
+			goodsList = new ArrayList<Good>();
 			populateGoodsList();
 		}
 		
@@ -75,9 +77,9 @@ public class GoodsUtil {
 		if (equipmentClass != null) {
 			Good result = null;
 			
-			Iterator i = goodsList.iterator();
+			Iterator<Good> i = getGoodsList().iterator();
 			while (i.hasNext()) {
-				Good good = (Good) i.next();
+				Good good = i.next();
 				if (good.getClassType() == equipmentClass) 
 					result = new Good(good.getName(), equipmentClass, Good.EQUIPMENT);
 			}
@@ -104,7 +106,7 @@ public class GoodsUtil {
 	 * @return true if good is valid.
 	 */
 	public static boolean containsGood(Good good) {
-		if (good != null) return goodsList.contains(good);
+		if (good != null) return getGoodsList().contains(good);
 		else throw new IllegalArgumentException("good cannot be null.");
 	}
 	
@@ -165,5 +167,27 @@ public class GoodsUtil {
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
+	}
+	
+	/**
+	 * Gets the mass per item for a good.
+	 * @param good the good to check.
+	 * @return mass (kg) per item (or 1kg for amount resources).
+	 * @throws Exception if error getting mass per item.
+	 */
+	public static double getGoodMassPerItem(Good good) throws Exception {
+		double result = 0D;
+		
+		if (Good.AMOUNT_RESOURCE.equals(good.getCategory())) result = 1D;
+		else if (Good.ITEM_RESOURCE.equals(good.getCategory())) 
+			result = ((ItemResource) good.getObject()).getMassPerItem();
+		else if (Good.EQUIPMENT.equals(good.getCategory())) 
+			result = EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0, 0)).getMass();
+		else if (Good.VEHICLE.equals(good.getCategory())) {
+			VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+			result = config.getEmptyMass(good.getName());
+		}
+		
+		return result;
 	}
 }

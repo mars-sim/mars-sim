@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.79 2006-06-13
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -156,9 +156,9 @@ public class UnloadVehicle extends Task implements Serializable {
      * @return list of vehicle missions.
      * @throws Exception if error finding missions.
      */
-    private static List getAllMissionsNeedingUnloading(Settlement settlement) throws Exception {
+    private static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) throws Exception {
     	
-    	List result = new ArrayList();
+    	List<Mission> result = new ArrayList<Mission>();
     	
     	MissionManager manager = Simulation.instance().getMissionManager();
     	Iterator i = manager.getMissions().iterator();
@@ -236,6 +236,10 @@ public class UnloadVehicle extends Task implements Serializable {
         	UnitIterator k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
         	while (k.hasNext() && (amountUnloading > 0D)) {
         		Equipment equipment = (Equipment) k.next();
+        		
+        		// Unload inventories of equipment (if possible)
+        		unloadEquipmentInventory(equipment);
+        		
         		vehicleInv.retrieveUnit(equipment);
         		settlementInv.storeUnit(equipment);
         		amountUnloading -= equipment.getMass();
@@ -277,6 +281,24 @@ public class UnloadVehicle extends Task implements Serializable {
         return 0D;
     }
     
+    private void unloadEquipmentInventory(Equipment equipment) throws InventoryException {
+    	Inventory eInv = equipment.getInventory();
+    	Inventory sInv = settlement.getInventory();
+    	
+        // Unload amount resources.
+    	// Note: only unloading amount resources at the moment.
+        Iterator i = eInv.getAllAmountResourcesStored().iterator();
+        while (i.hasNext()) {
+        	AmountResource resource = (AmountResource) i.next();
+        	double amount = eInv.getAmountResourceStored(resource);
+        	try {
+        		eInv.retrieveAmountResource(resource, amount);
+        		sInv.storeAmountResource(resource, amount);
+        	}
+        	catch (Exception e) {}
+        }
+    }
+    
 	/**
 	 * Adds experience to the person's skills used in this task.
 	 * @param time the amount of time (ms) the person performed this task.
@@ -308,8 +330,8 @@ public class UnloadVehicle extends Task implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List getAssociatedSkills() {
-		List results = new ArrayList();
+	public List<String> getAssociatedSkills() {
+		List<String> results = new ArrayList<String>(0);
 		return results;
 	}
 }

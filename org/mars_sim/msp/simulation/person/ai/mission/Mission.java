@@ -23,6 +23,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
+import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
@@ -50,12 +51,12 @@ public abstract class Mission implements Serializable {
     private String description; // Description of the mission
     private int minPeople; // The minimum number of people for mission.
     private boolean done; // True if mission is completed
-    private Collection phases; // A collection of the mission's phases.
+    private Collection<String> phases; // A collection of the mission's phases.
     private String phase; // The current phase of the mission
     private String phaseDescription; // The discription of the current phase of operation.
     private boolean phaseEnded; // Has the current phase ended?
     private int missionCapacity; // The number of people that can be in the mission.
-    private transient List listeners; // Mission listeners.
+    private transient List<MissionListener> listeners; // Mission listeners.
 
     /** 
      * Constructs a Mission object
@@ -73,11 +74,11 @@ public abstract class Mission implements Serializable {
         done = false;
         phase = null;
         phaseDescription = null;
-        phases = new ArrayList();
+        phases = new ArrayList<String>();
         phaseEnded = false;
         this.minPeople = minPeople;
         missionCapacity = Integer.MAX_VALUE;
-        listeners = Collections.synchronizedList(new ArrayList());
+        listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
 		// Created mission starting event.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(startingPerson, this, MissionHistoricalEvent.START);
@@ -92,7 +93,7 @@ public abstract class Mission implements Serializable {
      * @param newListener the listener to add.
      */
     public final void addMissionListener(MissionListener newListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
@@ -101,7 +102,7 @@ public abstract class Mission implements Serializable {
      * @param oldListener the listener to remove.
      */
     public final void removeMissionListener(MissionListener oldListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
     
@@ -119,7 +120,7 @@ public abstract class Mission implements Serializable {
      * @param target the event target or null if none.
      */
     protected final void fireMissionUpdate(String updateType, Object target) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
     	synchronized(listeners) {
     		Iterator i = listeners.iterator();
     		while (i.hasNext()) ((MissionListener) i.next()).missionUpdate(
@@ -580,7 +581,7 @@ public abstract class Mission implements Serializable {
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public abstract Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception ;
+    public abstract Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception ;
     
     /**
      * Gets the number and types of equipment needed for the mission.
@@ -588,7 +589,7 @@ public abstract class Mission implements Serializable {
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public abstract Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception;
+    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception;
     
     /** 
      * Time passing for mission.

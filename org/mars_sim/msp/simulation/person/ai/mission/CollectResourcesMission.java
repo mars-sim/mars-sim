@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.79 2006-06-01
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -25,6 +25,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Rover;
@@ -116,6 +117,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+		
+		// int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
+		// System.out.println("Starting " + getName() + " with " + emptyContainers + " " + containerType);
 	}
 	
 	/**
@@ -371,7 +375,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 */
 	private void determineCollectionSites(double roverRange, double tripTimeLimit, int numSites) throws MissionException {
 
-		List unorderedSites = new ArrayList();
+		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
 		
 		// Determining the actual travelling range.
 		double range = roverRange;
@@ -411,10 +415,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     		int collectionSiteNum = 1;
     		currentLocation = startingLocation;
     		while (unorderedSites.size() > 0) {
-    			Coordinates shortest = (Coordinates) unorderedSites.get(0);
-    			Iterator i = unorderedSites.iterator();
+    			Coordinates shortest = unorderedSites.get(0);
+    			Iterator<Coordinates> i = unorderedSites.iterator();
     			while (i.hasNext()) {
-    				Coordinates site = (Coordinates) i.next();
+    				Coordinates site = i.next();
     				if (currentLocation.getDistance(site) < currentLocation.getDistance(shortest)) 
     					shortest = site;
     			}
@@ -552,8 +556,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
-    	Map result = super.getResourcesNeededForRemainingMission(useBuffer);
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
+    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
     	
     	double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
     	double timeSols = collectionSitesTime / 1000D;
@@ -562,18 +566,18 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     	
     	// Determine life support supplies needed for trip.
     	double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-    	// if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    	if (result.containsKey(AmountResource.OXYGEN)) oxygenAmount += ((Double) result.get(AmountResource.OXYGEN)).doubleValue();
+    	if (result.containsKey(AmountResource.OXYGEN)) 
+    		oxygenAmount += ((Double) result.get(AmountResource.OXYGEN)).doubleValue();
     	result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
     		
     	double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-    	// if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    	if (result.containsKey(AmountResource.WATER)) waterAmount += ((Double) result.get(AmountResource.WATER)).doubleValue();
+    	if (result.containsKey(AmountResource.WATER)) 
+    		waterAmount += ((Double) result.get(AmountResource.WATER)).doubleValue();
     	result.put(AmountResource.WATER, new Double(waterAmount));
     		
     	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-    	// if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    	if (result.containsKey(AmountResource.FOOD)) foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
+    	if (result.containsKey(AmountResource.FOOD)) 
+    		foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
     	result.put(AmountResource.FOOD, new Double(foodAmount));
     	
     	return result;
@@ -653,10 +657,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
+    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
-    		Map result = new HashMap();
+    		Map<Class, Integer> result = new HashMap<Class, Integer>();
     	
         	// Include one EVA suit per person on mission.
         	result.put(EVASuit.class, new Integer(getPeopleNumber()));

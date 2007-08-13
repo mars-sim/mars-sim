@@ -21,7 +21,7 @@ public class ResourceProcessing extends Function implements Serializable {
 	public static final String NAME = "Resource Processing";
         
 	private double powerDownProcessingLevel;
-    private List resourceProcesses;
+    private List<ResourceProcess> resourceProcesses;
 
 	/**
 	 * Constructor
@@ -47,7 +47,7 @@ public class ResourceProcessing extends Function implements Serializable {
 	 * Gets the resource processes in this building.
 	 * @return list of processes.
 	 */
-    public List getProcesses() {
+    public List<ResourceProcess> getProcesses() {
     	return resourceProcesses;
     }
     
@@ -72,11 +72,10 @@ public class ResourceProcessing extends Function implements Serializable {
 			productionLevel = powerDownProcessingLevel;
 	
 		// Run each resource process.
-		Iterator i = resourceProcesses.iterator();
+		Iterator<ResourceProcess> i = resourceProcesses.iterator();
 		while (i.hasNext()) {
-			ResourceProcess process = (ResourceProcess) i.next();
 			try {
-				process.processResources(time, productionLevel, getBuilding().getInventory());
+				i.next().processResources(time, productionLevel, getBuilding().getInventory());
 			}
 			catch(Exception e) {
 				throw new BuildingException("Error processing resources: " + e.getMessage(), e);

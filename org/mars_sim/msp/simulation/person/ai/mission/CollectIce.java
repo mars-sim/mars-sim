@@ -1,18 +1,15 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 2.78 05-08-18
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.util.List;
 
-import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.equipment.Bag;
-import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;

@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.equipment;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Phase;
 
 /**
  * A specialized container for holding rock samples.
@@ -29,5 +30,13 @@ public class SpecimenContainer extends Equipment implements Container, Serializa
 		
 		// Set the capacity of the container.
 		getInventory().addAmountResourceTypeCapacity(AmountResource.ROCK_SAMPLES, ROCK_CAPACITY);
+	}
+	
+	/**
+	 * Gets the phase of resources this container can hold.
+	 * @return resource phase.
+	 */
+	public Phase getContainingResourcePhase() {
+		return Phase.SOLID;
 	}
 }

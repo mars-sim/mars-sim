@@ -28,30 +28,31 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 public class MissionManager implements Serializable {
 
     // Data members
-    private List missions; // Current missions in the simulation.
-    private transient List listeners; // Mission listeners.
+    private List<Mission> missions; // Current missions in the simulation.
+    private transient List<MissionManagerListener> listeners; // Mission listeners.
     
     // Cache variables.
     private Person personCache;
     private MarsClock timeCache;
-    private Map missionProbCache;
+    private Map<Class, Double> missionProbCache;
     private double totalProbCache;
 
     // Array of potential new missions
-    Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, CollectIce.class, RescueSalvageVehicle.class };
+    Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, 
+    		CollectIce.class, RescueSalvageVehicle.class, Trade.class };
     
     /** 
      * Constructor
      */
     public MissionManager() {
         // Initialize data members
-        missions = new ArrayList();
-        listeners = Collections.synchronizedList(new ArrayList());
+        missions = new ArrayList<Mission>();
+        listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
         
         // Initialize cache values.
         personCache = null;
         timeCache = null;
-        missionProbCache = new HashMap(potentialMissions.length);
+        missionProbCache = new HashMap<Class, Double>(potentialMissions.length);
         totalProbCache = 0D;
     }
     
@@ -60,7 +61,8 @@ public class MissionManager implements Serializable {
      * @param newListener The listener to add.
      */
     public void addListener(MissionManagerListener newListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = 
+    		Collections.synchronizedList(new ArrayList<MissionManagerListener>());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
@@ -69,7 +71,8 @@ public class MissionManager implements Serializable {
      * @param oldListener the listener to remove.
      */
     public void removeListener(MissionManagerListener oldListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = 
+    		Collections.synchronizedList(new ArrayList<MissionManagerListener>());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
 
@@ -88,11 +91,11 @@ public class MissionManager implements Serializable {
      * Gets a list of current missions.
      * @return list of missions.
      */
-    public List getMissions() {
+    public List<Mission> getMissions() {
     	// Remove inactive missions.
     	cleanMissions();
     	
-    	return new ArrayList(missions);
+    	return new ArrayList<Mission>(missions);
     }
 
     /** 
@@ -104,7 +107,7 @@ public class MissionManager implements Serializable {
     public Mission getMission(Person person) {
         Mission result = null;
         for (int x=0; x < missions.size(); x++) {
-            Mission tempMission = (Mission) missions.get(x);
+            Mission tempMission = missions.get(x);
             if (tempMission.hasPerson(person)) result = tempMission;
         }
         return result;
@@ -115,11 +118,13 @@ public class MissionManager implements Serializable {
      * @param newMission new mission to be added
      */
     public void addMission(Mission newMission) {
+    	if (newMission == null) throw new IllegalArgumentException("newMission is null");
         if (!missions.contains(newMission)) {
             missions.add(newMission);
             
             // Update listeners.
-            if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+            if (listeners == null) listeners = 
+            	Collections.synchronizedList(new ArrayList<MissionManagerListener>());
             synchronized(listeners) {
             	Iterator i = listeners.iterator();
             	while (i.hasNext()) ((MissionManagerListener) i.next()).addMission(newMission);
@@ -137,7 +142,8 @@ public class MissionManager implements Serializable {
             missions.remove(oldMission);
             
             // Update listeners.
-            if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+            if (listeners == null) listeners = 
+            	Collections.synchronizedList(new ArrayList<MissionManagerListener>());
             synchronized(listeners) {
             	Iterator i = listeners.iterator();
             	while (i.hasNext()) ((MissionManagerListener) i.next()).removeMission(oldMission);
@@ -206,14 +212,15 @@ public class MissionManager implements Serializable {
      * @param settlement the settlement to find missions.
      * @return list of missions associated with the settlement.
      */
-    public List getMissionsForSettlement(Settlement settlement) {
+    public List<Mission> getMissionsForSettlement(Settlement settlement) {
     	if (settlement == null) throw new IllegalArgumentException("settlement is null");
     	
-    	List settlementMissions = new ArrayList();
-    	Iterator i = getMissions().iterator();
+    	List<Mission> settlementMissions = new ArrayList<Mission>();
+    	Iterator<Mission> i = getMissions().iterator();
     	while (i.hasNext()) {
-    		Mission mission = (Mission) i.next();
-    		if (!mission.isDone() && (settlement == mission.getAssociatedSettlement())) settlementMissions.add(mission);
+    		Mission mission = i.next();
+    		if (!mission.isDone() && (settlement == mission.getAssociatedSettlement())) 
+    			settlementMissions.add(mission);
     	}
     	
     	return settlementMissions;
@@ -229,9 +236,9 @@ public class MissionManager implements Serializable {
     	
     	Mission result = null;
     	
-    	Iterator i = getMissions().iterator();
+    	Iterator<Mission> i = getMissions().iterator();
     	while (i.hasNext()) {
-    		Mission mission = (Mission) i.next();
+    		Mission mission = i.next();
     		if (!mission.isDone() && (mission instanceof VehicleMission)) {
     			if (((VehicleMission) mission).getVehicle() == vehicle) result = mission;
     		}
@@ -247,7 +254,7 @@ public class MissionManager implements Serializable {
       
         int index = 0;
         while (index < missions.size()) {
-            Mission tempMission = (Mission) missions.get(index);
+            Mission tempMission = missions.get(index);
             if ((tempMission == null) || tempMission.isDone()) removeMission(tempMission);
             else index++;
         }
@@ -301,7 +308,7 @@ public class MissionManager implements Serializable {
      * @throws Exception if error in updating missions
      */
     public void timePassing(double time) throws Exception {
-    	Iterator i = missions.iterator();
-    	while (i.hasNext()) ((Mission) i.next()).timePassing(time);
+    	Iterator<Mission> i = missions.iterator();
+    	while (i.hasNext()) i.next().timePassing(time);
     }
 }

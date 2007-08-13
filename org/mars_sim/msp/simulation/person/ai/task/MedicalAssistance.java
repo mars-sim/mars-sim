@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.78 2005-08-14
+ * @version 2.81 2007-08-12
  * @author Barry Evans
  */
 
@@ -23,8 +23,6 @@ import org.mars_sim.msp.simulation.person.medical.Treatment;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
-import org.mars_sim.msp.simulation.vehicle.Medical;
-import org.mars_sim.msp.simulation.vehicle.SickBay;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
@@ -195,8 +193,8 @@ public class MedicalAssistance extends Task implements Serializable {
      * 
      * @return List of medical aids
      */
-    private static List getNeedyMedicalAids(Person person) {
-        List result = new ArrayList();
+    private static List<MedicalAid> getNeedyMedicalAids(Person person) {
+        List<MedicalAid> result = new ArrayList<MedicalAid>();
         
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
@@ -306,7 +304,7 @@ public class MedicalAssistance extends Task implements Serializable {
 			BuildingManager manager = settlement.getBuildingManager();
 			List medicalBuildings = manager.getBuildings(MedicalCare.NAME);
 			
-			List needyMedicalBuildings = new ArrayList();
+			List<Building> needyMedicalBuildings = new ArrayList<Building>();
 			Iterator i = medicalBuildings.iterator();
 			while (i.hasNext()) {
 				Building building = (Building) i.next();
@@ -370,8 +368,8 @@ public class MedicalAssistance extends Task implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List getAssociatedSkills() {
-		List results = new ArrayList();
+	public List<String> getAssociatedSkills() {
+		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.MEDICAL);
 		return results;
 	}

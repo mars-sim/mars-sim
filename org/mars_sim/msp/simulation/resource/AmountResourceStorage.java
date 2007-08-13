@@ -9,8 +9,10 @@ package org.mars_sim.msp.simulation.resource;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,6 +44,25 @@ public class AmountResourceStorage implements Serializable {
 		resourceCapacityKeyCache = null;
 	}
 	
+	/**
+	 * Gets the amount resources and the type capacity for them.
+	 * @return map of all amount resources that have type capacity.
+	 */
+    public Map<AmountResource, Double> getAmountResourceTypeCapacities() {
+    	Map<AmountResource, Double> typeCapacities = new HashMap<AmountResource, Double>();
+    	
+    	if (typeStorage != null) {
+    		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+    		while (i.hasNext()) {
+    			AmountResource resource = i.next();
+    			double capacity = typeStorage.getAmountResourceTypeCapacity(resource);
+    			if (capacity > 0D) typeCapacities.put(resource, new Double(capacity));
+    		}
+    	}
+    	
+    	return typeCapacities;
+    }
+	
     /**
      * Adds capacity for a resource phase.
      * @param phase the phase
@@ -52,6 +73,25 @@ public class AmountResourceStorage implements Serializable {
     	if (phaseStorage == null)  phaseStorage = new AmountResourcePhaseStorage();
     	phaseStorage.addAmountResourcePhaseCapacity(phase, capacity);
     	resourceCapacityKeyCache = null;
+    }
+    
+    /**
+     * Gets the phase capacities in storage.
+     * @return map of phases with capacities.
+     */
+    public Map<Phase, Double> getAmountResourcePhaseCapacities() {
+    	Map<Phase, Double> phaseCapacities = new HashMap<Phase, Double>();
+    	
+    	if (phaseStorage != null) {
+    		Iterator<Phase> i = Phase.getPhases().iterator();
+    		while (i.hasNext()) {
+    			Phase phase = i.next();
+    			double capacity = phaseStorage.getAmountResourcePhaseCapacity(phase);
+    			if (capacity > 0D) phaseCapacities.put(phase, new Double(capacity));
+    		}
+    	}
+    	
+    	return phaseCapacities;
     }
 	
     /**

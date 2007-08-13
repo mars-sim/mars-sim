@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.78 2005-07-15
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -189,8 +189,8 @@ class Sleep extends Task implements Serializable {
 	 * @return list of buildings with empty beds.
 	 * @throws BuildingException if any buildings in list don't have the living accommodations function.
 	 */
-	private static List getQuartersWithEmptyBeds(List buildingList) throws BuildingException {
-		List result = new ArrayList();
+	private static List<Building> getQuartersWithEmptyBeds(List buildingList) throws BuildingException {
+		List<Building> result = new ArrayList<Building>();
 		
 		Iterator i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -226,8 +226,8 @@ class Sleep extends Task implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List getAssociatedSkills() {
-		List results = new ArrayList();
+	public List<String> getAssociatedSkills() {
+		List<String> results = new ArrayList<String>(0);
 		return results;
 	}
 }

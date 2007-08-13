@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.80 2007-03-29
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -263,8 +263,8 @@ public class EnterAirlock extends Task implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List getAssociatedSkills() {
-		List results = new ArrayList();
+	public List<String> getAssociatedSkills() {
+		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.EVA_OPERATIONS);
 		return results;
 	}

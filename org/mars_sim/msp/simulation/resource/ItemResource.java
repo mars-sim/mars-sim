@@ -20,7 +20,7 @@ import java.util.Set;
 public final class ItemResource implements Resource, Serializable {
 
 	// Set of all item resources.
-	private static final Set resources = new HashSet(3);
+	private static final Set<ItemResource> resources = new HashSet<ItemResource>(3);
 	
 	// Item resources.
 	public static final ItemResource HAMMER = new ItemResource("hammer", 1.4D);
@@ -98,9 +98,9 @@ public final class ItemResource implements Resource, Serializable {
 	 */
 	public static final ItemResource findItemResource(String name) throws ResourceException {
 		ItemResource result = null;
-		Iterator i = resources.iterator();
+		Iterator<ItemResource> i = resources.iterator();
 		while (i.hasNext()) {
-			ItemResource resource = (ItemResource) i.next();
+			ItemResource resource = i.next();
 			if (resource.getName().equals(name)) result = resource;
 		}
 		if (result != null) return result;
@@ -111,7 +111,7 @@ public final class ItemResource implements Resource, Serializable {
 	 * Gets a ummutable set of all the item resources.
 	 * @return set of item resources.
 	 */
-	public static final Set getItemResources() {
+	public static final Set<ItemResource> getItemResources() {
 		return Collections.unmodifiableSet(resources);
 	}
 }

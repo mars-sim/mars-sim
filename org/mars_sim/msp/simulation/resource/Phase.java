@@ -19,7 +19,7 @@ import java.util.Set;
 public final class Phase implements Serializable {
 	
 	// List of all phases.
-	private final static Set phases = new HashSet(3);
+	private final static Set<Phase> phases = new HashSet<Phase>(3);
 	
 	// The possible phases.
 	public final static Phase GAS = new Phase("gas");
@@ -54,9 +54,9 @@ public final class Phase implements Serializable {
 	 */
 	public static final Phase findPhase(String name) throws Exception {
 		Phase result = null;
-		Iterator i = phases.iterator();
+		Iterator<Phase> i = phases.iterator();
 		while (i.hasNext()) {
-			Phase phase = (Phase) i.next();
+			Phase phase = i.next();
 			if (phase.getName().equals(name.toLowerCase())) result = phase;
 		}
 		if (result != null) return result;
@@ -67,7 +67,7 @@ public final class Phase implements Serializable {
 	 * Gets a ummutable set of all the phases.
 	 * @return set of phases.
 	 */
-	public static final Set getPhases() {
+	public static final Set<Phase> getPhases() {
 		return Collections.unmodifiableSet(phases);
 	}
 	

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.79 2006-06-13
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -56,7 +56,7 @@ public class TaskManager implements Serializable {
     
     // Cache variables.
     private MarsClock timeCache;
-    private Map taskProbCache;
+    private Map<Class, Double> taskProbCache;
     private double totalProbCache;
     
     /** 
@@ -70,7 +70,7 @@ public class TaskManager implements Serializable {
         
         // Initialize cache values.
         timeCache = null;
-        taskProbCache = new HashMap(availableTasks.length);
+        taskProbCache = new HashMap<Class, Double>(availableTasks.length);
         totalProbCache = 0D;
     }
 

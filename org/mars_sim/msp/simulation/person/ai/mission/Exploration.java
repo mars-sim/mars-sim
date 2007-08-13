@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.78 2005-08-18
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;

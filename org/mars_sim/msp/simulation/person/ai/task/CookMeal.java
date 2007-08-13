@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 2.78 2005-08-14
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -281,8 +281,8 @@ public class CookMeal extends Task implements Serializable {
 	 * @return list of kitchen buildings
 	 * @throws BuildingException if error
 	 */
-	private static List getKitchensNeedingCooks(List kitchenBuildings) throws BuildingException {
-		List result = new ArrayList();
+	private static List<Building> getKitchensNeedingCooks(List kitchenBuildings) throws BuildingException {
+		List<Building> result = new ArrayList<Building>();
 		
 		if (kitchenBuildings != null) {
 			Iterator i = kitchenBuildings.iterator();
@@ -310,8 +310,8 @@ public class CookMeal extends Task implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List getAssociatedSkills() {
-		List results = new ArrayList();
+	public List<String> getAssociatedSkills() {
+		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.COOKING);
 		return results;
 	}

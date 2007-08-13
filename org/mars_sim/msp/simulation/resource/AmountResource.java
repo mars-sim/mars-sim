@@ -20,7 +20,7 @@ import java.util.Set;
 public final class AmountResource implements Resource, Serializable {
 	
     // Set of all amount resources.
-    private static final Set resources = new HashSet(10);
+    private static final Set<AmountResource> resources = new HashSet<AmountResource>(10);
 	
 	// Amount resources
     public static final AmountResource WATER = new AmountResource("water", Phase.LIQUID, true);
@@ -105,9 +105,9 @@ public final class AmountResource implements Resource, Serializable {
 	 */
 	public static final AmountResource findAmountResource(String name) throws ResourceException {
 		AmountResource result = null;
-		Iterator i = resources.iterator();
+		Iterator<AmountResource> i = resources.iterator();
 		while (i.hasNext()) {
-			AmountResource resource = (AmountResource) i.next();
+			AmountResource resource = i.next();
 			if (resource.getName().equals(name.toLowerCase())) result = resource;
 		}
 		if (result != null) return result;
@@ -118,7 +118,7 @@ public final class AmountResource implements Resource, Serializable {
 	 * Gets a ummutable set of all the amount resources.
 	 * @return set of amount resources.
 	 */
-	public static final Set getAmountResources() {
+	public static final Set<AmountResource> getAmountResources() {
 		return Collections.unmodifiableSet(resources);
 	}
 	

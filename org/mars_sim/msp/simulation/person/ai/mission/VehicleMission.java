@@ -61,7 +61,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     private OperateVehicle operateVehicleTask; // The current operate vehicle task.
     
     // Caches
-	protected Map equipmentNeededCache;
+	protected Map<Class, Integer> equipmentNeededCache;
 
     /**
      * Constructor
@@ -289,14 +289,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      */
     public final boolean isVehicleLoadable() throws Exception {
     	
-    	Map resources = getResourcesNeededForRemainingMission(true);
-    	Map equipment = getEquipmentNeededForRemainingMission(true);
+    	Map<Resource, Number> resources = getResourcesNeededForRemainingMission(true);
+    	Map<Class, Integer> equipment = getEquipmentNeededForRemainingMission(true);
     	Vehicle vehicle = getVehicle();
     	Settlement settlement = vehicle.getSettlement();
     	double tripTime = getEstimatedRemainingMissionTime(true);
     	
     	boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(resources, equipment, vehicle, settlement);
-    	boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, resources, equipment, getPeopleNumber(), tripTime);
+    	boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, resources, equipment, 
+    			getPeopleNumber(), tripTime);
     	
     	// if (!vehicleCapacity) System.out.println("Vehicle doesn't have capacity.");
     	// if (!settlementSupplies) System.out.println("Settlement doesn't have supplies.");
@@ -509,7 +510,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
     	return getResourcesNeededForTrip(useBuffer, getTotalRemainingDistance());
     }
     
@@ -520,10 +521,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return map of amount and item resources and their Double amount or Integer number.
      * @throws Exception if error determining needed resources.
      */
-    public Map getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
-    	Map result = new HashMap();
-    	if (vehicle != null) 
-    		result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(distance, 
+    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
+    	Map<Resource, Number> result = new HashMap<Resource, Number>();
+    	if (vehicle != null) result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(distance, 
     				vehicle.getFuelEfficiency(), useBuffer)));
     	return result;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 2.80 2006-12-04
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -49,7 +49,7 @@ public abstract class Task implements Serializable, Comparable {
     private boolean createEvents;       // Task should create Historical events
     protected double stressModifier;  // Stress modified by person performing task per millisol.
     private Person teacher;           // The person teaching this task if any.
-    private Collection phases;        // A collection of the task's phases.
+    private Collection<String> phases;        // A collection of the task's phases.
 
     /** 
      * Constructs a Task object.
@@ -78,7 +78,7 @@ public abstract class Task implements Serializable, Comparable {
         subTask = null;
         phase = null;
         effortDriven = effort;
-        phases = new ArrayList();
+        phases = new ArrayList<String>();
     }
     
     /**
@@ -372,7 +372,7 @@ public abstract class Task implements Serializable, Comparable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public abstract List getAssociatedSkills();
+	public abstract List<String> getAssociatedSkills();
 	
 	/**
 	 * Checks if someone is teaching this task to the person performing it.

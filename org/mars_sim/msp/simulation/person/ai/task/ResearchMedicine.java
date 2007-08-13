@@ -1,9 +1,10 @@
 /**
  * Mars Simulation Project
  * ResearchMedicine.java
- * @version 2.78 2005-08-14
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
@@ -88,8 +89,8 @@ public class ResearchMedicine extends ResearchScience implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List getAssociatedSkills() {
-		List results = new ArrayList();
+	public List<String> getAssociatedSkills() {
+		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.MEDICAL);
 		return results;
 	}

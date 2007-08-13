@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 2.80 2007-03-29
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.job.Driver;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
@@ -395,8 +396,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * @return map of amount resources and their amounts.
 	 * @throws Exception if error determining resources.
 	 */
-	private Map determineRescueResourcesNeeded(boolean useBuffer) throws Exception {
-		Map result = new HashMap(3);
+	private Map<Resource, Number> determineRescueResourcesNeeded(boolean useBuffer) throws Exception {
+		Map<Resource, Number> result = new HashMap<Resource, Number>(3);
 		
     	// Determine estimate time for trip.
 		double distance = vehicleTarget.getCoordinates().getDistance(getStartingSettlement().getCoordinates());
@@ -539,19 +540,26 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public Map getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
-    	Map result = super.getResourcesNeededForRemainingMission(useBuffer);
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
+    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
     	
     	// Include rescue resources if needed.
     	if (rescue && (getRover().getTowedVehicle() == null)) {
-    		Map rescueResources = determineRescueResourcesNeeded(useBuffer);
-    		Iterator i = rescueResources.keySet().iterator();
+    		Map<Resource, Number> rescueResources = determineRescueResourcesNeeded(useBuffer);
+    		Iterator<Resource> i = rescueResources.keySet().iterator();
     		while (i.hasNext()) {
-    			AmountResource resource = (AmountResource) i.next();
-    			double amount = ((Double) rescueResources.get(resource)).doubleValue();
-    			if (result.containsKey(resource)) amount += ((Double) result.get(resource)).doubleValue();
-    			if (useBuffer) amount *= RESCUE_RESOURCE_BUFFER;
-    			result.put(resource, new Double(amount));
+    			Resource resource = i.next();
+    			if (resource instanceof AmountResource) {
+    				double amount = ((Double) rescueResources.get(resource)).doubleValue();
+    				if (result.containsKey(resource)) amount += ((Double) result.get(resource)).doubleValue();
+    				if (useBuffer) amount *= RESCUE_RESOURCE_BUFFER;
+    				result.put(resource, new Double(amount));
+    			}
+    			else {
+    				int num = ((Integer) rescueResources.get(resource)).intValue();
+    				if (result.containsKey(resource)) num += ((Integer) result.get(resource)).intValue();
+    				result.put(resource, new Integer(num));
+    			}
     		}
     	}
     	
@@ -564,10 +572,10 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
+    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
-    		Map result = new HashMap();
+    		Map<Class, Integer> result = new HashMap<Class, Integer>();
     		
     		// Include two EVA suits.
         	result.put(EVASuit.class, new Integer(2));

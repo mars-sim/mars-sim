@@ -1,9 +1,10 @@
 /**
  * Mars Simulation Project
  * ResearchScience.java
- * @version 2.78 2005-07-15
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
@@ -238,8 +239,8 @@ public abstract class ResearchScience extends Task implements Serializable {
 	 * @return research buildings with available lab space.
 	 * @throws BuildingException if building list contains buildings without research function.
 	 */
-	private static List getSettlementLabsWithAvailableSpace(List buildingList) throws BuildingException {
-		List result = new ArrayList();
+	private static List<Building> getSettlementLabsWithAvailableSpace(List buildingList) throws BuildingException {
+		List<Building> result = new ArrayList<Building>();
     	
 		Iterator i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -259,8 +260,9 @@ public abstract class ResearchScience extends Task implements Serializable {
 	 * @return research buildings with science speciality.
 	 * @throws BuildingException if building list contains buildings without research function.
 	 */
-	private static List getSettlementLabsWithSpeciality(String science, List buildingList) throws BuildingException {
-		List result = new ArrayList();
+	private static List<Building> getSettlementLabsWithSpeciality(String science, List buildingList) 
+			throws BuildingException {
+		List<Building> result = new ArrayList<Building>();
 		
 		Iterator i = buildingList.iterator();
 		while (i.hasNext()) {

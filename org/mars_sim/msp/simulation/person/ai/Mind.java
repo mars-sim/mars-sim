@@ -234,9 +234,10 @@ public class Mind implements Serializable {
             if (rand < missionWeights) {
                 // System.out.println(person.getName() + " starting a new mission.");
                 Mission newMission = missionManager.getNewMission(person);
-                missionManager.addMission(newMission);
-
-                setMission(newMission);
+                if (newMission != null) {
+                	missionManager.addMission(newMission);
+                	setMission(newMission);
+                }
                 return;
             }
             else rand -= missionWeights;

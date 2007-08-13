@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 2.78 2007-05-06
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -305,8 +305,8 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @see org.mars_sim.msp.simulation.person.ai.task.Task#getAssociatedSkills()
 	 */
 	@Override
-	public List getAssociatedSkills() {
-		List result = new ArrayList();
+	public List<String> getAssociatedSkills() {
+		List<String> result = new ArrayList<String>(2);
 		result.add(Skill.MECHANICS);
 		if (isEVA) result.add(Skill.EVA_OPERATIONS);
 		return result;

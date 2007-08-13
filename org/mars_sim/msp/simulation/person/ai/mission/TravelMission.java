@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelMission.java
- * @version 2.80 2006-09-08
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -28,7 +28,7 @@ public abstract class TravelMission extends Mission {
 	public final static String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
 	
 	// Data members
-	private List navPoints = new ArrayList();  // List of navpoints for the mission.
+	private List<NavPoint> navPoints = new ArrayList<NavPoint>();  // List of navpoints for the mission.
 	private int navIndex = 0; // The current navpoint index.
 	private String travelStatus; // The current traveling status of the mission. 
 	private NavPoint lastStopNavpoint; // The last navpoint the mission stopped at.

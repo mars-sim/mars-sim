@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.79 2006-06-13
+ * @version 2.81 2006-08-12
  * @author Scott Davis
  */
 
@@ -10,11 +10,14 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.*;
 
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitCollection;
 import org.mars_sim.msp.simulation.equipment.Equipment;
+import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
@@ -47,8 +50,8 @@ public class LoadVehicle extends Task implements Serializable {
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be loaded.
     private Settlement settlement; // The person's settlement.
-    private Map resources; // Resources needed to load.
-    private Map equipment; // Equipment needed to load.
+    private Map<Resource, Number> resources; // Resources needed to load.
+    private Map<Class, Integer> equipment; // Equipment needed to load.
     
     /**
      * Constructor
@@ -85,15 +88,16 @@ public class LoadVehicle extends Task implements Serializable {
      * @param equipment a map of equipment to be loaded.
      * @throws Exception if error creating task.
      */
-    public LoadVehicle(Person person, Vehicle vehicle, Map resources, Map equipment) throws Exception {
+    public LoadVehicle(Person person, Vehicle vehicle, Map<Resource, Number> resources, 
+    		Map<Class, Integer> equipment) throws Exception {
     	// Use Task constructor.
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
     	setDescription("Loading " + vehicle.getName());
         this.vehicle = vehicle;
         
-        if (resources != null) this.resources = new HashMap(resources);
-        if (equipment != null) this.equipment = new HashMap(equipment);
+        if (resources != null) this.resources = new HashMap<Resource, Number>(resources);
+        if (equipment != null) this.equipment = new HashMap<Class, Integer>(equipment);
         
         // tripProportion = tripDistance / vehicle.getRange();
         
@@ -142,9 +146,9 @@ public class LoadVehicle extends Task implements Serializable {
      * @return list of vehicle missions.
      * @throws Exception if error finding missions.
      */
-    private static List getAllMissionsNeedingLoading(Settlement settlement) throws Exception {
+    private static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) throws Exception {
     	
-    	List result = new ArrayList();
+    	List<Mission> result = new ArrayList<Mission>();
     	
     	MissionManager manager = Simulation.instance().getMissionManager();
     	Iterator i = manager.getMissions().iterator();
@@ -219,11 +223,11 @@ public class LoadVehicle extends Task implements Serializable {
         Building garage = BuildingManager.getBuilding(vehicle);
         if (garage == null) amountLoading /= 4D;
         
-        // Load resources
-        amountLoading = loadResources(amountLoading);
-        
         // Load equipment
         if (amountLoading > 0D) amountLoading = loadEquipment(amountLoading);
+        
+        // Load resources
+        amountLoading = loadResources(amountLoading);
 
         if (isFullyLoaded(resources, equipment, vehicle)) endTask();
         
@@ -238,9 +242,9 @@ public class LoadVehicle extends Task implements Serializable {
      */
     private double loadResources(double amountLoading) throws Exception {
         
-        Iterator iR = resources.keySet().iterator();
+        Iterator<Resource> iR = resources.keySet().iterator();
         while (iR.hasNext() && (amountLoading > 0D)) {
-        	Resource resource = (Resource) iR.next();
+        	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
         		// Load amount resources
         		amountLoading = loadAmountResource(amountLoading, (AmountResource) resource);
@@ -352,9 +356,9 @@ public class LoadVehicle extends Task implements Serializable {
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
         
-        Iterator iE = equipment.keySet().iterator();
+        Iterator<Class> iE = equipment.keySet().iterator();
         while (iE.hasNext() && (amountLoading > 0D)) {
-        	Class equipmentType = (Class) iE.next();
+        	Class equipmentType = iE.next();
         	int numNeededTotal = ((Integer) equipment.get(equipmentType)).intValue();
         	int numAlreadyLoaded = vInv.findNumUnitsOfClass(equipmentType);
         	if (numAlreadyLoaded < numNeededTotal) {
@@ -408,7 +412,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if enough supplies
      * @throws Exception if error checking supplies.
      */
-    public static boolean hasEnoughSupplies(Settlement settlement, Map resources, Map equipment, int vehicleCrewNum, double tripTime) throws Exception {
+    public static boolean hasEnoughSupplies(Settlement settlement, Map <Resource, Number> resources, 
+    		Map<Class, Integer> equipment, int vehicleCrewNum, double tripTime) throws Exception {
     	
     	// Check input parameters.
     	if (settlement == null) throw new IllegalArgumentException("settlement is null");
@@ -417,9 +422,9 @@ public class LoadVehicle extends Task implements Serializable {
         Inventory inv = settlement.getInventory();
         
         // Check if there are enough resources at the settlement.
-        Iterator iR = resources.keySet().iterator();
+        Iterator<Resource> iR = resources.keySet().iterator();
         while (iR.hasNext()) {
-        	Resource resource = (Resource) iR.next();
+        	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
         		double amountNeeded = ((Double) resources.get(resource)).doubleValue();
         		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, (AmountResource) resource, tripTime);
@@ -444,9 +449,9 @@ public class LoadVehicle extends Task implements Serializable {
         }
         
         // Check if there is enough equipment at the settlement.
-        Iterator iE = equipment.keySet().iterator();
+        Iterator<Class> iE = equipment.keySet().iterator();
         while (iE.hasNext()) {
-        	Class equipmentType = (Class) iE.next();
+        	Class equipmentType = iE.next();
         	int numNeeded = ((Integer) equipment.get(equipmentType)).intValue();
         	int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
     		int totalNeeded = numNeeded + remainingSettlementNum;
@@ -491,7 +496,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return remaining number
      * @throws Exception if error getting the remaining number.
      */
-    private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, ItemResource resource) throws Exception {
+    private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, 
+    		ItemResource resource) throws Exception {
     	// No item resources required at settlement at this time.
     	return 0;
     }
@@ -504,7 +510,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return remaining number.
      * @throws Exception if error getting the remaining number.
      */
-    private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, Class equipmentType) throws Exception {
+    private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, Class equipmentType) 
+    		throws Exception {
     	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
     	// Leave one EVA suit for every four remaining people at settlement (min 1).
     	if (equipmentType == EVASuit.class) {
@@ -524,44 +531,42 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle can carry supplies.
      * @throws Exception if error
      */
-    public static boolean enoughCapacityForSupplies(Map resources, Map equipment, Vehicle vehicle, Settlement settlement) throws Exception {
+    public static boolean enoughCapacityForSupplies(Map<Resource, Number> resources, Map<Class, Integer> equipment, 
+    		Vehicle vehicle, Settlement settlement) throws Exception {
     	
     	boolean sufficientCapacity = true;
     	
-    	Inventory vInv = vehicle.getInventory(); 
-    	
-    	double generalMass = 0D;
-    	
-    	// Check if enough capacity to carry resources.
-    	Iterator iR = resources.keySet().iterator();
-    	while (iR.hasNext() && sufficientCapacity) {
-    		Resource resource = (Resource) iR.next();
-    		if (resource instanceof AmountResource) {
-    			double amount = ((Double) resources.get(resource)).doubleValue();
-    			if (vInv.getAmountResourceCapacity((AmountResource) resource) < amount) {
-    				// double capacity = vInv.getAmountResourceCapacity((AmountResource) resource);
-    				// System.out.println(resource.getName() + " needed: " + amount + " capacity: " + capacity);
-    				sufficientCapacity = false;
+    	// Create vehicle inventory clone.
+    	Inventory inv = vehicle.getInventory().clone(null);
+  
+    	try {
+    		// Add equipment clones.
+    		Iterator<Class> i = equipment.keySet().iterator();
+    		while (i.hasNext()) {
+    			Class equipmentType = i.next();
+    			int num = ((Integer) equipment.get(equipmentType)).intValue();
+    			Coordinates defaultLoc = new Coordinates(0D, 0D);
+    			for (int x = 0; x < num; x++) 
+    				inv.storeUnit(EquipmentFactory.getEquipment(equipmentType, defaultLoc));
+    		}
+    		
+    		// Add all resources.
+    		Iterator j = resources.keySet().iterator();
+    		while (j.hasNext()) {
+    			Resource resource = (Resource) j.next();
+    			if (resource instanceof AmountResource) {
+    				double amount = ((Double) resources.get(resource)).doubleValue();
+    				inv.storeAmountResource((AmountResource) resource, amount);
+    			}
+    			else {
+    				int num = ((Integer) resources.get(resource)).intValue();
+    				inv.storeItemResources((ItemResource) resource, num);
     			}
     		}
-    		else if (resource instanceof ItemResource) {
-    			int num = ((Integer) resources.get(resource)).intValue();
-    			generalMass += ((ItemResource) resource).getMassPerItem() * num;
-    		}
     	}
-    	
-    	// Check if enough capacity to carry equipment.
-    	Iterator iE = equipment.keySet().iterator();
-    	while (iE.hasNext() && sufficientCapacity) {
-    		Class equipmentType = (Class) iE.next();
-    		int num = ((Integer) equipment.get(equipmentType)).intValue();
-    		
-    		// Use an example of the equipment from the settlement.
-    		Equipment equipmentExample = (Equipment) settlement.getInventory().findUnitOfClass(equipmentType);
-    		if (equipmentExample != null) generalMass += equipmentExample.getMass() * num;
+    	catch (InventoryException e) {
+    		sufficientCapacity = false;
     	}
-    	
-    	if (vInv.getGeneralCapacity() < generalMass) sufficientCapacity = false;
     	
     	return sufficientCapacity;
     }
@@ -571,7 +576,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle is fully loaded.
      * @throws Exception if error checking supplies.
      */
-    public static final boolean isFullyLoaded(Map resources, Map equipment, Vehicle vehicle) throws Exception {
+    public static final boolean isFullyLoaded(Map<Resource, Number> resources, Map<Class, Integer> equipment, 
+    		Vehicle vehicle) throws Exception {
     	
     	boolean sufficientSupplies = true;
 
@@ -591,14 +597,15 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle is loaded.
      * @throws Exception if error checking vehicle.
      */
-    private static final boolean isFullyLoadedWithResources(Map resources, Vehicle vehicle) throws Exception {
+    private static final boolean isFullyLoadedWithResources(Map<Resource, Number> resources, Vehicle vehicle) 
+    		throws Exception {
     	
     	boolean sufficientSupplies = true;
         Inventory inv = vehicle.getInventory();
 
-        Iterator iR = resources.keySet().iterator();
+        Iterator<Resource> iR = resources.keySet().iterator();
         while (iR.hasNext() && sufficientSupplies) {
-        	Resource resource = (Resource) iR.next();
+        	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
         		double amount = ((Double) resources.get(resource)).doubleValue();
         		if (inv.getAmountResourceStored((AmountResource) resource) < amount) sufficientSupplies = false;
@@ -620,14 +627,15 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle is full loaded.
      * @throws Exception if error checking vehicle.
      */
-    private static final boolean isFullyLoadedWithEquipment(Map equipment, Vehicle vehicle) throws Exception {
+    private static final boolean isFullyLoadedWithEquipment(Map<Class, Integer> equipment, Vehicle vehicle) 
+    		throws Exception {
     	
     	boolean sufficientSupplies = true;
         Inventory inv = vehicle.getInventory();
         
-        Iterator iE = equipment.keySet().iterator();
+        Iterator<Class> iE = equipment.keySet().iterator();
         while (iE.hasNext() && sufficientSupplies) {
-        	Class equipmentType = (Class) iE.next();
+        	Class equipmentType = iE.next();
         	int num = ((Integer) equipment.get(equipmentType)).intValue();
         	if (inv.findNumUnitsOfClass(equipmentType) < num) sufficientSupplies = false;
         }
@@ -648,7 +656,7 @@ public class LoadVehicle extends Task implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List getAssociatedSkills() {
-		return Collections.EMPTY_LIST;
+	public List<String> getAssociatedSkills() {
+		return new ArrayList<String>(0);
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.80 2006-09-08
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 
@@ -262,8 +262,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @param range the range (km) that can be travelled.
      * @return map of destination settlements.
      */
-    private static Map getDestinationSettlements(Person person, Settlement startingSettlement, double range) {
-    	Map result = new HashMap();
+    private static Map<Settlement, Double> getDestinationSettlements(Person person, Settlement startingSettlement, 
+    		double range) {
+    	Map<Settlement, Double> result = new HashMap<Settlement, Double>();
     	
     	UnitManager unitManager = startingSettlement.getUnitManager();
     	SettlementIterator i = new SettlementCollection(unitManager.getSettlements()).iterator();
@@ -408,10 +409,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
+    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
-    		Map result = new HashMap();
+    		Map<Class, Integer> result = new HashMap<Class, Integer>();
     		
     		// Include two EVA suits.
         	result.put(EVASuit.class, new Integer(2));

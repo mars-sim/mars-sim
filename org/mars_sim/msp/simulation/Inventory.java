@@ -853,4 +853,31 @@ public class Inventory implements Serializable {
     	
     	if (amountResourceRemainingCache != null) amountResourceRemainingCache.clear();
     }
+    
+    /**
+     * Creates a clone of this inventory (not including the inventory contents).
+     * @param owner the unit owner of the inventory (or null).
+     * @return inventory clone.
+     * @throws InventoryException if error creating inventory clone.
+     */
+    public Inventory clone(Unit owner) throws InventoryException {
+    	Inventory result = new Inventory(owner);
+    	result.addGeneralCapacity(getGeneralCapacity());
+    	
+    	Map<AmountResource, Double> typeCapacities = resourceStorage.getAmountResourceTypeCapacities();
+    	Iterator<AmountResource> i = typeCapacities.keySet().iterator();
+    	while (i.hasNext()) {
+    		AmountResource type = i.next();
+    		result.addAmountResourceTypeCapacity(type, typeCapacities.get(type));
+    	}
+    	
+    	Map<Phase, Double> phaseCapacities = resourceStorage.getAmountResourcePhaseCapacities();
+    	Iterator<Phase> j = phaseCapacities.keySet().iterator();
+    	while (j.hasNext()) {
+    		Phase phase = j.next();
+    		result.addAmountResourcePhaseCapacity(phase, phaseCapacities.get(phase));
+    	}
+    	
+    	return result;
+    }
 }

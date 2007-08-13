@@ -19,6 +19,7 @@ import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.UnloadVehicle;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -208,7 +209,7 @@ public abstract class RoverMission extends VehicleMission {
      * Checks if the rover is currently in a garage or not.
      * @return true if rover is in a garage.
      */
-    private boolean isRoverInAGarage() {
+    protected boolean isRoverInAGarage() {
     	return (BuildingManager.getBuilding(getVehicle()) != null);
     }
     
@@ -476,8 +477,13 @@ public abstract class RoverMission extends VehicleMission {
 		return result;
 	}
     
-    public Map getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
-    	Map result = super.getResourcesNeededForTrip(useBuffer, distance);
+	/**
+	 * Gets a map of all resources needed for the trip.
+	 * @param useBuffer should a buffer be used when determining resources?
+	 * @param distance the distance of the trip.
+	 */
+    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
+    	Map<Resource, Number> result = super.getResourcesNeededForTrip(useBuffer, distance);
     	
     	// Determine estimate time for trip.
     	double time = getEstimatedTripTime(useBuffer, distance);
@@ -507,5 +513,5 @@ public abstract class RoverMission extends VehicleMission {
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public abstract Map getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception;
+    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception;
 }

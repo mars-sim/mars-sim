@@ -31,4 +31,12 @@ public class Bag extends Equipment implements Container, Serializable {
 		if (capacity < 0D) throw new Exception("Capacity cannot be less than zero.");
 		getInventory().addAmountResourcePhaseCapacity(Phase.SOLID, capacity);
 	}
+	
+	/**
+	 * Gets the phase of resources this container can hold.
+	 * @return resource phase.
+	 */
+	public Phase getContainingResourcePhase() {
+		return Phase.SOLID;
+	}
 }

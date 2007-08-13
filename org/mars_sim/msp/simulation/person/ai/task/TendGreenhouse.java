@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.78 2005-08-14
+ * @version 2.81 2007-08-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -227,8 +227,8 @@ public class TendGreenhouse extends Task implements Serializable {
      * @return list of farming buildings needing work.
      * @throws BuildingException if any buildings in building list don't have the farming function.
      */
-    private static List getFarmsNeedingWork(List buildingList) throws BuildingException {
-    	List result = new ArrayList();
+    private static List<Building> getFarmsNeedingWork(List buildingList) throws BuildingException {
+    	List<Building> result = new ArrayList<Building>();
     	
     	Iterator i = buildingList.iterator();
     	while (i.hasNext()) {
@@ -254,8 +254,8 @@ public class TendGreenhouse extends Task implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List getAssociatedSkills() {
-		List results = new ArrayList();
+	public List<String> getAssociatedSkills() {
+		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.BOTANY);
 		return results;
 	}
