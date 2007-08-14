@@ -90,6 +90,22 @@
 		<sickbay tech-level="3" beds="2" />
 	</rover>
 	
+	<!-- Cargo rover -->
+	<!-- A rover for transporting cargo from one settlement to another. -->
+	<rover type="Cargo Rover">
+		<fuel-efficiency value="2.0" />
+		<base-speed value="30.0" />
+		<empty-mass value="10000.0" />
+		<crew-size value="2" />
+		<cargo total-capacity="10000.0">
+			<capacity resource="Methane" value="2000.0" />
+			<capacity resource="Oxygen" value="350.0" />
+			<capacity resource="Water" value="1400.0" />
+			<capacity resource="Food" value="525.0" />            
+		</cargo>
+		<sickbay tech-level="1" beds="1" />
+	</rover>
+	
 	<!-- List of rover names -->
 	<rover-name-list>		
 
