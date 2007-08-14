@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.mission.TradeUtil;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -126,6 +128,11 @@ public class NegotiateTrade extends Task implements Serializable {
 		// Modify by 10% for each skill level in trading for buyer and seller.
 		modifier += sellingTrader.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING) / 10D;
 		modifier -= buyingTrader.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING) / 10D;
+		
+		// Modify by 10% for the relationship between the buyer and seller.
+		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		modifier += relationshipManager.getOpinionOfPerson(sellingTrader, buyingTrader) / 1000D;
+		modifier -= relationshipManager.getOpinionOfPerson(buyingTrader, sellingTrader) / 1000D;
 		
 		// Get sold load value.
 		double soldLoadValue = TradeUtil.determineLoadValue(soldLoad, sellingSettlement, true);
