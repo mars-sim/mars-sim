@@ -210,7 +210,7 @@ public class MedicalAssistance extends Task implements Serializable {
             Vehicle vehicle = person.getVehicle();
             if (vehicle instanceof Medical) {
                 MedicalAid aid = ((Medical) vehicle).getSickBay();
-                if (isNeedyMedicalAid(aid)) result.add(aid);
+                if ((aid != null) && isNeedyMedicalAid(aid)) result.add(aid);
             }
         }
 
@@ -223,6 +223,7 @@ public class MedicalAssistance extends Task implements Serializable {
      * @return true if medical aid has patients waiting and is not malfunctioning.
      */
     private static boolean isNeedyMedicalAid(MedicalAid aid) {
+    	if (aid == null) throw new IllegalArgumentException("aid is null");
         boolean waitingProblems = (aid.getProblemsAwaitingTreatment().size() > 0);
         boolean malfunction = getMalfunctionable(aid).getMalfunctionManager().hasMalfunction();
         if (waitingProblems && !malfunction) return true;
