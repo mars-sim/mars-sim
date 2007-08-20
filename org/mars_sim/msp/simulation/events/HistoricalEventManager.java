@@ -1,13 +1,17 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 2.76 2004-06-01
+ * @version 2.81 2007-08-20
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation.events;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.time.MarsClock;
 
@@ -35,8 +39,8 @@ public class HistoricalEventManager {
 	public final static String TASK = "Task";
 	public final static String SUPPLY = "Supply";
 
-    private List listeners = new ArrayList();
-    private List events = new LinkedList();
+    private List<HistoricalEventListener> listeners = new ArrayList<HistoricalEventListener>();
+    private List<HistoricalEvent> events = new LinkedList<HistoricalEvent>();
     private MarsClock mainClock;
 
     /**
@@ -70,7 +74,7 @@ public class HistoricalEventManager {
      * @return Historical event.
      */
     public HistoricalEvent getEvent(int index) {
-        return (HistoricalEvent)events.get(index);
+        return events.get(index);
     }
 
     /**
@@ -90,14 +94,11 @@ public class HistoricalEventManager {
         if (mainClock == null) {
             mainClock = Simulation.instance().getMasterClock().getMarsClock();
         }
-        newEvent.setTimestamp((MarsClock)mainClock.clone());
+        newEvent.setTimestamp((MarsClock) mainClock.clone());
         events.add(0, newEvent);
 
-        Iterator iter = listeners.iterator();
-        while (iter.hasNext()) {
-            HistoricalEventListener next = (HistoricalEventListener)iter.next();
-            next.eventAdded(0, newEvent);
-        }
+        Iterator<HistoricalEventListener> iter = listeners.iterator();
+        while (iter.hasNext()) iter.next().eventAdded(0, newEvent);
     }
 
     /**
@@ -113,11 +114,8 @@ public class HistoricalEventManager {
             events.remove(i);
         }
 
-        Iterator iter = listeners.iterator();
-        while(iter.hasNext()) {
-            HistoricalEventListener next = (HistoricalEventListener)iter.next();
-            next.eventsRemoved(index, index + number);
-        }
+        Iterator<HistoricalEventListener> iter = listeners.iterator();
+        while(iter.hasNext()) iter.next().eventsRemoved(index, index + number);
     }
 
     /**

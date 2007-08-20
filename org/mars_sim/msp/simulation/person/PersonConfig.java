@@ -53,7 +53,7 @@ public class PersonConfig implements Serializable {
 	private static final String OPINION = "opinion";
 	
 	private Document personDoc;
-	private List nameList;
+	private List<String> nameList;
 
 	/**
 	 * Constructor
@@ -68,10 +68,10 @@ public class PersonConfig implements Serializable {
 	 * @return List of person names.
 	 * @throws Exception if person names could not be found.
 	 */
-	public List getPersonNameList() throws Exception {
+	public List<String> getPersonNameList() throws Exception {
 		
 		if (nameList == null) {
-			nameList = new ArrayList();
+			nameList = new ArrayList<String>();
 			Element root = personDoc.getDocumentElement();
 			Element personNameList = (Element) root.getElementsByTagName(PERSON_NAME_LIST).item(0);
 			NodeList personNames = personNameList.getElementsByTagName(PERSON_NAME);

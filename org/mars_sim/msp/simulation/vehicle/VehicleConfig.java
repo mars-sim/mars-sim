@@ -37,7 +37,7 @@ public class VehicleConfig implements Serializable {
 	private static final String ROVER_NAME = "rover-name";
 
 	private Document roverDoc;
-	private List roverNames;
+	private List<String> roverNames;
 	
 	/**
 	 * Constructor
@@ -286,10 +286,10 @@ public class VehicleConfig implements Serializable {
 	 * @return list of rover names as strings.
 	 * @throws Exception if XML parsing error.
 	 */
-	public List getRoverNameList() throws Exception {
+	public List<String> getRoverNameList() throws Exception {
 		
 		if (roverNames == null) {
-			roverNames = new ArrayList();
+			roverNames = new ArrayList<String>();
 			
 			Element root = roverDoc.getDocumentElement();
 			Element roverNameListElement = (Element) root.getElementsByTagName(ROVER_NAME_LIST).item(0);

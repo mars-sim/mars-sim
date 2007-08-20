@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resource.java
- * @version 2.79 2005-12-28
+ * @version 2.81 2007-08-20
  * @author Scott Davis 
  */
 
@@ -36,16 +36,16 @@ public class Inventory implements Serializable {
     // Data members
     private Unit owner; // The unit that owns this inventory. 
     private UnitCollection containedUnits = null; // Collection of units in inventory.
-    private Map containedItemResources = null; // Map of item resources.
+    private Map<ItemResource, Integer> containedItemResources = null; // Map of item resources.
     private double generalCapacity = 0D; // General mass capacity of inventory.
     private AmountResourceStorage resourceStorage = null; // Resource storage.
     
     // Cache capacity variables.
-    private transient Map amountResourceCapacityCache = new HashMap(10);
-    private transient Map amountResourceStoredCache = new HashMap(10);
-	private transient Set allStoredAmountResourcesCache = null;
+    private transient Map<AmountResource, Double> amountResourceCapacityCache = new HashMap<AmountResource, Double>(10);
+    private transient Map<AmountResource, Double> amountResourceStoredCache = new HashMap<AmountResource, Double>(10);
+	private transient Set<AmountResource> allStoredAmountResourcesCache = null;
 	private transient double totalAmountResourcesStored = -1D;
-	private transient Map amountResourceRemainingCache = new HashMap(10);
+	private transient Map<AmountResource, Double> amountResourceRemainingCache = new HashMap<AmountResource, Double>(10);
     
     /** 
      * Constructor
@@ -99,7 +99,7 @@ public class Inventory implements Serializable {
     	try {
     		boolean result = false;
     		if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
-    			double amountCapacity = ((Double) amountResourceCapacityCache.get(resource)).doubleValue();
+    			double amountCapacity = amountResourceCapacityCache.get(resource);
     			result = (amountCapacity > 0D);
     		}
     		else {
@@ -129,7 +129,7 @@ public class Inventory implements Serializable {
     	try {
     		boolean result = false;
     		if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
-    			double amountCapacity = ((Double) amountResourceCapacityCache.get(resource)).doubleValue();
+    			double amountCapacity = amountResourceCapacityCache.get(resource);
     			result = (amountCapacity >= amount);
     		}
     		else {
@@ -144,8 +144,9 @@ public class Inventory implements Serializable {
     				capacity += containedCapacity;
     				if ((capacity + containedCapacity) > amount) result = true;
     			}
-    			if (amountResourceCapacityCache == null) amountResourceCapacityCache = new HashMap(10);
-    			amountResourceCapacityCache.put(resource, new Double(capacity));
+    			if (amountResourceCapacityCache == null) 
+    				amountResourceCapacityCache = new HashMap<AmountResource, Double>(10);
+    			amountResourceCapacityCache.put(resource, capacity);
     		}
     		return result;
     	}
@@ -164,7 +165,7 @@ public class Inventory implements Serializable {
     	try {
     		double result = 0D;
     		if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) 
-    			result = ((Double) amountResourceCapacityCache.get(resource)).doubleValue();
+    			result = amountResourceCapacityCache.get(resource);
     		else {
     			if (hasAmountResourceCapacity(resource)) {
     				if (resourceStorage != null) result += resourceStorage.getAmountResourceCapacity(resource);
@@ -176,8 +177,9 @@ public class Inventory implements Serializable {
     					result += containedCapacity;
     				}
     			}
-    			if (amountResourceCapacityCache == null) amountResourceCapacityCache = new HashMap(10);
-    			amountResourceCapacityCache.put(resource, new Double(result));
+    			if (amountResourceCapacityCache == null) 
+    				amountResourceCapacityCache = new HashMap<AmountResource, Double>(10);
+    			amountResourceCapacityCache.put(resource, result);
     		}
     		return result;
     	}
@@ -196,15 +198,16 @@ public class Inventory implements Serializable {
     	try {
     		double result = 0D;
     		if ((amountResourceStoredCache != null) && amountResourceStoredCache.containsKey(resource)) 
-    			result = ((Double) amountResourceStoredCache.get(resource)).doubleValue();
+    			result = amountResourceStoredCache.get(resource);
     		else {
     			if (resourceStorage != null) result += resourceStorage.getAmountResourceStored(resource);
     			if (containedUnits != null) {
     				UnitIterator i = containedUnits.iterator();
     				while (i.hasNext()) result += i.next().getInventory().getAmountResourceStored(resource);
     			}
-    			if (amountResourceStoredCache == null) amountResourceStoredCache = new HashMap(10);
-    			amountResourceStoredCache.put(resource, new Double(result));
+    			if (amountResourceStoredCache == null) 
+    				amountResourceStoredCache = new HashMap<AmountResource, Double>(10);
+    			amountResourceStoredCache.put(resource, result);
     		}
     		return result;
     	}
@@ -218,17 +221,17 @@ public class Inventory implements Serializable {
      * @return set of amount resources.
      * @throws InventoryException if error getting all amount resources.
      */
-    public synchronized Set getAllAmountResourcesStored() throws InventoryException {
+    public synchronized Set<AmountResource> getAllAmountResourcesStored() throws InventoryException {
     	try {
-    		if (allStoredAmountResourcesCache != null) return new HashSet(allStoredAmountResourcesCache);
+    		if (allStoredAmountResourcesCache != null) return new HashSet<AmountResource>(allStoredAmountResourcesCache);
     		else {
-    			allStoredAmountResourcesCache = new HashSet(1, 1);
+    			allStoredAmountResourcesCache = new HashSet<AmountResource>(1, 1);
     			if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
     			if (containedUnits != null) {
     				UnitIterator i = containedUnits.iterator();
     				while (i.hasNext()) allStoredAmountResourcesCache.addAll(i.next().getInventory().getAllAmountResourcesStored());
     			}
-    			return new HashSet(allStoredAmountResourcesCache);
+    			return new HashSet<AmountResource>(allStoredAmountResourcesCache);
     		}
     	}
     	catch(Exception e) {
@@ -270,7 +273,7 @@ public class Inventory implements Serializable {
     	try {
     		double result = 0D;
     		if ((amountResourceRemainingCache != null) && amountResourceRemainingCache.containsKey(resource))
-    			return ((Double) amountResourceRemainingCache.get(resource)).doubleValue();
+    			return amountResourceRemainingCache.get(resource);
     		else {
     			if (resourceStorage != null) result += resourceStorage.getAmountResourceRemainingCapacity(resource);
     			if (containedUnits != null) {
@@ -282,8 +285,8 @@ public class Inventory implements Serializable {
     			}
     			if (result > getContainerUnitGeneralCapacityLimit()) result = getContainerUnitGeneralCapacityLimit();
     		
-    			if (amountResourceRemainingCache == null) amountResourceRemainingCache = new HashMap(10);
-    			amountResourceRemainingCache.put(resource, new Double(result));
+    			if (amountResourceRemainingCache == null) amountResourceRemainingCache = new HashMap<AmountResource, Double>(10);
+    			amountResourceRemainingCache.put(resource, result);
     		}
     		return result;
     	}
@@ -445,7 +448,7 @@ public class Inventory implements Serializable {
     	try {
     		boolean result = false;
     		if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
-    			if (((Integer) containedItemResources.get(resource)).intValue() > 0) result = true;
+    			if (containedItemResources.get(resource) > 0) result = true;
     		}
     		else if (containedUnits != null) {
     			UnitIterator i = containedUnits.iterator();
@@ -470,7 +473,7 @@ public class Inventory implements Serializable {
     	try {
     		int result = 0;
     		if ((containedItemResources != null) && containedItemResources.containsKey(resource)) 
-    			result += ((Integer) containedItemResources.get(resource)).intValue();
+    			result += containedItemResources.get(resource);
     		if (containedUnits != null) {
     			UnitIterator i = containedUnits.iterator();
     			while (i.hasNext()) result += i.next().getInventory().getItemResourceNum(resource);
@@ -489,7 +492,7 @@ public class Inventory implements Serializable {
      */
     public Set getAllItemResourcesStored() throws InventoryException {
     	try {
-    		if (containedItemResources != null) return new HashSet(containedItemResources.keySet());
+    		if (containedItemResources != null) return new HashSet<ItemResource>(containedItemResources.keySet());
     		else return new HashSet();
     	}
     	catch (Exception e) {
@@ -506,9 +509,9 @@ public class Inventory implements Serializable {
     	try {
     		double result = 0D;
     		if (containedItemResources != null) {
-    			Iterator i = containedItemResources.keySet().iterator();
+    			Iterator<ItemResource> i = containedItemResources.keySet().iterator();
     			while (i.hasNext()) {
-    				ItemResource resource = (ItemResource) i.next();
+    				ItemResource resource = i.next();
     				int resourceNum = getItemResourceNum(resource);
     				result += resourceNum * resource.getMassPerItem();
     			}
@@ -530,9 +533,9 @@ public class Inventory implements Serializable {
     	if (number < 0) throw new InventoryException("Cannot store negative number of resources.");
     	double totalMass = resource.getMassPerItem() * number;
     	if (totalMass <= getRemainingGeneralCapacity()) {
-    		if (containedItemResources == null) containedItemResources = new HashMap();
+    		if (containedItemResources == null) containedItemResources = new HashMap<ItemResource, Integer>();
     		int totalNum = number + getItemResourceNum(resource);
-    		containedItemResources.put(resource, new Integer(totalNum));
+    		containedItemResources.put(resource, totalNum);
     		
     		if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
     	}
@@ -552,10 +555,10 @@ public class Inventory implements Serializable {
     		
     		// Retrieve resources from local storage.
     		if ((containedItemResources != null) &&  containedItemResources.containsKey(resource)) {
-    			int storedLocal = ((Integer) containedItemResources.get(resource)).intValue();
+    			int storedLocal = containedItemResources.get(resource);
     			int retrieveNum = remainingNum;
     			if (retrieveNum > storedLocal) retrieveNum = storedLocal;
-    			containedItemResources.put(resource, new Integer(storedLocal - retrieveNum));
+    			containedItemResources.put(resource, storedLocal - retrieveNum);
     			remainingNum -= retrieveNum;
     		}
     		

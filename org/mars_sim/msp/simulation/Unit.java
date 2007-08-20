@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.79 2005-12-11
+ * @version 2.81 2007-08-20
  * @author Scott Davis
  */
 
@@ -34,7 +34,7 @@ public abstract class Unit implements Serializable {
     private double baseMass;          // The mass of the unit without inventory
     private Inventory inventory;      // The unit's inventory
     private Unit containerUnit;       // The unit containing this unit
-    private transient List listeners; // Unit listeners.
+    private transient List<UnitListener> listeners; // Unit listeners.
     
     /** 
      * Constructor
@@ -52,7 +52,7 @@ public abstract class Unit implements Serializable {
         setContainerUnit(null);
 	    
 	    // Initialize unit listeners.
-	    listeners = Collections.synchronizedList(new ArrayList());
+	    listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
     }
 
     /** 
@@ -215,7 +215,7 @@ public abstract class Unit implements Serializable {
      * @param newListener the listener to add.
      */
     public final void addUnitListener(UnitListener newListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
@@ -224,7 +224,7 @@ public abstract class Unit implements Serializable {
      * @param oldListener the listener to remove.
      */
     public final void removeUnitListener(UnitListener oldListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
     
@@ -242,10 +242,10 @@ public abstract class Unit implements Serializable {
      * @param target the event target object or null if none.
      */
     public final void fireUnitUpdate(String updateType, Object target) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
     	synchronized(listeners) {
-    		Iterator i = listeners.iterator();
-    		while (i.hasNext()) ((UnitListener) i.next()).unitUpdate(new UnitEvent(this, updateType, target));
+    		Iterator<UnitListener> i = listeners.iterator();
+    		while (i.hasNext()) i.next().unitUpdate(new UnitEvent(this, updateType, target));
     	}
     }
 }

@@ -1,28 +1,41 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.80 2006-12-03
+ * @version 2.81 2007-08-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentCollection;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonConfig;
+import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.resource.AmountResource;
-import org.mars_sim.msp.simulation.structure.*;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.SettlementCollection;
+import org.mars_sim.msp.simulation.structure.SettlementConfig;
+import org.mars_sim.msp.simulation.structure.SettlementIterator;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** The UnitManager class contains and manages all units in virtual
  *  Mars. It has methods for getting information about units. It is
@@ -40,11 +53,11 @@ public class UnitManager implements Serializable {
     
     // Data members
     private UnitCollection units; // Collection of all units
-    private List settlementNames; // List of possible settlement names
-    private List vehicleNames; // List of possible vehicle names
-    private List personMaleNames; // List of possible male person names
-    private List personFemaleNames; // List of possible female person names
-    private transient List listeners; // List of unit manager listeners.
+    private List<String> settlementNames; // List of possible settlement names
+    private List<String> vehicleNames; // List of possible vehicle names
+    private List<String> personMaleNames; // List of possible male person names
+    private List<String> personFemaleNames; // List of possible female person names
+    private transient List<UnitManagerListener> listeners; // List of unit manager listeners.
 
     /** 
      * Constructor
@@ -53,7 +66,7 @@ public class UnitManager implements Serializable {
    
         // Initialize unit collection
         units = new UnitCollection();
-        listeners = Collections.synchronizedList(new ArrayList());
+        listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
     }
     
     /**
@@ -82,9 +95,9 @@ public class UnitManager implements Serializable {
     private void initializePersonNames() throws Exception {
  		try {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-    		List personNames = personConfig.getPersonNameList();
-    		personMaleNames = new ArrayList();
-    		personFemaleNames = new ArrayList();
+    		List<String> personNames = personConfig.getPersonNameList();
+    		personMaleNames = new ArrayList<String>();
+    		personFemaleNames = new ArrayList<String>();
     		Iterator i = personNames.iterator();
     		while (i.hasNext()) {
     			String name = (String) i.next();
@@ -154,8 +167,8 @@ public class UnitManager implements Serializable {
      */
     public String getNewName(String unitType, String gender) {
         
-        Collection initialNameList = null;
-        ArrayList usedNames = new ArrayList();
+        List<String> initialNameList = null;
+        List<String> usedNames = new ArrayList<String>();
         String unitName = "";
         
         if (unitType.equals(SETTLEMENT)) {
@@ -180,10 +193,10 @@ public class UnitManager implements Serializable {
         }
         else throw new IllegalArgumentException("Improper unitType");
  
-        ArrayList remainingNames = new ArrayList();
-        Iterator i = initialNameList.iterator();
+        List<String> remainingNames = new ArrayList<String>();
+        Iterator<String> i = initialNameList.iterator();
         while (i.hasNext()) {
-            String name = (String) i.next();
+            String name = i.next();
             if (!usedNames.contains(name)) remainingNames.add(name);
         }
             
@@ -577,7 +590,7 @@ public class UnitManager implements Serializable {
      * @param newListener the listener to add.
      */
     public final void addUnitManagerListener(UnitManagerListener newListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
@@ -586,7 +599,7 @@ public class UnitManager implements Serializable {
      * @param oldListener the listener to remove.
      */
     public final void removeUnitManagerListener(UnitManagerListener oldListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
     
@@ -596,7 +609,7 @@ public class UnitManager implements Serializable {
      * @param unit the unit causing the event.
      */
     public final void fireUnitManagerUpdate(String eventType, Unit unit) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
     	synchronized(listeners) {
     		Iterator i = listeners.iterator();
     		while (i.hasNext()) ((UnitManagerListener) i.next()).unitManagerUpdate(

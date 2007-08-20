@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * MspCollection.java
- * @version 2.77 2004-08-11
+ * @version 2.81 2007-08-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class provides an abstract implementation of a Collection for
@@ -20,7 +22,7 @@ public abstract class MspCollection implements java.io.Serializable {
     // private transient Collection listeners = null; // Collection of MspCollectionEventListeners.
 
     // We can replace this with another type of collection if we need to.
-    private List elements;  // Used internally to hold elements.
+    private List<Unit> elements;  // Used internally to hold elements.
 
     /**
      * Constructs a MspCollection object.
@@ -28,7 +30,7 @@ public abstract class MspCollection implements java.io.Serializable {
     public MspCollection() {
 
         // Array lists are suited to List that have dynamic contents
-        elements = new ArrayList();
+        elements = new ArrayList<Unit>();
     }
 
     /**
@@ -76,7 +78,7 @@ public abstract class MspCollection implements java.io.Serializable {
      */
     public Unit get(int index) {
     	Unit result = null;
-    	if ((index > -1) && (index < elements.size())) result = (Unit) elements.get(index);
+    	if ((index > -1) && (index < elements.size())) result = elements.get(index);
     	return result;
     }
 
@@ -169,9 +171,9 @@ public abstract class MspCollection implements java.io.Serializable {
     		MspCollection collection = (MspCollection) object;
     		if (collection.size() == elements.size()) {
     			result = true;
-    			Iterator i = elements.iterator();
+    			Iterator<Unit> i = elements.iterator();
     			while (i.hasNext()) {
-    				Unit unit = (Unit) i.next();
+    				Unit unit = i.next();
     				if (!collection.contains(unit)) result = false;
     			}
     		}

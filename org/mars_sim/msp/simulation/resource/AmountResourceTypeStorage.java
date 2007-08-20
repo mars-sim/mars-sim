@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceTypeStorage.java
- * @version 2.79 2005-12-09
+ * @version 2.81 2007-08-20
  * @author Scott Davis 
  */
 
@@ -20,8 +20,8 @@ import java.util.Set;
 class AmountResourceTypeStorage implements Serializable {
 
 	// Data members
-	private Map amountResourceTypeCapacities = null; // Capacity for each type of amount resource.
-    private Map amountResourceTypeStored = null; // Stored resources by type.
+	private Map<AmountResource, ResourceAmount> amountResourceTypeCapacities = null; // Capacity for each type of amount resource.
+    private Map<AmountResource, ResourceAmount> amountResourceTypeStored = null; // Stored resources by type.
     private transient double totalAmountCache = 0D; // Cache value for the total amount of resources stored.
     
     /**
@@ -32,9 +32,9 @@ class AmountResourceTypeStorage implements Serializable {
      */
     void addAmountResourceTypeCapacity(AmountResource resource, double capacity) throws ResourceException {
     	if (capacity < 0D) throw new ResourceException("Cannot add negative type capacity: " + capacity);
-    	if (amountResourceTypeCapacities == null) amountResourceTypeCapacities = new HashMap();
+    	if (amountResourceTypeCapacities == null) amountResourceTypeCapacities = new HashMap<AmountResource, ResourceAmount>();
     	if (hasAmountResourceTypeCapacity(resource)) {
-    		ResourceAmount existingCapacity = (ResourceAmount) amountResourceTypeCapacities.get(resource);
+    		ResourceAmount existingCapacity = amountResourceTypeCapacities.get(resource);
     		existingCapacity.setAmount(existingCapacity.getAmount() + capacity);
     	}
     	else amountResourceTypeCapacities.put(resource, new ResourceAmount(capacity));
@@ -60,7 +60,7 @@ class AmountResourceTypeStorage implements Serializable {
     double getAmountResourceTypeCapacity(AmountResource resource) {
     	double result = 0D;
     	if (hasAmountResourceTypeCapacity(resource)) 
-    		result = ((ResourceAmount) amountResourceTypeCapacities.get(resource)).getAmount();
+    		result = (amountResourceTypeCapacities.get(resource)).getAmount();
     	return result;
     }
     
@@ -72,7 +72,7 @@ class AmountResourceTypeStorage implements Serializable {
     double getAmountResourceTypeStored(AmountResource resource) {
     	double result = 0D;
     	if (hasAmountResourceTypeCapacity(resource) && (amountResourceTypeStored != null)) {
-    		ResourceAmount amount = (ResourceAmount) amountResourceTypeStored.get(resource);
+    		ResourceAmount amount = amountResourceTypeStored.get(resource);
     		if (amount != null) result = amount.getAmount();
     	}
     	return result;
@@ -84,7 +84,7 @@ class AmountResourceTypeStorage implements Serializable {
      * @return stored amount as Double (kg).
      */
     private ResourceAmount getAmountResourceTypeStoredObject(AmountResource resource) {
-    	if (amountResourceTypeStored != null) return (ResourceAmount) amountResourceTypeStored.get(resource);
+    	if (amountResourceTypeStored != null) return amountResourceTypeStored.get(resource);
     	else return null;
     }
     
@@ -102,8 +102,8 @@ class AmountResourceTypeStorage implements Serializable {
     private void updateTotalAmountResourceTypesStored() {
     	totalAmountCache = 0D;
     	if (amountResourceTypeStored != null) {
-    		Iterator i = amountResourceTypeStored.keySet().iterator();
-    		while (i.hasNext()) totalAmountCache += getAmountResourceTypeStored((AmountResource) i.next());
+    		Iterator<AmountResource> i = amountResourceTypeStored.keySet().iterator();
+    		while (i.hasNext()) totalAmountCache += getAmountResourceTypeStored(i.next());
     	}
     }
     
@@ -111,12 +111,12 @@ class AmountResourceTypeStorage implements Serializable {
      * Gets a set of resources stored.
      * @return set of resources.
      */
-    Set getAllAmountResourcesStored() {
-    	Set result = new HashSet();
+    Set<AmountResource> getAllAmountResourcesStored() {
+    	Set<AmountResource> result = new HashSet<AmountResource>();
     	if (amountResourceTypeStored != null) {
-    		Iterator i = amountResourceTypeStored.keySet().iterator();
+    		Iterator<AmountResource> i = amountResourceTypeStored.keySet().iterator();
     		while (i.hasNext()) {
-    			AmountResource resource = (AmountResource) i.next();
+    			AmountResource resource = i.next();
     			if (getAmountResourceTypeStored(resource) > 0D) result.add(resource);
     		}
     	}
@@ -145,7 +145,7 @@ class AmountResourceTypeStorage implements Serializable {
     	if (amount < 0D) throw new ResourceException("Cannot store negative amount of type: " + amount);
     	if (amount > 0D) {
     		if (getAmountResourceTypeRemainingCapacity(resource) >= amount) {
-    			if (amountResourceTypeStored == null) amountResourceTypeStored = new HashMap();
+    			if (amountResourceTypeStored == null) amountResourceTypeStored = new HashMap<AmountResource, ResourceAmount>();
     			ResourceAmount stored = getAmountResourceTypeStoredObject(resource);
     			if (stored != null) {
     				stored.setAmount(stored.getAmount() + amount);

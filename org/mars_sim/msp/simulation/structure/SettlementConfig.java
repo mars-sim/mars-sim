@@ -412,8 +412,8 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement names as strings
 	 * @throws Exception if XML parsing error.
 	 */
-	public List getSettlementNameList() throws Exception {
-		List result = new ArrayList();
+	public List<String> getSettlementNameList() throws Exception {
+		List<String> result = new ArrayList<String>();
 		Element root = settlementDoc.getDocumentElement();
 		Element settlementNameList = (Element) root.getElementsByTagName(SETTLEMENT_NAME_LIST).item(0);
 		NodeList settlementNameNodes = settlementNameList.getElementsByTagName(SETTLEMENT_NAME);
