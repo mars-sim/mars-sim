@@ -53,7 +53,7 @@
             <classpath>
                 <fileset dir="${mars.jars}">
                     <include name="junit.jar" />
-                    <include name="plexus-core.jar" />
+                    <include name="plexus-core-0.13.1.jar" />
                     <include name="commons-collections-3.1.jar" />
                     <include name="log4j-1.2.8.jar" />
                 </fileset>
@@ -161,7 +161,7 @@
                     <include name="jcommon.jar" />
                     <include name="jfreechart.jar" />
                     <include name="junit.jar" />
-                    <include name="plexus-core.jar" />
+                    <include name="plexus-core-0.13.1.jar" />
                     <include name="commons-collections-3.1.jar" />
                     <include name="log4j-1.2.8.jar" />
                 </fileset>
