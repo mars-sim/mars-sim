@@ -1,17 +1,28 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 2.78 2005-04-17
+ * @version 2.81 2007-08-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.social;
 
-import com.phoenixst.plexus.*;
+import com.phoenixst.plexus.DefaultGraph;
+import com.phoenixst.plexus.EdgePredicate;
+import com.phoenixst.plexus.EdgePredicateFactory;
+import com.phoenixst.plexus.Graph;
+import com.phoenixst.plexus.GraphUtils;
+import com.phoenixst.plexus.NoSuchNodeException;
+import com.phoenixst.plexus.Traverser;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.PersonalityType;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -152,7 +163,7 @@ public class RelationshipManager implements Serializable {
 	 * @return a list of the person's Relationship objects.
 	 */
 	public List getAllRelationships(Person person) {
-		List result = new ArrayList();
+		List<Relationship> result = new ArrayList<Relationship>();
 		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
 			traverser.next();
