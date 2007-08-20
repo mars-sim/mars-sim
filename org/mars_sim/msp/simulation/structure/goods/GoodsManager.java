@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.81 2007-04-28
+ * @version 2.81 2007-08-19
  * @author Scott Davis
  */
 
@@ -23,9 +23,11 @@ import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.job.Areologist;
 import org.mars_sim.msp.simulation.person.ai.job.Driver;
+import org.mars_sim.msp.simulation.person.ai.job.Trader;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
@@ -43,6 +45,7 @@ import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessin
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /**
@@ -53,12 +56,21 @@ public class GoodsManager implements Serializable {
 	// Unit update events.
 	public static final String GOODS_VALUE_EVENT = "goods values";
 	
+	// Mission types.
+	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
+	private static final String EXPLORATION_MISSION = "exploration";
+	private static final String COLLECT_ICE_MISSION = "collect ice";
+	private static final String RESCUE_SALVAGE_MISSION = "rescue/salvage mission";
+	private static final String TRADE_MISSION = "trade";
+	
 	// Data members
 	private Settlement settlement;
 	private Map<Good, Double> goodsValues;
 	private Map<Good, Double> goodsDemandCache;
 	private Map<Good, Double> goodsTradeCache;
 	private Map<AmountResource, Double> resourceProcessingCache;
+	private Map<String, Double> vehicleBuyValueCache;
+	private Map<String, Double> vehicleSellValueCache;
 	
 	/**
 	 * Constructor
@@ -625,6 +637,15 @@ public class GoodsManager implements Serializable {
 		return result;
 	}
 	
+	private int getTraderNum() {
+		int result = 0;
+		PersonIterator i = settlement.getAllAssociatedPeople().iterator();
+		while (i.hasNext()) {
+			if (i.next().getMind().getJob() instanceof Trader) result ++;
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets the number of equipment for a settlement.
 	 * @param equipmentClass the equipmentType to check.
@@ -672,6 +693,46 @@ public class GoodsManager implements Serializable {
 		
 		String vehicleType = vehicleGood.getName();
 		
+		boolean buy = false;
+		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+		double currentNum = getNumberOfVehiclesForSettlement(vehicleType);
+		double currentSupply = currentNum * config.getEmptyMass(vehicleType);
+		if (supply == currentSupply) buy = true;
+		
+		if (vehicleBuyValueCache == null) vehicleBuyValueCache = new HashMap<String, Double>();
+		if (vehicleSellValueCache == null) vehicleSellValueCache = new HashMap<String, Double>();
+		
+		if (useCache) {
+			if (buy) {
+				if (vehicleBuyValueCache.containsKey(vehicleType)) value = vehicleBuyValueCache.get(vehicleType);
+				else determineVehicleGoodValue(vehicleGood, supply, false);
+			}
+			else {
+				if (vehicleSellValueCache.containsKey(vehicleType)) value = vehicleSellValueCache.get(vehicleType);
+				else determineVehicleGoodValue(vehicleGood, supply, false);
+			}
+		}
+		else {
+			double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION, vehicleType, buy);
+			if (travelToSettlementMissionValue > value) value = travelToSettlementMissionValue;
+		
+			double explorationMissionValue = determineMissionVehicleValue(EXPLORATION_MISSION, vehicleType, buy);
+			if (explorationMissionValue > value) value = explorationMissionValue;
+		
+			double collectIceMissionValue = determineMissionVehicleValue(COLLECT_ICE_MISSION, vehicleType, buy);
+			if (collectIceMissionValue > value) value = collectIceMissionValue;
+		
+			double rescueMissionValue = determineMissionVehicleValue(RESCUE_SALVAGE_MISSION, vehicleType, buy);
+			if (rescueMissionValue > value) value = rescueMissionValue;
+		
+			double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
+			if (tradeMissionValue > value) value = tradeMissionValue;
+			
+			if (buy) vehicleBuyValueCache.put(vehicleType, value);
+			else vehicleSellValueCache.put(vehicleType, value);
+		}
+		
+		/*
 		// Determine demand amount.
 		double demand = 0D;
 		
@@ -685,8 +746,136 @@ public class GoodsManager implements Serializable {
 		}
 		
 		value = demand / (supply + 1D);
-		
+		*/
 		return value;
+	}
+	
+	private double determineMissionVehicleValue(String missionType, String vehicleType, boolean buy) throws Exception {
+		
+		double demand = determineMissionVehicleDemand(missionType);
+		
+		double currentCapacity = 0D;
+		boolean soldFlag = false;
+		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			String type = i.next().getDescription().toLowerCase();
+			if (!buy && !soldFlag && (type.equals(vehicleType))) soldFlag = true;
+			else currentCapacity += determineMissionVehicleCapacity(missionType, type);
+		}
+		
+		double vehicleCapacity = determineMissionVehicleCapacity(missionType, vehicleType);
+		
+		return (demand / (currentCapacity + 1D)) * vehicleCapacity;
+	}
+	
+	private double determineMissionVehicleDemand(String missionType) {
+		double demand = 0D;
+		
+		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
+			demand = getDriverNum() / 2D;
+			demand *= ((double) settlement.getAllAssociatedPeople().size() / 
+					(double) settlement.getPopulationCapacity());
+		}
+		else if (EXPLORATION_MISSION.equals(missionType)) {
+			demand = getAreologistNum() / 2D;
+		}
+		else if (COLLECT_ICE_MISSION.equals(missionType)) {
+			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
+		}
+		else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
+			demand = getDriverNum() / 4D;
+		}
+		else if (TRADE_MISSION.equals(missionType)) {
+			demand = getTraderNum();
+		}
+		
+		return demand;
+	}
+	
+	private double determineMissionVehicleCapacity(String missionType, String vehicleType) throws Exception {
+		double capacity = 0D;
+		
+		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+		int crewCapacity = config.getCrewSize(vehicleType);
+		
+		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
+			if (crewCapacity >= 2) capacity = 1D;
+			capacity *= crewCapacity / 4D;
+			
+			double range = getVehicleRange(vehicleType);
+			capacity *= range / 5000D;
+		}
+		else if (EXPLORATION_MISSION.equals(missionType)) {
+			if (crewCapacity >= 2) capacity = 1D;
+			
+			double cargoCapacity = config.getTotalCapacity(vehicleType);
+			if (cargoCapacity < 500D) capacity = 0D;
+			
+			if (config.hasLab(vehicleType)) {
+				if (config.getLabTechSpecialities(vehicleType).contains("Areology")) capacity *= 2D;
+			}
+		}
+		else if (COLLECT_ICE_MISSION.equals(missionType)) {
+			if (crewCapacity >= 2) capacity = 1D;
+			
+			double cargoCapacity = config.getTotalCapacity(vehicleType);
+			if (cargoCapacity < 1250D) capacity = 0D;
+		}
+		else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
+			if (crewCapacity >= 2) capacity = 1D;
+			
+			double range = getVehicleRange(vehicleType);
+			capacity *= range / 5000D;
+		}
+		else if (TRADE_MISSION.equals(missionType)) {
+			if (crewCapacity >= 2) capacity = 1D;
+			
+			double cargoCapacity = config.getTotalCapacity(vehicleType);
+			capacity *= cargoCapacity / 2000D;
+			
+			double range = getVehicleRange(vehicleType);
+			capacity *= range / 5000D;
+		}
+		
+		return capacity;
+	}
+	
+	private double getVehicleRange(String vehicleType) throws Exception {
+		double range = 0D;
+		
+		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+		double fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, AmountResource.METHANE.getName());
+		double fuelEfficiency = vehicleConfig.getFuelEfficiency(vehicleType);
+		range = fuelCapacity * fuelEfficiency / 1.5D;
+		
+		double baseSpeed = vehicleConfig.getBaseSpeed(vehicleType);
+		double distancePerSol = baseSpeed / 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+		
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		int crewSize = vehicleConfig.getCrewSize(vehicleType);
+		
+    	// Check food capacity as range limit.
+    	double foodConsumptionRate = personConfig.getFoodConsumptionRate();
+    	double foodCapacity = vehicleConfig.getCargoCapacity(vehicleType, AmountResource.FOOD.getName());
+    	double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
+    	double foodRange = distancePerSol * foodSols / 3D;
+    	if (foodRange < range) range = foodRange;
+    		
+    	// Check water capacity as range limit.
+    	double waterConsumptionRate = personConfig.getWaterConsumptionRate();
+    	double waterCapacity = vehicleConfig.getCargoCapacity(vehicleType, AmountResource.WATER.getName());
+    	double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
+    	double waterRange = distancePerSol * waterSols / 3D;
+    	if (waterRange < range) range = waterRange;
+    		
+    	// Check oxygen capacity as range limit.
+    	double oxygenConsumptionRate = personConfig.getOxygenConsumptionRate();
+    	double oxygenCapacity = vehicleConfig.getCargoCapacity(vehicleType, AmountResource.OXYGEN.getName());
+    	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
+    	double oxygenRange = distancePerSol * oxygenSols / 3D;
+    	if (oxygenRange < range) range = oxygenRange;
+		
+		return range;
 	}
 	
 	/**
@@ -713,6 +902,7 @@ public class GoodsManager implements Serializable {
 	 * @return the vehicle mass needed (kg).
 	 * @throws Exception if error determining demand.
 	 */
+	/*
 	private double determineVehicleDemand(String vehicleType) throws Exception {
 		double numDemand = 0D;
 		
@@ -731,6 +921,7 @@ public class GoodsManager implements Serializable {
 		
 		return demand;
 	}
+	*/
 	
 	/**
 	 * Determines the trade value for a good at a settlement.

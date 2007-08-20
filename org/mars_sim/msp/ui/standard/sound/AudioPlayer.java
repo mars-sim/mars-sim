@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 2.78 2005-09-05
+ * @version 2.81 2007-08-19
  * @author Dima Stepanchuk
  */
 
@@ -37,19 +37,7 @@ public class AudioPlayer {
 			try {
 				File soundFile = new File(filepath);
 				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-				
-				// Note: This block is used to be compatible with Java 1.4
-				// In Java 1.5+ use clip=AudioSystem.getClip();
-				// TODO: Change as soon as project migrates to 1.5
-				// ###############################################
-				AudioFormat format = new AudioFormat(
-						AudioFormat.Encoding.PCM_SIGNED, AudioSystem.NOT_SPECIFIED,
-						16, 2, 4, AudioSystem.NOT_SPECIFIED, true);
-				DataLine.Info info = new DataLine.Info(Clip.class, format);
-				clip = (Clip) AudioSystem.getLine(info);
-				// clip = AudioSystem.getClip();
-				// ###############################################
-				
+				clip = AudioSystem.getClip();
 				clip.open(audioInputStream);
 				
 				setVolume(volume);
