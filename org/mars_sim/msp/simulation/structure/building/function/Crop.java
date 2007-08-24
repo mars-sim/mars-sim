@@ -229,9 +229,12 @@ public class Crop implements Serializable {
                 	double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
                 	double wasteWaterUsed = wasteWaterRequired;
                 	if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
+                	double waterAmount = wasteWaterUsed * .8D;
+                	double waterCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.WATER);
+                	if (waterAmount > waterCapacity) waterAmount = waterCapacity;
                 	try {
                 		inv.retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
-                		inv.storeAmountResource(AmountResource.WATER, wasteWaterUsed * .8D);
+                		inv.storeAmountResource(AmountResource.WATER, waterAmount);
                 	}
                 	catch (Exception e) {}
                 	harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
@@ -241,9 +244,12 @@ public class Crop implements Serializable {
                 	double carbonDioxideAvailable = inv.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
                 	double carbonDioxideUsed = carbonDioxideRequired;
                 	if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
+                	double oxygenAmount = carbonDioxideUsed * .9D;
+                	double oxygenCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN);
+                	if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
                 	try {
                 		inv.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideUsed);
-                		inv.storeAmountResource(AmountResource.OXYGEN, carbonDioxideUsed * .9D);
+                		inv.storeAmountResource(AmountResource.OXYGEN, oxygenAmount);
                 	}
                 	catch (Exception e) {}
                 	harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);   

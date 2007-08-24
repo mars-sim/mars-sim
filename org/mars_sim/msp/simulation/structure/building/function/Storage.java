@@ -52,6 +52,8 @@ public class Storage extends Function implements Serializable {
 				String resourceName = (String) i2.next();
 				AmountResource resource = AmountResource.findAmountResource(resourceName);
 				double initialResource = ((Double) initialResources.get(resourceName)).doubleValue();
+				double resourceCapacity = inventory.getAmountResourceRemainingCapacity(resource);
+				if (initialResource > resourceCapacity) initialResource = resourceCapacity;
 				inventory.storeAmountResource(resource, initialResource);
 			}
 		}

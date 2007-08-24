@@ -214,8 +214,10 @@ public class Cooking extends Function implements Serializable {
 			if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
 				try {
 					PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-					getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, 
-							config.getFoodConsumptionRate() * (1D / 3D));
+					double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
+					double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(AmountResource.FOOD);
+					if (foodAmount > foodCapacity) foodAmount = foodCapacity;
+					getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, foodAmount);
 					i.remove();
 					// System.out.println("Cooked meal expiring at " + 
 					// 	getBuilding().getBuildingManager().getSettlement().getName());
