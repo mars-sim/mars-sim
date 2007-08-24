@@ -126,8 +126,8 @@ public class MissionManager implements Serializable {
             if (listeners == null) listeners = 
             	Collections.synchronizedList(new ArrayList<MissionManagerListener>());
             synchronized(listeners) {
-            	Iterator i = listeners.iterator();
-            	while (i.hasNext()) ((MissionManagerListener) i.next()).addMission(newMission);
+            	Iterator<MissionManagerListener> i = listeners.iterator();
+            	while (i.hasNext()) i.next().addMission(newMission);
             }
             // System.out.println("MissionManager: Added new mission - " + newMission.getName());
         }

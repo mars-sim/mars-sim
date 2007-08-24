@@ -154,7 +154,7 @@ public class PowerGridTabPanel extends TabPanel {
             return 4;
         }
         
-        public Class getColumnClass(int columnIndex) {
+        public Class<?> getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = ImageIcon.class;
             else if (columnIndex == 1) dataType = String.class;

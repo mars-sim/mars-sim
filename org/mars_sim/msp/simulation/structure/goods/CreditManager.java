@@ -8,6 +8,10 @@
 package org.mars_sim.msp.simulation.structure.goods;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -29,6 +33,7 @@ public class CreditManager implements Serializable {
 
 	// Domain members
 	private Graph creditGraph;
+	private transient List<CreditListener> listeners; // Credit listeners.
 	
 	/**
 	 * Constructor
@@ -75,6 +80,12 @@ public class CreditManager implements Serializable {
 		// Add edge for credit.
 		if (amount >= 0D) creditGraph.addEdge(new Double(Math.abs(amount)), settlement1, settlement2, true);
 		else creditGraph.addEdge(new Double(Math.abs(amount)), settlement2, settlement1, true);
+		
+        // Update listeners.
+        synchronized(getListeners()) {
+        	Iterator<CreditListener> i = getListeners().iterator();
+        	while (i.hasNext()) i.next().creditUpdate(new CreditEvent(settlement1, settlement2, amount));
+        }
 	}
 	
 	/**
@@ -99,4 +110,29 @@ public class CreditManager implements Serializable {
 		
 		return result;
 	}
+	
+	/**
+	 * Gets the list of credit listeners.
+	 * @return list of credit listeners.
+	 */
+	private List<CreditListener> getListeners() {
+		if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<CreditListener>());
+		return listeners;
+	}
+	
+    /**
+     * Add a listener
+     * @param newListener The listener to add.
+     */
+    public void addListener(CreditListener newListener) {
+        if (!getListeners().contains(newListener)) getListeners().add(newListener);
+    }
+    
+    /**
+     * Remove a listener
+     * @param oldListener the listener to remove.
+     */
+    public void removeListener(CreditListener oldListener) {
+    	if (getListeners().contains(oldListener)) getListeners().remove(oldListener);
+    }
 }
