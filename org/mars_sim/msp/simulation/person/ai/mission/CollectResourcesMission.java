@@ -77,6 +77,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			
         	// Set mission capacity.
         	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
+        	int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+        	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
 		
 			// Initialize data members.
 			setStartingSettlement(startingPerson.getSettlement());
@@ -146,7 +148,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		super(missionName, (Person) members.get(0), minPeople, rover);
 		
 		setStartingSettlement(startingSettlement);
+		
+		// Set mission capacity.
 		setMissionCapacity(getRover().getCrewCapacity());
+		int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
+    	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
+    	
 		this.resourceType = resourceType;
 		this.siteResourceGoal = siteResourceGoal;
 		this.resourceCollectionRate = resourceCollectionRate;

@@ -67,6 +67,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         	// Set mission capacity.
         	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
+        	int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+        	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
         	
         	// Choose destination settlement.
         	setDestinationSettlement(getRandomDestinationSettlement(startingPerson, getStartingSettlement()));
@@ -115,6 +117,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     	
     	// Sets the mission capacity.
     	setMissionCapacity(getRover().getCrewCapacity());
+    	int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
+    	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
     	
     	// Set mission destination.
     	setDestinationSettlement(destinationSettlement);
@@ -162,6 +166,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			// Plus one to hold down the fort.
 			if (!minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1))) missionPossible = false;
 	    	
+			// Check if min number of EVA suits at settlement.
+			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE) 
+				missionPossible = false;
+			
 	    	// Check if there are any desirable settlements within range.
 	    	try {
 	    		Vehicle vehicle = getVehicleWithGreatestRange(settlement);

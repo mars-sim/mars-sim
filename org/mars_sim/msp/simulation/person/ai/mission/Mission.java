@@ -369,7 +369,7 @@ public abstract class Mission implements Serializable {
     		fireMissionUpdate(END_MISSION_EVENT);
     		Object p[] = people.toArray();
     		for(int i = 0; i < p.length; i++) removePerson((Person) p[i]);
-    		// System.out.println(getDescription() + " ending due to " + reason);
+    		// System.out.println(getDescription() + " ending at " + getPhase() + " due to " + reason);
     	}
     }
 

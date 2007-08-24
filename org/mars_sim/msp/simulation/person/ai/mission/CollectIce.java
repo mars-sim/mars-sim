@@ -84,6 +84,9 @@ public class CollectIce extends CollectResourcesMission {
 			GoodsManager manager = person.getSettlement().getGoodsManager();
 			double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
 			result *= value * 10D;
+			
+			// Check if min number of EVA suits at settlement.
+			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
 		}
 		
 		return result;

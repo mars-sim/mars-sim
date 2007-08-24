@@ -600,6 +600,8 @@ public class LoadVehicle extends Task implements Serializable {
     private static final boolean isFullyLoadedWithResources(Map<Resource, Number> resources, Vehicle vehicle) 
     		throws Exception {
     	
+    	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
+    	
     	boolean sufficientSupplies = true;
         Inventory inv = vehicle.getInventory();
 
@@ -629,6 +631,8 @@ public class LoadVehicle extends Task implements Serializable {
      */
     private static final boolean isFullyLoadedWithEquipment(Map<Class, Integer> equipment, Vehicle vehicle) 
     		throws Exception {
+    	
+    	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
     	
     	boolean sufficientSupplies = true;
         Inventory inv = vehicle.getInventory();

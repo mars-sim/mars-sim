@@ -188,9 +188,12 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     	double oxygenTaken = amountRequested;
     	double oxygenLeft = getInventory().getAmountResourceStored(AmountResource.OXYGEN);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
+    	double carbonDioxideProvided = oxygenTaken;
+    	double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE);
+    	if (carbonDioxideProvided > carbonDioxideCapacity) carbonDioxideProvided = carbonDioxideCapacity;
     	try {
     		getInventory().retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
-    		getInventory().storeAmountResource(AmountResource.CARBON_DIOXIDE, oxygenTaken);
+    		getInventory().storeAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideProvided);
     	}
     	catch (InventoryException e) {};
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);

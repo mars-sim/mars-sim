@@ -79,8 +79,15 @@ public class Exploration extends CollectResourcesMission {
 	 */
 	public static double getNewMissionProbability(Person person) {
 
-		return CollectResourcesMission.getNewMissionProbability(person, SpecimenContainer.class, 
+		double result =  CollectResourcesMission.getNewMissionProbability(person, SpecimenContainer.class, 
 				REQUIRED_SPECIMEN_CONTAINERS, MIN_PEOPLE, Exploration.class);
+		
+		if (result > 0D) {
+			// Check if min number of EVA suits at settlement.
+			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
+		}
+		
+		return result;
 	}
 	
 	/**

@@ -229,7 +229,7 @@ public class CollectResources extends EVAOperation implements Serializable {
         // Add experience points
         addExperience(time);
 		
-		// Collect rock samples.
+		// Collect resources.
 		if (samplesCollected <= sampleLimit) {
 			person.getInventory().storeAmountResource(resourceType, samplesCollected);
 			return 0D;

@@ -18,6 +18,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitEvent;
 import org.mars_sim.msp.simulation.UnitListener;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
@@ -175,6 +176,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			boolean usable = true;
 			if (newVehicle.isReserved()) usable = false;
 			if (!newVehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
+			if (newVehicle.getInventory().getTotalInventoryMass() > 0D) usable = false;
 			return usable;
 		}
 		else throw new IllegalArgumentException("isUsableVehicle: newVehicle is null.");
@@ -277,6 +279,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @throws Exception if error checking vehicle.
      */
     public final boolean isVehicleLoaded() throws Exception {
+    	
+    	if (getVehicle() == null) throw new MissionException(getPhase(), "vehicle is null");
     	
     	return LoadVehicle.isFullyLoaded(getResourcesNeededForRemainingMission(true), 
     			getEquipmentNeededForRemainingMission(true), getVehicle());
@@ -670,5 +674,21 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		String type = event.getType();
 		if (type.equals(Unit.LOCATION_EVENT)) fireMissionUpdate(DISTANCE_EVENT);
 		else if (type.equals(Unit.NAME_EVENT)) fireMissionUpdate(VEHICLE_EVENT);
+	}
+	
+	/**
+	 * Gets the number of available EVA suits for a mission at a settlement.
+	 * @param settlement the settlement to check.
+	 * @return number of available suits.
+	 */
+	static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
+		int result = 0;
+		
+		result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
+		
+		// Leave one suit for settlement use.
+		if (result > 0) result--;
+		
+		return result;
 	}
 }

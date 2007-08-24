@@ -74,8 +74,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         	try {
         		if (hasVehicle()) {
         			vehicleTarget = findAvailableBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
+        			
         			int capacity = getRover().getCrewCapacity();
         			if (capacity < MISSION_MAX_MEMBERS) setMissionCapacity(capacity);
+        			
+        			int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+                	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
         		}
         	}
         	catch (Exception e) {
@@ -179,6 +183,10 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	    
 	    	// Check if available rover.
 	    	if (!areVehiclesAvailable(settlement)) missionPossible = false;
+	    	
+			// Check if min number of EVA suits at settlement.
+			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(settlement) < MISSION_MIN_MEMBERS) 
+				missionPossible = false;
 	    	
 	    	// Check if there are any beacon vehicles within range that need help.
 	    	Vehicle vehicleTarget = null;

@@ -23,6 +23,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.goods.CreditManager;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
@@ -89,6 +90,13 @@ public class NegotiateTrade extends Task implements Serializable {
 		if (getDuration() < (getTimeCompleted() + time)) {
 			double tradeValueLimit = determineTradeValueLimit();
 			buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover, tradeValueLimit);
+			
+			// Set credit between settlements.
+			double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, sellingSettlement, false);
+			CreditManager creditManager = Simulation.instance().getCreditManager();
+			double credit = tradeValueLimit - buyLoadValue;
+			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+			// System.out.println("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + " is " + credit);
 		}
 		
 		return 0D;
@@ -135,9 +143,13 @@ public class NegotiateTrade extends Task implements Serializable {
 		modifier -= relationshipManager.getOpinionOfPerson(buyingTrader, sellingTrader) / 1000D;
 		
 		// Get sold load value.
-		double soldLoadValue = TradeUtil.determineLoadValue(soldLoad, sellingSettlement, true);
+		double soldLoadValue = TradeUtil.determineLoadValue(soldLoad, buyingSettlement, true);
 		
-		return soldLoadValue * modifier;
+		// Get existing credit between settlements.
+		CreditManager creditManager = Simulation.instance().getCreditManager();
+		double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
+		
+		return (soldLoadValue * modifier) + credit;
 	}
 
 	/**

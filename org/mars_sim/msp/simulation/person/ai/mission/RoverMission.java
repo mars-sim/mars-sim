@@ -131,6 +131,7 @@ public abstract class RoverMission extends VehicleMission {
 			boolean usable = true;
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
+			if (vehicle.getInventory().getTotalInventoryMass() > 0D) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
 			
 			if (usable) {
@@ -159,6 +160,13 @@ public abstract class RoverMission extends VehicleMission {
 			if (vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
+			
+			try {
+				if (vehicle.getInventory().getTotalInventoryMass() > 0D) usable = false;
+			}
+			catch (InventoryException e) {
+				e.printStackTrace(System.err);
+			}
 			
 			if (usable) result = true;    
 		}
@@ -252,8 +260,12 @@ public abstract class RoverMission extends VehicleMission {
     		else {
     			// If person is not aboard the rover, board rover.
     			if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
-    				if (person.getLocationSituation().equals(Person.INSETTLEMENT))
-    					settlement.getInventory().retrieveUnit(person);
+    				if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+    					try {
+    						settlement.getInventory().retrieveUnit(person);
+    					}
+    					catch (InventoryException e) {}
+    				}
     				getVehicle().getInventory().storeUnit(person);
             	}
     			

@@ -20,7 +20,7 @@ class AmountResourcePhaseStorage implements Serializable {
 	// Data members
 	private Map amountResourcePhaseCapacities = null; // Capacity for each phase of amount resource.
     private Map amountResourcePhaseStored = null; // Stored resources by phase.
-    private transient double totalStoredCache = 0D; // The total amount phase resources stored. (kg)
+    private transient double totalStoredCache = -1D; // The total amount phase resources stored. (kg)
     
     /**
      * Adds capacity for a resource phase.
@@ -81,6 +81,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @return amount stored (kg).
      */
     double getTotalAmountResourcePhasesStored() {
+    	if (totalStoredCache < 0D) updateTotalAmountResourcePhasesStored();
     	return totalStoredCache;
     }
     

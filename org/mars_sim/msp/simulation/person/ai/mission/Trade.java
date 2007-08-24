@@ -75,7 +75,11 @@ public class Trade extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson);
 		
+		// Set the mission capacity.
 		setMissionCapacity(MAX_MEMBERS);
+		int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+    	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
+		
 		outbound = true;
 		
 		if (!isDone()) {
@@ -144,8 +148,12 @@ public class Trade extends RoverMission implements Serializable {
             
 			// Check if minimum number of people are available at the settlement.
 			// Plus one to hold down the fort.
-			if (!minAvailablePeopleAtSettlement(settlement, MIN_PEOPLE)) missionPossible = false;
+			if (!minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_PEOPLE)) missionPossible = false;
 	    	
+			// Check if min number of EVA suits at settlement.
+			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE) 
+				missionPossible = false;
+			
 	    	// Check for the best trade settlement within range.
 			double tradeProfit = 0D;
 	    	try {
@@ -166,7 +174,7 @@ public class Trade extends RoverMission implements Serializable {
 	        if (missionPossible) {
 	        	
 	        	// Trade value modifier.
-	        	missionProbability = tradeProfit;
+	        	missionProbability = tradeProfit / 100D;
 	            
 	            // Crowding modifier.
 	            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
@@ -334,6 +342,7 @@ public class Trade extends RoverMission implements Serializable {
     	
     	if (getPhaseEnded()) {
     		outbound = false;
+    		equipmentNeededCache = null;
     		addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(), 
 					getStartingSettlement().getName()));
     	}
@@ -372,25 +381,27 @@ public class Trade extends RoverMission implements Serializable {
      */
     private void performLoadGoodsPhase(Person person) throws MissionException {
     	
-    	try {
-    		// Load towed vehicle (if necessary).
-    		loadTowedVehicle();
+    	if (!isDone()) {
+    		try {
+    			// Load towed vehicle (if necessary).
+    			loadTowedVehicle();
     		
-    		if (!isVehicleLoaded()) {
-    			// Check if vehicle can hold enough supplies for mission.
-    			if (isVehicleLoadable()) {
-    				// Random chance of having person load (this allows person to do other things sometimes)
-    				if (RandomUtil.lessThanRandPercent(50)) { 
-    					assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesNeededForRemainingMission(true), 
-							getEquipmentNeededForRemainingMission(true)));
+    			if (!isVehicleLoaded()) {
+    				// Check if vehicle can hold enough supplies for mission.
+    				if (isVehicleLoadable()) {
+    					// Random chance of having person load (this allows person to do other things sometimes)
+    					if (RandomUtil.lessThanRandPercent(50)) { 
+    						assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesNeededForRemainingMission(true), 
+    								getEquipmentNeededForRemainingMission(true)));
+    					}
     				}
+    				else endMission("Vehicle is not loadable (RoverMission).");
     			}
-    			else endMission("Vehicle is not loadable (RoverMission).");
+    			else setPhaseEnded(true);
     		}
-    		else setPhaseEnded(true);
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(VehicleMission.EMBARKING, e);
+    		catch (Exception e) {
+    			throw new MissionException(VehicleMission.EMBARKING, e);
+    		}
     	}
     }
     
@@ -403,6 +414,10 @@ public class Trade extends RoverMission implements Serializable {
     		towed.setReservedForMission(false);
     		getRover().setTowedVehicle(null);
     		towed.setTowingVehicle(null);
+    		try {
+    			tradingSettlement.getInventory().storeUnit(towed);
+    		}
+    		catch (InventoryException e) {}
     	}
     }
     
@@ -418,6 +433,10 @@ public class Trade extends RoverMission implements Serializable {
     				buyVehicle.setReservedForMission(true);
     				getRover().setTowedVehicle(buyVehicle);
     				buyVehicle.setTowingVehicle(getRover());
+    				try {
+    					tradingSettlement.getInventory().retrieveUnit(buyVehicle);
+    				}
+    				catch (InventoryException e) {}
     			}	
     			else endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
     		}
@@ -475,10 +494,38 @@ public class Trade extends RoverMission implements Serializable {
     				sellVehicle.setReservedForMission(true);
     				getRover().setTowedVehicle(sellVehicle);
     				sellVehicle.setTowingVehicle(getRover());
+    				try {
+    					getStartingSettlement().getInventory().retrieveUnit(sellVehicle);
+    				}
+    				catch (InventoryException e) {}
     			}	
     			else endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
     		}
     	}
+    }
+    
+    /**
+     * Performs the disembark to settlement phase of the mission.
+     * @param person the person currently performing the mission.
+     * @param disembarkSettlement the settlement to be disembarked to.
+     * @throws MissionException if error performing phase.
+     */
+    protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) 
+    		throws MissionException {
+    	
+    	// Unload towed vehicle if any.
+    	if (!isDone() && (getRover().getTowedVehicle() != null)) {
+    		Vehicle towed = getRover().getTowedVehicle();
+    		towed.setReservedForMission(false);
+    		getRover().setTowedVehicle(null);
+    		towed.setTowingVehicle(null);
+    		try {
+    			getStartingSettlement().getInventory().storeUnit(towed);
+    		}
+    		catch (InventoryException e) {}
+    	}
+    	
+    	super.performDisembarkToSettlementPhase(person, disembarkSettlement);
     }
     
     /** 

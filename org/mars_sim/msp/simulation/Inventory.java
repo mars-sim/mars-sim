@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.AmountResourceStorage;
 import org.mars_sim.msp.simulation.resource.ItemResource;
@@ -336,8 +337,11 @@ public class Inventory implements Serializable {
     				
     				if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
     			}
-    			else throw new InventoryException("Insufficiant capacity to store " + resource.getName() + ", capacity: " + 
+    			else {
+    				System.out.println("Inventory.storeAmountResource() test");
+    				throw new InventoryException("Insufficiant capacity to store " + resource.getName() + ", capacity: " + 
     					getAmountResourceRemainingCapacity(resource) + ", attempted: " + amount);
+    			}
     		}
     	}
     	catch (ResourceException e) {
@@ -738,6 +742,26 @@ public class Inventory implements Serializable {
         	if (containedUnits == null) containedUnits = new UnitCollection();
             containedUnits.add(unit);
             unit.setContainerUnit(owner);
+            
+            // Try to empty amount resources into parent if container.
+            if (unit instanceof Container) {
+            	Inventory containerInv = unit.getInventory();
+            	Iterator<AmountResource> i = containerInv.getAllAmountResourcesStored().iterator();
+            	while (i.hasNext()) {
+            		AmountResource resource = i.next();
+            		double containerAmount = containerInv.getAmountResourceStored(resource);
+            		try {
+            			if (getAmountResourceRemainingCapacity(resource) >= containerAmount) {
+            				containerInv.retrieveAmountResource(resource, containerAmount);
+            				storeAmountResource(resource, containerAmount);
+            			}
+            		}
+            		catch (InventoryException e) {
+            			e.printStackTrace(System.err);
+            		}
+            	}
+            }
+            
             clearAmountResourceCapacityCache();
         	clearAmountResourceStoredCache();
             if (owner != null) {

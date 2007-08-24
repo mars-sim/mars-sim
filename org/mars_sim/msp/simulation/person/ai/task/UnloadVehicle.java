@@ -107,7 +107,7 @@ public class UnloadVehicle extends Task implements Serializable {
         		int numVehicles = 0;
         		numVehicles += getAllMissionsNeedingUnloading(person.getSettlement()).size();
         		if (getNonMissionVehicleNeedingUnloading(person.getSettlement()) != null) numVehicles++;
-        		result = 100D * numVehicles;
+        		result = 500D * numVehicles;
         	}
         	catch (Exception e) {
         		System.err.println("Error finding unloading missions. " + e.getMessage());
@@ -138,8 +138,7 @@ public class UnloadVehicle extends Task implements Serializable {
     		while (i.hasNext()) {
     			Vehicle vehicle = i.next();
     			try {
-    				if (!vehicle.isReserved() && (vehicle.getInventory().getTotalInventoryMass() > 0D)) 
-    					result = vehicle;
+    				if (!vehicle.isReserved() && (vehicle.getInventory().getTotalInventoryMass() > 0D)) result = vehicle;
     			}
     			catch(InventoryException e) {
     				e.printStackTrace(System.err);
@@ -229,6 +228,10 @@ public class UnloadVehicle extends Task implements Serializable {
         if (garage == null) amountUnloading /= 4D;
         
         Inventory vehicleInv = vehicle.getInventory();
+        if (settlement == null) {
+        	endTask();
+        	return 0D;
+        }
         Inventory settlementInv = settlement.getInventory();
         
         // Unload equipment.
@@ -252,6 +255,11 @@ public class UnloadVehicle extends Task implements Serializable {
         	AmountResource resource = (AmountResource) i.next();
         	double amount = vehicleInv.getAmountResourceStored(resource);
         	if (amount > amountUnloading) amount = amountUnloading;
+        	double capacity = settlementInv.getAmountResourceRemainingCapacity(resource);
+        	if (capacity < amount) {
+        		amount = capacity;
+        		amountUnloading = 0D;
+        	}
         	try {
         		vehicleInv.retrieveAmountResource(resource, amount);
         		settlementInv.storeAmountResource(resource, amount);
@@ -291,6 +299,8 @@ public class UnloadVehicle extends Task implements Serializable {
         while (i.hasNext()) {
         	AmountResource resource = (AmountResource) i.next();
         	double amount = eInv.getAmountResourceStored(resource);
+        	double capacity = sInv.getAmountResourceRemainingCapacity(resource);
+        	if (amount < capacity) amount = capacity;
         	try {
         		eInv.retrieveAmountResource(resource, amount);
         		sInv.storeAmountResource(resource, amount);

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.equipment.Barrel;
 import org.mars_sim.msp.simulation.equipment.Equipment;
@@ -25,11 +26,13 @@ import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Phase;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
+import org.mars_sim.msp.simulation.structure.goods.CreditManager;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /**
  * Utility class for static trade methods.
@@ -121,18 +124,26 @@ public final class TradeUtil {
     	Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, Double.MAX_VALUE);
     	double sellValue = determineLoadValue(sellLoad, tradingSettlement, true);
     	
-    	Map<Good, Integer> buyLoad = determineLoad(startingSettlement, tradingSettlement, rover, sellValue);
+    	// Add in credit between settlements.
+    	CreditManager creditManager = Simulation.instance().getCreditManager();
+    	double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
+    	double valueLimit = sellValue + credit;
+    	
+    	Map<Good, Integer> buyLoad = determineLoad(startingSettlement, tradingSettlement, rover, valueLimit);
     	double buyValue = determineLoadValue(buyLoad, startingSettlement, true);
     	
     	// Balance loads to least trade value.
-    	if (buyValue < sellValue) { 
-    		sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, buyValue);
+    	if (buyValue < valueLimit) { 
+    		sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, (buyValue - credit));
     		sellValue = determineLoadValue(sellLoad, tradingSettlement, true);
     	}
     	
     	// Determine value of buy and sell loads to starting settlement.
     	double startingSettlementSellValue = determineLoadValue(sellLoad, startingSettlement, false);
     	double startingSettlementBuyValue = determineLoadValue(buyLoad, startingSettlement, true);
+    	
+    	// Add credit to buy value if credit is owed.
+    	if (credit < 0D) startingSettlementBuyValue -= credit;
     	
     	// Revenue is the value of what is bought minus what is sold.
     	return startingSettlementBuyValue - startingSettlementSellValue;
@@ -227,7 +238,6 @@ public final class TradeUtil {
     	    		tradeList.put(good, newNumber);
     			}
     			catch (Exception e) {
-    				System.out.println(e.getMessage());
     				done = true;
     			}
     		}
@@ -403,8 +413,16 @@ public final class TradeUtil {
     		return inventory.getItemResourceNum((ItemResource) good.getObject());
     	else if (good.getCategory().equals(Good.EQUIPMENT))
     		return inventory.findNumUnitsOfClass(good.getClassType());
-    	else if (good.getCategory().equals(Good.VEHICLE))
-    		return inventory.findNumUnitsOfClass(good.getClassType()) - 1;
+    	else if (good.getCategory().equals(Good.VEHICLE)) {
+    		int count = 0;
+    		UnitIterator i = inventory.findAllUnitsOfClass(good.getClassType()).iterator();
+    		while (i.hasNext()) {
+    			Vehicle vehicle = (Vehicle) i.next();
+    			if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved()) count++;
+    		}
+    		return count;
+    		// return inventory.findNumUnitsOfClass(good.getClassType()) - 1;
+    	}
     	else return 0D;
     }
     
@@ -415,8 +433,13 @@ public final class TradeUtil {
      * @throws Exception if error adding good to the inventory.
      */
     private static void addToInventory(Good good, Inventory inventory) throws Exception {	
-    	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
-    		inventory.storeAmountResource((AmountResource) good.getObject(), AMOUNT_RESOURCE_TRADE_AMOUNT);
+    	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
+    		AmountResource resource = (AmountResource) good.getObject();
+    		double amount = AMOUNT_RESOURCE_TRADE_AMOUNT;
+    		double capacity = inventory.getAmountResourceRemainingCapacity(resource);
+    		if (amount > capacity) amount = capacity;
+    		inventory.storeAmountResource(resource, amount);
+    	}
     	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
     		inventory.storeItemResources((ItemResource) good.getObject(), 1);
     	else if (good.getCategory().equals(Good.EQUIPMENT)) 
