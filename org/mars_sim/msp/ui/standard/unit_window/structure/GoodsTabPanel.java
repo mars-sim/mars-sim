@@ -39,7 +39,7 @@ public class GoodsTabPanel extends TabPanel {
      */
 	public GoodsTabPanel(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
-		super("Trade", null, "Trade Goods", unit, desktop);
+		super("Goods", null, "Trade Goods", unit, desktop);
 		
         // Prepare goods label panel.
         JPanel goodsLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -51,7 +51,7 @@ public class GoodsTabPanel extends TabPanel {
         
 		// Create scroll panel for the outer table panel.
 		JScrollPane goodsScrollPanel = new JScrollPane();
-		goodsScrollPanel.setPreferredSize(new Dimension(220, 260));
+		goodsScrollPanel.setPreferredSize(new Dimension(220, 280));
 		topContentPanel.add(goodsScrollPanel);         
         
         // Prepare outer table panel.
@@ -75,7 +75,9 @@ public class GoodsTabPanel extends TabPanel {
         goodsTablePanel.add(goodsTable, BorderLayout.CENTER);
 	}
 	
-	@Override
+    /**
+     * Updates the info on this panel.
+     */
 	public void update() {
 		goodsTableModel.update();
 	} 

@@ -61,7 +61,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
         
 		// Create scroll panel for the outer table panel.
 		processesScrollPanel = new JScrollPane();
-		processesScrollPanel.setPreferredSize(new Dimension(220, 260));
+		processesScrollPanel.setPreferredSize(new Dimension(220, 280));
 		topContentPanel.add(processesScrollPanel);         
         
         // Prepare process list panel.
