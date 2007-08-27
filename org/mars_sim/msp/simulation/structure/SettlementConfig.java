@@ -86,8 +86,8 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if there isn't a settlement template with this name or
 	 * if there is an XML parsing error.
 	 */
-	public List getTemplateBuildingTypes(String templateName) throws Exception {
-		List result = new ArrayList();
+	public List<String> getTemplateBuildingTypes(String templateName) throws Exception {
+		List<String> result = new ArrayList<String>();
 		
 		Element templateElement = getSettlementTemplateElement(templateName);
 		NodeList buildingNodes = templateElement.getElementsByTagName(BUILDING);
@@ -109,8 +109,8 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if there isn't a settlement template with this name or
 	 * if there is an XML parsing error.
 	 */
-	public List getTemplateVehicleTypes(String templateName) throws Exception {
-		List result = new ArrayList();
+	public List<String> getTemplateVehicleTypes(String templateName) throws Exception {
+		List<String> result = new ArrayList<String>();
 		
 		Element templateElement = getSettlementTemplateElement(templateName);
 		NodeList vehicleNodes = templateElement.getElementsByTagName(VEHICLE);

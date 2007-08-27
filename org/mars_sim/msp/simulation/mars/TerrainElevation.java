@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TerrainElevation.java
- * @version 2.76 2004-07-15
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ public class TerrainElevation {
 	private static final double ASCRAEUS_MONS_THETA = 4.459316D;
 
 	//	Data members
-	private static ArrayList topoColors = null;
+	private static ArrayList<int[]> topoColors = null;
 
     /** 
      * Constructor
@@ -83,7 +83,7 @@ public class TerrainElevation {
 	 * @return array list of map data
 	 * @throws IOException if map data cannot be loaded.
 	 */
-	private ArrayList loadMapData(String filename, int[] index) throws IOException {
+	private ArrayList<int[]> loadMapData(String filename, int[] index) throws IOException {
      
 		// Load map data from map_data jar file.
 		ClassLoader loader = getClass().getClassLoader();
@@ -95,7 +95,7 @@ public class TerrainElevation {
 		DataInputStream mapReader = new DataInputStream(mapBuff);
         
 		// Create map colors array list.
-		ArrayList mapColors = new ArrayList(MAP_HEIGHT);
+		ArrayList<int[]> mapColors = new ArrayList<int[]>(MAP_HEIGHT);
         
 		// Create an array of colors for each pixel in map height.
 		for (int x=0; x < MAP_HEIGHT; x++) {

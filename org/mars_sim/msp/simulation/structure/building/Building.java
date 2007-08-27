@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.78 2004-11-10
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
  
@@ -32,7 +32,7 @@ public class Building implements Malfunctionable, Serializable {
     protected String name;
     protected String powerMode;
     protected MalfunctionManager malfunctionManager;
-    protected List functions;
+    protected List<Function> functions;
     protected double basePowerRequirement;
     protected double basePowerDownPowerRequirement;
     
@@ -67,11 +67,8 @@ public class Building implements Malfunctionable, Serializable {
 		malfunctionManager.addScopeString("Building");
 		
 		// Add each function to the malfunction scope.
-		Iterator i = functions.iterator();
-		while (i.hasNext()) {
-			Function function = (Function) i.next();
-			malfunctionManager.addScopeString(function.getName());
-		}
+		Iterator<Function> i = functions.iterator();
+		while (i.hasNext()) malfunctionManager.addScopeString(i.next().getName());
     }
     
     /**
@@ -86,8 +83,8 @@ public class Building implements Malfunctionable, Serializable {
      * @return list of building functions.
      * @throws Exception if error in functions.
      */
-    private List determineFunctions() throws Exception {
-    	List buildingFunctions = new ArrayList();
+    private List<Function> determineFunctions() throws Exception {
+    	List<Function> buildingFunctions = new ArrayList<Function>();
     	
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
     	
@@ -146,10 +143,9 @@ public class Building implements Malfunctionable, Serializable {
      */
     public boolean hasFunction(String functionName) {
     	boolean result = false;
-    	Iterator i = functions.iterator();
+    	Iterator<Function> i = functions.iterator();
     	while (i.hasNext()) {
-    		Function function = (Function) i.next();
-    		if (function.getName().equals(functionName)) result = true;
+    		if (i.next().getName().equals(functionName)) result = true;
     	}
     	return result;
     }
@@ -162,9 +158,9 @@ public class Building implements Malfunctionable, Serializable {
      */
     public Function getFunction(String functionName) throws BuildingException {
     	Function result = null;
-    	Iterator i = functions.iterator();
+    	Iterator<Function> i = functions.iterator();
     	while (i.hasNext()) {
-    		Function function = (Function) i.next();
+    		Function function = i.next();
     		if (function.getName().equals(functionName)) result = function;
     	}
     	if (result != null) return result;
@@ -201,8 +197,8 @@ public class Building implements Malfunctionable, Serializable {
         
         try {
         	// Send time to each building function.
-        	Iterator i = functions.iterator();
-        	while (i.hasNext()) ((Function) i.next()).timePassing(time);
+        	Iterator<Function> i = functions.iterator();
+        	while (i.hasNext()) i.next().timePassing(time);
         	
         	// Update malfunction manager.
         	malfunctionManager.timePassing(time);
@@ -223,8 +219,8 @@ public class Building implements Malfunctionable, Serializable {
 		double result = basePowerRequirement;
     	
     	// Determine power required for each function.
-    	Iterator i = functions.iterator();
-    	while (i.hasNext()) result += ((Function) i.next()).getFullPowerRequired();
+    	Iterator<Function> i = functions.iterator();
+    	while (i.hasNext()) result += i.next().getFullPowerRequired();
     	
     	return result;
     }
@@ -237,8 +233,8 @@ public class Building implements Malfunctionable, Serializable {
 		double result = basePowerDownPowerRequirement;
 		
 		// Determine power required for each function.
-		Iterator i = functions.iterator();
-		while (i.hasNext()) result += ((Function) i.next()).getPowerDownPowerRequired();
+		Iterator<Function> i = functions.iterator();
+		while (i.hasNext()) result += i.next().getPowerDownPowerRequired();
 		
 		return result;
     }

@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.malfunction;
 import java.io.Serializable;
 import java.util.*;
 
+import org.mars_sim.msp.simulation.resource.AmountResource;
+
 /** 
  * The Malfunction class represents a
  * malfunction in a vehicle, structure or equipment.
@@ -20,10 +22,10 @@ public class Malfunction implements Serializable {
     private String name; 
     private int severity;
     private double probability;
-    private Collection scope;
-    private Map resourceEffects;
-    private Map lifeSupportEffects;
-    private Map medicalComplaints;
+    private Collection<String> scope;
+    private Map<AmountResource, Double> resourceEffects;
+    private Map<String, Double> lifeSupportEffects;
+    private Map<String, Double> medicalComplaints;
 
     // Work time tracking
     private double workTime;
@@ -38,8 +40,9 @@ public class Malfunction implements Serializable {
      * @param name name of the malfunction 
      */
     public Malfunction(String name, int severity, double probability, double emergencyWorkTime, 
-		       double workTime, double EVAWorkTime, Collection scope, Map resourceEffects, 
-		       Map lifeSupportEffects, Map medicalComplaints) {
+		       double workTime, double EVAWorkTime, Collection<String> scope, 
+		       Map<AmountResource, Double> resourceEffects, 
+		       Map<String, Double> lifeSupportEffects, Map<String, Double> medicalComplaints) {
 
         // Initialize data members
         this.name = name;
@@ -195,16 +198,16 @@ public class Malfunction implements Serializable {
      * with the malfunction's scope strings.
      * @return true if any matches
      */
-    public boolean unitScopeMatch(Collection unitScope) {
+    public boolean unitScopeMatch(Collection<String> unitScope) {
         boolean result = false;
 
         if ((scope.size() > 0) && (unitScope.size() > 0)) {
-            Iterator i1 = scope.iterator();
+            Iterator<String> i1 = scope.iterator();
             while (i1.hasNext()) {
-                String scopeString = (String) i1.next();
-                Iterator i2 = unitScope.iterator();
+                String scopeString = i1.next();
+                Iterator<String> i2 = unitScope.iterator();
                 while (i2.hasNext()) {
-                    String unitScopeString = (String) i2.next();
+                    String unitScopeString = i2.next();
             	    if (scopeString.equals(unitScopeString)) result = true;
                 }
             }
@@ -217,7 +220,7 @@ public class Malfunction implements Serializable {
      * Gets the resource effects of the malfunction.
      * @return resource effects as name-value pairs in Map
      */
-    public Map getResourceEffects() {
+    public Map<AmountResource, Double> getResourceEffects() {
         return resourceEffects;
     }
 
@@ -225,7 +228,7 @@ public class Malfunction implements Serializable {
      * Gets the life support effects of the malfunction.
      * @return life support effects as name-value pairs in Map
      */
-    public Map getLifeSupportEffects() {
+    public Map<String, Double> getLifeSupportEffects() {
         return lifeSupportEffects;
     }
 
@@ -234,7 +237,7 @@ public class Malfunction implements Serializable {
      * and their probability of occuring.
      * @return medical complaints as name-value pairs in Map
      */
-    public Map getMedicalComplaints() {
+    public Map<String, Double> getMedicalComplaints() {
         return medicalComplaints;
     }
 

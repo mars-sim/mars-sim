@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonalityType.java
- * @version 2.78 2005-10-06
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 
@@ -42,7 +42,7 @@ public class PersonalityType implements Serializable {
 	private static final double BASE_COMPANY_STRESS_MODIFIER = .1D;
 
 	// Domain members
-	private static Map personalityTypes = null;
+	private static Map<String, Double> personalityTypes = null;
 	private String personalityType;
 	private Person person;
 
@@ -58,10 +58,10 @@ public class PersonalityType implements Serializable {
 		
 		// Determine personality type.
 		double randValue = RandomUtil.getRandomDouble(100D);
-		Iterator i = personalityTypes.keySet().iterator();
+		Iterator<String> i = personalityTypes.keySet().iterator();
 		while (i.hasNext()) {
-			String type = (String) i.next();
-			double percentage = ((Double) personalityTypes.get(type)).doubleValue();
+			String type = i.next();
+			double percentage = personalityTypes.get(type);
 			if (randValue <= percentage) {
 				personalityType = type;
 				break;
@@ -192,35 +192,33 @@ public class PersonalityType implements Serializable {
 	 */
 	private void loadPersonalityTypes() throws Exception {
 		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-		personalityTypes = new HashMap(16);
+		personalityTypes = new HashMap<String, Double>(16);
 		
 		try {
-			personalityTypes.put(ISTP, new Double(config.getPersonalityTypePercentage(ISTP)));
-			personalityTypes.put(ISTJ, new Double(config.getPersonalityTypePercentage(ISTJ)));
-			personalityTypes.put(ISFP, new Double(config.getPersonalityTypePercentage(ISFP)));
-			personalityTypes.put(ISFJ, new Double(config.getPersonalityTypePercentage(ISFJ)));
-			personalityTypes.put(INTP, new Double(config.getPersonalityTypePercentage(INTP)));
-			personalityTypes.put(INTJ, new Double(config.getPersonalityTypePercentage(INTJ)));
-			personalityTypes.put(INFP, new Double(config.getPersonalityTypePercentage(INFP)));
-			personalityTypes.put(INFJ, new Double(config.getPersonalityTypePercentage(INFJ)));
-			personalityTypes.put(ESTP, new Double(config.getPersonalityTypePercentage(ESTP)));
-			personalityTypes.put(ESTJ, new Double(config.getPersonalityTypePercentage(ESTJ)));
-			personalityTypes.put(ESFP, new Double(config.getPersonalityTypePercentage(ESFP)));
-			personalityTypes.put(ESFJ, new Double(config.getPersonalityTypePercentage(ESFJ)));
-			personalityTypes.put(ENTP, new Double(config.getPersonalityTypePercentage(ENTP)));
-			personalityTypes.put(ENTJ, new Double(config.getPersonalityTypePercentage(ENTJ)));
-			personalityTypes.put(ENFP, new Double(config.getPersonalityTypePercentage(ENFP)));
-			personalityTypes.put(ENFJ, new Double(config.getPersonalityTypePercentage(ENFJ)));			
+			personalityTypes.put(ISTP, config.getPersonalityTypePercentage(ISTP));
+			personalityTypes.put(ISTJ, config.getPersonalityTypePercentage(ISTJ));
+			personalityTypes.put(ISFP, config.getPersonalityTypePercentage(ISFP));
+			personalityTypes.put(ISFJ, config.getPersonalityTypePercentage(ISFJ));
+			personalityTypes.put(INTP, config.getPersonalityTypePercentage(INTP));
+			personalityTypes.put(INTJ, config.getPersonalityTypePercentage(INTJ));
+			personalityTypes.put(INFP, config.getPersonalityTypePercentage(INFP));
+			personalityTypes.put(INFJ, config.getPersonalityTypePercentage(INFJ));
+			personalityTypes.put(ESTP, config.getPersonalityTypePercentage(ESTP));
+			personalityTypes.put(ESTJ, config.getPersonalityTypePercentage(ESTJ));
+			personalityTypes.put(ESFP, config.getPersonalityTypePercentage(ESFP));
+			personalityTypes.put(ESFJ, config.getPersonalityTypePercentage(ESFJ));
+			personalityTypes.put(ENTP, config.getPersonalityTypePercentage(ENTP));
+			personalityTypes.put(ENTJ, config.getPersonalityTypePercentage(ENTJ));
+			personalityTypes.put(ENFP, config.getPersonalityTypePercentage(ENFP));
+			personalityTypes.put(ENFJ, config.getPersonalityTypePercentage(ENFJ));			
 		}
 		catch (Exception e) {
 			throw new Exception("PersonalityType.loadPersonalityTypes(): unable to load a personality type.");
 		}
 		
-		Iterator i = personalityTypes.keySet().iterator();
+		Iterator<String> i = personalityTypes.keySet().iterator();
 		double count = 0D;
-		while (i.hasNext()) {
-			count+= ((Double) personalityTypes.get(i.next())).doubleValue();
-		}
+		while (i.hasNext()) count+= personalityTypes.get(i.next());
 		if (count != 100D) 
 			throw new Exception("PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
 	}

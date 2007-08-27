@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.81 2007-04-23
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -244,8 +244,8 @@ public class BuildingConfig implements Serializable {
 	 * @return list of research specialities as strings.
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
-	public List getResearchSpecialities(String buildingName) throws Exception {
-		List result = new ArrayList();
+	public List<String> getResearchSpecialities(String buildingName) throws Exception {
+		List<String> result = new ArrayList<String>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element researchElement = (Element) functionsElement.getElementsByTagName(RESEARCH).item(0);
@@ -429,8 +429,8 @@ public class BuildingConfig implements Serializable {
 	 * @return list of storage capacities
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
-	public Map getStorageCapacities(String buildingName) throws Exception {
-		Map capacities = new HashMap();
+	public Map<String, Double> getStorageCapacities(String buildingName) throws Exception {
+		Map<String, Double> capacities = new HashMap<String, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element storageElement = (Element) functionsElement.getElementsByTagName(STORAGE).item(0);
@@ -450,8 +450,8 @@ public class BuildingConfig implements Serializable {
 	 * @return map of initial resources
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
-	public Map getInitialStorage(String buildingName) throws Exception {
-		Map resourceMap = new HashMap();
+	public Map<String, Double> getInitialStorage(String buildingName) throws Exception {
+		Map<String, Double> resourceMap = new HashMap<String, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element storageElement = (Element) functionsElement.getElementsByTagName(STORAGE).item(0);
@@ -486,8 +486,8 @@ public class BuildingConfig implements Serializable {
 	 * @return list of power sources
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
-	public List getPowerSources(String buildingName) throws Exception {
-		List powerSourceList = new ArrayList();
+	public List<PowerSource> getPowerSources(String buildingName) throws Exception {
+		List<PowerSource> powerSourceList = new ArrayList<PowerSource>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element powerGenerationElement = (Element) functionsElement.getElementsByTagName(POWER_GENERATION).item(0);

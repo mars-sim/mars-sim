@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 2.77 2004-09-13
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person;
@@ -397,8 +397,8 @@ public class PersonConfig implements Serializable {
 	 * @return map of natural attributes (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	public Map getNaturalAttributeMap(int index) throws Exception {
-		Map result = new HashMap();
+	public Map<String, Integer> getNaturalAttributeMap(int index) throws Exception {
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getDocumentElement();
 		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
 		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
@@ -422,8 +422,8 @@ public class PersonConfig implements Serializable {
 	 * @return map of skills (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	public Map getSkillMap(int index) throws Exception {
-		Map result = new HashMap();
+	public Map<String, Integer> getSkillMap(int index) throws Exception {
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getDocumentElement();
 		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
 		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);
@@ -448,8 +448,8 @@ public class PersonConfig implements Serializable {
 	 * (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	public Map getRelationshipMap(int index) throws Exception {
-		Map result = new HashMap();
+	public Map<String, Integer> getRelationshipMap(int index) throws Exception {
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getDocumentElement();
 		Element personList = (Element) root.getElementsByTagName(PERSON_LIST).item(0);
 		Element personElement = (Element) personList.getElementsByTagName(PERSON).item(index);

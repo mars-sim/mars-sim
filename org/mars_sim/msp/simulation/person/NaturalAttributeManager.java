@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 2.78 2005-10-07
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 
@@ -33,8 +33,8 @@ public class NaturalAttributeManager implements Serializable {
     static private String[] attributeKeys = {STRENGTH, ENDURANCE, AGILITY, TEACHING, ACADEMIC_APTITUDE, 
         EXPERIENCE_APTITUDE, STRESS_RESILIENCE, ATTRACTIVENESS, LEADERSHIP, CONVERSATION}; 
 
-    // Data members
-    private Hashtable attributeList; // List of the person's natural attributes keyed by unique name.
+    // List of the person's natural attributes keyed by unique name.
+    private Hashtable<String, Integer> attributeList; 
 
     /**
      * Constructor
@@ -42,7 +42,7 @@ public class NaturalAttributeManager implements Serializable {
      */
     NaturalAttributeManager(Person person) {
 
-        attributeList = new Hashtable();
+        attributeList = new Hashtable<String, Integer>();
 
         // Create natural attributes using random values (averaged for bell curve around 50%).
         // Note: this may change later.
@@ -51,7 +51,7 @@ public class NaturalAttributeManager implements Serializable {
         	int numberOfIterations = 3;
         	for (int y = 0; y < numberOfIterations; y++) attributeValue+= RandomUtil.getRandomInt(100);
         	attributeValue /= numberOfIterations;
-            attributeList.put(attributeKeys[x], new Integer(attributeValue));
+            attributeList.put(attributeKeys[x], attributeValue);
         }
 
         // Adjust certain attributes reflective of Martian settlers.
@@ -109,9 +109,7 @@ public class NaturalAttributeManager implements Serializable {
      */
     public int getAttribute(String name) {
         int result = 0;
-        if (attributeList.containsKey(name))
-            result = ((Integer) attributeList.get(name)).intValue();
-
+        if (attributeList.containsKey(name)) result = attributeList.get(name);
         return result;
     }
 
@@ -128,7 +126,7 @@ public class NaturalAttributeManager implements Serializable {
         boolean found = false;
         for (int x=0; x < attributeKeys.length; x++) {
             if (name.equals(attributeKeys[x])) {
-            	attributeList.put(name, new Integer(level));
+            	attributeList.put(name, level);
             	found = true;
             } 
         }

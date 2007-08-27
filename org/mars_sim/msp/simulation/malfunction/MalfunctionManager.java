@@ -34,8 +34,8 @@ public class MalfunctionManager implements Serializable {
                                                       // actively used since last maintenance.
     private double maintenanceWorkTime;      // The required work time for maintenance on entity.
     private double maintenanceTimeCompleted; // The completed
-    private Collection scope;                // The scope strings of the unit.
-    private Collection malfunctions;         // The current malfunctions in the unit.
+    private Collection<String> scope;        // The scope strings of the unit.
+    private Collection<Malfunction> malfunctions; // The current malfunctions in the unit.
 
     // Life support modifiers.
     private double oxygenFlowModifier = 100D;
@@ -53,8 +53,8 @@ public class MalfunctionManager implements Serializable {
         this.entity = entity;
         timeSinceLastMaintenance = 0D;
         effectiveTimeSinceLastMaintenance = 0D;
-        scope = new ArrayList();
-        malfunctions = new ArrayList();
+        scope = new ArrayList<String>();
+        malfunctions = new ArrayList<Malfunction>();
         maintenanceWorkTime = DEFAULT_MAINTENANCE_WORK_TIME;
     }
 
@@ -91,9 +91,9 @@ public class MalfunctionManager implements Serializable {
         boolean result = false;
 
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if ((malfunction.getEmergencyWorkTime() -
                     malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
             }
@@ -110,9 +110,9 @@ public class MalfunctionManager implements Serializable {
         boolean result = false;
 
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if ((malfunction.getWorkTime() -
                     malfunction.getCompletedWorkTime()) > 0D) result = true;
             }
@@ -129,9 +129,9 @@ public class MalfunctionManager implements Serializable {
         boolean result = false;
 
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if ((malfunction.getEVAWorkTime() -
                     malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
             }
@@ -144,8 +144,8 @@ public class MalfunctionManager implements Serializable {
      * Gets a list of the unit's current malfunctions.
      * @return malfunction list
      */
-    public List getMalfunctions() {
-        return new ArrayList(malfunctions);
+    public List<Malfunction> getMalfunctions() {
+        return new ArrayList<Malfunction>(malfunctions);
     }
 
     /**
@@ -158,9 +158,9 @@ public class MalfunctionManager implements Serializable {
         double highestSeverity = 0;
 
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if ((malfunction.getSeverity() > highestSeverity) && !malfunction.isFixed()) {
                     highestSeverity = malfunction.getSeverity();
                     result = malfunction;
@@ -181,9 +181,9 @@ public class MalfunctionManager implements Serializable {
         double highestSeverity = 0;
 
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D) {
                     if (malfunction.getSeverity() > highestSeverity) {
                         highestSeverity = malfunction.getSeverity();
@@ -206,9 +206,9 @@ public class MalfunctionManager implements Serializable {
         double highestSeverity = 0;
 
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) {
                     if (malfunction.getSeverity() > highestSeverity) {
                         highestSeverity = malfunction.getSeverity();
@@ -231,9 +231,9 @@ public class MalfunctionManager implements Serializable {
         double highestSeverity = 0;
 
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
                     if (malfunction.getSeverity() > highestSeverity) {
                         highestSeverity = malfunction.getSeverity();
@@ -292,21 +292,21 @@ public class MalfunctionManager implements Serializable {
      */
     public void timePassing(double time) {
 
-        Collection fixedMalfunctions = new ArrayList();
+        Collection<Malfunction> fixedMalfunctions = new ArrayList<Malfunction>();
 
         // Check if any malfunctions are fixed.
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if (malfunction.isFixed()) fixedMalfunctions.add(malfunction);
             }
         }
 
         if (fixedMalfunctions.size() > 0) {
-            Iterator i = fixedMalfunctions.iterator();
+            Iterator<Malfunction> i = fixedMalfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction item = (Malfunction)i.next();
+                Malfunction item = i.next();
                 malfunctions.remove(item);
                 
                 try {
@@ -349,9 +349,9 @@ public class MalfunctionManager implements Serializable {
 
         // Make any life support modifications.
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
                     Map effects = malfunction.getLifeSupportEffects();
                     if (effects.get("Oxygen") != null)

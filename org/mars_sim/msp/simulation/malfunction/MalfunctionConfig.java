@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionConfig.java
- * @version 2.75 2004-03-17
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.malfunction;
@@ -35,7 +35,7 @@ public class MalfunctionConfig implements Serializable {
 	private static final String MEDICAL_COMPLAINT = "medical-complaint";
 
 	private Document malfunctionDoc;
-	private List malfunctionList;
+	private List<Malfunction> malfunctionList;
 	
 	/**
 	 * Constructor
@@ -50,10 +50,10 @@ public class MalfunctionConfig implements Serializable {
 	 * @return list of malfunctions
 	 * @throws Exception when malfunctions can not be resolved.
 	 */
-	public List getMalfunctionList() throws Exception {
+	public List<Malfunction> getMalfunctionList() throws Exception {
 		
 		if (malfunctionList == null) {
-			malfunctionList = new ArrayList();
+			malfunctionList = new ArrayList<Malfunction>();
 			
 			Element root = malfunctionDoc.getDocumentElement();
 			NodeList malfunctionNodes = root.getElementsByTagName(MALFUNCTION);
@@ -99,7 +99,7 @@ public class MalfunctionConfig implements Serializable {
 					catch (NullPointerException e) {}
 					
 					// Get affected entities.
-					List entities = new ArrayList();
+					List<String> entities = new ArrayList<String>();
 					Element entityListElement = (Element) malfunctionElement.getElementsByTagName(ENTITY_LIST).item(0);
 					NodeList entityNodes = entityListElement.getElementsByTagName(ENTITY);
 					for (int y = 0; y < entityNodes.getLength(); y++) {
@@ -108,8 +108,8 @@ public class MalfunctionConfig implements Serializable {
 					}
 					
 					// Get effects.
-					Map lifeSupportEffects = new HashMap();
-					Map resourceEffects = new HashMap();
+					Map<String, Double> lifeSupportEffects = new HashMap<String, Double>();
+					Map<AmountResource, Double> resourceEffects = new HashMap<AmountResource, Double>();
 					try {
 						Element effectListElement = (Element) malfunctionElement.getElementsByTagName(EFFECT_LIST).item(0);
 						NodeList effectNodes = effectListElement.getElementsByTagName(EFFECT);
@@ -130,7 +130,7 @@ public class MalfunctionConfig implements Serializable {
 					catch (NullPointerException e) {}
 					
 					// Get medical complaints.
-					Map medicalComplaints = new HashMap();
+					Map<String, Double> medicalComplaints = new HashMap<String, Double>();
 					try {
 						Element medicalComplaintListElement = (Element) malfunctionElement.getElementsByTagName(MEDICAL_COMPLAINT_LIST).item(0);
 						NodeList medicalComplaintNodes = medicalComplaintListElement.getElementsByTagName(MEDICAL_COMPLAINT);

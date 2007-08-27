@@ -15,7 +15,6 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.vehicle.*;
@@ -29,7 +28,7 @@ public class BuildingManager implements Serializable {
 	public static final String ADD_BUILDING_EVENT = "add building";
 	
     private Settlement settlement; // The manager's settlement.
-    private List buildings; // The settlement's buildings.
+    private List<Building> buildings; // The settlement's buildings.
     
     /**
      * Constructor to construct buildings from settlement config template.
@@ -47,16 +46,16 @@ public class BuildingManager implements Serializable {
      * @param buildingNames the names of the settlement's buildings.
      * @throws Exception if buildings cannot be constructed.
      */
-    public BuildingManager(Settlement settlement, List buildingNames) throws Exception {
+    public BuildingManager(Settlement settlement, List<String> buildingNames) throws Exception {
     	
     	this.settlement = settlement;
     	
     	// Construct all buildings in the settlement.
-    	buildings = new ArrayList();
+    	buildings = new ArrayList<Building>();
     	if (buildingNames != null) {
-    		Iterator i = buildingNames.iterator();
+    		Iterator<String> i = buildingNames.iterator();
     		while (i.hasNext()) {
-    			String buildingType = (String) i.next();
+    			String buildingType = i.next();
     			addBuilding(buildingType);
     		}
         }
@@ -98,7 +97,7 @@ public class BuildingManager implements Serializable {
      *
      * @return collection of buildings
      */
-    public List getBuildings() {
+    public List<Building> getBuildings() {
         return buildings;
     }
     
@@ -107,11 +106,11 @@ public class BuildingManager implements Serializable {
      * @param functionName the name of the building.
      * @return list of buildings.
      */
-    public List getBuildings(String functionName) {
-    	List functionBuildings = new ArrayList();
-    	Iterator i = buildings.iterator();
+    public List<Building> getBuildings(String functionName) {
+    	List<Building> functionBuildings = new ArrayList<Building>();
+    	Iterator<Building> i = buildings.iterator();
     	while (i.hasNext()) {
-    		Building building = (Building) i.next();
+    		Building building = i.next();
     		if (building.hasFunction(functionName)) functionBuildings.add(building);
     	}
     	return functionBuildings;
@@ -134,8 +133,8 @@ public class BuildingManager implements Serializable {
      */
     public void timePassing(double time) throws Exception {
     	try {
-        	Iterator i = buildings.iterator();
-        	while (i.hasNext()) ((Building) i.next()).timePassing(time);
+        	Iterator<Building> i = buildings.iterator();
+        	while (i.hasNext()) i.next().timePassing(time);
     	}
     	catch (BuildingException e) {
     		throw new Exception("BuildingManager.timePassing(): " + e.getMessage());
@@ -151,17 +150,16 @@ public class BuildingManager implements Serializable {
      */
     public static void addToRandomBuilding(Person person, Settlement settlement) throws BuildingException {
         
-        List habs = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
-        List goodHabs = getLeastCrowdedBuildings(habs);
+        List<Building> habs = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
+        List<Building> goodHabs = getLeastCrowdedBuildings(habs);
         
         int rand = RandomUtil.getRandomInt(goodHabs.size() - 1);
         
         Building building = null;
         int count = 0;
-        Iterator i = goodHabs.iterator();
+        Iterator<Building> i = goodHabs.iterator();
         while (i.hasNext()) {
-            Building hab = (Building) i.next();
-            if (count == rand) building = hab;
+            if (count == rand) building = i.next();
             count++;
         }
         
@@ -177,18 +175,18 @@ public class BuildingManager implements Serializable {
      */
     public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) throws BuildingException {
         
-        Collection garages = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME);
-        List openGarages = new ArrayList();
-        Iterator i = garages.iterator();
+        List<Building> garages = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME);
+        List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
+        Iterator<Building> i = garages.iterator();
         while (i.hasNext()) {
-        	Building garageBuilding = (Building) i.next();
+        	Building garageBuilding = i.next();
             VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
             if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) openGarages.add(garage);
         }
         
         if (openGarages.size() > 0) {
             int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
-            ((VehicleMaintenance) openGarages.get(rand)).addVehicle(vehicle);
+            openGarages.get(rand).addVehicle(vehicle);
         }
         else {
             throw new BuildingException("No available garage space for " + vehicle.getName());
@@ -206,9 +204,9 @@ public class BuildingManager implements Serializable {
         
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            Iterator i = settlement.getBuildingManager().getBuildings(LifeSupport.NAME).iterator();
+            Iterator<Building> i = settlement.getBuildingManager().getBuildings(LifeSupport.NAME).iterator();
             while (i.hasNext()) {
-            	Building building = (Building) i.next();
+            	Building building = i.next();
             	try {
                 	LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
                 	if (lifeSupport.containsPerson(person)) result = building;
@@ -234,9 +232,9 @@ public class BuildingManager implements Serializable {
         
         Settlement settlement = vehicle.getSettlement();
         if (settlement != null) {
-            Iterator i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+            Iterator<Building> i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
             while (i.hasNext()) {
-                Building garageBuilding = (Building) i.next();
+                Building garageBuilding = i.next();
                 try {
                 	VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
                 	if (garage.containsVehicle(vehicle)) result = garageBuilding;
@@ -256,13 +254,13 @@ public class BuildingManager implements Serializable {
      * @return list of buildings that are not at or above maximum occupant capacity.
      * @throws BuildingException if building in list does not have the life support function.
      */
-    public static List getUncrowdedBuildings(List buildingList) throws BuildingException {
-    	List result = new ArrayList();
+    public static List<Building> getUncrowdedBuildings(List<Building> buildingList) throws BuildingException {
+    	List<Building> result = new ArrayList<Building>();
     	
     	try {
-    		Iterator i = buildingList.iterator();
+    		Iterator<Building> i = buildingList.iterator();
     		while (i.hasNext()) {
-    			Building building = (Building) i.next();
+    			Building building = i.next();
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				if (lifeSupport.getAvailableOccupancy() > 0) result.add(building);
     		}
@@ -280,25 +278,24 @@ public class BuildingManager implements Serializable {
      * @return list of least crowded buildings.
      * @throws BuildingException if building in list does not have the life support function.
      */
-    public static List getLeastCrowdedBuildings(List buildingList) throws BuildingException {
-    	List result = new ArrayList();
+    public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) throws BuildingException {
+    	List<Building> result = new ArrayList<Building>();
     	
     	try {
     		// Find least crowded population.
     		int leastCrowded = Integer.MAX_VALUE;
-    		Iterator i = buildingList.iterator();
+    		Iterator<Building> i = buildingList.iterator();
     		while (i.hasNext()) {
-    			Building building = (Building) i.next();
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(LifeSupport.NAME);
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
 				if (crowded < -1) crowded = -1;
 				if (crowded < leastCrowded) leastCrowded = crowded;
 			}
 			
 			// Add least crowded buildings to list.
-			Iterator j = buildingList.iterator();
+			Iterator<Building> j = buildingList.iterator();
 			while (j.hasNext()) {
-				Building building = (Building) j.next();
+				Building building = j.next();
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
 				if (crowded < -1) crowded = -1;
@@ -319,18 +316,17 @@ public class BuildingManager implements Serializable {
      * @return list of buildings with the best relationships.
      * @throws BuildingException if building in list does not have the life support function.if building in list does not have the life support function.
      */
-    public static List getBestRelationshipBuildings(Person person, List buildingList) throws BuildingException {
-    	List result = new ArrayList();
+    public static List<Building> getBestRelationshipBuildings(Person person, List<Building> buildingList) throws BuildingException {
+    	List<Building> result = new ArrayList<Building>();
     	
     	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
     	
 		try {
 			// Find best relationship buildings.
 			double bestRelationships = Double.NEGATIVE_INFINITY;
-			Iterator i = buildingList.iterator();
+			Iterator<Building> i = buildingList.iterator();
 			while (i.hasNext()) {
-				Building building = (Building) i.next();
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+				LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(LifeSupport.NAME);
 				double buildingRelationships = 0D;
 				PersonIterator j = lifeSupport.getOccupants().iterator();
 				while (j.hasNext()) {
@@ -343,7 +339,7 @@ public class BuildingManager implements Serializable {
 			// Add bestRelationships buildings to list.
 			i = buildingList.iterator();
 			while (i.hasNext()) {
-				Building building = (Building) i.next();
+				Building building = i.next();
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				double buildingRelationships = 0D;
 				PersonIterator j = lifeSupport.getOccupants().iterator();
@@ -366,12 +362,12 @@ public class BuildingManager implements Serializable {
      * @param buildingList the list of buildings.
      * @return list of buildings without malfunctions.
      */
-    public static List getNonMalfunctioningBuildings(List buildingList) {
-    	List result = new ArrayList();
+    public static List<Building> getNonMalfunctioningBuildings(List<Building> buildingList) {
+    	List<Building> result = new ArrayList<Building>();
     	
-    	Iterator i = buildingList.iterator();
+    	Iterator<Building> i = buildingList.iterator();
     	while (i.hasNext()) {
-    		Building building = (Building) i.next();
+    		Building building = i.next();
 			boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 			if (!malfunction) result.add(building);
     	}
@@ -397,22 +393,4 @@ public class BuildingManager implements Serializable {
 		}
 		else throw new BuildingException("Building is null");
     }
-    
-	/**
-	 * Adds the amount resources in the addition map to the starting map.
-	 * @param startingMap map of amount resources and their Double values.
-	 * @param additionMap map of amount resources and their Double values.
-	 */
-	public static void sumAmountResourceChanges(Map startingMap, Map additionMap) {
-		Iterator i = additionMap.keySet().iterator();
-		while (i.hasNext()) {
-			AmountResource resource = (AmountResource) i.next();
-			double additionValue = ((Double) additionMap.get(resource)).doubleValue();
-			if (startingMap.containsKey(resource)) {
-				double startingValue = ((Double) startingMap.get(resource)).doubleValue();
-				startingMap.put(resource, new Double(startingValue + additionValue));
-			}
-			else startingMap.put(resource, new Double(additionValue));
-		}
-	}
 }

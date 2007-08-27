@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LandmarkConfig.java
- * @version 2.75 2004-03-16
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.mars;
@@ -25,7 +25,7 @@ public class LandmarkConfig implements Serializable {
 	private static final String LONGITUDE = "longitude";
 
 	private Document landmarkDoc;
-	private List landmarkList;
+	private List<Landmark> landmarkList;
 
 	/**
 	 * Constructor
@@ -43,7 +43,7 @@ public class LandmarkConfig implements Serializable {
 	public List getLandmarkList() throws Exception {
 		
 		if (landmarkList == null) {
-			landmarkList = new ArrayList();
+			landmarkList = new ArrayList<Landmark>();
 			
 			Element root = landmarkDoc.getDocumentElement();
 			NodeList landmarks = root.getElementsByTagName(LANDMARK);

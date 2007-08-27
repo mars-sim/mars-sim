@@ -1,21 +1,30 @@
 /**
  * Mars Simulation Project
  * BuildingsTabPanel.java
- * @version 2.75 2003-07-16
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.unit_window.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 import org.mars_sim.msp.ui.standard.unit_window.structure.building.BuildingPanel;
 
 /**
@@ -25,10 +34,10 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
     
     private DefaultComboBoxModel buildingComboBoxModel;
     private JComboBox buildingComboBox;
-    private java.util.List buildingsCache;
+    private List<Building> buildingsCache;
     private JPanel buildingDisplayPanel;
     private CardLayout buildingLayout;
-    private java.util.List buildingPanels;
+    private List<BuildingPanel> buildingPanels;
     private int count;
     
     /**
@@ -42,7 +51,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         super("Buildings", null, "Settlement Buildings", unit, desktop);
         
         Settlement settlement = (Settlement) unit;
-        java.util.List buildings = settlement.getBuildingManager().getBuildings();
+        List<Building> buildings = settlement.getBuildingManager().getBuildings();
         
         // Create building select panel.
         JPanel buildingSelectPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -51,8 +60,8 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         
         // Create building combo box model.
         buildingComboBoxModel = new DefaultComboBoxModel();
-        buildingsCache = new ArrayList(buildings);
-        Iterator i = buildingsCache.iterator();
+        buildingsCache = new ArrayList<Building>(buildings);
+        Iterator<Building> i = buildingsCache.iterator();
         while (i.hasNext()) buildingComboBoxModel.addElement(i.next());
         
         // Create building list.
@@ -69,12 +78,11 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         centerContentPanel.add(buildingDisplayPanel);
         
         // Create building panels
-        buildingPanels = new ArrayList();
+        buildingPanels = new ArrayList<BuildingPanel>();
         count = 0;
-        Iterator iter = buildings.iterator();
+        Iterator<Building> iter = buildings.iterator();
         while (iter.hasNext()) {
-            Building b = (Building) iter.next();
-            BuildingPanel panel = new BuildingPanel(String.valueOf(count), b, desktop);
+            BuildingPanel panel = new BuildingPanel(String.valueOf(count), iter.next(), desktop);
             buildingPanels.add(panel);
             buildingDisplayPanel.add(panel, panel.getPanelName());
             count++;
@@ -87,15 +95,15 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
     public void update() {
         
         Settlement settlement = (Settlement) unit;
-        java.util.List buildings = settlement.getBuildingManager().getBuildings();
+        List<Building> buildings = settlement.getBuildingManager().getBuildings();
         
         // Update buildings if necessary.
         if (!buildingsCache.equals(buildings)) {
         	
             // Add building panels for new buildings.
-            Iterator iter1 = buildings.iterator();
+            Iterator<Building> iter1 = buildings.iterator();
             while (iter1.hasNext()) {
-                Building building = (Building) iter1.next();
+                Building building = iter1.next();
                 if (!buildingsCache.contains(building)) {
                     BuildingPanel panel = new BuildingPanel(String.valueOf(count), building, desktop);
                     buildingPanels.add(panel);
@@ -106,9 +114,9 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
             }
             
             // Remove building panels for destroyed buildings.
-            Iterator iter2 = buildingsCache.iterator();
+            Iterator<Building> iter2 = buildingsCache.iterator();
             while (iter2.hasNext()) {
-                Building building = (Building) iter2.next();
+                Building building = iter2.next();
                 if (!buildings.contains(building)) {
                     BuildingPanel panel = getBuildingPanel(building);
                     if (panel != null) {
@@ -124,8 +132,8 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         }
     
         // Have each building panel update.
-        Iterator i = buildingPanels.iterator();
-        while (i.hasNext()) ((BuildingPanel) i.next()).update();
+        Iterator<BuildingPanel> i = buildingPanels.iterator();
+        while (i.hasNext()) i.next().update();
     }
     
     /** 
@@ -148,9 +156,9 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
      */
     private BuildingPanel getBuildingPanel(Building building) {
         BuildingPanel result = null;
-        Iterator i = buildingPanels.iterator();
+        Iterator<BuildingPanel> i = buildingPanels.iterator();
         while (i.hasNext()) {
-            BuildingPanel panel = (BuildingPanel) i.next();
+            BuildingPanel panel = i.next();
             if (panel.getBuilding() == building) result = panel;
         }
         

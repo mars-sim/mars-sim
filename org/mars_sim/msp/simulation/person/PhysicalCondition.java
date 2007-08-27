@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.79 2006-05-15
+ * @version 2.81 2007-08-26
  * @author Barry Evans
  */
 
@@ -32,9 +32,6 @@ public class PhysicalCondition implements Serializable {
     private static int MIN_VALUE = 0;
     private static int MAX_VALUE = 1;
     
-    // private static final String START_MEDICAL = "Has Illness";
-    // private static final String STOP_MEDICAL = "Cured";
-    
     // Stress jump resulting from being in an accident.
     public static final double ACCIDENT_STRESS = 40D;
     
@@ -43,7 +40,7 @@ public class PhysicalCondition implements Serializable {
 
     // Data members
     private DeathInfo deathDetails;     // Details of persons death
-    private HashMap problems;           // Injury/Illness effecting person
+    private HashMap<Complaint, HealthProblem> problems; // Injury/Illness effecting person
     private HealthProblem serious;      // Most serious problem
     private double fatigue;             // Person's fatigue level
     private double hunger;              // Person's hunger level
@@ -59,7 +56,7 @@ public class PhysicalCondition implements Serializable {
     public PhysicalCondition(Person newPerson) {
         deathDetails = null;
         person = newPerson;
-        problems = new HashMap();
+        problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
         fatigue = RandomUtil.getRandomDouble(1000D);
         hunger = RandomUtil.getRandomDouble(1000D);
@@ -82,10 +79,9 @@ public class PhysicalCondition implements Serializable {
     boolean canTreatProblems(MedicalAid unit) {
         boolean result = false;
         
-        Iterator iter = problems.values().iterator();
+        Iterator<HealthProblem> iter = problems.values().iterator();
         while(iter.hasNext()) {
-            HealthProblem prob = (HealthProblem) iter.next();
-            if (unit.canTreatProblem(prob)) result = true;
+            if (unit.canTreatProblem(iter.next())) result = true;
         }
         
         return result;
@@ -98,9 +94,9 @@ public class PhysicalCondition implements Serializable {
      * @param aid the medical aid the person is using.
      */
     void requestAllTreatments(MedicalAid aid) {
-        Iterator iter = problems.values().iterator();
+        Iterator<HealthProblem> iter = problems.values().iterator();
         while(iter.hasNext()) {
-            HealthProblem prob = (HealthProblem) iter.next();
+            HealthProblem prob = iter.next();
             if (aid.canTreatProblem(prob)) {
                 try {
                     aid.requestTreatment(prob);
@@ -132,11 +128,11 @@ public class PhysicalCondition implements Serializable {
         	// Throw illness event if any problems already exist.
         	illnessEvent = true;
         	
-            List newProblems = new ArrayList();
+            List<Complaint> newProblems = new ArrayList<Complaint>();
 
-            Iterator iter = problems.values().iterator();
+            Iterator<HealthProblem> iter = problems.values().iterator();
             while(!isDead() && iter.hasNext()) {
-                HealthProblem problem = (HealthProblem) iter.next();
+                HealthProblem problem = iter.next();
 
                 // Advance each problem, they may change into a worse problem.
                 // If the current is completed or a new problem exists then
@@ -150,9 +146,9 @@ public class PhysicalCondition implements Serializable {
             }
             
             // Add the new problems
-            Iterator newIter = newProblems.iterator();
+            Iterator<Complaint> newIter = newProblems.iterator();
             while(newIter.hasNext()) {
-            	addMedicalComplaint((Complaint) newIter.next());
+            	addMedicalComplaint(newIter.next());
             	illnessEvent = true;
             }
         }
@@ -288,7 +284,7 @@ public class PhysicalCondition implements Serializable {
         else {
             //Is the person suffering from the illness, if so recovery
             // as the amount has been provided
-            HealthProblem illness = (HealthProblem)problems.get(complaint);
+            HealthProblem illness = problems.get(complaint);
             if (illness != null) {
             	illness.startRecovery();
             	person.fireUnitUpdate(ILLNESS_EVENT);
@@ -409,7 +405,7 @@ public class PhysicalCondition implements Serializable {
     			}
     		}
     		else if (hunger == 0D) {
-                HealthProblem illness = (HealthProblem) problems.get(starvation);
+                HealthProblem illness = problems.get(starvation);
                 if (illness != null) {
                 	illness.startRecovery();
                 	person.fireUnitUpdate(ILLNESS_EVENT);
@@ -529,7 +525,7 @@ public class PhysicalCondition implements Serializable {
     /**
      * The collection of known Medical Problems.
      */
-    public Collection getProblems() {
+    public Collection<HealthProblem> getProblems() {
         return problems.values();
     }
 
@@ -543,13 +539,11 @@ public class PhysicalCondition implements Serializable {
 
         // Check the existing problems. find most serious & performance
         // effecting
-        Iterator iter = problems.values().iterator();
+        Iterator<HealthProblem> iter = problems.values().iterator();
         while(iter.hasNext()) {
-            HealthProblem problem = (HealthProblem)iter.next();
+            HealthProblem problem = iter.next();
             double factor = problem.getPerformanceFactor();
-            if (factor < tempPerformance) {
-            	tempPerformance = factor;
-            }
+            if (factor < tempPerformance) tempPerformance = factor;
 
             if ((serious == null) || (serious.getIllness().getSeriousness() <
                                       problem.getIllness().getSeriousness())) {
@@ -577,10 +571,9 @@ public class PhysicalCondition implements Serializable {
      */
     public boolean hasSeriousMedicalProblems() {
     	boolean result = false;
-		Iterator meds = getProblems().iterator();
+		Iterator<HealthProblem> meds = getProblems().iterator();
 		while (meds.hasNext()) {
-			HealthProblem prob = (HealthProblem) meds.next();
-			if (prob.getIllness().getSeriousness() >= 50) result = true;
+			if (meds.next().getIllness().getSeriousness() >= 50) result = true;
 		}
 		return result;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 2.81 2007-06-10
+ * @version 2.81 2007-08-26
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -35,10 +36,10 @@ import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 public class MaintenanceTabPanel extends TabPanel {
 
 	private Settlement settlement;
-	private List buildingsList;
+	private List<Building> buildingsList;
 	private JScrollPane maintenanceScrollPanel;
 	private JPanel maintenanceListPanel;
-	private List malfunctionsList;
+	private List<Malfunction> malfunctionsList;
 	private JScrollPane malfunctionsScrollPanel;
 	private JPanel malfunctionsListPanel;
 	
@@ -112,10 +113,9 @@ public class MaintenanceTabPanel extends TabPanel {
     	
     	// Populate the list.
     	buildingsList = settlement.getBuildingManager().getBuildings();
-    	Iterator i = buildingsList.iterator();
+    	Iterator<Building> i = buildingsList.iterator();
     	while (i.hasNext()) {
-    		Building building = (Building) i.next();
-    		JPanel panel = new BuildingMaintenancePanel(building);
+    		JPanel panel = new BuildingMaintenancePanel(i.next());
     		maintenanceListPanel.add(panel);
     	}
     }
@@ -128,14 +128,14 @@ public class MaintenanceTabPanel extends TabPanel {
     	malfunctionsListPanel.removeAll();
     	
     	// Populate the list.
-    	if (malfunctionsList == null) malfunctionsList = new ArrayList();
+    	if (malfunctionsList == null) malfunctionsList = new ArrayList<Malfunction>();
     	else malfunctionsList.clear();
-    	Iterator i = settlement.getBuildingManager().getBuildings().iterator();
+    	Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
     	while (i.hasNext()) {
-    		Building building = (Building) i.next();
-    		Iterator j = building.getMalfunctionManager().getMalfunctions().iterator();
+    		Building building = i.next();
+    		Iterator<Malfunction> j = building.getMalfunctionManager().getMalfunctions().iterator();
     		while (j.hasNext()) {
-    			Malfunction malfunction = (Malfunction) j.next();
+    			Malfunction malfunction = j.next();
     			malfunctionsList.add(malfunction);
     			JPanel panel = new BuildingMalfunctionPanel(malfunction, building);
     			malfunctionsListPanel.add(panel);
@@ -149,7 +149,7 @@ public class MaintenanceTabPanel extends TabPanel {
 	public void update() {
 		
 		// Check if building list has changed.
-		List tempBuildings = ((Settlement) unit).getBuildingManager().getBuildings();
+		List<Building> tempBuildings = ((Settlement) unit).getBuildingManager().getBuildings();
 		if (!tempBuildings.equals(buildingsList)) {
 			// Populate maintenance list.
 			populateMaintenanceList();
@@ -162,10 +162,10 @@ public class MaintenanceTabPanel extends TabPanel {
 		}
 		
 		// Create temporary malfunctions list.
-		List tempMalfunctions = new ArrayList();
-		Iterator i = tempBuildings.iterator();
+		List<Malfunction> tempMalfunctions = new ArrayList<Malfunction>();
+		Iterator<Building> i = tempBuildings.iterator();
 		while (i.hasNext()) {
-    		Iterator j = ((Building) i.next()).getMalfunctionManager().getMalfunctions().iterator();
+    		Iterator<Malfunction> j = i.next().getMalfunctionManager().getMalfunctions().iterator();
     		while (j.hasNext()) malfunctionsList.add(j.next());
 		}
 		
