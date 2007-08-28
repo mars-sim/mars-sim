@@ -159,7 +159,8 @@ public class BuildingManager implements Serializable {
         int count = 0;
         Iterator<Building> i = goodHabs.iterator();
         while (i.hasNext()) {
-            if (count == rand) building = i.next();
+        	Building tempBuilding = i.next();
+            if (count == rand) building = tempBuilding;
             count++;
         }
         
