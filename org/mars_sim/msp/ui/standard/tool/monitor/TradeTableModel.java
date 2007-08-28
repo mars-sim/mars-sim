@@ -18,7 +18,7 @@ public class TradeTableModel extends AbstractTableModel implements
 		UnitListener, MonitorModel {
 	
 	// Data members
-	List goodsList;
+	List<Good> goodsList;
 	SettlementCollection settlements;
 	
 	/**
@@ -80,7 +80,7 @@ public class TradeTableModel extends AbstractTableModel implements
      * @param columnIndex Index of column.
      * @return Class of specified column.
      */
-    public Class getColumnClass(int columnIndex) {
+    public Class<?> getColumnClass(int columnIndex) {
     	if (columnIndex < 2) return String.class;
     	else return Double.class;
     }

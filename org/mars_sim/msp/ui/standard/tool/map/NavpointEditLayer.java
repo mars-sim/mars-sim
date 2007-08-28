@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointEditLayer.java
- * @version 2.80 2007-03-23
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -31,7 +31,7 @@ public class NavpointEditLayer implements MapLayer {
 	private static final String GREEN_ICON_NAME = "FlagGreen";
 	
 	// Domain members.
-	private List navpointPositions;
+	private List<IntPoint> navpointPositions;
 	private int selectedNavpoint;
 	private Component displayComponent;
 	private Icon navpointIconColor;
@@ -45,7 +45,7 @@ public class NavpointEditLayer implements MapLayer {
 	 */
 	public NavpointEditLayer(Component displayComponent, boolean drawNavNumbers) {
 		this.displayComponent = displayComponent;
-		navpointPositions = new ArrayList();
+		navpointPositions = new ArrayList<IntPoint>();
 		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIcon(GREEN_ICON_NAME);
 		selectedNavpoint = -1;
@@ -74,7 +74,7 @@ public class NavpointEditLayer implements MapLayer {
 	 */
 	public IntPoint getNavpointPosition(int index) {
 		if ((index > -1) && (index < navpointPositions.size()))
-			return (IntPoint) navpointPositions.get(index);
+			return navpointPositions.get(index);
 		else return null;
 	}
 	
@@ -125,7 +125,7 @@ public class NavpointEditLayer implements MapLayer {
 		
 		for (int z = 0; z < navpointPositions.size(); z++) {
 			if (result < 0) {
-				IntPoint navpointPosition = (IntPoint) navpointPositions.get(z);
+				IntPoint navpointPosition = navpointPositions.get(z);
 				int leftBound = navpointPosition.getiX();
 				int rightBound = navpointPosition.getiX() + navpointIconColor.getIconWidth();
 				int topBound = navpointPosition.getiY() - navpointIconColor.getIconHeight();
@@ -151,19 +151,19 @@ public class NavpointEditLayer implements MapLayer {
 		// Draw the path lines.
 		for (int x = 0; x < navpointPositions.size(); x++) {
 			g2d.setColor(Color.GREEN);
-			IntPoint currentPosition = (IntPoint) navpointPositions.get(x);
+			IntPoint currentPosition = navpointPositions.get(x);
 			if ((x == 0) || (x == (navpointPositions.size() - 1))) 
 				g2d.drawLine(currentPosition.getiX(), currentPosition.getiY(), 150, 150);
 			
 			if (x != 0) {
-				IntPoint prevPosition = (IntPoint) navpointPositions.get(x - 1);
+				IntPoint prevPosition = navpointPositions.get(x - 1);
 				g2d.drawLine(currentPosition.getiX(), currentPosition.getiY(), prevPosition.getiX(), prevPosition.getiY());
 			}
 		}
 
 		// Draw navpoint icons and numbers.
 		for (int x = 0; x < navpointPositions.size(); x ++) {
-			IntPoint currentPosition = (IntPoint) navpointPositions.get(x);
+			IntPoint currentPosition = navpointPositions.get(x);
 			
 			// Determine navpoint icon to use.
 			Icon navIcon = null;

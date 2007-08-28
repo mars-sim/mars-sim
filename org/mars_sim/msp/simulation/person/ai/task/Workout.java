@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -153,7 +153,7 @@ public class Workout extends Task implements Serializable {
 		// If person is in a settlement, try to find a building with a gym.	
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List gyms = buildingManager.getBuildings(Exercise.NAME);
+			List<Building> gyms = buildingManager.getBuildings(Exercise.NAME);
 			gyms = BuildingManager.getNonMalfunctioningBuildings(gyms);
 			gyms = BuildingManager.getLeastCrowdedBuildings(gyms);
 			gyms = BuildingManager.getBestRelationshipBuildings(person, gyms);

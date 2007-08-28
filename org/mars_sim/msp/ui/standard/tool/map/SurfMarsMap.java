@@ -25,7 +25,7 @@ public class SurfMarsMap extends CannedMarsMap {
     private static final String INDEX_FILE = "SurfaceMarsMap.index";
     private static final String MAP_FILE = "SurfaceMarsMap.dat";
     
-    private static List surfMapArray;
+    private static List<int[]> surfMapArray;
 
     /** 
      * Constructor

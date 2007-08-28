@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalManager.java
- * @version 2.76 2004-06-01
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 
@@ -22,9 +23,9 @@ public class MedicalManager implements Serializable {
 
     public final static int MINSPERDAY = (24 * 60);
 
-    private HashMap complaints = new HashMap(); // Possible Complaints
-    private HashMap treatments = new HashMap(); // Possible Treatments
-    private HashMap supported = new HashMap();  // Treatments 2 Facilities
+    private HashMap<String, Complaint> complaints = new HashMap<String, Complaint>(); // Possible Complaints
+    private HashMap<String, Treatment> treatments = new HashMap<String, Treatment>(); // Possible Treatments
+    private HashMap<Integer, List<Treatment>> supported = new HashMap<Integer, List<Treatment>>();  // Treatments 2 Facilities
     private Complaint starvation;        // Pre-defined complaint
     private Complaint suffocation;       // Pre-defined complaint
     private Complaint dehydration;       // Pre-defined complaint
@@ -223,15 +224,15 @@ public class MedicalManager implements Serializable {
         // that have a probability higher that the calculated, i.e.
         // possible complaints.
         // THis need improving.
-        ArrayList possibles = null;
-        Iterator items = complaints.values().iterator();
+        ArrayList<Complaint> possibles = null;
+        Iterator<Complaint> items = complaints.values().iterator();
         while(items.hasNext()) {
-            Complaint next = (Complaint)items.next();
+            Complaint next = items.next();
 
             // Found a match
             if (next.getProbability() > r) {
                 if (possibles == null) {
-                    possibles = new ArrayList();
+                    possibles = new ArrayList<Complaint>();
                 }
                 possibles.add(next);
             }
@@ -242,7 +243,7 @@ public class MedicalManager implements Serializable {
         if (possibles != null) {
             // Just take one of the possibles at random
             int index = RandomUtil.getRandomInt(possibles.size() - 1);
-            complaint = (Complaint)possibles.get(index);
+            complaint = possibles.get(index);
         }
         return complaint;
     }
@@ -255,7 +256,7 @@ public class MedicalManager implements Serializable {
      * @return Matched complaint, if none is found then a null.
      */
     public Complaint getComplaintByName(String name) {
-        return (Complaint)complaints.get(name);
+        return complaints.get(name);
     }
 
     /**
@@ -266,7 +267,7 @@ public class MedicalManager implements Serializable {
      * @return Matched Treatment, if none is found then a null.
      */
     public Treatment getTreatmentByName(String name) {
-        return (Treatment)treatments.get(name);
+        return treatments.get(name);
     }
 
     /**
@@ -287,17 +288,15 @@ public class MedicalManager implements Serializable {
      * @param level Level of Medical facility.
      * @return List of Treatments
      */
-    public List getSupportedTreatments(int level) {
+    public List<Treatment> getSupportedTreatments(int level) {
         Integer key = new Integer(level);
-        List results = (List)supported.get(key);
+        List<Treatment> results = supported.get(key);
         if (results == null) {
-            results = new ArrayList();
-            Iterator iter = treatments.values().iterator();
+            results = new ArrayList<Treatment>();
+            Iterator<Treatment> iter = treatments.values().iterator();
             while(iter.hasNext()) {
-                Treatment next = (Treatment)iter.next();
-                if (next.getFacilityLevel() <= level) {
-                    results.add(next);
-                }
+                Treatment next = iter.next();
+                if (next.getFacilityLevel() <= level) results.add(next);
             }
             Collections.sort(results);
             supported.put(key, results);

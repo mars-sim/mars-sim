@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TableTab.java
- * @version 2.75 2003-08-03
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -288,7 +288,7 @@ abstract class TableTab extends MonitorTab {
         MonitorModel target = (sortedModel != null ? sortedModel : getModel());
 
         int indexes[] = table.getSelectedRows();
-        ArrayList selectedRows = new ArrayList();
+        ArrayList<Object> selectedRows = new ArrayList<Object>();
         for(int i = 0; i < indexes.length; i++) {
         	Object selected = target.getObject(indexes[i]);
         	if (selected != null) selectedRows.add(selected);

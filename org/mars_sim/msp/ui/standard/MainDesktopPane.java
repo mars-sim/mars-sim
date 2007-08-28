@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.80 2006-08-11
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -49,8 +49,8 @@ import org.mars_sim.msp.ui.standard.unit_window.UnitWindowListener;
 public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	
     // Data members
-    private Collection unitWindows; // List of open or buttoned unit windows.
-    private Collection toolWindows; // List of tool windows.
+    private Collection<UnitWindow> unitWindows; // List of open or buttoned unit windows.
+    private Collection<ToolWindow> toolWindows; // List of tool windows.
     private MainWindow mainWindow; // The main window frame.
     private ImageIcon backgroundImageIcon; // ImageIcon that contains the tiled background.
     private JLabel backgroundLabel; // Label that contains the tiled background.
@@ -69,8 +69,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Initialize data members
         this.mainWindow = mainWindow;
-        unitWindows = new ArrayList();
-        toolWindows = new ArrayList();
+        unitWindows = new ArrayList<UnitWindow>();
+        toolWindows = new ArrayList<ToolWindow>();
         soundPlayer = new AudioPlayer();
 
         // Set background color to black
@@ -218,9 +218,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      */
     public ToolWindow getToolWindow(String toolName) {
         ToolWindow result = null;
-        Iterator i = toolWindows.iterator();
+        Iterator<ToolWindow> i = toolWindows.iterator();
         while (i.hasNext()) {
-            ToolWindow window = (ToolWindow) i.next();
+            ToolWindow window = i.next();
             if (toolName.equals(window.getToolName())) result = window;
         }
         
@@ -304,9 +304,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         UnitWindow tempWindow = null;
 
-        Iterator i = unitWindows.iterator();
+        Iterator<UnitWindow> i = unitWindows.iterator();
         while (i.hasNext()) {
-            UnitWindow window = (UnitWindow) i.next();
+            UnitWindow window = i.next();
             if (window.getUnit() == unit) tempWindow = window;
         }
         
@@ -365,9 +365,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
         // Dispose unit window
         UnitWindow deadWindow = null;
-        Iterator i = unitWindows.iterator();
+        Iterator<UnitWindow> i = unitWindows.iterator();
         while (i.hasNext()) {
-            UnitWindow window = (UnitWindow) i.next();
+            UnitWindow window = i.next();
             if (unit == window.getUnit()) deadWindow = window;
         }
         
@@ -401,12 +401,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     private void update() {
      
         // Update all unit windows.
-        Iterator i1 = unitWindows.iterator();
+        Iterator<UnitWindow> i1 = unitWindows.iterator();
         try {
-        	while (i1.hasNext()) {
-            	UnitWindow window = (UnitWindow) i1.next();
-	            window.update();
-    	    }
+        	while (i1.hasNext()) i1.next().update();
         }
         catch (ConcurrentModificationException e) {
         	// Concurrent modifications exceptions may occur as 
@@ -414,12 +411,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         }
         
         // Update all tool windows.
-        Iterator i2 = toolWindows.iterator();
+        Iterator<ToolWindow> i2 = toolWindows.iterator();
         try {
-        	while (i2.hasNext()) {
-            	ToolWindow window = (ToolWindow) i2.next();
-            	window.update();
-        	}
+        	while (i2.hasNext()) i2.next().update();
         }
     	catch (ConcurrentModificationException e) {
     		// Concurrent modifications exceptions may occur as
@@ -437,9 +431,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         updateThread.setRun(false);
         
         // Dispose unit windows
-        Iterator i1 = unitWindows.iterator();
+        Iterator<UnitWindow> i1 = unitWindows.iterator();
         while (i1.hasNext()) {
-            UnitWindow window = (UnitWindow) i1.next();
+            UnitWindow window = i1.next();
             window.dispose();
             mainWindow.disposeUnitButton(window.getUnit());
             window.destroy();
@@ -447,9 +441,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         unitWindows.clear();
         
         // Dispose tool windows
-        Iterator i2 = toolWindows.iterator();
+        Iterator<ToolWindow> i2 = toolWindows.iterator();
         while (i2.hasNext()) {
-            ToolWindow window = (ToolWindow) i2.next();
+            ToolWindow window = i2.next();
             window.dispose();
             window.destroy();
         }

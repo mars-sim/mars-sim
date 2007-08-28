@@ -107,7 +107,7 @@ public class VehicleTableModel extends UnitTableModel {
     // Data members
     private UnitManagerListener unitManagerListener;
     private LocalMissionManagerListener missionManagerListener;
-    private Map resourceCache;
+    private Map<Unit, Map<AmountResource, Integer>> resourceCache;
 
     /**
      * Constructs a VehicleTableModel object. It creates the list of possible
@@ -135,7 +135,7 @@ public class VehicleTableModel extends UnitTableModel {
         
         if (rowIndex < getUnitNumber()) {
         	Vehicle vehicle = (Vehicle)getUnit(rowIndex);
-        	Map resourceMap = (Map) resourceCache.get(vehicle);
+        	Map<AmountResource, Integer> resourceMap = resourceCache.get(vehicle);
 
         	// Invoke the appropriate method, switch is the best solution
         	// althought disliked by some
@@ -300,8 +300,8 @@ public class VehicleTableModel extends UnitTableModel {
 				int newValue = getResourceStored(unit, (AmountResource) target).intValue();
 				if (currentValue != newValue) {
 					columnNum = tempColumnNum;
-					Map resourceMap = (Map) resourceCache.get(unit);
-					resourceMap.put(target, new Integer(newValue));
+					Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
+					resourceMap.put((AmountResource) target, new Integer(newValue));
 				}
 			}
 		}
@@ -322,9 +322,9 @@ public class VehicleTableModel extends UnitTableModel {
      * @param newUnit Unit to add to the model.
      */
     protected void addUnit(Unit newUnit) {
-    	if (resourceCache == null) resourceCache = new HashMap();
+    	if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
     	if (!resourceCache.containsKey(newUnit)) {
-    		Map resourceMap = new HashMap(6);
+    		Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(6);
     		resourceMap.put(AmountResource.FOOD, getResourceStored(newUnit, AmountResource.FOOD));
     		resourceMap.put(AmountResource.OXYGEN, getResourceStored(newUnit, AmountResource.OXYGEN));
     		resourceMap.put(AmountResource.WATER, getResourceStored(newUnit, AmountResource.WATER));
@@ -341,9 +341,9 @@ public class VehicleTableModel extends UnitTableModel {
      * @param oldUnit Unit to remove from the model.
      */
     protected void removeUnit(Unit oldUnit) {
-    	if (resourceCache == null) resourceCache = new HashMap();
+    	if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
     	if (resourceCache.containsKey(oldUnit)) {
-    		Map resourceMap = (Map) resourceCache.get(oldUnit);
+    		Map<AmountResource, Integer> resourceMap = resourceCache.get(oldUnit);
     		resourceMap.clear();
     		resourceCache.remove(oldUnit);
     	}
@@ -410,14 +410,14 @@ public class VehicleTableModel extends UnitTableModel {
     
     private class LocalMissionManagerListener implements MissionManagerListener {
     	
-    	private List missions;
+    	private List<Mission> missions;
     	private MissionListener missionListener;
     	
     	LocalMissionManagerListener() {
     		missionListener = new LocalMissionListener();
     		missions = Simulation.instance().getMissionManager().getMissions();
-    		Iterator i = missions.iterator();
-    		while (i.hasNext()) addMission((Mission) i.next());
+    		Iterator<Mission> i = missions.iterator();
+    		while (i.hasNext()) addMission(i.next());
     	}
     	
     	/**
@@ -452,8 +452,8 @@ public class VehicleTableModel extends UnitTableModel {
     	 * Prepares for deletion.
     	 */
     	public void destroy() {
-    		Iterator i = missions.iterator();
-    		while (i.hasNext()) removeMission((Mission) i.next());
+    		Iterator<Mission> i = missions.iterator();
+    		while (i.hasNext()) removeMission(i.next());
     		missions = null;
     		missionListener = null;
     	}

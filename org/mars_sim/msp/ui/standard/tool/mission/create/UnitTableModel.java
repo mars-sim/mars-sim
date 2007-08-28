@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTableModel.java
- * @version 2.80 2007-03-22
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -21,7 +21,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 
 	// Data members.
 	protected UnitCollection units;
-	protected List columns;
+	protected List<String> columns;
 	
 	/**
 	 * Constructor
@@ -32,7 +32,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 		
 		// Initialize data members.
 		units = new UnitCollection();
-		columns = new ArrayList();
+		columns = new ArrayList<String>();
 	}
 	
 	/**
@@ -57,7 +57,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 	 * @return column name.
 	 */
 	public String getColumnName(int columnIndex) {
-		return (String) columns.get(columnIndex);
+		return columns.get(columnIndex);
     }
 	
 	/**

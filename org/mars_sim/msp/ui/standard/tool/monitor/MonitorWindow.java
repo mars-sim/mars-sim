@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.76 2006-08-26
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -48,7 +48,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
     // Data members
     private JTabbedPane tabsSection;
     private JLabel rowCount;
-    private ArrayList tabs = new ArrayList();
+    private ArrayList<MonitorTab> tabs = new ArrayList<MonitorTab>();
     private EventTab eventsTab; // Tab showing historical events.
     private MonitorTab oldTab = null;
     private JButton mapButton;
@@ -221,10 +221,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
      */
     public boolean containsModel(UnitTableModel model) {
     	boolean result = false;
-    	Iterator i = tabs.iterator();
+    	Iterator<MonitorTab> i = tabs.iterator();
     	while (i.hasNext()) {
-    		MonitorTab tab = (MonitorTab) i.next();
-    		if (tab.getModel().equals(model)) result = true;
+    		if (i.next().getModel().equals(model)) result = true;
     	}
     	return result;
     }
@@ -236,9 +235,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
      */
     public int getModelIndex(UnitTableModel model) {
     	int result = -1;
-    	Iterator i = tabs.iterator();
+    	Iterator<MonitorTab> i = tabs.iterator();
     	while (i.hasNext()) {
-    		MonitorTab tab = (MonitorTab) i.next();
+    		MonitorTab tab = i.next();
     		if (tab.getModel().equals(model)) result = tabs.indexOf(tab);
     	}
     	return result;
@@ -276,9 +275,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
     private MonitorTab getSelected() {
         MonitorTab selected = null;
         int selectedIdx = tabsSection.getSelectedIndex();
-        if (selectedIdx != -1) {
-            selected = (MonitorTab)tabs.get(selectedIdx);
-        }
+        if (selectedIdx != -1) selected = tabs.get(selectedIdx);
         return selected;
     }
 
@@ -383,8 +380,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
      * Prepare tool window for deletion.
      */
     public void destroy() {
-    	Iterator i = tabs.iterator();
-    	while (i.hasNext()) ((MonitorTab) i.next()).removeTab();
+    	Iterator<MonitorTab> i = tabs.iterator();
+    	while (i.hasNext()) i.next().removeTab();
     	tabs.clear();
     }
 }

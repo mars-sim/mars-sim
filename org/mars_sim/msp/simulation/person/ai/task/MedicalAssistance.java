@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -313,7 +313,7 @@ public class MedicalAssistance extends Task implements Serializable {
 				if (isNeedyMedicalAid(medical)) needyMedicalBuildings.add(building);
 			}
 			
-			List bestMedicalBuildings = BuildingManager.getNonMalfunctioningBuildings(needyMedicalBuildings);
+			List<Building> bestMedicalBuildings = BuildingManager.getNonMalfunctioningBuildings(needyMedicalBuildings);
 			bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(bestMedicalBuildings);
 			bestMedicalBuildings = BuildingManager.getBestRelationshipBuildings(person, bestMedicalBuildings);
 		

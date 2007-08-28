@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 2.75 2004-03-23
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.vehicle;
@@ -52,10 +52,10 @@ public class VehicleConfig implements Serializable {
 	 * @return set of rover types as strings.
 	 * @throws Exception if error retrieving rover types.
 	 */
-	public Set getRoverTypes() throws Exception {
+	public Set<String> getRoverTypes() throws Exception {
 		Element root = roverDoc.getDocumentElement();
 		NodeList roverNodes = root.getElementsByTagName(ROVER);
-		Set types = new HashSet(roverNodes.getLength());
+		Set<String> types = new HashSet<String>(roverNodes.getLength());
 		for (int x=0; x < roverNodes.getLength(); x++) {
 			Element roverElement = (Element) roverNodes.item(x);
 			types.add(roverElement.getAttribute(TYPE));
@@ -264,8 +264,8 @@ public class VehicleConfig implements Serializable {
 	 * @return list of lab tech speciality strings.
 	 * @throws Exception if rover type could not be found or XML parsing error.
 	 */
-	public List getLabTechSpecialities(String roverType) throws Exception {
-		List specialities = new ArrayList();
+	public List<String> getLabTechSpecialities(String roverType) throws Exception {
+		List<String> specialities = new ArrayList<String>();
 		
 		Element roverElement = getRoverElement(roverType);
 		try {

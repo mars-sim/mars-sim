@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -123,7 +123,7 @@ class Relax extends Task implements Serializable {
         
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List recreationBuildings = manager.getBuildings(Recreation.NAME);
+			List<Building> recreationBuildings = manager.getBuildings(Recreation.NAME);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getBestRelationshipBuildings(person, recreationBuildings);

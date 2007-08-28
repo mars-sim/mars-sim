@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCareBuildingPanel.java
- * @version 2.75 2004-04-05
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -111,7 +111,7 @@ public class MedicalCareBuildingPanel extends BuildingFunctionPanel {
             return 2;
         }
         
-        public Class getColumnClass(int columnIndex) {
+        public Class<?> getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             else if (columnIndex == 1) dataType = String.class;

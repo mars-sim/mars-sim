@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 2.80 2007-03-21
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -35,7 +35,7 @@ public class CreateMissionWizard extends JDialog {
 	private JButton nextButton;
 	private JButton finalButton;
 	private MissionDataBean missionBean;
-	private List wizardPanels;
+	private List<WizardPanel> wizardPanels;
 	private int displayPanelIndex;
 	
 	/**
@@ -55,7 +55,7 @@ public class CreateMissionWizard extends JDialog {
 		add(infoPane, BorderLayout.CENTER);
 		
 		// Create wizard panels list.
-		wizardPanels = new ArrayList();
+		wizardPanels = new ArrayList<WizardPanel>();
 		displayPanelIndex = 0;
 		
 		// Create initial set of wizard panels.
@@ -140,7 +140,7 @@ public class CreateMissionWizard extends JDialog {
 	 * @return wizard panel.
 	 */
 	private WizardPanel getCurrentWizardPanel() {
-		return (WizardPanel) wizardPanels.get(displayPanelIndex);
+		return wizardPanels.get(displayPanelIndex);
 	}
 	
 	/**

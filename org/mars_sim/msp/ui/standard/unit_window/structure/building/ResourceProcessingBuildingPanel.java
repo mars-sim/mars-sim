@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessingBuildingPanel.java
- * @version 2.81 2007-05-18
+ * @version 2.81 2007-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -26,7 +26,7 @@ public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
     
 	// Data members
 	private ResourceProcessing processor;
-	private List processLabels;
+	private List<JLabel> processLabels;
 	private ImageIcon greenDot;
 	private ImageIcon redDot;
 	
@@ -52,7 +52,7 @@ public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
         add(resourceProcessesLabel, BorderLayout.NORTH);
         
         // Get all processes at building.
-        List processes = processor.getProcesses();
+        List<ResourceProcess> processes = processor.getProcesses();
         
         // Prepare resource processes list panel.
         JPanel resourceProcessesListPanel = new JPanel(new GridLayout(processes.size(), 1, 0, 0));
@@ -64,10 +64,10 @@ public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
         redDot = new ImageIcon("images/RedDot.gif", "Process is not running");
         
         // For each resource process, add a label.
-        processLabels = new ArrayList(processes.size());
-        Iterator i = processes.iterator();
+        processLabels = new ArrayList<JLabel>(processes.size());
+        Iterator<ResourceProcess> i = processes.iterator();
         while (i.hasNext()) {
-            ResourceProcess process = (ResourceProcess) i.next();
+            ResourceProcess process = i.next();
             JLabel processLabel = new JLabel(process.getProcessName(), JLabel.LEFT);
             
             if (process.isProcessRunning()) {
@@ -89,9 +89,9 @@ public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
      */
     public void update() {
     
-    	List processes = processor.getProcesses();
+    	List<ResourceProcess> processes = processor.getProcesses();
     	for (int x=0; x < processes.size(); x++) {
-    		ResourceProcess process = (ResourceProcess) processes.get(x);
+    		ResourceProcess process = processes.get(x);
     		JLabel processLabel = (JLabel) processLabels.get(x);
     		if (process.isProcessRunning()) {
     			processLabel.setIcon(greenDot);

@@ -36,7 +36,7 @@ public class MasterClock implements Runnable, Serializable {
     private transient volatile boolean saveSimulation; // Flag for saving a simulation.
     private transient volatile File file;            // The file to save or load the simulation.
     private transient volatile boolean exitProgram;  // Flag for ending the simulation program.
-    private transient List listeners; // Clock listeners.
+    private transient List<ClockListener> listeners; // Clock listeners.
 
     // Sleep duration in milliseconds 
     public final static long TIME_PULSE_LENGTH = 1000L;
@@ -61,7 +61,7 @@ public class MasterClock implements Runnable, Serializable {
         uptimer = new UpTimer();
         
         // Create listener list.
-        listeners = Collections.synchronizedList(new ArrayList());
+        listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
     }
 
     /** Returns the Martian clock
@@ -90,7 +90,7 @@ public class MasterClock implements Runnable, Serializable {
      * @param newListener the listener to add.
      */
     public final void addClockListener(ClockListener newListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
         if (!listeners.contains(newListener)) listeners.add(newListener);
     }
     
@@ -99,7 +99,7 @@ public class MasterClock implements Runnable, Serializable {
      * @param oldListener the listener to remove.
      */
     public final void removeClockListener(ClockListener oldListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList());
+    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
     	if (listeners.contains(oldListener)) listeners.remove(oldListener);
     }
     
@@ -215,8 +215,8 @@ public class MasterClock implements Runnable, Serializable {
 				
         			synchronized(listeners) {
         				// Send clock pulse to listeners.
-        				Iterator i = listeners.iterator();
-        				while (i.hasNext()) ((ClockListener) i.next()).clockPulse(timePulse);
+        				Iterator<ClockListener> i = listeners.iterator();
+        				while (i.hasNext()) i.next().clockPulse(timePulse);
         			}
 				
         			long endTime = System.nanoTime();

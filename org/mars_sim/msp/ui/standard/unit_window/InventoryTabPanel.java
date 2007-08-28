@@ -1,24 +1,45 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.80 2003-11-16
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.equipment.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitCollection;
+import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Resource;
-import org.mars_sim.msp.ui.standard.*;
-import java.awt.*;
-import java.text.DecimalFormat;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+import org.mars_sim.msp.ui.standard.NumberCellRenderer;
 
 /** 
  * The InventoryTabPanel is a tab panel for displaying inventory information.
@@ -112,28 +133,28 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     private class ResourceTableModel extends AbstractTableModel {
         
         private Inventory inventory;
-        private java.util.Map resources;
-        private java.util.List keys;
+        private Map<Resource, Number> resources;
+        private List<Resource> keys;
         private DecimalFormat decFormatter = new DecimalFormat("0.0");
         
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
-            keys = new ArrayList();
-            resources = new HashMap();
+            keys = new ArrayList<Resource>();
+            resources = new HashMap<Resource, Number>();
             
             try {
             	keys.addAll(inventory.getAllAmountResourcesStored());
-            	Iterator iAmount = keys.iterator();
+            	Iterator<Resource> iAmount = keys.iterator();
             	while (iAmount.hasNext()) {
             		AmountResource resource = (AmountResource) iAmount.next();
-            		resources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
+            		resources.put(resource, inventory.getAmountResourceStored(resource));
             	}
             	
-            	Set itemResources = inventory.getAllItemResourcesStored();
+            	Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
             	keys.addAll(itemResources);
-            	Iterator iItem = itemResources.iterator();
+            	Iterator<ItemResource> iItem = itemResources.iterator();
             	while (iItem.hasNext()) {
-            		ItemResource resource = (ItemResource) iItem.next();
+            		ItemResource resource = iItem.next();
             		resources.put(resource, new Integer(inventory.getItemResourceNum(resource)));
             	}
             }
@@ -148,7 +169,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             return 2;
         }
         
-        public Class getColumnClass(int columnIndex) {
+        public Class<?> getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 1) dataType = Double.class;
             return dataType;
@@ -163,7 +184,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         public Object getValueAt(int row, int column) {
             if (column == 0) return keys.get(row);
             else if (column == 1) {
-            	Resource resource = (Resource) keys.get(row);
+            	Resource resource = keys.get(row);
             	String result = resources.get(resource).toString();
             	if (resource instanceof AmountResource) {
             		double amount = ((Double) resources.get(resource)).doubleValue();
@@ -176,21 +197,21 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
   
         public void update() {
         	try {
-        		java.util.List newResourceKeys = new ArrayList();
+        		List<Resource> newResourceKeys = new ArrayList<Resource>();
         		newResourceKeys.addAll(inventory.getAllAmountResourcesStored());
-        		Map newResources = new HashMap();
-        		Iterator i = newResourceKeys.iterator();
+        		Map<Resource, Number> newResources = new HashMap<Resource, Number>();
+        		Iterator<Resource> i = newResourceKeys.iterator();
         		while (i.hasNext()) {
         			AmountResource resource = (AmountResource) i.next();
-        			newResources.put(resource, new Double(inventory.getAmountResourceStored(resource)));
+        			newResources.put(resource, inventory.getAmountResourceStored(resource));
         		}
         		
-        		Set itemResources = inventory.getAllItemResourcesStored();
+        		Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
         		newResourceKeys.addAll(itemResources);
-            	Iterator iItem = itemResources.iterator();
+            	Iterator<ItemResource> iItem = itemResources.iterator();
             	while (iItem.hasNext()) {
-            		ItemResource resource = (ItemResource) iItem.next();
-            		newResources.put(resource, new Integer(inventory.getItemResourceNum(resource)));
+            		ItemResource resource = iItem.next();
+            		newResources.put(resource, inventory.getItemResourceNum(resource));
             	}
             
         		if (!resources.equals(newResources)) {
@@ -224,7 +245,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             return 1;
         }
         
-        public Class getColumnClass(int columnIndex) {
+        public Class<?> getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
             return dataType;
         }

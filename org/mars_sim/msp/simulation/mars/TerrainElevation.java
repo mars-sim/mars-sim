@@ -220,7 +220,7 @@ public class TerrainElevation {
      * Gets the cached topographical colors.
      * @return array list of colors.
      */
-    public ArrayList getTopoColors() {
+    public ArrayList<int[]> getTopoColors() {
     	return topoColors;
     }
 }

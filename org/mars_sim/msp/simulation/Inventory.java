@@ -494,10 +494,10 @@ public class Inventory implements Serializable {
      * @return set of item resources.
      * @throws InventoryException if error getting all item resources.
      */
-    public Set getAllItemResourcesStored() throws InventoryException {
+    public Set<ItemResource> getAllItemResourcesStored() throws InventoryException {
     	try {
     		if (containedItemResources != null) return new HashSet<ItemResource>(containedItemResources.keySet());
-    		else return new HashSet();
+    		else return new HashSet<ItemResource>(0);
     	}
     	catch (Exception e) {
     		throw new InventoryException(e);

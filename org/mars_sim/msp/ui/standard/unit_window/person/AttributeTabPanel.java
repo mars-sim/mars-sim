@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AttributeTabPanel.java
- * @version 2.77 2004-08-31
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -81,7 +81,7 @@ public class AttributeTabPanel extends TabPanel {
             return 2;
         }
         
-        public Class getColumnClass(int columnIndex) {
+        public Class<?> getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             if (columnIndex == 1) dataType = String.class;

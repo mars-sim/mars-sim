@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.80 2006-12-03
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -20,6 +20,7 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+
 
 /** 
  * The Settlement class represents a settlement unit on virtual Mars.
@@ -377,7 +378,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         
         try {
 			BuildingManager manager = getBuildingManager();
-			List evaBuildings = manager.getBuildings(EVA.NAME);
+			List<Building> evaBuildings = manager.getBuildings(EVA.NAME);
 			evaBuildings = BuildingManager.getLeastCrowdedBuildings(evaBuildings);
         	
 			if (evaBuildings.size() > 0) {

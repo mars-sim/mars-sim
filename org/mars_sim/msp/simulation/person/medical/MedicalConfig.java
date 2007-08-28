@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 2.75 2004-03-16
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.medical;
@@ -33,8 +33,8 @@ public class MedicalConfig implements Serializable {
 	private static final String RETAINAID = "retainaid";
 	
 	private Document medicalDoc;
-	private List complaintList;
-	private List treatmentList;
+	private List<Complaint> complaintList;
+	private List<Treatment> treatmentList;
 
 	/**
 	 * Constructor
@@ -49,10 +49,10 @@ public class MedicalConfig implements Serializable {
 	 * @return list of complaints
 	 * @throws Exception if list could not be found.
 	 */
-	public List getComplaintList() throws Exception {
+	public List<Complaint> getComplaintList() throws Exception {
 		
 		if (complaintList == null) {
-			complaintList = new ArrayList();
+			complaintList = new ArrayList<Complaint>();
 			Element root = medicalDoc.getDocumentElement();
 			Element medicalComplaintList = (Element) root.getElementsByTagName(MEDICAL_COMPLAINT_LIST).item(0);
 			NodeList medicalComplaints = medicalComplaintList.getElementsByTagName(MEDICAL_COMPLAINT);
@@ -123,14 +123,14 @@ public class MedicalConfig implements Serializable {
 			}
 			
 			// Fill in degrade complaint objects based on complaint names.
-			Iterator i = complaintList.iterator();
+			Iterator<Complaint> i = complaintList.iterator();
 			while (i.hasNext()) {
-				Complaint complaint = (Complaint) i.next();
+				Complaint complaint = i.next();
 				String degradeComplaintName = complaint.getNextPhaseStr();
 				if (!degradeComplaintName.equals("")) {
-					Iterator j = complaintList.iterator();
+					Iterator<Complaint> j = complaintList.iterator();
 					while (j.hasNext()) {
-						Complaint degradeComplaint = (Complaint) j.next();
+						Complaint degradeComplaint = j.next();
 						if (degradeComplaint.getName().equals(degradeComplaintName))
 							complaint.setNextComplaint(degradeComplaint);
 					}
@@ -144,10 +144,10 @@ public class MedicalConfig implements Serializable {
 		return complaintList;
 	}
 
-	public List getTreatmentList() throws Exception {
+	public List<Treatment> getTreatmentList() throws Exception {
 		
 		if (treatmentList == null) {
-			treatmentList = new ArrayList();
+			treatmentList = new ArrayList<Treatment>();
 			
 			Element root = medicalDoc.getDocumentElement();
 			Element medicalTreatmentList = (Element) root.getElementsByTagName(TREATMENT_LIST).item(0);

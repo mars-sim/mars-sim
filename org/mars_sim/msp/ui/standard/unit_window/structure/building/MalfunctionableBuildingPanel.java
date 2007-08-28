@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionableBuildingPanel.java
- * @version 2.75 2003-06-02
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -22,8 +22,8 @@ import org.mars_sim.msp.ui.standard.unit_window.MalfunctionPanel;
 public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
     
     private Malfunctionable malfunctionable; // The malfunctionable building.
-    private Collection malfunctionPanels; // List of malfunction panels.
-    private Collection malfunctionCache; // List of malfunctions in building.
+    private Collection<MalfunctionPanel> malfunctionPanels; // List of malfunction panels.
+    private Collection<Malfunction> malfunctionCache; // List of malfunctions in building.
     private JPanel malfunctionListPanel; // Malfunction list panel.
     
     /**
@@ -63,10 +63,10 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
         
         // Create malfunction panels
         malfunctionCache = malfunctionable.getMalfunctionManager().getMalfunctions();
-        malfunctionPanels = new ArrayList();
-        Iterator i = malfunctionCache.iterator();
+        malfunctionPanels = new ArrayList<MalfunctionPanel>();
+        Iterator<Malfunction> i = malfunctionCache.iterator();
         while (i.hasNext()) {
-            MalfunctionPanel panel = new MalfunctionPanel((Malfunction) i.next());
+            MalfunctionPanel panel = new MalfunctionPanel(i.next());
             malfunctionListPanel.add(panel);
             malfunctionPanels.add(panel);
         }
@@ -77,14 +77,14 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
      */
     public void update() {
         
-        Collection malfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();
+        Collection<Malfunction> malfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();
         
         // Update malfunction panels if necessary.
         if (!malfunctionCache.equals(malfunctions)) {
             // Add malfunction panels for new malfunctions.
-            Iterator iter1 = malfunctions.iterator();
+            Iterator<Malfunction> iter1 = malfunctions.iterator();
             while (iter1.hasNext()) {
-                Malfunction malfunction = (Malfunction) iter1.next();
+                Malfunction malfunction = iter1.next();
                 if (!malfunctionCache.contains(malfunction)) {
                     MalfunctionPanel panel = new MalfunctionPanel(malfunction);
                     malfunctionPanels.add(panel);
@@ -93,9 +93,9 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
             }
             
             // Remove malfunction panels for repaired malfunctions.
-            Iterator iter2 = malfunctionCache.iterator();
+            Iterator<Malfunction> iter2 = malfunctionCache.iterator();
             while (iter2.hasNext()) {
-                Malfunction malfunction = (Malfunction) iter2.next();
+                Malfunction malfunction = iter2.next();
                 if (!malfunctions.contains(malfunction)) {
                     MalfunctionPanel panel = getMalfunctionPanel(malfunction);
                     if (panel != null) {
@@ -110,8 +110,8 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
         }
     
         // Have each malfunction panel update.
-        Iterator i = malfunctionPanels.iterator();
-        while (i.hasNext()) ((MalfunctionPanel) i.next()).update();
+        Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
+        while (i.hasNext()) i.next();
     }
     
     /**
@@ -123,9 +123,9 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
     private MalfunctionPanel getMalfunctionPanel(Malfunction malfunction) {
         MalfunctionPanel result = null;
         
-        Iterator i = malfunctionPanels.iterator();
+        Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
         while (i.hasNext()) {
-            MalfunctionPanel panel = (MalfunctionPanel) i.next();
+            MalfunctionPanel panel = i.next();
             if (panel.getMalfunction() == malfunction) result = panel;
         }
         

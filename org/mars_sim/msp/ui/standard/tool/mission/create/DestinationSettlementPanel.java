@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DestinationSettlementPanel.java
- * @version 2.80 2007-03-22
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapPanel.java
- * @version 2.80 2006-11-21
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -34,7 +34,7 @@ public class MapPanel extends JPanel implements Runnable {
 	private Image mapImage;
 	private boolean wait;
 	private String mapType;
-	private List mapLayers;
+	private List<MapLayer> mapLayers;
 	private String oldMapType;
 	private SurfMarsMap surfMap;
 	private TopoMarsMap topoMap;
@@ -52,7 +52,7 @@ public class MapPanel extends JPanel implements Runnable {
 		map = surfMap;
 		mapError = false;
 		wait = false;
-		mapLayers = new ArrayList();
+		mapLayers = new ArrayList<MapLayer>();
 		update = true;
 		
 		setPreferredSize(new Dimension(300, 300));
@@ -214,8 +214,8 @@ public class MapPanel extends JPanel implements Runnable {
                 	}  
                 
                 	// Display map layers.
-                	Iterator i = mapLayers.iterator();
-                	while (i.hasNext()) ((MapLayer) i.next()).displayLayer(centerCoords, mapType, g);
+                	Iterator<MapLayer> i = mapLayers.iterator();
+                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
                 }
         	}
         }

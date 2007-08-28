@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Treatment.java
- * @version 2.75 2004-03-16
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -11,7 +11,7 @@ package org.mars_sim.msp.simulation.person.medical;
  * This class represents a Medical treatment that can be applied to
  * a Person to cure a complaint.
  */
-public class Treatment implements java.io.Serializable, Comparable {
+public class Treatment implements java.io.Serializable, Comparable<Treatment> {
 
     private String  name;
     private int     requiredSkill;  // Optimal MEDICAL skill
@@ -47,8 +47,8 @@ public class Treatment implements java.io.Serializable, Comparable {
     /**
      * Compare this object with another
      */
-    public int compareTo(Object obj) {
-        return name.compareTo(((Treatment)obj).name);
+    public int compareTo(Treatment otherTreatment) {
+        return name.compareTo((otherTreatment).name);
     }
 
     /**

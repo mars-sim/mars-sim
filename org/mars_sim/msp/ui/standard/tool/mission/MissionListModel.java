@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionListModel.java
- * @version 2.80 2007-03-20
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -26,19 +26,18 @@ public class MissionListModel extends AbstractListModel implements
 		MissionManagerListener, MissionListener {
 
 	// Private members.
-	private List missions;
+	private List<Mission> missions;
 	
 	/**
 	 * Constructor
 	 */
 	public MissionListModel() {
-		missions = new ArrayList();
+		missions = new ArrayList<Mission>();
 		
 		// Add all current missions.
 		MissionManager manager = Simulation.instance().getMissionManager();
-		List managerMissions = manager.getMissions();
-		Iterator i = managerMissions.iterator();
-		while (i.hasNext()) addMission((Mission) i.next());
+		Iterator<Mission> i = manager.getMissions().iterator();
+		while (i.hasNext()) addMission(i.next());
 		
 		// Add list as mission manager listener.
 		manager.addListener(this);

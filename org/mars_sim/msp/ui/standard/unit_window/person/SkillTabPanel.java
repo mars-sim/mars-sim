@@ -1,19 +1,30 @@
 /**
  * Mars Simulation Project
  * SkillTabPanel.java
- * @version 2.75 2003-09-10
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import org.mars_sim.msp.simulation.person.*;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+import org.mars_sim.msp.ui.standard.NumberCellRenderer;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
 /** 
@@ -72,20 +83,20 @@ public class SkillTabPanel extends TabPanel {
     private class SkillTableModel extends AbstractTableModel {
         
         SkillManager manager;
-        java.util.Map skills;
-        java.util.List skillNames;
+        Map<String, Integer> skills;
+        List<String> skillNames;
         
         private SkillTableModel(Person person) {
             manager = person.getMind().getSkillManager();
             
             String[] keys = manager.getKeys();
-            skills = new HashMap();
-            skillNames = new ArrayList();
+            skills = new HashMap<String, Integer>();
+            skillNames = new ArrayList<String>();
             for (int x=0; x < keys.length; x++) {
                 int level = manager.getSkillLevel(keys[x]);
                 if (level > 0) {
                     skillNames.add(keys[x]);
-                    skills.put(keys[x], new Integer(level));
+                    skills.put(keys[x], level);
                 }
             }
         }
@@ -98,7 +109,7 @@ public class SkillTabPanel extends TabPanel {
             return 2;
         }
         
-        public Class getColumnClass(int columnIndex) {
+        public Class<?> getColumnClass(int columnIndex) {
             Class dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             if (columnIndex == 1) dataType = Integer.class;
@@ -119,13 +130,13 @@ public class SkillTabPanel extends TabPanel {
   
         public void update() {
             String[] keys = manager.getKeys();
-            java.util.List newSkillNames = new ArrayList();
-            java.util.Map newSkills = new HashMap();
+            List<String> newSkillNames = new ArrayList<String>();
+            Map<String, Integer> newSkills = new HashMap<String, Integer>();
             for (int x=0; x < keys.length; x++) {
                 int level = manager.getSkillLevel(keys[x]);
                 if (level > 0) {
                     newSkillNames.add(keys[x]);
-                    newSkills.put(keys[x], new Integer(level));
+                    newSkills.put(keys[x], level);
                 }
             }
                 

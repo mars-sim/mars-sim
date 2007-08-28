@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -157,7 +157,7 @@ class EatMeal extends Task implements Serializable {
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Settlement settlement = person.getSettlement();
         	BuildingManager manager = settlement.getBuildingManager();
-        	List diningBuildings = manager.getBuildings(Dining.NAME);
+        	List<Building> diningBuildings = manager.getBuildings(Dining.NAME);
         	diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
         	diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
         	diningBuildings = BuildingManager.getBestRelationshipBuildings(person, diningBuildings);

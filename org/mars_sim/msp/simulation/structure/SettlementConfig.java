@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 2.76 2004-08-01
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;
@@ -131,8 +131,8 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if there isn't a settlement template with this name or
 	 * if there is an XML parsing error.
 	 */
-	public Map getTemplateEquipment(String templateName) throws Exception {
-		Map result = new HashMap();
+	public Map<String, Integer> getTemplateEquipment(String templateName) throws Exception {
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		
 		Element templateElement = getSettlementTemplateElement(templateName);
 		NodeList equipmentNodes = templateElement.getElementsByTagName(EQUIPMENT);
@@ -153,8 +153,8 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if there isn't a settlement template with this name or
 	 * if there is an XML parsing error.
 	 */
-	public Map getTemplateResources(String templateName) throws Exception {
-		Map result = new HashMap();
+	public Map<String, Double> getTemplateResources(String templateName) throws Exception {
+		Map<String, Double> result = new HashMap<String, Double>();
 		
 		Element templateElement = getSettlementTemplateElement(templateName);
 		NodeList resourceNodes = templateElement.getElementsByTagName(RESOURCE);
@@ -243,8 +243,8 @@ public class SettlementConfig implements Serializable {
 	 * @return list of building types as strings.
 	 * @throws Exception if XML parsing exception.
 	 */
-	public List getResupplyBuildingTypes(String resupplyName) throws Exception {
-		List result = new ArrayList();
+	public List<String> getResupplyBuildingTypes(String resupplyName) throws Exception {
+		List<String> result = new ArrayList<String>();
 		
 		Element resupplyElement = getResupplyElement(resupplyName);
 		NodeList buildingNodes = resupplyElement.getElementsByTagName(BUILDING);
@@ -264,8 +264,8 @@ public class SettlementConfig implements Serializable {
 	 * @return list of vehicle types as strings.
 	 * @throws Exception if XML parsing exception.
 	 */
-	public List getResupplyVehicleTypes(String resupplyName) throws Exception {
-		List result = new ArrayList();
+	public List<String> getResupplyVehicleTypes(String resupplyName) throws Exception {
+		List<String> result = new ArrayList<String>();
 		
 		Element resupplyElement = getResupplyElement(resupplyName);
 		NodeList vehicleNodes = resupplyElement.getElementsByTagName(VEHICLE);
@@ -285,8 +285,8 @@ public class SettlementConfig implements Serializable {
 	 * @return map of equipment types and number.
 	 * @throws Exception if XML parsing error.
 	 */
-	public Map getResupplyEquipment(String resupplyName) throws Exception {
-		Map result = new HashMap();
+	public Map<String, Integer> getResupplyEquipment(String resupplyName) throws Exception {
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		
 		Element resupplyElement = getResupplyElement(resupplyName);
 		NodeList equipmentNodes = resupplyElement.getElementsByTagName(EQUIPMENT);
@@ -319,8 +319,8 @@ public class SettlementConfig implements Serializable {
 	 * @return map of resource types (String) and their amounts (Double).
 	 * @throws Exception if XML parsing exception
 	 */
-	public Map getResupplyResources(String resupplyName) throws Exception {
-		Map result = new HashMap();
+	public Map<String, Double> getResupplyResources(String resupplyName) throws Exception {
+		Map<String, Double> result = new HashMap<String, Double>();
 		
 		Element resupplyElement = getResupplyElement(resupplyName);
 		NodeList resourceNodes = resupplyElement.getElementsByTagName(RESOURCE);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResearchScience.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -213,7 +213,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 		
 		try {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List labBuildings = manager.getBuildings(Research.NAME);
+			List<Building> labBuildings = manager.getBuildings(Research.NAME);
 			labBuildings = getSettlementLabsWithSpeciality(science, labBuildings);
 			labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
 			labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);

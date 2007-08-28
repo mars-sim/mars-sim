@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -209,7 +209,7 @@ public class TendGreenhouse extends Task implements Serializable {
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
         	BuildingManager manager = person.getSettlement().getBuildingManager();
-            List farmBuildings = manager.getBuildings(Farming.NAME);
+            List<Building> farmBuildings = manager.getBuildings(Farming.NAME);
 			farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
 			farmBuildings = getFarmsNeedingWork(farmBuildings);
 			farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings); 

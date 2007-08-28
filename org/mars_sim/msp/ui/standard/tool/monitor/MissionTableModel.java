@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 2.80 2006-08-24
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -38,7 +38,7 @@ public class MissionTableModel extends AbstractTableModel implements
 	private static String columnNames[];             // Names of Columns
     private static Class columnTypes[];              // Types of Columns
 	
-    private List missionCache;
+    private List<Mission> missionCache;
     
     public MissionTableModel() {
     	columnNames = new String[COLUMNCOUNT];
@@ -65,8 +65,8 @@ public class MissionTableModel extends AbstractTableModel implements
         MissionManager manager = Simulation.instance().getMissionManager();
         missionCache = manager.getMissions();
         manager.addListener(this);
-        Iterator i = missionCache.iterator();
-        while (i.hasNext()) ((Mission) i.next()).addMissionListener(this);
+        Iterator<Mission> i = missionCache.iterator();
+        while (i.hasNext()) i.next().addMissionListener(this);
     }
     
 	/**
@@ -113,7 +113,7 @@ public class MissionTableModel extends AbstractTableModel implements
      * @param columnIndex Index of column.
      * @return Class of specified column.
      */
-    public Class getColumnClass(int columnIndex) {
+    public Class<?> getColumnClass(int columnIndex) {
         if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
             return columnTypes[columnIndex];
         }
@@ -207,7 +207,7 @@ public class MissionTableModel extends AbstractTableModel implements
 		Object result = null;
 		
 		if (rowIndex < missionCache.size()) {
-			Mission mission = (Mission) missionCache.get(rowIndex);
+			Mission mission = missionCache.get(rowIndex);
 			
 			switch (columnIndex) {
 			
@@ -282,7 +282,7 @@ public class MissionTableModel extends AbstractTableModel implements
      */
     public void destroy() {
     	for (int x = 0; x < missionCache.size(); x++) {
-    		removeMission((Mission) missionCache.get(0));
+    		removeMission(missionCache.get(0));
     	}
     	missionCache = null;
     	Simulation.instance().getMissionManager().removeListener(this);

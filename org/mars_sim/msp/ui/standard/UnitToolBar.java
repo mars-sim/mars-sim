@@ -1,17 +1,22 @@
 /**
  * Mars Simulation Project
  * UnitToolbar.java
- * @version 2.75 2003-07-28
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;  
  
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JToolBar;
+import javax.swing.border.BevelBorder;
+
 import org.mars_sim.msp.simulation.Unit;
 
 /** The UnitToolBar class is a UI toolbar for holding unit buttons.
@@ -21,7 +26,7 @@ import org.mars_sim.msp.simulation.Unit;
 public class UnitToolBar extends JToolBar implements ActionListener {
 
     // Data members
-    private java.util.List unitButtons; // List of unit buttons
+    private List<UnitButton> unitButtons; // List of unit buttons
     private MainWindow parentMainWindow; // Main window that contains this toolbar.
 
     /** Constructs a UnitToolBar object 
@@ -33,7 +38,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
         super();
 
         // Initialize data members
-        unitButtons = new ArrayList();
+        unitButtons = new ArrayList<UnitButton>();
         this.parentMainWindow = parentMainWindow;
 
         // Set name
@@ -58,9 +63,9 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 
         // Check if unit button already exists
         boolean alreadyExists = false;
-        Iterator i = unitButtons.iterator();
+        Iterator<UnitButton> i = unitButtons.iterator();
         while (i.hasNext()) {
-            UnitButton unitButton = (UnitButton) i.next();
+            UnitButton unitButton = i.next();
             if (unitButton.getUnit() == unit) alreadyExists = true;
         }
 
@@ -80,9 +85,9 @@ public class UnitToolBar extends JToolBar implements ActionListener {
      * @param unit the unit whose button is to be removed.
      */
     public void disposeUnitButton(Unit unit) {
-        Iterator i = unitButtons.iterator();
+        Iterator<UnitButton> i = unitButtons.iterator();
         while (i.hasNext()) {
-            UnitButton unitButton = (UnitButton) i.next();
+            UnitButton unitButton = i.next();
             if (unitButton.getUnit() == unit) {
                 remove(unitButton);
                 validate();

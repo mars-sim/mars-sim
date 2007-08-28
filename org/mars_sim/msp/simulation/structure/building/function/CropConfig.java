@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropConfig.java
- * @version 2.75 2004-03-18
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -23,7 +23,7 @@ public class CropConfig implements Serializable {
 	private static final String GROWING_TIME = "growing-time";
 	
 	private Document cropDoc;
-	private List cropList;
+	private List<CropType> cropList;
 
 	/**
 	 * Constructor
@@ -38,10 +38,10 @@ public class CropConfig implements Serializable {
 	 * @return list of crop types
 	 * @throws Exception when crops could not be parsed.
 	 */
-	public List getCropList() throws Exception {
+	public List<CropType> getCropList() throws Exception {
 		
 		if (cropList == null) {
-			cropList = new ArrayList();
+			cropList = new ArrayList<CropType>();
 			
 			Element root = cropDoc.getDocumentElement();
 			NodeList crops = root.getElementsByTagName(CROP);

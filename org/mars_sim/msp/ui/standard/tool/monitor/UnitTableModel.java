@@ -125,7 +125,7 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @param columnIndex Index of column.
      * @return Class of specified column.
      */
-    public Class getColumnClass(int columnIndex) {
+    public Class<?> getColumnClass(int columnIndex) {
         if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
             return columnTypes[columnIndex];
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 2.76 2004-07-08
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -47,7 +47,7 @@ public class EventTableModel extends AbstractTableModel
     }
 
     private HistoricalEventManager manager;
-    private List cachedEvents = new ArrayList();
+    private List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
     
     // Event categories to be displayed.
     private boolean displayMalfunction = true;
@@ -73,7 +73,7 @@ public class EventTableModel extends AbstractTableModel
 	private void updateCachedEvents() {
 		
 		// Clean out cached events.
-		cachedEvents = new ArrayList();
+		cachedEvents = new ArrayList<HistoricalEvent>();
 		
 		// Filter events based on category.
 		for (int x = 0; x < manager.size(); x++) {
@@ -113,7 +113,7 @@ public class EventTableModel extends AbstractTableModel
      * @param columnIndex Index of column.
      * @return Class of specified column.
      */
-    public Class getColumnClass(int columnIndex) {
+    public Class<?> getColumnClass(int columnIndex) {
         if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
             return columnTypes[columnIndex];
         }
@@ -154,7 +154,7 @@ public class EventTableModel extends AbstractTableModel
      * @return Unit associated with the Event as the specified position.
      */
     public Object getObject(int row) {
-    	HistoricalEvent event = (HistoricalEvent) cachedEvents.get(row);
+    	HistoricalEvent event = cachedEvents.get(row);
     	Object result = null;
     	if (event != null) {
     		Object source = event.getSource();
@@ -182,7 +182,7 @@ public class EventTableModel extends AbstractTableModel
         Object result = null;
         
         if (rowIndex < cachedEvents.size()) {
-        	HistoricalEvent event = (HistoricalEvent) cachedEvents.get(rowIndex);
+        	HistoricalEvent event = cachedEvents.get(rowIndex);
 
         	if (event != null) {
         		// Invoke the appropriate method, switch is the best solution

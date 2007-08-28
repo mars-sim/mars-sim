@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InfoDialog.java
- * @version 2.80 2007-03-21
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -209,8 +209,8 @@ public class InfoPanel extends JPanel {
 	 * @param mission the mission 
 	 * @return vector of actions.
 	 */
-	private Vector getActions(Mission mission) {
-		Vector actions = new Vector();
+	private Vector<String> getActions(Mission mission) {
+		Vector<String> actions = new Vector<String>();
 		actions.add(ACTION_NONE);
 		
 		String phase = mission.getPhase();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CannedMarsMap.java
- * @version 2.80 2006-11-21
+ * @version 2.81 2007-08-27
  * @author Greg Whelan
  */
 
@@ -28,7 +28,7 @@ public abstract class CannedMarsMap implements Map {
 	private static final double TWO_PI = Math.PI * 2D;
     
 	// Data members
-	protected List surfaceColors = null;
+	protected List<int[]> surfaceColors = null;
 	private JComponent displayArea = null;
 	private Coordinates currentCenter = null;
 	private Image mapImage = null;
@@ -40,7 +40,7 @@ public abstract class CannedMarsMap implements Map {
      * @param displayArea the display component.
      * @param surfaceColors the ArrayList containing all of the cached map colors.
      */
-    public CannedMarsMap(JComponent displayArea, List surfaceColors) {
+    public CannedMarsMap(JComponent displayArea, List<int[]> surfaceColors) {
     	this.displayArea = displayArea;
     	this.surfaceColors = surfaceColors;
     }
@@ -52,7 +52,7 @@ public abstract class CannedMarsMap implements Map {
      * @param dataFile the map data filename within map_data.jar.
      * @param indexFile the map index filename within map_data.jar.
      */
-    public CannedMarsMap(JComponent displayArea, String dataFile, String indexFile, List mapColors) {
+    public CannedMarsMap(JComponent displayArea, String dataFile, String indexFile, List<int[]> mapColors) {
         this.displayArea = displayArea;
         
         if (mapColors == null) {
@@ -102,7 +102,7 @@ public abstract class CannedMarsMap implements Map {
 	 * @return array list of map data
 	 * @throws IOException if map data cannot be loaded.
 	 */
-	private List loadMapData(String filename, int[] index) throws IOException {
+	private List<int[]> loadMapData(String filename, int[] index) throws IOException {
      
 		// Load map data from map_data jar file.
 		ClassLoader loader = getClass().getClassLoader();
@@ -114,7 +114,7 @@ public abstract class CannedMarsMap implements Map {
 		DataInputStream mapReader = new DataInputStream(mapBuff);
         
 		// Create map colors array list.
-		List mapColors = new ArrayList(MAP_HEIGHT);
+		List<int[]> mapColors = new ArrayList<int[]>(MAP_HEIGHT);
         
 		// Create an array of colors for each pixel in map height.
 		for (int x=0; x < MAP_HEIGHT; x++) {
@@ -156,7 +156,7 @@ public abstract class CannedMarsMap implements Map {
 		int row = (int) Math.round(phi * (MAP_HEIGHT / Math.PI));
 		if (row == surfaceColors.size()) row--;
         
-		int[] colorRow = (int[]) surfaceColors.get(row);
+		int[] colorRow = surfaceColors.get(row);
 		int column = (int) Math.round(theta * ((double) colorRow.length / TWO_PI));
 		if (column == colorRow.length) column--;
         

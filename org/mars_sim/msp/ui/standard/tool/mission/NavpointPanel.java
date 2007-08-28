@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 2.80 2007-03-20
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -253,13 +253,13 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	private class NavpointTableModel extends AbstractTableModel {
 		
 		// Private members.
-		private List navpoints;
+		private List<NavPoint> navpoints;
 		
 		/**
 		 * Constructor.
 		 */
 		private NavpointTableModel() {
-			navpoints = new ArrayList();
+			navpoints = new ArrayList<NavPoint>();
 		}
 		
 		/**

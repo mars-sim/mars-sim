@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 2.78 2004-11-15
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -29,7 +29,7 @@ public class Cooking extends Function implements Serializable {
 
 	// Data members
 	private int cookCapacity;
-	private List meals;
+	private List<CookedMeal> meals;
 	private double cookingWorkTime;
 	
 	/**
@@ -42,7 +42,7 @@ public class Cooking extends Function implements Serializable {
 		super(NAME, building);
 		
 		cookingWorkTime = 0D;
-		meals = new ArrayList();
+		meals = new ArrayList<CookedMeal>();
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
@@ -133,9 +133,9 @@ public class Cooking extends Function implements Serializable {
 	public CookedMeal getCookedMeal() {
 		CookedMeal bestMeal = null;
 		int bestQuality = -1;
-		Iterator i = meals.iterator();
+		Iterator<CookedMeal> i = meals.iterator();
 		while (i.hasNext()) {
-			CookedMeal meal = (CookedMeal) i.next();
+			CookedMeal meal = i.next();
 			if (meal.getQuality() > bestQuality) {
 				bestQuality = meal.getQuality();
 				bestMeal = meal;
@@ -153,9 +153,9 @@ public class Cooking extends Function implements Serializable {
 	 */
 	public int getBestMealQuality() {
 		int bestQuality = 0;
-		Iterator i = meals.iterator();
+		Iterator<CookedMeal> i = meals.iterator();
 		while (i.hasNext()) {
-			CookedMeal meal = (CookedMeal) i.next();
+			CookedMeal meal = i.next();
 			if (meal.getQuality() > bestQuality) bestQuality = meal.getQuality();
 		}
 		
@@ -207,9 +207,9 @@ public class Cooking extends Function implements Serializable {
 	public void timePassing(double time) throws BuildingException {
 		
 		// Move expired meals back to food again (refrigerate leftovers).
-		Iterator i = meals.iterator();
+		Iterator<CookedMeal> i = meals.iterator();
 		while (i.hasNext()) {
-			CookedMeal meal = (CookedMeal) i.next();
+			CookedMeal meal = i.next();
 			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
 				try {

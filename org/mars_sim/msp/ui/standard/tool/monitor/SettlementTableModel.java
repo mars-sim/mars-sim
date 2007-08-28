@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.77 2004-08-11
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -83,7 +83,7 @@ public class SettlementTableModel extends UnitTableModel {
     
     // Data members
     private UnitManagerListener unitManagerListener;
-    private Map resourceCache;
+    private Map<Unit, Map<AmountResource, Integer>> resourceCache;
 
     /**
      * Constructs a SettlementTableModel model that displays all Settlements
@@ -110,7 +110,7 @@ public class SettlementTableModel extends UnitTableModel {
         if (rowIndex < getUnitNumber()) {
         	Settlement settle = (Settlement)getUnit(rowIndex);
         	BuildingManager bMgr = settle.getBuildingManager();
-        	Map resourceMap = (Map) resourceCache.get(settle);
+        	Map<AmountResource, Integer> resourceMap = resourceCache.get(settle);
 
         	// Invoke the appropriate method, switch is the best solution
         	// althought disliked by some
@@ -249,8 +249,8 @@ public class SettlementTableModel extends UnitTableModel {
 				int newValue = getResourceStored(unit, (AmountResource) target).intValue();
 				if (currentValue != newValue) {
 					columnNum = tempColumnNum;
-					Map resourceMap = (Map) resourceCache.get(unit);
-					resourceMap.put(target, new Integer(newValue));
+					Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
+					resourceMap.put((AmountResource) target, newValue);
 				}
 			}
 		}
@@ -271,9 +271,9 @@ public class SettlementTableModel extends UnitTableModel {
      * @param newUnit Unit to add to the model.
      */
     protected void addUnit(Unit newUnit) {
-    	if (resourceCache == null) resourceCache = new HashMap();
+    	if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
     	if (!resourceCache.containsKey(newUnit)) {
-    		Map resourceMap = new HashMap(9);
+    		Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
     		resourceMap.put(AmountResource.FOOD, getResourceStored(newUnit, AmountResource.FOOD));
     		resourceMap.put(AmountResource.OXYGEN, getResourceStored(newUnit, AmountResource.OXYGEN));
     		resourceMap.put(AmountResource.WATER, getResourceStored(newUnit, AmountResource.WATER));
@@ -293,9 +293,9 @@ public class SettlementTableModel extends UnitTableModel {
      * @param oldUnit Unit to remove from the model.
      */
     protected void removeUnit(Unit oldUnit) {
-    	if (resourceCache == null) resourceCache = new HashMap();
+    	if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
     	if (resourceCache.containsKey(oldUnit)) {
-    		Map resourceMap = (Map) resourceCache.get(oldUnit);
+    		Map<AmountResource, Integer> resourceMap = resourceCache.get(oldUnit);
     		resourceMap.clear();
     		resourceCache.remove(oldUnit);
     	}

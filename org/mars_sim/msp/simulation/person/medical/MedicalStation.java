@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 2.76 2004-06-10
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -25,9 +25,9 @@ public class MedicalStation implements MedicalAid, Serializable {
 
     private int level;                              // Treatment level of the facility
     private int sickBeds;                           // Number of sick beds
-    private List problemsBeingTreated;              // List of health problems currently being treated.
-    private List problemsAwaitingTreatment;         // List of health problems awaiting treatment.
-    private List supportedTreatments;               // Treatments supported by the medical station.
+    private List<HealthProblem> problemsBeingTreated; // List of health problems currently being treated.
+    private List<HealthProblem> problemsAwaitingTreatment; // List of health problems awaiting treatment.
+    private List<Treatment> supportedTreatments; // Treatments supported by the medical station.
 
     /** 
      * Constructor.
@@ -38,8 +38,8 @@ public class MedicalStation implements MedicalAid, Serializable {
     public MedicalStation(int level, int sickBeds) {
         this.level = level;
         this.sickBeds = sickBeds;
-        problemsBeingTreated = new ArrayList();
-        problemsAwaitingTreatment = new ArrayList();
+        problemsBeingTreated = new ArrayList<HealthProblem>();
+        problemsAwaitingTreatment = new ArrayList<HealthProblem>();
 
         // Get all supported treatments.
         MedicalManager medManager = Simulation.instance().getMedicalManager();
@@ -51,8 +51,8 @@ public class MedicalStation implements MedicalAid, Serializable {
      *
      * @return list of health problems
      */
-    public List getProblemsAwaitingTreatment() {
-        return new ArrayList(problemsAwaitingTreatment);
+    public List<HealthProblem> getProblemsAwaitingTreatment() {
+        return new ArrayList<HealthProblem>(problemsAwaitingTreatment);
     }
 
     /**
@@ -60,8 +60,8 @@ public class MedicalStation implements MedicalAid, Serializable {
      *
      * @return list of health problems
      */
-    public List getProblemsBeingTreated() {
-        return new ArrayList(problemsBeingTreated);
+    public List<HealthProblem> getProblemsBeingTreated() {
+        return new ArrayList<HealthProblem>(problemsBeingTreated);
     }
 
     /**
@@ -100,8 +100,8 @@ public class MedicalStation implements MedicalAid, Serializable {
     /**
      * Get a list of supported Treatments at this SickBay.
      */
-    public List getSupportedTreatments() {
-        return new ArrayList(supportedTreatments);
+    public List<Treatment> getSupportedTreatments() {
+        return new ArrayList<Treatment>(supportedTreatments);
     }
 
     /**

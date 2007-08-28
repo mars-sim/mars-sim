@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 2.78 2004-11-20
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -33,7 +33,7 @@ public class Farming extends Function implements Serializable {
     private double powerSustainingCrop;
     private double growingArea;
     private double maxHarvest;
-    private List crops;
+    private List<Crop> crops;
     
     /**
      * Constructor
@@ -60,7 +60,7 @@ public class Farming extends Function implements Serializable {
 		maxHarvest = growingArea * HARVEST_MULTIPLIER;
 		
 		// Create initial crops.
-		crops = new ArrayList();
+		crops = new ArrayList<Crop>();
 		try {
 			Settlement settlement = building.getBuildingManager().getSettlement();
 			for (int x=0; x < cropNum; x++) {
@@ -79,7 +79,7 @@ public class Farming extends Function implements Serializable {
      * Gets the farm's current crops.
      * @return collection of crops
      */
-    public List getCrops() {
+    public List<Crop> getCrops() {
     	return crops;
     }
     
@@ -89,10 +89,9 @@ public class Farming extends Function implements Serializable {
      */
     public boolean requiresWork() {
 		boolean result = false;
-		Iterator i = crops.iterator();
+		Iterator<Crop> i = crops.iterator();
 		while (i.hasNext()) {
-			Crop crop = (Crop) i.next();
-			if (crop.requiresWork()) result = true;
+			if (i.next().requiresWork()) result = true;
 		}
 		return result;
     }
@@ -111,11 +110,8 @@ public class Farming extends Function implements Serializable {
 		// becoming very small double values and an endless loop occurs.
 		while (((needyCrops = getNeedyCrops()) > 0) && (workTimeRemaining > 00001D)) {
 			double maxCropTime = workTimeRemaining / (double) needyCrops;
-			Iterator i = crops.iterator();
-			while (i.hasNext()) {
-				Crop crop = (Crop) i.next();
-				workTimeRemaining -= (maxCropTime - crop.addWork(maxCropTime));
-			}
+			Iterator<Crop> i = crops.iterator();
+			while (i.hasNext()) workTimeRemaining -= (maxCropTime - i.next().addWork(maxCropTime));
 		}
  
 		return workTimeRemaining;
@@ -127,10 +123,9 @@ public class Farming extends Function implements Serializable {
 	 */
 	private int getNeedyCrops() {
 		int result = 0;
-		Iterator i = crops.iterator();
+		Iterator<Crop> i = crops.iterator();
 		while (i.hasNext()) {
-			Crop crop = (Crop) i.next();
-			if (crop.requiresWork()) result++;
+			if (i.next().requiresWork()) result++;
 		}
 		return result;
 	}
@@ -184,11 +179,11 @@ public class Farming extends Function implements Serializable {
 		else if (getBuilding().getPowerMode().equals(Building.POWER_DOWN)) productionLevel = .5D;
         
 		// Add time to each crop.
-		Iterator i = crops.iterator();
+		Iterator<Crop> i = crops.iterator();
 		int newCrops = 0;
 		try {
 			while (i.hasNext()) {
-				Crop crop = (Crop) i.next();
+				Crop crop = i.next();
 				crop.timePassing(time * productionLevel);
             
 				// Remove old crops.
@@ -226,9 +221,9 @@ public class Farming extends Function implements Serializable {
 		// Power (kW) required for normal operations.
 		double powerRequired = 0D;
         
-		Iterator i = crops.iterator();
+		Iterator<Crop> i = crops.iterator();
 		while (i.hasNext()) {
-			Crop crop = (Crop) i.next();
+			Crop crop = i.next();
 			if (crop.getPhase().equals(Crop.GROWING))
 				powerRequired += (crop.getMaxHarvest() * powerGrowingCrop);
 		}
@@ -246,9 +241,9 @@ public class Farming extends Function implements Serializable {
 		double powerRequired = 0D;
         
 		// Add power required to sustain growing or harvest-ready crops.
-		Iterator i = crops.iterator();
+		Iterator<Crop> i = crops.iterator();
 		while (i.hasNext()) {
-			Crop crop = (Crop) i.next();
+			Crop crop = i.next();
 			if (crop.getPhase().equals(Crop.GROWING) || crop.getPhase().equals(Crop.HARVESTING))
 				powerRequired += (crop.getMaxHarvest() * powerSustainingCrop);
 		}

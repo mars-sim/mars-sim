@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BarChartTab.java
- * @version 2.75 2003-11-25
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -49,7 +49,7 @@ class BarChartTab extends MonitorTab {
         
         private TableModel model;
         private int[] columns;
-        private List categories;
+        private List<String> categories;
 
         public TableBarDataset(TableModel model, int columns[]) {
             setModel(model);
@@ -81,7 +81,7 @@ class BarChartTab extends MonitorTab {
          *
          * @return List of String that represent Unit names.
          */
-        public List getCategories() {
+        public List<String> getCategories() {
             return categories;
         }
 
@@ -100,7 +100,7 @@ class BarChartTab extends MonitorTab {
          * of the rows in the model, i.e. the first column.
          */
         private void loadCategories() {
-            categories = new ArrayList(model.getRowCount());
+            categories = new ArrayList<String>(model.getRowCount());
 
             // Iterate the rows and add the value from the first cell.
             for(int i = 0; i < model.getRowCount(); i++) {
@@ -120,7 +120,7 @@ class BarChartTab extends MonitorTab {
          * @param series Series index.
          * @return Numeric value of the model cell.
          */
-        public Number getValue(int series, Object category) {
+        public Number getValue(int series, String category) {
             int rowId = categories.indexOf(category);
             return (Number)model.getValueAt(rowId, columns[series]);
         }
@@ -159,8 +159,8 @@ class BarChartTab extends MonitorTab {
             return model.getColumnName(columns[index]);
         }
         
-        public List getRowKeys() {
-            List result = new ArrayList();
+        public List<String> getRowKeys() {
+            List<String> result = new ArrayList<String>();
             for (int x=0; x < columns.length; x++) {
                 result.add(model.getColumnName(columns[x]));
             }

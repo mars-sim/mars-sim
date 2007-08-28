@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -171,7 +171,7 @@ class Sleep extends Task implements Serializable {
         
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List quartersBuildings = manager.getBuildings(LivingAccommodations.NAME);
+			List<Building> quartersBuildings = manager.getBuildings(LivingAccommodations.NAME);
 			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
 			quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings);
 			quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);

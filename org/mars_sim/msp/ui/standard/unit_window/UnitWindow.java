@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 2.80 2006-11-21
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -23,7 +23,7 @@ public abstract class UnitWindow extends JInternalFrame {
     // Data members
     protected MainDesktopPane desktop; // Main window
     protected Unit unit;               // Unit for this window
-    private Collection tabPanels;      // The tab panels
+    private Collection<TabPanel> tabPanels;      // The tab panels
     private JTabbedPane centerPanel;   // The center panel
     
     /**
@@ -41,7 +41,7 @@ public abstract class UnitWindow extends JInternalFrame {
         // Initialize data members
         this.desktop = desktop;
         this.unit = unit;
-        tabPanels = new ArrayList();
+        tabPanels = new ArrayList<TabPanel>();
         
         // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
@@ -103,11 +103,8 @@ public abstract class UnitWindow extends JInternalFrame {
     public void update() {
         
         // Update each of the tab panels.
-        Iterator i = tabPanels.iterator();
-        while (i.hasNext()) {
-            TabPanel panel = (TabPanel) i.next();
-            panel.update();
-        }
+        Iterator<TabPanel> i = tabPanels.iterator();
+        while (i.hasNext()) i.next().update();
     }
     
     /**

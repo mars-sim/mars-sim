@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * PieChartView.java
- * @version 2.81 2007-05-15
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -49,11 +49,11 @@ class PieChartTab extends MonitorTab {
 
         private TableModel model;
         private int column;
-        private Map dataMap;
+        private Map<Comparable, Integer> dataMap;
 
         public TablePieDataset(TableModel model, int column) {
             this.column = column;
-            dataMap = Collections.synchronizedMap(new LinkedHashMap(model.getRowCount()));
+            dataMap = Collections.synchronizedMap(new LinkedHashMap<Comparable, Integer>(model.getRowCount()));
             setModel(model);
         }
 
@@ -65,11 +65,11 @@ class PieChartTab extends MonitorTab {
             
             int rows = model.getRowCount();
 
-            Map tempMap = Collections.synchronizedMap(new LinkedHashMap(dataMap));
+            Map<Comparable, Integer> tempMap = Collections.synchronizedMap(new LinkedHashMap<Comparable, Integer>(dataMap));
             
             // Clear the temp map.
-            Iterator iter = tempMap.keySet().iterator();
-            while (iter.hasNext()) tempMap.put(iter.next(), new Integer(0));
+            Iterator<Comparable> iter = tempMap.keySet().iterator();
+            while (iter.hasNext()) tempMap.put(iter.next(), 0);
                 
 
             // Add category values and categories.
@@ -80,12 +80,12 @@ class PieChartTab extends MonitorTab {
                 else if (!(category instanceof String)) category = category.toString();
                 if (((String) category).trim().equals("")) category = "None";
 
-                Integer value = (Integer) tempMap.get(category);
+                Integer value = tempMap.get(category);
                 int count = 1;
                 if (value != null) count = value.intValue() + 1;
 
                 // Put updated value in data map.
-                tempMap.put(category, new Integer(count));
+                tempMap.put(category, count);
             }    
             
             if (!dataMap.equals(tempMap)) {
@@ -145,10 +145,10 @@ class PieChartTab extends MonitorTab {
         public int getIndex(Comparable key) {
             int result = -1;
             
-            Set keys = dataMap.keySet();
+            Set<Comparable> keys = dataMap.keySet();
             if (keys.contains(key)) {
                 int count = 0;
-                Iterator i = keys.iterator();
+                Iterator<Comparable> i = keys.iterator();
                 while (i.hasNext()) {
                     if (key == i.next()) result = count;
                     else count++;
@@ -191,7 +191,7 @@ class PieChartTab extends MonitorTab {
             Number result = null;
             
             Object[] keys = dataMap.keySet().toArray();
-            if (item < keys.length) result = (Number) dataMap.get(keys[item]);
+            if (item < keys.length) result = dataMap.get(keys[item]);
             
             return result;
         }
@@ -218,9 +218,9 @@ class PieChartTab extends MonitorTab {
          * 
          * @return the keys.
          */
-        public List getKeys() {
-            List result = new ArrayList(dataMap.size());
-            Iterator i = dataMap.keySet().iterator();
+        public List<Comparable> getKeys() {
+            List<Comparable> result = new ArrayList<Comparable>(dataMap.size());
+            Iterator<Comparable> i = dataMap.keySet().iterator();
             while (i.hasNext()) result.add(i.next());
             
             return result;
@@ -276,7 +276,7 @@ class PieChartTab extends MonitorTab {
     }
 
     protected List getSelection() {
-        return new ArrayList();
+        return Collections.EMPTY_LIST;
     }
 
     /**

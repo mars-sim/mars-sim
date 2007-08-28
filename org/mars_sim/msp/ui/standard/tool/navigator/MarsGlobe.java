@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsGlobe.java
- * @version 2.75 2003-08-03
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -27,7 +27,7 @@ public class MarsGlobe {
 
     // Data members
     private Coordinates centerCoords; // Center position of globe
-    private Vector[] Sphere_Color; // point colors in variably-sized vectors
+    private Vector<Integer>[] sphereColor; // point colors in variably-sized vectors
     // private String globeType; // "surface" or "topo"
     private Image marsMap; // cylindrical map image
     private Image globeImage; // finished image of sphere with transparency
@@ -38,12 +38,13 @@ public class MarsGlobe {
      *  @param globeType the type of globe: "surface" or "topo"
      *  @param displayArea the display component for the globe
      */
-    public MarsGlobe (String globeType, JComponent displayArea) {
+    @SuppressWarnings("unchecked")
+	public MarsGlobe (String globeType, JComponent displayArea) {
 
         // Initialize Variables
         // this.globeType = globeType;
         this.displayArea = displayArea;
-        Sphere_Color = new Vector[map_height];
+        sphereColor = new Vector[map_height];
         centerCoords = new Coordinates(Math.PI / 2, Math.PI / 2);
 
         // Load Surface Map Image
@@ -130,7 +131,7 @@ public class MarsGlobe {
                 continue;
 
             // Determine circumference of this row
-            int circum = Sphere_Color[array_y].size();
+            int circum = sphereColor[array_y].size();
             double row_cos = Math.cos(row);
 
             // Determine visible boundry of row
@@ -197,9 +198,7 @@ public class MarsGlobe {
                         temp_buff_y2) + half_map;
 
                 // Put point in buffer array
-                buffer_array[buff_x + (map_height * buff_y)] =
-                        ((Integer) Sphere_Color[array_y].elementAt(array_x)).
-                        intValue();
+                buffer_array[buff_x + (map_height * buff_y)] = sphereColor[array_y].elementAt(array_x);
             }
         }
 
@@ -265,7 +264,7 @@ public class MarsGlobe {
             row = (int) Math.floor((phi / Math.PI) * ih_d);
             circum = 2 * Math.PI * (rho * Math.sin(phi));
             col_num = (int) Math.round(circum);
-            Sphere_Color[row] = new Vector(col_num);
+            sphereColor[row] = new Vector<Integer>(col_num);
 
             // Fill vector with colors
             for (theta = 0; theta < (2 * Math.PI);
@@ -276,7 +275,7 @@ public class MarsGlobe {
                     map_col = (int) Math.floor((theta / Math.PI) * ih_d);
                 }
 
-                Sphere_Color[row].addElement(new Integer(map_pixels[map_col][row]));
+                sphereColor[row].addElement(map_pixels[map_col][row]);
             }
         }
     }

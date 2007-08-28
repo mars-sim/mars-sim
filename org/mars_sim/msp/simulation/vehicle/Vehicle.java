@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.79 2006-06-28
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -51,7 +51,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private double fuelEfficiency; // The fuel efficiency of the vehicle. (km/kg)
     private boolean isReservedMission = false; // True if vehicle is currently reserved for a mission and cannot be taken by another
     private boolean distanceMark = false; // True if vehicle is due for maintenance.
-    private ArrayList trail; // A collection of locations that make up the vehicle's trail.
+    private ArrayList<Coordinates> trail; // A collection of locations that make up the vehicle's trail.
     private boolean reservedForMaintenance = false; // True if vehicle is currently reserved for periodic maintenance.
     private boolean emergencyBeacon = false; // The emergency beacon for the vehicle.  True if beacon is turned on.
     private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
@@ -78,7 +78,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         // Initialize vehicle data
         setDescription(description);
         direction = new Direction(0);
-	    trail = new ArrayList();
+	    trail = new ArrayList<Coordinates>();
 	    setBaseSpeed(baseSpeed);
 	    setBaseMass(baseMass);
 	    this.fuelEfficiency = fuelEfficiency;
@@ -106,7 +106,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
         // Initialize vehicle data
         setDescription(description);
         direction = new Direction(0);
-	    trail = new ArrayList();
+	    trail = new ArrayList<Coordinates>();
 	    status = PARKED;
 	    
 	    // Initialize malfunction manager.
@@ -433,7 +433,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * Gets the vehicle's trail as a collection of coordinate locations.
      * @return trail collection
      */
-    public Collection getTrail() {
+    public Collection<Coordinates> getTrail() {
         return trail;
     }
 

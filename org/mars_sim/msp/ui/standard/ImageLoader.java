@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ImageLoader.java
- * @version 2.74 2002-04-09
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -21,8 +21,8 @@ import java.net.URL;
  */
 public class ImageLoader {
 
-    private static HashMap iconCache = new HashMap();
-    private static HashMap imageCache = new HashMap();
+    private static HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
+    private static HashMap<String, Image> imageCache = new HashMap<String, Image>();
     private static Toolkit usedToolkit = null;
 
     /**
@@ -44,7 +44,7 @@ public class ImageLoader {
      * @return ImageIcon containing image of specified name.
      */
     public static ImageIcon getIcon(String name) {
-        ImageIcon found = (ImageIcon)iconCache.get(name);
+        ImageIcon found = iconCache.get(name);
         if (found == null) {
             String fileName = IMAGE_DIR + name + ".gif";
             URL resource = ClassLoader.getSystemResource(fileName);
@@ -65,7 +65,7 @@ public class ImageLoader {
      * @return Image found and loaded.
      */
     public static Image getImage(String imagename) {
-        Image newImage = (Image)imageCache.get(imagename);
+        Image newImage = imageCache.get(imagename);
         if (newImage == null) {
 
             if (usedToolkit == null) {

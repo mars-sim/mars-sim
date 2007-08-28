@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 2.80 2006-08-11
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -25,7 +25,7 @@ import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 public class ToolToolBar extends JToolBar implements ActionListener {
 
 	// Data members
-	private Vector toolButtons;          // List of tool buttons
+	private Vector<ToolButton> toolButtons;          // List of tool buttons
 	private MainWindow parentMainWindow; // Main window that contains this toolbar.
 
 	/** Constructs a ToolToolBar object
@@ -37,7 +37,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		super(JToolBar.HORIZONTAL);
 
 		// Initialize data members
-		toolButtons = new Vector();
+		toolButtons = new Vector<ToolButton>();
 		this.parentMainWindow = parentMainWindow;
 
 		// Set name

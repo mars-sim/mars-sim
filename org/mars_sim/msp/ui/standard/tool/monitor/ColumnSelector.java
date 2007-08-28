@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ColumnSelector.java
- * @version 2.78 2005-08-28
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -44,7 +44,7 @@ public class ColumnSelector extends JDialog {
         super(owner, model.getName(), true);
 
         // Add all valid columns into the list
-        Vector items = new Vector();
+        Vector<String> items = new Vector<String>();
         columnMappings = new int[model.getColumnCount()-1];
         for(int i = 1; i < model.getColumnCount(); i++) {
             // If a valid column then add to model.

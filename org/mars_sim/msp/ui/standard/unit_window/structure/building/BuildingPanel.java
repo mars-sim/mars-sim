@@ -1,17 +1,32 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 2.77 2004-09-27
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.function.Cooking;
+import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
+import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
+import org.mars_sim.msp.simulation.structure.building.function.Research;
+import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**
@@ -21,7 +36,7 @@ public class BuildingPanel extends JPanel {
     
     private String panelName; // The name of the panel.
     private Building building; // The building this panel is for.
-    private java.util.List functionPanels; // The function panels
+    private List<BuildingFunctionPanel> functionPanels; // The function panels
     
     /**
      * Constructor
@@ -36,7 +51,7 @@ public class BuildingPanel extends JPanel {
         // Initialize data members
         this.panelName = panelName;
         this.building = building;
-        this.functionPanels = new ArrayList();
+        this.functionPanels = new ArrayList<BuildingFunctionPanel>();
         
         // Set layout
         setLayout(new BorderLayout(0, 0));
@@ -168,14 +183,8 @@ public class BuildingPanel extends JPanel {
      * Update this panel
      */
     public void update() {
-    
         // Update each building function panel.
-        Iterator i = functionPanels.iterator();
-        while (i.hasNext()) {
-            BuildingFunctionPanel panel = (BuildingFunctionPanel) i.next();
-            panel.update();
-        }
+        Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
+        while (i.hasNext()) i.next().update();
     }
 }
-        
-    

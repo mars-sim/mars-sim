@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.80 2007-03-22
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 
@@ -56,12 +56,12 @@ class MissionDataBean {
 			else if (RESCUE_MISSION.equals(type))
 				mission = new RescueSalvageVehicle(members, startingSettlement, rescueRover, rover, description);
 			else if (ICE_MISSION.equals(type)) {
-				List collectionSites = new ArrayList(1);
+				List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 				collectionSites.add(iceCollectionSite);
 				mission = new CollectIce(members, startingSettlement, collectionSites, rover, description);
 			}
 			else if (EXPLORATION_MISSION.equals(type)) {
-				List collectionSites = new ArrayList(explorationSites.length);
+				List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
 				for (int x = 0; x < explorationSites.length; x++) collectionSites.add(explorationSites[x]);
 				mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 			}

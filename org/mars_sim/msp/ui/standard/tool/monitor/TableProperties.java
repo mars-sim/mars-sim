@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorPropsDialog.java
- * @version 2.75 2003-08-03
+ * @version 2.81 2007-08-27
  * @author Barry Evans
  */
 
@@ -33,7 +33,7 @@ class TableProperties extends JInternalFrame {
 
     // Data members
     private TableColumnModel model; // Table to change
-    private ArrayList columnButtons = new ArrayList(); // Check boxes
+    private ArrayList<JCheckBox> columnButtons = new ArrayList<JCheckBox>(); // Check boxes
 
     /** Constructs a MonitorPropsDialog class
      *  @param title The name of the specified model
@@ -79,7 +79,7 @@ class TableProperties extends JInternalFrame {
         Enumeration en = model.getColumns();
         while(en.hasMoreElements()) {
             int selected = ((TableColumn)en.nextElement()).getModelIndex();
-            JCheckBox columnButton  = (JCheckBox)columnButtons.get(selected);
+            JCheckBox columnButton = columnButtons.get(selected);
             columnButton.setSelected(true);
         }
 
@@ -115,5 +115,4 @@ class TableProperties extends JInternalFrame {
             model.removeColumn(col);
         }
     }
-
 }

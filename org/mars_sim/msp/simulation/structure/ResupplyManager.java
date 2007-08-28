@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyManager.java
- * @version 2.76 2004-07-01
+ * @version 2.81 2007-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;
@@ -17,7 +17,7 @@ import org.mars_sim.msp.simulation.time.MarsClock;
 public class ResupplyManager implements Serializable {
 	
 	// Data members
-	private List resupplies;
+	private List<Resupply> resupplies;
 	
 	/**
 	 * Constructor
@@ -27,7 +27,7 @@ public class ResupplyManager implements Serializable {
 	ResupplyManager(Settlement settlement) throws Exception {
 		
 		//Initialize data
-		resupplies = new ArrayList();
+		resupplies = new ArrayList<Resupply>();
 		
 		// Create resupply missions.
 		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
@@ -52,7 +52,7 @@ public class ResupplyManager implements Serializable {
 	 * Gets the settlement resupply missions.
 	 * @return list of resupply missions.
 	 */
-	public List getResupplies() {
+	public List<Resupply> getResupplies() {
 		return resupplies;
 	}
 	
@@ -64,9 +64,9 @@ public class ResupplyManager implements Serializable {
 	 */
 	public void timePassing(double time) throws Exception {
 		try {
-			Iterator i = resupplies.iterator();
+			Iterator<Resupply> i = resupplies.iterator();
 			while (i.hasNext()) {
-				Resupply resupply = (Resupply) i.next();
+				Resupply resupply = i.next();
 				if (!resupply.isDelivered()) {
 					MarsClock currentDate = Simulation.instance().getMasterClock().getMarsClock();
 					if (MarsClock.getTimeDiff(resupply.getArrivalDate(), currentDate) <= 0D) {
