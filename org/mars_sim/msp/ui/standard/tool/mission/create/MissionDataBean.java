@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.81 2007-08-27
+ * @version 2.81 2007-08-28
  * @author Scott Davis
  */
 
@@ -19,6 +19,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
@@ -33,6 +34,7 @@ class MissionDataBean {
 	final static String EXPLORATION_MISSION = "Exploration";
 	final static String ICE_MISSION = "Ice Prospecting";
 	final static String RESCUE_MISSION = "Rescue/Salvage Vehicle";
+	final static String TRADE_MISSION = "Trade";
 
 	// Data members.
 	private String type;
@@ -65,6 +67,9 @@ class MissionDataBean {
 				for (int x = 0; x < explorationSites.length; x++) collectionSites.add(explorationSites[x]);
 				mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 			}
+			else if (TRADE_MISSION.equals(type)) {
+				// TODO: implement
+			}
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
 			manager.addMission(mission);
@@ -79,7 +84,7 @@ class MissionDataBean {
 	 * @return array of mission type strings.
 	 */
 	static final String[] getMissionTypes() {
-		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, RESCUE_MISSION };
+		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, RESCUE_MISSION, TRADE_MISSION };
 		return result;
 	}
 	
@@ -94,6 +99,7 @@ class MissionDataBean {
 		else if (missionType.equals(EXPLORATION_MISSION)) result = Exploration.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(ICE_MISSION)) result = CollectIce.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(RESCUE_MISSION)) result = RescueSalvageVehicle.DEFAULT_DESCRIPTION;
+		else if (missionType.equals(TRADE_MISSION)) result = Trade.DEFAULT_DESCRIPTION;
 		return result;
 	}
 	
