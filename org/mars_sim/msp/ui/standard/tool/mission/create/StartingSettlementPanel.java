@@ -97,11 +97,11 @@ class StartingSettlementPanel extends WizardPanel {
         				if (index > -1) {
         					if (settlementTableModel.isFailureRow(index)) {
         						errorMessageLabel.setText("Settlement cannot start the mission (see red cells).");
-        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
+        						getWizard().setButtons(false);
         					}
         					else {
         						errorMessageLabel.setText(" ");
-        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
+        						getWizard().setButtons(true);
         					}
         				}
         			}

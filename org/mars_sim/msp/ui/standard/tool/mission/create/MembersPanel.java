@@ -489,8 +489,7 @@ class MembersPanel extends WizardPanel {
     		units = units.sortByName();
     		fireTableDataChanged();
     		
-    		if (units.size() > 0) getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
-    		else getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
+    		getWizard().setButtons(units.size() > 0);
     	}
     	
     	/**
@@ -505,8 +504,7 @@ class MembersPanel extends WizardPanel {
     		}
     		fireTableDataChanged();
     		
-    		if (units.size() > 0) getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
-    		else getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
+    		getWizard().setButtons(units.size() > 0);
     	}
     }
 }

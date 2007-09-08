@@ -89,12 +89,12 @@ class DestinationSettlementPanel extends WizardPanel {
         					if (settlementTableModel.isFailureRow(index)) {
         						// If selected row is a failure row, display warning and disable final button.
         						errorMessageLabel.setText("Selected destination settlement is not within rover range.");
-        						getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
+        						getWizard().setButtons(false);
         					}
         					else {
         						// If selected row is valid, clear warning and enable final button.
         						errorMessageLabel.setText(" ");
-        						getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
+        						getWizard().setButtons(true);
         					}
         				}
         			}
@@ -129,7 +129,7 @@ class DestinationSettlementPanel extends WizardPanel {
 		int selectedIndex = settlementTable.getSelectedRow();
 		Settlement selectedSettlement = (Settlement) settlementTableModel.getUnit(selectedIndex);
 		getWizard().getMissionData().setDestinationSettlement(selectedSettlement);
-		getWizard().getMissionData().createMission();
+		// getWizard().getMissionData().createMission();
 	}
 
 	/**

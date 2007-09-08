@@ -171,7 +171,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	void commitChanges() {
 		getWizard().getMissionData().setExplorationSites(getSites());
-		getWizard().getMissionData().createMission();
+		// getWizard().getMissionData().createMission();
 	}
 
 	/**
@@ -180,7 +180,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	void clearInfo() {
 		siteListPane.removeAll();
 		navLayer.clearNavpointPositions();
-		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
+		getWizard().setButtons(false);
 	}
 
 	/**
@@ -197,7 +197,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		navLayer.addNavpointPosition(MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
 		mapPane.showMap(getCenterCoords());
 		addButton.setEnabled(canAddMoreSites());
-		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
+		getWizard().setButtons(true);
 	}
 	
 	/**

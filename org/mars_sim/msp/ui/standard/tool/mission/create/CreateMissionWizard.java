@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 2.81 2007-08-27
+ * @version 2.81 2007-09-01
  * @author Scott Davis
  */
 
@@ -23,11 +23,6 @@ import org.mars_sim.msp.ui.standard.MarsPanelBorder;
  * A dialog wizard for creating new missions.
  */
 public class CreateMissionWizard extends JDialog {
-	
-	// Static members.
-	final static String PREVIOUS_BUTTON = "previous button";
-	final static String NEXT_BUTTON = "next button";
-	final static String FINAL_BUTTON = "final button";
 	
 	// Data members
 	private JPanel infoPane;
@@ -93,12 +88,11 @@ public class CreateMissionWizard extends JDialog {
 						// Go to next wizard panel.
 						getCurrentWizardPanel().commitChanges();
 						displayPanelIndex++;
+						setButtons(false);
 						CardLayout layout = (CardLayout) infoPane.getLayout();
 						WizardPanel currentPanel = getCurrentWizardPanel();
 						currentPanel.updatePanel();
 						layout.show(infoPane, currentPanel.getPanelName());
-						prevButton.setEnabled(true);
-						nextButton.setEnabled(false);
 					}
 				});
 		nextButton.setEnabled(false);
@@ -111,6 +105,7 @@ public class CreateMissionWizard extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						// Create mission and dispose this dialog.
 						getCurrentWizardPanel().commitChanges();
+						missionBean.createMission();
 						dispose();
 					}
 				});
@@ -159,6 +154,11 @@ public class CreateMissionWizard extends JDialog {
 			addWizardPanel(new ProspectingSitePanel(this));
 		else if (missionBean.getType().equals(MissionDataBean.EXPLORATION_MISSION))
 			addWizardPanel(new ExplorationSitesPanel(this));
+		else if (missionBean.getType().equals(MissionDataBean.TRADE_MISSION)) {
+			addWizardPanel(new DestinationSettlementPanel(this));
+			addWizardPanel(new TradeGoodsPanel(this, false));
+			addWizardPanel(new TradeGoodsPanel(this, true));
+		}
 	}
 	
 	/**
@@ -179,13 +179,21 @@ public class CreateMissionWizard extends JDialog {
 	}
 	
 	/**
-	 * Enables a button.
-	 * @param buttonType the type of button.
-	 * @param enabled true if button is enabled.
+	 * Sets previous, next and final buttons to be enabled or disabled.
+	 * @param nextEnabled true if next/final button is enabled.
 	 */
-	void setButtonEnabled(String buttonType, boolean enabled) {
-		if (PREVIOUS_BUTTON.equals(buttonType)) prevButton.setEnabled(enabled);
-		else if (NEXT_BUTTON.equals(buttonType)) nextButton.setEnabled(enabled);
-		else if (FINAL_BUTTON.equals(buttonType)) finalButton.setEnabled(enabled);
+	void setButtons(boolean nextEnabled) {
+		
+		// Enable previous button if after first panel.
+		prevButton.setEnabled(displayPanelIndex > 0);
+		
+		if (nextEnabled) {
+			nextButton.setEnabled(displayPanelIndex < (wizardPanels.size() - 1));
+			finalButton.setEnabled(displayPanelIndex == (wizardPanels.size() - 1));
+		}
+		else {
+			nextButton.setEnabled(false);
+			finalButton.setEnabled(false);
+		}
 	}
 }

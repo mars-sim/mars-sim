@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.81 2007-08-28
+ * @version 2.81 2007-09-01
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /**
@@ -46,6 +48,8 @@ class MissionDataBean {
 	private Rover rescueRover;
 	private Coordinates iceCollectionSite;
 	private Coordinates[] explorationSites;
+	private Map<Good, Integer> sellGoods;
+	private Map<Good, Integer> buyGoods;
 	
 	/**
 	 * Creates a mission from the mission data.
@@ -67,9 +71,9 @@ class MissionDataBean {
 				for (int x = 0; x < explorationSites.length; x++) collectionSites.add(explorationSites[x]);
 				mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 			}
-			else if (TRADE_MISSION.equals(type)) {
-				// TODO: implement
-			}
+			else if (TRADE_MISSION.equals(type)) 
+				mission = new Trade(members, startingSettlement, destinationSettlement, rover, description, sellGoods, 
+						buyGoods);
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
 			manager.addMission(mission);
@@ -245,5 +249,37 @@ class MissionDataBean {
 	 */
 	void setExplorationSites(Coordinates[] explorationSites) {
 		this.explorationSites = explorationSites;
+	}
+	
+	/**
+	 * Gets the sell goods.
+	 * @return map of goods and integer amounts.
+	 */
+	Map<Good, Integer> getSellGoods() {
+		return sellGoods;
+	}
+	
+	/**
+	 * Sets the sell goods.
+	 * @param sellGoods map of goods and integer amounts.
+	 */
+	void setSellGoods(Map<Good, Integer> sellGoods) {
+		this.sellGoods = sellGoods;
+	}
+	
+	/**
+	 * Gets the buy goods.
+	 * @return map of goods and integer amounts.
+	 */
+	Map<Good, Integer> getBuyGoods() {
+		return buyGoods;
+	}
+	
+	/**
+	 * Sets the buy goods.
+	 * @param sellGoods map of goods and integer amounts.
+	 */
+	void setBuyGoods(Map<Good, Integer> buyGoods) {
+		this.buyGoods = buyGoods;
 	}
 }

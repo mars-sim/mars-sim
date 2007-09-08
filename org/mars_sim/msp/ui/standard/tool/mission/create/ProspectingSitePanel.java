@@ -116,14 +116,14 @@ class ProspectingSitePanel extends WizardPanel {
 		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
 				navpointPixel.getiY() - 150);
 		getWizard().getMissionData().setIceCollectionSite(navpoint);
-		getWizard().getMissionData().createMission();
+		// getWizard().getMissionData().createMission();
 	}
 
 	/**
 	 * Clear information on the wizard panel.
 	 */
 	void clearInfo() {
-		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
+		getWizard().setButtons(false);
 		navLayer.clearNavpointPositions();
 	}
 
@@ -143,7 +143,7 @@ class ProspectingSitePanel extends WizardPanel {
 		}
 		catch (Exception e) {}
 		
-		getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
+		getWizard().setButtons(true);
 	}
 	
 	/**

@@ -99,12 +99,12 @@ class RendezvousVehiclePanel extends WizardPanel {
         					if (vehicleTableModel.isFailureRow(index)) {
         						// Set error message and disable final button.
         						errorMessageLabel.setText("Rover cannot be rescued/salvaged (see red cells).");
-        						getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, false);
+        						getWizard().setButtons(false);
         					}
         					else {
         						// Clear error message and enable final button.
         						errorMessageLabel.setText(" ");
-        						getWizard().setButtonEnabled(CreateMissionWizard.FINAL_BUTTON, true);
+        						getWizard().setButtons(true);
         					}
         				}
         			}
@@ -138,7 +138,7 @@ class RendezvousVehiclePanel extends WizardPanel {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
 		getWizard().getMissionData().setRescueRover(selectedVehicle);
-		getWizard().getMissionData().createMission();
+		// getWizard().getMissionData().createMission();
 	}
 
 	/**

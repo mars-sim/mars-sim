@@ -95,12 +95,12 @@ class VehiclePanel extends WizardPanel {
         					if (vehicleTableModel.isFailureRow(index)) {
         						// Set the error message and disable the next button.
         						errorMessageLabel.setText("Rover cannot be used on the mission (see red cells).");
-        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, false);
+        						getWizard().setButtons(false);
         					}
         					else {
         						// Clear the error message and enable the next button.
         						errorMessageLabel.setText(" ");
-        						getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, true);
+        						getWizard().setButtons(true);
         					}
         				}
         			}

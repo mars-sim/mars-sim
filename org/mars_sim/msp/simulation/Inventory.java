@@ -338,7 +338,6 @@ public class Inventory implements Serializable {
     				if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
     			}
     			else {
-    				System.out.println("Inventory.storeAmountResource() test");
     				throw new InventoryException("Insufficiant capacity to store " + resource.getName() + ", capacity: " + 
     					getAmountResourceRemainingCapacity(resource) + ", attempted: " + amount);
     			}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-09-01
  * @author Scott Davis
  */
 
@@ -17,6 +17,7 @@ import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
@@ -65,6 +66,7 @@ public class Trade extends RoverMission implements Serializable {
 	private boolean outbound;
 	private MarsClock startNegotiationTime;
 	private NegotiateTrade negotiationTask;
+	private boolean doNegotiation;
 	
 	/**
 	 * Constructor.
@@ -81,6 +83,7 @@ public class Trade extends RoverMission implements Serializable {
     	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
 		
 		outbound = true;
+		doNegotiation = true;
 		
 		if (!isDone()) {
 		
@@ -119,6 +122,58 @@ public class Trade extends RoverMission implements Serializable {
         
         // System.out.println(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
 	}
+	
+    /**
+     * Constructor with explicit data.
+     * @param members collection of mission members.
+     * @param startingSettlement the starting settlement.
+     * @param tradingSettlement the trading settlement.
+     * @param rover the rover to use.
+     * @param description the mission's description.
+     * @param sellGoods map of mission sell goods and integer amounts.
+     * @param buyGoods map of mission buy goods and integer amounts
+     * @throws MissionException if error constructing mission.
+     */
+    public Trade(PersonCollection members, Settlement startingSettlement, Settlement tradingSettlement, 
+    		Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) 
+    		throws MissionException {
+    	// Use RoverMission constructor.
+    	super(description, (Person) members.get(0), 1, rover);
+    	
+    	doNegotiation = false;
+    	
+    	// Initialize data members
+    	setStartingSettlement(startingSettlement);
+    	
+    	// Sets the mission capacity.
+    	setMissionCapacity(MAX_MEMBERS);
+    	int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
+    	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
+    	
+    	// Set mission destination.
+    	this.tradingSettlement = tradingSettlement;
+    	addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, 
+				tradingSettlement.getName()));
+
+    	// Add mission members.
+    	PersonIterator i = members.iterator();
+    	while (i.hasNext()) i.next().getMind().setMission(this);
+    	
+    	// Set trade goods.
+    	this.sellLoad = sellGoods;
+    	this.buyLoad = buyGoods;
+    	
+		// Add trade mission phases.
+		addPhase(TRADE_DISEMBARKING);
+		addPhase(TRADE_NEGOTIATING);
+		addPhase(UNLOAD_GOODS);
+		addPhase(LOAD_GOODS);
+		addPhase(TRADE_EMBARKING);
+    	
+        // Set initial phase
+        setPhase(VehicleMission.EMBARKING);
+        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+    }
 	
     /** 
      * Gets the weighted probability that a given person would start this mission.
@@ -309,36 +364,39 @@ public class Trade extends RoverMission implements Serializable {
      * @throws MissionException if error performing the phase.
      */
     private void performTradeNegotiatingPhase(Person person) throws MissionException {
-    	if (person == getMissionTrader()) {
-    		if (negotiationTask != null) {
-    			if (negotiationTask.isDone()) {
-    				buyLoad = negotiationTask.getBuyLoad();
-    				setPhaseEnded(true);
-    			}
-    		}
-    		else {
-    			if (startNegotiationTime == null) 
-    				startNegotiationTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-    			Person settlementTrader = getSettlementTrader();
-    			if (settlementTrader != null) {
-    				try {
-    					negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(), sellLoad, person, settlementTrader);
-    					assignTask(person, negotiationTask);
-    				}
-    				catch (Exception e) {
-    					throw new MissionException(TRADE_NEGOTIATING, e);
+    	if (doNegotiation) {
+    		if (person == getMissionTrader()) {
+    			if (negotiationTask != null) {
+    				if (negotiationTask.isDone()) {
+    					buyLoad = negotiationTask.getBuyLoad();
+    					setPhaseEnded(true);
     				}
     			}
     			else {
-    				MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-    				double timeDiff = MarsClock.getTimeDiff(startNegotiationTime, currentTime);
-    				if (timeDiff > 1000D) {
-    					buyLoad = new HashMap<Good, Integer>(0);
-    					setPhaseEnded(true);
+    				if (startNegotiationTime == null) 
+    					startNegotiationTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+    				Person settlementTrader = getSettlementTrader();
+    				if (settlementTrader != null) {
+    					try {
+    						negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(), sellLoad, person, settlementTrader);
+    						assignTask(person, negotiationTask);
+    					}
+    					catch (Exception e) {
+    						throw new MissionException(TRADE_NEGOTIATING, e);
+    					}
+    				}
+    				else {
+    					MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+    					double timeDiff = MarsClock.getTimeDiff(startNegotiationTime, currentTime);
+    					if (timeDiff > 1000D) {
+    						buyLoad = new HashMap<Good, Integer>(0);
+    						setPhaseEnded(true);
+    					}
     				}
     			}
     		}
     	}
+    	else setPhaseEnded(true);
     	
     	if (getPhaseEnded()) {
     		outbound = false;

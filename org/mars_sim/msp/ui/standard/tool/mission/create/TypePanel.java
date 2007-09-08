@@ -116,7 +116,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		descriptionInfoLabel.setEnabled(enableDescription);
 		descriptionLabel.setEnabled(enableDescription);
 		descriptionField.setEnabled(enableDescription);
-		getWizard().setButtonEnabled(CreateMissionWizard.NEXT_BUTTON, enableDescription);
+		getWizard().setButtons(enableDescription);
 	}
 	
 	/**

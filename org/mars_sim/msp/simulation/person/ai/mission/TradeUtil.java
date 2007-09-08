@@ -416,7 +416,7 @@ public final class TradeUtil {
      * @return number of goods in inventory.
      * @throws Exception if error getting number of goods in inventory.
      */
-    private static double getNumInInventory(Good good, Inventory inventory) throws Exception {
+    public static double getNumInInventory(Good good, Inventory inventory) throws Exception {
     	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
     		return inventory.getAmountResourceStored((AmountResource) good.getObject());
     	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
