@@ -110,13 +110,14 @@ class ProspectingSitePanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
+	 * @retun true if changes can be committed.
 	 */
-	void commitChanges() {
+	boolean commitChanges() {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
 				navpointPixel.getiY() - 150);
 		getWizard().getMissionData().setIceCollectionSite(navpoint);
-		// getWizard().getMissionData().createMission();
+		return true;
 	}
 
 	/**

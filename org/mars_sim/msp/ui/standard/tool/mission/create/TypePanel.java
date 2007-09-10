@@ -129,11 +129,13 @@ class TypePanel extends WizardPanel implements ItemListener {
 	
 	/**
 	 * Commits changes from this wizard panel.
+	 * @retun true if changes can be committed.
 	 */
-	void commitChanges() {
+	boolean commitChanges() {
 		getWizard().getMissionData().setType((String) typeSelect.getSelectedItem());
 		getWizard().getMissionData().setDescription(descriptionField.getText());
 		getWizard().setFinalWizardPanels();
+		return true;
 	}
 	
 	/**

@@ -86,13 +86,14 @@ public class CreateMissionWizard extends JDialog {
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// Go to next wizard panel.
-						getCurrentWizardPanel().commitChanges();
-						displayPanelIndex++;
-						setButtons(false);
-						CardLayout layout = (CardLayout) infoPane.getLayout();
-						WizardPanel currentPanel = getCurrentWizardPanel();
-						currentPanel.updatePanel();
-						layout.show(infoPane, currentPanel.getPanelName());
+						if (getCurrentWizardPanel().commitChanges()) {
+							displayPanelIndex++;
+							setButtons(false);
+							CardLayout layout = (CardLayout) infoPane.getLayout();
+							WizardPanel currentPanel = getCurrentWizardPanel();
+							currentPanel.updatePanel();
+							layout.show(infoPane, currentPanel.getPanelName());
+						}
 					}
 				});
 		nextButton.setEnabled(false);
@@ -104,9 +105,10 @@ public class CreateMissionWizard extends JDialog {
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// Create mission and dispose this dialog.
-						getCurrentWizardPanel().commitChanges();
-						missionBean.createMission();
-						dispose();
+						if (getCurrentWizardPanel().commitChanges()) {
+							missionBean.createMission();
+							dispose();
+						}
 					}
 				});
 		finalButton.setEnabled(false);

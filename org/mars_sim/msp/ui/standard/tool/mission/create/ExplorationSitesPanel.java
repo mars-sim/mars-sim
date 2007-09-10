@@ -168,10 +168,11 @@ class ExplorationSitesPanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
+	 * @retun true if changes can be committed.
 	 */
-	void commitChanges() {
+	boolean commitChanges() {
 		getWizard().getMissionData().setExplorationSites(getSites());
-		// getWizard().getMissionData().createMission();
+		return true;
 	}
 
 	/**

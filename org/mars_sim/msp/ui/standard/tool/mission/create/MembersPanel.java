@@ -249,12 +249,14 @@ class MembersPanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
+	 * @retun true if changes can be committed.
 	 */
-	void commitChanges() {
+	boolean commitChanges() {
 		PersonCollection people = new PersonCollection();
 		for (int x = 0; x < membersTableModel.getRowCount(); x++) 
 			people.add(membersTableModel.getUnit(x));
 		getWizard().getMissionData().setMembers(people);
+		return true;
 	}
 
 	/**

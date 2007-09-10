@@ -130,11 +130,13 @@ class VehiclePanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
+	 * @retun true if changes can be committed.
 	 */
-	void commitChanges() {
+	boolean commitChanges() {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
 		getWizard().getMissionData().setRover(selectedVehicle);
+		return true;
 	}
 
 	/**

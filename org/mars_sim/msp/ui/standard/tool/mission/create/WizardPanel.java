@@ -45,8 +45,9 @@ abstract class WizardPanel extends JPanel {
 	
 	/**
 	 * Commits changes from this wizard panel.
+	 * @retun true if changes can be committed.
 	 */
-	abstract void commitChanges();
+	abstract boolean commitChanges();
 	
 	/**
 	 * Clear information on the wizard panel.

@@ -131,11 +131,13 @@ class StartingSettlementPanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
+	 * @retun true if changes can be committed.
 	 */
-	void commitChanges() {
+	boolean commitChanges() {
 		int selectedIndex = settlementTable.getSelectedRow();
 		Settlement selectedSettlement = (Settlement) settlementTableModel.getUnit(selectedIndex);
 		getWizard().getMissionData().setStartingSettlement(selectedSettlement);
+		return true;
 	}
 
 	/**

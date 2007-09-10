@@ -27,7 +27,15 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.NumberFormatter;
 
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.equipment.Bag;
+import org.mars_sim.msp.simulation.equipment.Barrel;
+import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
+import org.mars_sim.msp.simulation.equipment.GasCanister;
 import org.mars_sim.msp.simulation.person.ai.mission.TradeUtil;
+import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Phase;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
@@ -221,13 +229,83 @@ class TradeGoodsPanel extends WizardPanel {
 	}
 
 	/**
-	 * Clear information on the wizard panel.
+	 * Commits changes from this wizard panel.
+	 * @retun true if changes can be committed.
 	 */
-	void commitChanges() {
-		// Set buy/sell goods.
-		MissionDataBean missionData = getWizard().getMissionData();
-		if (buyGoods) missionData.setBuyGoods(tradeTableModel.getTradeGoods());
-		else missionData.setSellGoods(tradeTableModel.getTradeGoods());
+	boolean commitChanges() {
+		boolean result = false;
+		try {
+			// Check if enough containers in trade goods.
+			if (hasEnoughContainers()) {
+				// Set buy/sell goods.
+				MissionDataBean missionData = getWizard().getMissionData();
+				if (buyGoods) missionData.setBuyGoods(tradeTableModel.getTradeGoods());
+				else missionData.setSellGoods(tradeTableModel.getTradeGoods());
+				result = true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return result;
+	}
+	
+	private boolean hasEnoughContainers() throws Exception {
+		boolean result = true;
+		
+		Map<Class, Integer> containerMap = new HashMap<Class, Integer>(3);
+		containerMap.put(Bag.class, getNumberOfTradedContainers(Bag.class));
+		containerMap.put(Barrel.class, getNumberOfTradedContainers(Barrel.class));
+		containerMap.put(GasCanister.class, getNumberOfTradedContainers(GasCanister.class));
+		
+		Map<Good, Integer> tradeGoods = tradeTableModel.getTradeGoods();
+		
+		Iterator<Good> i = tradeGoods.keySet().iterator();
+		while (i.hasNext()) {
+			Good good = i.next();
+			if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
+				AmountResource resource = (AmountResource) good.getObject();
+				Phase phase = resource.getPhase();
+				Class containerType = getContainerTypeNeeded(phase);
+				int containerNum = containerMap.get(containerType);
+				Unit container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0));
+				double capacity = container.getInventory().getAmountResourceCapacity(resource);
+				double totalCapacity = containerNum * capacity;
+				double resourceAmount = tradeGoods.get(good);
+				if (resourceAmount > totalCapacity) {
+					double neededCapacity = resourceAmount - totalCapacity;
+					int neededContainerNum = (int) Math.ceil(neededCapacity / capacity);
+					String containerName = container.getName().toLowerCase();
+					if (neededContainerNum > 1) containerName = containerName + "s";
+					errorMessageLabel.setText(neededContainerNum + " " + containerName + " needed to hold " + resource.getName());
+					result = false;
+					break;
+				}
+				else {
+					int neededContainerNum = (int) Math.ceil(resourceAmount / capacity);
+					int remainingContainerNum = containerNum - neededContainerNum;
+					containerMap.put(containerType, remainingContainerNum);
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	private int getNumberOfTradedContainers(Class containerType) {
+		int result = 0;
+		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
+		Map<Good, Integer> tradeGoods = tradeTableModel.getTradeGoods();
+		if (tradeGoods.containsKey(containerGood)) result = tradeGoods.get(containerGood);
+		return result;
+	}
+	
+	private Class getContainerTypeNeeded(Phase phase) {
+		Class result = null;
+		if (phase.equals(Phase.SOLID)) result = Bag.class;
+		if (phase.equals(Phase.LIQUID)) result = Barrel.class;
+		if (phase.equals(Phase.GAS)) result = GasCanister.class;
+		return result;
 	}
 
 	/**
