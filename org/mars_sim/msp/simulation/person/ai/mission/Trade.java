@@ -140,6 +140,7 @@ public class Trade extends RoverMission implements Serializable {
     	// Use RoverMission constructor.
     	super(description, (Person) members.get(0), 1, rover);
     	
+    	outbound = true;
     	doNegotiation = false;
     	
     	// Initialize data members

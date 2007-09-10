@@ -328,8 +328,8 @@ class TradeGoodsPanel extends WizardPanel {
     		// Update good values for settlement.
     		MissionDataBean missionData = getWizard().getMissionData();
     		Settlement settlement = null;
-    		if (buyGoods) settlement = missionData.getStartingSettlement();
-    		else settlement = missionData.getDestinationSettlement();
+    		if (buyGoods) settlement = missionData.getDestinationSettlement();
+    		else settlement = missionData.getStartingSettlement();
     		Iterator<Good> i = goodsList.iterator();
     		while (i.hasNext()) {
     			Good good = i.next();
