@@ -66,8 +66,8 @@ public class LoadVehicle extends Task implements Serializable {
     	if (mission != null) {
     		vehicle = mission.getVehicle();
     		setDescription("Loading " + vehicle.getName());
-    		resources = mission.getResourcesNeededForRemainingMission(true);
-    		equipment = mission.getEquipmentNeededForRemainingMission(true);
+    		resources = mission.getResourcesToLoad();
+    		equipment = mission.getEquipmentToLoad();
     		settlement = person.getSettlement();
     		if (settlement == null) endTask();
     		

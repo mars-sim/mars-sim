@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 2.81 2007-08-12
+ * @version 2.81 2007-09-11
  * @author Scott Davis
  */
 
@@ -385,6 +385,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         			towedVehicle.getInventory().retrieveUnit(crewmember);
         			disembarkSettlement.getInventory().storeUnit(crewmember);
         			BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
+        			crewmember.setAssociatedSettlement(disembarkSettlement);
         			// System.out.println(crewmember.getName() + " rescued.");
         			HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.RESCUE_PERSON);
         			Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
@@ -682,5 +683,21 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Gets the resources needed for loading the vehicle.
+	 * @return resources and their number.
+	 * @throws Exception if error determining resources.
+	 */
+	public Map<Resource, Number> getResourcesToLoad() throws Exception {
+		// Override and full rover with fuel and life support resources.
+		Map<Resource, Number> result = new HashMap<Resource, Number>(4);
+		Inventory inv = getVehicle().getInventory();
+		result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(getVehicle().getFuelType()));
+		result.put(AmountResource.OXYGEN, inv.getAmountResourceCapacity(AmountResource.OXYGEN));
+		result.put(AmountResource.WATER, inv.getAmountResourceCapacity(AmountResource.WATER));
+		result.put(AmountResource.FOOD, inv.getAmountResourceCapacity(AmountResource.FOOD));
+		return result;
 	}
 }

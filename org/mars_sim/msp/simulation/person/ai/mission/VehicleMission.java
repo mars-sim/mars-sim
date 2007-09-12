@@ -279,11 +279,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @throws Exception if error checking vehicle.
      */
     public final boolean isVehicleLoaded() throws Exception {
-    	
     	if (getVehicle() == null) throw new MissionException(getPhase(), "vehicle is null");
-    	
-    	return LoadVehicle.isFullyLoaded(getResourcesNeededForRemainingMission(true), 
-    			getEquipmentNeededForRemainingMission(true), getVehicle());
+    	return LoadVehicle.isFullyLoaded(getResourcesToLoad(), getEquipmentToLoad(), getVehicle());
     }
     
     /**
@@ -293,8 +290,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      */
     public final boolean isVehicleLoadable() throws Exception {
     	
-    	Map<Resource, Number> resources = getResourcesNeededForRemainingMission(true);
-    	Map<Class, Integer> equipment = getEquipmentNeededForRemainingMission(true);
+    	Map<Resource, Number> resources = getResourcesToLoad();
+    	Map<Class, Integer> equipment = getEquipmentToLoad();
     	Vehicle vehicle = getVehicle();
     	Settlement settlement = vehicle.getSettlement();
     	double tripTime = getEstimatedRemainingMissionTime(true);
@@ -690,5 +687,23 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (result > 0) result--;
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the resources needed for loading the vehicle.
+	 * @return resources and their number.
+	 * @throws Exception if error determining resources.
+	 */
+	public Map<Resource, Number> getResourcesToLoad() throws Exception {
+		return getResourcesNeededForRemainingMission(true);
+	}
+	
+	/**
+	 * Gets the equipment needed for loading the vehicle.
+	 * @return equipment and their number.
+	 * @throws Exception if error determining equipment.
+	 */
+	public Map<Class, Integer> getEquipmentToLoad() throws Exception {
+		return getEquipmentNeededForRemainingMission(true);
 	}
 }

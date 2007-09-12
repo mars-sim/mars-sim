@@ -86,6 +86,6 @@ public class Driver extends Job implements Serializable {
 			if (mission instanceof VehicleMission) settlementVehicleNum++;
 		}
 		
-		return settlementVehicleNum * 3D;	
+		return settlementVehicleNum;	
 	}
 }

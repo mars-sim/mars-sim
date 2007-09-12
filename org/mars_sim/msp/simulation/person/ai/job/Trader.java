@@ -74,6 +74,6 @@ public class Trader extends Job implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		
 		// Gets total associated population with settlement.
-		return settlement.getAllAssociatedPeople().size();
+		return settlement.getAllAssociatedPeople().size() / 2D;
 	}
 }

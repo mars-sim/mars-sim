@@ -89,4 +89,11 @@ public final class Phase implements Serializable {
 	public int hashCode() {
 		return name.hashCode();
 	}
+	
+	/**
+	 * Gets the string value for the object.
+	 */
+	public String toString() {
+		return name;
+	}
 }

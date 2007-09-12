@@ -250,6 +250,11 @@ class TradeGoodsPanel extends WizardPanel {
 		return result;
 	}
 	
+	/**
+	 * Checks if trade list has enough containers to hold amount resources.
+	 * @return true if enough containers
+	 * @throws Exception if error checking containers.
+	 */
 	private boolean hasEnoughContainers() throws Exception {
 		boolean result = true;
 		
@@ -292,6 +297,11 @@ class TradeGoodsPanel extends WizardPanel {
 		return result;
 	}
 	
+	/**
+	 * Gets the number of containers of a type in the trade list.
+	 * @param containerType the container class.
+	 * @return number of containers.
+	 */
 	private int getNumberOfTradedContainers(Class containerType) {
 		int result = 0;
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
@@ -300,6 +310,11 @@ class TradeGoodsPanel extends WizardPanel {
 		return result;
 	}
 	
+	/**
+	 * Gets the container type needed for an amount resource phase.
+	 * @param phase the amount resource phase.
+	 * @return container class.
+	 */
 	private Class getContainerTypeNeeded(Phase phase) {
 		Class result = null;
 		if (phase.equals(Phase.SOLID)) result = Bag.class;

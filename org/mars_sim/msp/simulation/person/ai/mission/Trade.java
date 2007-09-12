@@ -449,10 +449,8 @@ public class Trade extends RoverMission implements Serializable {
     				// Check if vehicle can hold enough supplies for mission.
     				if (isVehicleLoadable()) {
     					// Random chance of having person load (this allows person to do other things sometimes)
-    					if (RandomUtil.lessThanRandPercent(50)) { 
-    						assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesNeededForRemainingMission(true), 
-    								getEquipmentNeededForRemainingMission(true)));
-    					}
+    					if (RandomUtil.lessThanRandPercent(50)) 
+    						assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesToLoad(), getEquipmentToLoad()));
     				}
     				else endMission("Vehicle is not loadable (RoverMission).");
     			}

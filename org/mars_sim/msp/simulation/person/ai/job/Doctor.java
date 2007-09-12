@@ -70,7 +70,7 @@ public class Doctor extends Job implements Serializable {
 		double result = 0D;
 		
 		// Add total population / 2
-		int population = settlement.getCurrentPopulationNum();
+		int population = settlement.getAllAssociatedPeople().size();
 		result+= population / 2D;
 		
 		// Add (labspace * tech level) / 2 for all labs with areology specialities.
