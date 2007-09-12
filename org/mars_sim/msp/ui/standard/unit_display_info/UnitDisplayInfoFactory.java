@@ -24,6 +24,7 @@ public final class UnitDisplayInfoFactory {
     private static UnitDisplayInfo roverBean = new RoverDisplayInfoBean();
     private static UnitDisplayInfo explorerRoverBean = new ExplorerRoverDisplayInfoBean();
 	private static UnitDisplayInfo transportRoverBean = new TransportRoverDisplayInfoBean();
+	private static UnitDisplayInfo cargoRoverBean = new CargoRoverDisplayInfoBean();
     private static UnitDisplayInfo equipmentBean = new EquipmentDisplayInfoBean();
     
     /**
@@ -42,6 +43,7 @@ public final class UnitDisplayInfoFactory {
         else if (unit instanceof Rover) {
         	if (unit.getDescription().equals("Explorer Rover")) return explorerRoverBean;
         	else if (unit.getDescription().equals("Transport Rover")) return transportRoverBean;
+        	else if (unit.getDescription().equals("Cargo Rover")) return cargoRoverBean;
         	else return roverBean;
         }
         else if (unit instanceof Equipment) return equipmentBean;
