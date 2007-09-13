@@ -637,6 +637,10 @@ public class GoodsManager implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Gets the number of traders associated with the settlement.
+	 * @return number of traders.
+	 */
 	private int getTraderNum() {
 		int result = 0;
 		PersonIterator i = settlement.getAllAssociatedPeople().iterator();
@@ -732,21 +736,6 @@ public class GoodsManager implements Serializable {
 			else vehicleSellValueCache.put(vehicleType, value);
 		}
 		
-		/*
-		// Determine demand amount.
-		double demand = 0D;
-		
-		if (useCache) {
-			if (goodsDemandCache.containsKey(vehicleGood)) demand = goodsDemandCache.get(vehicleGood).doubleValue();
-			else throw new IllegalArgumentException("Good: " + vehicleGood + " not valid.");
-		}
-		else {
-			demand = determineVehicleDemand(vehicleType);
-			goodsDemandCache.put(vehicleGood, new Double(demand));
-		}
-		
-		value = demand / (supply + 1D);
-		*/
 		return value;
 	}
 	
@@ -772,7 +761,7 @@ public class GoodsManager implements Serializable {
 		double demand = 0D;
 		
 		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
-			demand = getDriverNum() / 2D;
+			demand = getDriverNum();
 			demand *= ((double) settlement.getAllAssociatedPeople().size() / 
 					(double) settlement.getPopulationCapacity());
 		}
@@ -783,7 +772,7 @@ public class GoodsManager implements Serializable {
 			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
 		}
 		else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
-			demand = getDriverNum() / 4D;
+			demand = getDriverNum();
 		}
 		else if (TRADE_MISSION.equals(missionType)) {
 			demand = getTraderNum();
@@ -800,10 +789,10 @@ public class GoodsManager implements Serializable {
 		
 		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2) capacity = 1D;
-			capacity *= crewCapacity / 4D;
+			capacity *= crewCapacity / 8D;
 			
 			double range = getVehicleRange(vehicleType);
-			capacity *= range / 5000D;
+			capacity *= range / 2000D;
 		}
 		else if (EXPLORATION_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2) capacity = 1D;
@@ -811,9 +800,11 @@ public class GoodsManager implements Serializable {
 			double cargoCapacity = config.getTotalCapacity(vehicleType);
 			if (cargoCapacity < 500D) capacity = 0D;
 			
+			boolean hasAreologyLab = false;
 			if (config.hasLab(vehicleType)) {
-				if (config.getLabTechSpecialities(vehicleType).contains("Areology")) capacity *= 2D;
+				if (config.getLabTechSpecialities(vehicleType).contains("Areology")) hasAreologyLab = true;
 			}
+			if (!hasAreologyLab) capacity /= 2D;
 		}
 		else if (COLLECT_ICE_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2) capacity = 1D;
@@ -825,21 +816,27 @@ public class GoodsManager implements Serializable {
 			if (crewCapacity >= 2) capacity = 1D;
 			
 			double range = getVehicleRange(vehicleType);
-			capacity *= range / 5000D;
+			capacity *= range / 2000D;
 		}
 		else if (TRADE_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2) capacity = 1D;
 			
 			double cargoCapacity = config.getTotalCapacity(vehicleType);
-			capacity *= cargoCapacity / 2000D;
+			capacity *= cargoCapacity / 10000D;
 			
 			double range = getVehicleRange(vehicleType);
-			capacity *= range / 5000D;
+			capacity *= range / 2000D;
 		}
 		
 		return capacity;
 	}
 	
+	/**
+	 * Gets the range of the vehicle type.
+	 * @param vehicleType the vehicle type.
+	 * @return range (km)
+	 * @throws Exception if error determining range.
+	 */
 	private double getVehicleRange(String vehicleType) throws Exception {
 		double range = 0D;
 		

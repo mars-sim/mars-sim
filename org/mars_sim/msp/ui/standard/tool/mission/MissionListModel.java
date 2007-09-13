@@ -93,8 +93,12 @@ public class MissionListModel extends AbstractListModel implements
 	 * @return the object at the index or null if one.
 	 */
 	public Object getElementAt(int index) {
-		if ((index > -1) && (index < missions.size())) return missions.get(index);
-		else return null;
+		try {
+			return missions.get(index);
+		}
+		catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 	
 	/**

@@ -275,8 +275,9 @@ public class LoadVehicle extends Task implements Serializable {
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource);
 		if (amountAlreadyLoaded < amountNeededTotal) {
 			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
-			if ((sInv.getAmountResourceStored(resource) >= amountNeeded) && 
-					(vInv.getAmountResourceRemainingCapacity(resource) >= amountNeeded)) {
+			if (sInv.getAmountResourceStored(resource) >= amountNeeded) {
+				double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource);
+				if (remainingCapacity < amountNeeded) amountNeeded = remainingCapacity;
 				double resourceAmount = amountNeeded;
 				if (amountNeeded > amountLoading) resourceAmount = amountLoading;
 				try {
