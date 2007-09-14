@@ -152,6 +152,22 @@
 		<rover-name value="Sojourner II" />
 		<rover-name value="Spirit II" />
 		<rover-name value="Opportunity II" />
+		<rover-name value="Fire Star" />
+		<rover-name value="Rahu" /> <!-- Hindi for "Mars" (not certain) -->
+		<rover-name value="Vayu" /> <!-- Hindi for "wind" -->
+		<rover-name value="Agni" /> <!-- Hindi for "fire" -->
+		<rover-name value="Prithvi" /> <!-- Hindi for "earth" -->
+		<rover-name value="Reth" /> <!-- Hindi for "sand" -->
+		<rover-name value="Naag" /> <!-- Hindi for "snake" -->
+		<rover-name value="Mangala" /> <!-- Mars in Jyotish astrology -->
+		<rover-name value="Angaraka" /> <!-- Mars in Jyotish astrology (alternate name) -->
+		<rover-name value="Ma'adim" /> <!-- Hebrew for "Mars" -->
+		<rover-name value="al-Mirrikh" /> <!-- Arabic/Persian for "Mars" -->
+		<rover-name value="Bahram" /> <!-- Ancient Persian for "Mars" -->
+		<rover-name value="Merih" /> <!-- Turkish for "Mars" -->
+		<rover-name value="Sakit" /> <!-- Ancient Turkish for "Mars" -->
+		<rover-name value="Nergal" /> <!-- Babylonian for "Mars" -->
+		<rover-name value="Areos aster" /> <!-- Greek for "star of Ares" -->
 																						
 	</rover-name-list>
 
