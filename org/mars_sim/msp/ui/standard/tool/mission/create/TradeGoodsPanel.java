@@ -428,6 +428,7 @@ class TradeGoodsPanel extends WizardPanel {
     			Good good = i.next();
     			try {
     				int amount = (int) TradeUtil.getNumInInventory(good, settlement.getInventory());
+    				if (checkForVehicle(good)) amount--;
     				goodsMap.put(good, amount);
     			}
     			catch (Exception e) {
@@ -435,6 +436,22 @@ class TradeGoodsPanel extends WizardPanel {
     			}
     		}
     		fireTableDataChanged();
+    	}
+    	
+    	/**
+    	 * Checks if good is the same type as the mission vehicle.
+    	 * @param good the good to check.
+    	 * @return true if same type of vehicle.
+    	 */
+    	private boolean checkForVehicle(Good good) {
+    		boolean result = false;
+    		
+    		if (!buyGoods && good.getCategory().equals(Good.VEHICLE)) {
+    			String missionRoverName = getWizard().getMissionData().getRover().getDescription();
+    			if (good.getName().equalsIgnoreCase(missionRoverName)) result = true;
+    		}
+    		
+    		return result;
     	}
     	
     	/**
