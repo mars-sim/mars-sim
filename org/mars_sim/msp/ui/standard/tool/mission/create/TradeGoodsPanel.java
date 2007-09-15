@@ -609,6 +609,10 @@ class TradeGoodsPanel extends WizardPanel {
     		return new HashMap<Good, Integer>(tradeMap);
     	}
     	
+    	/**
+    	 * Checks if a vehicle is being traded.
+    	 * @return true if vehicle traded.
+    	 */
     	private boolean hasTradedVehicle() {
     		boolean result = false;
     		Iterator<Good> i = tradeList.iterator();
