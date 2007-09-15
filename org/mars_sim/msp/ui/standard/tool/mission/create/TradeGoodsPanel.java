@@ -168,9 +168,15 @@ class TradeGoodsPanel extends WizardPanel {
 								Good good = goodsTableModel.goodsList.get(selectedGoodIndex);
 								int currentAmount = goodsTableModel.goodsMap.get(good);
 								if (amount <= currentAmount) {
-									goodsTableModel.removeGoodAmount(good, amount);
-									tradeTableModel.addGoodAmount(good, amount);
-									errorMessageLabel.setText(" ");
+									if (good.getCategory().equals(Good.VEHICLE) && 
+											((amount > 1) || tradeTableModel.hasTradedVehicle())) {
+										errorMessageLabel.setText("Only one vehicle can be traded.");
+									}
+									else {
+										goodsTableModel.removeGoodAmount(good, amount);
+										tradeTableModel.addGoodAmount(good, amount);
+										errorMessageLabel.setText(" ");
+									}
 								}
 								else errorMessageLabel.setText("Amount to add is larger than available amount.");
 							}
@@ -601,6 +607,15 @@ class TradeGoodsPanel extends WizardPanel {
     	 */
     	Map<Good, Integer> getTradeGoods() {
     		return new HashMap<Good, Integer>(tradeMap);
+    	}
+    	
+    	private boolean hasTradedVehicle() {
+    		boolean result = false;
+    		Iterator<Good> i = tradeList.iterator();
+    		while (i.hasNext()) {
+    			if (i.next().getCategory().equals(Good.VEHICLE)) result = true;
+    		}
+    		return result;
     	}
     }
 }
