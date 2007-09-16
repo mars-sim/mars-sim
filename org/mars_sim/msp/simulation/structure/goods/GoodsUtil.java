@@ -70,7 +70,7 @@ public class GoodsUtil {
 	
 	/**
 	 * Gets a good object for a given equipment class.
-	 * @param goodClass the resource class.
+	 * @param equipmentClass the equipment class.
 	 * @return good for the resource class or null if none.
 	 */
 	public static Good getEquipmentGood(Class equipmentClass) {

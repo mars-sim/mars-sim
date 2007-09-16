@@ -55,8 +55,7 @@ public class CreditEvent extends EventObject {
 	
 	/**
 	 * Gets the credit amount.
-	 * credit amount (VP).
-	 * @return
+	 * @return credit amount (VP).
 	 */
 	public double getCredit() {
 		return credit;
