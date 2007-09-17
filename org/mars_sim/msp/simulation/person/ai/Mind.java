@@ -92,7 +92,14 @@ public class Mind implements Serializable {
             	taskManager.performTask(time, person.getPerformanceRating());
         	}
         	else {
-            	if (activeMission) mission.performMission(person);
+            	if (activeMission) {
+            		try {
+            			mission.performMission(person);
+            		}
+            		catch (MissionException e) {
+            			mission.endMission(e.getMessage());
+            		}
+            	}
             	if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission);
             	takeAction(time);
         	}
