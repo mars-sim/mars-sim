@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.75 2004-04-12
+ * @version 2.82 2007-10-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -12,6 +12,7 @@ import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
+import org.mars_sim.msp.simulation.resource.PartConfig;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
@@ -36,6 +37,7 @@ public class SimulationConfig implements Serializable {
 	private static final String CROP_FILE = "crops";
 	private static final String LANDMARK_FILE = "landmarks";
 	private static final String BUILDING_FILE = "buildings";
+	private static final String PART_FILE = "parts";
 	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -69,6 +71,7 @@ public class SimulationConfig implements Serializable {
 			simulationDoc = parseXMLFile(SIMULATION_FILE);
 		
 			// Load subset configuration classes.
+			PartConfig.loadItemResources(parseXMLFile(PART_FILE));
 			personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
 			medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
 			landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARK_FILE));

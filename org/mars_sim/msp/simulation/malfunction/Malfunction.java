@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Malfunction.java
- * @version 2.75 2003-01-20
+ * @version 2.82 2007-10-08
  * @author Scott Davis
  */
 
@@ -10,7 +10,11 @@ package org.mars_sim.msp.simulation.malfunction;
 import java.io.Serializable;
 import java.util.*;
 
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.ItemResource;
+import org.mars_sim.msp.simulation.resource.Part;
 
 /** 
  * The Malfunction class represents a
@@ -26,6 +30,7 @@ public class Malfunction implements Serializable {
     private Map<AmountResource, Double> resourceEffects;
     private Map<String, Double> lifeSupportEffects;
     private Map<String, Double> medicalComplaints;
+    private Map<Part, Integer> repairParts;
 
     // Work time tracking
     private double workTime;
@@ -56,6 +61,7 @@ public class Malfunction implements Serializable {
         this.lifeSupportEffects = lifeSupportEffects;
         this.medicalComplaints = medicalComplaints;
 
+        repairParts = new HashMap<Part, Integer>();
         workTimeCompleted = 0D;
         emergencyWorkTimeCompleted = 0D;
         EVAWorkTimeCompleted = 0D;
@@ -208,7 +214,7 @@ public class Malfunction implements Serializable {
                 Iterator<String> i2 = unitScope.iterator();
                 while (i2.hasNext()) {
                     String unitScopeString = i2.next();
-            	    if (scopeString.equals(unitScopeString)) result = true;
+            	    if (scopeString.equalsIgnoreCase(unitScopeString)) result = true;
                 }
             }
         }
@@ -252,5 +258,23 @@ public class Malfunction implements Serializable {
         // if (emergencyWorkTime > 0D) System.out.println(name + "@" + Integer.toHexString(clone.hashCode()) + " emergency starts");
 	
         return clone;
+    }
+    
+    /**
+     * Determines the parts that are required to repair this malfunction.
+     * @throws Exception if error determining the repair parts.
+     */
+    public void determineRepairParts() throws Exception {
+    	MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
+    	String[] partNames = config.getRepairPartNamesForMalfunction(name);
+    	for (int x = 0; x < partNames.length; x++) {
+    		String partName = partNames[x];
+    		if (RandomUtil.lessThanRandPercent(config.getRepairPartProbability(name, partName))) {
+    			int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
+    			Part part = (Part) ItemResource.findItemResource(partName);
+    			repairParts.put(part, number);
+    			// System.out.println("New Malfunction: " + getName() + " - required part: " + part.getName() + " - number: " + number);
+    		}
+    	}
     }
 }

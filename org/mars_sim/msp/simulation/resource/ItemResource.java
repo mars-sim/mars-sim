@@ -17,7 +17,7 @@ import java.util.Set;
  * The ItemResource class represents a type of resource that is measured in units, 
  * such as simple tools and parts.
  */
-public final class ItemResource implements Resource, Serializable {
+public class ItemResource implements Resource, Serializable {
 
 	// Set of all item resources.
 	private static final Set<ItemResource> resources = new HashSet<ItemResource>(3);
@@ -37,11 +37,11 @@ public final class ItemResource implements Resource, Serializable {
 	private ItemResource() {}
 	
 	/**
-	 * Private constructor
+	 * Constructor
 	 * @param name the name of the resource.
 	 * @param massPerItem the mass (kg) of the resource per item.
 	 */
-	private ItemResource(String name, double massPerItem) {
+	protected ItemResource(String name, double massPerItem) {
 		this.name = name;
 		this.massPerItem = massPerItem;
 		if (!resources.contains(this)) resources.add(this);

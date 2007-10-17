@@ -62,7 +62,15 @@ public class MalfunctionFactory implements Serializable {
             Malfunction temp = i.next();
             double probability = temp.getProbability();
             if (temp.unitScopeMatch(scope) && (result == null)) {
-                if (r < probability) result = temp.getClone();
+                if (r < probability) {
+                	try {
+                		result = temp.getClone();
+                		result.determineRepairParts();
+                	}
+                	catch (Exception e) {
+                		e.printStackTrace(System.err);
+                	}
+                }
                 else r -= probability;
             }
         }

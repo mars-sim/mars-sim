@@ -25,9 +25,9 @@
 		
 		<!-- List of entities that are susceptible to this malfunction. (min 1 entity required) -->
 		<entity-list>
-			<entity name="Life Support" />
-			<entity name="Rover" />
-			<entity name="EVA Suit" />
+			<entity name="life support" />
+			<entity name="rover" />
+			<entity name="eva suit" />
 		</entity-list>
 		
 		<!-- List of effects this malfunction can produce. (optional) -->
@@ -53,6 +53,15 @@
 		<medical-complaint-list>
 		</medical-complaint-list>
 		
+		<!-- Repair parts required to fix this malfunction. (optional) -->
+		<!-- See parts.xml -->
+		<repair-parts-list>
+			<!-- A part required for repairing this malfunction. -->
+			<!-- Values: number - the number of the part needed. -->
+			<!-- Values: probability - the percentage probability that the part will be needed for repair. -->
+			<part name="airleak patch" number="1" probability="60" />
+		</repair-parts-list>
+		
 	</malfunction>
 	
 	<!-- Small electrical or chemical fire. -->
@@ -62,13 +71,16 @@
 		<repair-time value="100.0" />
 		<emergency-repair-time value="10.0" />
 		<entity-list>
-			<entity name="Life Support" />
-			<entity name="Rover" />
-			<entity name="EVA Suit" />			
+			<entity name="life support" />
+			<entity name="rover" />
+			<entity name="eva suit" />			
 		</entity-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
 		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="co2 extinguisher" number="1" probability="50" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Medium electrical or chemical fire. -->
@@ -78,8 +90,8 @@
 		<repair-time value="200.0" />
 		<emergency-repair-time value="20.0" />
 		<entity-list>
-			<entity name="Life Support" />
-			<entity name="Rover" />
+			<entity name="life support" />
+			<entity name="rover" />
 		</entity-list>
 		<effect-list>
 			<effect type="life support" name="Oxygen" change-rate="-.01" />
@@ -89,6 +101,9 @@
 			<medical-complaint name="Minor Burns" probability="15.0" />
 			<medical-complaint name="Burns" probability="5.0" />
 		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="co2 extinguisher" number="1" probability="50" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Large electrical or chemical fire. -->
@@ -98,7 +113,7 @@
 		<repair-time value="400.0" />
 		<emergency-repair-time value="40.0" />
 		<entity-list>
-			<entity name="Life Support" />
+			<entity name="life support" />
 		</entity-list>
 		<effect-list>
 			<effect type="life support" name="Oxygen" change-rate="-.02" />
@@ -109,6 +124,9 @@
 			<medical-complaint name="Burns" probability="15.0" />
 			<medical-complaint name="Major Burns" probability="5.0" />
 		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="co2 extinguisher" number="2" probability="50" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Minor punctured tire on rover. -->
@@ -117,8 +135,11 @@
 	    <probability value="60.0" />
 	    <eva-repair-time value="10.0" />
 	    <entity-list>
-	    	<entity name="Rover" />
+	    	<entity name="rover" />
 	    </entity-list>
+	    <repair-parts-list>
+			<part name="tire plug" number="1" probability="100" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Flat tire on rover. -->
@@ -127,8 +148,12 @@
 		<probability value="30.0" />
 		<eva-repair-time value="50.0" />
 		<entity-list>
-			<entity name="Rover" />
+			<entity name="rover" />
 		</entity-list>
+		<repair-parts-list>
+			<part name="tire plug" number="2" probability="60" />
+			<part name="rover tire" number="1" probability="30" />
+		</repair-parts-list>
 	</malfunction>
 
 	<!-- Methane fuel leak. -->
@@ -138,11 +163,16 @@
 		<emergency-repair-time value="100.0" />
 		<eva-repair-time value="50.0" />
 		<entity-list>
-			<entity name="Rover" />
+			<entity name="rover" />
 		</entity-list>
 		<effect-list>
 			<effect type="resource" name="Methane" change-rate="-.1" />
 		</effect-list>
+		<repair-parts-list>
+			<part name="gasket" number="1" probability="30" />
+			<part name="valve" number="1" probability="20" />
+			<part name="silicone sealant" number="1" probability="50" />
+		</repair-parts-list>
 	</malfunction>
 
 	<!-- Problems with the rover's engine. -->
@@ -152,8 +182,18 @@
 		<repair-time value="50.0" />
 		<emergency-repair-time value="50.0" />
 		<entity-list>
-			<entity name="Rover" />
+			<entity name="rover" />
 		</entity-list>
+		<repair-parts-list>
+			<part name="gasket" number="1" probability="20" />
+			<part name="spark plug" number="1" probability="15" />
+			<part name="fan belt" number="1" probability="5" />
+			<part name="coolant bottle" number="1" probability="40" />
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="plastic tubing" number="1" probability="10" />
+			<part name="lubricant bottle" number="1" probability="30" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Battery failure. -->
@@ -162,8 +202,13 @@
 		<probability value="25.0" />
 		<repair-time value="50.0" />
 		<entity-list>
-			<entity name="Vehicle" />
+			<entity name="vehicle" />
 		</entity-list>
+		<repair-parts-list>
+			<part name="wire connector" number="2" probability="30" />
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="rover battery" number="1" probability="10" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Communication system failure. -->
@@ -173,9 +218,16 @@
 		<repair-time value="50.0" />
 		<eva-repair-time value="50.0" />
 		<entity-list>
-			<entity name="Vehicle" />
-			<entity name="Communication" />
+			<entity name="vehicle" />
+			<entity name="communication" />
 		</entity-list>
+		<repair-parts-list>
+			<part name="wire connector" number="2" probability="30" />
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="radio antenna" number="1" probability="10" />
+			<part name="satellite dish" number="1" probability="5" />
+			<part name="communications circuit board" number="1" probability="5" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Navigation system failure. -->
@@ -185,8 +237,14 @@
 		<repair-time value="50.0" />
 		<eva-repair-time value="20.0" />
 		<entity-list>
-			<entity name="Vehicle" />
+			<entity name="vehicle" />
 		</entity-list>
+		<repair-parts-list>
+			<part name="wire connector" number="2" probability="30" />
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="satellite dish" number="1" probability="10" />
+			<part name="navigation circuit board" number="1" probability="5" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Leak in the water reserves. -->
@@ -196,14 +254,19 @@
 		<emergency-repair-time value="100.0" />
 		<eva-repair-time value="50.0" />
 		<entity-list>
-			<entity name="Rover" />
-			<entity name="Living Accomodations" />
-			<entity name="Farming" />
-			<entity name="EVA Suit" />
+			<entity name="rover" />
+			<entity name="living accomodations" />
+			<entity name="farming" />
+			<entity name="eva suit" />
 		</entity-list>
 		<effects-list>
 			<effect type="resource" name="Water" change-rate="-.1" />
 		</effects-list>
+		<repair-parts-list>
+			<part name="gasket" number="1" probability="30" />
+			<part name="valve" number="1" probability="20" />
+			<part name="silicone sealant" number="1" probability="50" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Failure of life support heating unit.  -->
@@ -213,11 +276,16 @@
 		<emergency-repair-time value="20.0" />
 		<repair-time value="100.0" />
 		<entity-list>
-			<entity name="EVA Suit" />
+			<entity name="eva suit" />
 		</entity-list>
 		<effects-list>
 			<effect type="life-support" name="Temperature" change-rate="-.1" />
 		</effects-list>
+		<repair-parts-list>
+			<part name="wire connector" number="2" probability="30" />
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="suit heating unit" number="1" probability="5" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Contamination of the water supply. -->
@@ -227,13 +295,20 @@
 		<emergency-repair-time value="100.0" />
 		<repair-time value="500.0" />
 		<entity-list>
-			<entity name="Living Accommodations" />
-			<entity name="Farming" />
-			<entity name="Rover" />
+			<entity name="living accommodations" />
+			<entity name="farming" />
+			<entity name="rover" />
 		</entity-list>
 		<effects-list>
 			<effect type="resource" name="Water" change-rate="-1.0" />
 		</effects-list>
+		<repair-parts-list>
+			<part name="gasket" number="1" probability="30" />
+			<part name="valve" number="1" probability="20" />
+			<part name="silicone sealant" number="1" probability="50" />
+			<part name="plastic tubing" number="5" probability="30" />
+			<part name="plastic pipe" number="2" probability="5" />
+		</repair-parts-list>
 	</malfunction>
 	
 	<!-- Contamination of the food supply. -->
@@ -243,8 +318,8 @@
 		<emergency-repair-time value="100.0" />
 		<repair-time value="500.0" />
 		<entity-list>
-			<entity name="Dining" />
-			<entity name="Rover" />
+			<entity name="dining" />
+			<entity name="rover" />
 		</entity-list>
 		<effects-list>
 			<effect type="resource" name="Food" change-rate="-1.0" />
@@ -258,8 +333,8 @@
 		<emergency-repair-time value="100.0" />
 		<repair-time value="500.0" />
 		<entity-list>
-			<entity name="Farming" />
-			<entity name="Research" />
+			<entity name="farming" />
+			<entity name="research" />
 		</entity-list>
 		<effects-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
@@ -273,12 +348,15 @@
 		<emergency-repair-time value="1.0" />
 		<repair-time value="20.0" />
 		<entity-list>
-			<entity name="EVA Suit" />
+			<entity name="eva suit" />
 		</entity-list>
 		<medical-complaint-list>
 			<medical-complaint name="Frostnip" probability="80.0" />
 			<medical-complaint name="Frostbite" probability="10.0" />
 		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="airleak patch" number="1" probability="100" />
+		</repair-parts-list>
 	</malfunction>
 
 </malfunction-list>
