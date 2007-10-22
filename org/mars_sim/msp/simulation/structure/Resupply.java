@@ -122,7 +122,7 @@ public class Resupply implements Serializable {
 			String equipmentType = (String) equipmentI.next();
 			int number = ((Integer) newEquipment.get(equipmentType)).intValue();
 			for (int x=0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates());
+				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
 				settlement.getInventory().storeUnit(equipment);
 			}
 		}
