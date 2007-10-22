@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.simulation.resource;
 
+import java.io.Serializable;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -14,7 +16,7 @@ import org.w3c.dom.NodeList;
  * Provides configuration information about parts.
  * Uses a DOM document to get the information. 
  */
-public final class PartConfig {
+public final class PartConfig implements Serializable {
 
 	// Element names
 	private static final String PART = "part";
@@ -29,14 +31,16 @@ public final class PartConfig {
 	 * Constructor
 	 * Private constructor for utility class.
 	 */
-	private PartConfig() {}
+	public PartConfig(Document itemResourceDoc) throws Exception {
+		loadItemResources(itemResourceDoc);
+	}
 	
 	/**
 	 * Loads item resources from the parts.xml config document.
 	 * @param itemResourceDoc the configuration XML document.
 	 * @throws Exception if error loading item resources.
 	 */
-	public static final void loadItemResources(Document itemResourceDoc) throws Exception {
+	private void loadItemResources(Document itemResourceDoc) throws Exception {
 		Element root = itemResourceDoc.getDocumentElement();
 		NodeList partNodes = root.getElementsByTagName(PART);
 		for (int x=0; x < partNodes.getLength(); x++) {

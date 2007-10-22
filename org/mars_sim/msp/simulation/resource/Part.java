@@ -9,8 +9,10 @@ package org.mars_sim.msp.simulation.resource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The Part class represents a type of unit resource that is used for maintenance and repairs.
@@ -86,6 +88,22 @@ public class Part extends ItemResource {
 			MaintenanceEntity entity = i.next();
 			if (entity.name.equalsIgnoreCase(entityName)) result = entity.maxNumber;
 		}
+		return result;
+	}
+	
+	/**
+	 * Gets a set of all parts.
+	 * @return set of parts.
+	 */
+	public static final Set<Part> getParts() {
+		Set<Part> result = new HashSet<Part>();
+		
+		Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
+		while(i.hasNext()) {
+			ItemResource resource = i.next();
+			if (resource instanceof Part) result.add((Part) resource);
+		}
+		
 		return result;
 	}
 	

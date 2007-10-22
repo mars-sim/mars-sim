@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.82 2007-10-13
+ * @version 2.82 2007-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -52,6 +52,7 @@ public class SimulationConfig implements Serializable {
 	private Document simulationDoc;
 	
 	// Subset configuration classes
+	private PartConfig partConfig;
 	private PersonConfig personConfig;
 	private MedicalConfig medicalConfig;
 	private LandmarkConfig landmarkConfig;
@@ -71,7 +72,7 @@ public class SimulationConfig implements Serializable {
 			simulationDoc = parseXMLFile(SIMULATION_FILE);
 		
 			// Load subset configuration classes.
-			PartConfig.loadItemResources(parseXMLFile(PART_FILE));
+			partConfig = new PartConfig(parseXMLFile(PART_FILE));
 			personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
 			medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
 			landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARK_FILE));
@@ -194,6 +195,14 @@ public class SimulationConfig implements Serializable {
 			throw new Exception("Mars start date time must not be blank.");
 		
 		return startDate;
+	}
+	
+	/**
+	 * Gets the part config subset.
+	 * @return part config
+	 */
+	public PartConfig getPartConfig() {
+		return partConfig;
 	}
 	
 	/**

@@ -279,7 +279,7 @@ class TradeGoodsPanel extends WizardPanel {
 				Phase phase = resource.getPhase();
 				Class containerType = getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
-				Unit container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0));
+				Unit container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0), true);
 				double capacity = container.getInventory().getAmountResourceCapacity(resource);
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = tradeGoods.get(good);

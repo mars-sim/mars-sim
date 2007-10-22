@@ -401,7 +401,7 @@ public final class TradeUtil {
     	else if (good.getCategory().equals(Good.EQUIPMENT)) {
     		Class type = good.getClassType();
     		if (!equipmentGoodCache.containsKey(type)) 
-    			equipmentGoodCache.put(type, EquipmentFactory.getEquipment(type, new Coordinates(0D, 0D)));
+    			equipmentGoodCache.put(type, EquipmentFactory.getEquipment(type, new Coordinates(0D, 0D), true));
     		result = inventory.canStoreUnit(equipmentGoodCache.get(type));
     	}
     	else if (good.getCategory().equals(Good.VEHICLE)) 
@@ -452,7 +452,7 @@ public final class TradeUtil {
     	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
     		inventory.storeItemResources((ItemResource) good.getObject(), 1);
     	else if (good.getCategory().equals(Good.EQUIPMENT)) 
-    		inventory.storeUnit(EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0D, 0D)));
+    		inventory.storeUnit(EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0D, 0D), true));
     }
     
     /**
@@ -548,7 +548,7 @@ public final class TradeUtil {
     	Equipment container = null;
     	if (containerTypeCache.containsKey(containerType)) container = containerTypeCache.get(containerType);
     	else {
-    		container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0));
+    		container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0), true);
     		containerTypeCache.put(containerType, container);
     	}
     	

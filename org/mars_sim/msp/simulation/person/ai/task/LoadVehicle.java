@@ -548,7 +548,7 @@ public class LoadVehicle extends Task implements Serializable {
     			int num = ((Integer) equipment.get(equipmentType)).intValue();
     			Coordinates defaultLoc = new Coordinates(0D, 0D);
     			for (int x = 0; x < num; x++) 
-    				inv.storeUnit(EquipmentFactory.getEquipment(equipmentType, defaultLoc));
+    				inv.storeUnit(EquipmentFactory.getEquipment(equipmentType, defaultLoc, true));
     		}
     		
     		// Add all resources.

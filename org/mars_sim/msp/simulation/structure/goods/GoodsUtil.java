@@ -182,7 +182,7 @@ public class GoodsUtil {
 		else if (Good.ITEM_RESOURCE.equals(good.getCategory())) 
 			result = ((ItemResource) good.getObject()).getMassPerItem();
 		else if (Good.EQUIPMENT.equals(good.getCategory())) 
-			result = EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0, 0)).getMass();
+			result = EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0, 0), true).getMass();
 		else if (Good.VEHICLE.equals(good.getCategory())) {
 			VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 			result = config.getEmptyMass(good.getName());

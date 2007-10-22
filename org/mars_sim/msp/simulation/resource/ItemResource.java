@@ -20,7 +20,7 @@ import java.util.Set;
 public class ItemResource implements Resource, Serializable {
 
 	// Set of all item resources.
-	private static final Set<ItemResource> resources = new HashSet<ItemResource>(3);
+	private static final Set<ItemResource> resources = new HashSet<ItemResource>();
 	
 	// Item resources.
 	public static final ItemResource HAMMER = new ItemResource("hammer", 1.4D);

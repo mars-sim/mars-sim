@@ -14,6 +14,7 @@ import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.building.Building;
 
 /**
@@ -36,6 +37,7 @@ public class MalfunctionManager implements Serializable {
     private double maintenanceTimeCompleted; // The completed
     private Collection<String> scope;        // The scope strings of the unit.
     private Collection<Malfunction> malfunctions; // The current malfunctions in the unit.
+    private Map<Part, Integer> partsNeededForMaintenance; // The parts currently needed to maintain this entity.
 
     // Life support modifiers.
     private double oxygenFlowModifier = 100D;
@@ -65,6 +67,9 @@ public class MalfunctionManager implements Serializable {
     public void addScopeString(String scopeString) {
         if ((scopeString != null) && !scope.contains(scopeString))
         scope.add(scopeString);
+        
+        // Update maintenance parts.
+        determineNewMaintenanceParts();
     }
 
     /**
@@ -489,6 +494,7 @@ public class MalfunctionManager implements Serializable {
     		maintenanceTimeCompleted = 0D;
     		timeSinceLastMaintenance = 0D;
     		effectiveTimeSinceLastMaintenance = 0D;
+    		determineNewMaintenanceParts();
         }
     }
 
@@ -563,5 +569,35 @@ public class MalfunctionManager implements Serializable {
     	else if (entity instanceof Building) 
     		return ((Building) entity).getBuildingManager().getSettlement();
     	else throw new Exception("Could not find unit associated with malfunctionable.");
+    }
+    
+    private void determineNewMaintenanceParts() {
+    	if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
+    	partsNeededForMaintenance.clear();
+    	
+    	Iterator<String> i = scope.iterator();
+    	while (i.hasNext()) {
+    		String entity = i.next();
+    		Iterator<Part> j = Part.getParts().iterator();
+    		while (j.hasNext()) {
+    			Part part = j.next();
+    			if (part.hasMaintenanceEntity(entity)) {
+    				if (RandomUtil.lessThanRandPercent(part.getMaintenanceProbability(entity))) {
+    					int number = RandomUtil.getRandomRegressionInteger(part.getMaintenanceMaximumNumber(entity));
+    					if (partsNeededForMaintenance.containsKey(part)) number += partsNeededForMaintenance.get(part);
+    					partsNeededForMaintenance.put(part, number);
+    				}
+    			}
+    		}
+    	}
+    	
+    	// if (partsNeededForMaintenance.size() > 0) System.out.println(entity + " needs maintenance parts: " + 
+    	// 		partsNeededForMaintenance.toString());
+    	// System.out.println(entity + " needs maintenance parts: " + partsNeededForMaintenance.toString());
+    }
+    
+    public Map<Part, Integer> getMaintenanceParts() {
+    	if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
+    	return new HashMap<Part, Integer>(partsNeededForMaintenance);
     }
 }

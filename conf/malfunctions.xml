@@ -358,5 +358,24 @@
 			<part name="airleak patch" number="1" probability="100" />
 		</repair-parts-list>
 	</malfunction>
+	
+	<!-- Electrical wire short. -->
+	<malfunction name="Electrical Short">
+		<severity value="20" />
+		<probability value="35.0" />
+		<repair-time value="20.0" />
+		<eva-repair-time value="20.0" />
+		<entity-list>
+			<entity name="vehicle" />
+			<entity name="eva suit" />
+			<entity name="power generation" />
+			<entity name="building" />
+			<entity name="settlement" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="wire connector" number="4" probability="50" />
+			<part name="electrical wire" number="4" probability="100" />
+		</repair-parts-list>
+	</malfunction>
 
 </malfunction-list>
