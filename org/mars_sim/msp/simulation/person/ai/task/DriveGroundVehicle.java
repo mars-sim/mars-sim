@@ -333,7 +333,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
     	GroundVehicle vehicle = (GroundVehicle) getVehicle();
     	
-        double chance = .001D;
+        double chance = OperateVehicle.BASE_ACCIDENT_CHANCE;
 
         // Driver skill modification.
         int skill = getEffectiveSkillLevel();

@@ -25,7 +25,7 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 /** 
  * The EVAOperation class is an abstract task that involves an extra vehicular activity. 
  */
-abstract class EVAOperation extends Task implements Serializable {
+public abstract class EVAOperation extends Task implements Serializable {
 
     // Task phase names
     protected static final String EXIT_AIRLOCK = "Exit Airlock";
@@ -33,6 +33,7 @@ abstract class EVAOperation extends Task implements Serializable {
     
 	// Static members
 	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
+	public static final double BASE_ACCIDENT_CHANCE = .001; // The base chance of an accident per millisol.
     
     // Data members
     protected boolean exitedAirlock;  // Person has exited the airlock.
@@ -196,7 +197,7 @@ abstract class EVAOperation extends Task implements Serializable {
         EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit != null) {
 	    
-            double chance = .001D;
+            double chance = BASE_ACCIDENT_CHANCE;
 
             // EVA operations skill modification.
             int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);

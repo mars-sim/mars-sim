@@ -43,6 +43,32 @@
 			<!-- amount: the amount of the resource (kg) -->
 			<resource type="waste water" amount="100.0" />
 			
+			<!-- Parts -->
+			<!-- type: the type of part (see parts.xml) -->
+			<!-- number: the number of parts. -->
+			<part type="airleak patch" number="100" />
+			<part type="tire plug" number="100" />
+			<part type="co2 extinguisher" number="100" />
+			<part type="rover tire" number="100" />
+			<part type="gasket" number="100" />
+			<part type="valve" number="100" />
+			<part type="silicone sealant" number="100" />
+			<part type="spark plug" number="100" />
+			<part type="fan belt" number="100" />
+			<part type="coolant bottle" number="100" />
+			<part type="electrical wire" number="100" />
+			<part type="power cable" number="100" />
+			<part type="wire connector" number="100" />
+			<part type="plastic tubing" number="100" />
+			<part type="lubricant bottle" number="100" />
+			<part type="rover battery" number="100" />
+			<part type="radio antenna" number="100" />
+			<part type="satellite dish" number="100" />
+			<part type="communications circuit board" number="100" />
+			<part type="navigation circuit board" number="100" />
+			<part type="suit heating unit" number="100" />
+			<part type="plastic pipe" number="100" />
+			
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
 				
@@ -70,6 +96,28 @@
 			<equipment type="Specimen Box" number="40" />
 			<resource type="waste water" amount="200.0" />
 			<resource type="carbon dioxide" amount="100.0" />
+			<part type="airleak patch" number="100" />
+			<part type="tire plug" number="100" />
+			<part type="co2 extinguisher" number="100" />
+			<part type="rover tire" number="100" />
+			<part type="gasket" number="100" />
+			<part type="valve" number="100" />
+			<part type="silicone sealant" number="100" />
+			<part type="spark plug" number="100" />
+			<part type="fan belt" number="100" />
+			<part type="coolant bottle" number="100" />
+			<part type="electrical wire" number="100" />
+			<part type="power cable" number="100" />
+			<part type="wire connector" number="100" />
+			<part type="plastic tubing" number="100" />
+			<part type="lubricant bottle" number="100" />
+			<part type="rover battery" number="100" />
+			<part type="radio antenna" number="100" />
+			<part type="satellite dish" number="100" />
+			<part type="communications circuit board" number="100" />
+			<part type="navigation circuit board" number="100" />
+			<part type="suit heating unit" number="100" />
+			<part type="plastic pipe" number="100" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -92,6 +140,28 @@
 			<equipment type="Specimen Box" number="60" />
 			<resource type="waste water" amount="300.0" />
 			<resource type="carbon dioxide" amount="200.0" />
+			<part type="airleak patch" number="100" />
+			<part type="tire plug" number="100" />
+			<part type="co2 extinguisher" number="100" />
+			<part type="rover tire" number="100" />
+			<part type="gasket" number="100" />
+			<part type="valve" number="100" />
+			<part type="silicone sealant" number="100" />
+			<part type="spark plug" number="100" />
+			<part type="fan belt" number="100" />
+			<part type="coolant bottle" number="100" />
+			<part type="electrical wire" number="100" />
+			<part type="power cable" number="100" />
+			<part type="wire connector" number="100" />
+			<part type="plastic tubing" number="100" />
+			<part type="lubricant bottle" number="100" />
+			<part type="rover battery" number="100" />
+			<part type="radio antenna" number="100" />
+			<part type="satellite dish" number="100" />
+			<part type="communications circuit board" number="100" />
+			<part type="navigation circuit board" number="100" />
+			<part type="suit heating unit" number="100" />
+			<part type="plastic pipe" number="100" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -122,6 +192,28 @@
 			<equipment type="Specimen Box" number="100" />
 			<resource type="waste water" amount="1000.0" />
 			<resource type="carbon dioxide" amount="500.0" />
+			<part type="airleak patch" number="100" />
+			<part type="tire plug" number="100" />
+			<part type="co2 extinguisher" number="100" />
+			<part type="rover tire" number="100" />
+			<part type="gasket" number="100" />
+			<part type="valve" number="100" />
+			<part type="silicone sealant" number="100" />
+			<part type="spark plug" number="100" />
+			<part type="fan belt" number="100" />
+			<part type="coolant bottle" number="100" />
+			<part type="electrical wire" number="100" />
+			<part type="power cable" number="100" />
+			<part type="wire connector" number="100" />
+			<part type="plastic tubing" number="100" />
+			<part type="lubricant bottle" number="100" />
+			<part type="rover battery" number="100" />
+			<part type="radio antenna" number="100" />
+			<part type="satellite dish" number="100" />
+			<part type="communications circuit board" number="100" />
+			<part type="navigation circuit board" number="100" />
+			<part type="suit heating unit" number="100" />
+			<part type="plastic pipe" number="100" />
 		</template>
 	
 	</settlement-template-list>

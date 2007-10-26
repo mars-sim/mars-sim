@@ -39,6 +39,7 @@ public class SettlementConfig implements Serializable {
 	private static final String PERSON = "person";
 	private static final String RESOURCE = "resource";
 	private static final String AMOUNT = "amount";
+	private static final String PART = "part";
 	private static final String RESUPPLY_LIST = "resupply-list";
 	
 	// Random value indicator.
@@ -163,6 +164,28 @@ public class SettlementConfig implements Serializable {
 			String type = resourceElement.getAttribute(TYPE);
 			Double amount = new Double(resourceElement.getAttribute(AMOUNT));
 			result.put(type, amount);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the part types in a settlement template.
+	 * @param templateName the name of the settlement template.
+	 * @return map of part types and number.
+	 * @throws Exception if there isn't a settlement template with this name or
+	 * if there is an XML parsing error.
+	 */
+	public Map<String, Integer> getTemplateParts(String templateName) throws Exception {
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		
+		Element templateElement = getSettlementTemplateElement(templateName);
+		NodeList resourceNodes = templateElement.getElementsByTagName(PART);
+		for (int x=0; x < resourceNodes.getLength(); x++) {
+			Element resourceElement = (Element) resourceNodes.item(x);
+			String type = resourceElement.getAttribute(TYPE);
+			Integer number = new Integer(resourceElement.getAttribute(NUMBER));
+			result.put(type, number);
 		}
 		
 		return result;

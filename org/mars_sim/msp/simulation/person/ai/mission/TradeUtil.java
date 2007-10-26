@@ -452,7 +452,7 @@ public final class TradeUtil {
     	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
     		inventory.storeItemResources((ItemResource) good.getObject(), 1);
     	else if (good.getCategory().equals(Good.EQUIPMENT)) 
-    		inventory.storeUnit(EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0D, 0D), true));
+    		inventory.storeUnit(EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0D, 0D), false));
     }
     
     /**

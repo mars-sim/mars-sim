@@ -20,11 +20,13 @@ import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
+import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.time.MarsClock;
@@ -560,11 +562,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     /**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * @param useBuffer use time buffers in estimation if true.
+	 * @param parts include parts.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
-    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, boolean parts) throws Exception {
+    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
     	
     	double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
     	double timeSols = collectionSitesTime / 1000D;
@@ -587,6 +590,40 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     		foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
     	result.put(AmountResource.FOOD, new Double(foodAmount));
     	
+    	return result;
+    }
+    
+    /**
+     * Gets the parts needed for the trip.
+     * @param distance the distance of the trip.
+     * @return map of part resources and their number.
+     * @throws Exception if error determining parts.
+     */
+    protected Map<Resource, Number> getPartsNeededForTrip(double distance) throws Exception {
+    	Map<Resource, Number> result = super.getPartsNeededForTrip(distance);
+    	
+    	// Determine repair parts for EVA Suits.
+    	double evaTime = getEstimatedRemainingCollectionSiteTime(false);
+    	double numberAccidents = evaTime * getPeopleNumber() * EVAOperation.BASE_ACCIDENT_CHANCE;
+    	
+    	// Average number malfunctions per accident is two.
+		double numberMalfunctions = numberAccidents * 2D; 
+		
+		// Get temporary EVA suit.
+		EVASuit suit = (EVASuit) EquipmentFactory.getEquipment(EVASuit.class, new Coordinates(0, 0), true);
+		
+		// Determine needed repair parts for EVA suits.
+		Map<Part, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
+		Iterator<Part> i = parts.keySet().iterator();
+		while (i.hasNext()) {
+			Part part = i.next();
+			int number = (int) Math.round(parts.get(part) * numberMalfunctions);
+			if (number > 0) {
+				if (result.containsKey(part)) number += result.get(part).intValue();
+				result.put(part, number);
+			}
+		}
+
     	return result;
     }
     

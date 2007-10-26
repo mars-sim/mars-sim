@@ -538,7 +538,7 @@ public class Inventory implements Serializable {
     	if (totalMass <= getRemainingGeneralCapacity()) {
     		if (containedItemResources == null) containedItemResources = new HashMap<ItemResource, Integer>();
     		int totalNum = number + getItemResourceNum(resource);
-    		containedItemResources.put(resource, totalNum);
+    		if (totalNum > 0) containedItemResources.put(resource, totalNum);
     		
     		if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
     	}
@@ -561,7 +561,9 @@ public class Inventory implements Serializable {
     			int storedLocal = containedItemResources.get(resource);
     			int retrieveNum = remainingNum;
     			if (retrieveNum > storedLocal) retrieveNum = storedLocal;
-    			containedItemResources.put(resource, storedLocal - retrieveNum);
+    			int remainingLocal = storedLocal - retrieveNum;
+    			if (remainingLocal > 0) containedItemResources.put(resource, remainingLocal);
+    			else containedItemResources.remove(resource);
     			remainingNum -= retrieveNum;
     		}
     		

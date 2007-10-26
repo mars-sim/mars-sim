@@ -26,6 +26,7 @@ import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
@@ -508,24 +509,57 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * @param useBuffer use time buffers in estimation if true.
+	 * @param parts include parts.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
-    	return getResourcesNeededForTrip(useBuffer, getTotalRemainingDistance());
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, boolean parts) throws Exception {
+    	return getResourcesNeededForTrip(useBuffer, parts, getTotalRemainingDistance());
     }
     
     /**
      * Gets the number and amounts of resources needed for a trip.
      * @param useBuffer use time buffers in estimation if true.
+     * @param parts include parts.
      * @param distance the distance (km) of the trip.
      * @return map of amount and item resources and their Double amount or Integer number.
      * @throws Exception if error determining needed resources.
      */
-    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
+    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, boolean parts, double distance) throws Exception {
     	Map<Resource, Number> result = new HashMap<Resource, Number>();
-    	if (vehicle != null) result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(distance, 
+    	if (vehicle != null) {
+    		result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(distance, 
     				vehicle.getFuelEfficiency(), useBuffer)));
+    		if (parts) result.putAll(getPartsNeededForTrip(distance));
+    	}
+    	return result;
+    }
+    
+    /**
+     * Gets the parts needed for the trip.
+     * @param distance the distance of the trip.
+     * @return map of part resources and their number.
+     * @throws Exception if error determining parts.
+     */
+    protected Map<Resource, Number> getPartsNeededForTrip(double distance) throws Exception {
+    	Map<Resource, Number> result = new HashMap<Resource, Number>();
+    	
+    	// Determine vehicle parts.
+    	if (vehicle != null) {
+    		double drivingTime = getEstimatedTripTime(false, distance);
+    		double numberAccidents = drivingTime * OperateVehicle.BASE_ACCIDENT_CHANCE;
+    		// Average number malfunctions per accident is two.
+    		double numberMalfunctions = numberAccidents * 2D; 
+    		
+    		Map<Part, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
+    		Iterator<Part> i = parts.keySet().iterator();
+    		while (i.hasNext()) {
+    			Part part = i.next();
+    			int number = (int) Math.round(parts.get(part) * numberMalfunctions);
+    			if (number > 0) result.put(part, number);
+    		}
+    	}
+
     	return result;
     }
     
@@ -536,7 +570,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @throws Exception if error checking resources.
      */
     protected final boolean hasEnoughResourcesForRemainingMission(boolean useBuffers) throws Exception {
-    	return hasEnoughResources(getResourcesNeededForRemainingMission(useBuffers));
+    	return hasEnoughResources(getResourcesNeededForRemainingMission(useBuffers, false));
     }
     
     /**
@@ -581,7 +615,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	
     	// Check if enough resources to get to settlement.
     	double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
-    	if (hasEnoughResources(getResourcesNeededForTrip(false, distance)) && !hasEmergencyAllCrew()) {
+    	if (hasEnoughResources(getResourcesNeededForTrip(false, false, distance)) && !hasEmergencyAllCrew()) {
     		// System.out.println(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
     		
     		// Creating emergency destination mission event.
@@ -695,7 +729,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws Exception if error determining resources.
 	 */
 	public Map<Resource, Number> getResourcesToLoad() throws Exception {
-		return getResourcesNeededForRemainingMission(true);
+		return getResourcesNeededForRemainingMission(true, true);
 	}
 	
 	/**

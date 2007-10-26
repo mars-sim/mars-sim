@@ -671,10 +671,12 @@ public class Trade extends RoverMission implements Serializable {
 	/**
 	 * Gets a map of all resources needed for the trip.
 	 * @param useBuffer should a buffer be used when determining resources?
+	 * @param parts include parts.
 	 * @param distance the distance of the trip.
 	 */
-    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, double distance) throws Exception {
-    	Map<Resource, Number> result = super.getResourcesNeededForTrip(useBuffer, distance);
+    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, boolean parts, double distance) 
+    		throws Exception {
+    	Map<Resource, Number> result = super.getResourcesNeededForTrip(useBuffer, parts, distance);
     	
     	// Add buy/sell load.
     	Map<Good, Integer> load = null;

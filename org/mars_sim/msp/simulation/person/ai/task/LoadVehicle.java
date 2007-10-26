@@ -304,7 +304,7 @@ public class LoadVehicle extends Task implements Serializable {
     }
     
     /**
-     * Loads the vehicle with an amount resource from the settlement.
+     * Loads the vehicle with an item resource from the settlement.
      * @param amountLoading the amount (kg) the person can load in this time period.
      * @param resource the item resource to be loaded.
      * @return the remaining amount (kg) the person can load in this time period.
@@ -548,7 +548,7 @@ public class LoadVehicle extends Task implements Serializable {
     			int num = ((Integer) equipment.get(equipmentType)).intValue();
     			Coordinates defaultLoc = new Coordinates(0D, 0D);
     			for (int x = 0; x < num; x++) 
-    				inv.storeUnit(EquipmentFactory.getEquipment(equipmentType, defaultLoc, true));
+    				inv.storeUnit(EquipmentFactory.getEquipment(equipmentType, defaultLoc, false));
     		}
     		
     		// Add all resources.

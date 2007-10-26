@@ -28,6 +28,7 @@ import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementCollection;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;
@@ -85,6 +86,7 @@ public class UnitManager implements Serializable {
         createInitialVehicles();
         createInitialEquipment();
         createInitialResources();
+        createInitialParts();
         createInitialPeople();
     }
 
@@ -330,6 +332,33 @@ public class UnitManager implements Serializable {
     	}
     	catch (Exception e) {
     		throw new Exception("Equipment could not be created: " + e.getMessage());
+    	}
+    }
+    
+    /**
+     * Create initial parts for a settlement.
+     * @throws Exception if error creating parts.
+     */
+    private void createInitialParts() throws Exception {
+    	SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
+    	
+    	try {
+    		SettlementIterator i = getSettlements().iterator();
+    		while (i.hasNext()) {
+    			Settlement settlement = i.next();
+    			Map<String, Integer> partMap = config.getTemplateParts(settlement.getTemplate());
+    			Iterator<String> j = partMap.keySet().iterator();
+    			while (j.hasNext()) {
+    				String type = (String) j.next();
+    				Integer number = partMap.get(type);
+    				Part part = (Part) Part.findItemResource(type);
+    				Inventory inv = settlement.getInventory();
+    				inv.storeItemResources(part, number);
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		throw new Exception("Part could not be created: " + e.getMessage());
     	}
     }
     

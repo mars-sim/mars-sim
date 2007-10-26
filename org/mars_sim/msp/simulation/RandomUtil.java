@@ -105,6 +105,26 @@ public final class RandomUtil {
     }
     
     /**
+     * Gets the average value returned from the getRandomRegressionInteger method.
+     * @param ceiling the maximum integer result, (ceiling > 0)
+     * @return average value.
+     */
+    public static double getRandomRegressionIntegerAverageValue(int ceiling) {
+    	
+    	double totalProbability = 0D;
+    	double totalValue = 0D;
+    	
+    	double probability = 1D;
+    	for (int x = 0; x < ceiling; x++) {
+    		totalValue += (x + 1) * probability;
+    		totalProbability += probability;
+    		probability /= 2D;
+    	}
+    	
+    	return totalValue / totalProbability;
+    }
+    
+    /**
      * Gets a random weighted object from a map.
      * @param weightedMap a map of objects and their weights as Double values.
      * @return randomly selected object from the list (or null if empty map).

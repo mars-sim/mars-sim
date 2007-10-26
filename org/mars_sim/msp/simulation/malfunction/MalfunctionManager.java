@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.malfunction;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.*;
@@ -600,4 +601,9 @@ public class MalfunctionManager implements Serializable {
     	if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
     	return new HashMap<Part, Integer>(partsNeededForMaintenance);
     }
+
+	public Map<Part, Double> getRepairPartProbabilities() throws Exception {
+		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
+		return factory.getRepairPartProbabilities(scope);
+	}
 }

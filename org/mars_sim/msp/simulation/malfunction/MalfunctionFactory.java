@@ -10,20 +10,25 @@ package org.mars_sim.msp.simulation.malfunction;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitCollection;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.resource.ItemResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 
 /**
  * This class is a factory for Malfunction objects.
  */
-public class MalfunctionFactory implements Serializable {
+public final class MalfunctionFactory implements Serializable {
 
     // Data members
     private Collection<Malfunction> malfunctions;  // The possible malfunctions in the simulation.
@@ -143,5 +148,30 @@ public class MalfunctionFactory implements Serializable {
         }
 
         return entities;
+    }
+    
+    Map<Part, Double> getRepairPartProbabilities(Collection<String> scope) throws Exception {
+    	Map<Part, Double> result = new HashMap<Part, Double>();
+    	
+    	Iterator<Malfunction> i = malfunctions.iterator();
+    	while (i.hasNext()) {
+    		Malfunction malfunction = i.next();
+    		if (malfunction.unitScopeMatch(scope)) {
+    			double malfunctionProbability = malfunction.getProbability() / 100D;
+    			MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
+    			String[] partNames = config.getRepairPartNamesForMalfunction(malfunction.getName());
+    			for (int x = 0; x < partNames.length; x++) {
+    				double partProbability = config.getRepairPartProbability(malfunction.getName(), partNames[x]) / 100D;
+    				int partNumber = config.getRepairPartNumber(malfunction.getName(), partNames[x]);
+    				double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+    				double totalNumber = averageNumber * partProbability * malfunctionProbability;
+    				Part part = (Part) ItemResource.findItemResource(partNames[x]);
+    				if (result.containsKey(part)) totalNumber += result.get(part);
+    				result.put(part, totalNumber);
+    			}
+    		}
+    	}
+    	
+    	return result;
     }
 }

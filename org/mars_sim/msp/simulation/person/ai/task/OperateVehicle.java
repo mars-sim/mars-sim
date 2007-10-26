@@ -31,6 +31,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	
     // Distance buffer for arriving at destination.
     private final static double DESTINATION_BUFFER = 4D;
+    
+    // The base percentage chance of an accident while operating vehicle per millisol.
+    public static final double BASE_ACCIDENT_CHANCE = .001D; 
 	
 	// Data members
 	private Vehicle vehicle; // The vehicle to operate.

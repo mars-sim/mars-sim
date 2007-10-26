@@ -546,11 +546,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     /**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * @param useBuffer use time buffers in estimation if true.
+	 * @param parts include parts.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception {
-    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, boolean parts) throws Exception {
+    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
     	
     	// Include rescue resources if needed.
     	if (rescue && (getRover().getTowedVehicle() == null)) {

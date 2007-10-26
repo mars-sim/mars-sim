@@ -578,10 +578,11 @@ public abstract class Mission implements Serializable {
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * @param useBuffer use time buffers in estimation if true.
+	 * @param parts include parts.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 * @throws Exception if error determining needed resources.
 	 */
-    public abstract Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) throws Exception ;
+    public abstract Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, boolean parts) throws Exception ;
     
     /**
      * Gets the number and types of equipment needed for the mission.
