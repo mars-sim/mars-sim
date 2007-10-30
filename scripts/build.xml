@@ -154,8 +154,8 @@
             version="false"
             use="true"
             overview="${mars.scripts}/overview.html"
-            windowtitle="Mars Simulation Project v 2.81 API Specification"
-            doctitle="Mars Simulation Project v 2.81 &lt;br>API Specification"> 
+            windowtitle="Mars Simulation Project v 2.82 API Specification"
+            doctitle="Mars Simulation Project v 2.82 &lt;br>API Specification"> 
             <classpath>
                 <fileset dir="${mars.jars}">
                     <include name="jcommon.jar" />
