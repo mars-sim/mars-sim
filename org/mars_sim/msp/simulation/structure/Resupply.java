@@ -15,6 +15,7 @@ import org.mars_sim.msp.simulation.events.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Rover;
@@ -29,11 +30,12 @@ public class Resupply implements Serializable {
 	private Settlement settlement;
 	private MarsClock arrivalDate;
 	private boolean isDelivered;
-	private List newBuildings;
-	private List newVehicles;
-	private Map newEquipment;
+	private List<String> newBuildings;
+	private List<String> newVehicles;
+	private Map<String, Integer> newEquipment;
 	private int newImmigrantNum;
-	private Map newResources;
+	private Map<String, Double> newResources;
+	private Map<String, Integer> newParts;
 
 	/**
 	 * Constructor
@@ -66,6 +68,9 @@ public class Resupply implements Serializable {
 			
 		// Get new resources map.
 		newResources = config.getResupplyResources(resupplyName);
+		
+		// Get new parts map.
+		newParts = config.getResupplyParts(resupplyName);
 	}
 	
 	/**
@@ -100,43 +105,50 @@ public class Resupply implements Serializable {
 		
 		// Deliver buildings.
 		BuildingManager buildingManager = settlement.getBuildingManager();
-		Iterator buildingI = newBuildings.iterator();
-		while (buildingI.hasNext()) {
-			String buildingType = (String) buildingI.next();
-			buildingManager.addBuilding(buildingType);
-		}
+		Iterator<String> buildingI = newBuildings.iterator();
+		while (buildingI.hasNext()) buildingManager.addBuilding(buildingI.next());
 		
 		// Deliver vehicles.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
-		Iterator vehicleI = newVehicles.iterator();
+		Iterator<String> vehicleI = newVehicles.iterator();
 		while (vehicleI.hasNext()) {
-			String vehicleType = (String) vehicleI.next();
+			String vehicleType = vehicleI.next();
 			String vehicleName = unitManager.getNewName(UnitManager.VEHICLE, null);
 			Rover rover = new Rover(vehicleName, vehicleType, settlement);
 			unitManager.addUnit(rover);
 		}
 		
+		Inventory inv = settlement.getInventory();
+		
 		// Deliver equipment.
-		Iterator equipmentI = newEquipment.keySet().iterator();
+		Iterator<String> equipmentI = newEquipment.keySet().iterator();
 		while (equipmentI.hasNext()) {
-			String equipmentType = (String) equipmentI.next();
-			int number = ((Integer) newEquipment.get(equipmentType)).intValue();
+			String equipmentType = equipmentI.next();
+			int number = newEquipment.get(equipmentType);
 			for (int x=0; x < number; x++) {
 				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
-				settlement.getInventory().storeUnit(equipment);
+				inv.storeUnit(equipment);
 			}
 		}
 		
 		// Deliver resources.
-		Iterator resourcesI = newResources.keySet().iterator();
+		Iterator<String> resourcesI = newResources.keySet().iterator();
 		while (resourcesI.hasNext()) {
-			String resourceType = (String) resourcesI.next();
-			double amount = ((Double) newResources.get(resourceType)).doubleValue();
+			String resourceType = resourcesI.next();
+			double amount = newResources.get(resourceType);
 			AmountResource resource = AmountResource.findAmountResource(resourceType);
-			Inventory inv = settlement.getInventory();
 			double capacity = inv.getAmountResourceRemainingCapacity(resource);
 			if (amount > capacity) amount = capacity;
-			settlement.getInventory().storeAmountResource(resource, amount);
+			inv.storeAmountResource(resource, amount);
+		}
+		
+		// Deliver parts.
+		Iterator<String> partsI = newParts.keySet().iterator();
+		while (partsI.hasNext()) {
+			String partType = partsI.next();
+			int number = newParts.get(partType);
+			Part part = (Part) Part.findItemResource(partType);
+			inv.storeItemResources(part, number);
 		}
 		
 		// Deliver immigrants.

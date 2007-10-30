@@ -337,6 +337,27 @@ public class SettlementConfig implements Serializable {
 	}
 	
 	/**
+	 * Gets a map of parts and their number in a resupply mission.
+	 * @param resupplyName the name of the resupply mission.
+	 * @return map of part types (String) and their numbers.
+	 * @throws Exception if XML parsing exception.
+	 */
+	public Map<String, Integer> getResupplyParts(String resupplyName) throws Exception {
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		
+		Element resupplyElement = getResupplyElement(resupplyName);
+		NodeList partNodes = resupplyElement.getElementsByTagName(PART);
+		for (int x = 0; x < partNodes.getLength(); x++) {
+			Element partElement = (Element) partNodes.item(x);
+			String type = partElement.getAttribute(TYPE);
+			Integer number = new Integer(partElement.getAttribute(NUMBER));
+			result.put(type, number);
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Gets a map of resources and their amounts in a resupply mission.
 	 * @param resupplyName the name of the resupply mission.
 	 * @return map of resource types (String) and their amounts (Double).

@@ -255,6 +255,32 @@
 			<!-- amount: the amount of the resource (kg) -->
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
+			
+			<!-- Parts -->
+			<!-- type: the type of part (see parts.xml) -->
+			<!-- number: the number of parts. -->
+			<part type="airleak patch" number="100" />
+			<part type="tire plug" number="100" />
+			<part type="co2 extinguisher" number="100" />
+			<part type="rover tire" number="100" />
+			<part type="gasket" number="100" />
+			<part type="valve" number="100" />
+			<part type="silicone sealant" number="100" />
+			<part type="spark plug" number="100" />
+			<part type="fan belt" number="100" />
+			<part type="coolant bottle" number="100" />
+			<part type="electrical wire" number="100" />
+			<part type="power cable" number="100" />
+			<part type="wire connector" number="100" />
+			<part type="plastic tubing" number="100" />
+			<part type="lubricant bottle" number="100" />
+			<part type="rover battery" number="100" />
+			<part type="radio antenna" number="100" />
+			<part type="satellite dish" number="100" />
+			<part type="communications circuit board" number="100" />
+			<part type="navigation circuit board" number="100" />
+			<part type="suit heating unit" number="100" />
+			<part type="plastic pipe" number="100" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 2">
@@ -272,6 +298,28 @@
 			<person number="4" />
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
+			<part type="airleak patch" number="100" />
+			<part type="tire plug" number="100" />
+			<part type="co2 extinguisher" number="100" />
+			<part type="rover tire" number="100" />
+			<part type="gasket" number="100" />
+			<part type="valve" number="100" />
+			<part type="silicone sealant" number="100" />
+			<part type="spark plug" number="100" />
+			<part type="fan belt" number="100" />
+			<part type="coolant bottle" number="100" />
+			<part type="electrical wire" number="100" />
+			<part type="power cable" number="100" />
+			<part type="wire connector" number="100" />
+			<part type="plastic tubing" number="100" />
+			<part type="lubricant bottle" number="100" />
+			<part type="rover battery" number="100" />
+			<part type="radio antenna" number="100" />
+			<part type="satellite dish" number="100" />
+			<part type="communications circuit board" number="100" />
+			<part type="navigation circuit board" number="100" />
+			<part type="suit heating unit" number="100" />
+			<part type="plastic pipe" number="100" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 3">
@@ -292,6 +340,28 @@
 			<person number="12" />
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
+			<part type="airleak patch" number="100" />
+			<part type="tire plug" number="100" />
+			<part type="co2 extinguisher" number="100" />
+			<part type="rover tire" number="100" />
+			<part type="gasket" number="100" />
+			<part type="valve" number="100" />
+			<part type="silicone sealant" number="100" />
+			<part type="spark plug" number="100" />
+			<part type="fan belt" number="100" />
+			<part type="coolant bottle" number="100" />
+			<part type="electrical wire" number="100" />
+			<part type="power cable" number="100" />
+			<part type="wire connector" number="100" />
+			<part type="plastic tubing" number="100" />
+			<part type="lubricant bottle" number="100" />
+			<part type="rover battery" number="100" />
+			<part type="radio antenna" number="100" />
+			<part type="satellite dish" number="100" />
+			<part type="communications circuit board" number="100" />
+			<part type="navigation circuit board" number="100" />
+			<part type="suit heating unit" number="100" />
+			<part type="plastic pipe" number="100" />
 		</resupply>
 	
 	</resupply-list>
