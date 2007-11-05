@@ -252,7 +252,6 @@
 		<severity value="50" />
 		<probability value="10.0" />
 		<emergency-repair-time value="100.0" />
-		<eva-repair-time value="50.0" />
 		<entity-list>
 			<entity name="rover" />
 			<entity name="living accomodations" />
@@ -364,7 +363,6 @@
 		<severity value="20" />
 		<probability value="35.0" />
 		<repair-time value="20.0" />
-		<eva-repair-time value="20.0" />
 		<entity-list>
 			<entity name="vehicle" />
 			<entity name="eva suit" />
