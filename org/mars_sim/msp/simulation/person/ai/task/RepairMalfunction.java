@@ -9,12 +9,15 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+
+import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.building.*;
 
 /**
@@ -39,31 +42,84 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     public RepairMalfunction(Person person) throws Exception {
         super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
 
+        // Get the malfunctioning entity.
+        entity = getMalfunctionEntity(person);
+        if (entity != null) {
+        	// Add person to building if malfunctionable is a building with life support.
+        	addPersonToMalfunctionableBuilding(entity); 
+        }
+        else endTask();
+        
         // Initialize phase
         addPhase(REPAIRING);
         setPhase(REPAIRING);
         
         // System.out.println(person.getName() + " repairing malfunction.");
     }
-
+    
     /**
-     * Checks if the person has a local malfunction.
-     * @return true if malfunction, false if none.
+     * Gets a malfunctional entity with a normal malfunction for a user.
+     * @param person the person.
+     * @return malfunctional entity.
+     * @throws Exception if error checking if error finding entity.
      */
-    public static boolean hasMalfunction(Person person) {
-
-        boolean result = false;
-
+    private static Malfunctionable getMalfunctionEntity(Person person) throws Exception {
+        Malfunctionable result = null;
+        
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
-            if (manager.hasNormalMalfunction()) result = true;
+        while (i.hasNext() && (result == null)) {
+            Malfunctionable entity = (Malfunctionable) i.next();
+            if (hasMalfunction(person, entity)) result = entity;
         }
-
+        
         return result;
     }
+    
+    /**
+     * Gets a malfunctional entity with a normal malfunction for a user.
+     * @return malfunctional entity.
+     * @throws Exception if error checking if error finding entity.
+     */
+    private static boolean hasMalfunction(Person person, Malfunctionable entity) throws Exception {
+    	boolean result = false;
+    	
+    	MalfunctionManager manager = entity.getMalfunctionManager();
+        Iterator<Malfunction> i = manager.getNormalMalfunctions().iterator();
+        while (i.hasNext() && !result) {
+           	if (hasRepairPartsForMalfunction(person, i.next())) result = true;
+        }
+    	
+    	return result;
+    }
+    
+    /**
+     * Checks if there are enough repair parts at person's location to fix the malfunction.
+     * @param person the person checking.
+     * @param malfunction the malfunction.
+     * @return true if enough repair parts to fix malfunction.
+     * @throws Exception if error checking for repair parts.
+     */
+    private static boolean hasRepairPartsForMalfunction(Person person, Malfunction malfunction) 
+    		throws Exception {
+    	if (person == null) throw new IllegalArgumentException("person is null");
+    	if (malfunction == null) throw new IllegalArgumentException("malfunction is null");
+    	
+    	boolean result = true;    	
+    	Inventory inv = person.getTopContainerUnit().getInventory();
 
-    /** Returns the weighted probability that a person might perform this task.
+    	Map<Part, Integer> repairParts = malfunction.getRepairParts();
+    	Iterator<Part> i = repairParts.keySet().iterator();
+    	while (i.hasNext() && result) {
+    		Part part = i.next();
+    		int number = repairParts.get(part);
+    		if (inv.getItemResourceNum(part) < number) result = false;
+    	}
+    	
+    	return result;
+    }
+    
+    /** 
+     *  Returns the weighted probability that a person might perform this task.
      *  @param person the person to perform the task
      *  @return the weighted probability that a person might perform this task
      */
@@ -73,10 +129,18 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         // Total probabilities for all malfunctionable entities in person's local.
         Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
-            // MalfunctionManager manager = ((Malfunctionable) i.next()).getMalfunctionManager();
             Malfunctionable entity = (Malfunctionable) i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
-            if (manager.hasNormalMalfunction()) result = 100D;
+            Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
+            while (j.hasNext()) {
+            	Malfunction malfunction = j.next();
+            	try {
+            		if (hasRepairPartsForMalfunction(person, malfunction)) result += 100D;
+            	}
+            	catch (Exception e) {
+            		e.printStackTrace(System.err);
+            	}
+            }
         }
 
         // Effort-driven task modifier.
@@ -110,7 +174,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     private double repairingPhase(double time) throws Exception {
     	
         // Check if there are no more malfunctions.
-        if (!hasMalfunction(person)) endTask();
+        if (!hasMalfunction(person, entity)) endTask();
 
         if (isDone()) return time;
         
@@ -122,18 +186,24 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
         // Get a local malfunction.
         Malfunction malfunction = null;
-        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            Malfunctionable e = (Malfunctionable) i.next();
-            MalfunctionManager manager = e.getMalfunctionManager();
-            if (manager.hasNormalMalfunction()) {
-                malfunction = manager.getMostSeriousNormalMalfunction();
-            	setDescription("Repairing " + malfunction.getName() + " on " + e);
-            	entity = e;
-            	// Add person to building if malfunctionable is a building with life support.
-            	addPersonToMalfunctionableBuilding(e);
-            	break;
+        Iterator<Malfunction> i = entity.getMalfunctionManager().getNormalMalfunctions().iterator();
+        while (i.hasNext() && (malfunction == null)) {
+           	Malfunction tempMalfunction = i.next();
+           	if (hasRepairPartsForMalfunction(person, tempMalfunction)) {
+           		malfunction = tempMalfunction;
+           		setDescription("Repairing " + malfunction.getName() + " on " + entity.getName());
             }
+        }
+        
+        // Add repair parts if necessary.
+        Inventory inv = person.getTopContainerUnit().getInventory();
+        Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
+        Iterator<Part> j = parts.keySet().iterator();
+        while (j.hasNext()) {
+        	Part part = j.next();
+        	int number = parts.get(part);
+        	inv.retrieveItemResources(part, number);
+        	malfunction.repairWithParts(part, number);
         }
 
         // Add work to malfunction.
@@ -146,6 +216,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         // Check if an accident happens during maintenance.
         checkForAccident(time);
 
+        // Check if there are no more malfunctions.
+        if (!hasMalfunction(person, entity)) endTask();
+        
         return (workTimeLeft / workTime) / time;
     }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 2.78 2005-07-13
+ * @version 2.82 2007-11-04
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.*;
@@ -39,6 +40,7 @@ public abstract class EVAOperation extends Task implements Serializable {
     protected boolean exitedAirlock;  // Person has exited the airlock.
     protected boolean enteredAirlock; // Person has entered the airlock.
     private boolean endEVA;           // Flag for ending EVA operation externally. 
+    protected Unit containerUnit;        // The unit that is being exited for EVA.
 	
     /** 
      * Constructor
@@ -52,6 +54,7 @@ public abstract class EVAOperation extends Task implements Serializable {
         // Initialize data members
         exitedAirlock = false;
         enteredAirlock = false;
+        containerUnit = person.getTopContainerUnit();
         
         // Add task phases.
         addPhase(EXIT_AIRLOCK);

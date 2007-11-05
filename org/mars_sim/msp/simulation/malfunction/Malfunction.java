@@ -264,7 +264,7 @@ public class Malfunction implements Serializable {
      * Determines the parts that are required to repair this malfunction.
      * @throws Exception if error determining the repair parts.
      */
-    public void determineRepairParts() throws Exception {
+    void determineRepairParts() throws Exception {
     	MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
     	String[] partNames = config.getRepairPartNamesForMalfunction(name);
     	for (int x = 0; x < partNames.length; x++) {
@@ -276,5 +276,40 @@ public class Malfunction implements Serializable {
     			// System.out.println("New Malfunction: " + getName() + " - required part: " + part.getName() + " - number: " + number);
     		}
     	}
+    }
+    
+    /**
+     * Gets the parts required to repair this malfunction.
+     * @return map of parts and their number.
+     */
+    public Map<Part, Integer> getRepairParts() {
+    	return new HashMap<Part, Integer>(repairParts);
+    }
+    
+    /**
+     * Repairs the malfunction with a number of a part.
+     * @param part the part.
+     * @param number the number used for repair.
+     */
+    public void repairWithParts(Part part, int number) {
+    	if (part == null) throw new IllegalArgumentException("part is null");
+    	if (repairParts.containsKey(part)) {
+    		int numberNeeded = repairParts.get(part);
+    		if (number > numberNeeded) throw new IllegalArgumentException("number " + number + 
+    				" is greater that number of parts needed: " + numberNeeded);
+    		else {
+    			numberNeeded -= number;
+    			if (numberNeeded > 0) repairParts.put(part, numberNeeded);
+    			else repairParts.remove(part);
+    		}
+    	}
+    	else throw new IllegalArgumentException("Part " + part + " is not needed for repairs.");
+    }
+    
+    /**
+     * Gets the string value for the object.
+     */
+    public String toString() {
+    	return getName();
     }
 }

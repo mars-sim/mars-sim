@@ -184,7 +184,7 @@ public class MalfunctionManager implements Serializable {
     public Malfunction getMostSeriousEmergencyMalfunction() {
 
         Malfunction result = null;
-        double highestSeverity = 0;
+        double highestSeverity = 0D;
 
         if (hasMalfunction()) {
             Iterator<Malfunction> i = malfunctions.iterator();
@@ -209,7 +209,7 @@ public class MalfunctionManager implements Serializable {
     public Malfunction getMostSeriousNormalMalfunction() {
 
         Malfunction result = null;
-        double highestSeverity = 0;
+        double highestSeverity = 0D;
 
         if (hasMalfunction()) {
             Iterator<Malfunction> i = malfunctions.iterator();
@@ -226,6 +226,22 @@ public class MalfunctionManager implements Serializable {
 
         return result;
     }
+    
+    /**
+     * Gets a list of all normal malfunctions sorted by highest severity first.
+     * @return list of malfunctions.
+     */
+    public List<Malfunction> getNormalMalfunctions() {
+    	List<Malfunction> result = new ArrayList<Malfunction>();
+    	Iterator<Malfunction> i = malfunctions.iterator();
+    	while (i.hasNext()) {
+    		Malfunction malfunction = i.next();
+    		if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) 
+    			result.add(malfunction);
+    	}
+    	Collections.sort(result, new MalfunctionSeverityComparator());
+    	return result;
+    }
 
     /**
      * Gets the most serious EVA malfunction the entity has.
@@ -234,7 +250,7 @@ public class MalfunctionManager implements Serializable {
     public Malfunction getMostSeriousEVAMalfunction() {
 
         Malfunction result = null;
-        double highestSeverity = 0;
+        double highestSeverity = 0D;
 
         if (hasMalfunction()) {
             Iterator<Malfunction> i = malfunctions.iterator();
@@ -251,6 +267,22 @@ public class MalfunctionManager implements Serializable {
 
         return result;
     }
+    
+    /**
+     * Gets a list of all EVA malfunctions sorted by highest severity first.
+     * @return list of malfunctions.
+     */
+    public List<Malfunction> getEVAMalfunctions() {
+    	List<Malfunction> result = new ArrayList<Malfunction>();
+    	Iterator<Malfunction> i = malfunctions.iterator();
+    	while (i.hasNext()) {
+    		Malfunction malfunction = i.next();
+    		if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) 
+    			result.add(malfunction);
+    	}
+    	Collections.sort(result, new MalfunctionSeverityComparator());
+    	return result;
+    }
 
     /**
      * Adds a randomly selected malfunction to the unit (if possible).
@@ -258,8 +290,17 @@ public class MalfunctionManager implements Serializable {
     private void addMalfunction() {
         MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
         Malfunction malfunction = factory.getMalfunction(scope);
-        if (malfunction != null) {
-            malfunctions.add(malfunction);
+        if (malfunction != null) addMalfunction(malfunction);
+    }
+    
+    /**
+     * Adds a malfunction to the unit.
+     * @param malfunction the malfunction to add.
+     */
+    void addMalfunction(Malfunction malfunction) {
+    	if (malfunction == null) throw new IllegalArgumentException("malfunction is null");
+    	else {
+    		malfunctions.add(malfunction);
             
             try {
             	getUnit().fireUnitUpdate(MALFUNCTION_EVENT, malfunction);
@@ -272,7 +313,7 @@ public class MalfunctionManager implements Serializable {
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
             issueMedicalComplaints(malfunction);
-       }
+    	}
     }
 
     /**
@@ -505,9 +546,6 @@ public class MalfunctionManager implements Serializable {
      */
     public void issueMedicalComplaints(Malfunction malfunction) {
 
-        // Get people who can be affected by this malfunction.
-        PersonCollection people = entity.getAffectedPeople();
-
         // Determine medical complaints for each malfunction.
         Iterator i1 = malfunction.getMedicalComplaints().keySet().iterator();
         while (i1.hasNext()) {
@@ -516,7 +554,8 @@ public class MalfunctionManager implements Serializable {
             MedicalManager medic = Simulation.instance().getMedicalManager();
             Complaint complaint = medic.getComplaintByName(complaintName);
             if (complaint != null) {
-                PersonIterator i2 = people.iterator();
+            	// Get people who can be affected by this malfunction.
+                PersonIterator i2 = entity.getAffectedPeople().iterator();
                 while (i2.hasNext()) {
                     Person person = i2.next();
                     if (RandomUtil.lessThanRandPercent(probability)) {
@@ -597,13 +636,35 @@ public class MalfunctionManager implements Serializable {
     	// System.out.println(entity + " needs maintenance parts: " + partsNeededForMaintenance.toString());
     }
     
+    /**
+     * Gets the parts needed for maintenance on this entity.
+     * @return map of parts and their number.
+     */
     public Map<Part, Integer> getMaintenanceParts() {
     	if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
     	return new HashMap<Part, Integer>(partsNeededForMaintenance);
     }
 
+    /**
+     * Gets off of the repair part probabilities for the malfunctionable.
+     * @return maps of parts and probable number of parts needed per malfunction.
+     * @throws Exception if error finding probabilities.
+     */
 	public Map<Part, Double> getRepairPartProbabilities() throws Exception {
 		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getRepairPartProbabilities(scope);
+	}
+	
+	/**
+	 * Inner class comparator for sorting malfunctions my highest severity to lowest.
+	 */
+	private class MalfunctionSeverityComparator implements Comparator<Malfunction>, Serializable {
+		public int compare(Malfunction malfunction1, Malfunction malfunction2) {
+			int severity1 = malfunction1.getSeverity();
+			int severity2 = malfunction2.getSeverity();
+			if (severity1 > severity2) return -1;
+			else if (severity1 == severity2) return 0;
+			else return 1;
+		}
 	}
 }

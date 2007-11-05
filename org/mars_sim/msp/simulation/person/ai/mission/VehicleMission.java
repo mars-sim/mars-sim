@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.80 2006-09-08
+ * @version 2.82 2007-11-05
  * @author Scott Davis
  */
 
@@ -20,6 +20,7 @@ import org.mars_sim.msp.simulation.UnitEvent;
 import org.mars_sim.msp.simulation.UnitListener;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
+import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
@@ -412,6 +413,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     			// If not, determine an emergency destination.
     			determineEmergencyDestination(person);
     		}
+    		
+    		// If vehicle has unrepairable malfunction, end mission.
+    		if (hasUnrepairableMalfunction()) endMission("unrepairable malfunction");
     	}
     	catch (Exception e) {
     		throw new MissionException(e.getMessage(), getPhase());
@@ -739,5 +743,33 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public Map<Class, Integer> getEquipmentToLoad() throws Exception {
 		return getEquipmentNeededForRemainingMission(true);
+	}
+	
+	/**
+	 * Checks if the vehicle has a malfunction that cannot be repaired.
+	 * @return true if unrepairable malfunction.
+	 * @throws Exception if error checking for malfunction.
+	 */
+	private boolean hasUnrepairableMalfunction() throws Exception {
+		boolean result = false;
+		
+		if (vehicle != null) {
+			vehicle.getMalfunctionManager();
+			Iterator<Malfunction> i = vehicle.getMalfunctionManager().getMalfunctions().iterator();
+			while (i.hasNext()) {
+				Malfunction malfunction = i.next();
+				Map<Part, Integer> parts = malfunction.getRepairParts();
+				Iterator<Part> j = parts.keySet().iterator();
+				while (j.hasNext()) {
+					Part part = j.next();
+					int number = parts.get(part);
+					if (vehicle.getInventory().getItemResourceNum(part) < number) {
+						result = true;
+					}
+				}
+			}
+		}
+		
+		return result;
 	}
 }

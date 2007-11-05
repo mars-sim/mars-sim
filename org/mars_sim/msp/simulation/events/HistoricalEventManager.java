@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.time.MarsClock;
+import org.mars_sim.msp.simulation.time.MasterClock;
 
 /**
  * This class provides a manager that maintains a model of the events that
@@ -91,10 +92,12 @@ public class HistoricalEventManager {
             removeEvents(events.size() - excess, excess);
         }
 
-        if (mainClock == null) {
-            mainClock = Simulation.instance().getMasterClock().getMarsClock();
+        MasterClock masterClock = Simulation.instance().getMasterClock();
+        if (masterClock != null) {
+        	if (mainClock == null) mainClock = masterClock.getMarsClock();
+        	newEvent.setTimestamp((MarsClock) mainClock.clone());
         }
-        newEvent.setTimestamp((MarsClock) mainClock.clone());
+        
         events.add(0, newEvent);
 
         Iterator<HistoricalEventListener> iter = listeners.iterator();

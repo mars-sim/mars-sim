@@ -150,6 +150,12 @@ public final class MalfunctionFactory implements Serializable {
         return entities;
     }
     
+    /**
+     * Gest the repair part probabilities for a set of entity scope strings.
+     * @param scope a collections of entity scope strings.
+     * @return map of repair parts and probable number of parts needed per malfunction.
+     * @throws Exception if error finding repair part probabilities.
+     */
     Map<Part, Double> getRepairPartProbabilities(Collection<String> scope) throws Exception {
     	Map<Part, Double> result = new HashMap<Part, Double>();
     	

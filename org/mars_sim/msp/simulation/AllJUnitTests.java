@@ -28,7 +28,7 @@ public class AllJUnitTests extends TestCase {
 		suite.addTestSuite(org.mars_sim.msp.simulation.TestInventory.class);
 		//suite.addTestSuite(org.mars_sim.msp.simulation.equipment.JUnitTests.class);
 		//suite.addTestSuite(org.mars_sim.msp.simulation.events.JUnitTests.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.malfunction.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.malfunction.TestMalfunctionManager.class);
 		//suite.addTestSuite(org.mars_sim.msp.simulation.person.JUnitTests.class);
 		//suite.addTestSuite(org.mars_sim.msp.simulation.person.ai.JUnitTests.class);
 		//suite.addTestSuite(org.mars_sim.msp.simulation.person.ai.mission.JUnitTests.class);
