@@ -1,25 +1,38 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.81 2007-08-12
+ * @version 2.82 2007-11-05
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.simulation.mars.*;
-import org.mars_sim.msp.simulation.person.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
-import org.mars_sim.msp.simulation.structure.building.function.*;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
@@ -71,26 +84,16 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 			while (i.hasNext()) {
 				MalfunctionManager manager = i.next().getMalfunctionManager();
 				double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
-				if (entityProb > 50D) entityProb = 50D;
+				if (entityProb > 100D) entityProb = 100D;
 				result += entityProb;
 			}
 		}
 
-		// Determine if settlement has available space in garages.
-		boolean garageSpace = false;
+		// Determine if settlement has a garage.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {	
-			Settlement settlement = person.getSettlement();
-			Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
-			while (j.hasNext()) {
-				try {
-					Building building = (Building) j.next();
-					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
-					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) garageSpace = true;
-				}
-				catch (Exception e) {}
-			}
+			if (person.getSettlement().getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).size() > 0) 
+				result = 0D;
         }
-		if (garageSpace) result = 0D;
 
         // Check if an airlock is available
         if (getAvailableAirlock(person) == null) result = 0D;
@@ -208,6 +211,17 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         if (skill == 0) workTime /= 2;
         if (skill > 1) workTime += workTime * (.2D * skill);
 
+        // Add repair parts if necessary.
+        Inventory inv = containerUnit.getInventory();
+        Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
+        Iterator<Part> j = parts.keySet().iterator();
+        while (j.hasNext()) {
+          	Part part = j.next();
+           	int number = parts.get(part);
+           	inv.retrieveItemResources(part, number);
+           	manager.maintainWithParts(part, number);
+        }
+        
         // Add work to the maintenance
         manager.addMaintenanceWorkTime(workTime);
         
@@ -286,13 +300,13 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     }
     
     /**
-     * Gets a ground vehicle that requires maintenance outside the settlement.
+     * Gets a ground vehicle that requires maintenance in a local garage.
      * Returns null if none available.
-     *
      * @param person person checking.
      * @return ground vehicle
+     * @throws Exception if error finding needy vehicle.
      */
-    private GroundVehicle getNeedyGroundVehicle(Person person) {
+    private GroundVehicle getNeedyGroundVehicle(Person person) throws Exception {
             
         GroundVehicle result = null;
 
@@ -303,8 +317,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         double totalProbWeight = 0D;
         VehicleIterator i = availableVehicles.iterator();
         while (i.hasNext()) {
-            MalfunctionManager manager = i.next().getMalfunctionManager();
-            totalProbWeight = manager.getEffectiveTimeSinceLastMaintenance();
+            totalProbWeight += getProbabilityWeight(i.next());
         }
         
         // Get random value
@@ -312,17 +325,35 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         
         // Determine which vehicle was picked.
         VehicleIterator i2 = availableVehicles.iterator();
-        while (i2.hasNext()) {
+        while (i2.hasNext() && (result == null)) {
             Vehicle vehicle = i2.next();
-            if (result == null) {
-                MalfunctionManager manager = vehicle.getMalfunctionManager();
-                double probWeight = manager.getEffectiveTimeSinceLastMaintenance();
-                if (rand < probWeight) result = (GroundVehicle) vehicle;
-                else rand -= probWeight;
+            double probWeight = getProbabilityWeight(vehicle);
+            if (rand < probWeight) {
+            	result = (GroundVehicle) vehicle;
+            	setDescription("Performing maintenance on " + result.getName());
+            	break;
             }
+            else rand -= probWeight;
         }
         
         return result;
+    }
+    
+    /**
+     * Gets the probability weight for a vehicle.
+     * @param vehicle the vehicle.
+     * @return the probability weight.
+     * @throws Exception if error determining probability weight.
+     */
+    private double getProbabilityWeight(Vehicle vehicle) throws Exception {
+    	double result = 0D;
+		MalfunctionManager manager = vehicle.getMalfunctionManager();
+		boolean hasMalfunction = manager.hasMalfunction();
+		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		boolean minTime = (effectiveTime >= 1000D); 
+		boolean enoughParts = Maintenance.hasMaintenanceParts(person, vehicle);
+		if (!hasMalfunction && minTime && enoughParts) result = effectiveTime;
+		return result;
     }
     
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.81 2007-08-12
+ * @version 2.82 2007-11-05
  * @author Scott Davis
  */
 
@@ -9,12 +9,15 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+
+import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -64,24 +67,30 @@ public class Maintenance extends Task implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        // Total probabilities for all malfunctionable entities in person's local.
-        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = (Malfunctionable) i.next();
-            boolean isVehicle = (entity instanceof Vehicle);
-            boolean uninhabitableBuilding = false;
-            if (entity instanceof Building) 
-            	uninhabitableBuilding = !((Building) entity).hasFunction(LifeSupport.NAME);
-            MalfunctionManager manager = entity.getMalfunctionManager();
-            boolean hasMalfunction = manager.hasMalfunction();
-            double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-            boolean minTime = (effectiveTime >= 1000D);
-            if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && minTime) {
-                double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
-                if (entityProb > 100D) entityProb = 100D;
-                result += entityProb;
-            }   
+        try {
+        	// Total probabilities for all malfunctionable entities in person's local.
+        	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        	while (i.hasNext()) {
+        		Malfunctionable entity = (Malfunctionable) i.next();
+        		boolean isVehicle = (entity instanceof Vehicle);
+        		boolean uninhabitableBuilding = false;
+        		if (entity instanceof Building) 
+        			uninhabitableBuilding = !((Building) entity).hasFunction(LifeSupport.NAME);
+        		MalfunctionManager manager = entity.getMalfunctionManager();
+        		boolean hasMalfunction = manager.hasMalfunction();
+        		boolean hasParts = hasMaintenanceParts(person, entity);
+        		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+        		boolean minTime = (effectiveTime >= 1000D);
+        		if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
+        			double entityProb = effectiveTime / 1000D;
+        			if (entityProb > 100D) entityProb = 100D;
+        			result += entityProb;
+        		}
+            }
         }
+        catch (Exception e) {
+    		e.printStackTrace(System.err);
+    	}
 	
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -131,6 +140,17 @@ public class Maintenance extends Task implements Serializable {
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
+        // Add repair parts if necessary.
+        Inventory inv = person.getTopContainerUnit().getInventory();
+        Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
+        Iterator<Part> j = parts.keySet().iterator();
+        while (j.hasNext()) {
+        	Part part = j.next();
+        	int number = parts.get(part);
+        	inv.retrieveItemResources(part, number);
+        	manager.maintainWithParts(part, number);
+        }
+        
         // Add work to the maintenance
         manager.addMaintenanceWorkTime(workTime);
             
@@ -245,9 +265,9 @@ public class Maintenance extends Task implements Serializable {
      * Gets the probability weight for a malfunctionable.
      * @param malfunctionable the malfunctionable
      * @return the probability weight.
-     * @throws BuildingException if error determining probability weight.
+     * @throws Exception if error determining probability weight.
      */
-    private double getProbabilityWeight(Malfunctionable malfunctionable)  throws BuildingException {
+    private double getProbabilityWeight(Malfunctionable malfunctionable)  throws Exception {
     	double result = 0D;
     	boolean isVehicle = (malfunctionable instanceof Vehicle);
 		boolean uninhabitableBuilding = false;
@@ -257,7 +277,8 @@ public class Maintenance extends Task implements Serializable {
 		boolean hasMalfunction = manager.hasMalfunction();
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		boolean minTime = (effectiveTime >= 1000D); 
-		if (!isVehicle && !uninhabitableBuilding && !hasMalfunction && minTime) {
+		boolean enoughParts = hasMaintenanceParts(person, malfunctionable);
+		if (!isVehicle && !uninhabitableBuilding && !hasMalfunction && minTime && enoughParts) {
 			result = effectiveTime;
 			if (malfunctionable instanceof Building) {
 				Building building = (Building) malfunctionable;
@@ -268,6 +289,30 @@ public class Maintenance extends Task implements Serializable {
 			}
 		}
 		return result;
+    }
+    
+    /**
+     * Checks if there are enough local parts to perform maintenance.
+     * @param person the person performing the maintenance.
+     * @param malfunctionable the entity needing maintenance.
+     * @return true if enough parts.
+     * @throws Exception if error checking parts availability.
+     */
+    static boolean hasMaintenanceParts(Person person, Malfunctionable malfunctionable) throws Exception {
+    	boolean result = true;
+    	
+    	Inventory inv = null;
+    	if (person.getTopContainerUnit() != null) inv = person.getTopContainerUnit().getInventory();
+    	else inv = person.getInventory();
+    	Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+    	Iterator<Part> i = parts.keySet().iterator();
+    	while (i.hasNext()) {
+    		Part part = i.next();
+    		int number = parts.get(part);
+    		if (inv.getItemResourceNum(part) < number) result = false;
+    	}
+    	
+    	return result;
     }
     
 	/**

@@ -611,6 +611,9 @@ public class MalfunctionManager implements Serializable {
     	else throw new Exception("Could not find unit associated with malfunctionable.");
     }
     
+    /**
+     * Determines a new set of required maintenance parts.
+     */
     private void determineNewMaintenanceParts() {
     	if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
     	partsNeededForMaintenance.clear();
@@ -643,6 +646,26 @@ public class MalfunctionManager implements Serializable {
     public Map<Part, Integer> getMaintenanceParts() {
     	if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
     	return new HashMap<Part, Integer>(partsNeededForMaintenance);
+    }
+    
+    /**
+     * Adds a number of a part to the entity for maintenance.
+     * @param part the part.
+     * @param number the number used.
+     */
+    public void maintainWithParts(Part part, int number) {
+    	if (part == null) throw new IllegalArgumentException("part is null");
+    	if (partsNeededForMaintenance.containsKey(part)) {
+    		int numberNeeded = partsNeededForMaintenance.get(part);
+    		if (number > numberNeeded) throw new IllegalArgumentException("number " + number + 
+    				" is greater that number of parts needed: " + numberNeeded);
+    		else {
+    			numberNeeded -= number;
+    			if (numberNeeded > 0) partsNeededForMaintenance.put(part, numberNeeded);
+    			else partsNeededForMaintenance.remove(part);
+    		}
+    	}
+    	else throw new IllegalArgumentException("Part " + part + " is not needed for maintenance.");
     }
 
     /**

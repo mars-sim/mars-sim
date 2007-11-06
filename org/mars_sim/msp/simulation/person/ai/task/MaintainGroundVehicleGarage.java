@@ -1,24 +1,38 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.81 2007-08-12
+ * @version 2.82 2007-11-05
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.simulation.person.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.*;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
@@ -65,7 +79,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         		// If not in a garage, try to add it to a garage with empty space.
         		Settlement settlement = person.getSettlement();
         		Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
-        		while (j.hasNext()) {
+        		while (j.hasNext() && (garage == null)) {
         			try {
         				Building garageBuilding = (Building) j.next();
         				VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
@@ -101,38 +115,44 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-		// Get all vehicles requiring maintenance.
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-        	VehicleIterator i = getAllVehicleCandidates(person).iterator();
-        	while (i.hasNext()) {
-            	MalfunctionManager manager = i.next().getMalfunctionManager();
-            	double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
-            	if (entityProb > 50D) entityProb = 50D;
-            	result += entityProb;
+        try {
+        	// Get all vehicles requiring maintenance.
+        	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        		VehicleIterator i = getAllVehicleCandidates(person).iterator();
+        		while (i.hasNext()) {
+        			Vehicle vehicle = i.next();
+        			MalfunctionManager manager = vehicle.getMalfunctionManager();
+        			boolean hasMalfunction = manager.hasMalfunction();
+        			boolean hasParts = Maintenance.hasMaintenanceParts(person, vehicle);
+        			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+        			boolean minTime = (effectiveTime >= 1000D);
+        			if (!hasMalfunction && hasParts && minTime) {
+        				double entityProb = effectiveTime / 200D;
+        				if (entityProb > 100D) entityProb = 100D;
+        				result += entityProb;
+        			}
+            	}
         	}
 		}
+        catch (Exception e) {
+        	e.printStackTrace(System.err);
+        }
         
-		// Determine if settlement has available space in garages or 
-		// garage has vehicle currently being worked on.
+		// Determine if settlement has available space in garage.
 		boolean garageSpace = false;
-		boolean vehicleMaint = false;
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {	
 			Settlement settlement = person.getSettlement();
 			Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
-			while (j.hasNext()) {
+			while (j.hasNext() && !garageSpace) {
 				try {
 					Building building = (Building) j.next();
 					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
 					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) garageSpace = true;
-					VehicleIterator h = garage.getVehicles().iterator();
-					while (h.hasNext()) {
-						if (h.next().isReservedForMaintenance()) vehicleMaint = true;
-					}
 				}
 				catch (Exception e) {}
 			}
 		}
-		if (!garageSpace && !vehicleMaint) result = 0D;
+		if (!garageSpace) result = 0D;
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -165,41 +185,52 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
     private double maintainVehiclePhase(double time) throws Exception {
         MalfunctionManager manager = vehicle.getMalfunctionManager();
     	
-            // If person is incompacitated, end task.
-            if (person.getPerformanceRating() == 0D) endTask();
+        // If person is incompacitated, end task.
+        if (person.getPerformanceRating() == 0D) endTask();
 
-            // Check if maintenance has already been completed.
-            if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
+        // Check if maintenance has already been completed.
+        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
 
-            // If vehicle has malfunction, end task.
-            if (manager.hasMalfunction()) endTask();
+        // If vehicle has malfunction, end task.
+        if (manager.hasMalfunction()) endTask();
 
-            if (isDone()) return time;
+        if (isDone()) return time;
     	
-            // Determine effective work time based on "Mechanic" skill.
-            double workTime = time;
-            int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
-            if (mechanicSkill == 0) workTime /= 2;
-            if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
+        // Determine effective work time based on "Mechanic" skill.
+        double workTime = time;
+        int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        if (mechanicSkill == 0) workTime /= 2;
+        if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
-            // Add work to the maintenance
-            manager.addMaintenanceWorkTime(workTime);
+        // Add work to the maintenance
+        manager.addMaintenanceWorkTime(workTime);
 
-            // Add experience points
-            addExperience(time);
+        // Add repair parts if necessary.
+        Inventory inv = person.getTopContainerUnit().getInventory();
+        Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
+        Iterator<Part> j = parts.keySet().iterator();
+        while (j.hasNext()) {
+          	Part part = j.next();
+           	int number = parts.get(part);
+           	inv.retrieveItemResources(part, number);
+           	manager.maintainWithParts(part, number);
+        }
             
-            // If maintenance is complete, task is done.
-            if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
-                // System.out.println(person.getName() + " finished " + description);
-                vehicle.setReservedForMaintenance(false);
-                garage.removeVehicle(vehicle);
-                endTask();
-            }
+        // Add experience points
+        addExperience(time);
+            
+        // If maintenance is complete, task is done.
+        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
+            // System.out.println(person.getName() + " finished " + description);
+            vehicle.setReservedForMaintenance(false);
+            garage.removeVehicle(vehicle);
+            endTask();
+        }
 
-            // Check if an accident happens during maintenance.
-            checkForAccident(time);
+        // Check if an accident happens during maintenance.
+        checkForAccident(time);
     	
-            return 0D;
+        return 0D;
     }
     
 	/**
@@ -270,8 +301,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * Returns null if none available.
      * @param person person checking.
      * @return ground vehicle
+     * @throws Exception if error finding needy vehicle.
      */
-    private GroundVehicle getNeedyGroundVehicle(Person person) {
+    private GroundVehicle getNeedyGroundVehicle(Person person) throws Exception {
             
         GroundVehicle result = null;
 
@@ -282,8 +314,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         double totalProbWeight = 0D;
         VehicleIterator i = availableVehicles.iterator();
         while (i.hasNext()) {
-            MalfunctionManager manager = i.next().getMalfunctionManager();
-            totalProbWeight = manager.getEffectiveTimeSinceLastMaintenance();
+            totalProbWeight += getProbabilityWeight(i.next());
         }
         
         // Get random value
@@ -293,13 +324,33 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         VehicleIterator i2 = availableVehicles.iterator();
         while (i2.hasNext() && (result == null)) {
             Vehicle vehicle = i2.next();
-            MalfunctionManager manager = vehicle.getMalfunctionManager();
-            double probWeight = manager.getEffectiveTimeSinceLastMaintenance();
-            if (rand < probWeight) result = (GroundVehicle) vehicle;
+            double probWeight = getProbabilityWeight(vehicle);
+            if (rand < probWeight) {
+            	result = (GroundVehicle) vehicle;
+            	setDescription("Performing maintenance on " + result.getName());
+            	break;
+            }
             else rand -= probWeight;
         }
         
         return result;
+    }
+    
+    /**
+     * Gets the probability weight for a vehicle.
+     * @param vehicle the vehicle.
+     * @return the probability weight.
+     * @throws Exception if error determining probability weight.
+     */
+    private double getProbabilityWeight(Vehicle vehicle) throws Exception {
+    	double result = 0D;
+		MalfunctionManager manager = vehicle.getMalfunctionManager();
+		boolean hasMalfunction = manager.hasMalfunction();
+		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		boolean minTime = (effectiveTime >= 1000D); 
+		boolean enoughParts = Maintenance.hasMaintenanceParts(person, vehicle);
+		if (!hasMalfunction && minTime && enoughParts) result = effectiveTime;
+		return result;
     }
     
 	/**
