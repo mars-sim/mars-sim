@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.76 2004-06-01
+ * @version 2.82 2007-11-09
  * @author Scott Davis
  */
 
@@ -27,6 +27,7 @@ public class MasterClock implements Runnable, Serializable {
 
     // Data members
     private MarsClock marsTime;   // Martian Clock
+    private MarsClock initialMarsTime; // Initial Martian time.
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer;      // Uptime Timer
     private transient volatile boolean keepRunning;  // Runnable flag
@@ -53,6 +54,7 @@ public class MasterClock implements Runnable, Serializable {
 
         // Create a Martian clock
         marsTime = new MarsClock(config.getMarsStartDateTime());
+        initialMarsTime = (MarsClock) marsTime.clone();
 	
         // Create an Earth clock
         earthTime = new EarthClock(config.getEarthStartDateTime());
@@ -69,6 +71,14 @@ public class MasterClock implements Runnable, Serializable {
      */
     public MarsClock getMarsClock() {
         return marsTime;
+    }
+    
+    /**
+     * Gets the initial Mars time at the start of the simulation.
+     * @return initial Mars time.
+     */
+    public MarsClock getInitialMarsTime() {
+    	return initialMarsTime;
     }
 
     /** Returns the Earth clock

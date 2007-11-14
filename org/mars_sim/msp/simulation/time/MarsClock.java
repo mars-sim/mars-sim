@@ -54,7 +54,7 @@ public class MarsClock implements Serializable {
      */
     public MarsClock(String dateString) throws Exception {
     
-        // Set initial date to 15-Adir-01:000.000
+        // Set initial date to dateString. ex: "15-Adir-01:000.000"
         String orbitStr = dateString.substring(0, dateString.indexOf("-"));
         orbit = Integer.parseInt(orbitStr);
         if (orbit < 0) throw new Exception("Invalid orbit number: " + orbit);
