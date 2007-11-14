@@ -162,6 +162,7 @@ class AmountResourcePhaseStorage implements Serializable {
     		if (stored != null) {
     			stored.amount -= amount;
     			retrievable = true;
+    			if (stored.amount <= 0D) amountResourcePhaseStored.remove(phase);
     			updateTotalAmountResourcePhasesStored();
     		}
     	}
