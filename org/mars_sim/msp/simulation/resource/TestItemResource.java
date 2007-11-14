@@ -11,19 +11,20 @@ public class TestItemResource extends TestCase {
 	}
 	
 	public void testResourceMass() {
-		double hammerMass = ItemResource.HAMMER.getMassPerItem();
+		double hammerMass = ItemResource.getTestResourceHammer().getMassPerItem();
 		assertEquals("Hammer mass is correct.", 1.4D, hammerMass, 0D);
 	}
 	
 	public void testResourceName() {
-		String hammerName = ItemResource.HAMMER.getName();
+		String hammerName = ItemResource.getTestResourceHammer().getName();
 		assertEquals("Hammer name is correct", "hammer", hammerName);
 	}
 	
 	public void testFindItemResourcePositive() {
 		try {
+			ItemResource hammer = ItemResource.getTestResourceHammer();
 			ItemResource hammerResource = ItemResource.findItemResource("hammer");
-			assertEquals("Hammer found in resource types.", ItemResource.HAMMER, hammerResource);
+			assertEquals("Hammer found in resource types.", hammer, hammerResource);
 		}
 		catch (Exception e) {
 			fail("Hammer found in resource types.");
@@ -39,13 +40,19 @@ public class TestItemResource extends TestCase {
 	}
 	
 	public void testGetItemResourcesSize() {
+		ItemResource.getTestResourceHammer();
+		ItemResource.getTestResourcePipeWrench();
+		ItemResource.getTestResourceSocketWrench();
 		assertEquals("Correct number of item resource types.", 3, ItemResource.getItemResources().size());
 	}
 	
 	public void testGetItemResourcesContents() {
+		ItemResource hammer = ItemResource.getTestResourceHammer();
+		ItemResource socketWrench = ItemResource.getTestResourceSocketWrench();
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Set resources = ItemResource.getItemResources();
-		assertTrue("Contains hammer.", (resources.contains(ItemResource.HAMMER)));
-		assertTrue("Contains socket wrench.", (resources.contains(ItemResource.SOCKET_WRENCH)));
-		assertTrue("Contains pipe wrench.", (resources.contains(ItemResource.PIPE_WRENCH)));
+		assertTrue("Contains hammer.", (resources.contains(hammer)));
+		assertTrue("Contains socket wrench.", (resources.contains(socketWrench)));
+		assertTrue("Contains pipe wrench.", (resources.contains(pipeWrench)));
 	}
 }

@@ -17,6 +17,7 @@ public class UnloadVehicleTest extends TestCase {
 
 	public void testUnloadingPhase() throws Exception {
 		
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		Settlement settlement = new MockSettlement();
 		Inventory settlementInv = settlement.getInventory();
 		settlementInv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
@@ -35,7 +36,7 @@ public class UnloadVehicleTest extends TestCase {
 		vehicleInv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
 		vehicleInv.storeAmountResource(AmountResource.METHANE, 100D);
 		vehicleInv.addGeneralCapacity(100D);
-		vehicleInv.storeItemResources(ItemResource.HAMMER, 5);
+		vehicleInv.storeItemResources(hammer, 5);
 		for (int x = 0; x < 5; x++) {
 			vehicleInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}

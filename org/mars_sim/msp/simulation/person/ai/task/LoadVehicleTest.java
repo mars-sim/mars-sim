@@ -33,6 +33,7 @@ public class LoadVehicleTest extends TestCase {
 		Person person = new Person("test person", Person.MALE, settlement);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
 		Inventory vehicleInv = vehicle.getInventory();
 		
@@ -52,7 +53,7 @@ public class LoadVehicleTest extends TestCase {
 		settlementInv.storeAmountResource(AmountResource.WATER, 100D);
 		settlementInv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
 		settlementInv.storeAmountResource(AmountResource.METHANE, 100D);
-		settlementInv.storeItemResources(ItemResource.HAMMER, 5);
+		settlementInv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
 			settlementInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -63,7 +64,7 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
@@ -80,6 +81,7 @@ public class LoadVehicleTest extends TestCase {
 	public void testHasEnoughSuppliesGood() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
 		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
@@ -90,7 +92,7 @@ public class LoadVehicleTest extends TestCase {
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
 		inv.storeAmountResource(AmountResource.METHANE, 100D);
 		
-		inv.storeItemResources(ItemResource.HAMMER, 5);
+		inv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -101,7 +103,7 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
@@ -113,8 +115,9 @@ public class LoadVehicleTest extends TestCase {
 	public void testHasEnoughSuppliesNoAmountResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
-		inv.storeItemResources(ItemResource.HAMMER, 5);
+		inv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -125,7 +128,7 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
@@ -137,6 +140,7 @@ public class LoadVehicleTest extends TestCase {
 	public void testHasEnoughSuppliesNoItemResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
 		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
@@ -156,7 +160,7 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
@@ -168,6 +172,7 @@ public class LoadVehicleTest extends TestCase {
 	public void testHasEnoughSuppliesNoEquipment() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
 		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
@@ -178,14 +183,14 @@ public class LoadVehicleTest extends TestCase {
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
 		inv.storeAmountResource(AmountResource.METHANE, 100D);
 		
-		inv.storeItemResources(ItemResource.HAMMER, 5);
+		inv.storeItemResources(hammer, 5);
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
 		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
@@ -200,6 +205,7 @@ public class LoadVehicleTest extends TestCase {
 	public void testIsFullyLoadedGood() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 		
@@ -211,7 +217,7 @@ public class LoadVehicleTest extends TestCase {
 		inv.storeAmountResource(AmountResource.WATER, 100D);
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
 		inv.storeAmountResource(AmountResource.METHANE, 100D);
-		inv.storeItemResources(ItemResource.HAMMER, 5);
+		inv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -222,7 +228,7 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
@@ -236,10 +242,11 @@ public class LoadVehicleTest extends TestCase {
 	public void testIsFullyLoadedNoAmountResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 		
-		inv.storeItemResources(ItemResource.HAMMER, 5);
+		inv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -250,7 +257,7 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
@@ -264,6 +271,7 @@ public class LoadVehicleTest extends TestCase {
 	public void testIsFullyLoadedNoItemResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 		
@@ -285,7 +293,7 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
@@ -299,6 +307,7 @@ public class LoadVehicleTest extends TestCase {
 	public void testIsFullyLoadedNoEquipment() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
+		ItemResource hammer = ItemResource.getTestResourceHammer();
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 		
@@ -310,14 +319,14 @@ public class LoadVehicleTest extends TestCase {
 		inv.storeAmountResource(AmountResource.WATER, 100D);
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
 		inv.storeAmountResource(AmountResource.METHANE, 100D);
-		inv.storeItemResources(ItemResource.HAMMER, 5);
+		inv.storeItemResources(hammer, 5);
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
 		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
 		resourcesMap.put(AmountResource.FOOD, new Double(100D));
 		resourcesMap.put(AmountResource.WATER, new Double(100D));
 		resourcesMap.put(AmountResource.METHANE, new Double(100D));
-		resourcesMap.put(ItemResource.HAMMER, new Integer(5));
+		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));

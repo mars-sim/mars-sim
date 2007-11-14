@@ -127,7 +127,10 @@ public class CollectResources extends EVAOperation implements Serializable {
 			// Take container for collecting resource.
 			if (!hasContainers()) takeContainer();
 			
-			setPhase(COLLECT_RESOURCES);
+			if (hasContainers()) setPhase(COLLECT_RESOURCES);
+			else {
+				setPhase(ENTER_AIRLOCK);
+			}
 		}
 		return time;
 	}

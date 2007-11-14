@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ItemResource.java
- * @version 2.81 2007-04-16
+ * @version 2.82 2007-11-09
  * @author Scott Davis
  */
 
@@ -21,11 +21,6 @@ public class ItemResource implements Resource, Serializable {
 
 	// Set of all item resources.
 	private static final Set<ItemResource> resources = new HashSet<ItemResource>();
-	
-	// Item resources.
-	public static final ItemResource HAMMER = new ItemResource("hammer", 1.4D);
-	public static final ItemResource SOCKET_WRENCH = new ItemResource("socket wrench", .5D);
-	public static final ItemResource PIPE_WRENCH = new ItemResource("pipe wrench", 2.5D);
 	
 	// Data members
 	private String name;
@@ -113,5 +108,29 @@ public class ItemResource implements Resource, Serializable {
 	 */
 	public static final Set<ItemResource> getItemResources() {
 		return Collections.unmodifiableSet(resources);
+	}
+	
+	/**
+	 * Gets a mock item resource of a hammer.
+	 * @return item resource.
+	 */
+	public static final ItemResource getTestResourceHammer() {
+		return new ItemResource("hammer", 1.4D);
+	}
+	
+	/**
+	 * Gets a mock item resource of a socket wrench.
+	 * @return item resource.
+	 */
+	public static final ItemResource getTestResourceSocketWrench() {
+		return new ItemResource("socket wrench", .5D);
+	}
+	
+	/**
+	 * Gets a mock item resource of a pipe wrench.
+	 * @return item resource.
+	 */
+	public static final ItemResource getTestResourcePipeWrench() {
+		return new ItemResource("pipe wrench", 2.5D);
 	}
 }

@@ -17,6 +17,7 @@ import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /**
  * The MalfunctionManager class manages the current malfunctions in a unit.
@@ -26,7 +27,14 @@ public class MalfunctionManager implements Serializable {
 	// Unit update events.
 	public static final String MALFUNCTION_EVENT = "malfunction";
 	
+	// The default time (millisols) to perform maintenance work.
     private static double DEFAULT_MAINTENANCE_WORK_TIME = 1000D;
+    
+    // Initial estimate for malfunctions per orbit for an entity.
+    private static double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
+    
+    // Initial estimate for maintenances per orbit for an entity.
+    private static double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
     
     // Data members
     private Malfunctionable entity;          // The owning entity.
@@ -39,7 +47,9 @@ public class MalfunctionManager implements Serializable {
     private Collection<String> scope;        // The scope strings of the unit.
     private Collection<Malfunction> malfunctions; // The current malfunctions in the unit.
     private Map<Part, Integer> partsNeededForMaintenance; // The parts currently needed to maintain this entity.
-
+    private int numberMalfunctions;          // The number of malfunctions the entity has had so far.
+    private int numberMaintenances;          // The number of times the entity has been maintained so far.
+    
     // Life support modifiers.
     private double oxygenFlowModifier = 100D;
     private double waterFlowModifier = 100D;
@@ -290,7 +300,10 @@ public class MalfunctionManager implements Serializable {
     private void addMalfunction() {
         MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
         Malfunction malfunction = factory.getMalfunction(scope);
-        if (malfunction != null) addMalfunction(malfunction);
+        if (malfunction != null) {
+        	addMalfunction(malfunction);
+        	numberMalfunctions++;
+        }
     }
     
     /**
@@ -537,6 +550,7 @@ public class MalfunctionManager implements Serializable {
     		timeSinceLastMaintenance = 0D;
     		effectiveTimeSinceLastMaintenance = 0D;
     		determineNewMaintenanceParts();
+    		numberMaintenances++;
         }
     }
 
@@ -633,10 +647,6 @@ public class MalfunctionManager implements Serializable {
     			}
     		}
     	}
-    	
-    	// if (partsNeededForMaintenance.size() > 0) System.out.println(entity + " needs maintenance parts: " + 
-    	// 		partsNeededForMaintenance.toString());
-    	// System.out.println(entity + " needs maintenance parts: " + partsNeededForMaintenance.toString());
     }
     
     /**
@@ -677,6 +687,57 @@ public class MalfunctionManager implements Serializable {
 		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getRepairPartProbabilities(scope);
 	}
+	
+	public Map<Part, Double> getMaintenancePartProbabilities() throws Exception {
+		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
+		return factory.getMaintenancePartProbabilities(scope);
+	}
+	
+    /**
+     * Gets the estimated number of malfunctions this entity will
+     * have in one Martian orbit.
+     * @return number of malfunctions.
+     */
+    public double getEstimatedNumberOfMalfunctionsPerOrbit() {
+    	
+    	MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+    	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+    	double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+    	double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+    	
+    	double avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
+    	
+    	if (totalTimeOrbits < 1D) {
+    		double estimateTime = 1D - totalTimeOrbits;
+    		double estimatedMalfunctionsPerOrbit = ESTIMATED_MALFUNCTIONS_PER_ORBIT * estimateTime;
+    		avgMalfunctionsPerOrbit += estimatedMalfunctionsPerOrbit;
+    	}
+    	
+    	return avgMalfunctionsPerOrbit;
+    }
+    
+    /**
+     * Gets the estimated number of periodic maintenances this entity will 
+     * have in one Martian orbit.
+     * @return number of maintenances.
+     */
+    public double getEstimatedNumberOfMaintenancesPerOrbit() {
+    	
+    	MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+    	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+    	double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+    	double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+    	
+    	double avgMaintenancesPerOrbit = numberMaintenances / totalTimeOrbits;
+    	
+    	if (totalTimeOrbits < 1D) {
+    		double estimateTime = 1D - totalTimeOrbits;
+    		double estimatedMaintenancesPerOrbit = ESTIMATED_MAINTENANCES_PER_ORBIT * estimateTime;
+    		avgMaintenancesPerOrbit += estimatedMaintenancesPerOrbit;
+    	}
+    	
+    	return avgMaintenancesPerOrbit;
+    }
 	
 	/**
 	 * Inner class comparator for sorting malfunctions my highest severity to lowest.

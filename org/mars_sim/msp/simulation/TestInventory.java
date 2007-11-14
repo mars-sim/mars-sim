@@ -262,52 +262,57 @@ public class TestInventory extends TestCase {
 	}
 	
 	public void testInventoryItemResourceStoreGood() throws Exception {
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(50D);
-		inventory.storeItemResources(ItemResource.PIPE_WRENCH, 20);
-		int storedResource = inventory.getItemResourceNum(ItemResource.PIPE_WRENCH);
+		inventory.storeItemResources(pipeWrench, 20);
+		int storedResource = inventory.getItemResourceNum(pipeWrench);
 		assertEquals("Item resources correct number.", 20, storedResource);
 		double storedMass = inventory.getGeneralStoredMass();
 		assertEquals("Item resources correct mass.", 50D, storedMass, 0D);
 	}
 	
 	public void testInventoryItemResourceStoreDeep() throws Exception {
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(60D);
 		Unit testUnit = new MockUnit1();
 		testUnit.getInventory().addGeneralCapacity(50D);
 		inventory.storeUnit(testUnit);
-		testUnit.getInventory().storeItemResources(ItemResource.PIPE_WRENCH, 20);
-		int storedResource = inventory.getItemResourceNum(ItemResource.PIPE_WRENCH);
+		testUnit.getInventory().storeItemResources(pipeWrench, 20);
+		int storedResource = inventory.getItemResourceNum(pipeWrench);
 		assertEquals("Item resources correct number.", 20, storedResource);
 		double storedMass = inventory.getGeneralStoredMass();
 		assertEquals("Item resources correct mass.", 60D, storedMass, 0D);
 	}
 	
 	public void testInventoryItemResourceStoreOverload() throws Exception {
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(50D);
 		try {
-			inventory.storeItemResources(ItemResource.PIPE_WRENCH, 21);
+			inventory.storeItemResources(pipeWrench, 21);
 			fail("Throws exception if overloaded");
 		}
 		catch (InventoryException e) {}
 	}
 	
 	public void testInventoryItemResourceStoreNegativeNumber() throws Exception {
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(50D);
 		try {
-			inventory.storeItemResources(ItemResource.PIPE_WRENCH, -1);
+			inventory.storeItemResources(pipeWrench, -1);
 			fail("Throws exception if negative number");
 		}
 		catch (InventoryException e) {}
 	}
 	
 	public void testInventoryItemResourceStoreNoCapacity() throws Exception {
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Inventory inventory = new Inventory(null);
 		try {
-			inventory.storeItemResources(ItemResource.PIPE_WRENCH, 1);
+			inventory.storeItemResources(pipeWrench, 1);
 			fail("Throws exception if capacity not set (overloaded)");
 		}
 		catch (InventoryException e) {}
@@ -315,21 +320,23 @@ public class TestInventory extends TestCase {
 	
 	public void testInventoryItemResourceStoreDeepOverload() throws Exception {
 		try {
+			ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 			Unit testUnit1 = new MockUnit1();
 			testUnit1.getInventory().addGeneralCapacity(50D);
 			Unit testUnit2 = new MockUnit2();
 			testUnit2.getInventory().addGeneralCapacity(100D);
 			testUnit1.getInventory().storeUnit(testUnit2);
-			testUnit2.getInventory().storeItemResources(ItemResource.PIPE_WRENCH, 21);
+			testUnit2.getInventory().storeItemResources(pipeWrench, 21);
 			fail("Fails properly when parent unit's general capacity is overloaded.");	
 		}
 		catch (InventoryException e) {}
 	}
 	
 	public void testInventoryItemResourceRemainingCapacityGood() throws Exception {
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(50D);
-		inventory.storeItemResources(ItemResource.PIPE_WRENCH, 10);
+		inventory.storeItemResources(pipeWrench, 10);
 		double remainingCapacity = inventory.getRemainingGeneralCapacity();
 		assertEquals("Remaining capacity is correct.", 25D, remainingCapacity, 0D);
 	}
@@ -341,32 +348,35 @@ public class TestInventory extends TestCase {
 	}
 	
 	public void testInventoryItemResourceRetrieveGood() throws Exception {
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(50D);
-		inventory.storeItemResources(ItemResource.PIPE_WRENCH, 10);
-		inventory.retrieveItemResources(ItemResource.PIPE_WRENCH, 5);
-		int remainingNum = inventory.getItemResourceNum(ItemResource.PIPE_WRENCH);
+		inventory.storeItemResources(pipeWrench, 10);
+		inventory.retrieveItemResources(pipeWrench, 5);
+		int remainingNum = inventory.getItemResourceNum(pipeWrench);
 		assertEquals("Item resource remaining is correct number.", 5, remainingNum);
 	}
 	
 	public void testInventoryItemResourceRetrieveDeep() throws Exception {
+		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(60D);
 		Unit testUnit = new MockUnit1();
 		inventory.storeUnit(testUnit);
 		testUnit.getInventory().addGeneralCapacity(50D);
-		testUnit.getInventory().storeItemResources(ItemResource.PIPE_WRENCH, 10);
-		inventory.retrieveItemResources(ItemResource.PIPE_WRENCH, 5);
-		int remainingNum = inventory.getItemResourceNum(ItemResource.PIPE_WRENCH);
+		testUnit.getInventory().storeItemResources(pipeWrench, 10);
+		inventory.retrieveItemResources(pipeWrench, 5);
+		int remainingNum = inventory.getItemResourceNum(pipeWrench);
 		assertEquals("Item resource remaining is correct number.", 5, remainingNum);
 	}
 	
 	public void testInventoryItemResourceRetrieveTooMuch() throws Exception {
 		try {
+			ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 			Inventory inventory = new Inventory(null);
 			inventory.addGeneralCapacity(50D);
-			inventory.storeItemResources(ItemResource.PIPE_WRENCH, 10);
-			inventory.retrieveItemResources(ItemResource.PIPE_WRENCH, 11);
+			inventory.storeItemResources(pipeWrench, 10);
+			inventory.retrieveItemResources(pipeWrench, 11);
 			fail("Item resource retrieved fails correctly.");
 		}
 		catch (InventoryException e) {}
@@ -374,10 +384,11 @@ public class TestInventory extends TestCase {
 	
 	public void testInventoryItemResourceRetrieveNegative() throws Exception {
 		try {
+			ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 			Inventory inventory = new Inventory(null);
 			inventory.addGeneralCapacity(50D);
-			inventory.storeItemResources(ItemResource.PIPE_WRENCH, 10);
-			inventory.retrieveItemResources(ItemResource.PIPE_WRENCH, -1);
+			inventory.storeItemResources(pipeWrench, 10);
+			inventory.retrieveItemResources(pipeWrench, -1);
 			fail("Item resource retrieved fails correctly.");
 		}
 		catch (InventoryException e) {}
@@ -385,8 +396,9 @@ public class TestInventory extends TestCase {
 	
 	public void testInventoryItemResourceRetrieveNoItem() throws Exception {
 		try {
+			ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
 			Inventory inventory = new Inventory(null);
-			inventory.retrieveItemResources(ItemResource.PIPE_WRENCH, 1);
+			inventory.retrieveItemResources(pipeWrench, 1);
 			fail("Item resource retrieved fails correctly.");
 		}
 		catch (InventoryException e) {}

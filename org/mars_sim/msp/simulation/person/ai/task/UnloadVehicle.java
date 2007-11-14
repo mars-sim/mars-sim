@@ -36,7 +36,7 @@ public class UnloadVehicle extends Task implements Serializable {
 	private static final String UNLOADING = "Unloading";
 
     // The amount of resources (kg) one person of average strength can unload per millisol.
-    private static double UNLOAD_RATE = 10D;
+    private static double UNLOAD_RATE = 20D;
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 	private static final double DURATION = 100D; // The duration of the task (millisols).
 

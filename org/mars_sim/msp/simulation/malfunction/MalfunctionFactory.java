@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 2.81 2007-08-26
+ * @version 2.82 2007-11-08
  * @author Scott Davis 
  */
 
@@ -15,15 +15,20 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitCollection;
 import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /**
  * This class is a factory for Malfunction objects.
@@ -151,8 +156,40 @@ public final class MalfunctionFactory implements Serializable {
     }
     
     /**
-     * Gest the repair part probabilities for a set of entity scope strings.
-     * @param scope a collections of entity scope strings.
+     * Gets all malfunctionables associated with a settlement.
+     * @param settlement the settlement.
+     * @return collection of malfunctionables.
+     */
+    public static Collection<Malfunctionable> getAssociatedMalfunctionables(Settlement settlement) {
+    	
+    	// Add settlement, buildings and all other malfunctionables in settlement inventory.
+    	Collection<Malfunctionable> entities = getMalfunctionables(settlement);
+    	
+    	// Add all associated rovers out on missions and their inventories.
+    	Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			Mission mission = (Mission) i.next();
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
+					entities.addAll(getMalfunctionables(vehicle));
+			}
+		}
+		
+		// Get entities carried by people on EVA.
+		PersonIterator j = settlement.getAllAssociatedPeople().iterator();
+		while (j.hasNext()) {
+			Person person = j.next();
+			if (person.getLocationSituation().equals(Person.OUTSIDE)) 
+				entities.addAll(getMalfunctionables(person));
+		}
+    	
+    	return entities;
+    }
+    
+    /**
+     * Gets the repair part probabilities per malfunction for a set of entity scope strings.
+     * @param scope a collection of entity scope strings.
      * @return map of repair parts and probable number of parts needed per malfunction.
      * @throws Exception if error finding repair part probabilities.
      */
@@ -172,6 +209,35 @@ public final class MalfunctionFactory implements Serializable {
     				double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
     				double totalNumber = averageNumber * partProbability * malfunctionProbability;
     				Part part = (Part) ItemResource.findItemResource(partNames[x]);
+    				if (result.containsKey(part)) totalNumber += result.get(part);
+    				result.put(part, totalNumber);
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Gets the probabilities of parts per maintenance for a set of entity scope strings.
+     * @param scope a collection of entity scope strings.
+     * @return map of maintenance parts and probable number of parts needed per maintenance.
+     * @throws Exception if error finding maintenance part probabilities.
+     */
+    Map<Part, Double> getMaintenancePartProbabilities(Collection<String> scope) throws Exception {
+    	Map<Part, Double> result = new HashMap<Part, Double>();
+    	
+    	Iterator<String> i = scope.iterator();
+    	while (i.hasNext()) {
+    		String entity = i.next();
+    		Iterator<Part> j = Part.getParts().iterator();
+    		while (j.hasNext()) {
+    			Part part = j.next();
+    			if (part.hasMaintenanceEntity(entity)) {
+    				double prob = part.getMaintenanceProbability(entity) / 100D;
+    				int partNumber = part.getMaintenanceMaximumNumber(entity);
+    				double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+    				double totalNumber = averageNumber * prob;
     				if (result.containsKey(part)) totalNumber += result.get(part);
     				result.put(part, totalNumber);
     			}

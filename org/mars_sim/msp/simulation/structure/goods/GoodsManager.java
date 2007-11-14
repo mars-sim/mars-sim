@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.81 2007-08-19
+ * @version 2.82 2007-11-09
  * @author Scott Davis
  */
 
@@ -22,6 +22,10 @@ import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
+import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.PersonIterator;
@@ -34,6 +38,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.structure.building.Building;
@@ -63,6 +68,10 @@ public class GoodsManager implements Serializable {
 	private static final String RESCUE_SALVAGE_MISSION = "rescue/salvage mission";
 	private static final String TRADE_MISSION = "trade";
 	
+	// Number modifiers for outstanding repair and maintenance parts.
+	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 100;
+	private static final int OUTSTANDING_MAINT_PART_MODIFIER = 10;
+	
 	// Data members
 	private Settlement settlement;
 	private Map<Good, Double> goodsValues;
@@ -71,6 +80,7 @@ public class GoodsManager implements Serializable {
 	private Map<AmountResource, Double> resourceProcessingCache;
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
+	private Map<Part, Integer> partsDemandCache;
 	
 	/**
 	 * Constructor
@@ -104,6 +114,9 @@ public class GoodsManager implements Serializable {
 		resourceProcessingCache = new HashMap<AmountResource, Double>(amountResources.size());
 		Iterator<AmountResource> j = amountResources.iterator();
 		while (j.hasNext()) resourceProcessingCache.put(j.next(), new Double(0D));
+		
+		// Create parts demand cache.
+		partsDemandCache = new HashMap<Part, Integer>(ItemResource.getItemResources().size());
 	}
 	
 	/**
@@ -153,6 +166,9 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error updating goods values.
 	 */
 	private void updateGoodsValues() throws Exception {
+		// Clear parts demand cache.
+		partsDemandCache.clear();
+		
 		Iterator<Good> i = goodsValues.keySet().iterator();
 		while (i.hasNext()) updateGoodValue(i.next());
 		settlement.fireUnitUpdate(GOODS_VALUE_EVENT);
@@ -507,13 +523,141 @@ public class GoodsManager implements Serializable {
 			else throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
 		}
 		else {
-			// TODO: Determine demand (in kg).
+			ItemResource resource = (ItemResource) resourceGood.getObject();
+			
+			// Get demand for part.
+			if (resource instanceof Part) {
+				Part part = (Part) resource;
+				if (partsDemandCache.size() == 0) determinePartsDemand();
+				if (partsDemandCache.containsKey(part)) demand = partsDemandCache.get(part);
+			}
+			
+			demand *= resource.getMassPerItem(); 
 			goodsDemandCache.put(resourceGood, new Double(demand));
 		}
 		
 		value = demand / (supply + 1D);
 		
 		return value;
+	}
+	
+	/**
+	 * Determines the number demand for all parts at the settlement.
+	 * @throws Exception if error determining the parts demand.
+	 */
+	private void determinePartsDemand() throws Exception {
+		Map<Part, Double> partsProbDemand = new HashMap<Part, Double>(ItemResource.getItemResources().size());
+		
+		// Get all malfunctionables associated with settlement.
+		Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			
+			// Estimate repair parts needed per orbit for entity.
+			sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity));
+			
+			// Add outstanding repair parts required.
+			sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity));
+			
+			// Estimate maintenance parts needed per orbit for entity.
+			sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity));
+			
+			// Add outstanding maintenance parts required.
+			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity));
+		}
+		
+		// Round off parts and store in parts demand cache.
+		Iterator<Part> j = partsProbDemand.keySet().iterator();
+		while (j.hasNext()) {
+			Part part = j.next();
+			int number = (int) Math.round(partsProbDemand.get(part));
+			partsDemandCache.put(part, number);
+		}
+	}
+	
+	private void sumPartsDemand(Map<Part, Double> totalPartsDemand, Map<Part, Number> additionalPartsDemand) {
+		Iterator<Part> i = additionalPartsDemand.keySet().iterator();
+		while (i.hasNext()) {
+			Part part = i.next();
+			double number = additionalPartsDemand.get(part).doubleValue();
+			if (totalPartsDemand.containsKey(part)) number += totalPartsDemand.get(part);
+			totalPartsDemand.put(part, number);
+		}
+	}
+	
+	private Map<Part, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) throws Exception {
+		Map<Part, Number> result = new HashMap<Part, Number>();
+		
+		MalfunctionManager manager = entity.getMalfunctionManager();
+		
+		// Estimate number of malfunctions for entity per orbit.
+		double orbitMalfunctions = manager.getEstimatedNumberOfMalfunctionsPerOrbit();
+		
+		// Estimate parts needed per malfunction.
+		Map<Part, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
+		
+		// Multiply parts needed by malfunctions per orbit.
+		Iterator<Part> i = partsPerMalfunction.keySet().iterator();
+		while (i.hasNext()) {
+			Part part = i.next();
+			result.put(part, partsPerMalfunction.get(part) * orbitMalfunctions);
+		}
+		
+		return result;
+	}
+	
+	private Map<Part, Number> getOutstandingRepairParts(Malfunctionable entity) {
+		Map<Part, Number> result = new HashMap<Part, Number>(0);
+		
+		Iterator<Malfunction> i = entity.getMalfunctionManager().getMalfunctions().iterator();
+		while (i.hasNext()) {
+			Malfunction malfunction = i.next();
+			Map<Part, Integer> repairParts = malfunction.getRepairParts();
+			Iterator<Part> j = repairParts.keySet().iterator();
+			while (j.hasNext()) {
+				Part part = j.next();
+				int number = repairParts.get(part).intValue() * OUTSTANDING_REPAIR_PART_MODIFIER;
+				if (result.containsKey(part)) number += result.get(part).intValue();
+				result.put(part, number);
+			}
+		}
+		
+		return result;
+	}
+	
+	private Map<Part, Number> getEstimatedOrbitMaintenanceParts(Malfunctionable entity) throws Exception {
+		Map<Part, Number> result = new HashMap<Part, Number>();
+		
+		MalfunctionManager manager = entity.getMalfunctionManager();
+		
+		// Estimate number of maintenances for entity per orbit.
+		double orbitMaintenances = manager.getEstimatedNumberOfMaintenancesPerOrbit();
+		
+		// Estimate parts needed per maintenance.
+		Map<Part, Double> partsPerMaintenance = manager.getMaintenancePartProbabilities();
+		
+		// Multiply parts needed by maintenances per orbit.
+		Iterator<Part> i = partsPerMaintenance.keySet().iterator();
+		while (i.hasNext()) {
+			Part part = i.next();
+			result.put(part, partsPerMaintenance.get(part) * orbitMaintenances);
+		}
+		
+		return result;
+	}
+	
+	private Map<Part, Number> getOutstandingMaintenanceParts(Malfunctionable entity) {
+		Map<Part, Number> result = new HashMap<Part, Number>();
+		
+		Map<Part, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
+		Iterator<Part> i = maintParts.keySet().iterator();
+		while (i.hasNext()) {
+			Part part = i.next();
+			int number = maintParts.get(part) * OUTSTANDING_MAINT_PART_MODIFIER;
+			result.put(part, number);
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -892,33 +1036,6 @@ public class GoodsManager implements Serializable {
 		
 		return number;
 	}
-	
-	/**
-	 * Determine the number vehicles needed by the settlement.
-	 * @param vehicleType the vehicle type.
-	 * @return the vehicle mass needed (kg).
-	 * @throws Exception if error determining demand.
-	 */
-	/*
-	private double determineVehicleDemand(String vehicleType) throws Exception {
-		double numDemand = 0D;
-		
-		if (vehicleType.equals("explorer rover")) {
-			numDemand += getAreologistNum() / 2D;
-			numDemand += getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
-		}
-		else if (vehicleType.equals("transport rover")) {
-			numDemand += getDriverNum() / 2D;
-			numDemand *= ((double) settlement.getAllAssociatedPeople().size() / 
-					(double) settlement.getPopulationCapacity());
-		}
-		
-		// Convert demand from number to mass.
-		double demand = numDemand * GoodsUtil.getGoodMassPerItem(GoodsUtil.getVehicleGood(vehicleType));
-		
-		return demand;
-	}
-	*/
 	
 	/**
 	 * Determines the trade value for a good at a settlement.

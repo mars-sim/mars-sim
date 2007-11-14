@@ -572,11 +572,13 @@ public class Inventory implements Serializable {
    				UnitIterator i = containedUnits.iterator();
 	    		while (i.hasNext()) {
 	    			Inventory unitInventory = i.next().getInventory();
-	    			int storedUnit = unitInventory.getItemResourceNum(resource);
-	    			int retrieveNum = remainingNum;
-	    			if (retrieveNum > storedUnit) retrieveNum = storedUnit;
-	    			unitInventory.retrieveItemResources(resource, retrieveNum);
-	    			remainingNum -= retrieveNum;
+	    			if (unitInventory.hasItemResource(resource)) {
+	    				int storedUnit = unitInventory.getItemResourceNum(resource);
+	    				int retrieveNum = remainingNum;
+	    				if (retrieveNum > storedUnit) retrieveNum = storedUnit;
+	    				unitInventory.retrieveItemResources(resource, retrieveNum);
+	    				remainingNum -= retrieveNum;
+	    			}
 	    		}
 			}
 			if (owner != null) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);

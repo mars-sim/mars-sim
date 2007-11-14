@@ -29,7 +29,8 @@ public class TestGoods extends TestCase {
 	}
 	
 	public void testGoodsListContainsHammer() {
-		Good hammerGood = GoodsUtil.getResourceGood(ItemResource.HAMMER);
+		ItemResource hammer = ItemResource.getTestResourceHammer();
+		Good hammerGood = GoodsUtil.getResourceGood(hammer);
 		assertTrue("Goods list contains hammer", GoodsUtil.containsGood(hammerGood));
 	}
 	

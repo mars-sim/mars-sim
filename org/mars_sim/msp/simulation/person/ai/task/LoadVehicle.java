@@ -42,7 +42,7 @@ public class LoadVehicle extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 
     // The amount of resources (kg) one person of average strength can load per millisol.
-    private static double LOAD_RATE = 10D;
+    private static double LOAD_RATE = 20D;
     
     // The duration of the loading task (millisols).
     private static double DURATION = 100D;

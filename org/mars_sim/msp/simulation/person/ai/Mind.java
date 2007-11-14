@@ -13,6 +13,8 @@ import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.job.*;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** The Mind class represents a person's mind.
  *  It keeps track of missions and tasks which
@@ -207,8 +209,10 @@ public class Mind implements Serializable {
 
         // If this Person is too weak then they can not do Missions
         if (person.getPerformanceRating() < 0.5D) missions = false;
-
-		Person person = getPerson();
+        
+        // If for some reason person is in a rover at the settlement, and not on a mission,
+        // have them enter the settlement.
+        enterSettlementIfInRover();
 
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = 0D;
@@ -249,6 +253,29 @@ public class Mind implements Serializable {
             }
             else rand -= missionWeights;
         }
+    }
+    
+    /**
+     * If person is not on mission and is in a vehicle parked at a settlement,
+     * have person leave vehicle and enter settlement.
+     */
+    private void enterSettlementIfInRover() {
+    	if (getMission() == null) {
+    		if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+    			Vehicle vehicle = person.getVehicle();
+    			if (vehicle.getSettlement() != null) {
+    				Settlement settlement = vehicle.getSettlement();
+    				// Move person from vehicle to settlement.
+    				try {
+    	        		vehicle.getInventory().retrieveUnit(person);
+    	        		settlement.getInventory().storeUnit(person);
+    	        	}
+    	        	catch (InventoryException e) {
+    	        		e.printStackTrace(System.err);
+    	        	}
+    			}
+    		}
+    	}
     }
     
     /**
