@@ -85,7 +85,7 @@ public class VehicleCollection extends MspCollection implements Serializable {
             while (inner.hasNext()) {
                 Vehicle tempVehicle = inner.next();
                 String name = tempVehicle.getName();
-                if ((name.compareTo(leastName) < 0) && !sortedVehicles.contains(tempVehicle)) {
+                if ((name.compareToIgnoreCase(leastName) < 0) && !sortedVehicles.contains(tempVehicle)) {
                     leastName = name;
                     leastVehicle = tempVehicle;
                 }
