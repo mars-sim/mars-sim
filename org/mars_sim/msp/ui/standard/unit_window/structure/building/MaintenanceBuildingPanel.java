@@ -1,14 +1,17 @@
 /**
  * Mars Simulation Project
  * MaintenanceBuildingPanel.java
- * @version 2.75 2005-03-18
+ * @version 2.82 2007-11-17
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.JLabel;
@@ -17,6 +20,7 @@ import javax.swing.JProgressBar;
 
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
@@ -30,6 +34,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
     private JLabel lastCompletedLabel; // The last completed label.
     private BoundedRangeModel progressBarModel; // The progress bar model.
     private int lastCompletedTime; // The time since last completed maintenance.
+    private JLabel partsLabel; // Label for parts.
     
     /**
      * Constructor
@@ -47,7 +52,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
         
         // Set the layout
-        setLayout(new GridLayout(3, 1, 0, 0));
+        setLayout(new GridLayout(4, 1, 0, 0));
         
         // Create maintenance label.
         JLabel maintenanceLabel = new JLabel("Maintenance", JLabel.CENTER);
@@ -74,6 +79,11 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         double total = manager.getMaintenanceWorkTime();
         int percentDone = (int) (100D * (completed / total));
         progressBarModel.setValue(percentDone);
+        
+        // Prepare maintenance parts label.
+        partsLabel = new JLabel(getPartsString(), JLabel.CENTER);
+        partsLabel.setPreferredSize(new Dimension(-1, -1));
+        add(partsLabel);
     }
     
     /**
@@ -95,5 +105,30 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         double total = manager.getMaintenanceWorkTime();
         int percentDone = (int) (100D * (completed / total));
         progressBarModel.setValue(percentDone);
+        
+        // Update parts label.
+        partsLabel.setText(getPartsString());
+    }
+    
+    /**
+     * Gets the parts string.
+     * @return string.
+     */
+    private String getPartsString() {
+    	StringBuffer buf = new StringBuffer("Parts: ");
+    	
+    	Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+    	if (parts.size() > 0) {
+    		Iterator<Part> i = parts.keySet().iterator();
+    		while (i.hasNext()) {
+    			Part part = i.next();
+    			int number = parts.get(part);
+    			buf.append(number + " " + part.getName());
+    			if (i.hasNext()) buf.append(", ");
+    		}
+    	}
+    	else buf.append("none");
+    	
+    	return buf.toString();
     }
 }

@@ -1,15 +1,19 @@
 /**
  * Mars Simulation Project
  * MalfunctionPanel.java
- * @version 2.81 2007-06-10
+ * @version 2.82 2007-11-17
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.unit_window;
 
 import java.awt.*;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.swing.*;
 import org.mars_sim.msp.simulation.malfunction.*;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /** 
@@ -21,6 +25,7 @@ public class MalfunctionPanel extends JPanel {
     private Malfunction malfunction; // The malfunction.
     private JLabel nameLabel; // The name label.
     private BoundedRangeModel repairBarModel; // The repair bar model.
+    private JLabel partsLabel; // The repair parts label.
     
     /** 
      * Constructs a MalfunctionPanel object with a name prefex..
@@ -35,7 +40,7 @@ public class MalfunctionPanel extends JPanel {
         this.malfunction = malfunction;
     
         // Set layout
-        setLayout(new GridLayout(2, 1, 0, 0));
+        setLayout(new GridLayout(3, 1, 0, 0));
 
         // Set border
         setBorder(new MarsPanelBorder());
@@ -66,6 +71,11 @@ public class MalfunctionPanel extends JPanel {
         int percentComplete = 0;
         if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
         repairBarModel.setValue(percentComplete);
+        
+        // Prepare repair parts label.
+        partsLabel = new JLabel(getPartsString(), JLabel.CENTER);
+        partsLabel.setPreferredSize(new Dimension(-1, -1));
+        add(partsLabel);
     }
 
     /**
@@ -91,6 +101,31 @@ public class MalfunctionPanel extends JPanel {
         int percentComplete = 0;
         if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
         repairBarModel.setValue(percentComplete);
+        
+        // Update parts label.
+        partsLabel.setText(getPartsString());
+    }
+    
+    /**
+     * Gets the parts string.
+     * @return string.
+     */
+    private String getPartsString() {
+    	StringBuffer buf = new StringBuffer("Parts: ");
+    	
+    	Map<Part, Integer> parts = malfunction.getRepairParts();
+    	if (parts.size() > 0) {
+    		Iterator<Part> i = parts.keySet().iterator();
+    		while (i.hasNext()) {
+    			Part part = i.next();
+    			int number = parts.get(part);
+    			buf.append(number + " " + part.getName());
+    			if (i.hasNext()) buf.append(", ");
+    		}
+    	}
+    	else buf.append("none");
+    	
+    	return buf.toString();
     }
 
     /**

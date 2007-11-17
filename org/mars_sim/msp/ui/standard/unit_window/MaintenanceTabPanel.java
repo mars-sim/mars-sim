@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 2.81 2007-08-27
+ * @version 2.82 2007-11-17
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
@@ -26,6 +27,7 @@ import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
@@ -37,6 +39,7 @@ public class MaintenanceTabPanel extends TabPanel {
     private JLabel lastCompletedLabel; // The last completed label.
     private BoundedRangeModel progressBarModel; // The progress bar model.
     private int lastCompletedTime; // The time since last completed maintenance.
+    private JLabel partsLabel; // Label for showing maintenance parts list.
     private Collection<MalfunctionPanel> malfunctionPanels; // List of malfunction panels.
     private Collection<Malfunction> malfunctionCache; // List of malfunctions.
     private JPanel malfunctionListPanel; // Malfunction list panel.
@@ -55,7 +58,7 @@ public class MaintenanceTabPanel extends TabPanel {
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
         
         // Create maintenance panel
-        JPanel maintenancePanel = new JPanel(new GridLayout(3, 1, 0, 0));
+        JPanel maintenancePanel = new JPanel(new GridLayout(4, 1, 0, 0));
         maintenancePanel.setBorder(new MarsPanelBorder());
         topContentPanel.add(maintenancePanel);
         
@@ -72,6 +75,11 @@ public class MaintenanceTabPanel extends TabPanel {
         // Create maintenance progress bar panel.
         JPanel progressPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         maintenancePanel.add(progressPanel);
+        
+        // Prepare maintenance parts label.
+        partsLabel = new JLabel(getPartsString(), JLabel.CENTER);
+        partsLabel.setPreferredSize(new Dimension(-1, -1));
+        maintenancePanel.add(partsLabel);
     
         // Prepare progress bar.
         JProgressBar progressBar = new JProgressBar();
@@ -140,6 +148,9 @@ public class MaintenanceTabPanel extends TabPanel {
         int percentDone = (int) (100D * (completed / total));
         progressBarModel.setValue(percentDone);
         
+        // Update parts label.
+        partsLabel.setText(getPartsString());
+        
         // Get list of malfunctions.
         Collection<Malfunction> malfunctions = manager.getMalfunctions();
         
@@ -176,6 +187,29 @@ public class MaintenanceTabPanel extends TabPanel {
         // Have each malfunction panel update.
         Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
         while (i.hasNext()) i.next().update();
+    }
+    
+    /**
+     * Gets the parts string.
+     * @return string.
+     */
+    private String getPartsString() {
+    	Malfunctionable malfunctionable = (Malfunctionable) unit;
+    	StringBuffer buf = new StringBuffer("Parts: ");
+    	
+    	Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+    	if (parts.size() > 0) {
+    		Iterator<Part> i = parts.keySet().iterator();
+    		while (i.hasNext()) {
+    			Part part = i.next();
+    			int number = parts.get(part);
+    			buf.append(number + " " + part.getName());
+    			if (i.hasNext()) buf.append(", ");
+    		}
+    	}
+    	else buf.append("none");
+    	
+    	return buf.toString();
     }
     
     /**

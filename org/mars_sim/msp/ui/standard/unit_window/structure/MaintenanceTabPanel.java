@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 2.81 2007-08-26
+ * @version 2.82 2007-11-17
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
@@ -27,6 +28,7 @@ import javax.swing.JScrollPane;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
@@ -183,6 +185,27 @@ public class MaintenanceTabPanel extends TabPanel {
 		}
 	}
 	
+    /**
+     * Gets the parts string.
+     * @return string.
+     */
+    private String getPartsString(Map<Part, Integer> parts) {
+    	StringBuffer buf = new StringBuffer("Parts: ");
+    	
+    	if (parts.size() > 0) {
+    		Iterator<Part> i = parts.keySet().iterator();
+    		while (i.hasNext()) {
+    			Part part = i.next();
+    			int number = parts.get(part);
+    			buf.append(number + " " + part.getName());
+    			if (i.hasNext()) buf.append(", ");
+    		}
+    	}
+    	else buf.append("none");
+    	
+    	return buf.toString();
+    }
+	
 	/**
 	 * Inner class for the building maintenance panel.
 	 */
@@ -193,6 +216,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		private int lastCompletedCache;
 		private BoundedRangeModel progressBarModel;
 		private JLabel lastLabel;
+		private JLabel partsLabel;
 		
 		/**
 		 * Constructor
@@ -204,14 +228,14 @@ public class MaintenanceTabPanel extends TabPanel {
 			
 			manager = building.getMalfunctionManager();
 			
-			setLayout(new BorderLayout(0, 0));
+			setLayout(new GridLayout(3, 1, 0, 0));
 			setBorder(new MarsPanelBorder());
 			
 			JLabel buildingLabel = new JLabel(building.getName(), JLabel.LEFT);
-			add(buildingLabel, BorderLayout.NORTH);
+			add(buildingLabel);
 			
 			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
-			add(mainPanel, BorderLayout.CENTER);
+			add(mainPanel);
 			
 			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 			lastLabel = new JLabel("Last Completed: " + lastCompletedCache + " sols", JLabel.LEFT);
@@ -233,6 +257,11 @@ public class MaintenanceTabPanel extends TabPanel {
 	        double total = manager.getMaintenanceWorkTime();
 	        int percentDone = (int) (100D * (completed / total));
 	        progressBarModel.setValue(percentDone);
+	        
+	        // Prepare parts label.
+	        partsLabel = new JLabel(getPartsString(manager.getMaintenanceParts()), JLabel.CENTER);
+	        partsLabel.setPreferredSize(new Dimension(-1, -1));
+	        add(partsLabel);
 		}
 		
 		/**
@@ -251,6 +280,9 @@ public class MaintenanceTabPanel extends TabPanel {
 	        	lastCompletedCache = lastCompleted;
 	        	lastLabel.setText("Last Completed: " + lastCompletedCache + " sols");
 	        }
+	        
+	        // Update parts label.
+	        partsLabel.setText(getPartsString(manager.getMaintenanceParts()));
 		}
 	}
 	
@@ -263,6 +295,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		private Malfunction malfunction;
 		private JLabel malfunctionLabel;
 		private BoundedRangeModel progressBarModel;
+		private JLabel partsLabel;
 		
 		/**
 		 * Constructor
@@ -277,7 +310,7 @@ public class MaintenanceTabPanel extends TabPanel {
 			this.malfunction = malfunction;
 			
 			// Set layout and border.
-			setLayout(new GridLayout(3, 1, 0, 0));
+			setLayout(new GridLayout(4, 1, 0, 0));
 			setBorder(new MarsPanelBorder());
 			
 			// Prepare the building label.
@@ -310,6 +343,11 @@ public class MaintenanceTabPanel extends TabPanel {
 	        int percentComplete = 0;
 	        if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
 	        progressBarModel.setValue(percentComplete);
+	        
+	        // Prepare parts label.
+	        partsLabel = new JLabel(getPartsString(malfunction.getRepairParts()), JLabel.CENTER);
+	        partsLabel.setPreferredSize(new Dimension(-1, -1));
+	        add(partsLabel);
 		}
 		
 		/**
@@ -334,6 +372,9 @@ public class MaintenanceTabPanel extends TabPanel {
 	        int percentComplete = 0;
 	        if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
 	        progressBarModel.setValue(percentComplete);
+	        
+	        // Update parts label.
+	        partsLabel.setText(getPartsString(malfunction.getRepairParts()));
 		}
 	}
 }
