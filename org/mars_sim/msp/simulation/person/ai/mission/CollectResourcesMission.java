@@ -319,7 +319,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			boolean nobodyCollect = true;
 			PersonIterator j = getPeople().iterator();
 			while (j.hasNext()) {
-				if (CollectResources.canCollectResources(j.next(), getRover())) nobodyCollect = false;
+				if (CollectResources.canCollectResources(j.next(), getRover(), containerType, resourceType)) 
+					nobodyCollect = false;
 			}
 	    
 			// If no one can collect resources and this is not due to it just being
@@ -353,7 +354,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		if (!getPhaseEnded()) {
 			if ((siteCollectedResources < siteResourceGoal) && !endCollectingSite) {
 				// If person can collect resources, start him/her on that task.
-				if (CollectResources.canCollectResources(person, getRover())) {
+				if (CollectResources.canCollectResources(person, getRover(), containerType, resourceType)) {
 					try {
 						CollectResources collectResources = new CollectResources("Collecting Resources", person, 
 							getRover(), resourceType, resourceCollectionRate, 

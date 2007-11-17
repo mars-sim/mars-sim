@@ -148,40 +148,35 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @throws Exception if error taking container.
 	 */
 	private void takeContainer() throws Exception {
-		Unit container = findLeastFullContainer();
+		Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
 		if (container != null) {
-			if (container.getInventory().getAmountResourceRemainingCapacity(resourceType) > 0D) {
-				if (person.getInventory().canStoreUnit(container)) {
-					rover.getInventory().retrieveUnit(container);
-					person.getInventory().storeUnit(container);
-				}
+			if (person.getInventory().canStoreUnit(container)) {
+				rover.getInventory().retrieveUnit(container);
+				person.getInventory().storeUnit(container);
 			}
 		}
 	}
 	
 	/**
 	 * Gets the least full container in the rover.
+	 * @param inv the inventory to look in.
+	 * @param containerType the container class to look for.
+	 * @param resourceType the resource for capacity.
 	 * @return container.
 	 */
-	private Unit findLeastFullContainer() {
+	private static Unit findLeastFullContainer(Inventory inv, Class containerType, AmountResource resource) {
 		Unit result = null;
 		double mostCapacity = 0D;
 		
-		UnitIterator i = rover.getInventory().findAllUnitsOfClass(containerType).iterator();
+		UnitIterator i = inv.findAllUnitsOfClass(containerType).iterator();
 		while (i.hasNext()) {
 			Unit container = i.next();
 			try {
-				double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resourceType);
+				double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resource);
 			
-				if (result == null) {
+				if (remainingCapacity > mostCapacity) {
 					result = container;
 					mostCapacity = remainingCapacity;
-				}
-				else {
-					if (remainingCapacity > mostCapacity) {
-						result = container;
-						mostCapacity = remainingCapacity;
-					}
 				}
 			}
 			catch (InventoryException e) {
@@ -282,9 +277,12 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * Checks if a person can perform an CollectResources task.
 	 * @param person the person to perform the task
 	 * @param rover the rover the person will EVA from
+	 * @param containerType the container class to collect resources in.
+	 * @param resourceType the resource to collect.
 	 * @return true if person can perform the task.
 	 */
-	public static boolean canCollectResources(Person person, Rover rover) {
+	public static boolean canCollectResources(Person person, Rover rover, Class containerType, 
+			AmountResource resourceType) {
 
 		// Check if person can exit the rover.
 		boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
@@ -299,8 +297,12 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Check if person's medical condition will not allow task.
 		boolean medical = person.getPerformanceRating() < .5D;
+		
+		// Checks if available container with remaining capacity for resource.
+		boolean containerAvailable = 
+			(findLeastFullContainer(rover.getInventory(), containerType, resourceType) != null);
 	
-		return (exitable && (sunlight || darkRegion) && !medical);
+		return (exitable && (sunlight || darkRegion) && !medical && containerAvailable);
 	}
 	
 	/**
