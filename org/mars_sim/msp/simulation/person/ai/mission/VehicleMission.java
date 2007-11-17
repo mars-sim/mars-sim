@@ -52,7 +52,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public static final String DISEMBARKING = "Disembarking";
 	
 	// Static members
-	private static final double BUFFER_DISTANCE = 50D; // Buffer distance for determining fuel requirements.
+	
+	// Buffer distance for determining fuel requirements.
+	private static final double BUFFER_DISTANCE = 50D; 
+	
+	// Modifier for number of parts needed for a trip.
+	private static final double PARTS_NUMBER_MODIFIER = 2D;
 	
 	// Data members
 	private Vehicle vehicle;
@@ -559,7 +564,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     		Iterator<Part> i = parts.keySet().iterator();
     		while (i.hasNext()) {
     			Part part = i.next();
-    			int number = (int) Math.round(parts.get(part) * numberMalfunctions);
+    			int number = (int) Math.round(parts.get(part) * numberMalfunctions * PARTS_NUMBER_MODIFIER);
     			if (number > 0) result.put(part, number);
     		}
     	}
