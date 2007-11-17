@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.81 2007-09-01
+ * @version 2.82 2007-11-16
  * @author Scott Davis
  */
 
@@ -58,6 +58,9 @@ public class Trade extends RoverMission implements Serializable {
 	
 	// Static members
 	static final int MAX_MEMBERS = 2;
+	
+	// Static cache for holding trade profit info.
+	private static final Map<Person, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Person, TradeProfitInfo>();
 	
 	// Data members.
 	private Settlement tradingSettlement;
@@ -215,8 +218,26 @@ public class Trade extends RoverMission implements Serializable {
 	    	try {
 	    		Rover rover = (Rover) getVehicleWithGreatestRange(settlement);
 	    		if (rover != null) {
+	    			// Only check once a Sol, else use cache.
+	    			// Note: this method is very CPU intensive.
+	    			boolean useCache = false;
+	    			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	    			if (TRADE_PROFIT_CACHE.containsKey(person)) {
+	    				TradeProfitInfo profitInfo = TRADE_PROFIT_CACHE.get(person);
+	    				double timeDiff = MarsClock.getTimeDiff(currentTime, profitInfo.time);
+	    				if (timeDiff < 1000D) {
+	    					tradeProfit = profitInfo.profit;
+	    					useCache = true;
+	    				}
+	    			}
+	    			
+	    			if (!useCache) {
+	    				tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
+	    				TRADE_PROFIT_CACHE.put(person, new TradeProfitInfo(tradeProfit, (MarsClock) currentTime.clone()));
+	    			}
+	    			
 	    			// double startTime = System.currentTimeMillis();
-	    			tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
+	    			// tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
 	    			// double endTime = System.currentTimeMillis();
 	    			// System.out.println(person.getName() + " getBestTradeProfit: " + (endTime - startTime) + " - TP: " + tradeProfit);	    			
 	    		}
@@ -815,5 +836,18 @@ public class Trade extends RoverMission implements Serializable {
 		}
 		
 		return bestTrader;
+	}
+	
+	/**
+	 * Inner class for storing trade profit info.
+	 */
+	private static class TradeProfitInfo {
+		private double profit;
+		private MarsClock time;
+		
+		private TradeProfitInfo(double profit, MarsClock time) {
+			this.profit = profit;
+			this.time = time;
+		}
 	}
 }
