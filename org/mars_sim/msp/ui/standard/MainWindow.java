@@ -294,6 +294,7 @@ public class MainWindow extends JFrame implements WindowListener {
 				UIManager.setLookAndFeel(new MetalLookAndFeel());
     		}
 			SwingUtilities.updateComponentTreeUI(this);
+			desktop.updateToolWindowLF();
     	}
     	catch (Exception e) {
 			System.err.println("MainWindow: " + e.toString());

@@ -24,6 +24,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
@@ -533,4 +535,15 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     public void disposeAnnouncementWindow() {
     	announcementWindow.dispose();
     }
+
+    /**
+     * Updates the look & feel for all tool windows.
+     */
+	void updateToolWindowLF() {
+		Iterator<ToolWindow> i = toolWindows.iterator();
+		while (i.hasNext()) {
+			ToolWindow toolWindow = i.next();
+			SwingUtilities.updateComponentTreeUI(toolWindow);
+		}
+	}
 }
