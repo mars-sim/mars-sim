@@ -1,18 +1,29 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.78 2005-08-22
+ * @version 2.82 2007-11-18
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import javax.swing.*;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import org.mars_sim.msp.simulation.*;
+
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.time.MasterClock;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 
@@ -20,7 +31,7 @@ import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
  * The MainWindow class is the primary UI frame for the project. It
  * contains the tool bars and main desktop pane.
  */
-public class MainWindow extends JFrame implements WindowListener {
+public class MainWindow extends JFrame {
 
     // Data members
     private UnitToolBar unitToolbar; // The unit tool bar
@@ -43,7 +54,12 @@ public class MainWindow extends JFrame implements WindowListener {
         
         // Prepare frame
         setVisible(false);
-        addWindowListener(this);
+        
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent event) {
+                exitSimulation();
+            }
+        });
 
         // Prepare menu
         setJMenuBar(new MainWindowMenu(this));
@@ -258,11 +274,6 @@ public class MainWindow extends JFrame implements WindowListener {
         unitToolbar.disposeUnitButton(unit);
     }
 
-    // WindowListener methods overridden
-    public void windowClosing(WindowEvent event) {
-        exitSimulation();
-    }
-
     /**
      * Exit the simulation for running and exit.
      */
@@ -294,17 +305,10 @@ public class MainWindow extends JFrame implements WindowListener {
 				UIManager.setLookAndFeel(new MetalLookAndFeel());
     		}
 			SwingUtilities.updateComponentTreeUI(this);
-			desktop.updateToolWindowLF();
+			if (desktop != null) desktop.updateToolWindowLF();
     	}
     	catch (Exception e) {
-			System.err.println("MainWindow: " + e.toString());
+			e.printStackTrace(System.err);
     	}
     }
-
-    public void windowClosed(WindowEvent event) {}
-    public void windowDeiconified(WindowEvent event) {}
-    public void windowIconified(WindowEvent event) {}
-    public void windowActivated(WindowEvent event) {}
-    public void windowDeactivated(WindowEvent event) {}
-    public void windowOpened(WindowEvent event) {}
 }
