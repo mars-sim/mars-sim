@@ -172,6 +172,7 @@
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
 			<part name="silicone sealant" number="1" probability="50" />
+			<part name="plastic tubing" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -265,6 +266,7 @@
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
 			<part name="silicone sealant" number="1" probability="50" />
+			<part name="copper pipe" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 	

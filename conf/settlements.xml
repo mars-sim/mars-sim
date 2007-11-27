@@ -68,6 +68,8 @@
 			<part type="navigation circuit board" number="1" />
 			<part type="suit heating unit" number="6" />
 			<part type="plastic pipe" number="27" />
+			<part type="steel pipe" number="10" />
+			<part type="copper pipe" number="10" />
 			
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
@@ -118,6 +120,8 @@
 			<part type="navigation circuit board" number="6" />
 			<part type="suit heating unit" number="19" />
 			<part type="plastic pipe" number="48" />
+			<part type="steel pipe" number="20" />
+			<part type="copper pipe" number="20" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -162,6 +166,8 @@
 			<part type="navigation circuit board" number="7" />
 			<part type="suit heating unit" number="19" />
 			<part type="plastic pipe" number="71" />
+			<part type="steel pipe" number="30" />
+			<part type="copper pipe" number="30" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -214,6 +220,8 @@
 			<part type="navigation circuit board" number="7" />
 			<part type="suit heating unit" number="23" />
 			<part type="plastic pipe" number="94" />
+			<part type="steel pipe" number="40" />
+			<part type="copper pipe" number="40" />
 		</template>
 	
 	</settlement-template-list>
@@ -281,6 +289,8 @@
 			<part type="navigation circuit board" number="6" />
 			<part type="suit heating unit" number="19" />
 			<part type="plastic pipe" number="48" />
+			<part type="steel pipe" number="20" />
+			<part type="copper pipe" number="20" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 2">
@@ -320,6 +330,8 @@
 			<part type="navigation circuit board" number="7" />
 			<part type="suit heating unit" number="19" />
 			<part type="plastic pipe" number="71" />
+			<part type="steel pipe" number="30" />
+			<part type="copper pipe" number="30" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 3">
@@ -362,6 +374,8 @@
 			<part type="navigation circuit board" number="7" />
 			<part type="suit heating unit" number="23" />
 			<part type="plastic pipe" number="94" />
+			<part type="steel pipe" number="40" />
+			<part type="copper pipe" number="40" />
 		</resupply>
 	
 	</resupply-list>

@@ -158,4 +158,20 @@
 		</maintenance-entity-list>
 	</part>
 	
+	<part name="steel pipe" mass="10.0">
+		<maintenance-entity-list>
+			<entity name="farming" probability="10" max-number="2" />
+			<entity name="rover" probability="10" max-number="1" />
+			<entity name="settlement" probability="10" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="copper pipe" mass="5.0">
+		<maintenance-entity-list>
+			<entity name="living accomodations" probability="10" max-number="1" />
+			<entity name="farming" probability="20" max-number="2" />
+			<entity name="settlement" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
 </part-list>
