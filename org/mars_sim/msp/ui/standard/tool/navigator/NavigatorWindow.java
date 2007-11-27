@@ -372,7 +372,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
      * @param unit the unit the window is for.
      */
     public void openUnitWindow(Unit unit) {
-        desktop.openUnitWindow(unit);
+        desktop.openUnitWindow(unit, false);
     }
     
     private class mapClickListener extends MouseAdapter {

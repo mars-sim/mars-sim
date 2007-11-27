@@ -51,7 +51,7 @@ public class TowTabPanel extends TabPanel {
 			towingButton = new JButton();
 			towingButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
-					getDesktop().openUnitWindow(((Towing) getUnit()).getTowedVehicle());
+					getDesktop().openUnitWindow(((Towing) getUnit()).getTowedVehicle(), false);
 				}
 			});
 			
@@ -82,7 +82,7 @@ public class TowTabPanel extends TabPanel {
 		towedButton = new JButton();
 		towedButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				getDesktop().openUnitWindow(((Vehicle) getUnit()).getTowingVehicle());
+				getDesktop().openUnitWindow(((Vehicle) getUnit()).getTowingVehicle(), false);
 			}
 		});
 		

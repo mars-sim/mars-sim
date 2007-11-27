@@ -104,7 +104,7 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
 	public void mouseClicked(MouseEvent event) {
 		// If double-click, open vehicle window.
 		if (event.getClickCount() >= 2) 
-			desktop.openUnitWindow((Vehicle) vehicleList.getSelectedValue());
+			desktop.openUnitWindow((Vehicle) vehicleList.getSelectedValue(), false);
 	}
 
 	public void mousePressed(MouseEvent arg0) {}

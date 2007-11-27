@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.81 2007-08-27
+ * @version 2.82 2007-11-26
  * @author Scott Davis
  */
 
@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -27,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
 import org.mars_sim.msp.ui.standard.sound.SoundConstants;
@@ -266,7 +269,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         if (window != null) {
             if (window.isClosed()) {
                 if (!window.wasOpened()) {
-                    window.setLocation(getRandomLocation(window));
+                	if (UIConfig.INSTANCE.useUIDefault()) window.setLocation(getRandomLocation(window));
+                	else {
+                		window.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(toolName));
+                		if (window.isResizable()) 
+                			window.setSize(UIConfig.INSTANCE.getInternalWindowDimension(toolName));
+                	}
                     window.setWasOpened(true);
                 }
                 add(window, 0);
@@ -278,9 +286,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             window.show();
             //bring to front if it overlaps with other windows
             try {
-            window.setSelected(true);
+            	window.setSelected(true);
             } catch (PropertyVetoException e) {
-            // ignore if setSelected is vetoed	
+            	// ignore if setSelected is vetoed	
             }
         }
     }
@@ -299,10 +307,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     /** 
      * Creates and opens a window for a unit if it isn't 
      * already in existance and open.
-     *
      * @param unit the unit the window is for.
+     * @param initialWindow true if window is opened at UI startup.
      */
-    public void openUnitWindow(Unit unit) {
+    public void openUnitWindow(Unit unit, boolean initialWindow) {
 
         UnitWindow tempWindow = null;
 
@@ -314,7 +322,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         
         if (tempWindow != null) {
             if (tempWindow.isClosed()) add(tempWindow, 0);
-
+            
             try {
                 tempWindow.setIcon(false);
             }
@@ -332,8 +340,14 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
             // Set internal frame listener
             tempWindow.addInternalFrameListener(new UnitWindowListener(this));
 
-            // Put window in random position on desktop
-            tempWindow.setLocation(getRandomLocation(tempWindow));
+            if (initialWindow) {
+            	// Put window in configured position on desktop.
+            	tempWindow.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(unit.getName()));
+            }
+            else {
+            	// Put window in random position on desktop.
+            	tempWindow.setLocation(getRandomLocation(tempWindow));
+            }
 
             // Add unit window to unit windows
             unitWindows.add(tempWindow);
@@ -356,6 +370,21 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         if ((soundFilePath != null) && !soundFilePath.equals("")) 
         	soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
         soundPlayer.play(soundFilePath);
+    }
+    
+    /**
+     * Finds an existing unit window for a unit.
+     * @param unit the unit to search for.
+     * @return existing unit window or null if none.
+     */
+    public UnitWindow findUnitWindow(Unit unit) {
+    	UnitWindow result = null;
+    	Iterator<UnitWindow> i = unitWindows.iterator();
+        while (i.hasNext()) {
+            UnitWindow window = i.next();
+            if (window.getUnit() == unit) result = window;
+        }
+        return result;
     }
 
     /** 
@@ -541,9 +570,63 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
      */
 	void updateToolWindowLF() {
 		Iterator<ToolWindow> i = toolWindows.iterator();
-		while (i.hasNext()) {
-			ToolWindow toolWindow = i.next();
-			SwingUtilities.updateComponentTreeUI(toolWindow);
+		while (i.hasNext()) SwingUtilities.updateComponentTreeUI(i.next());
+	}
+	
+	/**
+	 * Opens all initial windows based on UI configuration.
+	 */
+	void openInitialWindows() {
+		UIConfig config = UIConfig.INSTANCE;
+		if (config.useUIDefault()) {
+			// Open up navigator tool initially.
+			openToolWindow(NavigatorWindow.NAME);
+		}
+		else {
+			// Open windows in Z-order.
+			List<String> windowNames = config.getInternalWindowNames();
+			int num = windowNames.size();
+			for (int x = 0; x < num; x++) {
+				String highestZName = null;
+				int highestZ = Integer.MIN_VALUE;
+				Iterator<String> i = windowNames.iterator();
+				while (i.hasNext()) {
+					String name = i.next();
+					boolean display = config.isInternalWindowDisplayed(name);
+					String type = config.getInternalWindowType(name);
+					if (UIConfig.UNIT.equals(type) && !Simulation.instance().isDefaultLoad()) display = false;
+					if (display) {
+						int zOrder = config.getInternalWindowZOrder(name);
+						if (zOrder > highestZ) {
+							highestZName = name;
+							highestZ = zOrder;
+						}
+					}
+				}
+				if (highestZName != null)  {
+					String type = config.getInternalWindowType(highestZName);
+					if (UIConfig.TOOL.equals(type)) openToolWindow(highestZName);
+					else if (UIConfig.UNIT.equals(type)) {
+						Unit unit = Simulation.instance().getUnitManager().findUnit(highestZName);
+						if (unit != null) openUnitWindow(unit, true);
+					}
+					windowNames.remove(highestZName);
+				}
+			}
+			
+			// Create unit bar buttons for closed unit windows.
+			if (Simulation.instance().isDefaultLoad()) {
+				Iterator<String> i = config.getInternalWindowNames().iterator();
+				while (i.hasNext()) {
+					String name = i.next();
+					if (UIConfig.UNIT.equals(config.getInternalWindowType(name))) {
+						if (!config.isInternalWindowDisplayed(name)) {
+							Unit unit = Simulation.instance().getUnitManager().findUnit(name);
+							if (unit != null) mainWindow.createUnitButton(unit);
+						}
+					}
+				}
+			}
 		}
 	}
 }

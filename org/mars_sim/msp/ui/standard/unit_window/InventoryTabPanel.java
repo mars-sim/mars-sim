@@ -124,7 +124,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public void valueChanged(ListSelectionEvent e) {
         int index = equipmentTable.getSelectedRow();
         Equipment selectedEquipment = (Equipment) equipmentTable.getValueAt(index, 0);
-        if (selectedEquipment != null) desktop.openUnitWindow(selectedEquipment);
+        if (selectedEquipment != null) desktop.openUnitWindow(selectedEquipment, false);
     }
     
     /** 

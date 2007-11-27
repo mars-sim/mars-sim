@@ -97,7 +97,7 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
 	 */
 	public void mouseClicked(MouseEvent event) {
 		// If double-click, open person window.
-		if (event.getClickCount() >= 2) desktop.openUnitWindow((Person) populationList.getSelectedValue());
+		if (event.getClickCount() >= 2) desktop.openUnitWindow((Person) populationList.getSelectedValue(), false);
 	}
 
 	public void mousePressed(MouseEvent arg0) {}

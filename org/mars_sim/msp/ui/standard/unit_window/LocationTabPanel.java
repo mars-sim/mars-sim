@@ -110,7 +110,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
             
         // If the location button was pressed, open the unit window.
         if (source == locationButton) 
-            desktop.openUnitWindow(unit.getContainerUnit());
+            desktop.openUnitWindow(unit.getContainerUnit(), false);
     }
     
     /**

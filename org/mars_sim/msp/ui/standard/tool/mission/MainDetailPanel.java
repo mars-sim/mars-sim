@@ -147,7 +147,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         				// Open window for selected person.
         				int index = memberTable.getSelectedRow();
         				Person selectedPerson = memberTableModel.getMemberAtIndex(index);
-        				if (selectedPerson != null) getDesktop().openUnitWindow(selectedPerson);
+        				if (selectedPerson != null) getDesktop().openUnitWindow(selectedPerson, false);
         			}
         		}
         	});
@@ -177,7 +177,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 					// Open window for vehicle.
 					VehicleMission vehicleMission = (VehicleMission) currentMission;
 					Vehicle vehicle = vehicleMission.getVehicle();
-					if (vehicle != null) getDesktop().openUnitWindow(vehicle);
+					if (vehicle != null) getDesktop().openUnitWindow(vehicle, false);
 				}
 			}
 		});

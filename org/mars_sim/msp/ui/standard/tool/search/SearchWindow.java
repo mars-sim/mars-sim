@@ -182,7 +182,7 @@ public class SearchWindow extends ToolWindow {
             Unit unit = unitI.next();
             if (selectTextField.getText().equalsIgnoreCase(unit.getName())) {
                 foundUnit = true;
-                if (openWindowCheck.isSelected()) desktop.openUnitWindow(unit);
+                if (openWindowCheck.isSelected()) desktop.openUnitWindow(unit, false);
                 if (centerMapCheck.isSelected())
                     desktop.centerMapGlobe(unit.getCoordinates());
             }

@@ -75,7 +75,7 @@ public abstract class Unit implements Serializable {
      * Sets the unit's name
      * @param name new name
      */
-    protected final void setName(String name) {
+    public final void setName(String name) {
     	this.name = name;
     	fireUnitUpdate(NAME_EVENT, name);
     }

@@ -113,7 +113,7 @@ public class Resupply implements Serializable {
 		Iterator<String> vehicleI = newVehicles.iterator();
 		while (vehicleI.hasNext()) {
 			String vehicleType = vehicleI.next();
-			String vehicleName = unitManager.getNewName(UnitManager.VEHICLE, null);
+			String vehicleName = unitManager.getNewName(UnitManager.VEHICLE, null, null);
 			Rover rover = new Rover(vehicleName, vehicleType, settlement);
 			unitManager.addUnit(rover);
 		}
@@ -127,6 +127,7 @@ public class Resupply implements Serializable {
 			int number = newEquipment.get(equipmentType);
 			for (int x=0; x < number; x++) {
 				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
+				equipment.setName(unitManager.getNewName(UnitManager.EQUIPMENT, equipmentType, null));
 				inv.storeUnit(equipment);
 			}
 		}
@@ -158,7 +159,7 @@ public class Resupply implements Serializable {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 			String gender = Person.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
-			Person immigrant = new Person(unitManager.getNewName(UnitManager.PERSON, gender), gender, settlement);
+			Person immigrant = new Person(unitManager.getNewName(UnitManager.PERSON, null, gender), gender, settlement);
 			unitManager.addUnit(immigrant);
 			relationshipManager.addNewImmigrant(immigrant, immigrants);
 			immigrants.add(immigrant);

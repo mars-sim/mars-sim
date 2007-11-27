@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.81 2007-08-20
+ * @version 2.82 2007-11-25
  * @author Scott Davis
  */
 
@@ -10,11 +10,11 @@ package org.mars_sim.msp.simulation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentCollection;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
@@ -59,6 +59,7 @@ public class UnitManager implements Serializable {
     private List<String> personMaleNames; // List of possible male person names
     private List<String> personFemaleNames; // List of possible female person names
     private transient List<UnitManagerListener> listeners; // List of unit manager listeners.
+    private Map<String, Integer> equipmentNumberMap; // Map of equipment types and their numbers.
 
     /** 
      * Constructor
@@ -68,6 +69,7 @@ public class UnitManager implements Serializable {
         // Initialize unit collection
         units = new UnitCollection();
         listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+        equipmentNumberMap = new HashMap<String, Integer>();
     }
     
     /**
@@ -154,20 +156,18 @@ public class UnitManager implements Serializable {
             
             // Fire unit manager event.
             fireUnitManagerUpdate(UnitManagerEvent.ADD_UNIT, unit);
-            
-            // units.mergeUnits(unit.getInventory().getContainedUnits());
         }		
     }
     
     /**
      * Gets a new name for a unit.
-     *
      * @param unitType the type of unit.
+     * @param baseName the base name or null if none.
      * @param gender the gender of the person or null if not a person.
      * @return new name
      * @throws IllegalArgumentException if unitType is not valid.
      */
-    public String getNewName(String unitType, String gender) {
+    public String getNewName(String unitType, String baseName, String gender) {
         
         List<String> initialNameList = null;
         List<String> usedNames = new ArrayList<String>();
@@ -192,6 +192,14 @@ public class UnitManager implements Serializable {
             PersonIterator pi = getPeople().iterator();
             while (pi.hasNext()) usedNames.add(pi.next().getName());
             unitName = "Person";
+        }
+        else if (unitType.equals(EQUIPMENT)) {
+        	if (baseName != null) {
+        		int number = 1;
+        		if (equipmentNumberMap.containsKey(baseName)) number = equipmentNumberMap.get(baseName) + 1;
+        		equipmentNumberMap.put(baseName, number);
+        		return baseName + " " + number;
+        	}
         }
         else throw new IllegalArgumentException("Improper unitType");
  
@@ -221,7 +229,7 @@ public class UnitManager implements Serializable {
 			for (int x=0; x < config.getNumberOfInitialSettlements(); x++) {
 				// Get settlement name
 				String name = config.getInitialSettlementName(x);
-				if (name.equals(SettlementConfig.RANDOM)) name = getNewName(SETTLEMENT, null);
+				if (name.equals(SettlementConfig.RANDOM)) name = getNewName(SETTLEMENT, null, null);
 				
 				// Get settlement template
 				String template = config.getInitialSettlementTemplate(x);
@@ -265,7 +273,7 @@ public class UnitManager implements Serializable {
     			Iterator j = vehicleTypes.iterator();
     			while (j.hasNext()) {
     				String vehicleType = (String) j.next();
-    				addUnit(new Rover(getNewName(VEHICLE, null), vehicleType, settlement));
+    				addUnit(new Rover(getNewName(VEHICLE, null, null), vehicleType, settlement));
     			}
     		}
     	}
@@ -293,8 +301,9 @@ public class UnitManager implements Serializable {
     				int number = ((Integer) equipmentMap.get(type)).intValue();
     				for (int x = 0; x < number; x++) {
     					Equipment equipment = EquipmentFactory.getEquipment(type, settlement.getCoordinates(), false);
+    					equipment.setName(getNewName(EQUIPMENT, type, null));
     					settlement.getInventory().storeUnit(equipment);
-    					if (!(equipment instanceof Container)) addUnit(equipment);
+    					addUnit(equipment);
     				}
     			}
     		}
@@ -383,7 +392,7 @@ public class UnitManager implements Serializable {
     			while (settlement.getAvailablePopulationCapacity() > 0) {
     				String gender = Person.FEMALE;
     				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
-    				Person person = new Person(getNewName(PERSON, gender), gender, settlement);
+    				Person person = new Person(getNewName(PERSON, null, gender), gender, settlement);
     				addUnit(person);
     				relationshipManager.addInitialSettler(person, settlement);
     			}
@@ -645,4 +654,19 @@ public class UnitManager implements Serializable {
     				new UnitManagerEvent(this, eventType, unit));
     	}
     }
+
+    /**
+     * Finds a unit in the simulation that has the given name.
+     * @param name the name to search for.
+     * @return unit or null if none.
+     */
+	public Unit findUnit(String name) {
+		Unit result = null;
+		UnitIterator i = units.iterator();
+		while (i.hasNext() && (result == null)) {
+			Unit unit = i.next();
+			if (unit.getName().equals(name)) result = unit;
+		}
+		return result;
+	}
 }

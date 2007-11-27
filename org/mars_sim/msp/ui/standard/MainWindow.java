@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.82 2007-11-18
+ * @version 2.82 2007-11-26
  * @author Scott Davis
  */
 
@@ -48,9 +48,15 @@ public class MainWindow extends JFrame {
 
         // use JFrame constructor
         super("Mars Simulation Project (version " + Simulation.VERSION + ")");
+        
+        // Load UI configuration.
+        UIConfig.INSTANCE.parseFile();
+        
+        boolean useDefault = UIConfig.INSTANCE.useUIDefault();
 
 		// Set look and feel of UI.
-		setLookAndFeel(false);
+        if (!useDefault) setLookAndFeel(UIConfig.INSTANCE.useNativeLookAndFeel());
+        else setLookAndFeel(false);
         
         // Prepare frame
         setVisible(false);
@@ -81,24 +87,33 @@ public class MainWindow extends JFrame {
         mainPane.add(desktop, "Center");
 
         // Set frame size
+        Dimension frame_size = null;
         Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frame_size = new Dimension(screen_size);
-        if (screen_size.width > 800) {
-            frame_size = new Dimension(
-                    (int) Math.round(screen_size.getWidth() * .8D),
-                    (int) Math.round(screen_size.getHeight() * .8D));
+        if (useDefault) {
+        	// Make frame size 80% of screen size.
+        	frame_size = new Dimension(screen_size);
+        	if (screen_size.width > 800) {
+        		frame_size = new Dimension(
+        				(int) Math.round(screen_size.getWidth() * .8D),
+        				(int) Math.round(screen_size.getHeight() * .8D));
+        	}
         }
+        else frame_size = UIConfig.INSTANCE.getMainWindowDimension();
         setSize(frame_size);
 
-        // Center frame on screen
-        setLocation(((screen_size.width - frame_size.width) / 2),
-                ((screen_size.height - frame_size.height) / 2));
+        // Set frame location.
+        if (useDefault) {
+        	// Center frame on screen
+        	setLocation(((screen_size.width - frame_size.width) / 2),
+        			((screen_size.height - frame_size.height) / 2));
+        }
+        else setLocation(UIConfig.INSTANCE.getMainWindowLocation());
 
         // Show frame
         setVisible(true);
         
-        // Open up navigator tool initially.
-        desktop.openToolWindow(NavigatorWindow.NAME);
+        // Open all initial windows.
+        desktop.openInitialWindows();
     }
     
     /**
@@ -279,6 +294,11 @@ public class MainWindow extends JFrame {
      */
     public void exitSimulation() {
     	// System.out.println("Exiting simulation");
+    	
+    	// Save the UI configuration.
+    	UIConfig.INSTANCE.saveFile(this);
+    	
+    	// Save the simulation.
     	Simulation sim = Simulation.instance();
         try {
         	sim.getMasterClock().saveSimulation(null);
@@ -310,5 +330,13 @@ public class MainWindow extends JFrame {
     	catch (Exception e) {
 			e.printStackTrace(System.err);
     	}
+    }
+    
+    /**
+     * Gets the unit toolbar.
+     * @return unit toolbar.
+     */
+    public UnitToolBar getUnitToolBar() {
+    	return unitToolbar;
     }
 }

@@ -91,7 +91,7 @@ public class DeathTabPanel extends TabPanel implements ActionListener {
         	topContainerButton.addActionListener(new ActionListener() {
         		public void actionPerformed(ActionEvent event) {
         			DeathInfo death = ((Person) getUnit()).getPhysicalCondition().getDeathDetails();
-        			getDesktop().openUnitWindow(death.getContainerUnit());
+        			getDesktop().openUnitWindow(death.getContainerUnit(), false);
         		}
         	});
         	locationLabelPanel.add(topContainerButton);

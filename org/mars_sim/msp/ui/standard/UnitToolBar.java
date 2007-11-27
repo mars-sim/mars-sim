@@ -101,6 +101,16 @@ public class UnitToolBar extends JToolBar implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         // show unit window on desktop
         Unit unit = ((UnitButton) event.getSource()).getUnit();
-        parentMainWindow.getDesktop().openUnitWindow(unit);
+        parentMainWindow.getDesktop().openUnitWindow(unit, false);
+    }
+    
+    /**
+     * Gets all the units in the toolbar.
+     * @return array of units.
+     */
+    public Unit[] getUnitsInToolBar() {
+    	Unit[] result = new Unit[unitButtons.size()];
+    	for (int x = 0; x < unitButtons.size(); x++) result[x] = unitButtons.get(x).getUnit();
+    	return result;
     }
 }

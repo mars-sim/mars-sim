@@ -133,7 +133,7 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
 
         // If double-click, open person window.
         if (event.getClickCount() >= 2) 
-            desktop.openUnitWindow((Person) populationList.getSelectedValue());
+            desktop.openUnitWindow((Person) populationList.getSelectedValue(), false);
     }
 
     public void mousePressed(MouseEvent event) {}

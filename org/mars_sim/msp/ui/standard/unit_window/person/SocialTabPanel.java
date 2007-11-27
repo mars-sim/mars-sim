@@ -72,7 +72,7 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 	public void valueChanged(ListSelectionEvent e) {
 		int index = relationshipTable.getSelectedRow();
 		Person selectedPerson = (Person) relationshipTable.getValueAt(index, 0);
-		if (selectedPerson != null) desktop.openUnitWindow(selectedPerson);
+		if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
 	}
 	
 	/** 

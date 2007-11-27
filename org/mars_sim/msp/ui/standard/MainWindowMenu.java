@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.80 2006-08-11
+ * @version 2.82 2007-11-19
  * @author Scott Davis
  */
 
@@ -119,7 +119,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		add(optionMenu);
 		
 		// Create look and feel menu item
-		lookAndFeelItem = new JCheckBoxMenuItem("Native Look & Feel");
+		boolean nativeLookAndFeel = UIConfig.INSTANCE.useNativeLookAndFeel();
+		if (UIConfig.INSTANCE.useUIDefault()) nativeLookAndFeel = false;
+		lookAndFeelItem = new JCheckBoxMenuItem("Native Look & Feel", nativeLookAndFeel);
 		lookAndFeelItem.addActionListener(this);
 		optionMenu.add(lookAndFeelItem);
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 2.82 2007-10-29
+ * @version 2.82 2007-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -55,8 +55,7 @@ public class Simulation implements ClockListener, Serializable {
 	private MedicalManager medicalManager; // Medical complaints
 	private MasterClock masterClock; // Master clock for the simulation.
 	private CreditManager creditManager; // Manages trade credit between settlements.
-	
-	public int id = 0;
+	private boolean defaultLoad = false;
 
 	/**
 	 * Constructor
@@ -86,6 +85,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public static void createNewSimulation() throws Exception {
 		Simulation simulation = instance();
+		simulation.defaultLoad = false;
 		simulation.stop();
 		
 		// Wait until current time pulse runs it course.
@@ -142,7 +142,11 @@ public class Simulation implements ClockListener, Serializable {
 		simulation.stop();
 		
 		// Use default file path if file is null.
-		if (file == null) file = new File(DEFAULT_DIR + File.separator + DEFAULT_FILE);
+		if (file == null) {
+			file = new File(DEFAULT_DIR + File.separator + DEFAULT_FILE);
+			defaultLoad = true;
+		}
+		else defaultLoad = false;
 		
 		try {
 			ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
@@ -308,5 +312,13 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public MasterClock getMasterClock() {
 		return masterClock;
+	}
+	
+	/**
+	 * Checks if simulation was loaded from default save file.
+	 * @return true if default load.
+	 */
+	public boolean isDefaultLoad() {
+		return defaultLoad;
 	}
 }

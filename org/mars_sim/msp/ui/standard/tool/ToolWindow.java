@@ -51,7 +51,7 @@ public abstract class ToolWindow extends JInternalFrame {
      * @return tool name
      */
     public String getToolName() {
-        return new String(name);
+        return name;
     }
 
     /** 

@@ -86,7 +86,7 @@ public class SoundWindow extends ToolWindow {
         mainPane.add(mutePane, BorderLayout.SOUTH);
         
         // Create mute checkbox.
-        muteCheck = new JCheckBox("Mute");
+        muteCheck = new JCheckBox("Mute", soundPlayer.isMute());
         muteCheck.addActionListener(new ActionListener() {
         		public void actionPerformed(ActionEvent e) {
         			soundPlayer.setMute(muteCheck.isSelected());

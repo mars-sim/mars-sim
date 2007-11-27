@@ -136,7 +136,7 @@ public class MissionTabPanel extends TabPanel {
         	public void mouseClicked(MouseEvent arg0) {
         		// If double-click, open person dialog.
                 if (arg0.getClickCount() >= 2) 
-                    getDesktop().openUnitWindow((Person) memberList.getSelectedValue());
+                    getDesktop().openUnitWindow((Person) memberList.getSelectedValue(), false);
         	}
         });
         memberScrollPanel.setViewportView(memberList);

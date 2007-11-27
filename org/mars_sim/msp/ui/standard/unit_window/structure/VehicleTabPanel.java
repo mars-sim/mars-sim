@@ -91,7 +91,7 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
 
         // If double-click, open person window.
         if (event.getClickCount() >= 2) 
-            desktop.openUnitWindow((Vehicle) vehicleList.getSelectedValue());
+            desktop.openUnitWindow((Vehicle) vehicleList.getSelectedValue(), false);
     }
 
     public void mousePressed(MouseEvent event) {}

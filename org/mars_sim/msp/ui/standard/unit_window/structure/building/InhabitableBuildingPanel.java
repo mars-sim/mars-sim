@@ -105,7 +105,7 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
 
         // If double-click, open person window.
         if (event.getClickCount() >= 2) 
-            desktop.openUnitWindow((Person) inhabitantList.getSelectedValue());
+            desktop.openUnitWindow((Person) inhabitantList.getSelectedValue(), false);
     }
 
     public void mousePressed(MouseEvent event) {}

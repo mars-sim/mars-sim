@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.standard.sound;
 import java.io.*;
 import javax.sound.sampled.*;
 
+import org.mars_sim.msp.ui.standard.UIConfig;
+
 /**
  * A class to play sound files.
  */
@@ -22,8 +24,15 @@ public class AudioPlayer {
 	
 	public AudioPlayer() {
 		clip = null;
-		mute = false;
-		volume = .5F;
+		
+		if (UIConfig.INSTANCE.useUIDefault()) {
+			setMute(false);
+			setVolume(.5F);
+		}
+		else {
+			setMute(UIConfig.INSTANCE.isMute());
+			setVolume(UIConfig.INSTANCE.getVolume());
+		}
 	}
 	
 	/**
