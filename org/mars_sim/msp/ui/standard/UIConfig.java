@@ -418,6 +418,31 @@ public class UIConfig {
 	}
 	
 	/**
+	 * Checks if internal window is configured.
+	 * @param windowName the window name.
+	 * @return true if configured.
+	 */
+	public boolean isInternalWindowConfigured(String windowName) {
+		try {
+			Element root = configDoc.getDocumentElement();
+			Element internalWindows = (Element) root.getElementsByTagName(INTERNAL_WINDOWS).item(0);
+			NodeList internalWindowNodes = internalWindows.getChildNodes();
+			boolean result = false;
+			for (int x = 0; x < internalWindowNodes.getLength(); x++) {
+				if (internalWindowNodes.item(x) instanceof Element) {
+					Element internalWindow = (Element) internalWindowNodes.item(x);
+					String name = internalWindow.getAttribute(NAME);
+					if (name.equals(windowName)) result = true;
+				}
+			}
+			return result;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
 	 * Gets all of the internal window names.
 	 * @return list of window names.
 	 */

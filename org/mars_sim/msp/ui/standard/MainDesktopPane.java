@@ -269,11 +269,15 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         if (window != null) {
             if (window.isClosed()) {
                 if (!window.wasOpened()) {
-                	if (UIConfig.INSTANCE.useUIDefault()) window.setLocation(getRandomLocation(window));
+                	UIConfig config = UIConfig.INSTANCE;
+                	if (config.useUIDefault()) window.setLocation(getRandomLocation(window));
                 	else {
-                		window.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(toolName));
-                		if (window.isResizable()) 
-                			window.setSize(UIConfig.INSTANCE.getInternalWindowDimension(toolName));
+                		if (config.isInternalWindowConfigured(toolName)) {
+                			window.setLocation(config.getInternalWindowLocation(toolName));
+                			if (window.isResizable()) 
+                				window.setSize(config.getInternalWindowDimension(toolName));
+                		}
+                		else window.setLocation(getRandomLocation(window));
                 	}
                     window.setWasOpened(true);
                 }
