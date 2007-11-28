@@ -290,10 +290,13 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     private static VehicleCollection getAllVehicleCandidates(Person person) {
         VehicleCollection result = new VehicleCollection();
         
-        VehicleIterator vI = person.getSettlement().getParkedVehicles().iterator();
-        while (vI.hasNext()) {
-            Vehicle vehicle = vI.next();
-            if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
+        Settlement settlement = person.getSettlement();
+        if (settlement != null) {
+        	VehicleIterator vI = settlement.getParkedVehicles().iterator();
+        	while (vI.hasNext()) {
+        		Vehicle vehicle = vI.next();
+        		if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
+        	}
         }
         
         return result;

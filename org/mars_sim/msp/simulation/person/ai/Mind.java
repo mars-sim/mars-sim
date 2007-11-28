@@ -103,7 +103,7 @@ public class Mind implements Serializable {
             		}
             	}
             	if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission);
-            	takeAction(time);
+            	if (taskManager.hasActiveTask()) takeAction(time);
         	}
         }
         catch (Exception e) {
