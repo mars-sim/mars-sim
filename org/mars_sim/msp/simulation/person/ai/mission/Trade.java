@@ -94,14 +94,18 @@ public class Trade extends RoverMission implements Serializable {
         	setStartingSettlement(startingPerson.getSettlement());
         	
         	// Get trading settlement
-			tradingSettlement = TradeUtil.bestTradeSettlementCache;
-			addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, 
-					tradingSettlement.getName()));
-			setDescription("Trade with " + tradingSettlement.getName());
+        	tradingSettlement = TradeUtil.bestTradeSettlementCache;
+        	if (tradingSettlement != null) {
+        		addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, 
+        				tradingSettlement.getName()));
+        		setDescription("Trade with " + tradingSettlement.getName());
+        	}
+        	else endMission("Could not determine trading settlement.");
         	
 			try {
 				// Get sell load
-				sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(), getRover(), tradingSettlement);
+				if (!isDone()) sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(), 
+						getRover(), tradingSettlement);
 			}
 			catch (Exception e) {
 				e.printStackTrace(System.err);
