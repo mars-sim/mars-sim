@@ -83,7 +83,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 			VehicleIterator i = getAllVehicleCandidates(person).iterator();
 			while (i.hasNext()) {
 				MalfunctionManager manager = i.next().getMalfunctionManager();
-				double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 200D);
+				double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 20D);
 				if (entityProb > 100D) entityProb = 100D;
 				result += entityProb;
 			}

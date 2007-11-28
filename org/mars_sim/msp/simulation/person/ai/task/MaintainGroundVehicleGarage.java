@@ -127,7 +127,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
         			boolean minTime = (effectiveTime >= 1000D);
         			if (!hasMalfunction && hasParts && minTime) {
-        				double entityProb = effectiveTime / 200D;
+        				double entityProb = effectiveTime / 20D;
         				if (entityProb > 100D) entityProb = 100D;
         				result += entityProb;
         			}
