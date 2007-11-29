@@ -525,4 +525,20 @@ public abstract class RoverMission extends VehicleMission {
      * @throws Exception if error determining needed equipment.
      */
     public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception;
+    
+	/** 
+	 * Finalizes the mission 
+	 * @param reason the reason of ending the mission.
+	 */
+	public void endMission(String reason) {
+		// If at a settlement, associate all members with the settlement.
+		PersonIterator i = getPeople().iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			if (person.getLocationSituation().equals(Person.INSETTLEMENT))
+				person.setAssociatedSettlement(person.getSettlement());
+		}
+		
+		super.endMission(reason);
+	}	
 }
