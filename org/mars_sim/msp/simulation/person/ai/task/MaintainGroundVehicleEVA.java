@@ -213,14 +213,20 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 
         // Add repair parts if necessary.
         Inventory inv = containerUnit.getInventory();
-        Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
-        Iterator<Part> j = parts.keySet().iterator();
-        while (j.hasNext()) {
-          	Part part = j.next();
-           	int number = parts.get(part);
-           	inv.retrieveItemResources(part, number);
-           	manager.maintainWithParts(part, number);
+        if (Maintenance.hasMaintenanceParts(inv, vehicle)) {
+        	Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
+        	Iterator<Part> j = parts.keySet().iterator();
+        	while (j.hasNext()) {
+        		Part part = j.next();
+        		int number = parts.get(part);
+        		inv.retrieveItemResources(part, number);
+        		manager.maintainWithParts(part, number);
+        	}
         }
+        else {
+			setPhase(ENTER_AIRLOCK);
+			return time;
+		}
         
         // Add work to the maintenance
         manager.addMaintenanceWorkTime(workTime);

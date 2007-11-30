@@ -196,6 +196,25 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
         if (isDone()) return time;
     	
+        // Add repair parts if necessary.
+        Inventory inv = person.getTopContainerUnit().getInventory();
+        if (Maintenance.hasMaintenanceParts(inv, vehicle)) {
+        	Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
+        	Iterator<Part> j = parts.keySet().iterator();
+        	while (j.hasNext()) {
+        		Part part = j.next();
+        		int number = parts.get(part);
+        		inv.retrieveItemResources(part, number);
+        		manager.maintainWithParts(part, number);
+        	}
+        }
+        else {
+        	vehicle.setReservedForMaintenance(false);
+            garage.removeVehicle(vehicle);
+            endTask();
+			return time;
+		}
+        
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
         int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
@@ -204,17 +223,6 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 
         // Add work to the maintenance
         manager.addMaintenanceWorkTime(workTime);
-
-        // Add repair parts if necessary.
-        Inventory inv = person.getTopContainerUnit().getInventory();
-        Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
-        Iterator<Part> j = parts.keySet().iterator();
-        while (j.hasNext()) {
-          	Part part = j.next();
-           	int number = parts.get(part);
-           	inv.retrieveItemResources(part, number);
-           	manager.maintainWithParts(part, number);
-        }
             
         // Add experience points
         addExperience(time);

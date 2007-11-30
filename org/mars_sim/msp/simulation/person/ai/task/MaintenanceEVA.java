@@ -212,19 +212,25 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		if (mechanicSkill == 0) workTime /= 2;
 		if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
-		// Add work to the maintenance
-		manager.addMaintenanceWorkTime(workTime);
-
         // Add repair parts if necessary.
-        Inventory inv = containerUnit.getInventory();
-        Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
-        Iterator<Part> j = parts.keySet().iterator();
-        while (j.hasNext()) {
-          	Part part = j.next();
-           	int number = parts.get(part);
-           	inv.retrieveItemResources(part, number);
-           	manager.maintainWithParts(part, number);
+		Inventory inv = containerUnit.getInventory();
+		if (Maintenance.hasMaintenanceParts(inv, entity)) {
+			Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
+			Iterator<Part> j = parts.keySet().iterator();
+			while (j.hasNext()) {
+				Part part = j.next();
+				int number = parts.get(part);
+				inv.retrieveItemResources(part, number);
+				manager.maintainWithParts(part, number);
+			}
         }
+		else {
+			setPhase(ENTER_AIRLOCK);
+			return time;
+		}
+        
+        // Add work to the maintenance
+		manager.addMaintenanceWorkTime(workTime);
 		
         // Add experience points
         addExperience(time);

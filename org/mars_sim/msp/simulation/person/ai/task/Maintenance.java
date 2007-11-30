@@ -142,13 +142,19 @@ public class Maintenance extends Task implements Serializable {
 
         // Add repair parts if necessary.
         Inventory inv = person.getTopContainerUnit().getInventory();
-        Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
-        Iterator<Part> j = parts.keySet().iterator();
-        while (j.hasNext()) {
-        	Part part = j.next();
-        	int number = parts.get(part);
-        	inv.retrieveItemResources(part, number);
-        	manager.maintainWithParts(part, number);
+        if (Maintenance.hasMaintenanceParts(inv, entity)) {
+        	Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
+        	Iterator<Part> j = parts.keySet().iterator();
+        	while (j.hasNext()) {
+        		Part part = j.next();
+        		int number = parts.get(part);
+        		inv.retrieveItemResources(part, number);
+        		manager.maintainWithParts(part, number);
+        	}
+        }
+        else {
+        	endTask();
+        	return time;
         }
         
         // Add work to the maintenance
@@ -299,11 +305,22 @@ public class Maintenance extends Task implements Serializable {
      * @throws Exception if error checking parts availability.
      */
     static boolean hasMaintenanceParts(Person person, Malfunctionable malfunctionable) throws Exception {
-    	boolean result = true;
-    	
     	Inventory inv = null;
     	if (person.getTopContainerUnit() != null) inv = person.getTopContainerUnit().getInventory();
     	else inv = person.getInventory();
+    	return hasMaintenanceParts(inv, malfunctionable);
+    }
+    
+    /**
+     * Checks if there are enough local parts to perform maintenance.
+     * @param inventory inventory holding the needed parts.
+     * @param malfunctionable the entity needing maintenance.
+     * @return true if enough parts.
+     * @throws Exception if error checking parts availability.
+     */
+    static boolean hasMaintenanceParts(Inventory inv, Malfunctionable malfunctionable) throws Exception {
+    	boolean result = true;
+    	
     	Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
     	Iterator<Part> i = parts.keySet().iterator();
     	while (i.hasNext()) {

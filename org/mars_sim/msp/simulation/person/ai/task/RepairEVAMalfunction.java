@@ -264,14 +264,20 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         
         // Add repair parts if necessary.
         Inventory inv = containerUnit.getInventory();
-        Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
-        Iterator<Part> j = parts.keySet().iterator();
-        while (j.hasNext()) {
-        	Part part = j.next();
-        	int number = parts.get(part);
-        	inv.retrieveItemResources(part, number);
-        	malfunction.repairWithParts(part, number);
+        if (hasRepairPartsForMalfunction(person, containerUnit, malfunction)) {
+        	Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
+        	Iterator<Part> j = parts.keySet().iterator();
+        	while (j.hasNext()) {
+        		Part part = j.next();
+        		int number = parts.get(part);
+        		inv.retrieveItemResources(part, number);
+        		malfunction.repairWithParts(part, number);
+        	}
         }
+        else {
+			setPhase(ENTER_AIRLOCK);
+			return time;
+		}
 	
         // Add EVA work to malfunction.
         double workTimeLeft = malfunction.addEVAWorkTime(workTime);
