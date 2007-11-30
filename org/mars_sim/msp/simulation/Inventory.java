@@ -326,8 +326,10 @@ public class Inventory implements Serializable {
     						double remainingUnitCapacity = unitInventory.getAmountResourceRemainingCapacity(resource);
     						double storageAmount = remainingAmount;
     						if (storageAmount > remainingUnitCapacity) storageAmount = remainingUnitCapacity;
-    						unitInventory.storeAmountResource(resource, storageAmount);
-    						remainingAmount -= storageAmount;
+    						if (storageAmount > 0D) {
+    							unitInventory.storeAmountResource(resource, storageAmount);
+    							remainingAmount -= storageAmount;
+    						}
     					}
     				}
     				
