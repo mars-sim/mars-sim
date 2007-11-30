@@ -22,6 +22,8 @@ malfunctions.xml: Modify or create new malfunctions that can occur
                   
 medical.xml:      Modify or create new illnesses or treatments.
 
+parts.xml:        Modify or create new parts.
+
 people.xml:       Modify properties related to people, or add new 
                   names to the person name list.
                   
