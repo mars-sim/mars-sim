@@ -303,7 +303,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         	
         	buildingManager.timePassing(time);
         	
-        	goodsManager.timePassing(time);
+        	updateGoodsManager(time);
         	
         	if (getCurrentPopulationNum() > 0) malfunctionManager.activeTimePassing(time);
         	malfunctionManager.timePassing(time);
@@ -312,6 +312,12 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         	e.printStackTrace(System.err);
         	throw new Exception("Settlement " + getName() + " timePassing(): " + e.getMessage());
         }
+    }
+    
+    private void updateGoodsManager(double time) throws Exception {
+    	
+    	// Randomly update goods manager five times per Sol.
+    	if ((time * 5D) >= RandomUtil.getRandomDouble(1000D)) goodsManager.timePassing(time);
     }
 
     /**
