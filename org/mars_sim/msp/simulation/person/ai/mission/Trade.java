@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.82 2007-11-16
+ * @version 2.83 2008-01-09
  * @author Scott Davis
  */
 
@@ -46,6 +46,9 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  */
 public class Trade extends RoverMission implements Serializable {
 
+	// Mission event types
+	public static final String BUY_LOAD_EVENT = "buy load";
+	
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Trade with Settlement";
 	
@@ -66,6 +69,9 @@ public class Trade extends RoverMission implements Serializable {
 	private Settlement tradingSettlement;
 	private Map<Good, Integer> sellLoad;
 	private Map<Good, Integer> buyLoad;
+	private double profit;
+	private Map<Good, Integer> desiredBuyLoad;
+	private double desiredProfit;
 	private boolean outbound;
 	private MarsClock startNegotiationTime;
 	private NegotiateTrade negotiationTask;
@@ -110,6 +116,19 @@ public class Trade extends RoverMission implements Serializable {
 			catch (Exception e) {
 				e.printStackTrace(System.err);
 				endMission("Could not determine sell load.");
+			}
+			
+			try {
+				// Determine desired buy load
+				if (!isDone()) {
+					desiredBuyLoad = TradeUtil.getDesiredBuyLoad(getStartingSettlement(), 
+							getRover(), tradingSettlement);
+					desiredProfit = estimateTradeProfit(desiredBuyLoad);
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+				endMission("Could not determine desired buy load.");
 			}
         	
         	// Recruit additional people to mission.
@@ -168,8 +187,11 @@ public class Trade extends RoverMission implements Serializable {
     	while (i.hasNext()) i.next().getMind().setMission(this);
     	
     	// Set trade goods.
-    	this.sellLoad = sellGoods;
-    	this.buyLoad = buyGoods;
+    	sellLoad = sellGoods;
+    	buyLoad = buyGoods;
+    	desiredBuyLoad = new HashMap<Good, Integer>(buyGoods);
+    	profit = estimateTradeProfit(buyLoad);
+    	desiredProfit = profit;
     	
 		// Add trade mission phases.
 		addPhase(TRADE_DISEMBARKING);
@@ -395,6 +417,8 @@ public class Trade extends RoverMission implements Serializable {
     			if (negotiationTask != null) {
     				if (negotiationTask.isDone()) {
     					buyLoad = negotiationTask.getBuyLoad();
+    					profit = estimateTradeProfit(buyLoad);
+    					fireMissionUpdate(BUY_LOAD_EVENT);
     					setPhaseEnded(true);
     				}
     			}
@@ -416,6 +440,8 @@ public class Trade extends RoverMission implements Serializable {
     					double timeDiff = MarsClock.getTimeDiff(startNegotiationTime, currentTime);
     					if (timeDiff > 1000D) {
     						buyLoad = new HashMap<Good, Integer>(0);
+    						profit = 0D;
+    						fireMissionUpdate(BUY_LOAD_EVENT);
     						setPhaseEnded(true);
     					}
     				}
@@ -840,6 +866,84 @@ public class Trade extends RoverMission implements Serializable {
 		}
 		
 		return bestTrader;
+	}
+	
+	/**
+	 * Gets the load that is being sold in the trade.
+	 * @return sell load.
+	 */
+	public Map<Good, Integer> getSellLoad() {
+		if (sellLoad != null) return new HashMap<Good, Integer>(sellLoad);
+		else return null;
+	}
+	
+	/**
+	 * Gets the load that is being bought in the trade.
+	 * @return buy load.
+	 */
+	public Map<Good, Integer> getBuyLoad() {
+		if (buyLoad != null) return new HashMap<Good, Integer>(buyLoad);
+		else return null;
+	}
+	
+	/**
+	 * Gets the profit for the settlement initiating the trade.
+	 * @return profit (VP).
+	 */
+	public double getProfit() {
+		return profit;
+	}
+	
+	/**
+	 * Gets the load that the starting settlement initially desires to buy.
+	 * @return desired buy load.
+	 */
+	public Map<Good, Integer> getDesiredBuyLoad() {
+		if (desiredBuyLoad != null) return new HashMap<Good, Integer>(desiredBuyLoad);
+		else return null;
+	}
+	
+	/**
+	 * Gets the profit initially expected by the starting settlement.
+	 * @return desired profit (VP).
+	 */
+	public double getDesiredProfit() {
+		return desiredProfit;
+	}
+	
+	/**
+	 * Gets the settlement that the starting settlement is trading with.
+	 * @return trading settlement.
+	 */
+	public Settlement getTradingSettlement() {
+		return tradingSettlement;
+	}
+	
+	/**
+	 * Estimates the profit for the starting settlement for a given buy load.
+	 * @param buyingLoad the load to buy.
+	 * @return profit (VP).
+	 */
+	private double estimateTradeProfit(Map<Good, Integer> buyingLoad) {
+		double result = 0D;
+		
+		try {
+			double sellingValue = TradeUtil.determineLoadValue(sellLoad, getStartingSettlement(), false);
+			double buyingValue = TradeUtil.determineLoadValue(buyingLoad, getStartingSettlement(), true);
+		
+			double estimatedDistance = getStartingSettlement().getCoordinates().getDistance(
+					tradingSettlement.getCoordinates()) * 2D;
+			double missionCost = TradeUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(), 
+					estimatedDistance);
+		
+			result = buyingValue - sellingValue - missionCost;
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+			endMission("Could not estimate trade profit.");
+		}
+		
+		return result;
 	}
 	
 	/**

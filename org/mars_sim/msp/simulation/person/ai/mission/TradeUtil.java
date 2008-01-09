@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 2.81 2007-08-12
+ * @version 2.83 2008-01-09
  * @author Scott Davis
  */
 
@@ -38,9 +38,6 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  * Utility class for static trade methods.
  */
 public final class TradeUtil {
-
-	// The amount (kg) block that resources are traded in.
-	// private static final double AMOUNT_RESOURCE_TRADE_AMOUNT = 10D;
 	
 	// Performance cache for equipment goods.
 	private final static Map <Class, Equipment> equipmentGoodCache = new HashMap<Class, Equipment>(5);
@@ -110,6 +107,30 @@ public final class TradeUtil {
     	double cost = getEstimatedMissionCost(startingSettlement, rover, distance);
     	
     	return revenue - cost;
+    }
+    
+    /**
+     * Gets the desired buy load from a trading settlement.
+     * @param startingSettlement the settlement that is buying.
+     * @param rover the rover used for trade.
+     * @param tradingSettlement the settlement to buy from.
+     * @return the desired buy load.
+     * @throws Exception if error determining the buy load.
+     */
+    static Map<Good, Integer> getDesiredBuyLoad(Settlement startingSettlement, Rover rover, 
+    		Settlement tradingSettlement) throws Exception {
+    	
+    	// Determine best trade loads.
+    	Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, Double.MAX_VALUE);
+    	double sellValue = determineLoadValue(sellLoad, tradingSettlement, true);
+    	
+    	// Add in credit between settlements.
+    	CreditManager creditManager = Simulation.instance().getCreditManager();
+    	double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
+    	double valueLimit = sellValue + credit;
+    	
+    	// Determine desired buy load.
+    	return determineLoad(startingSettlement, tradingSettlement, rover, valueLimit);
     }
     
     /**
@@ -280,9 +301,19 @@ public final class TradeUtil {
     			goodMass *= tradeAmount;
     			multiplier = tradeAmount;
     		}
+    		
     		for (int x = 0; x < goodNumber; x++) {
-    			if (buy) result+= (manager.getGoodValuePerItem(good, (supply + (x * goodMass))) * multiplier);
-    			else result+= (manager.getGoodValuePerItem(good, (supply - (x * goodMass))) * multiplier);
+    			
+    			double supplyAmount = 0D;
+    			if (buy) supplyAmount = supply + (x * goodMass);
+    			else {
+    				supplyAmount = supply - (x * goodMass);
+    				if (supplyAmount < 0D) supplyAmount = 0D;
+    			}
+    			
+    			double value = (manager.getGoodValuePerItem(good, supplyAmount) * multiplier);
+    			
+    			result+= value;
     		}
     	}
 
@@ -494,7 +525,7 @@ public final class TradeUtil {
      * @return the cost of the mission (value points).
      * @throws Exception if error getting the estimated mission cost.
      */
-    private static double getEstimatedMissionCost(Settlement startingSettlement, Rover rover, double distance) 
+    public static double getEstimatedMissionCost(Settlement startingSettlement, Rover rover, double distance) 
 			throws Exception {
     	Map<Good, Integer> neededResources = new HashMap<Good, Integer>(4);
 

@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 2.80 2007-03-19
+ * @version 2.83 2007-12-24
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.mission;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -38,6 +39,7 @@ import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
+import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
@@ -52,6 +54,10 @@ import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 public class MainDetailPanel extends JPanel implements ListSelectionListener, 
 		MissionListener, UnitListener {
 
+	// Custom mission panel IDs.
+	private final static String EMPTY = "empty";
+	private final static String TRADE = "trade";
+	
 	// Private members
 	private Mission currentMission;
 	private Vehicle currentVehicle;
@@ -68,6 +74,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private JLabel travelledLabel;
 	private MainDesktopPane desktop;
 	private DecimalFormat formatter = new DecimalFormat("0.0");
+	private CardLayout customPanelLayout;
+	private JPanel missionCustomPane;
+	private TradeMissionCustomInfoPanel tradePanel;
 	
 	/**
 	 * Constructor
@@ -201,6 +210,22 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		travelledLabel = new JLabel("Travelled Distance:");
 		travelledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(travelledLabel);
+		
+		// Create the mission custom panel.
+		customPanelLayout = new CardLayout();
+		missionCustomPane = new JPanel(customPanelLayout);
+		missionCustomPane.setPreferredSize(new Dimension(-1, 250));
+		missionCustomPane.setBorder(new MarsPanelBorder());
+		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		mainPane.add(missionCustomPane);
+
+		// Create custom empty panel.
+		JPanel emptyCustomPane1 = new JPanel();
+		missionCustomPane.add(emptyCustomPane1, EMPTY);
+		
+		// Create custom trade panel.
+		tradePanel = new TradeMissionCustomInfoPanel();
+		missionCustomPane.add(tradePanel, TRADE);
 	}
 	
 	/**
@@ -279,7 +304,26 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			travelledLabel.setText("Travelled Distance:");
 			currentMission = null;
 			currentVehicle = null;
+			customPanelLayout.show(missionCustomPane, EMPTY);
 		}
+		
+		// Update custom mission panel.
+		updateCustomPanel(mission);
+	}
+	
+	/**
+	 * Update the custom mission panel with a mission.
+	 * @param mission the mission.
+	 */
+	private void updateCustomPanel(Mission mission) {
+		if (mission != null) {
+			if (mission instanceof Trade) {
+				customPanelLayout.show(missionCustomPane, TRADE);
+				tradePanel.updateMission(mission);
+			}
+			else customPanelLayout.show(missionCustomPane, EMPTY);
+		}
+		else customPanelLayout.show(missionCustomPane, EMPTY);
 	}
 	
 	/**
@@ -335,6 +379,19 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			travelledLabel.setText("Travelled Distance: " + travelledDistance + 
 					" km of " + totalDistance + " km");
 		}
+		
+		// Update custom mission panel.
+		updateCustomPanelMissionEvent(e);
+	}
+	
+	/**
+	 * Update the custom mission panels with a mission event.
+	 * @param e the mission event.
+	 */
+	private void updateCustomPanelMissionEvent(MissionEvent e) {
+		Mission mission = (Mission) e.getSource();
+		
+		if (mission instanceof Trade) tradePanel.updateMissionEvent(e);
 	}
 	
 	/**

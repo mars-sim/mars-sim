@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NegotiateTrade.java
- * @version 2.81 2007-08-12
+ * @version 2.83 2008-01-09
  * @author Scott Davis
  */
 
@@ -92,7 +92,7 @@ public class NegotiateTrade extends Task implements Serializable {
 			buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover, tradeValueLimit);
 			
 			// Set credit between settlements.
-			double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, sellingSettlement, false);
+			double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
 			CreditManager creditManager = Simulation.instance().getCreditManager();
 			double credit = tradeValueLimit - buyLoadValue;
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
@@ -143,7 +143,7 @@ public class NegotiateTrade extends Task implements Serializable {
 		modifier -= relationshipManager.getOpinionOfPerson(buyingTrader, sellingTrader) / 1000D;
 		
 		// Get sold load value.
-		double soldLoadValue = TradeUtil.determineLoadValue(soldLoad, buyingSettlement, true);
+		double soldLoadValue = TradeUtil.determineLoadValue(soldLoad, sellingSettlement, true);
 		
 		// Get existing credit between settlements.
 		CreditManager creditManager = Simulation.instance().getCreditManager();

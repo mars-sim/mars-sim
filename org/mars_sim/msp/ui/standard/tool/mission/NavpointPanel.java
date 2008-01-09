@@ -151,7 +151,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		// Create the navpoint table panel.
 		JPanel navpointTablePane = new JPanel(new BorderLayout(0, 0));
 		navpointTablePane.setBorder(new MarsPanelBorder());
-		navpointTablePane.setPreferredSize(new Dimension(100, 100));
+		navpointTablePane.setPreferredSize(new Dimension(-1, 180));
 		mainPane.add(navpointTablePane);
 		
 		// Create the navpoint scroll panel.
