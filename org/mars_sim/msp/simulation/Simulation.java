@@ -31,7 +31,7 @@ import org.mars_sim.msp.simulation.time.MasterClock;
 public class Simulation implements ClockListener, Serializable {
 
 	// Version string.
-	public final static String VERSION = "2.82";
+	public final static String VERSION = "2.83";
 	
 	// Default save file.
 	public final static String DEFAULT_FILE = "default.sim";
