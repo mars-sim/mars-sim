@@ -172,7 +172,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		while (i.hasNext()) {
 			Unit container = i.next();
 			try {
-				double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resource);
+				double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resource, true);
 			
 				if (remainingCapacity > mostCapacity) {
 					result = container;
@@ -205,7 +205,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			return time;
 		}
 
-		double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(resourceType);
+		double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(resourceType, true);
 		double currentSamplesCollected = rover.getInventory().getAmountResourceStored(resourceType) - startingCargo; 
 		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
 		double sampleLimit = remainingPersonCapacity;
@@ -229,11 +229,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 		
 		// Collect resources.
 		if (samplesCollected <= sampleLimit) {
-			person.getInventory().storeAmountResource(resourceType, samplesCollected);
+			person.getInventory().storeAmountResource(resourceType, samplesCollected, true);
 			return 0D;
 		}
 		else {
-			if (sampleLimit >= 0D) person.getInventory().storeAmountResource(resourceType, sampleLimit);
+			if (sampleLimit >= 0D) person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
 			setPhase(ENTER_AIRLOCK);
 			return time - (sampleLimit / collectionRate);
 		}

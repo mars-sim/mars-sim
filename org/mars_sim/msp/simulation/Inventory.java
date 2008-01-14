@@ -267,27 +267,30 @@ public class Inventory implements Serializable {
     /**
      * Gets the remaining capacity available for a resource.
      * @param resource the resource.
+     * @param useContainedUnits should the capacity of contained units be added?
      * @return remaining capacity amount (kg).
      * throws InventoryException if error getting remaining capacity.
      */
-    public synchronized double getAmountResourceRemainingCapacity(AmountResource resource) throws InventoryException {
+    public synchronized double getAmountResourceRemainingCapacity(AmountResource resource, boolean useContainedUnits) throws InventoryException {
     	try {
     		double result = 0D;
-    		if ((amountResourceRemainingCache != null) && amountResourceRemainingCache.containsKey(resource))
+    		if (useContainedUnits && (amountResourceRemainingCache != null) && amountResourceRemainingCache.containsKey(resource))
     			return amountResourceRemainingCache.get(resource);
     		else {
     			if (resourceStorage != null) result += resourceStorage.getAmountResourceRemainingCapacity(resource);
-    			if (containedUnits != null) {
+    			if (useContainedUnits && (containedUnits != null)) {
     				double containedRemainingCapacity = 0D;
     				UnitIterator i = containedUnits.iterator();
-    				while (i.hasNext()) containedRemainingCapacity += i.next().getInventory().getAmountResourceRemainingCapacity(resource);
+    				while (i.hasNext()) containedRemainingCapacity += i.next().getInventory().getAmountResourceRemainingCapacity(resource, true);
     				if (containedRemainingCapacity > getRemainingGeneralCapacity()) containedRemainingCapacity = getRemainingGeneralCapacity();
     				result += containedRemainingCapacity;
     			}
     			if (result > getContainerUnitGeneralCapacityLimit()) result = getContainerUnitGeneralCapacityLimit();
     		
-    			if (amountResourceRemainingCache == null) amountResourceRemainingCache = new HashMap<AmountResource, Double>(10);
-    			amountResourceRemainingCache.put(resource, result);
+    			if (useContainedUnits) {
+    				if (amountResourceRemainingCache == null) amountResourceRemainingCache = new HashMap<AmountResource, Double>(10);
+    				amountResourceRemainingCache.put(resource, result);
+    			}
     		}
     		return result;
     	}
@@ -302,11 +305,11 @@ public class Inventory implements Serializable {
      * @param amount the amount (kg).
      * @throws InventoryException if error storing resource.
      */
-    public void storeAmountResource(AmountResource resource, double amount) throws InventoryException {
+    public void storeAmountResource(AmountResource resource, double amount, boolean useContainedUnits) throws InventoryException {
     	try {
     		if (amount < 0D) throw new InventoryException("Cannot store negative amount of resource: " + amount);
     		if (amount > 0D) {
-    			if (amount <= getAmountResourceRemainingCapacity(resource)) {
+    			if (amount <= getAmountResourceRemainingCapacity(resource, useContainedUnits)) {
     				double remainingAmount = amount;
     			
     				// Store resource in local resource storage.
@@ -319,15 +322,15 @@ public class Inventory implements Serializable {
     				}
     			
     				// Store remaining resource in contained units in general capacity.
-    				if ((remainingAmount > 0D) && (containedUnits != null)) {
+    				if (useContainedUnits && (remainingAmount > 0D) && (containedUnits != null)) {
     					UnitIterator i = containedUnits.iterator();
     					while (i.hasNext()) {
     						Inventory unitInventory = i.next().getInventory();
-    						double remainingUnitCapacity = unitInventory.getAmountResourceRemainingCapacity(resource);
+    						double remainingUnitCapacity = unitInventory.getAmountResourceRemainingCapacity(resource, true);
     						double storageAmount = remainingAmount;
     						if (storageAmount > remainingUnitCapacity) storageAmount = remainingUnitCapacity;
     						if (storageAmount > 0D) {
-    							unitInventory.storeAmountResource(resource, storageAmount);
+    							unitInventory.storeAmountResource(resource, storageAmount, true);
     							remainingAmount -= storageAmount;
     						}
     					}
@@ -341,7 +344,7 @@ public class Inventory implements Serializable {
     			}
     			else {
     				throw new InventoryException("Insufficiant capacity to store " + resource.getName() + ", capacity: " + 
-    					getAmountResourceRemainingCapacity(resource) + ", attempted: " + amount);
+    					getAmountResourceRemainingCapacity(resource, useContainedUnits) + ", attempted: " + amount);
     			}
     		}
     	}
@@ -756,9 +759,9 @@ public class Inventory implements Serializable {
             		AmountResource resource = i.next();
             		double containerAmount = containerInv.getAmountResourceStored(resource);
             		try {
-            			if (getAmountResourceRemainingCapacity(resource) >= containerAmount) {
+            			if (getAmountResourceRemainingCapacity(resource, false) >= containerAmount) {
             				containerInv.retrieveAmountResource(resource, containerAmount);
-            				storeAmountResource(resource, containerAmount);
+            				storeAmountResource(resource, containerAmount, false);
             			}
             		}
             		catch (InventoryException e) {

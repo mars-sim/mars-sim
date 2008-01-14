@@ -138,9 +138,9 @@ public class Resupply implements Serializable {
 			String resourceType = resourcesI.next();
 			double amount = newResources.get(resourceType);
 			AmountResource resource = AmountResource.findAmountResource(resourceType);
-			double capacity = inv.getAmountResourceRemainingCapacity(resource);
+			double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
 			if (amount > capacity) amount = capacity;
-			inv.storeAmountResource(resource, amount);
+			inv.storeAmountResource(resource, amount, true);
 		}
 		
 		// Deliver parts.

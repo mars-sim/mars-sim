@@ -137,9 +137,9 @@ public class Farming extends Function implements Serializable {
     public void addHarvest(double harvest) {
     	try {
     		Inventory inv = getBuilding().getInventory();
-    		double remainingCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.FOOD);
+    		double remainingCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.FOOD, false);
     		if (remainingCapacity < harvest) harvest = remainingCapacity;
-    		inv.storeAmountResource(AmountResource.FOOD, harvest);
+    		inv.storeAmountResource(AmountResource.FOOD, harvest, false);
     	}
     	catch (Exception e) {}
     }

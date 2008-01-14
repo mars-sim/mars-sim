@@ -61,7 +61,7 @@ public class TestInventory extends TestCase {
 	public void testInventoryAmountResourceTypeStoreGood() throws Exception {
 		Inventory inventory = new Inventory(null);
 		inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 100D);
-		inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D);
+		inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D, true);
 		double amountTypeStored = inventory.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
 		assertEquals("Amount resource type stored is correct.", 100D, amountTypeStored, 0D);
 	}
@@ -70,7 +70,7 @@ public class TestInventory extends TestCase {
 		Inventory inventory = new Inventory(null);
 		inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 100D);
 		try {
-			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 101D);
+			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 101D, true);
 			fail("Throws exception if overloaded");
 		}
 		catch (InventoryException e) {}
@@ -79,7 +79,7 @@ public class TestInventory extends TestCase {
 	public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
 		Inventory inventory = new Inventory(null);
 		inventory.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
-		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D);
+		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D, true);
 		double amountPhaseStored = inventory.getAmountResourceStored(AmountResource.HYDROGEN);
 		assertEquals("Amount resource phase stored is correct.", 100D, amountPhaseStored, 0D);
 	}
@@ -88,7 +88,7 @@ public class TestInventory extends TestCase {
 		Inventory inventory = new Inventory(null);
 		inventory.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
 		try {
-			inventory.storeAmountResource(AmountResource.HYDROGEN, 101D);
+			inventory.storeAmountResource(AmountResource.HYDROGEN, 101D, true);
 			fail("Throws exception if overloaded");
 		}
 		catch (InventoryException e) {}
@@ -98,7 +98,7 @@ public class TestInventory extends TestCase {
 		Inventory inventory = new Inventory(null);
 		inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 100D);
 		try {
-			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, -1D);
+			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, -1D, true);
 			fail("Throws exception if negative amount");
 		}
 		catch (InventoryException e) {}
@@ -107,7 +107,7 @@ public class TestInventory extends TestCase {
 	public void testInventoryAmountResourceStoreNoCapacity() throws Exception {
 		Inventory inventory = new Inventory(null);
 		try {
-			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D);
+			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D, true);
 			fail("Throws exception if capacity not set (overloaded)");
 		}
 		catch (InventoryException e) {}
@@ -119,7 +119,7 @@ public class TestInventory extends TestCase {
 		Unit testUnit = new MockUnit1();
 		testUnit.getInventory().addAmountResourcePhaseCapacity(Phase.GAS, 100D);
 		inventory.storeUnit(testUnit);
-		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D);
+		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D, true);
 		double amountPhaseStored = inventory.getAmountResourceStored(AmountResource.HYDROGEN);
 		assertEquals("Amount resource phase stored is correct.", 100D, amountPhaseStored, 0D);
 	}
@@ -130,7 +130,7 @@ public class TestInventory extends TestCase {
 		Unit testUnit = new MockUnit1();
 		testUnit.getInventory().addAmountResourceTypeCapacity(AmountResource.HYDROGEN, 100D);
 		inventory.storeUnit(testUnit);
-		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D);
+		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D, true);
 		double amountPhaseStored = inventory.getAmountResourceStored(AmountResource.HYDROGEN);
 		assertEquals("Amount resource phase stored is correct.", 100D, amountPhaseStored, 0D);
 	}
@@ -142,7 +142,7 @@ public class TestInventory extends TestCase {
 			Unit testUnit2 = new MockUnit1();
 			testUnit2.getInventory().addAmountResourceTypeCapacity(AmountResource.HYDROGEN, 100D);
 			testUnit1.getInventory().storeUnit(testUnit2);
-			testUnit2.getInventory().storeAmountResource(AmountResource.HYDROGEN, 100D);
+			testUnit2.getInventory().storeAmountResource(AmountResource.HYDROGEN, 100D, true);
 			fail("Fails properly when parent unit's general capacity is overloaded.");	
 		}
 		catch (InventoryException e) {}
@@ -152,8 +152,8 @@ public class TestInventory extends TestCase {
 		Inventory inventory = new Inventory(null);
 		inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 50D);
 		inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
-		inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 60D);
-		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE);
+		inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 60D, true);
+		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE, true);
 		assertEquals("Amount type capacity remaining is correct amount.", 40D, remainingCapacity, 0D);
 	}
 	
@@ -161,14 +161,14 @@ public class TestInventory extends TestCase {
 		Inventory inventory = new Inventory(null);
 		inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 40D);
 		inventory.addAmountResourceTypeCapacity(AmountResource.METHANE, 20D);
-		inventory.getAmountResourceRemainingCapacity(AmountResource.METHANE);
-		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE);
+		inventory.getAmountResourceRemainingCapacity(AmountResource.METHANE, true);
+		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE, true);
 		assertEquals("Amount type capacity remaining is correct amount.", 40D, remainingCapacity, 0D);
 	}
 	
 	public void testInventoryAmountResourceTypeRemainingCapacityNoCapacity() throws Exception {
 		Inventory inventory = new Inventory(null);
-		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE);
+		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE, true);
 		assertEquals("Amount type capacity remaining is correct amount.", 0D, remainingCapacity, 0D);
 	}
 	
@@ -176,9 +176,9 @@ public class TestInventory extends TestCase {
 		Inventory inventory = new Inventory(null);
 		inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 50D);
 		inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
-		inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D);
+		inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D, true);
 		inventory.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, 50D);
-		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE);
+		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE, true);
 		assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
 	}
 	
@@ -187,7 +187,7 @@ public class TestInventory extends TestCase {
 			Inventory inventory = new Inventory(null);
 			inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 50D);
 			inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
-			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D);
+			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D, true);
 			inventory.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, 101D);
 			fail("Amount type retrieved fails correctly.");
 		}
@@ -199,7 +199,7 @@ public class TestInventory extends TestCase {
 			Inventory inventory = new Inventory(null);
 			inventory.addAmountResourceTypeCapacity(AmountResource.CARBON_DIOXIDE, 50D);
 			inventory.addAmountResourcePhaseCapacity(Phase.GAS, 50D);
-			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D);
+			inventory.storeAmountResource(AmountResource.CARBON_DIOXIDE, 100D, true);
 			inventory.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, -100D);
 			fail("Amount type retrieved fails correctly.");
 		}
@@ -221,9 +221,9 @@ public class TestInventory extends TestCase {
 		Unit testUnit = new MockUnit1();
 		testUnit.getInventory().addAmountResourcePhaseCapacity(Phase.GAS, 100D);
 		inventory.storeUnit(testUnit);
-		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D);
+		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D, true);
 		inventory.retrieveAmountResource(AmountResource.HYDROGEN, 50D);
-		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.HYDROGEN);
+		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.HYDROGEN, true);
 		assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
 	}
 	
@@ -233,9 +233,9 @@ public class TestInventory extends TestCase {
 		Unit testUnit = new MockUnit1();
 		testUnit.getInventory().addAmountResourceTypeCapacity(AmountResource.HYDROGEN, 100D);
 		inventory.storeUnit(testUnit);
-		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D);
+		inventory.storeAmountResource(AmountResource.HYDROGEN, 100D, true);
 		inventory.retrieveAmountResource(AmountResource.HYDROGEN, 50D);
-		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.HYDROGEN);
+		double remainingCapacity = inventory.getAmountResourceRemainingCapacity(AmountResource.HYDROGEN, true);
 		assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
 	}
 	
@@ -247,8 +247,8 @@ public class TestInventory extends TestCase {
 		Unit testUnit = new MockUnit1();
 		testUnit.getInventory().addAmountResourceTypeCapacity(AmountResource.HYDROGEN, 100D);
 		inventory.storeUnit(testUnit);
-		inventory.storeAmountResource(AmountResource.HYDROGEN, 120D);
-		inventory.storeAmountResource(AmountResource.FOOD, 30D);
+		inventory.storeAmountResource(AmountResource.HYDROGEN, 120D, true);
+		inventory.storeAmountResource(AmountResource.FOOD, 30D, true);
 		Set resources = inventory.getAllAmountResourcesStored();
 		assertEquals("Number of resources is correct.", 2, resources.size());
 		assertTrue("Resources contains hydrogen", resources.contains(AmountResource.HYDROGEN));

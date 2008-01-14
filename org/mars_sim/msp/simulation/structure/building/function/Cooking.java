@@ -215,9 +215,9 @@ public class Cooking extends Function implements Serializable {
 				try {
 					PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 					double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-					double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(AmountResource.FOOD);
+					double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(AmountResource.FOOD, false);
 					if (foodAmount > foodCapacity) foodAmount = foodCapacity;
-					getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, foodAmount);
+					getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, foodAmount, false);
 					i.remove();
 					// System.out.println("Cooked meal expiring at " + 
 					// 	getBuilding().getBuildingManager().getSettlement().getName());

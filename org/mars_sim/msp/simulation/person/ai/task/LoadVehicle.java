@@ -276,13 +276,13 @@ public class LoadVehicle extends Task implements Serializable {
 		if (amountAlreadyLoaded < amountNeededTotal) {
 			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
 			if (sInv.getAmountResourceStored(resource) >= amountNeeded) {
-				double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource);
+				double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource, true);
 				if (remainingCapacity < amountNeeded) amountNeeded = remainingCapacity;
 				double resourceAmount = amountNeeded;
 				if (amountNeeded > amountLoading) resourceAmount = amountLoading;
 				try {
 					sInv.retrieveAmountResource(resource, resourceAmount);
-					vInv.storeAmountResource(resource, resourceAmount);
+					vInv.storeAmountResource(resource, resourceAmount, true);
 				}
 				catch (Exception e) {}
 				amountLoading -= resourceAmount;
@@ -294,7 +294,7 @@ public class LoadVehicle extends Task implements Serializable {
 			double amountToRemove = amountAlreadyLoaded - amountNeededTotal;
 			try {
 				vInv.retrieveAmountResource(resource, amountToRemove);
-				sInv.storeAmountResource(resource, amountToRemove);
+				sInv.storeAmountResource(resource, amountToRemove, true);
 			}
 			catch (Exception e) {}
 		}
@@ -557,7 +557,7 @@ public class LoadVehicle extends Task implements Serializable {
     			Resource resource = (Resource) j.next();
     			if (resource instanceof AmountResource) {
     				double amount = ((Double) resources.get(resource)).doubleValue();
-    				inv.storeAmountResource((AmountResource) resource, amount);
+    				inv.storeAmountResource((AmountResource) resource, amount, true);
     			}
     			else {
     				int num = ((Integer) resources.get(resource)).intValue();

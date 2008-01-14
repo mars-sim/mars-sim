@@ -232,10 +232,10 @@ public class ResourceProcess implements Serializable {
                 double maxRate = maxOutputResourceRates.get(resource).doubleValue();
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * timeSec;
-                double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource);
+                double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false);
                 if (resourceAmount > remainingCapacity) resourceAmount = remainingCapacity;
                 try {
-                	inventory.storeAmountResource(resource, resourceAmount);
+                	inventory.storeAmountResource(resource, resourceAmount, false);
                 }
                 catch (Exception e) {}
                 // System.out.println(resourceName + " output: " + resourceAmount + "kg.");

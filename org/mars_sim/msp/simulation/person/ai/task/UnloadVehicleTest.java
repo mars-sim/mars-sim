@@ -28,13 +28,13 @@ public class UnloadVehicleTest extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
 		Inventory vehicleInv = vehicle.getInventory();
 		vehicleInv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		vehicleInv.storeAmountResource(AmountResource.OXYGEN, 100D);
+		vehicleInv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
 		vehicleInv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		vehicleInv.storeAmountResource(AmountResource.FOOD, 100D);
+		vehicleInv.storeAmountResource(AmountResource.FOOD, 100D, true);
 		vehicleInv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		vehicleInv.storeAmountResource(AmountResource.WATER, 100D);
+		vehicleInv.storeAmountResource(AmountResource.WATER, 100D, true);
 		vehicleInv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		vehicleInv.storeAmountResource(AmountResource.METHANE, 100D);
+		vehicleInv.storeAmountResource(AmountResource.METHANE, 100D, true);
 		vehicleInv.addGeneralCapacity(100D);
 		vehicleInv.storeItemResources(hammer, 5);
 		for (int x = 0; x < 5; x++) {

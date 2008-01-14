@@ -311,7 +311,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					double amountNeeded = amount - targetInv.getAmountResourceStored(resource);
 					if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource) > amountNeeded)) {
 						roverInv.retrieveAmountResource(resource, amountNeeded);
-						targetInv.storeAmountResource(resource, amountNeeded);
+						targetInv.storeAmountResource(resource, amountNeeded, true);
 					}
 				}
 			}

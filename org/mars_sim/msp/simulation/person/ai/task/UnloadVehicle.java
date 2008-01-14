@@ -255,14 +255,14 @@ public class UnloadVehicle extends Task implements Serializable {
         	AmountResource resource = (AmountResource) i.next();
         	double amount = vehicleInv.getAmountResourceStored(resource);
         	if (amount > amountUnloading) amount = amountUnloading;
-        	double capacity = settlementInv.getAmountResourceRemainingCapacity(resource);
+        	double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true);
         	if (capacity < amount) {
         		amount = capacity;
         		amountUnloading = 0D;
         	}
         	try {
         		vehicleInv.retrieveAmountResource(resource, amount);
-        		settlementInv.storeAmountResource(resource, amount);
+        		settlementInv.storeAmountResource(resource, amount, true);
         	}
         	catch (Exception e) {}
 			amountUnloading -= amount;
@@ -299,11 +299,11 @@ public class UnloadVehicle extends Task implements Serializable {
         while (i.hasNext()) {
         	AmountResource resource = (AmountResource) i.next();
         	double amount = eInv.getAmountResourceStored(resource);
-        	double capacity = sInv.getAmountResourceRemainingCapacity(resource);
+        	double capacity = sInv.getAmountResourceRemainingCapacity(resource, true);
         	if (amount < capacity) amount = capacity;
         	try {
         		eInv.retrieveAmountResource(resource, amount);
-        		sInv.storeAmountResource(resource, amount);
+        		sInv.storeAmountResource(resource, amount, true);
         	}
         	catch (Exception e) {}
         }

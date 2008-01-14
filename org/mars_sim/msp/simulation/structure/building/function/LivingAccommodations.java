@@ -107,10 +107,10 @@ public class LivingAccommodations extends Function implements Serializable {
 		catch (Exception e) {}
 		
 		double wasteWaterProduced = waterUsed;
-		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.WASTE_WATER);
+		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.WASTE_WATER, false);
 		if (wasteWaterProduced > wasteWaterCapacity) wasteWaterProduced = wasteWaterCapacity;
 		try {
-			inv.storeAmountResource(AmountResource.WASTE_WATER, wasteWaterProduced);
+			inv.storeAmountResource(AmountResource.WASTE_WATER, wasteWaterProduced, false);
 		}
 		catch (Exception e) {}
     }

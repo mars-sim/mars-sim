@@ -46,13 +46,13 @@ public class LoadVehicleTest extends TestCase {
 		Inventory settlementInv = settlement.getInventory();
 		
 		settlementInv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		settlementInv.storeAmountResource(AmountResource.OXYGEN, 100D);
+		settlementInv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
 		settlementInv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		settlementInv.storeAmountResource(AmountResource.FOOD, 100D);
+		settlementInv.storeAmountResource(AmountResource.FOOD, 100D, true);
 		settlementInv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		settlementInv.storeAmountResource(AmountResource.WATER, 100D);
+		settlementInv.storeAmountResource(AmountResource.WATER, 100D, true);
 		settlementInv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		settlementInv.storeAmountResource(AmountResource.METHANE, 100D);
+		settlementInv.storeAmountResource(AmountResource.METHANE, 100D, true);
 		settlementInv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
@@ -84,13 +84,13 @@ public class LoadVehicleTest extends TestCase {
 		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
+		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D);
+		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D);
+		inv.storeAmountResource(AmountResource.WATER, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D);
+		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
 		
 		inv.storeItemResources(hammer, 5);
 		
@@ -143,13 +143,13 @@ public class LoadVehicleTest extends TestCase {
 		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
+		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D);
+		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D);
+		inv.storeAmountResource(AmountResource.WATER, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D);
+		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
 		
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -175,13 +175,13 @@ public class LoadVehicleTest extends TestCase {
 		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
+		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D);
+		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D);
+		inv.storeAmountResource(AmountResource.WATER, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D);
+		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
 		
 		inv.storeItemResources(hammer, 5);
 		
@@ -210,13 +210,13 @@ public class LoadVehicleTest extends TestCase {
 		inv.addGeneralCapacity(100D);
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
+		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D);
+		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D);
+		inv.storeAmountResource(AmountResource.WATER, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D);
+		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
 		inv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
@@ -276,13 +276,13 @@ public class LoadVehicleTest extends TestCase {
 		inv.addGeneralCapacity(100D);
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
+		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D);
+		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D);
+		inv.storeAmountResource(AmountResource.WATER, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D);
+		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
 		
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -312,13 +312,13 @@ public class LoadVehicleTest extends TestCase {
 		inv.addGeneralCapacity(100D);
 		
 		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D);
+		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D);
+		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D);
+		inv.storeAmountResource(AmountResource.WATER, 100D, true);
 		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D);
+		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
 		inv.storeItemResources(hammer, 5);
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();

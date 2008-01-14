@@ -230,7 +230,7 @@ public final class TradeUtil {
     				// Add resource container if needed.
     				if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
     					AmountResource resource = (AmountResource) good.getObject();
-    					if (inventory.getAmountResourceRemainingCapacity(resource) < getResourceTradeAmount(resource)) {
+    					if (inventory.getAmountResourceRemainingCapacity(resource, true) < getResourceTradeAmount(resource)) {
     						Equipment container = getAvailableContainerForResource(resource, sellingSettlement, tradeList);
     						if (container != null) {
     							Good containerGood = GoodsUtil.getEquipmentGood(container.getClass());
@@ -425,7 +425,7 @@ public final class TradeUtil {
     	boolean result = false;
     	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
     		AmountResource resource = (AmountResource) good.getObject();
-    		result = (inventory.getAmountResourceRemainingCapacity(resource) >= getResourceTradeAmount(resource));
+    		result = (inventory.getAmountResourceRemainingCapacity(resource, true) >= getResourceTradeAmount(resource));
     	}
     	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
     		result = inventory.getRemainingGeneralCapacity() >= ((ItemResource) good.getObject()).getMassPerItem();
@@ -476,9 +476,9 @@ public final class TradeUtil {
     	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
     		AmountResource resource = (AmountResource) good.getObject();
     		double amount = getResourceTradeAmount(resource);
-    		double capacity = inventory.getAmountResourceRemainingCapacity(resource);
+    		double capacity = inventory.getAmountResourceRemainingCapacity(resource, true);
     		if (amount > capacity) amount = capacity;
-    		inventory.storeAmountResource(resource, amount);
+    		inventory.storeAmountResource(resource, amount, true);
     	}
     	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
     		inventory.storeItemResources((ItemResource) good.getObject(), 1);

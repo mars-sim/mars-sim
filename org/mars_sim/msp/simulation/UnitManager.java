@@ -333,9 +333,9 @@ public class UnitManager implements Serializable {
     				double amount = ((Double) resourceMap.get(type)).doubleValue();
     				AmountResource resource = AmountResource.findAmountResource(type);
     				Inventory inv = settlement.getInventory();
-    				double capacity = inv.getAmountResourceRemainingCapacity(resource);
+    				double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
     				if (amount > capacity) amount = capacity;
-    				inv.storeAmountResource(resource, amount);
+    				inv.storeAmountResource(resource, amount, true);
     			}
     		}
     	}
