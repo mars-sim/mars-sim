@@ -29,7 +29,6 @@ public class Chef extends Job implements Serializable {
 		jobTasks.add(CookMeal.class);
 		
 		// Add chef-related missions.
-		// jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);

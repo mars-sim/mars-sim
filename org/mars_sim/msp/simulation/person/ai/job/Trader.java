@@ -12,8 +12,6 @@ import java.io.Serializable;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
-import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
-import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
@@ -34,8 +32,6 @@ public class Trader extends Job implements Serializable {
 		// Add trader-related missions.
 		jobMissionStarts.add(Trade.class);
 		jobMissionJoins.add(Trade.class);
-		jobMissionJoins.add(Exploration.class);
-		jobMissionJoins.add(CollectIce.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
