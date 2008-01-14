@@ -33,6 +33,7 @@ public final class AmountResource implements Resource, Serializable {
     public static final AmountResource ROCK_SAMPLES = new AmountResource("rock samples", Phase.SOLID);
     public static final AmountResource WASTE_WATER = new AmountResource("waste water", Phase.LIQUID);
     public static final AmountResource ICE = new AmountResource("ice", Phase.SOLID);
+    public static final AmountResource REGOLITH = new AmountResource("regolith", Phase.SOLID);
     
 	// Data members
 	private String name;

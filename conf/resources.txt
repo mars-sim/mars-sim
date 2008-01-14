@@ -16,6 +16,7 @@ Food
 Rock Samples
 Waste Water
 Ice
+Regolith
 
 The food resource represents dried or frozen food that will not spoil with time.  
 Food is harvested from crops in a greenhouse.
@@ -28,5 +29,7 @@ The crops help filter the waste water back to potable/drinking water.
 The ice resource is actually an ice/soil mixture collected from Martian permafrost
 in the ice prospecting mission.  It can be melted and filtered to produce 
 potable/drinking water.
+
+The regolith resource is Martian soil.
 
 The resource names in the configuration files are not case-sensitive.
