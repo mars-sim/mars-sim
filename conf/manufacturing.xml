@@ -45,7 +45,7 @@
 		</outputs>
 	</process>
 	
-	<process name="Steel ingot alloy" tech="2" skill="2" work-time="100" process-time="50">
+	<process name="Steel ingot alloying" tech="2" skill="2" work-time="100" process-time="50">
 		<inputs>
 			<part name="iron ingot" number="5">
 			<resource name="carbon" amount="1.0">
