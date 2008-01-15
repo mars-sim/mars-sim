@@ -44,6 +44,7 @@ public class Areologist extends Job implements Serializable {
 		jobMissionJoins.add(Exploration.class);
 		jobMissionStarts.add(CollectIce.class);
 		jobMissionJoins.add(CollectIce.class);
+		jobMissionStarts.add(CollectRegolith.class);
 		jobMissionJoins.add(CollectRegolith.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
