@@ -39,7 +39,8 @@ public class MissionManager implements Serializable {
 
     // Array of potential new missions
     Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, 
-    		CollectIce.class, RescueSalvageVehicle.class, Trade.class };
+    		CollectIce.class, RescueSalvageVehicle.class, 
+    		Trade.class, CollectRegolith.class };
     
     /** 
      * Constructor
