@@ -19,12 +19,12 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /** 
  * The Exploration class is a mission to travel in a rover to several
- * random locations around a settlement and collect ice.
+ * random locations around a settlement and collect Regolith.
  */
-public class CollectIce extends CollectResourcesMission {
+public class CollectRegolith  extends CollectResourcesMission {
 
 	// Default description.
-	public static final String DEFAULT_DESCRIPTION = "Ice Prospecting";
+	public static final String DEFAULT_DESCRIPTION = "Regolith Prospecting";
 	
 	// Amount of ice to be gathered at a given site (kg). 
 	private static final double SITE_GOAL = 1000D;
@@ -33,7 +33,7 @@ public class CollectIce extends CollectResourcesMission {
 	public static final int REQUIRED_BAGS = 20;
 	
 	// Collection rate of ice during EVA (kg/millisol).
-	private static final double COLLECTION_RATE = 1D;
+	private static final double COLLECTION_RATE = 10D;
 	
 	// Number of collection sites.
 	private static final int NUM_SITES = 1;
@@ -46,11 +46,14 @@ public class CollectIce extends CollectResourcesMission {
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public CollectIce(Person startingPerson) throws MissionException {
+	public CollectRegolith (Person startingPerson) throws MissionException {
 		
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, AmountResource.ICE, SITE_GOAL, COLLECTION_RATE, 
-				Bag.class, REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, startingPerson, 
+			AmountResource.REGOLITH, SITE_GOAL, 
+			COLLECTION_RATE, 
+			Bag.class, REQUIRED_BAGS, 
+			NUM_SITES, MIN_PEOPLE);
 	}
 	
     /**
@@ -62,12 +65,15 @@ public class CollectIce extends CollectResourcesMission {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public CollectIce(PersonCollection members, Settlement startingSettlement, 
-    		List iceCollectionSites, Rover rover, String description) throws MissionException {
+    public CollectRegolith (PersonCollection members, Settlement startingSettlement, 
+    		List regolithCollectionSites, Rover rover, String description) 
+    		throws MissionException {
     	
        	// Use CollectResourcesMission constructor.
-    	super(description, members, startingSettlement, AmountResource.ICE, SITE_GOAL, COLLECTION_RATE, 
-    			Bag.class, REQUIRED_BAGS, iceCollectionSites.size(), 1, rover, iceCollectionSites);
+    	super(description, members, startingSettlement, AmountResource.REGOLITH, 
+    	      SITE_GOAL, COLLECTION_RATE, 
+    	      Bag.class, REQUIRED_BAGS, regolithCollectionSites.size(), 
+    	      1, rover, regolithCollectionSites);
     }
 	
 	/** 
@@ -77,20 +83,22 @@ public class CollectIce extends CollectResourcesMission {
 	 */
 	public static double getNewMissionProbability(Person person) {
 
-		double result = CollectResourcesMission.getNewMissionProbability(person, Bag.class, 
-				REQUIRED_BAGS, MIN_PEOPLE, CollectIce.class);
+		/*double result = CollectResourcesMission.getNewMissionProbability(person, Bag.class, 
+				REQUIRED_BAGS, MIN_PEOPLE, CollectRegolith.class);
 		
 		if (result > 0D) {
 			// Factor the value of ice at the settlement.
 			GoodsManager manager = person.getSettlement().getGoodsManager();
-			double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
+			double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.REGOLITH));
 			result *= value * 10D;
 			
 			// Check if min number of EVA suits at settlement.
 			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
 		}
 		
-		return result;
+		return result;*/
+	    
+	    return 1.0;
 	}
 	
     /**

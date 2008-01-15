@@ -40,6 +40,7 @@ public class Driver extends Job implements Serializable {
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);
 		jobMissionJoins.add(CollectIce.class);
+		jobMissionJoins.add(CollectRegolith.class);
 		jobMissionJoins.add(Trade.class);
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
