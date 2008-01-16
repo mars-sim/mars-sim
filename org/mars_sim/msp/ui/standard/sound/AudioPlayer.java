@@ -3,27 +3,40 @@
  * AudioPlayer.java
  * @version 2.81 2007-08-19
  * @author Dima Stepanchuk
+ * @author Sebastien Venot
  */
 
 package org.mars_sim.msp.ui.standard.sound;
 
-import java.io.*;
-import javax.sound.sampled.*;
+
+
+import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.BooleanControl;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 
 import org.mars_sim.msp.ui.standard.UIConfig;
 
 /**
  * A class to play sound files.
  */
-public class AudioPlayer {
+public class AudioPlayer implements LineListener {
 
 	// Data members
-	private Clip clip; // The sound clip.
+	private Clip currentClip; // The current sound clip.
 	private boolean mute; // Is the audio player muted?
 	private float volume; // The volume of the audio player (0.0 to 1.0)
+	private ConcurrentHashMap<String, Clip> audioCache= new 
+				ConcurrentHashMap<String, Clip>();
 	
 	public AudioPlayer() {
-		clip = null;
+	       currentClip = null;
 		
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			setMute(false);
@@ -44,16 +57,30 @@ public class AudioPlayer {
 		
 		if ((filepath != null) && !filepath.equals("")) {
 			try {
-				File soundFile = new File(filepath);
-				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-				clip = AudioSystem.getClip();
-				clip.open(audioInputStream);
+			        Clip clip = null;
+			    	if (!audioCache.containsKey(filepath)) {
+			    	    System.out.println(filepath);
+			    	    File soundFile = new File(filepath);
+			    	    AudioInputStream audioInputStream = 
+			    		AudioSystem.getAudioInputStream(soundFile);
+			    	    clip = AudioSystem.getClip();
+			    	    clip.open(audioInputStream);
+			    	    audioCache.put(filepath, clip);
+			    	} else {
+			    	    clip = audioCache.get(filepath);
+			    	    clip.setFramePosition(0);  
+			    	}
 				
+			    	currentClip = clip;
+			    	currentClip.addLineListener(this);
 				setVolume(volume);
 				setMute(mute);
 				
-				if (loop) clip.loop(Clip.LOOP_CONTINUOUSLY);
-				else clip.loop(0);
+				if (loop){
+				    currentClip.loop(Clip.LOOP_CONTINUOUSLY); 
+				} else { 		   
+				    currentClip.start();
+				}
 			} 
 			catch (Exception e) {
 				e.printStackTrace();
@@ -81,7 +108,10 @@ public class AudioPlayer {
 	 * Stops the playing clip.
 	 */
 	public void stop() {
-		if (clip != null) clip.stop();
+	    
+		if (currentClip != null) {
+		    currentClip.stop();
+		}	   
 	}
 	
 	/**
@@ -94,23 +124,29 @@ public class AudioPlayer {
 	
 	/**
 	 * Sets the volume for the audio player.
-	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
+	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) 
+	 * (0.0 to 1.0 valid range)
 	 */
 	public void setVolume(float volume) {
 		if ((volume < 0F) && (volume > 1F)) 
-			throw new IllegalArgumentException("Volume invalid: " + volume);
+			throw new IllegalArgumentException("Volume invalid: " 
+							    + volume);
 		
 		this.volume = volume;
 		
 		// Set volume
-		if (clip != null) {
-			// Note: No linear volume control for the clip, so use gain control.
+		if (currentClip != null) {
+			// Note: No linear volume control for the clip, 
+		        //so use gain control.
 			// Linear volume = pow(10.0, gainDB/20.0) 
 			// Note Math.log10 is Java 1.5 or better.
 			// float gainLog10 = (float) Math.log10(volume);
-			float gainLog10 = (float) (Math.log(volume) / Math.log(10F));
+			float gainLog10 = (float) (Math.log(volume) 
+						   / Math.log(10F));
 			float gain = gainLog10 * 20F;
-			FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+			FloatControl gainControl = 
+			(FloatControl) currentClip.getControl(
+					FloatControl.Type.MASTER_GAIN);
 			gainControl.setValue(gain);
 		}
 	}
@@ -131,10 +167,21 @@ public class AudioPlayer {
 		// Set mute value.
 		this.mute = mute;
 		
-		if (clip != null) {
+		if (currentClip != null) {
 			BooleanControl muteControl = 
-				(BooleanControl) clip.getControl(BooleanControl.Type.MUTE);
+				(BooleanControl) currentClip.getControl(
+						 BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
 		}
+	}
+
+	/* 
+	 * 
+	 */
+	public void update(LineEvent event) {
+	   if (event.getType() == LineEvent.Type.STOP){
+	       stop();
+	   }
+	    
 	}
 }
