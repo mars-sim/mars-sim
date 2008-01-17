@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.82 2007-10-20
+ * @version 2.83 2008-01-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation;
 import java.io.*;
 import javax.xml.parsers.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
+import org.mars_sim.msp.simulation.manufacture.ManufactureConfig;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
@@ -38,6 +39,7 @@ public class SimulationConfig implements Serializable {
 	private static final String LANDMARK_FILE = "landmarks";
 	private static final String BUILDING_FILE = "buildings";
 	private static final String PART_FILE = "parts";
+	private static final String MANUFACTURE_FILE = "manufacturing";
 	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -61,6 +63,7 @@ public class SimulationConfig implements Serializable {
 	private VehicleConfig vehicleConfig;
 	private BuildingConfig buildingConfig;
 	private SettlementConfig settlementConfig;
+	private ManufactureConfig manufactureConfig;
 
 	/**
 	 * Constructor
@@ -81,6 +84,7 @@ public class SimulationConfig implements Serializable {
 			vehicleConfig = new VehicleConfig(parseXMLFile(VEHICLE_FILE));
 			buildingConfig = new BuildingConfig(parseXMLFile(BUILDING_FILE));
 			settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE));
+			manufactureConfig = new ManufactureConfig(parseXMLFile(MANUFACTURE_FILE));
 		}
 		catch (Exception e) {
 			System.err.println("Error creating simulation config: " + e.getMessage());
@@ -267,5 +271,13 @@ public class SimulationConfig implements Serializable {
 	 */
 	public SettlementConfig getSettlementConfiguration() {
 		return settlementConfig;
+	}
+	
+	/**
+	 * Gets the manufacture config subset.
+	 * @return manufacture config
+	 */
+	public ManufactureConfig getManufactureConfiguration() {
+		return manufactureConfig;
 	}
 }
