@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * CollectIce.java
- * @version 2.81 2007-08-12
- * @author Scott Davis
+ * CollectRegolith.java
+ * @version 2.83 2008-01-17
+ * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
@@ -83,22 +83,21 @@ public class CollectRegolith  extends CollectResourcesMission {
 	 */
 	public static double getNewMissionProbability(Person person) {
 
-		/*double result = CollectResourcesMission.getNewMissionProbability(person, Bag.class, 
+		double result = CollectResourcesMission.getNewMissionProbability(person, Bag.class, 
 				REQUIRED_BAGS, MIN_PEOPLE, CollectRegolith.class);
 		
 		if (result > 0D) {
 			// Factor the value of ice at the settlement.
+			/*
 			GoodsManager manager = person.getSettlement().getGoodsManager();
 			double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.REGOLITH));
 			result *= value * 10D;
-			
+			*/
 			// Check if min number of EVA suits at settlement.
 			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
 		}
 		
-		return result;*/
-	    
-	    return 1.0;
+		return result;
 	}
 	
     /**
