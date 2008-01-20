@@ -34,7 +34,7 @@ import org.mars_sim.msp.ui.standard.UIConfig;
 public class AudioPlayer implements LineListener {
 
 	// Data members
-	private Line currentLine; // The current sound clip.
+	private Line currentLine; // The current compressed sound.
 	private Clip currentClip; // The current sound clip.
 	private boolean mute; // Is the audio player muted?
 	private float volume; // The volume of the audio player (0.0 to 1.0)
@@ -55,11 +55,14 @@ public class AudioPlayer implements LineListener {
 	}
 	
 	/**
-	 * Starts playing a sound clip
-	 * @param filepath the file path to the sound clip.
+	 * Starts playing a sound (either compressed or not)
+	 * @param filepath the file path to the sound .
 	 * @param loop Should the sound clip be looped?
 	 */
 	private void startPlay(final String filepath, final boolean loop) {
+	    
+	    //if the sound is long(the whole UI get stuck, so we play
+	    //the sound within his own thread
 	    Thread sound_player = new Thread() {
 	        public void run() {
 	    	if ((filepath != null) && !filepath.equals("")) {
@@ -132,25 +135,13 @@ public class AudioPlayer implements LineListener {
 			
 			SourceDataLine line = 
 			(SourceDataLine) AudioSystem.getLine(info);
-			currentLine = line;
-			currentLine.addLineListener(this);
-			
+		
 			if(line != null) {
+			    	currentLine = line;
+				currentLine.addLineListener(this);
 				line.open(decodedFormat);
-				byte[] data = new byte[4096];
-				// Start
-				line.start();
-				int nBytesRead = 0;
-				
-        		        while ((nBytesRead = 
-        		            din.read(data, 0, data.length)) != -1) {
-        		            
-				    line.write(data, 0, nBytesRead);
-				}
 				
 				
-				line.close();
-				din.close();
 			}
 			
 		}
@@ -167,6 +158,7 @@ public class AudioPlayer implements LineListener {
 	    
 	    
 	}
+	
 	
 	/**
 	 * Play a clip once.
@@ -236,6 +228,21 @@ public class AudioPlayer implements LineListener {
 					FloatControl.Type.MASTER_GAIN);
 			gainControl.setValue(gain);
 		}
+		
+		if (currentLine != null) {
+			// Note: No linear volume control for the clip, 
+		        //so use gain control.
+			// Linear volume = pow(10.0, gainDB/20.0) 
+			// Note Math.log10 is Java 1.5 or better.
+			// float gainLog10 = (float) Math.log10(volume);
+			float gainLog10 = (float) (Math.log(volume) 
+						   / Math.log(10F));
+			float gain = gainLog10 * 20F;
+			FloatControl gainControl = 
+			(FloatControl) currentLine.getControl(
+					FloatControl.Type.MASTER_GAIN);
+			gainControl.setValue(gain);
+		}
 	}
 	
 	/**
@@ -257,6 +264,13 @@ public class AudioPlayer implements LineListener {
 		if (currentClip != null) {
 			BooleanControl muteControl = 
 				(BooleanControl) currentClip.getControl(
+						 BooleanControl.Type.MUTE);
+			muteControl.setValue(mute);
+		}
+		
+		if (currentLine != null) {
+			BooleanControl muteControl = 
+				(BooleanControl) currentLine.getControl(
 						 BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
 		}
