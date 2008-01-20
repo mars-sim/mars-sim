@@ -25,7 +25,7 @@ public interface SoundConstants {
 
     // Unit window sounds for people.
     // TODO: Add additional sounds for people based on activity.
-    public final static String SND_PERSON_FEMALE1 = "rahan.mp3";
+    public final static String SND_PERSON_FEMALE1 = "female_person1.wav";
     public final static String SND_PERSON_FEMALE2 = "female_person2.wav";
     public final static String SND_PERSON_MALE1 = "male_person1.wav";
     public final static String SND_PERSON_MALE2 = "male_person2.wav";
