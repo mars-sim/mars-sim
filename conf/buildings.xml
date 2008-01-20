@@ -33,6 +33,7 @@
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-speciality name="Areology" />
 				<research-speciality name="Medicine" />
+				<research-speciality name="Materials Science" />
 			</research>
 		
 			<!-- The building has communication capabilities. -->
@@ -384,6 +385,7 @@
 			<life-support capacity="10" power-required="20.0" />
 			<research tech-level="2" capacity="10">
 				<research-speciality name="Areology" />
+				<research-speciality name="Materials Science" />
 			</research>
 		</functions>
 	</building>
@@ -406,6 +408,9 @@
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
 			<manufacture tech-level="4" concurrent-processes="5" />
+			<research tech-level="4" capacity="5">
+				<research-speciality name="Materials Science" />
+			</research>
 			<storage>
 				<resource-storage resource="Regolith" capacity="1000.0" />
 				<resource-storage resource="Carbon" capacity="50.0" />

@@ -79,7 +79,7 @@ public class Research extends Function implements Lab, Serializable {
 		boolean result = false;
 		Iterator i = researchSpecialities.iterator();
 		while (i.hasNext()) {
-			if (((String) i.next()).equals(speciality)) result = true;
+			if (((String) i.next()).equalsIgnoreCase(speciality)) result = true;
 		}
 		return result;
 	}
