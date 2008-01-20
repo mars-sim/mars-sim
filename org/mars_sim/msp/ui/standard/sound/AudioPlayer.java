@@ -11,15 +11,20 @@ package org.mars_sim.msp.ui.standard.sound;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
+import javax.sound.sampled.SourceDataLine;
 
 import org.mars_sim.msp.ui.standard.UIConfig;
 
@@ -29,11 +34,12 @@ import org.mars_sim.msp.ui.standard.UIConfig;
 public class AudioPlayer implements LineListener {
 
 	// Data members
+	private Line currentLine; // The current sound clip.
 	private Clip currentClip; // The current sound clip.
 	private boolean mute; // Is the audio player muted?
 	private float volume; // The volume of the audio player (0.0 to 1.0)
-	private ConcurrentHashMap<String, Clip> audioCache= new 
-				ConcurrentHashMap<String, Clip>();
+	private ConcurrentHashMap < String, Clip > audioCache  
+	= new ConcurrentHashMap<String, Clip>();
 	
 	public AudioPlayer() {
 	       currentClip = null;
@@ -53,39 +59,113 @@ public class AudioPlayer implements LineListener {
 	 * @param filepath the file path to the sound clip.
 	 * @param loop Should the sound clip be looped?
 	 */
-	private void startPlay(String filepath, boolean loop) {
+	private void startPlay(final String filepath, final boolean loop) {
+	    Thread sound_player = new Thread() {
+	        public void run() {
+	    	if ((filepath != null) && !filepath.equals("")) {
+			   if (filepath.endsWith(SoundConstants.SND_FORMAT_WAV)) {
+			       startPlayWavSound(filepath,loop);
+			   } else if (filepath.endsWith(SoundConstants.SND_FORMAT_MP3)){
+			       startPlayCompressedSound(filepath, loop);
+			   } else if(filepath.endsWith(SoundConstants.SND_FORMAT_OGG)) {
+			       startPlayCompressedSound(filepath, loop);    
+			   }
+			}
+	        }
+	    
+	    };
+	    sound_player.start();
 		
-		if ((filepath != null) && !filepath.equals("")) {
-			try {
-			        Clip clip = null;
-			    	if (!audioCache.containsKey(filepath)) {
-			    	    System.out.println(filepath);
-			    	    File soundFile = new File(filepath);
-			    	    AudioInputStream audioInputStream = 
-			    		AudioSystem.getAudioInputStream(soundFile);
-			    	    clip = AudioSystem.getClip();
-			    	    clip.open(audioInputStream);
-			    	    audioCache.put(filepath, clip);
-			    	} else {
-			    	    clip = audioCache.get(filepath);
-			    	    clip.setFramePosition(0);  
-			    	}
+	}
+	
+	public void startPlayWavSound(String filepath, boolean loop) {
+	    try {
+	        Clip clip = null;
+	    	if (!audioCache.containsKey(filepath)) {
+	    	    System.out.println(filepath);
+	    	    File soundFile = new File(filepath);
+	    	    AudioInputStream audioInputStream = 
+	    		AudioSystem.getAudioInputStream(soundFile);
+	    	    clip = AudioSystem.getClip();
+	    	    clip.open(audioInputStream);
+	    	    audioCache.put(filepath, clip);
+	    	} else {
+	    	    clip = audioCache.get(filepath);
+	    	    clip.setFramePosition(0);  
+	    	}
+		
+	    	currentClip = clip;
+	    	currentClip.addLineListener(this);
+		setVolume(volume);
+		setMute(mute);
+		
+		if (loop){
+		    clip.loop(Clip.LOOP_CONTINUOUSLY); 
+		} else { 		   
+		    clip.start();
+		}
+	} 
+	catch (Exception e) {
+		e.printStackTrace();
+	}
+	    
+	}
+	
+	public void startPlayCompressedSound(String filepath, boolean loop) {
+	    AudioInputStream din = null;
+		
+		try {
+			File file = new File(filepath);
+			AudioInputStream in = AudioSystem.getAudioInputStream(file);
+			AudioFormat baseFormat = in.getFormat();
+			AudioFormat decodedFormat = 
+			new AudioFormat(
+			AudioFormat.Encoding.PCM_SIGNED,
+			baseFormat.getSampleRate(), 16, baseFormat.getChannels(),
+			baseFormat.getChannels() * 2, baseFormat.getSampleRate(),
+			false);
+			
+			din = AudioSystem.getAudioInputStream(decodedFormat, in);
+			
+			DataLine.Info info = new DataLine.Info(SourceDataLine.class, 
+							       decodedFormat);
+			
+			SourceDataLine line = 
+			(SourceDataLine) AudioSystem.getLine(info);
+			currentLine = line;
+			currentLine.addLineListener(this);
+			
+			if(line != null) {
+				line.open(decodedFormat);
+				byte[] data = new byte[4096];
+				// Start
+				line.start();
+				int nBytesRead = 0;
 				
-			    	currentClip = clip;
-			    	currentClip.addLineListener(this);
-				setVolume(volume);
-				setMute(mute);
-				
-				if (loop){
-				    currentClip.loop(Clip.LOOP_CONTINUOUSLY); 
-				} else { 		   
-				    currentClip.start();
+        		        while ((nBytesRead = 
+        		            din.read(data, 0, data.length)) != -1) {
+        		            
+				    line.write(data, 0, nBytesRead);
 				}
-			} 
-			catch (Exception e) {
-				e.printStackTrace();
+				
+				
+				line.close();
+				din.close();
+			}
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(din != null) {
+				try { 
+				    din.close(); 
+				 } 
+				catch(IOException e) { }
 			}
 		}
+	    
+	    
 	}
 	
 	/**
@@ -111,7 +191,14 @@ public class AudioPlayer implements LineListener {
 	    
 		if (currentClip != null) {
 		    currentClip.stop();
-		}	   
+		    currentClip = null;
+		}
+		
+		if (currentLine != null) {
+		    currentLine.close();
+		    currentLine = null;
+		}
+		
 	}
 	
 	/**
@@ -181,7 +268,6 @@ public class AudioPlayer implements LineListener {
 	public void update(LineEvent event) {
 	   if (event.getType() == LineEvent.Type.STOP){
 	       stop();
-	   }
-	    
+	   }    
 	}
 }
