@@ -174,4 +174,8 @@
 		</maintenance-entity-list>
 	</part>
 	
+	<part name="iron ingot" mass="10.0" />
+	
+	<part name="steel ingot" mass="10.0" />
+	
 </part-list>

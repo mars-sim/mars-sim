@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResource.java
- * @version 2.79 2005-11-20
+ * @version 2.83 2008-01-19
  * @author Scott Davis
  */
 
@@ -34,6 +34,10 @@ public final class AmountResource implements Resource, Serializable {
     public static final AmountResource WASTE_WATER = new AmountResource("waste water", Phase.LIQUID);
     public static final AmountResource ICE = new AmountResource("ice", Phase.SOLID);
     public static final AmountResource REGOLITH = new AmountResource("regolith", Phase.SOLID);
+    public static final AmountResource HEMATITE = new AmountResource("hematite", Phase.SOLID);
+    public static final AmountResource CARBON = new AmountResource("carbon", Phase.SOLID);
+    public static final AmountResource SAND = new AmountResource("sand", Phase.SOLID);
+    public static final AmountResource IRON_POWDER = new AmountResource("iron powder", Phase.SOLID);
     
 	// Data members
 	private String name;
@@ -109,7 +113,7 @@ public final class AmountResource implements Resource, Serializable {
 		Iterator<AmountResource> i = resources.iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
-			if (resource.getName().equals(name.toLowerCase())) result = resource;
+			if (resource.getName().equalsIgnoreCase(name)) result = resource;
 		}
 		if (result != null) return result;
 		else throw new ResourceException("Resource: " + name + " could not be found.");

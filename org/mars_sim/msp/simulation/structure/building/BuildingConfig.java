@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.81 2007-08-26
+ * @version 2.83 2008-01-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -66,6 +66,8 @@ public class BuildingConfig implements Serializable {
 	private static final String VEHICLE_CAPACITY = "vehicle-capacity";
 	private static final String COOKING = "cooking";
 	private static final String DEFAULT = "default";
+	private static final String MANUFACTURE = "manufacture";
+	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -695,5 +697,46 @@ public class BuildingConfig implements Serializable {
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element cookingElement = (Element) functionsElement.getElementsByTagName(COOKING).item(0);
 		return Integer.parseInt(cookingElement.getAttribute(CAPACITY));
-	}	
+	}
+	
+	/**
+	 * Checks if the building has the manufacture function.
+	 * @param buildingName the name of the building.
+	 * @return true if manufacture.
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public boolean hasManufacture(String buildingName) throws Exception {
+		boolean result = false;
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		NodeList manufactureNodes = functionsElement.getElementsByTagName(MANUFACTURE);
+		if (manufactureNodes.getLength() > 0) result = true;
+		return result;
+	}
+	
+	/**
+	 * Gets the tech level of the manufacture facility in the building.
+	 * @param buildingName the name of the building.
+	 * @return tech level.
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getManufactureTechLevel(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element manufactureElement = (Element) functionsElement.getElementsByTagName(MANUFACTURE).item(0);
+		return Integer.parseInt(manufactureElement.getAttribute(TECH_LEVEL));
+	}
+	
+	/**
+	 * Gets the concurrent process limit of the manufacture facility in the building.
+	 * @param buildingName the name of the building.
+	 * @return concurrent process limit.
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getManufactureConcurrentProcesses(String buildingName) throws Exception {
+		Element buildingElement = getBuildingElement(buildingName);
+		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+		Element manufactureElement = (Element) functionsElement.getElementsByTagName(MANUFACTURE).item(0);
+		return Integer.parseInt(manufactureElement.getAttribute(CONCURRENT_PROCESSES));
+	}
 }

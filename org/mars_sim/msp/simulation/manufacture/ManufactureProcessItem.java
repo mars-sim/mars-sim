@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcessItem.java
- * @version 2.83 2008-01-17
+ * @version 2.83 2008-01-19
  * @author Scott Davis
  */
 
@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.manufacture;
 
 import java.io.Serializable;
 
+/**
+ * A manufacturing process input or output item.
+ */
 public class ManufactureProcessItem implements Serializable {
 
 	public final static String AMOUNT_RESOURCE = "resource";

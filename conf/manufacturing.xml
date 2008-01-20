@@ -2,7 +2,7 @@
 
 <manufacturing-processes>
 
-	<process name="Extract hematite from regolith" tech="1" skill="1" work-time="100" process-time="0">
+	<process name="extract hematite from regolith" tech="1" skill="1" work-time="100" process-time="0">
 		<inputs>
 			<resource name="regolith" amount="50.0" />
 		</inputs>
@@ -13,7 +13,7 @@
 	</process>
 	
 	<!-- Fe2O3 + 3CO -> 2Fe + 3CO2 -->
-	<process name="Carbonyl process" tech="1" skill="1" work-time="50" process-time="100">
+	<process name="carbonyl process" tech="1" skill="1" work-time="50" process-time="100">
 		<inputs>
 			<resource name="hematite" amount="50.0" />
 			<resource name="carbon monoxide" amount="26.4" />
@@ -25,7 +25,7 @@
 	</process>
 	
 	<!-- Fe2O3 + 3H2 -> 2Fe + 3H2O -->
-	<process name="Hydrogen iron reduction" tech="1" skill="1" work-time="50" process-time="100">
+	<process name="hydrogen iron reduction" tech="1" skill="1" work-time="50" process-time="100">
 		<inputs>
 			<resource name="hematite" amount="50.0" />
 			<resource name="hydrogen" amount="2.5" />
@@ -36,12 +36,22 @@
 		</outputs>
 	</process>
 	
-	<process name="Iron ingot casting" tech="2" skill="2" work-time="100" process-time="100">
+	<process name="iron ingot casting" tech="2" skill="2" work-time="100" process-time="100">
 		<inputs>
 			<resource name="iron powder" amount="50.0" />
 		</inputs>
 		<outputs>
 			<part name="iron ingot" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="pyrolyze reaction" tech="1" skill="2" work-time="25" process-time="50">
+		<inputs>
+			<resource name="methane" amount="13.4" />
+		</inputs>
+		<outputs>
+			<resource name="carbon" amount="10.0" />
+			<resource name="hydrogen" amount="3.3" />
 		</outputs>
 	</process>
 	

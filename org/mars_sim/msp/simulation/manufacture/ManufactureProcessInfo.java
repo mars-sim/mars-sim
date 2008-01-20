@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcessInfo.java
- * @version 2.83 2008-01-17
+ * @version 2.83 2008-01-19
  * @author Scott Davis
  */
 
@@ -10,6 +10,9 @@ package org.mars_sim.msp.simulation.manufacture;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Information about a type of manufacturing process.
+ */
 public class ManufactureProcessInfo implements Serializable {
 
 	// Data members

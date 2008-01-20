@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConfig.java
- * @version 2.83 2008-01-17
+ * @version 2.83 2008-01-19
  * @author Scott Davis
  */
 
@@ -45,6 +45,11 @@ public class ManufactureConfig implements Serializable {
 		this.manufactureDoc = manufactureDoc;
 	}
 	
+	/**
+	 * Gets a list of manufacturing process information.
+	 * @return list of manufacturing process information.
+	 * @throws Exception if error getting info.
+	 */
 	List<ManufactureProcessInfo> getManufactureProcessList() 
 			throws Exception {
 		
@@ -124,6 +129,12 @@ public class ManufactureConfig implements Serializable {
 		return manufactureProcessList;
 	}
 	
+	/**
+	 * Parses the amount resource elements in a node list.
+	 * @param list the list to store the resources in.
+	 * @param resourceNodes the node list.
+	 * @throws Exception if error parsing resources.
+	 */
 	private void parseResources(List<ManufactureProcessItem> list, 
 			NodeList resourceNodes) throws Exception {
 		for (int y = 0; y < resourceNodes.getLength(); y++) {
@@ -137,6 +148,12 @@ public class ManufactureConfig implements Serializable {
 		}
 	}
 	
+	/**
+	 * Parses the part elements in a node list.
+	 * @param list the list to store the parts in.
+	 * @param partNodes the node list.
+	 * @throws Exception if error parsing parts.
+	 */
 	private void parseParts(List<ManufactureProcessItem> list, 
 			NodeList partNodes) throws Exception {
 		for (int y = 0; y < partNodes.getLength(); y++) {
@@ -150,6 +167,12 @@ public class ManufactureConfig implements Serializable {
 		}
 	}
 	
+	/**
+	 * Parses the equipment elements in a node list.
+	 * @param list the list to store the equipment in.
+	 * @param equipmentNodes the node list.
+	 * @throws Exception if error parsing equipment.
+	 */
 	private void parseEquipment(List<ManufactureProcessItem> list, 
 			NodeList equipmentNodes) throws Exception {
 		for (int y = 0; y < equipmentNodes.getLength(); y++) {
@@ -164,6 +187,12 @@ public class ManufactureConfig implements Serializable {
 		}
 	}
 	
+	/**
+	 * Parses the vehicle elements in a node list.
+	 * @param list the list to store the vehicles in.
+	 * @param vehicleNodes the node list.
+	 * @throws Exception if error parsing vehicles.
+	 */
 	private void parseVehicles(List<ManufactureProcessItem> list, 
 			NodeList vehicleNodes) throws Exception {
 		for (int y = 0; y < vehicleNodes.getLength(); y++) {

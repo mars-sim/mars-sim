@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.81 2007-08-26
+ * @version 2.83 2008-01-17
  * @author Scott Davis
  */
  
@@ -132,6 +132,9 @@ public class Building implements Malfunctionable, Serializable {
     	
     	// Set cooking function.
     	if (config.hasCooking(name)) buildingFunctions.add(new Cooking(this));
+    	
+    	// Set manufacture function.
+    	if (config.hasManufacture(name)) buildingFunctions.add(new Manufacture(this));
     	
     	return buildingFunctions;
     }
