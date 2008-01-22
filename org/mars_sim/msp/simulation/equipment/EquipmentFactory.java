@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EquipmentFactory.java
- * @version 2.81 2007-04-26
+ * @version 2.83 2008-01-20
  * @author Scott Davis
  */
 
@@ -45,11 +45,11 @@ public final class EquipmentFactory {
 			}
 		}
 		
-		if (Bag.TYPE.equals(type)) return new Bag(location, 50D);
-		else if (Barrel.TYPE.equals(type)) return new Barrel(location, 200D);
-		else if (EVASuit.TYPE.equals(type)) return new EVASuit(location);
-		else if (GasCanister.TYPE.equals(type)) return new GasCanister(location, 50D);
-		else if (SpecimenContainer.TYPE.equals(type)) return new SpecimenContainer(location);
+		if (Bag.TYPE.equalsIgnoreCase(type)) return new Bag(location, 50D);
+		else if (Barrel.TYPE.equalsIgnoreCase(type)) return new Barrel(location, 200D);
+		else if (EVASuit.TYPE.equalsIgnoreCase(type)) return new EVASuit(location);
+		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return new GasCanister(location, 50D);
+		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return new SpecimenContainer(location);
 		else throw new Exception("Equipment: " + type + " could not be constructed.");
 	}
 	
@@ -78,5 +78,20 @@ public final class EquipmentFactory {
 		else if (GasCanister.class.equals(equipmentClass)) return new GasCanister(location, 50D);
 		else if (SpecimenContainer.class.equals(equipmentClass)) return new SpecimenContainer(location);
 		else throw new Exception("Equipment: " + equipmentClass + " could not be constructed.");
+	}
+	
+	/**
+	 * Gets the class of equipment.
+	 * @param type the equipment type string.
+	 * @return the equipment class.
+	 * @throws Exception if equipment class could not be found.
+	 */
+	public static Class getEquipmentClass(String type) throws Exception {
+		if (Bag.TYPE.equalsIgnoreCase(type)) return Bag.class;
+		else if (Barrel.TYPE.equalsIgnoreCase(type)) return Barrel.class;
+		else if (EVASuit.TYPE.equalsIgnoreCase(type)) return EVASuit.class;
+		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return GasCanister.class;
+		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.class;
+		else throw new Exception("Class for equipment: " + type + " could not be found.");
 	}
 }

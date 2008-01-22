@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 2.83 2008-01-19
+ * @version 2.83 2008-01-20
  * @author Scott Davis
  */
 
@@ -35,7 +35,7 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
  */
 public class Manufacture extends Function implements Serializable {
 
-	private static final String NAME = "Manufacture";
+	public static final String NAME = "Manufacture";
 	
 	// Data members.
 	private int techLevel;
@@ -188,7 +188,7 @@ public class Manufacture extends Function implements Serializable {
 								manager.addUnit(rover);
 							}
 						}
-						else throw new BuildingException("Manufacture.addProcess(): input: " + 
+						else throw new BuildingException("Manufacture.addProcess(): output: " + 
 								item.getType() + " not a valid type.");
 					}
 				}
@@ -200,4 +200,23 @@ public class Manufacture extends Function implements Serializable {
 			}
 		}
 	}
+	
+    /**
+     * Checks if manufacturing function currently requires work.
+     * @return true if manufacturing work.
+     */
+    public boolean requiresWork() {
+		boolean result = false;
+		
+		if (concurrentProcesses > processes.size()) result = true;
+		else {
+			Iterator<ManufactureProcess> i = processes.iterator();
+			while (i.hasNext()) {
+				ManufactureProcess process = i.next();
+				if (process.getWorkTimeRemaining() > 0D) result = true;
+			}
+		}
+		
+		return result;
+    }
 }

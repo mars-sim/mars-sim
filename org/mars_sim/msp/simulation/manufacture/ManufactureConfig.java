@@ -63,6 +63,7 @@ public class ManufactureConfig implements Serializable {
 			for (int x=0; x < processNodes.getLength(); x++) {
 				
 				ManufactureProcessInfo process = new ManufactureProcessInfo();
+				manufactureProcessList.add(process);
 				String name = "";
 				
 				try {

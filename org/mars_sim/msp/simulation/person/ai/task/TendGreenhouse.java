@@ -176,7 +176,7 @@ public class TendGreenhouse extends Task implements Serializable {
         double chance = .001D;
 
         // Greenhouse farming skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.BOTANY);
+        int skill = getEffectiveSkillLevel();
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 

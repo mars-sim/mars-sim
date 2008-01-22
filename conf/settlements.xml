@@ -182,6 +182,7 @@
 			<building type="Large Greenhouse" number="1" />
 			<building type="Laboratory" number="1" />
 			<building type="Garage" number="1" />
+			<building type="Workshop" number="1" />
 			<building type="Lander Hab" number="3" />
 			<building type="Inflatable Greenhouse" number="3" />
 			<building type="MD1 Nuclear Reactor" number="4" />
@@ -343,6 +344,7 @@
 			<building type="Large Greenhouse" number="1" />
 			<building type="Laboratory" number="1" />
 			<building type="Garage" number="1" />
+			<building type="Workshop" number="1" />
 			<building type="MD4 Nuclear Reactor" number="2" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="2" />

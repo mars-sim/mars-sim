@@ -53,7 +53,8 @@ public class TaskManager implements Serializable {
                                        MaintenanceEVA.class,
                                        LoadVehicle.class, UnloadVehicle.class,
                                        ToggleResourceProcess.class,
-                                       ResearchMaterialsScience.class };
+                                       ResearchMaterialsScience.class,
+                                       ManufactureGood.class };
     
     // Cache variables.
     private MarsClock timeCache;

@@ -402,8 +402,8 @@
 		</functions>
 	</building>
 	
-	<!-- A manufacturing lab -->
-	<building name="Manufacturing Laboratory">
+	<!-- A manufacturing workshop -->
+	<building name="Workshop">
 		<power-required base-power="50.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
