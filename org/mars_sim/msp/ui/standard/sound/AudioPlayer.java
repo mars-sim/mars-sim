@@ -40,6 +40,7 @@ public class AudioPlayer implements LineListener {
 	private float volume; // The volume of the audio player (0.0 to 1.0)
 	private ConcurrentHashMap < String, Clip > audioCache  
 	= new ConcurrentHashMap<String, Clip>();
+	private boolean looping = false;
 	
 	public AudioPlayer() {
 	       currentClip = null;
@@ -115,7 +116,15 @@ public class AudioPlayer implements LineListener {
 	}
 	
 	public void startPlayCompressedSound(String filepath, boolean loop) {
-	    AudioInputStream din = null;
+	    looping = loop;
+	    
+	    do{
+	       try {
+		    Thread.sleep(100);
+		} catch (InterruptedException e1) {
+		}
+		
+		AudioInputStream din = null;
 		
 		try {
 			File file = new File(filepath);
@@ -155,7 +164,7 @@ public class AudioPlayer implements LineListener {
 				catch(IOException e) { }
 			}
 		}
-	    
+	    } while(looping);
 	    
 	}
 	
@@ -181,6 +190,8 @@ public class AudioPlayer implements LineListener {
 	 */
 	public void stop() {
 	    
+	    	looping = false;
+	    	
 		if (currentClip != null) {
 		    currentClip.stop();
 		    currentClip = null;
@@ -281,7 +292,17 @@ public class AudioPlayer implements LineListener {
 	 */
 	public void update(LineEvent event) {
 	   if (event.getType() == LineEvent.Type.STOP){
-	       stop();
+	       
+	       if (currentClip != null) {
+		    currentClip.stop();
+		    currentClip = null;
+		}
+		
+		if (currentLine != null) {
+		    currentLine.close();
+		    currentLine = null;
+		}
+		
 	   }    
 	}
 }
