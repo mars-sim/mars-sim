@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcess.java
- * @version 2.83 2008-01-19
+ * @version 2.83 2008-01-22
  * @author Scott Davis
  */
 
@@ -69,5 +69,10 @@ public class ManufactureProcess implements Serializable {
 	public void addProcessTime(double processTime) {
 		processTimeRemaining -= processTime;
 		if (processTimeRemaining < 0D) processTimeRemaining = 0D;
+	}
+	
+	@Override
+	public String toString() {
+		return info.getName();
 	}
 }

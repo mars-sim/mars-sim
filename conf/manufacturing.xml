@@ -45,6 +45,7 @@
 		</outputs>
 	</process>
 	
+	<!-- CH4 -> C + 2H2 -->
 	<process name="pyrolyze reaction" tech="1" skill="2" work-time="25" process-time="50">
 		<inputs>
 			<resource name="methane" amount="13.4" />
@@ -55,13 +56,22 @@
 		</outputs>
 	</process>
 	
-	<process name="Steel ingot alloying" tech="2" skill="2" work-time="100" process-time="50">
+	<process name="steel ingot alloying" tech="2" skill="2" work-time="100" process-time="50">
 		<inputs>
 			<part name="iron ingot" number="5" />
 			<resource name="carbon" amount="1.0" />
 		</inputs>
 		<outputs>
 			<part name="steel ingot" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="steel pipe manufacturing" tech="2" skill="2" work-time="200" process-time="100">
+		<inputs>
+			<part name="steel ingot" number="5" />
+		</inputs>
+		<outputs>
+			<part name="steel pipe" number="5" />
 		</outputs>
 	</process>
 

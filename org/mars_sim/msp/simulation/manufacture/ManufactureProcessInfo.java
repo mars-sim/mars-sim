@@ -79,4 +79,9 @@ public class ManufactureProcessInfo implements Serializable {
 	public void setOutputList(List<ManufactureProcessItem> outputList) {
 		this.outputList = outputList;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

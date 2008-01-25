@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 2.83 2008-01-17
+ * @version 2.83 2008-01-24
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -26,14 +26,14 @@ public class CollectRegolith  extends CollectResourcesMission {
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Regolith Prospecting";
 	
-	// Amount of ice to be gathered at a given site (kg). 
-	private static final double SITE_GOAL = 1000D;
+	// Amount of regolith to be gathered at a given site (kg). 
+	private static final double SITE_GOAL = 500D;
 	
 	// Number of bags required for the mission. 
-	public static final int REQUIRED_BAGS = 20;
+	public static final int REQUIRED_BAGS = 10;
 	
-	// Collection rate of ice during EVA (kg/millisol).
-	private static final double COLLECTION_RATE = 10D;
+	// Collection rate of regolith during EVA (kg/millisol).
+	private static final double COLLECTION_RATE = 20D;
 	
 	// Number of collection sites.
 	private static final int NUM_SITES = 1;
@@ -87,12 +87,11 @@ public class CollectRegolith  extends CollectResourcesMission {
 				REQUIRED_BAGS, MIN_PEOPLE, CollectRegolith.class);
 		
 		if (result > 0D) {
-			// Factor the value of ice at the settlement.
-			/*
+			// Factor the value of regolith at the settlement.
 			GoodsManager manager = person.getSettlement().getGoodsManager();
 			double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.REGOLITH));
 			result *= value * 10D;
-			*/
+			
 			// Check if min number of EVA suits at settlement.
 			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
 		}

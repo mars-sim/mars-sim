@@ -87,7 +87,7 @@ public class ManufactureGood extends Task implements Serializable {
         		// See if there is an available manufacturing building.
         		Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
         		if (manufacturingBuilding != null) {
-        			result = 50D;
+        			result = 1D;
         		
         			// Crowding modifier.
         			result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
@@ -216,8 +216,11 @@ public class ManufactureGood extends Task implements Serializable {
     		while (i.hasNext()) {
     			ManufactureProcessInfo process = i.next();
     			Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
-    			double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
-    			if (processValue > highestProcessValue) highestProcessValue = processValue;
+    			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) || 
+    					isProcessRunning(process, manufacturingFunction)) {
+    				double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
+    				if (processValue > highestProcessValue) highestProcessValue = processValue;
+    			}
     		}
     	}
     	catch (Exception e) {
@@ -327,6 +330,24 @@ public class ManufactureGood extends Task implements Serializable {
 	}
 	
 	/**
+	 * Checks if a process type is currently running at a manufacturing building.
+	 * @param processInfo the process type.
+	 * @param manufactureBuilding the manufacturing building.
+	 * @return true if process is running.
+	 */
+	private static boolean isProcessRunning(ManufactureProcessInfo processInfo, Manufacture manufactureBuilding) {
+		boolean result = false;
+		
+		Iterator<ManufactureProcess> i = manufactureBuilding.getProcesses().iterator();
+		while (i.hasNext()) {
+			ManufactureProcess process = i.next();
+			if (process.getInfo().getName() == processInfo.getName()) result = true;
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Creates a new manufacturing process if possible.
 	 * @return the new manufacturing process or null if none.
 	 * @throws Exception if error creating manufacturing process.
@@ -359,6 +380,7 @@ public class ManufactureGood extends Task implements Serializable {
 			if (highestValueProcess != null) {
 				result = new ManufactureProcess(highestValueProcess);
 				workshop.addProcess(result);
+				System.out.println("Starting " + highestValueProcess.getName() + " process at " + person.getSettlement().getName() + ".");
 			}
 		}
 		

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 2.83 2008-01-21
+ * @version 2.83 2008-01-22
  * @author Scott Davis
  */
 
@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.SimulationConfig;
-import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
@@ -105,7 +105,7 @@ public final class ManufactureUtil {
 		
 		double outputsValue = 0D;
 		Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-		while (j.hasNext()) inputsValue += getManufactureProcessItemValue(j.next(), settlement);
+		while (j.hasNext()) outputsValue += getManufactureProcessItemValue(j.next(), settlement);
 		
 		return outputsValue - inputsValue;
 	}
@@ -170,7 +170,7 @@ public final class ManufactureUtil {
 		if (!areProcessInputsAvailable(process, inv)) result = false;
 		
 		// Check to see if room for process output items at settlement.
-		if (!canProcessOutputsBeStored(process, inv)) result = false;
+		// if (!canProcessOutputsBeStored(process, inv)) result = false;
 		
 		return result;
 	}
@@ -211,6 +211,7 @@ public final class ManufactureUtil {
 	 * @return true if storage room.
 	 * @throws Exception if error determining storage room for outputs.
 	 */
+	/*
 	private static final boolean canProcessOutputsBeStored(ManufactureProcessInfo process, Inventory inv)
 			throws Exception {
 		boolean result = true;
@@ -246,5 +247,39 @@ public final class ManufactureUtil {
 		}
 		
 		return result;
+	}
+	*/
+	
+	/**
+	 * Checks if settlement has buildings with manufacture function.
+	 * @param settlement the settlement.
+	 * @return true if buildings with manufacture function.
+	 * @throws BuildingException if error checking for manufacturing buildings.
+	 */
+	public static final boolean doesSettlementHaveManufacturing(Settlement settlement) 
+			throws BuildingException {
+		BuildingManager manager = settlement.getBuildingManager();
+        return (manager.getBuildings(Manufacture.NAME).size() > 0);
+	}
+	
+	/**
+	 * Gets the highest manufacturing tech level in a settlement.
+	 * @param settlement the settlement.
+	 * @return highest manufacturing tech level.
+	 * @throws BuildingException if error determining highest tech level.
+	 */
+	public static final int getHighestManufacturingTechLevel(Settlement settlement) 
+			throws BuildingException {
+		int highestTechLevel = 0;
+		BuildingManager manager = settlement.getBuildingManager();
+		Iterator<Building> i = manager.getBuildings(Manufacture.NAME).iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
+    		if (manufacturingFunction.getTechLevel() > highestTechLevel) 
+    			highestTechLevel = manufacturingFunction.getTechLevel();
+		}
+		
+		return highestTechLevel;
 	}
 }

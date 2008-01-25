@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.82 2007-11-09
+ * @version 2.83 2008-01-24
  * @author Scott Davis
  */
 
@@ -26,6 +26,9 @@ import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.simulation.manufacture.ManufactureProcessItem;
+import org.mars_sim.msp.simulation.manufacture.ManufactureUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.PersonIterator;
@@ -80,7 +83,7 @@ public class GoodsManager implements Serializable {
 	private Map<AmountResource, Double> resourceProcessingCache;
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
-	private Map<Part, Integer> partsDemandCache;
+	private Map<Part, Double> partsDemandCache;
 	
 	/**
 	 * Constructor
@@ -116,7 +119,7 @@ public class GoodsManager implements Serializable {
 		while (j.hasNext()) resourceProcessingCache.put(j.next(), new Double(0D));
 		
 		// Create parts demand cache.
-		partsDemandCache = new HashMap<Part, Integer>(ItemResource.getItemResources().size());
+		partsDemandCache = new HashMap<Part, Double>(ItemResource.getItemResources().size());
 	}
 	
 	/**
@@ -250,7 +253,10 @@ public class GoodsManager implements Serializable {
 		
 			// Add farming demand.
 			demand += getFarmingDemand(resource);
-		
+			
+			// Add manufacturing demand.
+			demand += getResourceManufacturingDemand(resource);
+			
 			// Limit demand by storage capacity.
 			double capacity = settlement.getInventory().getAmountResourceCapacity(resource);
 			if (demand > capacity) demand = capacity;
@@ -437,6 +443,68 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
+	 * Gets the demand for an amount resource as an input in the settlement's manufacturing processes.
+	 * @param resource the amount resource.
+	 * @return demand (kg)
+	 * @throws Exception if error determining demand for resource.
+	 */
+	private double getResourceManufacturingDemand(AmountResource resource) throws Exception {
+		double demand = 0D;
+		
+		// Get highest manufacturing tech level in settlement.
+		if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
+			int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
+			Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(
+					techLevel).iterator();
+			while (i.hasNext()) {
+				double manufacturingDemand = getResourceManufacturingProcessDemand(resource, i.next());
+				if (manufacturingDemand > demand) demand = manufacturingDemand;
+			}
+		}
+		
+		return demand;
+	}
+	
+	/**
+	 * Gets the demand for an input amount resource in a manufacturing process.
+	 * @param resource the amount resource.
+	 * @param process the manufacturing process.
+	 * @return demand (kg)
+	 * @throws Exception if error determining resource value.
+	 */
+	private double getResourceManufacturingProcessDemand(AmountResource resource,
+			ManufactureProcessInfo process) throws Exception {
+		double demand = 0D;
+		
+		ManufactureProcessItem resourceInput = null;
+		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
+		while (i.hasNext()) {
+			ManufactureProcessItem item = i.next();
+			if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType()) && 
+					resource.getName().equalsIgnoreCase(item.getName())) resourceInput = item;
+		}
+		
+		if (resourceInput != null) {
+			double outputsValue = 0D;
+			Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
+			while (j.hasNext()) outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
+			
+			double inputsValue = 0D;
+			Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
+			while (k.hasNext()) {
+				ManufactureProcessItem item = k.next();
+				if (!ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType()) || 
+						!resource.getName().equalsIgnoreCase(item.getName()))
+					inputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement);
+			}
+			
+			demand = (outputsValue - inputsValue) / resourceInput.getAmount() / 2D;
+		}
+		
+		return demand;
+	}
+	
+	/**
 	 * Gets the number of a good at the settlement.
 	 * @param good the good to check.
 	 * @return the number of the good (or amount (kg) if amount resource good).
@@ -515,21 +583,25 @@ public class GoodsManager implements Serializable {
 	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) 
 			throws Exception {
 		double value = 0D;
-	
+		ItemResource resource = (ItemResource) resourceGood.getObject();
 		double demand = 0D;
 		
 		if (useCache) {
 			if (goodsDemandCache.containsKey(resourceGood)) demand = goodsDemandCache.get(resourceGood).doubleValue();
 			else throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
+			
+			// Clear parts demand cache so it will be calculated next time.
+			partsDemandCache.clear();
 		}
 		else {
-			ItemResource resource = (ItemResource) resourceGood.getObject();
-			
 			// Get demand for part.
 			if (resource instanceof Part) {
 				Part part = (Part) resource;
 				if (partsDemandCache.size() == 0) determinePartsDemand();
 				if (partsDemandCache.containsKey(part)) demand = partsDemandCache.get(part);
+				
+				// Add manufacturing demand.
+				demand += getPartManufacturingDemand(part);
 			}
 			
 			demand *= resource.getMassPerItem(); 
@@ -537,12 +609,13 @@ public class GoodsManager implements Serializable {
 		}
 		
 		value = demand / (supply + 1D);
-		
+			
 		return value;
 	}
 	
 	/**
 	 * Determines the number demand for all parts at the settlement.
+	 * @return map of parts and their demand.
 	 * @throws Exception if error determining the parts demand.
 	 */
 	private void determinePartsDemand() throws Exception {
@@ -566,12 +639,11 @@ public class GoodsManager implements Serializable {
 			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity));
 		}
 		
-		// Round off parts and store in parts demand cache.
+		// Store in parts demand cache.
 		Iterator<Part> j = partsProbDemand.keySet().iterator();
 		while (j.hasNext()) {
 			Part part = j.next();
-			int number = (int) Math.round(partsProbDemand.get(part));
-			partsDemandCache.put(part, number);
+			partsDemandCache.put(part, partsProbDemand.get(part));
 		}
 	}
 	
@@ -658,6 +730,68 @@ public class GoodsManager implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Gets the manufacturing demand for a part.
+	 * @param part the part.
+	 * @return demand (kg)
+	 * @throws Exception if error getting part manufacturing demand.
+	 */
+	private double getPartManufacturingDemand(Part part) throws Exception {
+		double demand = 0D;
+		
+		// Get highest manufacturing tech level in settlement.
+		if (ManufactureUtil.doesSettlementHaveManufacturing(settlement)) {
+			int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
+			Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechLevel(
+					techLevel).iterator();
+			while (i.hasNext()) {
+				double manufacturingDemand = getPartManufacturingProcessDemand(part, i.next());
+				if (manufacturingDemand > demand) demand = manufacturingDemand;
+			}
+		}
+		
+		return demand;
+	}
+	
+	/**
+	 * Gets the demand of an input part in a manufacturing process. 
+	 * @param part the input part.
+	 * @param process the manufacturing process.
+	 * @return demand (kg)
+	 * @throws Exception if error determining manufacturing demand.
+	 */
+	private double getPartManufacturingProcessDemand(Part part, ManufactureProcessInfo process) 
+			throws Exception {
+		double demand = 0D;
+		
+		ManufactureProcessItem partInput = null;
+		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
+		while (i.hasNext()) {
+			ManufactureProcessItem item = i.next();
+			if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType()) && 
+					part.getName().equalsIgnoreCase(item.getName())) partInput = item;
+		}
+		
+		if (partInput != null) {
+			double outputsValue = 0D;
+			Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
+			while (j.hasNext()) outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
+			
+			double inputsValue = 0D;
+			Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
+			while (k.hasNext()) {
+				ManufactureProcessItem item = k.next();
+				if (!ManufactureProcessItem.PART.equalsIgnoreCase(item.getType()) || 
+						!part.getName().equalsIgnoreCase(item.getName()))
+					inputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement);
+			}
+			
+			demand = (outputsValue - inputsValue) / (partInput.getAmount() * part.getMassPerItem() * part.getMassPerItem()) / 2D;
+		}
+		
+		return demand;
 	}
 	
 	/**
