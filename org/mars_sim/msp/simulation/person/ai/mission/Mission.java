@@ -14,12 +14,15 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
@@ -32,7 +35,12 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  * A Mission may have one or more people associated with it.
  */
 public abstract class Mission implements Serializable {
-
+    	private static String CLASS_NAME = 
+    	    "org.mars_sim.msp.simulation.person.ai.mission.Mission";
+    	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    
+    	
 	// Mission event types
 	public static final String NAME_EVENT = "name";
 	public static final String DESCRIPTION_EVENT = "description";
@@ -369,7 +377,12 @@ public abstract class Mission implements Serializable {
     		fireMissionUpdate(END_MISSION_EVENT);
     		Object p[] = people.toArray();
     		for(int i = 0; i < p.length; i++) removePerson((Person) p[i]);
-    		// System.out.println(getDescription() + " ending at " + getPhase() + " due to " + reason);
+    		
+    		logger.info(getDescription() 
+    			     + " ending at " 
+    			     + getPhase() 
+    			     + " due to " 
+    			     + reason);
     	}
     }
 
@@ -590,7 +603,8 @@ public abstract class Mission implements Serializable {
      * @return map of equipment class and Integer number.
      * @throws Exception if error determining needed equipment.
      */
-    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception;
+    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) 
+    throws Exception;
     
     /** 
      * Time passing for mission.
