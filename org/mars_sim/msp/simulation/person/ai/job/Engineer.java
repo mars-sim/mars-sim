@@ -1,17 +1,23 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 2.78 2005-08-22
+ * @version 2.83 2008-01-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.*;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
 
 /** 
  * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and vehicles.
@@ -26,15 +32,8 @@ public class Engineer extends Job implements Serializable {
 		super("Engineer");
 		
 		// Add engineer-related tasks.
-		jobTasks.add(Maintenance.class);
-		jobTasks.add(MaintenanceEVA.class);
-		jobTasks.add(MaintainGroundVehicleGarage.class);
-		jobTasks.add(MaintainGroundVehicleEVA.class);
-		jobTasks.add(RepairMalfunction.class);
-		jobTasks.add(RepairEVAMalfunction.class);
-		jobTasks.add(EnterAirlock.class);
-		jobTasks.add(ExitAirlock.class);
-		jobTasks.add(ToggleResourceProcess.class);
+		jobTasks.add(ManufactureGood.class);
+		jobTasks.add(ResearchMaterialsScience.class);
 		
 		// Add engineer-related missions.
 		jobMissionJoins.add(TravelToSettlement.class);	
@@ -51,12 +50,14 @@ public class Engineer extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		int areologySkill = person.getMind().getSkillManager().getSkillLevel(Skill.MECHANICS);
-		result = areologySkill;
+		int materialsScienceSkill = person.getMind().getSkillManager().getSkillLevel(Skill.MATERIALS_SCIENCE);
+		result = materialsScienceSkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
+		int academicAptitude = attributes.getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
-		result+= result * ((experienceAptitude - 50D) / 100D);
+		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
+		result+= result * ((averageAptitude - 50D) / 100D);
 		
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
 		
@@ -72,11 +73,19 @@ public class Engineer extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		// Add number of buildings in settlement.
-		result+= settlement.getBuildingManager().getBuildingNum();
-		
-		// Add number of vehicles parked at settlement.
-		result+= settlement.getParkedVehicleNum();
+		// Add (tech level * process number) for all maintenance buildings.
+		List maintenanceBuildings = settlement.getBuildingManager().getBuildings(Manufacture.NAME);
+		Iterator i = maintenanceBuildings.iterator();
+		while (i.hasNext()) {
+			Building building = (Building) i.next();
+			try {
+				Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
+				result += workshop.getTechLevel() * workshop.getConcurrentProcesses();
+			}
+			catch (BuildingException e) {
+				System.err.println("Engineer.getSettlementNeed(): " + e.getMessage());
+			}
+		}
 		
 		return result;	
 	}

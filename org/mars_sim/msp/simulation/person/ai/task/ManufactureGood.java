@@ -94,7 +94,7 @@ public class ManufactureGood extends Task implements Serializable {
         			result *= Task.getRelationshipModifier(person, manufacturingBuilding);
         			
                 	// Manufacturing good value modifier.
-                	result *= getHighestManufacturingProcessValue(person, manufacturingBuilding);
+                	result *= getHighestManufacturingProcessValue(person, manufacturingBuilding) * 10D;
         		}
         	}
         	catch (BuildingException e) {
