@@ -292,6 +292,10 @@ public class ManufactureGood extends Task implements Serializable {
         		if (providedWorkTime > remainingWorkTime) providedWorkTime = remainingWorkTime;
         		process.addWorkTime(providedWorkTime);
         		workTime -= providedWorkTime;
+        		
+        		if ((process.getWorkTimeRemaining() <= 0D) && 
+        				(process.getProcessTimeRemaining() <= 0D)) 
+        			workshop.endManufacturingProcess(process);
         	}
         	else {
         		process = createNewManufactureProcess();

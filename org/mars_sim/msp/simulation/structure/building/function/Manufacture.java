@@ -136,74 +136,23 @@ public class Manufacture extends Function implements Serializable {
 	@Override
 	public void timePassing(double time) throws BuildingException {
 		
+		List<ManufactureProcess> finishedProcesses = new ArrayList<ManufactureProcess>();
+		
 		Iterator<ManufactureProcess> i = processes.iterator();
 		while (i.hasNext()) {
 			ManufactureProcess process = i.next();
 			process.addProcessTime(time);
 		
-			// If process is done, produce outputs.
 			if ((process.getProcessTimeRemaining() == 0D) && 
 					(process.getWorkTimeRemaining() == 0D)) {
-				
-				
-				
-				// Produce outputs.
-				try {
-					Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-					System.out.println("Ending " + process.getInfo().getName() + " process at " + settlement.getName() + ".");
-					UnitManager manager = Simulation.instance().getUnitManager();
-					Inventory inv = getBuilding().getInventory();
-					
-					Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
-					while (j.hasNext()) {
-						ManufactureProcessItem item = j.next();
-						if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
-							if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
-								// Produce amount resources.
-								AmountResource resource = AmountResource.findAmountResource(item.getName());
-								double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
-								if (item.getAmount() <= capacity) 
-									inv.storeAmountResource(resource, item.getAmount(), true);
-							}
-							else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
-								// Produce parts.
-								Part part = (Part) ItemResource.findItemResource(item.getName());
-								double mass = item.getAmount() * part.getMassPerItem();
-								double capacity = inv.getGeneralCapacity();
-								if (mass <= capacity)
-									inv.storeItemResources(part, (int) item.getAmount());
-							}
-							else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
-								// Produce equipment.
-								String equipmentType = item.getName();
-								int number = (int) item.getAmount();
-								for (int x = 0; x < number; x++) {
-									Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
-									equipment.setName(manager.getNewName(UnitManager.EQUIPMENT, equipmentType, null));
-									inv.storeUnit(equipment);
-								}
-							}
-							else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
-								// Produce vehicles.
-								String vehicleType = item.getName();
-								int number = (int) item.getAmount();
-								for (int x = 0; x < number; x++) {
-									String vehicleName = manager.getNewName(UnitManager.VEHICLE, null, null);
-									Rover rover = new Rover(vehicleName, vehicleType, settlement);
-									manager.addUnit(rover);
-								}
-							}
-							else throw new BuildingException("Manufacture.addProcess(): output: " + 
-									item.getType() + " not a valid type.");
-						}
-					}
-				}
-				catch (Exception e) {
-					throw new BuildingException("Problem completing manufacturing process.", e);
-				}
-				
-				i.remove();
+				finishedProcesses.add(process);
 			}
+		}
+		
+		// End all processes that are done.
+		Iterator<ManufactureProcess> j = finishedProcesses.iterator();
+		while (j.hasNext()) {
+			endManufacturingProcess(j.next());
 		}
 	}
 	
@@ -224,5 +173,71 @@ public class Manufacture extends Function implements Serializable {
 		}
 		
 		return result;
+    }
+    
+    /**
+     * Ends a manufacturing process.
+     * @param process the process to end.
+     * @throws BuildingException if error ending process.
+     */
+    public void endManufacturingProcess(ManufactureProcess process) throws BuildingException {
+    	
+		// Produce outputs.
+		try {
+			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+			System.out.println("Ending " + process.getInfo().getName() + " process at " + settlement.getName() + ".");
+			UnitManager manager = Simulation.instance().getUnitManager();
+			Inventory inv = getBuilding().getInventory();
+			
+			Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
+			while (j.hasNext()) {
+				ManufactureProcessItem item = j.next();
+				if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
+					if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+						// Produce amount resources.
+						AmountResource resource = AmountResource.findAmountResource(item.getName());
+						double amount = item.getAmount();
+						double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
+						if (item.getAmount() > capacity) amount = capacity;  
+						inv.storeAmountResource(resource, amount, true);
+					}
+					else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+						// Produce parts.
+						Part part = (Part) ItemResource.findItemResource(item.getName());
+						double mass = item.getAmount() * part.getMassPerItem();
+						double capacity = inv.getGeneralCapacity();
+						if (mass <= capacity)
+							inv.storeItemResources(part, (int) item.getAmount());
+					}
+					else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
+						// Produce equipment.
+						String equipmentType = item.getName();
+						int number = (int) item.getAmount();
+						for (int x = 0; x < number; x++) {
+							Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
+							equipment.setName(manager.getNewName(UnitManager.EQUIPMENT, equipmentType, null));
+							inv.storeUnit(equipment);
+						}
+					}
+					else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
+						// Produce vehicles.
+						String vehicleType = item.getName();
+						int number = (int) item.getAmount();
+						for (int x = 0; x < number; x++) {
+							String vehicleName = manager.getNewName(UnitManager.VEHICLE, null, null);
+							Rover rover = new Rover(vehicleName, vehicleType, settlement);
+							manager.addUnit(rover);
+						}
+					}
+					else throw new BuildingException("Manufacture.addProcess(): output: " + 
+							item.getType() + " not a valid type.");
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new BuildingException("Problem completing manufacturing process.", e);
+		}
+		
+		processes.remove(process);
     }
 }
