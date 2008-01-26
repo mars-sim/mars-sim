@@ -44,7 +44,8 @@ public class AudioPlayer implements LineListener {
 	
 	public AudioPlayer() {
 	       currentClip = null;
-		
+	       currentLine = null;
+	       
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			setMute(false);
 			setVolume(.5F);
@@ -149,7 +150,6 @@ public class AudioPlayer implements LineListener {
 			    	currentLine = line;
 				currentLine.addLineListener(this);
 				line.open(decodedFormat);
-				
 				
 			}
 			
