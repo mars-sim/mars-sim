@@ -24,7 +24,10 @@ public class MarsProject {
      * @param args command line arguments. 
      */
     public MarsProject(String args[]) {
-
+	
+	//initialize logger
+	 Log.initialize();
+	
         // Create a splash window
         SplashWindow splashWindow = new SplashWindow();
         
@@ -91,6 +94,7 @@ public class MarsProject {
        
         // Dispose the splash window.
         splashWindow.dispose();
+       
     }
 
     /** 
@@ -111,7 +115,8 @@ public class MarsProject {
      * The starting method for the application
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) {	
+	//starting the simulation
         new MarsProject(args);
     }
 }
