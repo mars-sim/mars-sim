@@ -90,6 +90,7 @@
 			<building type="MD1 Nuclear Reactor" number="3" />
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="2" />
+			<building type="Small Workshop" number="1" />
 			<vehicle type="Explorer Rover" number="2" />
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="10" />
@@ -134,6 +135,7 @@
 			<building type="MD1 Nuclear Reactor" number="4" />
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="3" />
+			<building type="Small Workshop" number="1" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
@@ -183,6 +185,7 @@
 			<building type="Laboratory" number="1" />
 			<building type="Garage" number="1" />
 			<building type="Workshop" number="1" />
+			<building type="Small Workshop" number="1" />
 			<building type="Lander Hab" number="3" />
 			<building type="Inflatable Greenhouse" number="3" />
 			<building type="MD1 Nuclear Reactor" number="4" />
@@ -242,6 +245,7 @@
 			<building type="Inflatable Greenhouse" number="1" />
 			<building type="MD1 Nuclear Reactor" number="1" />
 			<building type="Starting ERV Base" number="1" />
+			<building type="Small Workshop" number="1" />
 			
 			<!-- A new vehicle for the settlement. -->
 			<!-- type: the type of vehicle (see vehicles.xml) -->

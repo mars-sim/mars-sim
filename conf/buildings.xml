@@ -402,13 +402,33 @@
 		</functions>
 	</building>
 	
+	<!-- A small manufacturing workshop -->
+	<building name="Small Workshop">
+		<power-required base-power="20.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="4.0" />
+			<manufacture tech-level="2" concurrent-processes="2" />
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Materials Science" />
+			</research>
+			<storage>
+				<resource-storage resource="Regolith" capacity="500.0" />
+				<resource-storage resource="Carbon" capacity="25.0" />
+				<resource-storage resource="Hematite" capacity="250.0" />
+				<resource-storage resource="Sand" capacity="500.0" />
+				<resource-storage resource="Iron Powder" capacity="50.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	
 	<!-- A manufacturing workshop -->
 	<building name="Workshop">
 		<power-required base-power="50.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
-			<manufacture tech-level="4" concurrent-processes="5" />
-			<research tech-level="4" capacity="5">
+			<manufacture tech-level="4" concurrent-processes="4" />
+			<research tech-level="4" capacity="4">
 				<research-speciality name="Materials Science" />
 			</research>
 			<storage>
