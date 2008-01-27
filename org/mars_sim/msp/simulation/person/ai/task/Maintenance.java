@@ -12,6 +12,7 @@ import java.util.*;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -141,18 +142,23 @@ public class Maintenance extends Task implements Serializable {
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
         // Add repair parts if necessary.
-        Inventory inv = person.getTopContainerUnit().getInventory();
-        if (Maintenance.hasMaintenanceParts(inv, entity)) {
-        	Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
-        	Iterator<Part> j = parts.keySet().iterator();
-        	while (j.hasNext()) {
-        		Part part = j.next();
-        		int number = parts.get(part);
-        		inv.retrieveItemResources(part, number);
-        		manager.maintainWithParts(part, number);
+        boolean repairParts = false;
+        Unit container = person.getTopContainerUnit();
+        if (container != null) {
+        	Inventory inv = container.getInventory();
+        	if (Maintenance.hasMaintenanceParts(inv, entity)) {
+        		repairParts = true;
+        		Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
+        		Iterator<Part> j = parts.keySet().iterator();
+        		while (j.hasNext()) {
+        			Part part = j.next();
+        			int number = parts.get(part);
+        			inv.retrieveItemResources(part, number);
+        			manager.maintainWithParts(part, number);
+        		}
         	}
         }
-        else {
+        if (!repairParts) {
         	endTask();
         	return time;
         }
