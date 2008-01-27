@@ -15,9 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitCollection;
+import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
@@ -35,9 +39,11 @@ import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.job.Areologist;
 import org.mars_sim.msp.simulation.person.ai.job.Driver;
 import org.mars_sim.msp.simulation.person.ai.job.Trader;
+import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
@@ -869,14 +875,20 @@ public class GoodsManager implements Serializable {
 		if (EVASuit.class.equals(equipmentClass)) numDemand += 2D * settlement.getAllAssociatedPeople().size();
 		
 		// Determine the number of containers that are needed.
-		if (Container.class.isAssignableFrom(equipmentClass)) numDemand = 10D;
+		if (Container.class.isAssignableFrom(equipmentClass)) {
+			numDemand = 10D;
+			// Add all non-empty containers.
+			numDemand += getNonEmptyContainers(equipmentClass);
+		}
 		
 		int areologistNum = getAreologistNum();
 		
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
 			double iceValue = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
-			numDemand +=  CollectIce.REQUIRED_BAGS * areologistNum * iceValue;
+			double regolithValue = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.REGOLITH));
+			numDemand += CollectIce.REQUIRED_BAGS * areologistNum * iceValue;
+			numDemand += CollectRegolith.REQUIRED_BAGS * areologistNum * regolithValue;
 		}
 		
 		// Determine number of specimen containers that are needed.
@@ -887,6 +899,42 @@ public class GoodsManager implements Serializable {
 		double demand = numDemand * GoodsUtil.getGoodMassPerItem(GoodsUtil.getEquipmentGood(equipmentClass));
 		
 		return demand;
+	}
+	
+	/**
+	 * Gets all non-empty containers of a given type associated with this settlement.
+	 * @param equipmentClass the equipment type.
+	 * @return number of non-empty containers.
+	 * @throws Exception if error determining containers.
+	 */
+	private int getNonEmptyContainers(Class equipmentClass) throws Exception {
+		int result = 0;
+		
+		Inventory inv = settlement.getInventory();
+		UnitCollection equipmentList = inv.findAllUnitsOfClass(equipmentClass);
+		MissionManager missionManager = Simulation.instance().getMissionManager();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			Mission mission = i.next();
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
+					Inventory vehicleInv = vehicle.getInventory();
+					UnitIterator j = vehicleInv.findAllUnitsOfClass(equipmentClass).iterator();
+					while (j.hasNext()) {
+						Unit equipment = j.next();
+						if (!equipmentList.contains(equipment)) equipmentList.add(equipment);
+					}
+				}
+			}
+		}
+		
+		UnitIterator k = equipmentList.iterator();
+		while (k.hasNext()) {
+			if (k.next().getInventory().getAllAmountResourcesStored().size() > 0D) result++;
+		}
+		
+		return result;
 	}
 	
 	/**
