@@ -18,7 +18,7 @@ public class GasCanister extends Equipment implements Container, Serializable {
 
 	// Static data members
 	public static final String TYPE = "Gas Canister";
-	private static final double BASE_MASS = 200D; // Empty mass of gas canister (kg).
+	private static final double BASE_MASS = 20D; // Empty mass of gas canister (kg).
 	
 	/**
 	 * Constructor
