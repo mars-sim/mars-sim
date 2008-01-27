@@ -363,7 +363,7 @@ public class ManufactureGood extends Task implements Serializable {
 		
 			int skillLevel = getEffectiveSkillLevel();
 			int techLevel = workshop.getTechLevel();
-		
+			
 			double highestValue = 0D;
 			ManufactureProcessInfo highestValueProcess = null;
 			Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
