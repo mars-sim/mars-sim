@@ -17,7 +17,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="co2 extinguisher" mass="1.0" />
+	<part name="co2 extinguisher" mass="20.0" />
 	
 	<part name="rover tire" mass="1.0">
 		<maintenance-entity-list>
@@ -177,5 +177,7 @@
 	<part name="iron ingot" mass="10.0" />
 	
 	<part name="steel ingot" mass="10.0" />
+	
+	<part name="steel canister" mass="10.0" />
 	
 </part-list>

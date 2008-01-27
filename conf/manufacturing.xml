@@ -46,13 +46,13 @@
 	</process>
 	
 	<!-- CH4 -> C + 2H2 -->
-	<process name="pyrolyze reaction" tech="1" skill="2" work-time="25" process-time="50">
+	<process name="pyrolyze reaction" tech="1" skill="1" work-time="25" process-time="50">
 		<inputs>
-			<resource name="methane" amount="13.4" />
+			<resource name="methane" amount="1.3" />
 		</inputs>
 		<outputs>
-			<resource name="carbon" amount="10.0" />
-			<resource name="hydrogen" amount="3.3" />
+			<resource name="carbon" amount="1.0" />
+			<resource name="hydrogen" amount=".3" />
 		</outputs>
 	</process>
 	
@@ -72,6 +72,59 @@
 		</inputs>
 		<outputs>
 			<part name="steel pipe" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="steel canister manufacturing" tech="2" skill="2" work-time="250" process-time="100">
+		<inputs>
+			<part name="steel ingot" number="5" />
+		</inputs>
+		<outputs>
+			<part name="steel canister" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="gas canister manufacturing" tech="2" skill="3" work-time="100" process-time="0">
+		<inputs>
+			<part name="steel canister" number="1" />
+			<part name="valve" number="2" />
+			<part name="gasket" number="4" />
+		</inputs>
+		<outputs>
+			<equipment name="gas canister" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="co2 extinguisher manufacturing" tech="2" skill="3" work-time="100" process-time="0">
+		<inputs>
+			<part name="steel canister" number="1" />
+			<part name="valve" number="2" />
+			<part name="gasket" number="4" />
+			<part name="plastic tubing" number="1" />
+			<resource name="carbon dioxide" amount="10.0" />
+		</inputs>
+		<outputs>
+			<part name="co2 extinguisher" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="valve manufacturing" tech="2" skill="3" work-time="200" process-time="100">
+		<inputs>
+			<part name="steel ingot" number="1" />
+		</inputs>
+		<outputs>
+			<part name="valve" number="50" />
+		</outputs>
+	</process>
+	
+	<process name="satellite dish manufacturing" tech="2" skill="3" work-time="200" process-time="100">
+		<inputs>
+			<part name="steel ingot" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</inputs>
+		<outputs>
+			<part name="satellite dish" number="1" />
 		</outputs>
 	</process>
 
