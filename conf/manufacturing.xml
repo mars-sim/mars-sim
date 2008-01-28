@@ -52,7 +52,7 @@
 		</inputs>
 		<outputs>
 			<resource name="carbon" amount="1.0" />
-			<resource name="hydrogen" amount=".3" />
+			,<!-- <resource name="hydrogen" amount=".3" /> -->
 		</outputs>
 	</process>
 	
