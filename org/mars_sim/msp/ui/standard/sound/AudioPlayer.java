@@ -117,16 +117,12 @@ public class AudioPlayer implements LineListener {
 	}
 	
 	public void startPlayCompressedSound(String filepath, boolean loop) {
-	    looping = loop;
-	    
-	    do{
-	       try {
-		    Thread.sleep(100);
-		} catch (InterruptedException e1) {
-		}
-		
+	 
 		AudioInputStream din = null;
+		looping = loop;
 		
+		do {
+		    
 		try {
 			File file = new File(filepath);
 			AudioInputStream in = AudioSystem.getAudioInputStream(file);
@@ -151,6 +147,15 @@ public class AudioPlayer implements LineListener {
 				currentLine.addLineListener(this);
 				line.open(decodedFormat);
 				
+				byte[] data = new byte[128];
+				// Start
+				line.start();
+				int nBytesRead = 0;
+
+            		       while ((nBytesRead = din.read(data, 0, data.length)) != -1) {
+					line.write(data, 0, nBytesRead);
+				}
+				
 			}
 			
 		}
@@ -164,7 +169,8 @@ public class AudioPlayer implements LineListener {
 				catch(IOException e) { }
 			}
 		}
-	    } while(looping);
+		} while (looping);
+	    
 	    
 	}
 	
