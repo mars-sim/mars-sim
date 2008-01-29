@@ -2,20 +2,29 @@
 
 <manufacturing-processes>
 
-	<process name="extract hematite from regolith" tech="1" skill="1" work-time="100" process-time="0">
+	<process name="extract iron oxide from regolith" tech="1" skill="1" work-time="100" process-time="0">
 		<inputs>
 			<resource name="regolith" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="hematite" amount="7.0" />
+			<resource name="iron oxide" amount="7.0" />
 			<resource name="sand" amount="40.0" />
+		</outputs>
+	</process>
+	
+	<process name="extract aluminum oxide from regolith" tech="1" skill="1" work-time="100" process-time="0">
+		<inputs>
+			<resource name="regolith" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="aluminum oxide" amount="2.0" />
 		</outputs>
 	</process>
 	
 	<!-- Fe2O3 + 3CO -> 2Fe + 3CO2 -->
 	<process name="carbonyl process" tech="1" skill="1" work-time="50" process-time="100">
 		<inputs>
-			<resource name="hematite" amount="50.0" />
+			<resource name="iron oxide" amount="50.0" />
 			<resource name="carbon monoxide" amount="26.4" />
 		</inputs>
 		<outputs>
@@ -27,12 +36,24 @@
 	<!-- Fe2O3 + 3H2 -> 2Fe + 3H2O -->
 	<process name="hydrogen iron reduction" tech="1" skill="1" work-time="50" process-time="100">
 		<inputs>
-			<resource name="hematite" amount="50.0" />
+			<resource name="iron oxide" amount="50.0" />
 			<resource name="hydrogen" amount="2.5" />
 		</inputs>
 		<outputs>
 			<resource name="iron powder" amount="34.9" />
 			<resource name="water" amount="16.9" />
+		</outputs>
+	</process>
+	
+	<!-- Al2O3 + 3C -> 2Al + 3CO -->
+	<process name="aluminum reduction" tech="2" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="aluminum oxide" amount="1.9" />
+			<resource name="carbon" amount=".6" />
+		</inputs>
+		<outputs>
+			<resource name="aluminum powder" amount="1.0" />
+			<resource name="carbon monoxide" amount="1.5" />
 		</outputs>
 	</process>
 	
@@ -42,6 +63,15 @@
 		</inputs>
 		<outputs>
 			<part name="iron ingot" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="aluminum ingot casting" tech="2" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="aluminum powder" amount="5.0" />
+		</inputs>
+		<outputs>
+			<part name="aluminum ingot" number="5" />
 		</outputs>
 	</process>
 	
@@ -125,6 +155,38 @@
 		</inputs>
 		<outputs>
 			<part name="satellite dish" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="barrel manufacturing" tech="2" skill="2" work-time="250" process-time="100">
+		<inputs>
+			<part name="steel ingot" number="5" />
+		</inputs>
+		<outputs>
+			<equipment name="barrel" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="radio antenna manufacturing" tech="2" skill="2" work-time="100" process-time="50">
+		<inputs>
+			<part name="steel ingot" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</inputs>
+		<outputs>
+			<part name="radio antenna" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="suit heating unit manufacturing" tech="2" skill="2" work-time="100" process-time="50">
+		<inputs>
+			<part name="steel ingot" number="1" />
+			<part name="aluminum ingot" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+		</inputs>
+		<outputs>
+			<part name="suit heating unit" number="5" />
 		</outputs>
 	</process>
 

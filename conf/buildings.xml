@@ -414,9 +414,11 @@
 			<storage>
 				<resource-storage resource="Regolith" capacity="500.0" />
 				<resource-storage resource="Carbon" capacity="25.0" />
-				<resource-storage resource="Hematite" capacity="250.0" />
+				<resource-storage resource="Iron Oxide" capacity="250.0" />
+				<resource-storage resource="Aluminum Oxide" capacity="25.0" />
 				<resource-storage resource="Sand" capacity="500.0" />
 				<resource-storage resource="Iron Powder" capacity="50.0" />
+				<resource-storage resource="Aluminum Powder" capacity="10.0" />
 			</storage>
 		</functions>
 	</building>
@@ -434,9 +436,11 @@
 			<storage>
 				<resource-storage resource="Regolith" capacity="1000.0" />
 				<resource-storage resource="Carbon" capacity="50.0" />
-				<resource-storage resource="Hematite" capacity="500.0" />
+				<resource-storage resource="Iron Oxide" capacity="500.0" />
+				<resource-storage resource="Aluminum Oxide" capacity="50.0" />
 				<resource-storage resource="Sand" capacity="1000.0" />
 				<resource-storage resource="Iron Powder" capacity="100.0" />
+				<resource-storage resource="Aluminum Powder" capacity="20.0" />
 			</storage>
 		</functions>
 	</building>

@@ -178,6 +178,8 @@
 	
 	<part name="steel ingot" mass="10.0" />
 	
+	<part name="aluminum ingot" mass="1.0" />
+	
 	<part name="steel canister" mass="10.0" />
 	
 </part-list>

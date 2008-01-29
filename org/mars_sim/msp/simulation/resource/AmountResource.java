@@ -34,10 +34,12 @@ public final class AmountResource implements Resource, Serializable {
     public static final AmountResource WASTE_WATER = new AmountResource("waste water", Phase.LIQUID);
     public static final AmountResource ICE = new AmountResource("ice", Phase.SOLID);
     public static final AmountResource REGOLITH = new AmountResource("regolith", Phase.SOLID);
-    public static final AmountResource HEMATITE = new AmountResource("hematite", Phase.SOLID);
+    public static final AmountResource IRON_OXIDE = new AmountResource("iron oxide", Phase.SOLID);
     public static final AmountResource CARBON = new AmountResource("carbon", Phase.SOLID);
     public static final AmountResource SAND = new AmountResource("sand", Phase.SOLID);
     public static final AmountResource IRON_POWDER = new AmountResource("iron powder", Phase.SOLID);
+    public static final AmountResource ALUMINUM_OXIDE = new AmountResource("aluminum oxide", Phase.SOLID);
+    public static final AmountResource ALUMINUM_POWDER = new AmountResource("aluminum powder", Phase.SOLID);
     
 	// Data members
 	private String name;
