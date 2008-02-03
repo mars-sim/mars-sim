@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.83 2008-01-24
+ * @version 2.83 2008-02-02
  * @author Scott Davis
  */
 
@@ -221,10 +221,6 @@ public class GoodsManager implements Serializable {
 			if (Good.VEHICLE.equals(good.getCategory()))
 				value = determineVehicleGoodValue(good, supply, useCache);
 			
-			// Determine trade value.
-			double tradeValue = determineTradeValue(good, useCache);
-			if (tradeValue > value) value = tradeValue;
-			
 			return value;
 		}
 		else throw new IllegalArgumentException("Good is null.");
@@ -262,6 +258,9 @@ public class GoodsManager implements Serializable {
 			
 			// Add manufacturing demand.
 			demand += getResourceManufacturingDemand(resource);
+			
+			// Add trade value.
+			demand += determineTradeValue(resourceGood, useCache);
 			
 			// Limit demand by storage capacity.
 			double capacity = settlement.getInventory().getAmountResourceCapacity(resource);
@@ -610,6 +609,9 @@ public class GoodsManager implements Serializable {
 				demand += getPartManufacturingDemand(part);
 			}
 			
+			// Add trade value.
+			demand += determineTradeValue(resourceGood, useCache) / resource.getMassPerItem();
+			
 			demand *= resource.getMassPerItem(); 
 			goodsDemandCache.put(resourceGood, new Double(demand));
 		}
@@ -854,6 +856,10 @@ public class GoodsManager implements Serializable {
 		else {
 			// Determine demand amount.
 			demand = determineEquipmentDemand(equipmentGood.getClassType());
+			
+			// Add trade value.
+			value += determineTradeValue(equipmentGood, useCache);
+			
 			goodsDemandCache.put(equipmentGood, new Double(demand));
 		}
 		
@@ -1057,6 +1063,11 @@ public class GoodsManager implements Serializable {
 		
 			double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
 			if (tradeMissionValue > value) value = tradeMissionValue;
+			
+			// Add trade value.
+			value += determineTradeValue(vehicleGood, useCache);
+			// double tradeValue = determineTradeValue(vehicleGood, useCache);
+			// if (tradeValue > value) value = tradeValue;
 			
 			if (buy) vehicleBuyValueCache.put(vehicleType, value);
 			else vehicleSellValueCache.put(vehicleType, value);
