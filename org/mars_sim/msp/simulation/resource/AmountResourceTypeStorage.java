@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceTypeStorage.java
- * @version 2.81 2007-08-20
+ * @version 2.83 2008-02-04
  * @author Scott Davis 
  */
 
@@ -23,6 +23,7 @@ class AmountResourceTypeStorage implements Serializable {
 	private Map<AmountResource, ResourceAmount> amountResourceTypeCapacities = null; // Capacity for each type of amount resource.
     private Map<AmountResource, ResourceAmount> amountResourceTypeStored = null; // Stored resources by type.
     private transient double totalAmountCache = -1D; // Cache value for the total amount of resources stored.
+    private transient boolean totalAmountCacheSet = false;
     
     /**
      * Adds capacity for a resource type.
@@ -93,7 +94,7 @@ class AmountResourceTypeStorage implements Serializable {
      * @return stored amount (kg).
      */
     double getTotalAmountResourceTypesStored() {
-    	if (totalAmountCache < 0D) updateTotalAmountResourceTypesStored();
+    	if (!totalAmountCacheSet) updateTotalAmountResourceTypesStored();
     	return totalAmountCache;
     }
     
@@ -106,6 +107,7 @@ class AmountResourceTypeStorage implements Serializable {
     		Iterator<AmountResource> i = amountResourceTypeStored.keySet().iterator();
     		while (i.hasNext()) totalAmountCache += getAmountResourceTypeStored(i.next());
     	}
+    	totalAmountCacheSet = true;
     }
     
     /**

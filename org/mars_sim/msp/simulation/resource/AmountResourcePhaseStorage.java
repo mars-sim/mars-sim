@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourcePhaseStorage.java
- * @version 2.81 2007-08-27
+ * @version 2.83 2008-02-04
  * @author Scott Davis 
  */
 
@@ -21,6 +21,7 @@ class AmountResourcePhaseStorage implements Serializable {
 	private Map<Phase, Double> amountResourcePhaseCapacities = null; // Capacity for each phase of amount resource.
     private Map<Phase, StoredPhase> amountResourcePhaseStored = null; // Stored resources by phase.
     private transient double totalStoredCache = -1D; // The total amount phase resources stored. (kg)
+    private transient boolean totalStoredCacheSet = false;
     
     /**
      * Adds capacity for a resource phase.
@@ -81,7 +82,7 @@ class AmountResourcePhaseStorage implements Serializable {
      * @return amount stored (kg).
      */
     double getTotalAmountResourcePhasesStored() {
-    	if (totalStoredCache < 0D) updateTotalAmountResourcePhasesStored();
+    	if (!totalStoredCacheSet) updateTotalAmountResourcePhasesStored();
     	return totalStoredCache;
     }
     
@@ -94,6 +95,7 @@ class AmountResourcePhaseStorage implements Serializable {
     		Iterator<Phase> i = amountResourcePhaseStored.keySet().iterator();
     		while (i.hasNext()) totalStoredCache += getAmountResourcePhaseStored(i.next());
     	}
+    	totalStoredCacheSet = true;
     }
     
     /**

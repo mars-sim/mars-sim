@@ -46,6 +46,7 @@ public class Inventory implements Serializable {
     private transient Map<AmountResource, Double> amountResourceStoredCache = new HashMap<AmountResource, Double>(10);
 	private transient Set<AmountResource> allStoredAmountResourcesCache = null;
 	private transient double totalAmountResourcesStored = -1D;
+	private transient boolean totalAmountResourcesStoredSet = false;
 	private transient Map<AmountResource, Double> amountResourceRemainingCache = new HashMap<AmountResource, Double>(10);
     
     /** 
@@ -248,7 +249,7 @@ public class Inventory implements Serializable {
     private double getTotalAmountResourcesStored() throws InventoryException { 
     	try {
     		double result = 0D;
-    		if (totalAmountResourcesStored >= 0D) result = totalAmountResourcesStored;
+    		if (totalAmountResourcesStoredSet) result = totalAmountResourcesStored;
     		else {
     			if (resourceStorage != null) result += resourceStorage.getTotalAmountResourcesStored();
     			if (containedUnits != null) {
@@ -256,6 +257,7 @@ public class Inventory implements Serializable {
     				while (i.hasNext()) result += i.next().getInventory().getTotalAmountResourcesStored();
     			}
     			totalAmountResourcesStored = result;
+    			totalAmountResourcesStoredSet = true;
     		}
     		return result;
     	}
@@ -717,6 +719,29 @@ public class Inventory implements Serializable {
     	}
     	return result;
     }
+    
+    /**
+     * Finds the number of units of a class that are contained in 
+     * storage and have an empty inventory.
+     * @param unitClass the unit class.
+     * @return number of empty units.
+     * @throws InventoryException if error determining number of units.
+     */
+    public int findNumEmptyUnitsOfClass(Class unitClass) throws InventoryException {
+    	int result = 0;
+    	if (containsUnitClass(unitClass)) {
+    		UnitIterator i = containedUnits.iterator();
+    		while (i.hasNext()) {
+    			Unit unit = i.next();
+    			if (unitClass.isInstance(unit)) {
+    				Inventory inv = unit.getInventory();
+    				if ((inv != null) && inv.isEmpty()) result ++;
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
 
     /**
      * Checks if a unit can be stored.
@@ -841,6 +866,15 @@ public class Inventory implements Serializable {
     }
     
     /**
+     * Checks if inventory is empty.
+     * @return true if empty.
+     * @throws InventoryException if error checking inventory.
+     */
+    public boolean isEmpty() throws InventoryException {
+    	return (getTotalInventoryMass() == 0D);
+    }
+    
+    /**
      * Gets any limits in the owner's general capacity.
      * @return owner general capacity limit (kg).
      * @throws InventoryException if error getting capacity.
@@ -880,6 +914,7 @@ public class Inventory implements Serializable {
     		allStoredAmountResourcesCache = null;
     	}
     	totalAmountResourcesStored = -1D;
+    	totalAmountResourcesStoredSet = false;
     	
     	if (owner != null) {
     		Unit container = owner.getContainerUnit();

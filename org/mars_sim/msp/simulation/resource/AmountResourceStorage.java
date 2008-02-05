@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceStorage.java
- * @version 2.81 2007-08-20
+ * @version 2.83 2008-02-04
  * @author Scott Davis 
  */
 
@@ -31,6 +31,7 @@ public class AmountResourceStorage implements Serializable {
 	private transient double resourceStoredCache = 0D;
 	private transient Set<AmountResource> allStoredResourcesCache = null;
 	private transient double totalResourcesStored = -1D;
+	private transient boolean totalResourcesStoredSet = false;
 	
     /**
      * Adds capacity for a resource type.
@@ -176,11 +177,12 @@ public class AmountResourceStorage implements Serializable {
      * @return stored amount (kg).
      */
     public double getTotalAmountResourcesStored() {
-    	if (totalResourcesStored >= 0D) return totalResourcesStored;
+    	if (totalResourcesStoredSet) return totalResourcesStored;
     	else {
     		totalResourcesStored = 0D;
     		if (typeStorage != null) totalResourcesStored += typeStorage.getTotalAmountResourceTypesStored();
     		if (phaseStorage != null) totalResourcesStored += phaseStorage.getTotalAmountResourcePhasesStored();
+    		totalResourcesStoredSet = true;
     		return totalResourcesStored;
     	}
     }
@@ -291,6 +293,8 @@ public class AmountResourceStorage implements Serializable {
     		allStoredResourcesCache.clear();
 			allStoredResourcesCache = null;
     	}
+    	resourceCapacityKeyCache = null;
     	totalResourcesStored = -1D;
+    	totalResourcesStoredSet = false;
     }
 }
