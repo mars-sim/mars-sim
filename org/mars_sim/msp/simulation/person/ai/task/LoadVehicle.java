@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.81 2006-08-12
+ * @version 2.83 2008-02-03
  * @author Scott Davis
  */
 
@@ -271,6 +271,12 @@ public class LoadVehicle extends Task implements Serializable {
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
         
+        boolean roverInSettlement = false;
+        if (sInv.containsUnit(vehicle)) {
+        	roverInSettlement = true;
+        	sInv.retrieveUnit(vehicle);
+        }
+        
     	double amountNeededTotal = ((Double) resources.get(resource)).doubleValue();
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource);
 		if (amountAlreadyLoaded < amountNeededTotal) {
@@ -284,7 +290,9 @@ public class LoadVehicle extends Task implements Serializable {
 					sInv.retrieveAmountResource(resource, resourceAmount);
 					vInv.storeAmountResource(resource, resourceAmount, true);
 				}
-				catch (Exception e) {}
+				catch (Exception e) {
+					e.printStackTrace(System.err);
+				}
 				amountLoading -= resourceAmount;
 			}
 			else endTask();
@@ -298,6 +306,8 @@ public class LoadVehicle extends Task implements Serializable {
 			}
 			catch (Exception e) {}
 		}
+		
+		if (roverInSettlement) sInv.storeUnit(vehicle);
 		
 		//  Return remaining amount that can be loaded by person this time period.
 		return amountLoading;
@@ -314,6 +324,12 @@ public class LoadVehicle extends Task implements Serializable {
     	
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
+        
+        boolean roverInSettlement = false;
+        if (sInv.containsUnit(vehicle)) {
+        	roverInSettlement = true;
+        	sInv.retrieveUnit(vehicle);
+        }
         
         int numNeededTotal = ((Integer) resources.get(resource)).intValue();
 		ItemResource itemResource = (ItemResource) resource;
@@ -342,6 +358,8 @@ public class LoadVehicle extends Task implements Serializable {
 			catch (Exception e) {}
 		}
 		
+		if (roverInSettlement) sInv.storeUnit(vehicle);
+		
 		// Return remaining amount that can be loaded by person this time period.
 		return amountLoading;
     }
@@ -357,6 +375,12 @@ public class LoadVehicle extends Task implements Serializable {
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
         
+        boolean roverInSettlement = false;
+        if (sInv.containsUnit(vehicle)) {
+        	roverInSettlement = true;
+        	sInv.retrieveUnit(vehicle);
+        }
+        
         Iterator<Class> iE = equipment.keySet().iterator();
         while (iE.hasNext() && (amountLoading > 0D)) {
         	Class equipmentType = iE.next();
@@ -366,15 +390,24 @@ public class LoadVehicle extends Task implements Serializable {
         		int numNeeded = numNeededTotal - numAlreadyLoaded;
         		UnitCollection units = sInv.findAllUnitsOfClass(equipmentType);
         		if (units.size() >= numNeeded) {
-        			for (int x = 0; (x < numNeeded) && (amountLoading > 0D); x++) {
+        			int loaded = 0;
+        			for (int x = 0; (x < units.size()) && (loaded < numNeeded) && (amountLoading > 0D); x++) {
         				Equipment eq = (Equipment) units.get(x);
-        				if (vInv.canStoreUnit(eq)) {
-        					sInv.retrieveUnit(eq);
-            				vInv.storeUnit(eq);
-            				amountLoading -= eq.getMass();
-            				if (amountLoading < 0D) amountLoading = 0D;
-            			}
-            			else endTask();
+        				
+        				boolean isEmpty = true;
+        				Inventory eInv = eq.getInventory();
+        				if (eInv != null) isEmpty = eq.getInventory().isEmpty();
+        				
+        				if (isEmpty) {
+        					if (vInv.canStoreUnit(eq)) {
+        						sInv.retrieveUnit(eq);
+        						vInv.storeUnit(eq);
+        						amountLoading -= eq.getMass();
+        						if (amountLoading < 0D) amountLoading = 0D;
+        						loaded++;
+        					}
+        					else endTask();
+        				}
         			}
         		}
         		else endTask();
@@ -390,6 +423,8 @@ public class LoadVehicle extends Task implements Serializable {
     			}
     		}
         }
+        
+        if (roverInSettlement) sInv.storeUnit(vehicle);
         
 		// Return remaining amount that can be loaded by person this time period.
 		return amountLoading;
@@ -413,7 +448,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if enough supplies
      * @throws Exception if error checking supplies.
      */
-    public static boolean hasEnoughSupplies(Settlement settlement, Map <Resource, Number> resources, 
+    public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle, Map <Resource, Number> resources, 
     		Map<Class, Integer> equipment, int vehicleCrewNum, double tripTime) throws Exception {
     	
     	// Check input parameters.
@@ -421,6 +456,13 @@ public class LoadVehicle extends Task implements Serializable {
     	
         boolean enoughSupplies = true;
         Inventory inv = settlement.getInventory();
+        Inventory vInv = vehicle.getInventory();
+        
+        boolean roverInSettlement = false;
+        if (inv.containsUnit(vehicle)) {
+        	roverInSettlement = true;
+        	inv.retrieveUnit(vehicle);
+        }
         
         // Check if there are enough resources at the settlement.
         Iterator<Resource> iR = resources.keySet().iterator();
@@ -429,20 +471,22 @@ public class LoadVehicle extends Task implements Serializable {
         	if (resource instanceof AmountResource) {
         		double amountNeeded = ((Double) resources.get(resource)).doubleValue();
         		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, (AmountResource) resource, tripTime);
-        		double totalNeeded = amountNeeded + remainingSettlementAmount;
+        		double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource);
+        		double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
         		if (inv.getAmountResourceStored((AmountResource) resource) < totalNeeded) {
-        			// double stored = inv.getAmountResourceStored((AmountResource) resource);
-        			// System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			double stored = inv.getAmountResourceStored((AmountResource) resource);
+        			System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
         		}
         	}
         	else if (resource instanceof ItemResource) {
         		int numNeeded = ((Integer) resources.get(resource)).intValue();
         		int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, (ItemResource) resource);
-        		int totalNeeded = numNeeded + remainingSettlementNum;
+        		int numLoaded = vInv.getItemResourceNum((ItemResource) resource);
+        		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
         		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
-        			// int stored = inv.getItemResourceNum((ItemResource) resource);
-        			// System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			int stored = inv.getItemResourceNum((ItemResource) resource);
+        			System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
         		}
         	}
@@ -455,13 +499,16 @@ public class LoadVehicle extends Task implements Serializable {
         	Class equipmentType = iE.next();
         	int numNeeded = ((Integer) equipment.get(equipmentType)).intValue();
         	int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
-    		int totalNeeded = numNeeded + remainingSettlementNum;
-        	if (inv.findNumUnitsOfClass(equipmentType) < totalNeeded) {
-        		// int stored = inv.findNumUnitsOfClass(equipmentType);
-        		// System.out.println(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
+        	int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
+    		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
+        	if (inv.findNumEmptyUnitsOfClass(equipmentType) < totalNeeded) {
+        		int stored = inv.findNumEmptyUnitsOfClass(equipmentType);
+        		System.out.println(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
         		enoughSupplies = false;
         	}
         }
+        
+        if (roverInSettlement) inv.storeUnit(vehicle);
 
         return enoughSupplies;
     }

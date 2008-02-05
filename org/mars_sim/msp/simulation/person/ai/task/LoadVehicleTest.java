@@ -108,8 +108,10 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
 		
+		Vehicle vehicle = new MockVehicle(settlement);
+		
 		assertTrue("Enough supplies at settlement for trip.", 
-				LoadVehicle.hasEnoughSupplies(settlement, resourcesMap, equipmentMap, 0, 0D));
+				LoadVehicle.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 	
 	public void testHasEnoughSuppliesNoAmountResources() throws Exception {
@@ -133,8 +135,10 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
 		
+		Vehicle vehicle = new MockVehicle(settlement);
+		
 		assertFalse("Not enough amount resource supplies at settlement for trip.", 
-				LoadVehicle.hasEnoughSupplies(settlement, resourcesMap, equipmentMap, 0, 0D));
+				LoadVehicle.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 	
 	public void testHasEnoughSuppliesNoItemResources() throws Exception {
@@ -165,8 +169,10 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
 		
+		Vehicle vehicle = new MockVehicle(settlement);
+		
 		assertFalse("Not enough item resource supplies at settlement for trip.", 
-				LoadVehicle.hasEnoughSupplies(settlement, resourcesMap, equipmentMap, 0, 0D));
+				LoadVehicle.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 	
 	public void testHasEnoughSuppliesNoEquipment() throws Exception {
@@ -195,8 +201,10 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, new Integer(5));
 		
+		Vehicle vehicle = new MockVehicle(settlement);
+		
 		assertFalse("Not enough equipment supplies at settlement for trip.", 
-				LoadVehicle.hasEnoughSupplies(settlement, resourcesMap, equipmentMap, 0, 0D));
+				LoadVehicle.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 
 	/*
