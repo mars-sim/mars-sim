@@ -218,9 +218,9 @@ class StartingSettlementPanel extends WizardPanel {
             			else if (column == 8) {
             				String type = getWizard().getMissionData().getType();
             				if (type.equals(MissionDataBean.EXPLORATION_MISSION))
-            					result = new Integer(inv.findNumUnitsOfClass(SpecimenContainer.class));
+            					result = new Integer(inv.findNumEmptyUnitsOfClass(SpecimenContainer.class));
             				else if (type.equals(MissionDataBean.ICE_MISSION))
-            					result = new Integer(inv.findNumUnitsOfClass(Bag.class));
+            					result = new Integer(inv.findNumEmptyUnitsOfClass(Bag.class));
             			}
             		}
             		catch (InventoryException e) {}
@@ -277,10 +277,10 @@ class StartingSettlementPanel extends WizardPanel {
     			else if (column == 8) {
     				String type = getWizard().getMissionData().getType();
     				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
-    					if (inv.findNumUnitsOfClass(SpecimenContainer.class) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
+    					if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
     				}
     				else if (type.equals(MissionDataBean.ICE_MISSION)) {
-    					if (inv.findNumUnitsOfClass(Bag.class) < CollectIce.REQUIRED_BAGS) result = true;
+    					if (inv.findNumEmptyUnitsOfClass(Bag.class) < CollectIce.REQUIRED_BAGS) result = true;
     				}
     			}
     		}
