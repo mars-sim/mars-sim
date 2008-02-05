@@ -189,5 +189,14 @@
 			<part name="suit heating unit" number="5" />
 		</outputs>
 	</process>
+	
+	<process name="specimen box manufacturing" tech="2" skill="2" work-time="300" process-time="100">
+		<inputs>
+			<part name="steel ingot" number="1" />
+		</inputs>
+		<outputs>
+			<equipment name="specimen box" number="20" />
+		</outputs>
+	</process>
 
 </manufacturing-processes>
