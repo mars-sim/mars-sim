@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.81 2007-08-12
+ * @version 2.83 2008-02-03
  * @author Scott Davis
  */
 
@@ -182,6 +182,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	    		System.err.println("Error finding vehicles at settlement.");
 	    		e.printStackTrace(System.err);
 	    	}
+	    	
+			// Check for embarking missions.
+			if (VehicleMission.hasEmbarkingMissions(settlement)) missionPossible = false;
 	    	
 	    	// Determine mission probability.
 	        if (missionPossible) {

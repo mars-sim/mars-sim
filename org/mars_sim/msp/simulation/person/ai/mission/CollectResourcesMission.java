@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.81 2007-08-12
+ * @version 2.83 2008-02-03
  * @author Scott Davis
  */
 
@@ -17,8 +17,6 @@ import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
-import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.mars.Mars;
@@ -213,9 +211,18 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			boolean minNum = minAvailablePeopleAtSettlement(settlement, (minPeople + 1));
 			
 			// Check if there are enough specimen containers at the settlement for collecting rock samples.
-			boolean enoughContainers = (numCollectingContainersAvailable(settlement, containerType) >= containerNum);
+			boolean enoughContainers = false;
+			try {
+				enoughContainers = (numCollectingContainersAvailable(settlement, containerType) >= containerNum);
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+			
+			// Check for embarking missions.
+			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
 	    
-			if (reservableRover && minNum && enoughContainers) result = 5D;
+			if (reservableRover && minNum && enoughContainers && !embarkingMissions) result = 5D;
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
@@ -505,21 +512,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param containerType the type of container
 	 * @return number of empty containers.
 	 */
-	protected static int numCollectingContainersAvailable(Settlement settlement, Class containerType) {
-		Inventory inv = settlement.getInventory();
-		int availableContainersNum = 0;
-		UnitIterator i = inv.findAllUnitsOfClass(containerType).iterator();
-		while (i.hasNext()) {
-			Unit container = (Unit) i.next();
-			try {
-				if (container.getInventory().getTotalInventoryMass() == 0D) availableContainersNum ++;
-			}
-			catch (InventoryException e) {
-				e.printStackTrace(System.err);
-			}
-		}
-		
-		return availableContainersNum; 
+	protected static int numCollectingContainersAvailable(Settlement settlement, 
+			Class containerType) throws Exception {
+		return settlement.getInventory().findNumEmptyUnitsOfClass(containerType); 
 	}
 	
     /**

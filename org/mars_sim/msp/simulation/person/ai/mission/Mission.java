@@ -455,47 +455,52 @@ public abstract class Mission implements Serializable {
 	 */
 	protected void recruitPeopleForMission(Person startingPerson) {
 		
-		// Get all people qualified for the mission.
-		PersonCollection qualifiedPeople = new PersonCollection();
-		PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
-		while (i.hasNext()) {
-			Person person = i.next();
-			if (isCapableOfMission(person)) qualifiedPeople.add(person);
-		}
-		
-		// Recruit the most qualified and most liked people first.
-		try {
-			while (qualifiedPeople.size() > 0) {
-				double bestPersonValue = 0D;
-				Person bestPerson = null;
-				PersonIterator j = qualifiedPeople.iterator();
-				while (j.hasNext() && (getPeopleNumber() < getMissionCapacity())) {
-					Person person = j.next();
-					// Determine the person's mission qualification.
-					double qualification = getMissionQualification(person) * 100D;
-					
-					// Determine how much the recruiter likes the person.
-					RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-					double likability = relationshipManager.getOpinionOfPerson(startingPerson, person);
-					
-					// Check if person is the best recruit.
-					double personValue = (qualification + likability) / 2D;
-					if (personValue > bestPersonValue) {
-						bestPerson = person;
-						bestPersonValue = personValue;
-					}
-				}
-		
-				// Try to recruit best person available to the mission.
-				if (bestPerson != null) {
-					recruitPerson(startingPerson, bestPerson);
-					qualifiedPeople.remove(bestPerson);
-				}
-				else break;
+		int count = 0;
+		while ((count < 4) && (getPeopleNumber() < getMinPeople())) {
+			count++;
+			
+			// Get all people qualified for the mission.
+			PersonCollection qualifiedPeople = new PersonCollection();
+			PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
+			while (i.hasNext()) {
+				Person person = i.next();
+				if (isCapableOfMission(person)) qualifiedPeople.add(person);
 			}
-		}
-		catch (Exception e) {
-			e.printStackTrace(System.err);
+		
+			// Recruit the most qualified and most liked people first.
+			try {
+				while (qualifiedPeople.size() > 0) {
+					double bestPersonValue = 0D;
+					Person bestPerson = null;
+					PersonIterator j = qualifiedPeople.iterator();
+					while (j.hasNext() && (getPeopleNumber() < getMissionCapacity())) {
+						Person person = j.next();
+						// Determine the person's mission qualification.
+						double qualification = getMissionQualification(person) * 100D;
+					
+						// Determine how much the recruiter likes the person.
+						RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+						double likability = relationshipManager.getOpinionOfPerson(startingPerson, person);
+					
+						// Check if person is the best recruit.
+						double personValue = (qualification + likability) / 2D;
+						if (personValue > bestPersonValue) {
+							bestPerson = person;
+							bestPersonValue = personValue;
+						}
+					}
+		
+					// Try to recruit best person available to the mission.
+					if (bestPerson != null) {
+						recruitPerson(startingPerson, bestPerson);
+						qualifiedPeople.remove(bestPerson);
+					}
+					else break;
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
 		}
 		
 		if (getPeopleNumber() < getMinPeople()) endMission("Not enough members");

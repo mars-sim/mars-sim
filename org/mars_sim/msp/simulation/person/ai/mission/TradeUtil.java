@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 2.83 2008-01-09
+ * @version 2.83 2008-02-03
  * @author Scott Davis
  */
 
@@ -253,7 +253,6 @@ public final class TradeUtil {
     				if (tradeList.containsKey(good)) currentNum = tradeList.get(good).intValue();
     				double supply = manager.getAmountOfGoodForSettlement(good);
     	    		double goodMass = GoodsUtil.getGoodMassPerItem(good);
-    	    		
     	    		boolean isAmountResource = good.getCategory().equals(Good.AMOUNT_RESOURCE);
     	    		if (isAmountResource) goodMass*= getResourceTradeAmount((AmountResource) good.getObject());
     	    		double goodValue = manager.getGoodValuePerItem(good, (supply + (currentNum * goodMass)));
@@ -396,8 +395,15 @@ public final class TradeUtil {
     			}
     			
     			boolean inValueLimit = buyingValue < valueLimit;
+    			
+    			boolean enoughResourceForContainer = true;
+    			if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
+    				enoughResourceForContainer = 
+    					(sellingSupplyAmount >= getResourceTradeAmount((AmountResource) good.getObject()));
+    			}
     	    	
-    			if ((isRoverCapacity || isContainerAvailable) && !isMissionRover && inValueLimit) {
+    			if ((isRoverCapacity || isContainerAvailable) && !isMissionRover && inValueLimit && 
+    					enoughResourceForContainer) {
     				double tradeValue = buyingValue - sellingValue;
     				if (tradeValue > bestValue) {
     					result = good;
@@ -492,9 +498,10 @@ public final class TradeUtil {
      * @param settlement the settlement to check for containers.
      * @param tradedGoods the list of goods traded so far.
      * @return container for the resource or null if none.
+     * @throws Exception if error.
      */
     private static Equipment getAvailableContainerForResource(AmountResource resource, Settlement settlement, 
-    		Map<Good, Integer> tradedGoods) {
+    		Map<Good, Integer> tradedGoods) throws Exception {
     	
     	Equipment result = null;
     	
@@ -506,7 +513,7 @@ public final class TradeUtil {
     	
     	Inventory settlementInv = settlement.getInventory();
     	
-    	int containersStored = settlementInv.findNumUnitsOfClass(containerType);
+    	int containersStored = settlementInv.findNumEmptyUnitsOfClass(containerType);
     	
     	Good containerGood = GoodsUtil.getEquipmentGood(containerType);
     	int containersTraded = 0;

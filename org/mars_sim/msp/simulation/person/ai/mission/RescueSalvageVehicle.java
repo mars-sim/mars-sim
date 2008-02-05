@@ -214,6 +214,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		    	}
 	    	}
 	    	
+			// Check for embarking missions.
+			if (VehicleMission.hasEmbarkingMissions(settlement)) missionPossible = false;
+	    	
 	    	// Determine mission probability.
 	        if (missionPossible) {
 	        	if (rescue) missionProbability = BASE_RESCUE_MISSION_WEIGHT;

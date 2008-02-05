@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.82 2007-11-05
+ * @version 2.83 2008-02-03
  * @author Scott Davis
  */
 
@@ -304,11 +304,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	double tripTime = getEstimatedRemainingMissionTime(true);
     	
     	boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(resources, equipment, vehicle, settlement);
-    	boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, resources, equipment, 
+    	boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle, resources, equipment, 
     			getPeopleNumber(), tripTime);
     	
-    	// if (!vehicleCapacity) System.out.println("Vehicle doesn't have capacity.");
-    	// if (!settlementSupplies) System.out.println("Settlement doesn't have supplies.");
+    	if (!vehicleCapacity) System.out.println("Vehicle doesn't have capacity.");
+    	if (!settlementSupplies) System.out.println("Settlement doesn't have supplies.");
     	
     	return vehicleCapacity && settlementSupplies;
     }
@@ -773,6 +773,23 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 				}
 			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Checks to see if there are any currently embarking missions at the settlement.
+	 * @param settlement the settlement.
+	 * @return true if embarking missions.
+	 */
+	protected static boolean hasEmbarkingMissions(Settlement settlement) {
+		boolean result = false;
+		
+		MissionManager manager = Simulation.instance().getMissionManager();
+		Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			if (EMBARKING.equals(i.next().getPhase())) result = true;
 		}
 		
 		return result;
