@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
@@ -378,11 +379,16 @@ public abstract class Mission implements Serializable {
     		Object p[] = people.toArray();
     		for(int i = 0; i < p.length; i++) removePerson((Person) p[i]);
     		
-    		logger.info(getDescription() 
-    			     + " ending at " 
-    			     + getPhase() 
-    			     + " due to " 
-    			     + reason);
+    		
+    		if (logger.isLoggable(Level.FINEST)) {
+    		logger.finest(getDescription() 
+			     + " ending at " 
+			     + getPhase() 
+			     + " due to " 
+			     + reason);
+    		    
+    		}
+    		
     	}
     }
 
