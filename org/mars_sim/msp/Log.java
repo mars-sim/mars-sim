@@ -48,7 +48,7 @@ public final class Log implements Serializable
 	 *       
 	 * @throws IOException
 	 */
-	public void setLogToFile(File file) throws IOException
+	public static void setLogToFile(File file) throws IOException
 	{
 		final DateFormat df = DateFormat.getDateTimeInstance();
 		fileHandler = new FileHandler(file.getAbsolutePath());
@@ -77,11 +77,18 @@ public final class Log implements Serializable
 	 * 
 	 * @return handler to log
 	 */
-	public static void initialize()
+	public static void initialize(Level level)
 	{
-	        logger = Logger.getLogger("");
-	        logger.setLevel(Level.INFO);
-		logger.setUseParentHandlers(true);
+	       try {
+		    logger = Logger.getLogger("");
+		    logger.setLevel(level);
+		    logger.setUseParentHandlers(true);
+		    Log.setLogToFile(new File("logs/log.txt"));
+		} catch (SecurityException e) {
+		    e.printStackTrace();
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
 	}
 
 }
