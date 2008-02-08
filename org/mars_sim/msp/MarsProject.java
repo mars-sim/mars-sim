@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Simulation;
@@ -52,8 +53,8 @@ public class MarsProject {
         		Simulation.createNewSimulation();
         	}
         	catch (Exception e) {
-        		System.err.println("Problem creating new simulation " + e);
-        		System.exit(0);
+        	    logger.log(Level.SEVERE, "roblem creating new simulation",e);
+        	    System.exit(0);
         	}
         }
         else if (argList.contains("-load")) {
@@ -64,13 +65,13 @@ public class MarsProject {
         		File loadFile = new File((String) argList.get(index + 1));
         		if (loadFile.exists()) Simulation.instance().loadSimulation(loadFile);
         		else {
-        			System.err.println("Problem loading simulation.");
-                    System.err.println(argList.get(index + 1) + " not found.");
-                    System.exit(0);
+        		    logger.log(Level.SEVERE, "Problem loading simulation");
+        		    logger.log(Level.SEVERE, argList.get(index + 1) + " not found.");
+        		    System.exit(0);
         		}
         	}
         	catch (Exception e) {
-        		System.err.println("Problem loading existing simulation " + e);
+        	    	logger.log(Level.SEVERE, "Problem loading existing simulation", e);
         		System.exit(0);
         	}
         }
@@ -81,16 +82,16 @@ public class MarsProject {
             	Simulation.instance().loadSimulation(null);
             }
             catch (Exception e) {
-                System.err.println("Problem loading default simulation " + e);
-                
+        	logger.log(Level.SEVERE, "Problem loading default simulation", e);
+        	
                 try {
-                	// If error reading default saved file, create new simulation.
-                	System.err.println("Creating new simulation");
-					Simulation.createNewSimulation();
+                    // If error reading default saved file, create new simulation.
+                    logger.warning("Creating new simulation");
+		    Simulation.createNewSimulation();
                 }
 				catch (Exception e2) {
-					System.err.println("Problem creating new simulation " + e2);
-					System.exit(0);
+				   logger.log(Level.SEVERE, "Problem creating new simulation", e2);
+				   System.exit(0);
 				}
             }
         }
