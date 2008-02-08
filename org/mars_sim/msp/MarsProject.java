@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.ui.standard.MainWindow;
@@ -22,12 +23,19 @@ import org.mars_sim.msp.ui.standard.SplashWindow;
  * Mars and the user interface.
  */
 public class MarsProject {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.MarsProject";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+
 
     /** 
      * Constructor
      * @param args command line arguments. 
      */
     public MarsProject(String args[]) {
+	
+	logger.info("Starting Mars Simulation");
 	
         // Create a splash window
         SplashWindow splashWindow = new SplashWindow();
