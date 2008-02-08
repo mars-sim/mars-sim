@@ -12,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.ui.standard.MainWindow;
@@ -29,9 +28,6 @@ public class MarsProject {
      * @param args command line arguments. 
      */
     public MarsProject(String args[]) {
-	
-	//initialize logger, default is INFO level
-	 Log.initialize(Level.INFO);
 	
         // Create a splash window
         SplashWindow splashWindow = new SplashWindow();
@@ -109,7 +105,6 @@ public class MarsProject {
         try {
             FileOutputStream errFileStream = new FileOutputStream("err.log");
             System.setErr(new PrintStream(errFileStream));
-            Log.initialize(Level.ALL);
             System.err.println("Testing");
         } 
         catch (FileNotFoundException e) {
