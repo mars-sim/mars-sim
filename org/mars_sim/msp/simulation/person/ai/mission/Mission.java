@@ -92,6 +92,11 @@ public abstract class Mission implements Serializable {
 		// Created mission starting event.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(startingPerson, this, MissionHistoricalEvent.START);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		
+		// Log mission starting.
+		if (logger.isLoggable(Level.FINEST)) 
+			logger.info(getDescription()  + " started by " + startingPerson.getName() + 
+					" at " + startingPerson.getSettlement());
 
         // Add starting person to mission.
 		startingPerson.getMind().setMission(this);
