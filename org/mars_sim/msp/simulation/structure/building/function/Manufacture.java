@@ -128,8 +128,10 @@ public class Manufacture extends Function implements Serializable {
 		// Log manufacturing process starting.
 		if (logger.isLoggable(Level.FINEST)) {
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-			logger.info(getBuilding() + " at " + settlement + " starting manufacturing process: " + 
-					process.getInfo().getName());
+			logger.finest(getBuilding() + " at " 
+						    + settlement
+						    + " starting manufacturing process: " 
+						    + process.getInfo().getName());
 		}
 	}
 	
@@ -254,7 +256,7 @@ public class Manufacture extends Function implements Serializable {
 		// Log process ending.
 		if (logger.isLoggable(Level.FINEST)) { 
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-			logger.info(getBuilding() + " at " + settlement + " ending manufacturing process: " + 
+			logger.finest(getBuilding() + " at " + settlement + " ending manufacturing process: " + 
 					process.getInfo().getName());
 		}
     }
