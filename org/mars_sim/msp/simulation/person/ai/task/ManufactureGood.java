@@ -31,7 +31,7 @@ import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
  * A task for working on a manufacturing process.
  */
 public class ManufactureGood extends Task implements Serializable {
-
+	
 	// Task phase
 	private static final String MANUFACTURE = "Manufacture";
 	
@@ -384,7 +384,6 @@ public class ManufactureGood extends Task implements Serializable {
 			if (highestValueProcess != null) {
 				result = new ManufactureProcess(highestValueProcess);
 				workshop.addProcess(result);
-				System.out.println("Starting " + highestValueProcess.getName() + " process at " + person.getSettlement().getName() + ".");
 			}
 		}
 		

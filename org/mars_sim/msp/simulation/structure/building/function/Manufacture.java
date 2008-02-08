@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
@@ -36,6 +38,9 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
  */
 public class Manufacture extends Function implements Serializable {
 
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.structure.building.function.Manufacture";
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	public static final String NAME = "Manufacture";
 	
 	// Data members.
@@ -119,6 +124,13 @@ public class Manufacture extends Function implements Serializable {
 		catch (Exception e) {
 			throw new BuildingException("Problem adding manufacturing process.", e);
 		}
+		
+		// Log manufacturing process starting.
+		if (logger.isLoggable(Level.FINEST)) {
+			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+			logger.info(getBuilding() + " at " + settlement + " starting manufacturing process: " + 
+					process.getInfo().getName());
+		}
 	}
 	
 	@Override
@@ -185,7 +197,6 @@ public class Manufacture extends Function implements Serializable {
 		// Produce outputs.
 		try {
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-			System.out.println("Ending " + process.getInfo().getName() + " process at " + settlement.getName() + ".");
 			UnitManager manager = Simulation.instance().getUnitManager();
 			Inventory inv = getBuilding().getInventory();
 			
@@ -239,5 +250,12 @@ public class Manufacture extends Function implements Serializable {
 		}
 		
 		processes.remove(process);
+		
+		// Log process ending.
+		if (logger.isLoggable(Level.FINEST)) { 
+			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+			logger.info(getBuilding() + " at " + settlement + " ending manufacturing process: " + 
+					process.getInfo().getName());
+		}
     }
 }
