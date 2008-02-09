@@ -83,6 +83,11 @@ public class AudioPlayer implements LineListener {
 		
 	}
 	
+	/**
+	 * Play and cache sound of type wav. 
+	 * @param filepath the file path to the sound
+	 * @param loop Should the sound clip be looped?
+	 */
 	public void startPlayWavSound(String filepath, boolean loop) {
 	    try {
 	        Clip clip = null;
@@ -116,6 +121,12 @@ public class AudioPlayer implements LineListener {
 	    
 	}
 	
+	/**
+	 * Play compressed sound (mp3 or ogg files)
+	 * The sounds are not cached in this case.
+	 * @param filepath filepath the file path to the sound
+	 * @param loop Should the sound clip be looped?
+	 */
 	public void startPlayCompressedSound(String filepath, boolean loop) {
 	 
 		AudioInputStream din = null;
@@ -293,8 +304,10 @@ public class AudioPlayer implements LineListener {
 		}
 	}
 
-	/* 
-	 * 
+	/**
+	 * LineListener interface. This method is called when
+	 * an event occurs during the sound playing:
+	 * end of sound...
 	 */
 	public void update(LineEvent event) {
 	   if (event.getType() == LineEvent.Type.STOP){
