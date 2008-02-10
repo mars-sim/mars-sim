@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
@@ -36,6 +38,10 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class LoadVehicle extends Task implements Serializable {
 
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.task.LoadVehicle";
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	
 	// Task phase
 	private static final String LOADING = "Loading";
 	
@@ -475,7 +481,8 @@ public class LoadVehicle extends Task implements Serializable {
         		double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
         		if (inv.getAmountResourceStored((AmountResource) resource) < totalNeeded) {
         			double stored = inv.getAmountResourceStored((AmountResource) resource);
-        			System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			if (logger.isLoggable(Level.FINEST)) 
+        				logger.finest(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
         		}
         	}
@@ -486,7 +493,8 @@ public class LoadVehicle extends Task implements Serializable {
         		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
         		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
         			int stored = inv.getItemResourceNum((ItemResource) resource);
-        			System.out.println(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			if (logger.isLoggable(Level.FINEST)) 
+        				logger.finest(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
         		}
         	}
@@ -503,7 +511,8 @@ public class LoadVehicle extends Task implements Serializable {
     		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
         	if (inv.findNumEmptyUnitsOfClass(equipmentType) < totalNeeded) {
         		int stored = inv.findNumEmptyUnitsOfClass(equipmentType);
-        		System.out.println(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
+    			if (logger.isLoggable(Level.FINEST)) 
+    				logger.finest(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
         		enoughSupplies = false;
         	}
         }
