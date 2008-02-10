@@ -145,7 +145,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         Building building = (Building) buildingComboBox.getSelectedItem();
         BuildingPanel panel = getBuildingPanel(building);
         if (panel != null) buildingLayout.show(buildingDisplayPanel, panel.getPanelName());
-        else System.err.println("Couldn't fine panel for " + building);
+        else System.err.println("Couldn't find panel for " + building);
     }
     
     /**

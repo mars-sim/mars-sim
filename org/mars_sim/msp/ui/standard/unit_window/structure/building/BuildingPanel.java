@@ -23,6 +23,7 @@ import org.mars_sim.msp.simulation.structure.building.function.Cooking;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
+import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
@@ -73,6 +74,17 @@ public class BuildingPanel extends JPanel {
             	BuildingFunctionPanel inhabitablePanel = new InhabitableBuildingPanel(lifeSupport, desktop);
             	functionPanels.add(inhabitablePanel);
             	functionListPanel.add(inhabitablePanel);
+        	}
+        	catch (BuildingException e) {}
+        }
+        
+        // Prepare manufacture panel if building has manufacturing.
+        if (building.hasFunction(Manufacture.NAME)) {
+        	try {
+        		Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
+        		BuildingFunctionPanel manufacturePanel = new ManufactureBuildingPanel(workshop, desktop);
+        		functionPanels.add(manufacturePanel);
+        		functionListPanel.add(manufacturePanel);
         	}
         	catch (BuildingException e) {}
         }

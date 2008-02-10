@@ -72,9 +72,7 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
         }
     }
     
-    /**
-     * Update this panel
-     */
+    @Override
     public void update() {
         
         Collection<Malfunction> malfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();
