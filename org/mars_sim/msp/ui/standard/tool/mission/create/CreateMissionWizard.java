@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 2.81 2007-09-01
+ * @version 2.83 2008-02-10
  * @author Scott Davis
  */
 
@@ -153,6 +153,8 @@ public class CreateMissionWizard extends JDialog {
 		else if (missionBean.getType().equals(MissionDataBean.RESCUE_MISSION)) 
 			addWizardPanel(new RendezvousVehiclePanel(this));
 		else if (missionBean.getType().equals(MissionDataBean.ICE_MISSION))
+			addWizardPanel(new ProspectingSitePanel(this));
+		else if (missionBean.getType().equals(MissionDataBean.REGOLITH_MISSION))
 			addWizardPanel(new ProspectingSitePanel(this));
 		else if (missionBean.getType().equals(MissionDataBean.EXPLORATION_MISSION))
 			addWizardPanel(new ExplorationSitesPanel(this));

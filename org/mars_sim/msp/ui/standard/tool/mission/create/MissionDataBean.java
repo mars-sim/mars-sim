@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.81 2007-09-01
+ * @version 2.83 2008-02-10
  * @author Scott Davis
  */
 
@@ -15,6 +15,7 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
+import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
@@ -35,6 +36,7 @@ class MissionDataBean {
 	final static String TRAVEL_MISSION = "Travel to Settlement";
 	final static String EXPLORATION_MISSION = "Exploration";
 	final static String ICE_MISSION = "Ice Prospecting";
+	final static String REGOLITH_MISSION = "Regolith Prospecting";
 	final static String RESCUE_MISSION = "Rescue/Salvage Vehicle";
 	final static String TRADE_MISSION = "Trade";
 
@@ -47,6 +49,7 @@ class MissionDataBean {
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
 	private Coordinates iceCollectionSite;
+	private Coordinates regolithCollectionSite;
 	private Coordinates[] explorationSites;
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
@@ -65,6 +68,11 @@ class MissionDataBean {
 				List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 				collectionSites.add(iceCollectionSite);
 				mission = new CollectIce(members, startingSettlement, collectionSites, rover, description);
+			}
+			else if (REGOLITH_MISSION.equals(type)) {
+				List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
+				collectionSites.add(regolithCollectionSite);
+				mission = new CollectRegolith(members, startingSettlement, collectionSites, rover, description);
 			}
 			else if (EXPLORATION_MISSION.equals(type)) {
 				List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
@@ -88,7 +96,8 @@ class MissionDataBean {
 	 * @return array of mission type strings.
 	 */
 	static final String[] getMissionTypes() {
-		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, RESCUE_MISSION, TRADE_MISSION };
+		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION, 
+				RESCUE_MISSION, TRADE_MISSION };
 		return result;
 	}
 	
@@ -102,6 +111,7 @@ class MissionDataBean {
 		if (missionType.equals(TRAVEL_MISSION)) result = TravelToSettlement.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(EXPLORATION_MISSION)) result = Exploration.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(ICE_MISSION)) result = CollectIce.DEFAULT_DESCRIPTION;
+		else if (missionType.equals(REGOLITH_MISSION)) result = CollectRegolith.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(RESCUE_MISSION)) result = RescueSalvageVehicle.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(TRADE_MISSION)) result = Trade.DEFAULT_DESCRIPTION;
 		return result;
@@ -233,6 +243,22 @@ class MissionDataBean {
 	 */
 	void setIceCollectionSite(Coordinates iceCollectionSite) {
 		this.iceCollectionSite = iceCollectionSite;
+	}
+	
+	/**
+	 * Gets the regolith collection site.
+	 * @return regolith collection site.
+	 */
+	Coordinates getRegolithCollectionSite() {
+		return regolithCollectionSite;
+	}
+	
+	/**
+	 * Sets the regolith collection site.
+	 * @param regolithCollectionSite the regolith collection site.
+	 */
+	void setRegolithCollectionSite(Coordinates regolithCollectionSite) {
+		this.regolithCollectionSite = regolithCollectionSite;
 	}
 
 	/**

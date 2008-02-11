@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProspectingSitePanel.java
- * @version 2.80 2007-03-22
+ * @version 2.83 2008-02-10
  * @author Scott Davis
  */
 
@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
 
 /**
- * A wizard panel for the ice prospecting site.
+ * A wizard panel for the ice or regolith prospecting site.
  */
 class ProspectingSitePanel extends WizardPanel {
 
@@ -64,7 +64,11 @@ class ProspectingSitePanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the title label.
-		JLabel titleLabel = new JLabel("Choose ice collection site.");
+		String resource = "";
+		String type = getWizard().getMissionData().getType();
+		if (type.equals(MissionDataBean.ICE_MISSION)) resource = "ice";
+		else if (type.equals(MissionDataBean.REGOLITH_MISSION)) resource = "regolith";
+		JLabel titleLabel = new JLabel("Choose " + resource + " collection site.");
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(titleLabel);
@@ -91,7 +95,8 @@ class ProspectingSitePanel extends WizardPanel {
 		add(Box.createVerticalStrut(10));
 		
 		// Create the instruction label.
-		JLabel instructionLabel = new JLabel("Drag navpoint flag to desired ice collection site.");
+		JLabel instructionLabel = new JLabel("Drag navpoint flag to desired " + resource + 
+				" collection site.");
 		instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.BOLD));
 		instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(instructionLabel);
@@ -116,7 +121,11 @@ class ProspectingSitePanel extends WizardPanel {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
 				navpointPixel.getiY() - 150);
-		getWizard().getMissionData().setIceCollectionSite(navpoint);
+		String type = getWizard().getMissionData().getType();
+		if (type.equals(MissionDataBean.ICE_MISSION)) 
+			getWizard().getMissionData().setIceCollectionSite(navpoint);
+		else if (type.equals(MissionDataBean.REGOLITH_MISSION)) 
+			getWizard().getMissionData().setRegolithCollectionSite(navpoint);
 		return true;
 	}
 

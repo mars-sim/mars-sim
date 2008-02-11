@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 2.80 2007-03-23
+ * @version 2.83 2008-02-10
  * @author Scott Davis
  */
 
@@ -219,7 +219,8 @@ class StartingSettlementPanel extends WizardPanel {
             				String type = getWizard().getMissionData().getType();
             				if (type.equals(MissionDataBean.EXPLORATION_MISSION))
             					result = new Integer(inv.findNumEmptyUnitsOfClass(SpecimenContainer.class));
-            				else if (type.equals(MissionDataBean.ICE_MISSION))
+            				else if (type.equals(MissionDataBean.ICE_MISSION) || 
+            						type.equals(MissionDataBean.REGOLITH_MISSION))
             					result = new Integer(inv.findNumEmptyUnitsOfClass(Bag.class));
             			}
             		}
@@ -237,7 +238,8 @@ class StartingSettlementPanel extends WizardPanel {
     		if (columns.size() == 9) columns.remove(8);
     		String type = getWizard().getMissionData().getType();
     		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) columns.add("Specimen Containers");
-    		else if (type.equals(MissionDataBean.ICE_MISSION)) columns.add("Bags");
+    		else if (type.equals(MissionDataBean.ICE_MISSION) || 
+    				type.equals(MissionDataBean.REGOLITH_MISSION)) columns.add("Bags");
     		fireTableStructureChanged();
     	}
     	
@@ -279,7 +281,8 @@ class StartingSettlementPanel extends WizardPanel {
     				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
     					if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
     				}
-    				else if (type.equals(MissionDataBean.ICE_MISSION)) {
+    				else if (type.equals(MissionDataBean.ICE_MISSION) || 
+    						type.equals(MissionDataBean.REGOLITH_MISSION)) {
     					if (inv.findNumEmptyUnitsOfClass(Bag.class) < CollectIce.REQUIRED_BAGS) result = true;
     				}
     			}
