@@ -30,6 +30,7 @@
 			<entity name="rover" probability="30" max-number="4" />
 			<entity name="farming" probability="60" max-number="6" />
 			<entity name="living accomodations" probability="30" max-number="4" />
+			<entity name="manufacture" probability="60" max-number="6" />
 			<entity name="eva suit" probability="5" max-number="1" />
 			<entity name="settlement" probability="15" max-number="2" />
 		</maintenance-entity-list>
@@ -40,6 +41,7 @@
 			<entity name="rover" probability="20" max-number="2" />
 			<entity name="farming" probability="30" max-number="3" />
 			<entity name="living accomodations" probability="15" max-number="2" />
+			<entity name="manufacture" probability="30" max-number="3" />
 			<entity name="eva suit" probability="5" max-number="1" />
 			<entity name="settlement" probability="10" max-number="1" />
 		</maintenance-entity-list>
@@ -50,6 +52,7 @@
 			<entity name="rover" probability="50" max-number="6" />
 			<entity name="farming" probability="80" max-number="12" />
 			<entity name="living accomodations" probability="40" max-number="4" />
+			<entity name="manufacture" probability="80" max-number="6" />
 			<entity name="eva suit" probability="20" max-number="1" />
 			<entity name="settlement" probability="20" max-number="4" />
 		</maintenance-entity-list>
@@ -77,6 +80,7 @@
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="30" max-number="6" />
 			<entity name="power generation" probability="20" max-number="4" />
+			<entity name="manufacture" probability="20" max-number="4" />
 			<entity name="settlement" probability="10" max-number="8" />
 		</maintenance-entity-list>
 	</part>
@@ -92,6 +96,7 @@
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="30" max-number="6" />
 			<entity name="power generation" probability="20" max-number="4" />
+			<entity name="manufacture" probability="20" max-number="4" />
 			<entity name="settlement" probability="10" max-number="8" />
 		</maintenance-entity-list>
 	</part>
@@ -100,6 +105,7 @@
 		<maintenance-entity-list>
 			<entity name="rover" probability="10" max-number="4" />
 			<entity name="farming" probability="30" max-number="10" />
+			<entity name="manufacture" probability="60" max-number="10" />
 			<entity name="settlement" probability="10" max-number="4" />
 		</maintenance-entity-list>
 	</part>
@@ -107,6 +113,7 @@
 	<part name="lubricant bottle" mass=".1">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="10" max-number="4" />
+			<entity name="manufacture" probability="10" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 	
@@ -153,6 +160,7 @@
 		<maintenance-entity-list>
 			<entity name="living accomodations" probability="10" max-number="2" />
 			<entity name="farming" probability="20" max-number="4" />
+			<entity name="manufacture" probability="20" max-number="2" />
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="settlement" probability="10" max-number="4" />
 		</maintenance-entity-list>
@@ -161,6 +169,7 @@
 	<part name="steel pipe" mass="10.0">
 		<maintenance-entity-list>
 			<entity name="farming" probability="10" max-number="2" />
+			<entity name="manufacture" probability="10" max-number="2" />
 			<entity name="rover" probability="10" max-number="1" />
 			<entity name="settlement" probability="10" max-number="2" />
 		</maintenance-entity-list>
@@ -170,6 +179,7 @@
 		<maintenance-entity-list>
 			<entity name="living accomodations" probability="10" max-number="1" />
 			<entity name="farming" probability="20" max-number="2" />
+			<entity name="manufacture" probability="10" max-number="2" />
 			<entity name="settlement" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>

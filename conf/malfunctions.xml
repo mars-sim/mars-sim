@@ -73,7 +73,7 @@
 		<entity-list>
 			<entity name="life support" />
 			<entity name="rover" />
-			<entity name="eva suit" />			
+			<entity name="eva suit" />	
 		</entity-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />
@@ -257,6 +257,7 @@
 			<entity name="rover" />
 			<entity name="living accomodations" />
 			<entity name="farming" />
+			<entity name="manufacture" />
 			<entity name="eva suit" />
 		</entity-list>
 		<effects-list>
@@ -298,6 +299,7 @@
 		<entity-list>
 			<entity name="living accommodations" />
 			<entity name="farming" />
+			<entity name="manufacture" />
 			<entity name="rover" />
 		</entity-list>
 		<effects-list>
@@ -335,6 +337,7 @@
 		<repair-time value="500.0" />
 		<entity-list>
 			<entity name="farming" />
+			<entity name="manufacture" />
 			<entity name="research" />
 		</entity-list>
 		<effects-list>
