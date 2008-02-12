@@ -8,6 +8,8 @@
 package org.mars_sim.msp.simulation.equipment;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
@@ -19,6 +21,10 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
  * for a person during a EVA operation.
  */
 public class EVASuit extends Equipment implements LifeSupport, Serializable, Malfunctionable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.equipment.EVASuit";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Static members
 	public static final String TYPE = "EVA Suit";
@@ -75,27 +81,27 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         boolean result = true;
 
         if (getInventory().getAmountResourceStored(AmountResource.OXYGEN) <= 0D) {
-            // System.out.println("bad oxygen");
+            logger.info("bad oxygen");
             result = false;
         }
         if (getInventory().getAmountResourceStored(AmountResource.WATER) <= 0D) {
-            // System.out.println("bad water");	
+            logger.info("bad water");
             result = false;
         }
         if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-            // System.out.println("bad oxygen flow");		
+            logger.info("bad oxygen flow");	
             result = false;
         }
         if (malfunctionManager.getWaterFlowModifier() < 100D) {
-            // System.out.println("bad water flow");
+            logger.info("bad water flow");
             result = false;
         }
         if (getAirPressure() != NORMAL_AIR_PRESSURE) {
-            // System.out.println("bad air pressure - " + getAirPressure());	
+            logger.info("bad air pressure - " + getAirPressure());	
             result = false;
 	    }
         if (getTemperature() != NORMAL_TEMP) {
-           // System.out.println("bad temperature - " + getTemperature());	
+            logger.info("bad temperature - " + getTemperature());	
             result = false;
         }
 

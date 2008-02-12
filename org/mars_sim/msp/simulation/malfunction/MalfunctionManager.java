@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.malfunction;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
@@ -23,9 +24,13 @@ import org.mars_sim.msp.simulation.time.MarsClock;
  * The MalfunctionManager class manages the current malfunctions in a unit.
  */
 public class MalfunctionManager implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.MalfunctionManager";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
-	// Unit update events.
-	public static final String MALFUNCTION_EVENT = "malfunction";
+  // Unit update events.
+   public static final String MALFUNCTION_EVENT = "malfunction";
 	
 	// The default time (millisols) to perform maintenance work.
     private static double DEFAULT_MAINTENANCE_WORK_TIME = 1000D;
@@ -341,7 +346,7 @@ public class MalfunctionManager implements Serializable {
         double chance = time * .0000001D * effectiveTimeSinceLastMaintenance;
 
         if (RandomUtil.lessThanRandPercent(chance)) {
-            // System.out.println(entity.getName() + " has maintenance-triggered malfunction: " + effectiveTimeSinceLastMaintenance);
+            logger.info(entity.getName() + " has maintenance-triggered malfunction: " + effectiveTimeSinceLastMaintenance);
             addMalfunction();
         }
     }
@@ -475,7 +480,7 @@ public class MalfunctionManager implements Serializable {
      */
     public void accident() {
 
-        // System.out.println(entity.getName() + " accident()");
+        logger.info(entity.getName() + " accident()");
 
         // Multiple malfunctions may have occured.
         // 50% one malfunction, 25% two etc.

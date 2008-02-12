@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.malfunction;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.SimulationConfig;
@@ -21,6 +22,10 @@ import org.mars_sim.msp.simulation.resource.Part;
  * malfunction in a vehicle, structure or equipment.
  */
 public class Malfunction implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.Malfunction";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private String name; 
@@ -162,7 +167,7 @@ public class Malfunction implements Serializable {
         if (emergencyWorkTimeCompleted >= emergencyWorkTime) {
             double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
             emergencyWorkTimeCompleted = emergencyWorkTime;
-            // System.out.println(name + "@" + Integer.toHexString(hashCode()) + " emergency fixed.");
+            logger.info(name + "@" + Integer.toHexString(hashCode()) + " emergency fixed.");
             return remaining;
         }
         return 0D;
@@ -255,7 +260,8 @@ public class Malfunction implements Serializable {
         Malfunction clone = new Malfunction(name, severity, probability, emergencyWorkTime,
             workTime, EVAWorkTime, scope, resourceEffects, lifeSupportEffects, medicalComplaints);
 
-        // if (emergencyWorkTime > 0D) System.out.println(name + "@" + Integer.toHexString(clone.hashCode()) + " emergency starts");
+        if (emergencyWorkTime > 0D) 
+            logger.info(name + "@" + Integer.toHexString(clone.hashCode()) + " emergency starts");
 	
         return clone;
     }
@@ -273,7 +279,7 @@ public class Malfunction implements Serializable {
     			int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
     			Part part = (Part) ItemResource.findItemResource(partName);
     			repairParts.put(part, number);
-    			// System.out.println("New Malfunction: " + getName() + " - required part: " + part.getName() + " - number: " + number);
+    			logger.info("New Malfunction: " + getName() + " - required part: " + part.getName() + " - number: " + number);
     		}
     	}
     }
