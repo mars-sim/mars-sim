@@ -6,20 +6,33 @@
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
-import java.util.*;
 import java.io.Serializable;
-import org.mars_sim.msp.simulation.person.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
-import org.mars_sim.msp.simulation.person.ai.mission.*;
-import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.simulation.person.ai.task.MedicalAssistance;
+import org.mars_sim.msp.simulation.person.ai.task.ResearchMedicine;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
+import org.mars_sim.msp.simulation.structure.building.function.Research;
 
 /** 
  * The Doctor class represents a job for an medical treatment expert.
  */
 public class Doctor extends Job implements Serializable {
+    
+    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Doctor";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	/**
 	 * Constructor
@@ -83,7 +96,7 @@ public class Doctor extends Job implements Serializable {
 					result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
 			}
 			catch (BuildingException e) {
-				System.err.println("Doctor.getSettlementNeed(): " + e.getMessage());
+			    logger.log(Level.SEVERE,"Doctor.getSettlementNeed()", e);
 			}
 		}		
 		
@@ -97,7 +110,7 @@ public class Doctor extends Job implements Serializable {
 				result+= (double) infirmary.getTechLevel() / 2D;
 			}
 			catch (BuildingException e) {
-				System.err.println("Doctor.getSettlementNeed(): " + e.getMessage());
+			    logger.log(Level.SEVERE,"Doctor.getSettlementNeed()", e);
 			}
 		}			
 		

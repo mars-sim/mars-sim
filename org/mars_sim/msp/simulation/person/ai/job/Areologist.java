@@ -7,24 +7,47 @@
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
-import org.mars_sim.msp.simulation.person.ai.task.*;
-import org.mars_sim.msp.simulation.person.ai.mission.*;
+import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
+import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
+import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.simulation.person.ai.mission.RoverMission;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.simulation.person.ai.task.CollectResources;
+import org.mars_sim.msp.simulation.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.simulation.person.ai.task.ExitAirlock;
+import org.mars_sim.msp.simulation.person.ai.task.StudyRockSamples;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The Areologist class represents a job for an areologist, one who studies the rocks and landforms of Mars.
  */
 public class Areologist extends Job implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Areologist";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	/**
 	 * Constructor
@@ -93,7 +116,7 @@ public class Areologist extends Job implements Serializable {
 					result += (lab.getLaboratorySize() * lab.getTechnologyLevel());
 			}
 			catch (BuildingException e) {
-				System.err.println("Areologist.getSettlementNeed(): " + e.getMessage());
+			    logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
 			}
 		}
 		

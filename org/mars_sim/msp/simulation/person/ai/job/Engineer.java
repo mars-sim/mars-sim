@@ -9,11 +9,16 @@ package org.mars_sim.msp.simulation.person.ai.job;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
-import org.mars_sim.msp.simulation.person.ai.mission.*;
-import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.simulation.person.ai.task.ManufactureGood;
+import org.mars_sim.msp.simulation.person.ai.task.ResearchMaterialsScience;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -23,6 +28,10 @@ import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
  * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and vehicles.
  */
 public class Engineer extends Job implements Serializable {
+    
+    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Engineer";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	/**
 	 * Constructor
@@ -83,7 +92,7 @@ public class Engineer extends Job implements Serializable {
 				result += workshop.getTechLevel() * workshop.getConcurrentProcesses();
 			}
 			catch (BuildingException e) {
-				System.err.println("Engineer.getSettlementNeed(): " + e.getMessage());
+			    logger.log(Level.SEVERE,"Engineer.getSettlementNeed()",e);
 			}
 		}
 		

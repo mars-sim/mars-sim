@@ -7,19 +7,30 @@
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.person.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
-import org.mars_sim.msp.simulation.person.ai.mission.*;
-import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.simulation.person.ai.task.CookMeal;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.function.Cooking;
 
 /** 
  * The Chef class represents a job for a chef.
  */
 public class Chef extends Job implements Serializable {
+    
+	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Chef";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	public Chef() {
 		// Use Job constructor
@@ -73,7 +84,7 @@ public class Chef extends Job implements Serializable {
 				result += (double) kitchen.getCookCapacity();
 			}
 			catch (BuildingException e) {
-				System.err.println("Chef.getSettlementNeed(): " + e.getMessage());
+			   logger.log(Level.SEVERE, "Chef.getSettlementNeed()", e);
 			}
 		}
 		

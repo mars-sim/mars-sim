@@ -7,15 +7,24 @@
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
-import java.util.*;
-import org.mars_sim.msp.simulation.person.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
-import org.mars_sim.msp.simulation.person.ai.mission.*;
-import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.simulation.person.ai.task.ResearchBotany;
+import org.mars_sim.msp.simulation.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import org.mars_sim.msp.simulation.structure.building.function.Research;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 
@@ -23,6 +32,10 @@ import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
  * The Botanist class represents a job for a botanist.
  */
 public class Botanist extends Job implements Serializable {
+    
+    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Botanist";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	/**
 	 * Constructor
@@ -83,7 +96,7 @@ public class Botanist extends Job implements Serializable {
 					result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
 			}
 			catch (BuildingException e) {
-				System.err.println("Botanist.getSettlementNeed(): " + e.getMessage());
+			    logger.log(Level.SEVERE,"Botanist.getSettlementNeed()", e);
 			}
 		}
 		
@@ -97,7 +110,7 @@ public class Botanist extends Job implements Serializable {
 				result += (farm.getGrowingArea() / 100D);
 			}
 			catch (BuildingException e) {
-				System.err.println("Botanist.getSetltementNeed(): " + e.getMessage());
+			    logger.log(Level.SEVERE,"Botanist.getSettlementNeed()", e);
 			}
 		}
 		

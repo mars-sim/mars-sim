@@ -7,9 +7,14 @@
 
 package org.mars_sim.msp.simulation.mars;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Color;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
@@ -20,6 +25,9 @@ import org.mars_sim.msp.simulation.Direction;
  */
 public class TerrainElevation {
 
+    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.mars.TerrainElevation";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	private static final String INDEX_FILE = "TopoMarsMap.index";
 	private static final String MAP_FILE = "TopoMarsMap.dat";
 	private static final int MAP_HEIGHT = 1440; // Source map height in pixels.
@@ -44,8 +52,7 @@ public class TerrainElevation {
     			topoColors = loadMapData(MAP_FILE, index);
     		}
     		catch (IOException e) {
-    			System.err.println("Could not find map data files.");
-    			System.err.println(e.toString());
+    		    logger.log(Level.SEVERE,"Could not find map data files.", e) ;
     		}
     	}
     }
