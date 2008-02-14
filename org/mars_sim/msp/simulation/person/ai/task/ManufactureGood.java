@@ -224,7 +224,7 @@ public class ManufactureGood extends Task implements Serializable {
     		}
     	}
     	catch (Exception e) {
-    		throw new BuildingException("ManufactureGoods.getHighestManufacturingProcessValue()", e);
+    		throw new BuildingException("ManufactureGood.getHighestManufacturingProcessValue()", e);
     	}
     	
 		return highestProcessValue;
