@@ -75,24 +75,23 @@ public class MarsProject {
         		System.exit(0);
         	}
         }
-
-        // Load a the default simulation
-        if (argList.size() == 0) {
+        else {
             try {
+            	// Load a the default simulation
             	Simulation.instance().loadSimulation(null);
             }
             catch (Exception e) {
-        	logger.log(Level.SEVERE, "Problem loading default simulation", e);
+            	logger.log(Level.SEVERE, "Problem loading default simulation", e);
         	
-                try {
-                    // If error reading default saved file, create new simulation.
-                    logger.warning("Creating new simulation");
-		    Simulation.createNewSimulation();
-                }
-				catch (Exception e2) {
-				   logger.log(Level.SEVERE, "Problem creating new simulation", e2);
-				   System.exit(0);
-				}
+            	try {
+            		// If error reading default saved file, create new simulation.
+                	logger.warning("Creating new simulation");
+                	Simulation.createNewSimulation();
+            	}
+            	catch (Exception e2) {
+            		logger.log(Level.SEVERE, "Problem creating new simulation", e2);
+            		System.exit(0);
+            	}
             }
         }
         
