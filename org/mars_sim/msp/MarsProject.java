@@ -53,7 +53,7 @@ public class MarsProject {
         		Simulation.createNewSimulation();
         	}
         	catch (Exception e) {
-        	    logger.log(Level.SEVERE, "roblem creating new simulation",e);
+        	    logger.log(Level.SEVERE, "Problem creating new simulation",e);
         	    System.exit(0);
         	}
         }
