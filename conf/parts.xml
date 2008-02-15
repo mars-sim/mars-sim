@@ -19,7 +19,7 @@
 
 	<part name="co2 extinguisher" mass="20.0" />
 	
-	<part name="rover tire" mass="1.0">
+	<part name="rover tire" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="6" />
 		</maintenance-entity-list>
@@ -191,5 +191,7 @@
 	<part name="aluminum ingot" mass="1.0" />
 	
 	<part name="steel canister" mass="10.0" />
+	
+	<part name="bottle" mass=".5" />
 	
 </part-list>

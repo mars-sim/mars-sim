@@ -40,6 +40,12 @@ public final class AmountResource implements Resource, Serializable {
     public static final AmountResource IRON_POWDER = new AmountResource("iron powder", Phase.SOLID);
     public static final AmountResource ALUMINUM_OXIDE = new AmountResource("aluminum oxide", Phase.SOLID);
     public static final AmountResource ALUMINUM_POWDER = new AmountResource("aluminum powder", Phase.SOLID);
+    public static final AmountResource ETHYLENE = new AmountResource("ethylene", Phase.GAS);
+    public static final AmountResource POLYETHYLENE = new AmountResource("polyethylene", Phase.SOLID);
+    public static final AmountResource GYPSUM = new AmountResource("gypsum", Phase.SOLID);
+    public static final AmountResource CALCIUM_CARBONATE = new AmountResource("calcium carbonate", Phase.SOLID);
+    public static final AmountResource LIME = new AmountResource("lime", Phase.SOLID);
+    public static final AmountResource STYRENE = new AmountResource("styrene", Phase.SOLID);
     
 	// Data members
 	private String name;

@@ -21,6 +21,15 @@
 		</outputs>
 	</process>
 	
+	<process name="extract aluminum oxide from sand" tech="1" skill="1" work-time="100" process-time="0">
+		<inputs>
+			<resource name="sand" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="aluminum oxide" amount="2.0" />
+		</outputs>
+	</process>
+	
 	<!-- Fe2O3 + 3CO -> 2Fe + 3CO2 -->
 	<process name="carbonyl process" tech="1" skill="1" work-time="50" process-time="100">
 		<inputs>
@@ -46,7 +55,7 @@
 	</process>
 	
 	<!-- Al2O3 + 3C -> 2Al + 3CO -->
-	<process name="aluminum reduction" tech="2" skill="2" work-time="100" process-time="100">
+	<process name="aluminum reduction" tech="1" skill="2" work-time="100" process-time="100">
 		<inputs>
 			<resource name="aluminum oxide" amount="1.9" />
 			<resource name="carbon" amount=".6" />
@@ -57,7 +66,7 @@
 		</outputs>
 	</process>
 	
-	<process name="iron ingot casting" tech="2" skill="2" work-time="100" process-time="100">
+	<process name="iron ingot casting" tech="1" skill="2" work-time="100" process-time="100">
 		<inputs>
 			<resource name="iron powder" amount="50.0" />
 		</inputs>
@@ -66,7 +75,7 @@
 		</outputs>
 	</process>
 	
-	<process name="aluminum ingot casting" tech="2" skill="2" work-time="100" process-time="100">
+	<process name="aluminum ingot casting" tech="1" skill="2" work-time="100" process-time="100">
 		<inputs>
 			<resource name="aluminum powder" amount="5.0" />
 		</inputs>
@@ -86,7 +95,7 @@
 		</outputs>
 	</process>
 	
-	<process name="steel ingot alloying" tech="2" skill="2" work-time="100" process-time="50">
+	<process name="steel ingot alloying" tech="1" skill="3" work-time="100" process-time="50">
 		<inputs>
 			<part name="iron ingot" number="5" />
 			<resource name="carbon" amount="1.0" />
@@ -190,12 +199,234 @@
 		</outputs>
 	</process>
 	
-	<process name="specimen box manufacturing" tech="2" skill="2" work-time="300" process-time="100">
+	<process name="specimen box manufacturing with steel" tech="2" skill="2" work-time="300" process-time="100">
 		<inputs>
 			<part name="steel ingot" number="1" />
 		</inputs>
 		<outputs>
 			<equipment name="specimen box" number="20" />
+		</outputs>
+	</process>
+	
+	<!-- 2CO + 4H2 -> C2H4 (ethylene) + 2H2O -->
+	<!-- Requires iron catalyst -->
+	<process name="ethylene production" tech="3" skill="2" work-time="50" process-time="200">
+		<inputs>
+			<resource name="carbon dioxide" amount="100.0" />
+			<resource name="hydrogen" amount="15.0" />
+			<resource name="iron powder" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="ethylene" amount="50.0" />
+			<resource name="water" amount="64.2" />
+			<resource name="iron powder" amount="1.0" />
+		</outputs>
+	</process>
+	
+	<!-- Assuming 10% loss during production. -->
+	<process name="polyethylene production" tech="3" skill="2" work-time="50" process-time="200">
+		<inputs>
+			<resource name="ethylene" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="polyethylene" amount="45.0" />
+		</outputs>
+	</process>
+	
+	<process name="plastic pipe manufacturing" tech="4" skill="3" work-time="100" process-time="200">
+		<inputs>
+			<resource name="polyethylene" amount="10.0" />
+		</inputs>
+		<outputs>
+			<part name="plastic pipe" number="10" />
+		</outputs>
+	</process>
+	
+	<process name="specimen box manufacturing with plastic" tech="4" skill="3" work-time="100" process-time="100">
+		<inputs>
+			<resource name="polyethylene" amount="5.0" />
+		</inputs>
+		<outputs>
+			<equipment name="specimen box" number="10" />
+		</outputs>
+	</process>
+	
+	<!-- Gypsum is CaSO4 * 2H2O -->
+	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
+	<process name="extract gypsum from regolith" tech="3" skill="2" work-time="100" process-time="0">
+		<inputs>
+			<resource name="regolith" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="gypsum" amount="10.0" />
+		</outputs>
+	</process>
+	
+	<!-- Gypsum is CaSO4 * 2H2O -->
+	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
+	<process name="extract gypsum from sand" tech="3" skill="2" work-time="100" process-time="0">
+		<inputs>
+			<resource name="sand" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="gypsum" amount="10.0" />
+		</outputs>
+	</process>
+
+	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
+	<!-- Wrapping two processes: -->
+	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
+	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
+	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
+	<process name="reduce gypsum to calcium carbonate with carbon" tech="3" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="gypsum" amount="50.0" />
+			<resource name="carbon" amount="7.0" />
+		</inputs>
+		<outputs>
+			<resource name="calcium carbonate" amount="29.0" />
+			<resource name="carbon dioxide" amount="12.7" />
+			<resource name="water" amount="5.2" />
+		</outputs>
+	</process>
+	
+	<!-- Process for reducing gypsum to calcium carbonate using carbon monoxide. -->
+	<!-- Wrapping two processes: -->
+	<!-- CaSO4*2H2O (gypsum) + 4CO -> CaS + 4CO2 + 2H2O -->
+	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
+	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
+	<process name="reduce gypsum to calcium carbonate with carbon monoxide" tech="3" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="gypsum" amount="50.0" />
+			<resource name="carbon monoxide" amount="32.5" />
+		</inputs>
+		<outputs>
+			<resource name="calcium carbonate" amount="29.0" />
+			<resource name="carbon dioxide" amount="38.1" />
+			<resource name="water" amount="5.2" />
+		</outputs>
+	</process>
+	
+	<!-- Process for reducing gypsum to calcium carbonate using hydrogen. -->
+	<!-- Wrapping two processes: -->
+	<!-- CaSO4*2H2O (gypsum) + 4H2 -> CaS + 6H2O -->
+	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
+	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
+	<process name="reduce gypsum to calcium carbonate with hydrogen" tech="3" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="gypsum" amount="50.0" />
+			<resource name="hydrogen" amount="2.3" />
+			<resource name="carbon dioxide" amount="12.8" />
+		</inputs>
+		<outputs>
+			<resource name="calcium carbonate" amount="29.0" />
+			<resource name="water" amount="26.0" />
+		</outputs>
+	</process>
+	
+	<!-- CaCO3 (calcium carbonate) -> CaO (lime) + CO2 -->
+	<process name="baking calcium carbonate to lime" tech="3" skill="2" work-time="50" process-time="200">
+		<inputs>
+			<resource name="calcium carbonate" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="lime" amount="27.8" />
+			<resource name="carbon dioxide" amount="21.8" />
+		</outputs>
+	</process>
+	
+	<!-- Wrapping four processes: -->
+	<!-- 3C + CaO -> CaC2 + CO -->
+	<!-- CaC2 + H2O -> C2H2 (acetylene) + CaO -->
+	<!-- 3C2H2 (acetylene) -> (condensed) C6H6 (benzene) -->
+	<!-- C6H6 (benzene) + C2H4 (ethylene) -> C2H3C6H5 (styrene) -->
+	<process name="styrene production" tech="3" skill="3" work-time="100" process-time="200">
+		<inputs>
+			<resource name="carbon" amount="32.12" />
+			<resource name="lime" amount="50.0" />
+			<resource name="water" amount="16.05" />
+			<resource name="ethylene" amount="8.34" />
+		</inputs>
+		<outputs>
+			<resource name="carbon monoxide" amount="24.97" />
+			<resource name="lime" amount="49.0" />
+			<resource name="styrene" amount="30.95" />
+		</outputs>
+	</process>
+	
+	<process name="tire plug manufacturing" tech="4" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="styrene" amount="2.0" />
+		</inputs>
+		<outputs>
+			<part name="tire plug" number="20" />
+		</outputs>
+	</process>
+	
+	<process name="rover tire manufacturing" tech="4" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<resource name="styrene" amount="40.0" />
+			<part name="steel ingot" number="1" />
+		</inputs>
+		<outputs>
+			<part name="rover tire" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="gasket manufacturing" tech="4" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="styrene" amount="2.0" />
+		</inputs>
+		<outputs>
+			<part name="gasket" number="20" />
+		</outputs>
+	</process>
+	
+	<process name="fan belt manufacturing" tech="4" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="styrene" amount="2.0" />
+		</inputs>
+		<outputs>
+			<part name="fan belt" number="10" />
+		</outputs>
+	</process>
+	
+	<process name="electrical wire manufacturing" tech="4" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<resource name="styrene" amount="1.0" />
+			<part name="aluminum ingot" number="1" />
+		</inputs>
+		<outputs>
+			<part name="electrical wire" number="10" />
+		</outputs>
+	</process>
+	
+	<process name="power cable manufacturing" tech="4" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<resource name="styrene" amount="1.0" />
+			<part name="aluminum ingot" number="1" />
+		</inputs>
+		<outputs>
+			<part name="power cable" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="wire connector manufacturing" tech="4" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<resource name="styrene" amount=".5" />
+			<part name="aluminum ingot" number="1" />
+		</inputs>
+		<outputs>
+			<part name="wire connector" number="15" />
+		</outputs>
+	</process>
+	
+	<process name="plastic tubing manufacturing" tech="4" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="styrene" amount="1.0" />
+		</inputs>
+		<outputs>
+			<part name="plastic tubing" number="10" />
 		</outputs>
 	</process>
 

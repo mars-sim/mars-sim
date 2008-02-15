@@ -441,6 +441,11 @@
 				<resource-storage resource="Sand" capacity="1000.0" />
 				<resource-storage resource="Iron Powder" capacity="100.0" />
 				<resource-storage resource="Aluminum Powder" capacity="20.0" />
+				<resource-storage resource="Ethylene" capacity="100.0" />
+				<resource-storage resource="Polyethylene" capacity="50.0" />
+				<resource-storage resource="Gypsum" capacity="100.0" />
+				<resource-storage resource="Calcium Carbonate" capacity="100.0" />
+				<resource-storage resource="Lime" capacity="100.0" />
 			</storage>
 		</functions>
 	</building>
