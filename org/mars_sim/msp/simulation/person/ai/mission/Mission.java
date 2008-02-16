@@ -166,7 +166,7 @@ public abstract class Mission implements Serializable {
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 			
 			fireMissionUpdate(ADD_MEMBER_EVENT, person);
-            // System.out.println(person.getName() + " added to mission: " + name);
+             logger.info(person.getName() + " added to mission: " + name);
         }
     }
 
@@ -185,7 +185,7 @@ public abstract class Mission implements Serializable {
 			fireMissionUpdate(REMOVE_MEMBER_EVENT, person);
 
             if (people.size() == 0) endMission("Not enough members.");
-            // System.out.println(person.getName() + " removed from mission: " + name);
+             logger.info(person.getName() + " removed from mission: " + name);
         }
     }
 

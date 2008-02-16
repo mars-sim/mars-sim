@@ -189,7 +189,7 @@ public class MissionWindow extends ToolWindow {
 	 * @param mission the mission to end.
 	 */
 	private void endMission(Mission mission) {
-		// System.out.println("End mission: " + mission.getName());
+		// logger.info("End mission: " + mission.getName());
 		
 		// If vehicle is parked at a settlement, have all people exit vehicle.
 		exitVehicleAtSettlement(mission);

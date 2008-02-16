@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.events.HistoricalEventManager;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionFactory;
@@ -29,6 +30,11 @@ import org.mars_sim.msp.simulation.time.MasterClock;
  * It's capable of creating a new simulation or loading/saving an existing one.
  */
 public class Simulation implements ClockListener, Serializable {
+    
+    	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.Simulation";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Version string.
 	public final static String VERSION = "2.83";
@@ -136,7 +142,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws Exception if simulation could not be loaded.
 	 */
 	public void loadSimulation(File file) throws Exception {
-		// System.out.println("Loading simulation from " + file);
+		logger.config("Loading simulation from " + file);
 		
 		Simulation simulation = instance();
 		simulation.stop();
@@ -177,7 +183,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws Exception if simulation could not be saved.
 	 */
 	public void saveSimulation(File file) throws Exception {
-		// System.out.println("Saving simulation to " + file);
+		logger.config("Saving simulation to " + file);
 		
 		Simulation simulation = instance();
 		simulation.stop();

@@ -66,7 +66,7 @@ public class Teach extends Task implements Serializable {
 		addPhase(TEACHING);
 		setPhase(TEACHING);
 		
-		// System.out.println(person.getName() + " " + description + " - Experience modifier: " + 
+		// logger.info(person.getName() + " " + description + " - Experience modifier: " + 
 		// teachingTask.getTeachingExperienceModifier());
 	}
 

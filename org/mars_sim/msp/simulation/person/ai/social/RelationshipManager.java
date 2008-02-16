@@ -17,6 +17,9 @@ import com.phoenixst.plexus.Traverser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
@@ -33,6 +36,11 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  * The simulation instance has only one relationship manager. 
  */
 public class RelationshipManager implements Serializable {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.social.RelationshipManager";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// The base % chance of a relationship change per millisol.
 	private static final double BASE_RELATIONSHIP_CHANGE_PROBABILITY = .1D;
@@ -110,7 +118,10 @@ public class RelationshipManager implements Serializable {
 				Person person2 = i.next();
 				if (person2 != person) {
 					addRelationship(person, person2, Relationship.EXISTING_RELATIONSHIP);
-					// System.out.println(person.getName() + " and " + person2.getName() + " have existing relationship.  " + count);
+					
+					if(logger.isLoggable(Level.FINEST)) {
+					 logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.  " + count);
+					}
 				} 
 			}
 		}
@@ -269,7 +280,10 @@ public class RelationshipManager implements Serializable {
 			// Check if new relationship.
 			if (!hasRelationship(person, localPerson)) {
 				addRelationship(person, localPerson, Relationship.FIRST_IMPRESSION);
-				// System.out.println(person.getName() + " and " + localPerson.getName() + " meet for the first time.  " + count);
+				
+				if(logger.isLoggable(Level.FINEST)) {
+				 logger.finest(person.getName() + " and " + localPerson.getName() + " meet for the first time.  " + count);
+				}
 			}
 			
 			// Determine probability of relationship change per millisol.
@@ -323,7 +337,9 @@ public class RelationshipManager implements Serializable {
 				Relationship relationship = getRelationship(person, localPerson);
 				if (relationship != null)
 					relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
-				// System.out.println(person.getName() + " has changed opinion of " + localPerson.getName() + " by " + changeAmount);
+				if(logger.isLoggable(Level.FINEST)){
+				 logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by " + changeAmount);
+				}
 			}
 		}	
 		count2++;

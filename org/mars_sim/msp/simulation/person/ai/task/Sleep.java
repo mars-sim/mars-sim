@@ -129,7 +129,7 @@ class Sleep extends Task implements Serializable {
         double alarmTime = getAlarmTime();
         if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
         	endTask();
-        	// System.out.println(person.getName() + " woke up from alarm.");
+        	// logger.info(person.getName() + " woke up from alarm.");
         }
         else previousTime = newTime;
         

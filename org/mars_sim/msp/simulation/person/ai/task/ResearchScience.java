@@ -313,7 +313,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 		else chance /= (skill - 2);
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			// System.out.println(person.getName() + " has a lab accident while doing " + science + " research.");
+			// logger.info(person.getName() + " has a lab accident while doing " + science + " research.");
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
 				((Research) lab).getBuilding().getMalfunctionManager().accident();
 			else if (person.getLocationSituation().equals(Person.INVEHICLE)) 

@@ -61,7 +61,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		addPhase(REPAIRING);
 		setPhase(REPAIRING);
 
-        // if (malfunction != null) System.out.println(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        // if (malfunction != null) logger.info(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
     }
     
     /**

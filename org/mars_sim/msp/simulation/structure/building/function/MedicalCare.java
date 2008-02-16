@@ -193,7 +193,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 			Iterator i = getProblemsBeingTreated().iterator();
 			while (i.hasNext()) {
 				HealthProblem problem = (HealthProblem) i.next();
-				System.out.println(name + ": " + problem.toString() + " - cured: " + problem.getCured());
+				logger.info(name + ": " + problem.toString() + " - cured: " + problem.getCured());
 			}
 		}
 		*/

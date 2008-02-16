@@ -66,7 +66,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         // Initialize phase.
         addPhase(MAINTAIN_VEHICLE);
         
-        // System.out.println(person.getName() + " starting MaintainGroundVehicleEVA task.");
+        // logger.info(person.getName() + " starting MaintainGroundVehicleEVA task.");
     }
     
     /** 
@@ -273,7 +273,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // System.out.println(person.getName() + " has accident while performing maintenance on " + vehicle.getName() + ".");
+            // logger.info(person.getName() + " has accident while performing maintenance on " + vehicle.getName() + ".");
             vehicle.getMalfunctionManager().accident();
         }
     }

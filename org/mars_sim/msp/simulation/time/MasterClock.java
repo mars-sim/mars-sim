@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
@@ -24,6 +26,11 @@ import org.mars_sim.msp.simulation.SimulationConfig;
  *  virtual Mars and its units are synchronized with this clock pulse.
  */
 public class MasterClock implements Runnable, Serializable {
+    
+    private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.time.MasterClock";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private MarsClock marsTime;   // Martian Clock
@@ -231,7 +238,10 @@ public class MasterClock implements Runnable, Serializable {
 				
         			long endTime = System.nanoTime();
         			lastTimeDiff = (endTime - startTime) / 1000000L;
-        			// System.out.println("time: " + lastTimeDiff);
+        			
+        			if(logger.isLoggable(Level.FINEST)) {
+        			    logger.finest("time: " + lastTimeDiff);
+        			}
         		}
         		catch (Exception e) {
         			e.printStackTrace(System.err);

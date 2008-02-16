@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.building.function;
  
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -19,6 +20,11 @@ import org.mars_sim.msp.simulation.time.*;
  * converting one set of resources to another.
  */
 public class ResourceProcess implements Serializable {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.structure.building.function.ResourceProcess";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
     
 	// The work time required to toggle this process on or off. 
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
@@ -114,8 +120,8 @@ public class ResourceProcess implements Serializable {
     	if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
     		toggleRunningWorkTime = 0D;
     		runningProcess = !runningProcess;
-    		// if (runningProcess) System.out.println(name + " turned on.");
-    		// else System.out.println(name + " turned off.");
+    		 if (runningProcess) logger.info(name + " turned on.");
+    		 else logger.info(name + " turned off.");
     	}
     }
     
@@ -197,7 +203,7 @@ public class ResourceProcess implements Serializable {
     	if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
             throw new IllegalArgumentException();
         
-        // System.out.println(name + " process");
+        // logger.info(name + " process");
      
         if (runningProcess) {       
             // Convert time from millisols to seconds.
@@ -207,7 +213,7 @@ public class ResourceProcess implements Serializable {
             double bottleneck = getInputBottleneck(time, inventory);
             if (productionLevel > bottleneck) productionLevel = bottleneck;
             
-            // System.out.println(name + " production level: " + productionLevel);
+            // logger.info(name + " production level: " + productionLevel);
             
             // Input resources from inventory.
             Iterator inputI = maxInputResourceRates.keySet().iterator();
@@ -222,7 +228,7 @@ public class ResourceProcess implements Serializable {
                 	inventory.retrieveAmountResource(resource, resourceAmount);
                 }
                 catch (Exception e) {}
-                // System.out.println(resourceName + " input: " + resourceAmount + "kg.");
+                // logger.info(resourceName + " input: " + resourceAmount + "kg.");
             }
             
             // Output resources to inventory.
@@ -238,7 +244,7 @@ public class ResourceProcess implements Serializable {
                 	inventory.storeAmountResource(resource, resourceAmount, false);
                 }
                 catch (Exception e) {}
-                // System.out.println(resourceName + " output: " + resourceAmount + "kg.");
+                // logger.info(resourceName + " output: " + resourceAmount + "kg.");
             }
         }
         else productionLevel = 0D;

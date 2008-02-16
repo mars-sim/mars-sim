@@ -50,7 +50,7 @@ public class ExitAirlock extends Task implements Serializable {
         addPhase(EXITING_AIRLOCK);
         setPhase(EXITING_AIRLOCK);
 
-        // System.out.println(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());
+        // logger.info(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());
     }
     
     /**
@@ -92,7 +92,7 @@ public class ExitAirlock extends Task implements Serializable {
 
         // If person still doesn't have an EVA suit, end task.
         if (!hasSuit) {
-            // System.out.println(person.getName() + " does not have an EVA suit, ExitAirlock ended");
+            // logger.info(person.getName() + " does not have an EVA suit, ExitAirlock ended");
             endTask();
             return time;
         }

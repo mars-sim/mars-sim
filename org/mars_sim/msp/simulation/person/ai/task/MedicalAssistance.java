@@ -68,7 +68,7 @@ public class MedicalAssistance extends Task implements Serializable {
             // Start the treatment
             try {
                 medical.startTreatment(problem, duration);
-				// System.out.println(person.getName() + " treating " + problem.getIllness().getName());
+				// logger.info(person.getName() + " treating " + problem.getIllness().getName());
                 
                 // Add person to medical care building if necessary.
 				if (medical instanceof MedicalCare) {
@@ -262,7 +262,7 @@ public class MedicalAssistance extends Task implements Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // System.out.println(person.getName() + " has accident during medical assistance.");
+            // logger.info(person.getName() + " has accident during medical assistance.");
             entity.getMalfunctionManager().accident();
         }
     }
@@ -278,7 +278,7 @@ public class MedicalAssistance extends Task implements Serializable {
             medical.stopTreatment(problem);
         }
         catch (Exception e) {
-            // System.out.println("MedicalAssistance.endTask(): " + e.getMessage());
+            // logger.info("MedicalAssistance.endTask(): " + e.getMessage());
         }
     }
     

@@ -73,7 +73,7 @@ public class HealthProblem implements Serializable {
             }
         }
         
-        // System.out.println(person.getName() + " has new health problem: " + complaint.getName());
+        // logger.info(person.getName() + " has new health problem: " + complaint.getName());
     }
     
     /**
@@ -83,7 +83,7 @@ public class HealthProblem implements Serializable {
     private void setState(int newState) {
     	state = newState;
     	sufferer.fireUnitUpdate(PhysicalCondition.ILLNESS_EVENT, illness);
-		// System.out.println(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
+		// logger.info(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
     }
     
     /**
@@ -212,7 +212,7 @@ public class HealthProblem implements Serializable {
         timePassed = 0;
         setState(TREATMENT);
         
-        // System.out.println("Starting treatment: " + getSufferer().getName() + " - " + toString());
+        // logger.info("Starting treatment: " + getSufferer().getName() + " - " + toString());
         
         // Create medical event for treatment.
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, MedicalEvent.TREATED);

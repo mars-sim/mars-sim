@@ -152,7 +152,7 @@ public class Trade extends RoverMission implements Serializable {
         setPhase(VehicleMission.EMBARKING);
         setPhaseDescription("Embarking from " + getStartingSettlement().getName());
         
-        // System.out.println(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
+         logger.info(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
 	}
 	
     /**
@@ -271,7 +271,7 @@ public class Trade extends RoverMission implements Serializable {
 	    			// double startTime = System.currentTimeMillis();
 	    			// tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
 	    			// double endTime = System.currentTimeMillis();
-	    			// System.out.println(person.getName() + " getBestTradeProfit: " + (endTime - startTime) + " - TP: " + tradeProfit);	    			
+	    			// logger.info(person.getName() + " getBestTradeProfit: " + (endTime - startTime) + " - TP: " + tradeProfit);	    			
 	    		}
 	    	}
 	    	catch (Exception e) {

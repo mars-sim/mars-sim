@@ -68,7 +68,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		// Set initial phase.
 		setPhase(EXIT_AIRLOCK);
 		
-		// System.out.println(person.getName() + " is starting " + getDescription());
+		// logger.info(person.getName() + " is starting " + getDescription());
 	}
 	
 	/** 

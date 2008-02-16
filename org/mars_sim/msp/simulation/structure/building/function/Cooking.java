@@ -8,6 +8,8 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -21,6 +23,12 @@ import org.mars_sim.msp.simulation.time.MarsClock;
  * The Cooking class is a building function for cooking meals.
  */
 public class Cooking extends Function implements Serializable {
+    
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.structure.building.function.Cooking";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	public static final String NAME = "Cooking";
 	
@@ -194,8 +202,11 @@ public class Cooking extends Function implements Serializable {
 			
 			meals.add(new CookedMeal(mealQuality, time));
 			cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
-			// System.out.println(getBuilding().getBuildingManager().getSettlement().getName() + 
-			//	" has " + meals.size() + " hot meals, quality=" + mealQuality);
+			
+			if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
+				" has " + meals.size() + " hot meals, quality=" + mealQuality);
+			}
 		}
 	}
 	
@@ -219,8 +230,11 @@ public class Cooking extends Function implements Serializable {
 					if (foodAmount > foodCapacity) foodAmount = foodCapacity;
 					getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, foodAmount, false);
 					i.remove();
-					// System.out.println("Cooked meal expiring at " + 
-					// 	getBuilding().getBuildingManager().getSettlement().getName());
+					
+					if(logger.isLoggable(Level.FINEST)) {
+					 logger.finest("Cooked meal expiring at " + 
+					 	getBuilding().getBuildingManager().getSettlement().getName());
+					}
 				}
 				catch (Exception e) {}
 			}

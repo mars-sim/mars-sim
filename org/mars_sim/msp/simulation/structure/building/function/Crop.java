@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.mars.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -19,6 +21,11 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  * The Crop class is a food crop grown on a farm.
  */
 public class Crop implements Serializable {
+    
+    	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.structure.building.function.Crop";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
     
 	// Static members
 	public static final double WASTE_WATER_NEEDED = 5D; // Amount of waste water needed / harvest mass.
@@ -261,7 +268,7 @@ public class Crop implements Serializable {
                 	// is less than 10% normal.
                 	if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) && (getCondition() < .1D)) {
                 		phase = FINISHED;
-                		// System.out.println("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
+                		logger.info("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
                 	}
     			}
             }

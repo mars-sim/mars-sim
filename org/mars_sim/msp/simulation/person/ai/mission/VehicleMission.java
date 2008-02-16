@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
@@ -41,6 +42,11 @@ import org.mars_sim.msp.simulation.time.MarsClock;
  * A mission that involves driving a vehicle along a series of navpoints.
  */
 public abstract class VehicleMission extends TravelMission implements UnitListener {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.mission.VehicleMission";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Mission event types
 	public static final String VEHICLE_EVENT = "vehicle";
@@ -307,8 +313,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle, resources, equipment, 
     			getPeopleNumber(), tripTime);
     	
-    	if (!vehicleCapacity) System.out.println("Vehicle doesn't have capacity.");
-    	if (!settlementSupplies) System.out.println("Settlement doesn't have supplies.");
+    	if (!vehicleCapacity) logger.info("Vehicle doesn't have capacity.");
+    	if (!settlementSupplies) logger.info("Settlement doesn't have supplies.");
     	
     	return vehicleCapacity && settlementSupplies;
     }
@@ -625,7 +631,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	// Check if enough resources to get to settlement.
     	double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
     	if (hasEnoughResources(getResourcesNeededForTrip(false, false, distance)) && !hasEmergencyAllCrew()) {
-    		// System.out.println(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
+    		 logger.info(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
     		
     		// Creating emergency destination mission event.
             HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_DESTINATION);

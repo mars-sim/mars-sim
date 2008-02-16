@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.medical.*;
@@ -19,6 +20,11 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
  * Persons health and physical charactertics.
  */
 public class PhysicalCondition implements Serializable {
+    
+    	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.PhysicalCondition";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Unit events
 	public static final String FATIGUE_EVENT = "fatigue event";
@@ -456,7 +462,7 @@ public class PhysicalCondition implements Serializable {
 					if (anxietyAttack != null) {
 						addMedicalComplaint(anxietyAttack);
 						person.fireUnitUpdate(ILLNESS_EVENT);
-						// System.out.println(person.getName() + " has an anxiety attack.");
+					        logger.info(person.getName() + " has an anxiety attack.");
 					}
 					else System.err.println("Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");
 				}

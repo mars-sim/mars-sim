@@ -55,7 +55,7 @@ public class EnterAirlock extends Task implements Serializable {
         addPhase(ENTERING_AIRLOCK);
         setPhase(ENTERING_AIRLOCK);
 
-        // System.out.println(person.getName() + " is starting to enter " + airlock.getEntityName());
+        // logger.info(person.getName() + " is starting to enter " + airlock.getEntityName());
     }
 
     /**
@@ -231,7 +231,7 @@ public class EnterAirlock extends Task implements Serializable {
         	catch (Exception e) {}
 
         	// Return suit to entity's inventory.
-        	// System.out.println(person.getName() + " putting away EVA suit into " + entity.getName());
+        	// logger.info(person.getName() + " putting away EVA suit into " + entity.getName());
         	personInv.retrieveUnit(suit);
         	entityInv.storeUnit(suit);
         }

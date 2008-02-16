@@ -8,6 +8,8 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.vehicle.*;
  
@@ -16,6 +18,11 @@ import org.mars_sim.msp.simulation.vehicle.*;
  * capable of maintaining vehicles.
  */
 public abstract class VehicleMaintenance extends Function implements Serializable {
+    
+    private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
         
     protected int vehicleCapacity;
 	private VehicleCollection vehicles;
@@ -76,7 +83,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
         
 		// Add vehicle to building.
 		vehicles.add(vehicle);
-		// System.out.println("Adding " + vehicle.getName());
+	       logger.info("Adding " + vehicle.getName());
     }
     
     /** 
@@ -88,7 +95,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		if (!containsVehicle(vehicle)) throw new BuildingException("Vehicle not in building.");
 		else {
 			vehicles.remove(vehicle);
-			// System.out.println("Removing " + vehicle.getName());
+			logger.info("Removing " + vehicle.getName());
 		} 
     }
     

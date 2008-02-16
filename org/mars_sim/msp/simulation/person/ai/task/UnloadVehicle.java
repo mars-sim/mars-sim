@@ -88,7 +88,7 @@ public class UnloadVehicle extends Task implements Serializable {
         addPhase(UNLOADING);
         setPhase(UNLOADING);
 
-        // System.out.println(person.getName() + " is unloading " + vehicle.getName());
+        // logger.info(person.getName() + " is unloading " + vehicle.getName());
     }
     
     /** 

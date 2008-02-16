@@ -8,6 +8,8 @@
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.job.*;
@@ -21,6 +23,11 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  *  the person is involved.
  */
 public class Mind implements Serializable {
+    
+    	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.Mind";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Unit events
 	public static final String JOB_EVENT = "job event";	
@@ -243,7 +250,7 @@ public class Mind implements Serializable {
         }
         if (missions) {
             if (rand < missionWeights) {
-                // System.out.println(person.getName() + " starting a new mission.");
+                 logger.info(person.getName() + " starting a new mission.");
                 Mission newMission = missionManager.getNewMission(person);
                 if (newMission != null) {
                 	missionManager.addMission(newMission);

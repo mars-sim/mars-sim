@@ -96,7 +96,7 @@ public class NegotiateTrade extends Task implements Serializable {
 			CreditManager creditManager = Simulation.instance().getCreditManager();
 			double credit = tradeValueLimit - buyLoadValue;
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-			// System.out.println("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + " is " + credit);
+			// logger.info("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + " is " + credit);
 		}
 		
 		return 0D;

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
@@ -40,6 +41,11 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  * the vehicle back if the crew is already dead.
  */
 public class RescueSalvageVehicle extends RoverMission implements Serializable {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Rescue/Salvage Vehicle";
@@ -260,8 +266,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     		startTravelToNextNode();
     		setPhase(VehicleMission.TRAVELLING);
     		setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
-    		// if (rescue) System.out.println(getVehicle().getName() + " starting rescue mission for " + vehicleTarget.getName());
-        	// else System.out.println(getVehicle().getName() + " starting salvage mission for " + vehicleTarget.getName());
+    		 if (rescue) logger.info(getVehicle().getName() + " starting rescue mission for " + vehicleTarget.getName());
+        	 else logger.info(getVehicle().getName() + " starting salvage mission for " + vehicleTarget.getName());
     	}
 		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
@@ -299,7 +305,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	private void rendezvousPhase(Person person) throws MissionException {
 	
-		// System.out.println(getVehicle().getName() + " rendezvous with " + vehicleTarget.getName());
+		 logger.info(getVehicle().getName() + " rendezvous with " + vehicleTarget.getName());
 		
 		// If rescuing vehicle crew, load rescue life support resources into vehicle (if possible).
 		if (rescue) {
@@ -375,7 +381,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     		// Store towed vehicle in settlement.
     		Inventory inv = disembarkSettlement.getInventory();
     		inv.storeUnit(towedVehicle);
-    		// System.out.println(towedVehicle + " salvaged at " + disembarkSettlement.getName());
+    		 logger.info(towedVehicle + " salvaged at " + disembarkSettlement.getName());
     		HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.SALVAGE_VEHICLE);
 			Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
     		
@@ -389,7 +395,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         			disembarkSettlement.getInventory().storeUnit(crewmember);
         			BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
         			crewmember.setAssociatedSettlement(disembarkSettlement);
-        			// System.out.println(crewmember.getName() + " rescued.");
+        		        logger.info(crewmember.getName() + " rescued.");
         			HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.RESCUE_PERSON);
         			Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
         		}

@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
@@ -38,6 +39,11 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  * Utility class for static trade methods.
  */
 public final class TradeUtil {
+    
+    	private static String CLASS_NAME = 
+    	    "org.mars_sim.msp.simulation.person.ai.mission.TradeUtil";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Performance cache for equipment goods.
 	private final static Map <Class, Equipment> equipmentGoodCache = new HashMap<Class, Equipment>(5);
@@ -73,7 +79,7 @@ public final class TradeUtil {
     				// double startTime = System.currentTimeMillis();
     				double profit = getEstimatedTradeProfit(startingSettlement, rover, settlement);
     				// double endTime = System.currentTimeMillis();
-    				// System.out.println("getEstimatedTradeProfit " + (endTime - startTime));
+    				// logger.info("getEstimatedTradeProfit " + (endTime - startTime));
     				if (profit > bestProfit) {
     					bestProfit = profit;
     					bestSettlement = settlement;
@@ -242,7 +248,7 @@ public final class TradeUtil {
     		    	    		loadValue+= manager.getGoodValuePerItem(good, (containerSupply + (containerNum * containerMass)));
     		    	    		tradeList.put(containerGood, (containerNum + 1));
     						}
-    						else System.out.println("container for " + resource.getName() + " not available.");
+    						else logger.warning("container for " + resource.getName() + " not available.");
     					}
     				}
     				

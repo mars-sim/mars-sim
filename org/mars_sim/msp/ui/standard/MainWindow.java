@@ -293,7 +293,7 @@ public class MainWindow extends JFrame {
      * Exit the simulation for running and exit.
      */
     public void exitSimulation() {
-    	// System.out.println("Exiting simulation");
+    	// logger.info("Exiting simulation");
     	
     	// Save the UI configuration.
     	UIConfig.INSTANCE.saveFile(this);

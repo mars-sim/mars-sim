@@ -54,7 +54,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         addPhase(REPAIRING);
         setPhase(REPAIRING);
         
-        // System.out.println(person.getName() + " repairing malfunction.");
+        // logger.info(person.getName() + " repairing malfunction.");
     }
     
     /**
@@ -213,7 +213,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         }
 
         // Add work to malfunction.
-        // System.out.println(description);
+        // logger.info(description);
         double workTimeLeft = malfunction.addWorkTime(workTime);
 
         // Add experience
@@ -258,7 +258,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // System.out.println(person.getName() + " has accident while " + description);
+            // logger.info(person.getName() + " has accident while " + description);
             if (entity != null) entity.getMalfunctionManager().accident();
         }
     }

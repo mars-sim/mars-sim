@@ -7,19 +7,35 @@
 
 package org.mars_sim.msp.simulation.structure;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.InventoryException;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PersonCollection;
+import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
+import org.mars_sim.msp.simulation.person.ai.task.Repair;
+import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.resource.AmountResource;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.function.EVA;
+import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
+
+
 
 
 /** 
@@ -27,6 +43,11 @@ import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
  * It contains information related to the state of the settlement.
  */
 public class Settlement extends Structure implements org.mars_sim.msp.simulation.LifeSupport {
+    
+    private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.structure.Settlement";
+	
+   private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Unit update events.
 	public static final String ADD_ASSOCIATED_PERSON_EVENT = "add associated person";
@@ -278,7 +299,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 		// If settlement is overcrowded, increase inhabitant's stress.
 		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
 		if (overCrowding > 0) {
-			// System.out.println("Overcrowding at " + getName());
+			logger.warning("Overcrowding at " + getName());
 			double stressModifier = .1D * overCrowding * time;
 			PersonIterator i = getInhabitants().iterator();
 			while (i.hasNext()) {

@@ -8,6 +8,9 @@ package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -15,6 +18,11 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  * The JobManager class keeps track of the settler jobs in a simulation.
  */
 public final class JobManager implements Serializable {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.job.JobManager";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Data members
 	private static List<Job> jobs; // List of the jobs in the simulation. 
@@ -114,9 +122,13 @@ public final class JobManager implements Serializable {
 				}
 			}
 			
-			//if ((newJob != null) && (newJob != originalJob)) 
-			// 	System.out.println(person.getName() + " changed jobs to " + newJob.getName());
-			// else System.out.println(person.getName() + " keeping old job of " + originalJob.getName());
+			if(logger.isLoggable(Level.FINEST)) {
+			    if ((newJob != null) && (newJob != originalJob)) 
+			 	logger.finest(person.getName() + " changed jobs to " + newJob.getName());
+			 else logger.finest(person.getName() + " keeping old job of " + originalJob.getName());
+			    
+			}
+			
 		}
 		else newJob = originalJob;
 		

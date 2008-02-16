@@ -116,7 +116,7 @@ public abstract class EVAOperation extends Task implements Serializable {
             }
         }
         else {
-            // System.out.println(person.getName() + " entering airlock of " + airlock.getEntityName());
+            // logger.info(person.getName() + " entering airlock of " + airlock.getEntityName());
             enteredAirlock = true;
             return time;
         }
@@ -137,14 +137,14 @@ public abstract class EVAOperation extends Task implements Serializable {
         // Check if it is night time. 
         Mars mars = Simulation.instance().getMars();
         if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
-            // System.out.println(person.getName() + " should end EVA: night time.");
+            // logger.info(person.getName() + " should end EVA: night time.");
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
             	result = true;
         }
 
         EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit == null) {
-            // System.out.println(person.getName() + " should end EVA: No EVA suit found.");
+            // logger.info(person.getName() + " should end EVA: No EVA suit found.");
             return true;
         }
         Inventory suitInv = suit.getInventory();
@@ -154,7 +154,7 @@ public abstract class EVAOperation extends Task implements Serializable {
         	double oxygenCap = suitInv.getAmountResourceCapacity(AmountResource.OXYGEN);
         	double oxygen = suitInv.getAmountResourceStored(AmountResource.OXYGEN);
         	if (oxygen <= (oxygenCap * .15D)) {
-        		// System.out.println(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
+        		// logger.info(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
         		result = true;
         	}
 
@@ -162,13 +162,13 @@ public abstract class EVAOperation extends Task implements Serializable {
         	double waterCap = suitInv.getAmountResourceCapacity(AmountResource.WATER);
         	double water = suitInv.getAmountResourceStored(AmountResource.WATER);
         	if (water <= (waterCap * .15D)) {
-        		// System.out.println(person.getName() + " should end EVA: EVA suit water level less than 15%");	
+        		// logger.info(person.getName() + " should end EVA: EVA suit water level less than 15%");	
         		result = true;
         	}
 
         	// Check if life support system in suit is working properly.
         	if (!suit.lifeSupportCheck()) {
-        		// System.out.println(person.getName() + " should end EVA: EVA suit failed life support check.");	
+        		// logger.info(person.getName() + " should end EVA: EVA suit failed life support check.");	
         		result = true;
         	}
         }
@@ -178,13 +178,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 
         // Check if suit has any malfunctions.
         if (suit.getMalfunctionManager().hasMalfunction()) {
-            // System.out.println(person.getName() + " should end EVA: EVA suit has malfunction.");	
+            // logger.info(person.getName() + " should end EVA: EVA suit has malfunction.");	
             result = true;
         }
 	
         // Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() < .5D) {
-            // System.out.println(person.getName() + " should end EVA: medical problems.");	
+            // logger.info(person.getName() + " should end EVA: medical problems.");	
             result = true;
         }
 	
@@ -208,7 +208,7 @@ public abstract class EVAOperation extends Task implements Serializable {
             else chance /= (skill - 2);
 
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-                // System.out.println(person.getName() + " has accident during EVA operation.");
+                // logger.info(person.getName() + " has accident during EVA operation.");
                 suit.getMalfunctionManager().accident();
             }
         }

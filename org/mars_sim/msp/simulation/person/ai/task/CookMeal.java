@@ -73,7 +73,7 @@ public class CookMeal extends Task implements Serializable {
 		setPhase(COOKING);
 		
 		// String jobName = person.getMind().getJob().getName();
-		// System.out.println(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + " in " + person.getSettlement());
+		// logger.info(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + " in " + person.getSettlement());
 	}
 	
 	/** 
@@ -148,7 +148,7 @@ public class CookMeal extends Task implements Serializable {
 		if (!isMealTime(person)) {
 			endTask();
 			kitchen.cleanup();
-			// System.out.println(person.getName() + " finished cooking.");
+			// logger.info(person.getName() + " finished cooking.");
 			return time;
 		}
         
@@ -215,7 +215,7 @@ public class CookMeal extends Task implements Serializable {
 		else chance /= (skill - 2);
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			// System.out.println(person.getName() + " has accident while cooking.");
+			// logger.info(person.getName() + " has accident while cooking.");
 			kitchen.getBuilding().getMalfunctionManager().accident();
 		}
 	}	

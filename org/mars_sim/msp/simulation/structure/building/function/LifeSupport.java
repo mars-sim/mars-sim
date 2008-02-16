@@ -8,6 +8,9 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.person.*;
@@ -17,6 +20,11 @@ import org.mars_sim.msp.simulation.structure.building.*;
  * The LifeSupport class is a building function for life support and managing inhabitants.
  */
 public class LifeSupport extends Function implements Serializable {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.structure.building.function.LifeSupport";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	public static final String NAME = "Life Support";
 	
@@ -167,7 +175,10 @@ public class LifeSupport extends Function implements Serializable {
 		// Add stress if building is overcrowded.
 		int overcrowding = getOccupantNumber() - getOccupantCapacity();
 		if (overcrowding > 0) {
-			// System.out.println("Overcrowding at " + getBuilding());
+		    
+		    	if(logger.isLoggable(Level.FINEST)){
+		    	    logger.finest("Overcrowding at " + getBuilding());
+		    	}
 			double stressModifier = .1D * overcrowding * time;
 			PersonIterator j = getOccupants().iterator();
 			while (j.hasNext()) {

@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
@@ -35,6 +36,11 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
  * random locations around a settlement and collect resources of a given type.
  */
 public abstract class CollectResourcesMission extends RoverMission implements Serializable {
+    
+    	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Mission phases
 	final public static String COLLECT_RESOURCES = "Collecting Resources";
@@ -121,7 +127,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		setPhaseDescription("Embarking from " + getStartingSettlement().getName());
 		
 		// int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
-		// System.out.println("Starting " + getName() + " with " + emptyContainers + " " + containerType);
+		// logger.info("Starting " + getName() + " with " + emptyContainers + " " + containerType);
 	}
 	
 	/**
@@ -276,7 +282,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     }
     
     public void endCollectingAtSite() {
-    	System.out.println("Collecting phase ended due to external trigger.");
+    	logger.info("Collecting phase ended due to external trigger.");
     	endCollectingSite = true;
     	
     	// End each member's collection task.

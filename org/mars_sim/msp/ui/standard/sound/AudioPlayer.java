@@ -13,6 +13,7 @@ package org.mars_sim.msp.ui.standard.sound;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -32,6 +33,11 @@ import org.mars_sim.msp.ui.standard.UIConfig;
  * A class to play sound files.
  */
 public class AudioPlayer implements LineListener {
+    
+    	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.sound.AudioPlayer";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Data members
 	private Line currentLine; // The current compressed sound.
@@ -92,7 +98,7 @@ public class AudioPlayer implements LineListener {
 	    try {
 	        Clip clip = null;
 	    	if (!audioCache.containsKey(filepath)) {
-	    	    System.out.println(filepath);
+	    	    logger.info(filepath);
 	    	    File soundFile = new File(filepath);
 	    	    AudioInputStream audioInputStream = 
 	    		AudioSystem.getAudioInputStream(soundFile);

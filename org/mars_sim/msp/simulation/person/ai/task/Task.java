@@ -309,7 +309,7 @@ public abstract class Task implements Serializable, Comparable {
     		// Reduce stress modifier if task is in person's current job description.
     		Job job = person.getMind().getJob();
     		if ((job != null) && job.isJobRelatedTask(this.getClass())) {
-    			// System.out.println("Job: " + job.getName() + " related to " + this.getName() + " task");
+    			// logger.info("Job: " + job.getName() + " related to " + this.getName() + " task");
     			effectiveStressModifier*= JOB_STRESS_MODIFIER;
     		}
     		

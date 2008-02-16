@@ -101,7 +101,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         setPhase(VehicleMission.EMBARKING);
         setPhaseDescription("Embarking from " + getStartingSettlement().getName());
         
-        // System.out.println("Travel to Settlement mission");
+         logger.info("Travel to Settlement mission");
     }
     
     /**

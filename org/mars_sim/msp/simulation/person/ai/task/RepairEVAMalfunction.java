@@ -53,7 +53,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         addPhase(REPAIR_MALFUNCTION);
         setPhase(EXIT_AIRLOCK);
 
-        // System.out.println(person.getName() + " has started the RepairEVAMalfunction task.");
+        // logger.info(person.getName() + " has started the RepairEVAMalfunction task.");
     }
 
     /**

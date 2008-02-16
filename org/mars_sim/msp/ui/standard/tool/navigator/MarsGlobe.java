@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.image.*;
 import javax.swing.*;
 import java.util.*;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 
@@ -20,6 +22,11 @@ import org.mars_sim.msp.ui.standard.ImageLoader;
  * coordinates.
  */
 public class MarsGlobe {
+    
+   private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.tool.navigator.MarsGlobe";
+	
+   private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Constant data members
     private final static int map_height = 150; // Height of map source image (pixels)
@@ -248,7 +255,7 @@ public class MarsGlobe {
             System.err.println("grabber error" + e);
         }
         if ((pg_color.status() & ImageObserver.ABORT) != 0)
-            System.out.println("grabber error");
+            logger.info("grabber error");
 
         // Transfer contents of 1-dimensional pixels_color into 2-dimensional map_pixels
         for (int x = 0; x < map_width; x++)

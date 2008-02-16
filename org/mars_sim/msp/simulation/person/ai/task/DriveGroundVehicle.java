@@ -56,7 +56,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
 
-        // System.out.println(person.getName() + " is driving " + vehicle.getName());
+        // logger.info(person.getName() + " is driving " + vehicle.getName());
     }
 
     /**
@@ -84,7 +84,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         addPhase(WINCH_VEHICLE);
 		if ((startingPhase != null) && !startingPhase.equals("")) setPhase(startingPhase);
 
-        // System.out.println(person.getName() + " is driving " + vehicle.getName());
+        // logger.info(person.getName() + " is driving " + vehicle.getName());
     }
     
     /**
@@ -356,7 +356,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         chance *= (5D * (1D - lightConditions)) + 1D;
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // System.out.println(person.getName() + " has accident driving " + vehicle.getName());
+            // logger.info(person.getName() + " has accident driving " + vehicle.getName());
 	    	vehicle.getMalfunctionManager().accident();
 		}
     }
@@ -404,7 +404,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
      */
     public void endTask() {
     	
-        // System.out.println(person.getName() + " finished driving " + getVehicle().getName());
+        // logger.info(person.getName() + " finished driving " + getVehicle().getName());
         // ((GroundVehicle) getVehicle()).setStuck(false);
     	
     	super.endTask();

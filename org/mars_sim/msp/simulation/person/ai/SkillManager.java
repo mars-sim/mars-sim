@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
 import java.util.Hashtable;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
 
@@ -16,6 +18,11 @@ import org.mars_sim.msp.simulation.person.Person;
  *  Each person has one skill manager.
  */
 public class SkillManager implements Serializable {
+    
+   private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.SkillManager";
+	
+   private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private Person person; // The person owning the SkillManager
@@ -132,6 +139,6 @@ public class SkillManager implements Serializable {
         }
         
         // int finalSkill = getSkillLevel(skillName);
-        // if (finalSkill > initialSkill) System.out.println(person.getName() + " improved " + skillName + " skill to " + finalSkill);
+        // if (finalSkill > initialSkill) logger.info(person.getName() + " improved " + skillName + " skill to " + finalSkill);
     }
 }
