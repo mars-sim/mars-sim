@@ -10,7 +10,14 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
@@ -26,6 +33,11 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  * The simulation has only one mission manager. 
  */
 public class MissionManager implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.MissionManager";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+ 
 
     // Data members
     private List<Mission> missions; // Current missions in the simulation.
@@ -202,8 +214,7 @@ public class MissionManager implements Serializable {
             return (Mission) construct.newInstance(parametersForInvokingConstructor);
         }
         catch (Exception e) {
-            System.err.println("MissionManager.getNewMission(): " + e.toString());
-            e.printStackTrace(System.err);
+            logger.log(Level.SEVERE, "MissionManager.getNewMission()", e);
             return null;
         } 
     }
@@ -283,7 +294,7 @@ public class MissionManager implements Serializable {
     			totalProbCache += probability.doubleValue();
             } 
             catch (Exception e) { 
-                System.err.println("MissionManager.getTotalMissionProbability(): " + e.toString());
+        	logger.log(Level.SEVERE, "MissionManager.getTotalMissionProbability()", e);
             }
         }
     	

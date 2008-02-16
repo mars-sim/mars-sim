@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcess;
@@ -31,6 +33,11 @@ import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
  * A task for working on a manufacturing process.
  */
 public class ManufactureGood extends Task implements Serializable {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.task.ManufactureGood";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String MANUFACTURE = "Manufacture";
@@ -65,7 +72,7 @@ public class ManufactureGood extends Task implements Serializable {
         	else endTask();
         }
         catch (BuildingException e) {
-			System.err.println("ManufactureGood: " + e.getMessage());
+            		logger.log(Level.SEVERE,"ManufactureGood",e);
 			endTask();
         }
         
@@ -98,7 +105,7 @@ public class ManufactureGood extends Task implements Serializable {
         		}
         	}
         	catch (BuildingException e) {
-        		System.err.println("ManufactureGood.getProbability(): " + e.getMessage());
+        	    logger.log(Level.SEVERE,"ManufactureGood.getProbability()",e);
         	}
         }
         
@@ -404,7 +411,7 @@ public class ManufactureGood extends Task implements Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // System.out.println(person.getName() + " has accident while manufacturing.");
+            logger.info(person.getName() + " has accident while manufacturing.");
             workshop.getBuilding().getMalfunctionManager().accident();
         }
     }

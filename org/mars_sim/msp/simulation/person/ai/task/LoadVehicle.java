@@ -131,8 +131,7 @@ public class LoadVehicle extends Task implements Serializable {
         		result = 100D * missions.size();
         	}
         	catch (Exception e) {
-        		System.err.println("Error finding loading missions. " + e.getMessage());
-        		e.printStackTrace(System.err);
+        	    logger.log(Level.SEVERE, "Error finding loading missions.", e);
         	}
         }
 

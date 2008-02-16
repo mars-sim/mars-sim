@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -22,9 +25,13 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  *  Note: Eating a meal reduces hunger to 0.
  */
 class EatMeal extends Task implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.EatMeal";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Task phase
-	private static final String EATING = "Eating";
+    private static final String EATING = "Eating";
 	
     // Static members
     private static final double DURATION = 40D; // The predetermined duration of task in millisols
@@ -78,7 +85,7 @@ class EatMeal extends Task implements Serializable {
 			}
 		}
 		catch (BuildingException e) {
-			System.err.println("EatMeal.getProbability(): " + e.getMessage());
+		    	logger.log(Level.SEVERE,"EatMeal.getProbability()",e);
 		}
 		
 		// Check if there's a cooked meal at a local kitchen.
@@ -188,7 +195,7 @@ class EatMeal extends Task implements Serializable {
 					if (kitchen.hasCookedMeal()) result = kitchen;
 				}
 				catch (BuildingException e) {
-					System.err.println("EatMeal.Cooking(): " + e.getMessage());
+				    logger.log(Level.SEVERE,"EatMeal.Cooking()",e);
 				}
 			}
 		}

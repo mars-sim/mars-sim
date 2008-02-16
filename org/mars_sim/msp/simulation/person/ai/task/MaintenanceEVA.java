@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
@@ -27,6 +29,11 @@ import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
  * preventive maintenance on malfunctionable entities outdoors.
  */
 public class MaintenanceEVA extends EVAOperation implements Serializable {
+    
+    	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.simulation.person.ai.task.MaintenanceEVA";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String MAINTAIN = "Maintenance";
@@ -51,7 +58,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			if (entity == null) endTask();
 		}
 		catch (Exception e) {
-			System.err.println("MaintenanceEVA.constructor(): " + e.getMessage());
+		    	logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
 			endTask();
 		}
 		
@@ -95,7 +102,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			}   
 		}
 		catch (Exception e) {
-    		e.printStackTrace(System.err);
+		logger.log(Level.SEVERE,"getProbability()",e);
     	}
 		
 		// Check if an airlock is available
@@ -274,7 +281,8 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		else chance /= (skill - 2);
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			// System.out.println(person.getName() + " has accident while performing maintenance on " + entity.getName() + ".");
+			logger.info(person.getName() + " has accident while performing maintenance on " 
+						     + entity.getName() + ".");
 			entity.getMalfunctionManager().accident();
 		}
 	}

@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
@@ -33,6 +35,10 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  * to another randomly selected one within range of an available rover.   
  */
 public class TravelToSettlement extends RoverMission implements Serializable {
+    
+	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Travel To Settlement";
@@ -179,8 +185,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	    		}
 	    	}
 	    	catch (Exception e) {
-	    		System.err.println("Error finding vehicles at settlement.");
-	    		e.printStackTrace(System.err);
+	    	    	logger.log(Level.SEVERE, "Error finding vehicles at settlement.", e);
 	    	}
 	    	
 			// Check for embarking missions.

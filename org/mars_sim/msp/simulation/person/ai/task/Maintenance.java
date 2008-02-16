@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
@@ -27,6 +29,11 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  *  preventive maintenance on vehicles, settlements and equipment.
  */
 public class Maintenance extends Task implements Serializable {
+    
+	private static String CLASS_NAME = 
+    	    "org.mars_sim.msp.simulation.person.ai.task.Maintenance";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Task phase
 	private static final String MAINTAIN = "Maintain";
@@ -51,7 +58,7 @@ public class Maintenance extends Task implements Serializable {
         	if (entity == null) endTask();
 		}
 		catch (Exception e) {
-			System.err.println("Maintenance.constructor(): " + e.getMessage());
+		    	logger.log(Level.SEVERE,"Maintenance.constructor()",e);
 			endTask();
 		}
 		
@@ -90,7 +97,7 @@ public class Maintenance extends Task implements Serializable {
             }
         }
         catch (Exception e) {
-    		e.printStackTrace(System.err);
+            logger.log(Level.SEVERE,"getProbability()",e);
     	}
 	
         // Effort-driven task modifier.
@@ -208,7 +215,9 @@ public class Maintenance extends Task implements Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // System.out.println(person.getName() + " has accident while performing maintenance on " + entity.getName() + ".");
+            logger.info(person.getName() + " has accident while performing maintenance on " 
+        	    		         + entity.getName() 
+        	    		         + ".");
             entity.getMalfunctionManager().accident();
         }
     }

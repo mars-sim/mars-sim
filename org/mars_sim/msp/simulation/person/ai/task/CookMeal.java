@@ -8,6 +8,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -23,6 +26,10 @@ import org.mars_sim.msp.simulation.structure.building.function.Cooking;
  * This is an effort driven task.
  */
 public class CookMeal extends Task implements Serializable {
+    
+    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.CookMeal";
+	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Task phase
 	private static final String COOKING = "Cooking";
@@ -97,7 +104,7 @@ public class CookMeal extends Task implements Serializable {
 				}
 			}
 			catch (Exception e) {
-				System.err.println("CookMeal.getProbability(): " + e.getMessage());
+			    logger.log(Level.SEVERE,"CookMeal.getProbability()" ,e);
 			}
         
 			// Effort-driven task modifier.

@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
@@ -39,6 +41,11 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  * preventive maintenance on ground vehicles in a garage.
  */
 public class MaintainGroundVehicleGarage extends Task implements Serializable {
+    
+    	private static String CLASS_NAME = 
+    	    "org.mars_sim.msp.simulation.person.ai.task.MaintainGroundVehicleGarage";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String MAINTAIN_VEHICLE = "Maintaining Vehicle";
@@ -72,7 +79,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         			BuildingManager.addPersonToBuilding(person, building);
         		}
         		catch (Exception e) {
-        			System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
+        		    logger.log(Level.SEVERE,"MaintainGroundVehicleGarage.constructor: ",e);
         		}
         	}
         	else {
@@ -90,7 +97,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         				} 
         			}
         			catch (Exception e) {
-        				System.err.println("MaintainGroundVehicleGarage.constructor: " + e.getMessage());
+        			    logger.log(Level.SEVERE,"MaintainGroundVehicleGarage.constructor: ",e);
         			}
         		}
 			}
@@ -103,7 +110,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         addPhase(MAINTAIN_VEHICLE);
         setPhase(MAINTAIN_VEHICLE);
         
-        // System.out.println(person.getName() + " starting MaintainGroundVehicleGarage task.");
+        logger.info(person.getName() + " starting MaintainGroundVehicleGarage task.");
     }
 
     /** 
@@ -135,7 +142,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         	}
 		}
         catch (Exception e) {
-        	e.printStackTrace(System.err);
+            logger.log(Level.SEVERE,"getProbability()",e);
         }
         
 		// Determine if settlement has available space in garage.
@@ -271,7 +278,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            // System.out.println(person.getName() + " has accident while performing maintenance on " + vehicle.getName() + ".");
+            logger.info(person.getName() + " has accident while performing maintenance on " 
+        	    		         + vehicle.getName() 
+        	    		         + ".");
             vehicle.getMalfunctionManager().accident();
         }
     }

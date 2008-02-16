@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
@@ -45,6 +47,10 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  * A mission for trading between two settlements.
  */
 public class Trade extends RoverMission implements Serializable {
+    
+    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.Trade";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Mission event types
 	public static final String BUY_LOAD_EVENT = "buy load";
@@ -269,8 +275,7 @@ public class Trade extends RoverMission implements Serializable {
 	    		}
 	    	}
 	    	catch (Exception e) {
-	    		System.err.println("Error finding vehicles at settlement.");
-	    		e.printStackTrace(System.err);
+	    	    logger.log(Level.SEVERE, "Error finding vehicles at settlement.", e);
 	    	}
 	    	
 			// Check for embarking missions.
