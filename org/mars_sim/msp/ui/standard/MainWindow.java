@@ -13,6 +13,8 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -32,6 +34,11 @@ import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
  * contains the tool bars and main desktop pane.
  */
 public class MainWindow extends JFrame {
+    
+    private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.MainWindow";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private UnitToolBar unitToolbar; // The unit tool bar
@@ -164,7 +171,7 @@ public class MainWindow extends JFrame {
 		catch(Exception e) {
 	        JOptionPane.showMessageDialog(null, "Problem loading simulation",
 				e.toString(), JOptionPane.ERROR_MESSAGE);
-	        System.err.println("Problem loading simulation: " + e);
+	        logger.log(Level.SEVERE,"Problem loading simulation: " + e);
 	        e.printStackTrace();
 	    }
     }
@@ -201,7 +208,7 @@ public class MainWindow extends JFrame {
 			desktop.openToolWindow(NavigatorWindow.NAME);
 		}
 		catch(Exception e) {
-			System.err.println("Problem creating new simulation: " + e);
+			logger.log(Level.SEVERE,"Problem creating new simulation: " + e);
 			e.printStackTrace(System.err);
 		}
     }
@@ -250,7 +257,7 @@ public class MainWindow extends JFrame {
 		catch(Exception e) {
 	        JOptionPane.showMessageDialog(null, "Problem saving simulation",
 				e.toString(), JOptionPane.ERROR_MESSAGE);
-	        System.err.println("Problem saving simulation: " + e);
+	        logger.log(Level.SEVERE,"Problem saving simulation: " + e);
 	        e.printStackTrace();
 	    }
     }
@@ -304,7 +311,7 @@ public class MainWindow extends JFrame {
         	sim.getMasterClock().saveSimulation(null);
         }
         catch(Exception e) {
-            System.err.println("Problem saving simulation " + e);
+            logger.log(Level.SEVERE,"Problem saving simulation " + e);
             e.printStackTrace(System.err);
         }
 

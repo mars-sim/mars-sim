@@ -8,6 +8,9 @@
 package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
@@ -18,6 +21,11 @@ import org.mars_sim.msp.simulation.person.PhysicalCondition;
  * characteristics of this problem.
  */
 public class HealthProblem implements Serializable {
+    
+    private static String CLASS_NAME = 
+	"org.mars_sim.msp.simulation.person.medical.HealthProblem";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     private static final int DEGRADING = 0;
     private static final int TREATMENT = 1;
@@ -67,7 +75,7 @@ public class HealthProblem implements Serializable {
                     usedAid.requestTreatment(this);
                 }
                 catch (Exception e) {
-                    System.err.println("HeathProblem: " + e.getMessage());
+                    logger.log(Level.SEVERE,"HeathProblem: " + e.getMessage());
                     e.printStackTrace(System.err);
                 }
             }
@@ -254,7 +262,7 @@ public class HealthProblem implements Serializable {
 						usedAid.stopTreatment(this);
 					}
 					catch (Exception e) {
-						// System.err.println("HealthProblem.timePassing(): " + e.getMessage());
+						// logger.log(Level.SEVERE,"HealthProblem.timePassing(): " + e.getMessage());
 					}
 					usedAid = null;
 				}
@@ -300,7 +308,7 @@ public class HealthProblem implements Serializable {
                         usedAid.stopTreatment(this);
                     }
                     catch (Exception e) {
-                    	// System.err.println("HealthProblem.timePassing(): " + e.getMessage());
+                    	// logger.log(Level.SEVERE,"HealthProblem.timePassing(): " + e.getMessage());
                     }
                     usedAid = null;
                 }
@@ -314,7 +322,7 @@ public class HealthProblem implements Serializable {
                             usedAid.stopTreatment(this);
                         }
                         catch (Exception e) {
-                            // System.err.println("HealthProblem.timePassing(): " + e.getMessage());
+                            // logger.log(Level.SEVERE,"HealthProblem.timePassing(): " + e.getMessage());
                         }
                         usedAid = null;
                     }

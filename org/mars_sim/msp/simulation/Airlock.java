@@ -9,11 +9,17 @@ package org.mars_sim.msp.simulation;
 
 import org.mars_sim.msp.simulation.person.*;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The Airlock class represents an airlock to a vehicle or structure.
  */
 public abstract class Airlock implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.Airlock";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     private static final double CYCLE_TIME = 5D; // Pressurize/depressurize time (millisols)
     
@@ -131,7 +137,7 @@ public abstract class Airlock implements Serializable {
                     exitAirlock(i.next());
                 }
                 catch (Exception e) { 
-                    System.err.println(e.getMessage()); 
+                    logger.log(Level.SEVERE,e.getMessage()); 
                 }
             }
             occupants.clear();

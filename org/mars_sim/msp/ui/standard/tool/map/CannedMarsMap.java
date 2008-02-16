@@ -12,6 +12,9 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.JComponent;
 import org.mars_sim.msp.simulation.*;
 
@@ -20,6 +23,11 @@ import org.mars_sim.msp.simulation.*;
  * jar file in order to generate a map image.
  */
 public abstract class CannedMarsMap implements Map {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.tool.map.CannedMarsMap";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	public static final double HALF_MAP_ANGLE = .48587D;
 	public static final int MAP_HEIGHT = 1440; // Source map height in pixels.
@@ -62,8 +70,7 @@ public abstract class CannedMarsMap implements Map {
         		surfaceColors = loadMapData(dataFile, index);
         	}
         	catch (IOException e) {
-        		System.err.println("Could not find map data files.");
-        		System.err.println(e.toString());
+        		logger.log(Level.SEVERE,"Could not find map data files.",e);
         	}
 		}
         else surfaceColors = mapColors;
@@ -263,7 +270,7 @@ public abstract class CannedMarsMap implements Map {
 				mt.waitForID(0);
 			} 
 			catch (InterruptedException e) {
-				System.err.println("MediaTracker interrupted " + e);
+				logger.log(Level.SEVERE,"MediaTracker interrupted " + e);
 			}
 			mapImageDone = true;
 			currentCenter = new Coordinates(newCenter);

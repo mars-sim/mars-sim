@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Lab;
@@ -25,6 +28,11 @@ import org.mars_sim.msp.simulation.vehicle.*;
  * The ResearchScience class is an abstract task for scientific research.
  */
 public abstract class ResearchScience extends Task implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.ResearchScience";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+
 	
 	// Task phase.
 	private static final String RESEARCHING = "Researching";
@@ -226,7 +234,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 			}
 		}
 		catch (BuildingException e) {
-			System.err.println("ResearchScience.getSettlementLab(): " + e.getMessage());
+			logger.log(Level.SEVERE,"ResearchScience.getSettlementLab(): " + e.getMessage());
 		}
 		
 		return result;
@@ -342,7 +350,7 @@ public abstract class ResearchScience extends Task implements Serializable {
 			}
 		}
 		catch (Exception e) {
-			System.err.println("ResearchScience.addPersonToLab(): " + e.getMessage());
+			logger.log(Level.SEVERE,"ResearchScience.addPersonToLab(): " + e.getMessage());
 		}
 	}
 }

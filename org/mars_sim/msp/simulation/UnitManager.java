@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentCollection;
@@ -45,6 +47,10 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  *  constructed and owned by the virtual Mars object.
  */
 public class UnitManager implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.UnitManager";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Static Data Members
     public static final String SETTLEMENT = "settlement";
@@ -472,7 +478,7 @@ public class UnitManager implements Serializable {
 			}
 			catch (Exception e) {
 				e.printStackTrace(System.err);
-				System.err.println("Configured person could not be created: " + e.getMessage());
+				logger.log(Level.SEVERE,"Configured person could not be created: " + e.getMessage());
 			}
 		}
 		
@@ -535,7 +541,7 @@ public class UnitManager implements Serializable {
 			}
 			catch (Exception e) {
 				e.printStackTrace(System.err);
-				System.err.println("Configured relationship could not be created: " + e.getMessage());
+				logger.log(Level.SEVERE,"Configured relationship could not be created: " + e.getMessage());
 			}
 		}
     }

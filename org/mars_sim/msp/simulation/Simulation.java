@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.events.HistoricalEventManager;
@@ -73,7 +74,7 @@ public class Simulation implements ClockListener, Serializable {
 			initializeTransientData();
 		}
 		catch (Exception e) {
-			System.err.println("Simulation could not be created: " + e.getMessage());
+			logger.log(Level.SEVERE,"Simulation could not be created: " + e.getMessage());
 		}
 	}
 	
@@ -244,7 +245,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
-			System.err.println("Simulation.clockPulse(): " + e.getMessage());
+			logger.log(Level.SEVERE,"Simulation.clockPulse(): " + e.getMessage());
 		}
 	}
 	

@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.image.*;
 import javax.swing.*;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
@@ -68,7 +69,7 @@ public class MarsGlobe {
         try {
             mtrack.waitForAll();
         } catch (InterruptedException e) {
-            System.err.println("Media Tracker Error " + e);
+            logger.log(Level.SEVERE,"Media Tracker Error " + e);
         }
 
         // Prepare Sphere
@@ -219,7 +220,7 @@ public class MarsGlobe {
         try {
             mt.waitForID(0);
         } catch (InterruptedException e) {
-            System.err.println("Media Tracker Error " + e);
+            logger.log(Level.SEVERE,"Media Tracker Error " + e);
         }
 
         // Indicate that image is complete
@@ -252,7 +253,7 @@ public class MarsGlobe {
         try {
             pg_color.grabPixels();
         } catch (InterruptedException e) {
-            System.err.println("grabber error" + e);
+            logger.log(Level.SEVERE,"grabber error" + e);
         }
         if ((pg_color.status() & ImageObserver.ABORT) != 0)
             logger.info("grabber error");

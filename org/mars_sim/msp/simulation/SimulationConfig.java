@@ -7,6 +7,9 @@
 package org.mars_sim.msp.simulation;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.xml.parsers.*;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.manufacture.ManufactureConfig;
@@ -27,6 +30,10 @@ import org.xml.sax.SAXException;
  * Provides access to other simulation subset configuration classes.
  */
 public class SimulationConfig implements Serializable {
+    
+    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.SimulationConfig";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Configuration files to load.
 	private static final String SIMULATION_FILE = "simulation";
@@ -87,7 +94,7 @@ public class SimulationConfig implements Serializable {
 			manufactureConfig = new ManufactureConfig(parseXMLFile(MANUFACTURE_FILE));
 		}
 		catch (Exception e) {
-			System.err.println("Error creating simulation config: " + e.getMessage());
+			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
 			e.printStackTrace(System.err);
 		}
 	}

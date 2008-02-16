@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
@@ -177,7 +178,7 @@ public class PhysicalCondition implements Serializable {
         	requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature());
         }
         catch (Exception e) {
-        	System.err.println(person.getName() + " - Error in lifesupport needs: " + e.getMessage());
+        	logger.log(Level.SEVERE,person.getName() + " - Error in lifesupport needs: " + e.getMessage());
         }
 
         // Build up fatigue & hunger for given time passing.
@@ -223,7 +224,7 @@ public class PhysicalCondition implements Serializable {
         	// if (checkResourceConsumption(foodEaten, amount, MIN_VALUE, getMedicalManager().getStarvation())) recalculate();
         }
         catch (InventoryException e) {
-        	System.err.println(person.getName() + " could not retrieve food.");
+        	logger.log(Level.SEVERE,person.getName() + " could not retrieve food.");
         	e.printStackTrace(System.err);
         }
     }
@@ -464,12 +465,12 @@ public class PhysicalCondition implements Serializable {
 						person.fireUnitUpdate(ILLNESS_EVENT);
 					        logger.info(person.getName() + " has an anxiety attack.");
 					}
-					else System.err.println("Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");
+					else logger.log(Level.SEVERE,"Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");
 				}
 			}
 		}
 		catch (Exception e) {
-			System.err.println("Problem reading 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
+			logger.log(Level.SEVERE,"Problem reading 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
 		}
     }
 

@@ -8,6 +8,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -22,6 +25,10 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  * collected rock samples. 
  */
 public class StudyRockSamples extends ResearchScience implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.StudyRockSamples";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Rate of rock sample research (kg / millisol)
     private static final double RESEARCH_RATE = .1D;
@@ -60,7 +67,7 @@ public class StudyRockSamples extends ResearchScience implements Serializable {
 						else result = 0D;		
 					}
 					catch (BuildingException e) {
-						System.err.println("StudyRockSamples.getProbability(): " + e.getMessage());
+						logger.log(Level.SEVERE,"StudyRockSamples.getProbability(): " + e.getMessage());
 					}
 				}
 			}

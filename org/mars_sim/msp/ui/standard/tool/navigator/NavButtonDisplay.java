@@ -9,6 +9,9 @@ package org.mars_sim.msp.ui.standard.tool.navigator;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.*;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.ui.standard.ImageLoader;
@@ -19,6 +22,10 @@ import org.mars_sim.msp.ui.standard.ImageLoader;
  * the globe and map.
  */
 public class NavButtonDisplay extends JComponent implements MouseListener {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.navigator.NavButtonDisplay";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Constant data members
     static final double degree = Math.PI / 180D; // Circular degree unit
@@ -71,7 +78,7 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
 
         try { mtrack.waitForAll(); }
         catch (InterruptedException e) {
-            System.err.println("NavButtonDisplay Media Tracker Error " + e);
+            logger.log(Level.SEVERE,"NavButtonDisplay Media Tracker Error " + e);
         }
 
         // Set hot spots for mouse clicks

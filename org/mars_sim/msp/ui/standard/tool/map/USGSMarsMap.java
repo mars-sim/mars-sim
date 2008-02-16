@@ -11,6 +11,8 @@ import org.mars_sim.msp.simulation.Coordinates;
 
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -24,6 +26,10 @@ import javax.swing.*;
  * @see <a href="http://www-pdsimage.wr.usgs.gov/PDS/public/mapmaker/faq.htm">PDS Mars Explorer</a>
  */
 public class USGSMarsMap implements Map, ActionListener {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.map.USGSMarsMap";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// The map type.
 	public static final String TYPE = "USGS map";
@@ -132,7 +138,7 @@ public class USGSMarsMap implements Map, ActionListener {
             new PDSConnectionManager(urlCon, this);
         } 
         catch (MalformedURLException e) {
-            System.err.println("URL not valid: " + url.toString());
+            logger.log(Level.SEVERE,"URL not valid: " + url.toString());
             throw new IOException("URL not valid");
         }
         catch (IOException e) {
@@ -227,7 +233,7 @@ public class USGSMarsMap implements Map, ActionListener {
         try {
             tracker.waitForID(0);
         } catch (InterruptedException e) {
-            System.err.println(e);
+            logger.log(Level.SEVERE,"waitForMapLoaded()",e);
         }
         imageDone = true;
     }
@@ -267,7 +273,7 @@ public class USGSMarsMap implements Map, ActionListener {
                 map.connectionEstablished(connection);
             }
             catch (IOException e) {
-                System.err.println("Unable to connect to: " + e.getMessage());
+                logger.log(Level.SEVERE,"Unable to connect to: " + e.getMessage());
             }
         }
     }

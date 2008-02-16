@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -21,6 +24,10 @@ import org.mars_sim.msp.simulation.structure.building.function.Research;
  * The ResearchBotany class is a task for researching botany science.
  */
 public class ResearchBotany extends ResearchScience implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.ResearchBotany";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	/** 
 	 * Constructor
@@ -56,7 +63,7 @@ public class ResearchBotany extends ResearchScience implements Serializable {
 						else result = 0D;		
 					}
 					catch (BuildingException e) {
-						System.err.println("ResearchBotany.getProbability(): " + e.getMessage());
+						logger.log(Level.SEVERE,"ResearchBotany.getProbability(): " + e.getMessage());
 					}
 				}
 			}

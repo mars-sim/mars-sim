@@ -8,6 +8,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
@@ -19,6 +22,10 @@ import org.mars_sim.msp.simulation.vehicle.Crewable;
  * This is a task for teaching a student a task.
  */
 public class Teach extends Task implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.Teach";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String TEACHING = "Teaching";
@@ -55,7 +62,7 @@ public class Teach extends Task implements Serializable {
 						BuildingManager.addPersonToBuilding(person, studentBuilding);
 				}
 				catch (BuildingException e) {
-					System.err.println("Teach.constructor(): " + e.getMessage());
+					logger.log(Level.SEVERE,"Teach.constructor(): " + e.getMessage());
 					endTask();
 				}
 			}
@@ -96,7 +103,7 @@ public class Teach extends Task implements Serializable {
 					else result = 0D;
 				}
 				catch (BuildingException e) {
-					System.err.println("Teach.getProbability(): " + e.getMessage());
+					logger.log(Level.SEVERE,"Teach.getProbability(): " + e.getMessage());
 				}
 			}
 		}

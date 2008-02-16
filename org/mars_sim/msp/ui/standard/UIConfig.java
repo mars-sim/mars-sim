@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
@@ -34,6 +36,11 @@ import org.w3c.dom.NodeList;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 public class UIConfig {
+    
+    	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.UIConfig";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Singleton instance.
 	public static final UIConfig INSTANCE = new UIConfig();
@@ -82,7 +89,7 @@ public class UIConfig {
 			configDoc = builder.parse(stream);
 		}
 		catch (Exception e) {
-			// System.err.println(e.getMessage());
+			// logger.log(Level.SEVERE,e.getMessage());
 		}
 		finally {
 			if (stream != null) {
@@ -178,7 +185,7 @@ public class UIConfig {
 			serializer.serialize(outputDoc);
 		}
 		catch (Exception e) {
-			System.err.println(e.getMessage());
+			logger.log(Level.SEVERE,e.getMessage());
 		}
 		finally {
 			if (stream != null) {

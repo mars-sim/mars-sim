@@ -15,6 +15,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -33,6 +35,11 @@ import org.mars_sim.msp.simulation.Simulation;
  *  It provides information about the project, credit to contributors and the GPL license.
  */
 public class AboutDialog extends JDialog implements ActionListener, ComponentListener {
+    
+    private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.AboutDialog";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private JButton closeButton; // The close button
@@ -152,7 +159,7 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
         try {
             document.insertString(0, buf.toString(), null);
         } catch (BadLocationException e) {
-            System.err.println(e.toString());
+            logger.log(Level.SEVERE,e.toString());
         }
 
         JScrollPane scrollPane = new JScrollPane(textPane);

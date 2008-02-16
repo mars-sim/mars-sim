@@ -8,6 +8,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -17,6 +20,10 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  * The Workout class is a task for working out in an exercise facility.
  */
 public class Workout extends Task implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.Workout";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String EXERCISING = "Exercising";
@@ -48,7 +55,7 @@ public class Workout extends Task implements Serializable {
 				else endTask();
 			}
 			catch (BuildingException e) {
-				System.err.println("Workout.constructor(): " + e.getMessage());
+				logger.log(Level.SEVERE,"Workout.constructor(): " + e.getMessage());
 				endTask();
 			}
 		}
@@ -85,7 +92,7 @@ public class Workout extends Task implements Serializable {
 				else result = 0D;
 			}
 			catch (BuildingException e) {
-				System.err.println("Workout.getProbability(): " + e.getMessage());
+				logger.log(Level.SEVERE,"Workout.getProbability(): " + e.getMessage());
 			}
 		}
 		

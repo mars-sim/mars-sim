@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Airlock;
@@ -417,7 +418,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 			}
         }
         catch (BuildingException e) {
-        	System.err.println("Settlement.getAvailableAirlock(): " + e.getMessage());
+        	logger.log(Level.SEVERE,"Settlement.getAvailableAirlock(): " + e.getMessage());
         }
         
         return result;

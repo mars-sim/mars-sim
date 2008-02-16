@@ -10,6 +10,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.person.Person;
@@ -25,6 +27,10 @@ import org.mars_sim.msp.simulation.structure.building.function.Research;
  */
 public class ResearchMaterialsScience extends ResearchScience implements
 		Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.ResearchMaterialsScience";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	/** 
 	 * Constructor
@@ -60,7 +66,7 @@ public class ResearchMaterialsScience extends ResearchScience implements
 						else result = 0D;		
 					}
 					catch (BuildingException e) {
-						System.err.println("ResearchMaterialsScience.getProbability(): " + e.getMessage());
+						logger.log(Level.SEVERE,"ResearchMaterialsScience.getProbability(): " + e.getMessage());
 					}
 				}
 			}

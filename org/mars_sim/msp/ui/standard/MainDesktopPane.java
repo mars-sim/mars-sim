@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
@@ -52,6 +54,11 @@ import org.mars_sim.msp.ui.standard.unit_window.UnitWindowListener;
  * along with the tool bars, by the main window.
  */
 public class MainDesktopPane extends JDesktopPane implements ComponentListener {
+    
+    private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.MainDesktopPane";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
     // Data members
     private Collection<UnitWindow> unitWindows; // List of open or buttoned unit windows.
@@ -285,7 +292,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 try { 
                     window.setClosed(false); 
                 }
-                catch (Exception e) { System.err.println(e.toString()); }
+                catch (Exception e) { logger.log(Level.SEVERE,e.toString()); }
             }
             window.show();
             //bring to front if it overlaps with other windows
@@ -331,7 +338,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 tempWindow.setIcon(false);
             }
             catch(java.beans.PropertyVetoException e) {
-                System.err.println("Problem reopening " + e);
+                logger.log(Level.SEVERE,"Problem reopening " + e);
             }
         }
         else {

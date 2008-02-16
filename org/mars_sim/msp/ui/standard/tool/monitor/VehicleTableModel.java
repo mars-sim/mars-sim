@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
@@ -25,7 +27,6 @@ import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
@@ -33,6 +34,10 @@ import org.mars_sim.msp.simulation.vehicle.*;
  * It maps key attributes of the Vehicle into Columns.
  */
 public class VehicleTableModel extends UnitTableModel {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.monitor.VehicleTableModel";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Column indexes
     private final static int NAME = 0;
@@ -238,7 +243,7 @@ public class VehicleTableModel extends UnitTableModel {
             				result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
             			}
             			catch (Exception e) {
-            				System.err.println("Error getting current leg remaining distance.");
+            				logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
             				e.printStackTrace(System.err);
             			}
             		}

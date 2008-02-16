@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
@@ -23,6 +25,11 @@ import org.mars_sim.msp.simulation.vehicle.*;
  * The BuildingManager manages the settlement's buildings.
  */
 public class BuildingManager implements Serializable {
+    
+    private static String CLASS_NAME = 
+	"org.mars_sim.msp.simulation.structure.building.BuildingManager";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
     
 	// Unit update events.
 	public static final String ADD_BUILDING_EVENT = "add building";
@@ -213,7 +220,7 @@ public class BuildingManager implements Serializable {
                 	if (lifeSupport.containsPerson(person)) result = building;
             	}
             	catch (Exception e) {
-            		System.err.println("BuildingManager.getBuilding(): " + e.getMessage());
+            		logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
             	}
             }
         }
@@ -241,7 +248,7 @@ public class BuildingManager implements Serializable {
                 	if (garage.containsVehicle(vehicle)) result = garageBuilding;
                 }
                 catch (Exception e) {
-                	System.err.println("BuildingManager.getBuilding(): " + e.getMessage());
+                	logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
                 }
             }
         }

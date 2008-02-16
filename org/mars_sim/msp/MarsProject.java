@@ -44,9 +44,6 @@ public class MarsProject {
         // Create a simulation
         List argList = Arrays.asList(args);
         
-        // If debug argument, put in debug mode.
-        if (argList.contains("-debug")) setDebugMode();
-        
         if (argList.contains("-new")) {
         	// If new argument, create new simulation.
         	try {
@@ -104,20 +101,6 @@ public class MarsProject {
         // Dispose the splash window.
         splashWindow.dispose();
        
-    }
-
-    /** 
-     * Set error output to a text file (for debugging) 
-     */
-    private void setDebugMode() {
-        try {
-            FileOutputStream errFileStream = new FileOutputStream("err.log");
-            System.setErr(new PrintStream(errFileStream));
-            System.err.println("Testing");
-        } 
-        catch (FileNotFoundException e) {
-            System.err.println("err.log could not be opened");
-        }
     }
 
     /** 

@@ -15,6 +15,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -42,6 +44,11 @@ import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
  * The NavigationTabPanel is a tab panel for a vehicle's navigation information.
  */
 public class NavigationTabPanel extends TabPanel implements ActionListener {
+    
+    private static String CLASS_NAME = 
+	"org.mars_sim.msp.ui.standard.unit_window.vehicle.NavigationTabPanel";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
     
     private DecimalFormat formatter = new DecimalFormat("0.0");
     private JButton driverButton;
@@ -223,7 +230,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         		distanceCache = mission.getCurrentLegRemainingDistance();
         	}
         	catch (Exception e) {
-        		System.err.println("Error getting current leg remaining distance.");
+        		logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
     			e.printStackTrace(System.err);
         	}
         	distanceLabel = new JLabel("Distance: " + formatter.format(distanceCache) + " km.", JLabel.LEFT);
@@ -377,7 +384,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         		}
         	}
         	catch (Exception e) {
-        		System.err.println("Error getting current leg remaining distance.");
+        		logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
     			e.printStackTrace(System.err);
         	}
         }

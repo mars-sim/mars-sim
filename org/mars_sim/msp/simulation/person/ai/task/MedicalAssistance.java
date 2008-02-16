@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
@@ -30,6 +33,10 @@ import org.mars_sim.msp.simulation.vehicle.*;
  * help to someone else. 
  */
 public class MedicalAssistance extends Task implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.MedicalAssistance";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	private static final String TREATMENT = "Treatment";
 
@@ -84,7 +91,7 @@ public class MedicalAssistance extends Task implements Serializable {
 				}
             }
             catch (Exception e) {
-                System.err.println("MedicalAssistance: " + e.getMessage());
+                logger.log(Level.SEVERE,"MedicalAssistance: " + e.getMessage());
                 endTask();
             }
         }
@@ -117,7 +124,7 @@ public class MedicalAssistance extends Task implements Serializable {
 				else result = 0D;
         	}
         	catch (Exception e) {
-        		System.err.println("MedicalAssistance.getProbability(): " + e.getMessage());
+        		logger.log(Level.SEVERE,"MedicalAssistance.getProbability(): " + e.getMessage());
         	}
         }
         
@@ -203,7 +210,7 @@ public class MedicalAssistance extends Task implements Serializable {
         		if (building != null) result.add((MedicalCare) building.getFunction(MedicalCare.NAME));
         	}
         	catch (Exception e) {
-        		System.err.println("MedicalAssistance.getNeedyMedicalAids(): " + e.getMessage());
+        		logger.log(Level.SEVERE,"MedicalAssistance.getNeedyMedicalAids(): " + e.getMessage());
         	}
         }
         else if (location.equals(Person.INVEHICLE)) {

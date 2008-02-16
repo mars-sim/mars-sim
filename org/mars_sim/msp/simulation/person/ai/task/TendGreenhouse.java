@@ -8,6 +8,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -24,6 +27,10 @@ import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
  * This is an effort driven task.
  */
 public class TendGreenhouse extends Task implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.TendGreenhouse";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String TENDING = "Tending";
@@ -58,7 +65,7 @@ public class TendGreenhouse extends Task implements Serializable {
         	else endTask();
         }
         catch (BuildingException e) {
-			System.err.println("TendGreenhouse: " + e.getMessage());
+			logger.log(Level.SEVERE,"TendGreenhouse: " + e.getMessage());
 			endTask();
         }
         
@@ -88,7 +95,7 @@ public class TendGreenhouse extends Task implements Serializable {
         		}
         	}
         	catch (BuildingException e) {
-        		System.err.println("TendGreenhouse.getProbability(): " + e.getMessage());
+        		logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
         	}
         	
             // Food value modifier.

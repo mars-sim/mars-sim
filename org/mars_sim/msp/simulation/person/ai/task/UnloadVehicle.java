@@ -8,6 +8,8 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
@@ -32,6 +34,10 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  */
 public class UnloadVehicle extends Task implements Serializable {
 	
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.UnloadVehicle";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    
 	// Task phase
 	private static final String UNLOADING = "Unloading";
 
@@ -110,7 +116,7 @@ public class UnloadVehicle extends Task implements Serializable {
         		result = 500D * numVehicles;
         	}
         	catch (Exception e) {
-        		System.err.println("Error finding unloading missions. " + e.getMessage());
+        		logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
         		e.printStackTrace(System.err);
         	}
         }

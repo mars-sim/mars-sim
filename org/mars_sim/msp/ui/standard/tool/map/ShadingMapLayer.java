@@ -13,6 +13,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
@@ -23,6 +25,10 @@ import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
  * The ShadingMapLayer is a graphics layer to display twilight and night time shading.
  */
 public class ShadingMapLayer implements MapLayer {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.map.ShadingMapLayer";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
     
     // Domain data
     private SurfaceFeatures surfaceFeatures;
@@ -96,7 +102,7 @@ public class ShadingMapLayer implements MapLayer {
                 mt.waitForID(0);
             }
             catch (InterruptedException e) {
-                System.err.println("ShadingMapLayer interrupted: " + e);
+                logger.log(Level.SEVERE,"ShadingMapLayer interrupted: " + e);
             }
 
             // Draw the shading image

@@ -18,11 +18,19 @@ import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.simulation.Coordinates;
 
 public class MapPanel extends JPanel implements Runnable {
+    
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.tool.map.MapPanel";
+	
+    	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Data members.
 	private Map map;
@@ -194,7 +202,7 @@ public class MapPanel extends JPanel implements Runnable {
         }
         else {
         	if (mapError) {
-            	System.err.println("mapError: " + mapErrorMessage);
+            	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
                 // Display previous map image
                 if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
                 

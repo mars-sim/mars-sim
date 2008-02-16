@@ -15,6 +15,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
@@ -32,6 +34,10 @@ import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
  * Navigator tool.
  */
 class GlobeDisplay extends JComponent implements Runnable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.navigator.GlobeDisplay";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private MarsGlobe marsSphere; // Real surface sphere object
@@ -202,7 +208,7 @@ class GlobeDisplay extends JComponent implements Runnable {
             mt.waitForID(0);
         }
         catch (InterruptedException e) {
-            System.err.println("GlobeDisplay - ShadingMap interrupted: " + e);
+            logger.log(Level.SEVERE,"GlobeDisplay - ShadingMap interrupted: " + e);
         }
 
         // Draw the shading image

@@ -8,6 +8,9 @@
 package org.mars_sim.msp.ui.standard.tool.time;
  
 import java.awt.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
@@ -21,6 +24,10 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
  * Martian and Earth time 
  */
 public class TimeWindow extends ToolWindow implements ClockListener {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.time.TimeWindow";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Tool name
 	public static final String NAME = "Time Tool";		
@@ -170,7 +177,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
                     	master.setTimeRatio(ratio);
                     }
                     catch (Exception e2) {
-                    	System.err.println(e2.getMessage());
+                    	logger.log(Level.SEVERE,e2.getMessage());
                     }
                 }
         });

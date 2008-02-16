@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
@@ -23,6 +26,10 @@ import org.mars_sim.msp.simulation.vehicle.*;
  * information about him/her.
  */
 public class Person extends Unit implements VehicleOperator, Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.Person";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Unit update events
 	public final static String ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
@@ -157,7 +164,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         		containerUnit.getInventory().retrieveUnit(this);
         	}
         	catch (InventoryException e) {
-        		System.err.println("Could not bury " + getName());
+        		logger.log(Level.SEVERE,"Could not bury " + getName());
         		e.printStackTrace(System.err);
         	}
         }

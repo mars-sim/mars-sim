@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
@@ -22,6 +25,10 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  * Note: Sleeping reduces fatigue and stress.
  */
 class Sleep extends Task implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.Sleep";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String SLEEPING = "Sleeping";
@@ -53,7 +60,7 @@ class Sleep extends Task implements Serializable {
         		}
         	}
         	catch (BuildingException e){
-        		System.err.println("Sleep.constructor(): " + e.getMessage());
+        		logger.log(Level.SEVERE,"Sleep.constructor(): " + e.getMessage());
         		endTask();
         	}
         }
@@ -92,7 +99,7 @@ class Sleep extends Task implements Serializable {
         		}
         	}
         	catch (BuildingException e) {
-        		System.err.println("Sleep.getProbability(): " + e.getMessage());
+        		logger.log(Level.SEVERE,"Sleep.getProbability(): " + e.getMessage());
         	}
         }
 

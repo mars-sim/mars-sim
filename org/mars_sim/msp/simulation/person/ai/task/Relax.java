@@ -9,6 +9,9 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -18,6 +21,10 @@ import org.mars_sim.msp.simulation.structure.building.function.*;
  *  The duration of the task is by default chosen randomly, up to 100 millisols.
  */
 class Relax extends Task implements Serializable {
+    
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.Task";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String RELAXING = "Relaxing";
@@ -40,7 +47,7 @@ class Relax extends Task implements Serializable {
         		if (recBuilding != null) BuildingManager.addPersonToBuilding(person, recBuilding);
         	}
         	catch (Exception e) {
-        		System.err.println("Relax.constructor(): " + e.getMessage());
+        		logger.log(Level.SEVERE,"Relax.constructor(): " + e.getMessage());
         		endTask();
         	}
         }
@@ -71,7 +78,7 @@ class Relax extends Task implements Serializable {
     			}
     		}
     		catch (Exception e) {
-    			System.err.println("Relax.getProbability(): " + e.getMessage());
+    			logger.log(Level.SEVERE,"Relax.getProbability(): " + e.getMessage());
     		}
     	}
         
