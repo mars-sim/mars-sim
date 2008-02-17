@@ -8,6 +8,8 @@
 package org.mars_sim.msp.ui.standard;
 
 import java.awt.event.*;
+import java.util.logging.Logger;
+
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -21,6 +23,11 @@ import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 /** The MainWindowMenu class is the menu for the main window.
  */
 public class MainWindowMenu extends JMenuBar implements ActionListener, MenuListener {
+    
+    private static String CLASS_NAME = 
+	"org.mars_sim.msp.ui.standard.MainWindowMenu";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private MainWindow mainWindow;                // The main window frame

@@ -89,7 +89,7 @@ public class UIConfig {
 			configDoc = builder.parse(stream);
 		}
 		catch (Exception e) {
-			// logger.log(Level.SEVERE,e.getMessage());
+			logger.log(Level.SEVERE,"parseFile()",e);
 		}
 		finally {
 			if (stream != null) {
