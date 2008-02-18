@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.81 2007-08-12
+ * @version 2.83 2008-02-18
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.util.*;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -104,15 +105,20 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     	if (person == null) throw new IllegalArgumentException("person is null");
     	if (malfunction == null) throw new IllegalArgumentException("malfunction is null");
     	
-    	boolean result = true;    	
-    	Inventory inv = person.getTopContainerUnit().getInventory();
+    	boolean result = false;    	
+    	Unit containerUnit = person.getTopContainerUnit();
 
-    	Map<Part, Integer> repairParts = malfunction.getRepairParts();
-    	Iterator<Part> i = repairParts.keySet().iterator();
-    	while (i.hasNext() && result) {
-    		Part part = i.next();
-    		int number = repairParts.get(part);
-    		if (inv.getItemResourceNum(part) < number) result = false;
+    	if (containerUnit != null) {
+    		result = true;
+    		Inventory inv = containerUnit.getInventory();
+    	
+    		Map<Part, Integer> repairParts = malfunction.getRepairParts();
+    		Iterator<Part> i = repairParts.keySet().iterator();
+    		while (i.hasNext() && result) {
+    			Part part = i.next();
+    			int number = repairParts.get(part);
+    			if (inv.getItemResourceNum(part) < number) result = false;
+    		}
     	}
     	
     	return result;
