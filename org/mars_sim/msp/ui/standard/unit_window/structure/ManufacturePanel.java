@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard.unit_window.structure;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.Iterator;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.JLabel;
@@ -16,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcess;
+import org.mars_sim.msp.simulation.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.simulation.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 public class ManufacturePanel extends JPanel {
@@ -90,6 +93,9 @@ public class ManufacturePanel extends JPanel {
         
         // Update progress bars.
         update();
+        
+        // Add tooltip.
+        setToolTipText(getToolTipString());
 	}
 	
     /**
@@ -117,5 +123,48 @@ public class ManufacturePanel extends JPanel {
      */
     public ManufactureProcess getManufactureProcess() {
     	return process;
+    }
+    
+    /**
+     * Adds the tool tip for the manufacturing panel.
+     */
+    private String getToolTipString() {
+    	StringBuffer result = new StringBuffer("<html>");
+    	
+    	ManufactureProcessInfo info = process.getInfo();
+    	result.append("Manufacturing Process: " + info.getName() + "<br>");
+    	result.append("Manufacture Building: " + process.getWorkshop().getBuilding().getName() + "<br>");
+    	result.append("Effort Time Required: " + info.getWorkTimeRequired() + " millisols<br>");
+    	result.append("Process Time Required: " + info.getProcessTimeRequired() + " millisols<br>");
+    	result.append("Building Tech Level Required: " + info.getTechLevelRequired() + "<br>");
+    	result.append("Engineering Skill Level Required: " + info.getSkillLevelRequired() + "<br>");
+    	
+    	// Add process inputs.
+    	result.append("Process Inputs:<br>");
+    	Iterator<ManufactureProcessItem> i = info.getInputList().iterator();
+    	while (i.hasNext()) {
+    		ManufactureProcessItem item = i.next();
+    		result.append("&nbsp;&nbsp;" + item.getName() + ": " + getItemAmountString(item) + "<br>");
+    	}
+    	
+    	// Add process outputs.
+    	result.append("Process Outputs:<br>");
+    	Iterator<ManufactureProcessItem> j = info.getOutputList().iterator();
+    	while (j.hasNext()) {
+    		ManufactureProcessItem item = j.next();
+    		result.append("&nbsp;&nbsp;" + item.getName() + ": " + getItemAmountString(item) + "<br>");
+    	}
+    	
+    	result.append("</html>");
+    	
+    	return result.toString();
+    }
+    
+    private String getItemAmountString(ManufactureProcessItem item) {
+    	String result = "";
+    	if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) 
+			result = item.getAmount() + " kg";
+		else result = Integer.toString((int) item.getAmount());
+    	return result;
     }
 }
