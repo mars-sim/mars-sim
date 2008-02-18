@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureTabPanel.java
- * @version 2.83 2008-02-10
+ * @version 2.83 2008-02-17
  * @author Scott Davis
  */
 
@@ -73,7 +73,7 @@ public class ManufactureTabPanel extends TabPanel {
         
         processCache = getManufactureProcesses();
         Iterator<ManufactureProcess> i = processCache.iterator();
-        while (i.hasNext()) manufactureListPane.add(new ManufacturePanel(i.next()));
+        while (i.hasNext()) manufactureListPane.add(new ManufacturePanel(i.next(), true));
 	}
 	
 	@Override
@@ -88,7 +88,7 @@ public class ManufactureTabPanel extends TabPanel {
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				if (!processCache.contains(process)) 
-					manufactureListPane.add(new ManufacturePanel(process));
+					manufactureListPane.add(new ManufacturePanel(process, true));
 			}
 			
 			// Remove manufacture panels for old processes.

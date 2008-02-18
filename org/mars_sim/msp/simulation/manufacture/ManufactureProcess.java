@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcess.java
- * @version 2.83 2008-01-22
+ * @version 2.83 2008-02-18
  * @author Scott Davis
  */
 
@@ -9,12 +9,15 @@ package org.mars_sim.msp.simulation.manufacture;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
+
 /**
  * A manufacturing process.
  */
 public class ManufactureProcess implements Serializable {
 
 	// Data members.
+	private Manufacture workshop;
 	private ManufactureProcessInfo info;
 	private double workTimeRemaining;
 	private double processTimeRemaining;
@@ -23,8 +26,9 @@ public class ManufactureProcess implements Serializable {
 	 * Constructor
 	 * @param info information about the process.
 	 */
-	public ManufactureProcess(ManufactureProcessInfo info) {
+	public ManufactureProcess(ManufactureProcessInfo info, Manufacture workshop) {
 		this.info = info;
+		this.workshop = workshop;
 		workTimeRemaining = info.getWorkTimeRequired();
 		processTimeRemaining = info.getProcessTimeRequired();
 	}
@@ -74,5 +78,13 @@ public class ManufactureProcess implements Serializable {
 	@Override
 	public String toString() {
 		return info.getName();
+	}
+
+	/**
+	 * Gets the manufacture building function.
+	 * @return manufacture building function.
+	 */
+	public Manufacture getWorkshop() {
+		return workshop;
 	}
 }

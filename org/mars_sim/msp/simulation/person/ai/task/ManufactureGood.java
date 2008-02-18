@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.83 2008-01-21
+ * @version 2.83 2008-02-18
  * @author Scott Davis
  */
 
@@ -389,7 +389,7 @@ public class ManufactureGood extends Task implements Serializable {
 			}
 		
 			if (highestValueProcess != null) {
-				result = new ManufactureProcess(highestValueProcess);
+				result = new ManufactureProcess(highestValueProcess, workshop);
 				workshop.addProcess(result);
 			}
 		}

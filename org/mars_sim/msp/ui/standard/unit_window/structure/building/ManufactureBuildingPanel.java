@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureBuildingPanel.java
- * @version 2.83 2008-02-10
+ * @version 2.83 2008-02-17
  * @author Scott Davis
  */
 
@@ -79,7 +79,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         // Create process panels
         processCache = new ArrayList<ManufactureProcess>(workshop.getProcesses());
         Iterator<ManufactureProcess> i = processCache.iterator();
-        while (i.hasNext()) processListPane.add(new ManufacturePanel(i.next()));
+        while (i.hasNext()) processListPane.add(new ManufacturePanel(i.next(), false));
 	}
 	
 	
@@ -95,7 +95,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				if (!processCache.contains(process)) 
-					processListPane.add(new ManufacturePanel(process));
+					processListPane.add(new ManufacturePanel(process, false));
 			}
 			
 			// Remove process panels for old processes.

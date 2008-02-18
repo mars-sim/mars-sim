@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufacturePanel.java
- * @version 2.83 2008-02-09
+ * @version 2.83 2008-02-18
  * @author Scott Davis
  */
 
@@ -28,8 +28,9 @@ public class ManufacturePanel extends JPanel {
 	/**
 	 * Constructor
 	 * @param process the manufacturing process.
+	 * @param showBuilding is the building name shown?
 	 */
-	public ManufacturePanel(ManufactureProcess process) {
+	public ManufacturePanel(ManufactureProcess process, boolean showBuilding) {
 		// Call JPanel constructor
 		super();
 		
@@ -37,7 +38,8 @@ public class ManufacturePanel extends JPanel {
 		this.process = process;
 		
         // Set layout
-        setLayout(new GridLayout(3, 1, 0, 0));
+		if (showBuilding) setLayout(new GridLayout(4, 1, 0, 0));
+		else setLayout(new GridLayout(3, 1, 0, 0));
 
         // Set border
         setBorder(new MarsPanelBorder());
@@ -50,6 +52,13 @@ public class ManufacturePanel extends JPanel {
         }
         JLabel nameLabel = new JLabel(name, JLabel.CENTER);
         add(nameLabel);
+
+        if (showBuilding) {
+        	// Prepare building name label.
+        	String buildingName = process.getWorkshop().getBuilding().getName();
+        	JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
+        	add(buildingNameLabel);
+        }
         
         // Prepare work panel.
         JPanel workPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
