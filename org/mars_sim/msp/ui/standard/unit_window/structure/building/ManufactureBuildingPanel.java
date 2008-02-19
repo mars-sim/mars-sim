@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureBuildingPanel.java
- * @version 2.83 2008-02-17
+ * @version 2.83 2008-02-19
  * @author Scott Davis
  */
 
@@ -11,25 +11,41 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcess;
+import org.mars_sim.msp.simulation.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.simulation.manufacture.ManufactureUtil;
 import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.unit_window.structure.ManufacturePanel;
 
 public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 
+	private static String CLASS_NAME = 
+	    "org.mars_sim.msp.ui.standard.unit_window.structure.building.ManufactureBuildingPanel";
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	
 	private Manufacture workshop; // The manufacture building.
 	private JPanel processListPane; // Panel for displaying process panels.
 	private List<ManufactureProcess> processCache; // List of manufacture processes in building.
+	private JComboBox processSelection; // Process selector.
+	private Vector<ManufactureProcessInfo> processSelectionCache; // List of available processes.
+	private JButton newProcessButton; // Process selection button.
 	
 	/**
 	 * Constructor
@@ -80,6 +96,37 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         processCache = new ArrayList<ManufactureProcess>(workshop.getProcesses());
         Iterator<ManufactureProcess> i = processCache.iterator();
         while (i.hasNext()) processListPane.add(new ManufacturePanel(i.next(), false));
+        
+        // Create interaction panel.
+        JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        add(interactionPanel, BorderLayout.SOUTH);
+        
+        // Create new manufacture process selection.
+        processSelectionCache = getAvailableProcesses();
+        processSelection = new JComboBox(processSelectionCache);
+        interactionPanel.add(processSelection);
+        
+        // Create new process button.
+        newProcessButton = new JButton("Create New Process");
+        newProcessButton.setEnabled(processSelection.getItemCount() > 0);
+        newProcessButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {
+        		try {
+        			ManufactureProcessInfo selectedProcess = (ManufactureProcessInfo) 
+        					processSelection.getSelectedItem();
+        			if (selectedProcess != null) {
+        				if (ManufactureUtil.canProcessBeStarted(selectedProcess, getWorkshop())) {
+        					getWorkshop().addProcess(new ManufactureProcess(selectedProcess, getWorkshop()));
+        					update();
+        				}
+        			}
+        		}
+        		catch (Exception e) {
+        			logger.log(Level.SEVERE, "new process button", e);
+        		}
+        	}
+        });
+        interactionPanel.add(newProcessButton);
 	}
 	
 	
@@ -119,6 +166,25 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 			ManufacturePanel panel = getManufacturePanel(i.next());
 			if (panel != null) panel.update();
 		}
+		
+		// Update process selection list.
+		Vector<ManufactureProcessInfo> newProcesses = getAvailableProcesses();
+		if (!newProcesses.equals(processSelectionCache)) {
+			processSelectionCache = newProcesses;
+			ManufactureProcessInfo currentSelection = (ManufactureProcessInfo) 
+					processSelection.getSelectedItem();
+			processSelection.removeAllItems();
+			Iterator<ManufactureProcessInfo> j = processSelectionCache.iterator();
+			while (j.hasNext()) processSelection.addItem(j.next());
+			
+			if (currentSelection != null) {
+				if (processSelectionCache.contains(currentSelection)) 
+					processSelection.setSelectedItem(currentSelection);
+			}
+		}
+		
+		// Update new process button.
+		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 	}
 	
 	/**
@@ -138,5 +204,39 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Gets all manufacturing processes available at the workshop.
+	 * @return vector of processes.
+	 */
+	private Vector<ManufactureProcessInfo> getAvailableProcesses() {
+		Vector<ManufactureProcessInfo> result = new Vector<ManufactureProcessInfo>();
+		
+		if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
+			try {
+				Iterator<ManufactureProcessInfo> i = 
+					ManufactureUtil.getManufactureProcessesForTechLevel(
+							workshop.getTechLevel()).iterator();
+				while (i.hasNext()) {
+					ManufactureProcessInfo process = i.next();
+					if (ManufactureUtil.canProcessBeStarted(process, workshop)) 
+						result.add(process);
+				}
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "get available processes", e);
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the workshop for this panel.
+	 * @return workshop
+	 */
+	private Manufacture getWorkshop() {
+		return workshop;
 	}
 }
