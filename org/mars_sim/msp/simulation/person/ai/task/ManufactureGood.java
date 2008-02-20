@@ -102,6 +102,9 @@ public class ManufactureGood extends Task implements Serializable {
         			
                 	// Manufacturing good value modifier.
                 	result *= getHighestManufacturingProcessValue(person, manufacturingBuilding) * 10D;
+                	
+                	// If manufacturing building has process requiring work, add modifier.
+                	if (hasProcessRequiringWork(manufacturingBuilding)) result += 10D;
         		}
         	}
         	catch (BuildingException e) {
@@ -137,6 +140,7 @@ public class ManufactureGood extends Task implements Serializable {
             List<Building> manufacturingBuildings = manager.getBuildings(Manufacture.NAME);
             manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
             manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings);
+            manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings);
             manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
             manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
             manufacturingBuildings = BuildingManager.getBestRelationshipBuildings(person, manufacturingBuildings);
@@ -154,7 +158,7 @@ public class ManufactureGood extends Task implements Serializable {
      * @return list of manufacture buildings needing work.
      * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
-    private static List<Building> getManufacturingBuildingsNeedingWork(List buildingList) 
+    private static List<Building> getManufacturingBuildingsNeedingWork(List<Building> buildingList) 
     		throws BuildingException {
     	
     	List<Building> result = new ArrayList<Building>();
@@ -170,13 +174,57 @@ public class ManufactureGood extends Task implements Serializable {
     }
     
     /**
+     * Gets a subset list of manufacturing buildings with processes requiring work.
+     * @param buildingList the original building list.
+     * @return subset list of buildings with processes requiring work, or original list if none found.
+     * @throws BuildingException if error determining building processes.
+     */
+    private static List<Building> getBuildingsWithProcessesRequiringWork(List<Building> buildingList) 
+    	throws BuildingException {
+    	
+    	List<Building> result = new ArrayList<Building>();
+    	
+    	// Add all buildings with processes requiring work.
+    	Iterator i = buildingList.iterator();
+    	while (i.hasNext()) {
+    		Building building = (Building) i.next();
+    		if (hasProcessRequiringWork(building)) result.add(building);
+    	}
+    	
+    	// If no building with processes requiring work, return original list.
+    	if (result.size() == 0) result = buildingList;
+    	
+    	return result;
+    }
+    
+    /**
+     * Checks if manufacturing building has any processes requiring work.
+     * @param manufacturingBuilding the manufacturing building.
+     * @return true if processes requiring work.
+     * @throws BuildingException if building is not manufacturing.
+     */
+    private static boolean hasProcessRequiringWork(Building manufacturingBuilding) 
+    		throws BuildingException {
+    	
+    	boolean result = false;
+    	
+    	Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
+		Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses().iterator();
+		while (i.hasNext()) {
+			if (i.next().getWorkTimeRemaining() > 0D) result = true;
+		}
+    	
+    	return result;
+    }
+    
+    /**
      * Gets a subset list of manufacturing buildings with the highest tech level from a list of buildings 
      * with the manufacture function.
      * @param buildingList list of buildings with the manufacture function.
      * @return subset list of highest tech level buildings.
      * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
-    private static List<Building> getHighestManufacturingTechLevelBuildings(List buildingList)
+    private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList)
     		throws BuildingException {
     	
     	List<Building> result = new ArrayList<Building>();
