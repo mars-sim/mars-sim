@@ -104,11 +104,13 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         // Create new manufacture process selection.
         processSelectionCache = getAvailableProcesses();
         processSelection = new JComboBox(processSelectionCache);
+        processSelection.setToolTipText("Select an available manufacturing process");
         interactionPanel.add(processSelection);
         
         // Create new process button.
         newProcessButton = new JButton("Create New Process");
         newProcessButton.setEnabled(processSelection.getItemCount() > 0);
+        newProcessButton.setToolTipText("Create a new manufacturing process");
         newProcessButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
         		try {

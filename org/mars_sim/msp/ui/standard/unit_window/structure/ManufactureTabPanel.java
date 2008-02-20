@@ -104,6 +104,7 @@ public class ManufactureTabPanel extends TabPanel {
         // Create new building selection.
         buildingSelectionCache = getManufacturingBuildings();
         buildingSelection = new JComboBox(buildingSelectionCache);
+        buildingSelection.setToolTipText("Select a manufacturing building");
         buildingSelection.addItemListener(new ItemListener() {
         	public void itemStateChanged(ItemEvent event) {
             	update();
@@ -115,11 +116,13 @@ public class ManufactureTabPanel extends TabPanel {
         Building workshopBuilding = (Building) buildingSelection.getSelectedItem();
         processSelectionCache = getAvailableProcesses(workshopBuilding);
         processSelection = new JComboBox(processSelectionCache);
+        processSelection.setToolTipText("Select an available manufacturing process");
         interactionPanel.add(processSelection);
         
         // Create new process button.
         newProcessButton = new JButton("Create New Process");
         newProcessButton.setEnabled(processSelection.getItemCount() > 0);
+        newProcessButton.setToolTipText("Create a new manufacturing process");
         newProcessButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
         		try {
