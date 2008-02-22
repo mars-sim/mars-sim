@@ -48,9 +48,8 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  */
 public class Trade extends RoverMission implements Serializable {
     
-    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.Trade";
-	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.Trade";	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Mission event types
 	public static final String BUY_LOAD_EVENT = "buy load";
@@ -70,6 +69,7 @@ public class Trade extends RoverMission implements Serializable {
 	
 	// Static cache for holding trade profit info.
 	private static final Map<Person, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Person, TradeProfitInfo>();
+	private static final Map<Person, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Person, Settlement>();
 	
 	// Data members.
 	private Settlement tradingSettlement;
@@ -106,8 +106,8 @@ public class Trade extends RoverMission implements Serializable {
         	setStartingSettlement(startingPerson.getSettlement());
         	
         	// Get trading settlement
-        	tradingSettlement = TradeUtil.bestTradeSettlementCache;
-        	if (tradingSettlement != null) {
+        	tradingSettlement = TRADE_SETTLEMENT_CACHE.get(startingPerson);
+        	if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
         		addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement, 
         				tradingSettlement.getName()));
         		setDescription("Trade with " + tradingSettlement.getName());
@@ -266,6 +266,7 @@ public class Trade extends RoverMission implements Serializable {
 	    			if (!useCache) {
 	    				tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
 	    				TRADE_PROFIT_CACHE.put(person, new TradeProfitInfo(tradeProfit, (MarsClock) currentTime.clone()));
+	    				TRADE_SETTLEMENT_CACHE.put(person, TradeUtil.bestTradeSettlementCache);
 	    			}
 	    			
 	    			// double startTime = System.currentTimeMillis();
