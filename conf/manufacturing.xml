@@ -81,15 +81,6 @@
 		</outputs>
 	</process>
 	
-	<process name="iron ingot forming" tech="2" skill="2" work-time="100" process-time="200">
-		<inputs>
-			<part name="iron sheet" number="1" />
-		</inputs>
-		<outputs>
-			<part name="iron ingot" number="3" />
-		</outputs>
-	</process>
-	
 	<!-- Al2O3 + 3C -> 2Al + 3CO -->
 	<process name="aluminum ingot casting" tech="1" skill="2" work-time="100" process-time="200">
 		<inputs>
@@ -120,15 +111,6 @@
 		</inputs>
 		<outputs>
 			<part name="aluminum sheet" number="1" />
-		</outputs>
-	</process>
-	
-	<process name="aluminum ingot forming" tech="2" skill="2" work-time="100" process-time="200">
-		<inputs>
-			<part name="aluminum sheet" number="1" />
-		</inputs>
-		<outputs>
-			<part name="aluminum ingot" number="5" />
 		</outputs>
 	</process>
 	
@@ -178,15 +160,6 @@
 		</inputs>
 		<outputs>
 			<part name="steel sheet" number="1" />
-		</outputs>
-	</process>
-	
-	<process name="steel ingot forming" tech="2" skill="2" work-time="100" process-time="200">
-		<inputs>
-			<part name="steel sheet" number="1" />
-		</inputs>
-		<outputs>
-			<part name="steel ingot" number="3" />
 		</outputs>
 	</process>
 	
