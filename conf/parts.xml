@@ -207,8 +207,19 @@
 	<!-- 1m x 2m x 1mm sheet of aluminum -->
 	<part name="aluminum sheet" mass="5.0" />
 	
+	<!-- 1kg spool of thick steel wire -->
 	<part name="steel wire" mass="1.0" />
 	
+	<!-- 1kg spool of thin aluminum wire -->
 	<part name="aluminum wire" mass="1.0" />
+	
+	<!-- 1kg spool of thin fiberglass -->
+	<part name="fiberglass" mass="1.0" />
+	
+	<!-- 1m x 1m square of woven fiberglass cloth -->
+	<part name="fiberglass cloth" mass=".1" />
+	
+	<!-- 1m x 1m square of thin plastic sheet -->
+	<part name="plastic sheet" mass=".1" />
 	
 </part-list>

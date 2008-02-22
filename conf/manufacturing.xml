@@ -232,9 +232,13 @@
 		</outputs>
 	</process>
 	
+	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make satellite dish. -->
 	<process name="satellite dish manufacturing" tech="2" skill="3" work-time="200" process-time="200">
 		<inputs>
-			<part name="steel ingot" number="2" />
+			<part name="fiberglass" number="1" />
+			<resource name="polyester resin" amount=".5" />
+			<resource name="styrene" amount=".5" />
+			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 		</inputs>
@@ -252,9 +256,13 @@
 		</outputs>
 	</process>
 	
+	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make antenna. -->
 	<process name="radio antenna manufacturing" tech="2" skill="2" work-time="100" process-time="100">
 		<inputs>
-			<part name="steel ingot" number="2" />
+			<part name="fiberglass" number="1" />
+			<resource name="polyester resin" amount=".5" />
+			<resource name="styrene" amount=".5" />
+			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 		</inputs>
@@ -598,6 +606,53 @@
 		</inputs>
 		<outputs>
 			<part name="spark plug" number="100" />
+		</outputs>
+	</process>
+	
+	<process name="optical fiber glass drawing" tech="3" skill="3" work-time="300" process-time="300">
+		<inputs>
+			<resource name="sand" amount="2.0" />
+		</inputs>
+		<outputs>
+			<part name="fiberglass" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="dark fiber glass drawing" tech="3" skill="3" work-time="300" process-time="300">
+		<inputs>
+			<resource name="regolith" amount="2.0" />
+		</inputs>
+		<outputs>
+			<part name="fiberglass" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="fiberglass cloth weaving" tech="4" skill="4" work-time="400" process-time="400">
+		<inputs>
+			<part name="fiberglass" number="1" />
+		</inputs>
+		<outputs>
+			<part name="fiberglass cloth" number="10" />
+		</outputs>
+	</process>
+
+	<process name="plastic sheet extrusion" tech="4" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<resource name="polyester resin" amount="10.0" />
+		</inputs>
+		<outputs>
+			<part name="plastic sheet" number="10" />
+		</outputs>
+	</process>
+	
+	<!-- Creating a bag sewn together with a fiberglass cloth and a plastic sheet liner. -->
+	<process name="bag manufacturing" tech="2" skill="2" work-time="100" process-time="0">
+		<inputs>
+			<part name="fiberglass cloth" number="5" />
+			<part name="plastic sheet" number="5" />
+		</inputs>
+		<outputs>
+			<equipment name="bag" number="10" />
 		</outputs>
 	</process>
 
