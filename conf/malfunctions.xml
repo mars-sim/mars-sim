@@ -129,21 +129,8 @@
 		</repair-parts-list>
 	</malfunction>
 	
-	<!-- Minor punctured tire on rover. -->
-	<malfunction name="Punctured Tire">
-	    <severity value="5" />
-	    <probability value="60.0" />
-	    <eva-repair-time value="10.0" />
-	    <entity-list>
-	    	<entity name="rover" />
-	    </entity-list>
-	    <repair-parts-list>
-			<part name="tire plug" number="1" probability="100" />
-		</repair-parts-list>
-	</malfunction>
-	
-	<!-- Flat tire on rover. -->
-	<malfunction name="Flat Tire">
+	<!-- Damaged tire on rover. -->
+	<malfunction name="Damaged Tire">
 		<severity value="20" />
 		<probability value="30.0" />
 		<eva-repair-time value="50.0" />
@@ -151,8 +138,7 @@
 			<entity name="rover" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="tire plug" number="2" probability="60" />
-			<part name="rover tire" number="1" probability="30" />
+			<part name="rover tire" number="1" probability="60" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -171,7 +157,7 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
-			<part name="silicone sealant" number="1" probability="50" />
+			<part name="epoxy resin bottle" number="1" probability="50" />
 			<part name="plastic tubing" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -188,12 +174,12 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="20" />
 			<part name="spark plug" number="1" probability="15" />
-			<part name="fan belt" number="1" probability="5" />
 			<part name="coolant bottle" number="1" probability="40" />
 			<part name="electrical wire" number="2" probability="20" />
 			<part name="wire connector" number="2" probability="20" />
 			<part name="plastic tubing" number="1" probability="10" />
 			<part name="lubricant bottle" number="1" probability="30" />
+			<part name="timing belt" number="1" probability="30" />
 		</repair-parts-list>
 	</malfunction>
 	
@@ -266,7 +252,7 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
-			<part name="silicone sealant" number="1" probability="50" />
+			<part name="epoxy resin bottle" number="1" probability="50" />
 			<part name="copper pipe" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -308,7 +294,7 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
-			<part name="silicone sealant" number="1" probability="50" />
+			<part name="epoxy resin bottle" number="1" probability="50" />
 			<part name="plastic tubing" number="5" probability="30" />
 			<part name="plastic pipe" number="2" probability="5" />
 		</repair-parts-list>

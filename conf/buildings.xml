@@ -418,7 +418,6 @@
 				<resource-storage resource="Aluminum Oxide" capacity="25.0" />
 				<resource-storage resource="Sand" capacity="500.0" />
 				<resource-storage resource="Iron Powder" capacity="50.0" />
-				<resource-storage resource="Aluminum Powder" capacity="10.0" />
 			</storage>
 		</functions>
 	</building>
@@ -440,7 +439,6 @@
 				<resource-storage resource="Aluminum Oxide" capacity="50.0" />
 				<resource-storage resource="Sand" capacity="1000.0" />
 				<resource-storage resource="Iron Powder" capacity="100.0" />
-				<resource-storage resource="Aluminum Powder" capacity="20.0" />
 				<resource-storage resource="Ethylene" capacity="100.0" />
 				<resource-storage resource="Polyethylene" capacity="50.0" />
 				<resource-storage resource="Gypsum" capacity="100.0" />

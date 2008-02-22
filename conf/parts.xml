@@ -10,15 +10,10 @@
 			<entity name="farming" probability="10" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-	
-	<part name="tire plug" mass=".1">
-		<maintenance-entity-list>
-			<entity name="rover" probability="20" max-number="12" />
-		</maintenance-entity-list>
-	</part>
 
 	<part name="co2 extinguisher" mass="20.0" />
 	
+	<!-- Rover tires are made of steel and steel wire. -->
 	<part name="rover tire" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="6" />
@@ -47,7 +42,7 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="silicone sealant" mass=".2">
+	<part name="epoxy resin bottle" mass=".2">
 		<maintenance-entity-list>
 			<entity name="rover" probability="50" max-number="6" />
 			<entity name="farming" probability="80" max-number="12" />
@@ -61,12 +56,6 @@
 	<part name="spark plug" mass=".1">
 		<maintenance-entity-list>
 			<entity name="rover" probability="30" max-number="2" />
-		</maintenance-entity-list>
-	</part>
-	
-	<part name="fan belt" mass=".2">
-		<maintenance-entity-list>
-			<entity name="vehicle" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
@@ -110,7 +99,7 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="lubricant bottle" mass=".1">
+	<part name="lubricant bottle" mass=".2">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="10" max-number="4" />
 			<entity name="manufacture" probability="10" max-number="2" />
@@ -134,6 +123,12 @@
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="5" max-number="1" />
 			<entity name="communication" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="timing belt" mass=".2">
+		<maintenance-entity-list>
+			<entity name="rover" probability="30" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
@@ -175,6 +170,15 @@
 		</maintenance-entity-list>
 	</part>
 	
+	<part name="iron pipe" mass="10.0">
+		<maintenance-entity-list>
+			<entity name="farming" probability="10" max-number="2" />
+			<entity name="manufacture" probability="10" max-number="2" />
+			<entity name="rover" probability="10" max-number="1" />
+			<entity name="settlement" probability="10" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+	
 	<part name="copper pipe" mass="5.0">
 		<maintenance-entity-list>
 			<entity name="living accomodations" probability="10" max-number="1" />
@@ -184,14 +188,27 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="iron ingot" mass="10.0" />
+	<part name="iron ingot" mass="5.0" />
 	
-	<part name="steel ingot" mass="10.0" />
+	<part name="steel ingot" mass="5.0" />
 	
 	<part name="aluminum ingot" mass="1.0" />
 	
 	<part name="steel canister" mass="10.0" />
 	
-	<part name="bottle" mass=".5" />
+	<part name="bottle" mass=".1" />
+	
+	<!-- 1m x 2m x 1mm sheet of steel -->
+	<part name="steel sheet" mass="15.0" />
+	
+	<!-- 1m x 2m x 1mm sheet of iron -->
+	<part name="iron sheet" mass="15.0" />
+	
+	<!-- 1m x 2m x 1mm sheet of aluminum -->
+	<part name="aluminum sheet" mass="5.0" />
+	
+	<part name="steel wire" mass="1.0" />
+	
+	<part name="aluminum wire" mass="1.0" />
 	
 </part-list>

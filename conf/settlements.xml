@@ -47,14 +47,12 @@
 			<!-- type: the type of part (see parts.xml) -->
 			<!-- number: the number of parts. -->
 			<part type="airleak patch" number="105" />
-			<part type="tire plug" number="23" />
 			<part type="co2 extinguisher" number="15" />
 			<part type="rover tire" number="4" />
 			<part type="gasket" number="85" />
 			<part type="valve" number="42" />
-			<part type="silicone sealant" number="144" />
+			<part type="epoxy resin bottle" number="144" />
 			<part type="spark plug" number="10" />
-			<part type="fan belt" number="1" />
 			<part type="coolant bottle" number="9" />
 			<part type="electrical wire" number="272" />
 			<part type="power cable" number="48" />
@@ -100,14 +98,12 @@
 			<resource type="waste water" amount="200.0" />
 			<resource type="carbon dioxide" amount="100.0" />
 			<part type="airleak patch" number="289" />
-			<part type="tire plug" number="120" />
 			<part type="co2 extinguisher" number="43" />
 			<part type="rover tire" number="18" />
 			<part type="gasket" number="215" />
 			<part type="valve" number="143" />
-			<part type="silicone sealant" number="371" />
+			<part type="epoxy resin bottle" number="371" />
 			<part type="spark plug" number="46" />
-			<part type="fan belt" number="7" />
 			<part type="coolant bottle" number="46" />
 			<part type="electrical wire" number="589" />
 			<part type="power cable" number="69" />
@@ -147,14 +143,12 @@
 			<resource type="waste water" amount="300.0" />
 			<resource type="carbon dioxide" amount="200.0" />
 			<part type="airleak patch" number="314" />
-			<part type="tire plug" number="120" />
 			<part type="co2 extinguisher" number="43" />
 			<part type="rover tire" number="19" />
 			<part type="gasket" number="293" />
 			<part type="valve" number="143" />
-			<part type="silicone sealant" number="485" />
+			<part type="epoxy resin bottle" number="485" />
 			<part type="spark plug" number="55" />
-			<part type="fan belt" number="8" />
 			<part type="coolant bottle" number="50" />
 			<part type="electrical wire" number="678" />
 			<part type="power cable" number="98" />
@@ -203,14 +197,12 @@
 			<resource type="waste water" amount="1000.0" />
 			<resource type="carbon dioxide" amount="500.0" />
 			<part type="airleak patch" number="401" />
-			<part type="tire plug" number="120" />
 			<part type="co2 extinguisher" number="64" />
 			<part type="rover tire" number="19" />
 			<part type="gasket" number="329" />
 			<part type="valve" number="156" />
-			<part type="silicone sealant" number="528" />
+			<part type="epoxy resin bottle" number="528" />
 			<part type="spark plug" number="55" />
-			<part type="fan belt" number="8" />
 			<part type="coolant bottle" number="50" />
 			<part type="electrical wire" number="866" />
 			<part type="power cable" number="143" />
@@ -273,14 +265,12 @@
 			<!-- type: the type of part (see parts.xml) -->
 			<!-- number: the number of parts. -->
 			<part type="airleak patch" number="289" />
-			<part type="tire plug" number="120" />
 			<part type="co2 extinguisher" number="43" />
 			<part type="rover tire" number="18" />
 			<part type="gasket" number="215" />
 			<part type="valve" number="143" />
-			<part type="silicone sealant" number="371" />
+			<part type="epoxy resin bottle" number="371" />
 			<part type="spark plug" number="46" />
-			<part type="fan belt" number="7" />
 			<part type="coolant bottle" number="46" />
 			<part type="electrical wire" number="589" />
 			<part type="power cable" number="69" />
@@ -314,14 +304,12 @@
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
 			<part type="airleak patch" number="314" />
-			<part type="tire plug" number="120" />
 			<part type="co2 extinguisher" number="43" />
 			<part type="rover tire" number="19" />
 			<part type="gasket" number="293" />
 			<part type="valve" number="143" />
-			<part type="silicone sealant" number="485" />
+			<part type="epoxy resin bottle" number="485" />
 			<part type="spark plug" number="55" />
-			<part type="fan belt" number="8" />
 			<part type="coolant bottle" number="50" />
 			<part type="electrical wire" number="678" />
 			<part type="power cable" number="98" />
@@ -359,14 +347,12 @@
 			<resource type="hydrogen" amount="1000.0" />
 			<resource type="food" amount="500.0" />
 			<part type="airleak patch" number="401" />
-			<part type="tire plug" number="120" />
 			<part type="co2 extinguisher" number="64" />
 			<part type="rover tire" number="19" />
 			<part type="gasket" number="329" />
 			<part type="valve" number="156" />
-			<part type="silicone sealant" number="528" />
+			<part type="epoxy resin bottle" number="528" />
 			<part type="spark plug" number="55" />
-			<part type="fan belt" number="8" />
 			<part type="coolant bottle" number="50" />
 			<part type="electrical wire" number="866" />
 			<part type="power cable" number="143" />

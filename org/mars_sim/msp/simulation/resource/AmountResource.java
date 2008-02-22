@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResource.java
- * @version 2.83 2008-01-19
+ * @version 2.83 2008-02-20
  * @author Scott Davis
  */
 
@@ -39,13 +39,13 @@ public final class AmountResource implements Resource, Serializable {
     public static final AmountResource SAND = new AmountResource("sand", Phase.SOLID);
     public static final AmountResource IRON_POWDER = new AmountResource("iron powder", Phase.SOLID);
     public static final AmountResource ALUMINUM_OXIDE = new AmountResource("aluminum oxide", Phase.SOLID);
-    public static final AmountResource ALUMINUM_POWDER = new AmountResource("aluminum powder", Phase.SOLID);
     public static final AmountResource ETHYLENE = new AmountResource("ethylene", Phase.GAS);
     public static final AmountResource POLYETHYLENE = new AmountResource("polyethylene", Phase.SOLID);
     public static final AmountResource GYPSUM = new AmountResource("gypsum", Phase.SOLID);
     public static final AmountResource CALCIUM_CARBONATE = new AmountResource("calcium carbonate", Phase.SOLID);
     public static final AmountResource LIME = new AmountResource("lime", Phase.SOLID);
     public static final AmountResource STYRENE = new AmountResource("styrene", Phase.SOLID);
+    public static final AmountResource POLYESTER_RESIN = new AmountResource("polyester resin", Phase.LIQUID);
     
 	// Data members
 	private String name;
