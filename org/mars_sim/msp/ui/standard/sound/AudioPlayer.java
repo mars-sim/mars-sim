@@ -13,6 +13,7 @@ package org.mars_sim.msp.ui.standard.sound;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFormat;
@@ -22,7 +23,6 @@ import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.SourceDataLine;
@@ -40,7 +40,7 @@ public class AudioPlayer implements LineListener {
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Data members
-	private Line currentLine; // The current compressed sound.
+	private SourceDataLine currentLine; // The current compressed sound.
 	private Clip currentClip; // The current sound clip.
 	private boolean mute; // Is the audio player muted?
 	private float volume; // The volume of the audio player (0.0 to 1.0)
@@ -85,8 +85,8 @@ public class AudioPlayer implements LineListener {
 	        }
 	    
 	    };
-	    sound_player.start();
-		
+	    
+	    sound_player.start();	
 	}
 	
 	/**
@@ -122,7 +122,7 @@ public class AudioPlayer implements LineListener {
 		}
 	} 
 	catch (Exception e) {
-		e.printStackTrace();
+	    logger.log(Level.SEVERE,"Issues whhen playing WAV sound",e);
 	}
 	    
 	}
@@ -139,7 +139,6 @@ public class AudioPlayer implements LineListener {
 		looping = loop;
 		
 		do {
-		    
 		try {
 			File file = new File(filepath);
 			AudioInputStream in = AudioSystem.getAudioInputStream(file);
@@ -156,32 +155,33 @@ public class AudioPlayer implements LineListener {
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, 
 							       decodedFormat);
 			
-			SourceDataLine line = 
+			currentLine = 
 			(SourceDataLine) AudioSystem.getLine(info);
 		
-			if(line != null) {
-			    	currentLine = line;
+			if(currentLine != null) {
 				currentLine.addLineListener(this);
-				line.open(decodedFormat);
+				currentLine.open(decodedFormat);
 				
-				byte[] data = new byte[128];
+				byte[] data = new byte[4096];
 				// Start
-				line.start();
+				currentLine.start();
 				int nBytesRead = 0;
 
             		       while ((nBytesRead = din.read(data, 0, data.length)) != -1) {
-					line.write(data, 0, nBytesRead);
+            			   	currentLine.write(data, 0, nBytesRead);
 				}
+            		       
 				
 			}
 			
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+		  logger.log(Level.SEVERE, "Issues when playing compressed sound", e);
 		} finally {
 			if(din != null) {
 				try { 
 				    din.close(); 
+				    din = null;
 				 } 
 				catch(IOException e) { }
 			}
@@ -217,11 +217,13 @@ public class AudioPlayer implements LineListener {
 	    	
 		if (currentClip != null) {
 		    currentClip.stop();
+		    currentClip.removeLineListener(this);
 		    currentClip = null;
 		}
 		
 		if (currentLine != null) {
 		    currentLine.close();
+		    currentLine.removeLineListener(this);
 		    currentLine = null;
 		}
 		
@@ -320,14 +322,15 @@ public class AudioPlayer implements LineListener {
 	       
 	       if (currentClip != null) {
 		    currentClip.stop();
+		    currentClip.removeLineListener(this);
 		    currentClip = null;
 		}
 		
 		if (currentLine != null) {
 		    currentLine.close();
+		    currentLine.removeLineListener(this);
 		    currentLine = null;
 		}
-		
 	   }    
 	}
 }

@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.person.ai;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
@@ -250,7 +251,10 @@ public class Mind implements Serializable {
         }
         if (missions) {
             if (rand < missionWeights) {
-                 logger.info(person.getName() + " starting a new mission.");
+        	
+        	if(logger.isLoggable(Level.FINE)){
+                 logger.fine(person.getName() + " starting a new mission.");
+        	}
                 Mission newMission = missionManager.getNewMission(person);
                 if (newMission != null) {
                 	missionManager.addMission(newMission);

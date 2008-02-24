@@ -142,7 +142,10 @@ public class MissionManager implements Serializable {
             	Iterator<MissionManagerListener> i = listeners.iterator();
             	while (i.hasNext()) i.next().addMission(newMission);
             }
-             logger.info("MissionManager: Added new mission - " + newMission.getName());
+            
+            if(logger.isLoggable(Level.FINER)) {
+             logger.finer("MissionManager: Added new mission - " + newMission.getName());
+            }
         }
     }
 
@@ -161,7 +164,10 @@ public class MissionManager implements Serializable {
             	Iterator i = listeners.iterator();
             	while (i.hasNext()) ((MissionManagerListener) i.next()).removeMission(oldMission);
             }
-             logger.info("MissionManager: Removed old mission - " + oldMission.getName());
+            
+            if(logger.isLoggable(Level.FINER)) {
+             logger.finer("MissionManager: Removed old mission - " + oldMission.getName());
+            }
         }
     } 
 
