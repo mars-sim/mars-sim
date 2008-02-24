@@ -48,7 +48,7 @@
 			<!-- number: the number of parts. -->
 			<part type="airleak patch" number="105" />
 			<part type="co2 extinguisher" number="15" />
-			<part type="rover tire" number="4" />
+			<part type="rover wheel" number="4" />
 			<part type="gasket" number="85" />
 			<part type="timing belt" number="10" />
 			<part type="valve" number="42" />
@@ -70,6 +70,17 @@
 			<part type="steel pipe" number="10" />
 			<part type="copper pipe" number="10" />
 			<part type="iron pipe" number="10" />
+			<part type="eva helmet" number="10" />
+			<part type="helmet visor" number="10" />
+			<part type="counter pressure suit" number="10" />
+			<part type="coveralls" number="10" />
+			<part type="eva gloves" number="10" />
+			<part type="eva boots" number="10" />
+			<part type="eva pads" number="10" />
+			<part type="eva backpack" number="10" />
+			<part type="eva antenna" number="10" />
+			<part type="eva battery" number="10" />
+			<part type="eva radio" number="10" />
 			
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
@@ -101,7 +112,7 @@
 			<resource type="carbon dioxide" amount="100.0" />
 			<part type="airleak patch" number="289" />
 			<part type="co2 extinguisher" number="43" />
-			<part type="rover tire" number="18" />
+			<part type="rover wheel" number="18" />
 			<part type="gasket" number="215" />
 			<part type="timing belt" number="20" />
 			<part type="valve" number="143" />
@@ -123,6 +134,17 @@
 			<part type="steel pipe" number="20" />
 			<part type="copper pipe" number="20" />
 			<part type="iron pipe" number="20" />
+			<part type="eva helmet" number="20" />
+			<part type="helmet visor" number="20" />
+			<part type="counter pressure suit" number="20" />
+			<part type="coveralls" number="20" />
+			<part type="eva gloves" number="20" />
+			<part type="eva boots" number="20" />
+			<part type="eva pads" number="20" />
+			<part type="eva backpack" number="20" />
+			<part type="eva antenna" number="20" />
+			<part type="eva battery" number="20" />
+			<part type="eva radio" number="20" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -148,7 +170,7 @@
 			<resource type="carbon dioxide" amount="200.0" />
 			<part type="airleak patch" number="314" />
 			<part type="co2 extinguisher" number="43" />
-			<part type="rover tire" number="19" />
+			<part type="rover wheel" number="19" />
 			<part type="gasket" number="293" />
 			<part type="timing belt" number="30" />
 			<part type="valve" number="143" />
@@ -170,6 +192,17 @@
 			<part type="steel pipe" number="30" />
 			<part type="copper pipe" number="30" />
 			<part type="iron pipe" number="30" />
+			<part type="eva helmet" number="30" />
+			<part type="helmet visor" number="30" />
+			<part type="counter pressure suit" number="30" />
+			<part type="coveralls" number="30" />
+			<part type="eva gloves" number="30" />
+			<part type="eva boots" number="30" />
+			<part type="eva pads" number="30" />
+			<part type="eva backpack" number="30" />
+			<part type="eva antenna" number="30" />
+			<part type="eva battery" number="30" />
+			<part type="eva radio" number="30" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -204,7 +237,7 @@
 			<resource type="carbon dioxide" amount="500.0" />
 			<part type="airleak patch" number="401" />
 			<part type="co2 extinguisher" number="64" />
-			<part type="rover tire" number="19" />
+			<part type="rover wheel" number="19" />
 			<part type="gasket" number="329" />
 			<part type="timing belt" number="40" />
 			<part type="valve" number="156" />
@@ -226,6 +259,17 @@
 			<part type="steel pipe" number="40" />
 			<part type="copper pipe" number="40" />
 			<part type="iron pipe" number="40" />
+			<part type="eva helmet" number="40" />
+			<part type="helmet visor" number="40" />
+			<part type="counter pressure suit" number="40" />
+			<part type="coveralls" number="40" />
+			<part type="eva gloves" number="40" />
+			<part type="eva boots" number="40" />
+			<part type="eva pads" number="40" />
+			<part type="eva backpack" number="40" />
+			<part type="eva antenna" number="40" />
+			<part type="eva battery" number="40" />
+			<part type="eva radio" number="40" />
 		</template>
 	
 	</settlement-template-list>
@@ -274,7 +318,7 @@
 			<!-- number: the number of parts. -->
 			<part type="airleak patch" number="289" />
 			<part type="co2 extinguisher" number="43" />
-			<part type="rover tire" number="18" />
+			<part type="rover wheel" number="18" />
 			<part type="gasket" number="215" />
 			<part type="timing belt" number="20" />
 			<part type="valve" number="143" />
@@ -296,6 +340,17 @@
 			<part type="steel pipe" number="20" />
 			<part type="copper pipe" number="20" />
 			<part type="iron pipe" number="20" />
+			<part type="eva helmet" number="20" />
+			<part type="helmet visor" number="20" />
+			<part type="counter pressure suit" number="20" />
+			<part type="coveralls" number="20" />
+			<part type="eva gloves" number="20" />
+			<part type="eva boots" number="20" />
+			<part type="eva pads" number="20" />
+			<part type="eva backpack" number="20" />
+			<part type="eva antenna" number="20" />
+			<part type="eva battery" number="20" />
+			<part type="eva radio" number="20" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 2">
@@ -315,7 +370,7 @@
 			<resource type="food" amount="500.0" />
 			<part type="airleak patch" number="314" />
 			<part type="co2 extinguisher" number="43" />
-			<part type="rover tire" number="19" />
+			<part type="rover wheel" number="19" />
 			<part type="gasket" number="293" />
 			<part type="timing belt" number="30" />
 			<part type="valve" number="143" />
@@ -337,6 +392,17 @@
 			<part type="steel pipe" number="30" />
 			<part type="copper pipe" number="30" />
 			<part type="iron pipe" number="30" />
+			<part type="eva helmet" number="30" />
+			<part type="helmet visor" number="30" />
+			<part type="counter pressure suit" number="30" />
+			<part type="coveralls" number="30" />
+			<part type="eva gloves" number="30" />
+			<part type="eva boots" number="30" />
+			<part type="eva pads" number="30" />
+			<part type="eva backpack" number="30" />
+			<part type="eva antenna" number="30" />
+			<part type="eva battery" number="30" />
+			<part type="eva radio" number="30" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 3">
@@ -360,7 +426,7 @@
 			<resource type="food" amount="500.0" />
 			<part type="airleak patch" number="401" />
 			<part type="co2 extinguisher" number="64" />
-			<part type="rover tire" number="19" />
+			<part type="rover wheel" number="19" />
 			<part type="gasket" number="329" />
 			<part type="timing belt" number="40" />
 			<part type="valve" number="156" />
@@ -382,6 +448,17 @@
 			<part type="steel pipe" number="40" />
 			<part type="copper pipe" number="40" />
 			<part type="iron pipe" number="40" />
+			<part type="eva helmet" number="40" />
+			<part type="helmet visor" number="40" />
+			<part type="counter pressure suit" number="40" />
+			<part type="coveralls" number="40" />
+			<part type="eva gloves" number="40" />
+			<part type="eva boots" number="40" />
+			<part type="eva pads" number="40" />
+			<part type="eva backpack" number="40" />
+			<part type="eva antenna" number="40" />
+			<part type="eva battery" number="40" />
+			<part type="eva radio" number="40" />
 		</resupply>
 	
 	</resupply-list>

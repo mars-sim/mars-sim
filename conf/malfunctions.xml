@@ -129,8 +129,8 @@
 		</repair-parts-list>
 	</malfunction>
 	
-	<!-- Damaged tire on rover. -->
-	<malfunction name="Damaged Tire">
+	<!-- Damaged wheel on rover. -->
+	<malfunction name="Damaged Wheel">
 		<severity value="20" />
 		<probability value="30.0" />
 		<eva-repair-time value="50.0" />
@@ -138,7 +138,7 @@
 			<entity name="rover" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="rover tire" number="1" probability="60" />
+			<part name="rover wheel" number="1" probability="60" />
 		</repair-parts-list>
 	</malfunction>
 

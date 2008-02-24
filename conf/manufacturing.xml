@@ -130,7 +130,7 @@
 		</inputs>
 		<outputs>
 			<resource name="carbon" amount="1.0" />
-			<resource name="hydrogen" amount=".3" />
+			<!-- <resource name="hydrogen" amount=".3" /> -->
 		</outputs>
 	</process>
 	
@@ -455,25 +455,24 @@
 	<process name="styrene production" tech="3" skill="3" work-time="100" process-time="400">
 		<inputs>
 			<resource name="carbon" amount="32.12" />
-			<resource name="lime" amount="50.0" />
+			<resource name="lime" amount="2.0" />
 			<resource name="water" amount="16.05" />
 			<resource name="ethylene" amount="8.34" />
 		</inputs>
 		<outputs>
 			<resource name="carbon monoxide" amount="24.97" />
-			<resource name="lime" amount="49.0" />
 			<resource name="styrene" amount="30.95" />
 		</outputs>
 	</process>
 	
 	<!-- Rover tires are made with steel and steel wire. -->
-	<process name="rover tire manufacturing" tech="4" skill="3" work-time="200" process-time="400">
+	<process name="rover wheel manufacturing" tech="4" skill="3" work-time="200" process-time="400">
 		<inputs>
 			<part name="steel sheet" number="3" />
 			<part name="steel wire" number="55" />
 		</inputs>
 		<outputs>
-			<part name="rover tire" number="2" />
+			<part name="rover wheel" number="2" />
 		</outputs>
 	</process>
 	
@@ -653,6 +652,142 @@
 		</inputs>
 		<outputs>
 			<equipment name="bag" number="10" />
+		</outputs>
+	</process>
+	
+	<process name="sheet glass manufacturing" tech="3" skill="3" work-time="200" process-time="300">
+		<inputs>
+			<resource name="sand" amount="26.0" />
+		</inputs>
+		<outputs>
+			<part name="glass sheet" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="eva helmet manufacturing" tech="4" skill="4" work-time="400" process-time="300">
+		<inputs>
+			<resource name="polyethylene" amount="2.0" />
+			<part name="plastic tubing" number="2" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="gasket" number="2" />
+		</inputs>
+		<outputs>
+			<part name="eva helmet" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="helmet visor manufacturing" tech="3" skill="4" work-time="300" process-time="200">
+		<inputs>
+			<part name="glass sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="helmet visor" number="13" />
+		</outputs>
+	</process>
+	
+	<process name="counter pressure suit manufacturing" tech="4" skill="4" work-time="400" process-time="300">
+		<inputs>
+			<resource name="polyethylene" amount="1.0" />
+		</inputs>
+		<outputs>
+			<part name="counter pressure suit" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="coveralls manufacturing" tech="2" skill="3" work-time="200" process-time="100">
+		<inputs>
+			<part name="fiberglass cloth" number="5" />
+			<part name="fiberglass" number="1" />
+		</inputs>
+		<outputs>
+			<part name="coveralls" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="eva gloves manufacturing" tech="3" skill="3" work-time="200" process-time="100">
+		<inputs>
+			<part name="fiberglass cloth" number="1" />
+			<part name="fiberglass" number="1" />
+		</inputs>
+		<outputs>
+			<part name="eva gloves" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="eva boots manufacturing" tech="3" skill="3" work-time="300" process-time="100">
+		<inputs>
+			<part name="steel ingot" number="1" />
+			<part name="fiberglass cloth" number="2" />
+			<part name="fiberglass" number="2" />
+		</inputs>
+		<outputs>
+			<part name="eva boots" number="2" />
+		</outputs>
+	</process>
+	
+	<process name="eva pads manufacturing" tech="3" skill="3" work-time="300" process-time="100">
+		<inputs>
+			<part name="steel ingot" number="1" />
+			<part name="fiberglass" number="1" />
+		</inputs>
+		<outputs>
+			<part name="eva pads" number="3" />
+		</outputs>
+	</process>
+	
+	<!-- Polyethylene box with steel frame and fiberglass cloth straps. -->
+	<process name="eva backpack manufacturing" tech="4" skill="4" work-time="400" process-time="200">
+		<inputs>
+			<resource name="polyethylene" amount="10.0" />
+			<part name="steel ingot" number="1" />
+			<part name="fiberglass cloth" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="plastic tubing" number="3" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="3" />
+			<part name="steel canister" number="1" />
+		</inputs>
+		<outputs>
+			<part name="eva backpack" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make antenna. -->
+	<process name="eva antenna manufacturing" tech="2" skill="2" work-time="50" process-time="50">
+		<inputs>
+			<part name="fiberglass" number="1" />
+			<resource name="polyester resin" amount=".5" />
+			<resource name="styrene" amount=".5" />
+			<part name="aluminum sheet" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</inputs>
+		<outputs>
+			<part name="eva antenna" number="20" />
+		</outputs>
+	</process>
+	
+	<process name="eva suit assembly" tech="2" skill="3" work-time="200" process-time="0">
+		<inputs>
+			<part name="eva helmet" number="1" />
+			<part name="helmet visor" number="1" />
+			<part name="counter pressure suit" number="1" />
+			<part name="coveralls" number="1" />
+			<part name="eva gloves" number="1" />
+			<part name="eva boots" number="1" />
+			<part name="eva pads" number="1" />
+			<part name="eva backpack" number="1" />
+			<part name="eva antenna" number="1" />
+			<part name="eva radio" number="1" />
+			<part name="eva battery" number="1" />
+			<part name="suit heating unit" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</inputs>
+		<outputs>
+			<equipment name="eva suit" number="1" />
 		</outputs>
 	</process>
 
