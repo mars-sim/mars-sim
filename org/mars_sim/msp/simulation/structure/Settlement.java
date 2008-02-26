@@ -300,7 +300,6 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 		// If settlement is overcrowded, increase inhabitant's stress.
 		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
 		if (overCrowding > 0) {
-			logger.warning("Overcrowding at " + getName());
 			double stressModifier = .1D * overCrowding * time;
 			PersonIterator i = getInhabitants().iterator();
 			while (i.hasNext()) {
