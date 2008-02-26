@@ -1,9 +1,20 @@
 <?xml version="1.0" ?>
 
+<!-- List of all parts in the simulation.  -->
+<!-- Parts are used for maintenance, repair and manufacturing. -->
 <part-list>
 
+	<!-- Plastic and adhesive patch for airleaks. -->
+	<!-- mass - The mass of the part in kilograms. -->
 	<part name="airleak patch" mass=".2">
+	
+		<!-- List of entities that may required this part for maintenance. (optional) -->
 		<maintenance-entity-list>
+		
+			<!-- probability - The percentage probability that at least one of this part -->
+			<!--   will be needed for a given maintenance. -->
+			<!-- max-number - The maximum number of this part that could be needed for a -->
+			<!--   given maintenance. -->
 			<entity name="life support" probability="10" max-number="4" />
 			<entity name="rover" probability="10" max-number="2" />
 			<entity name="eva suit" probability="10" max-number="1" />
@@ -106,7 +117,7 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="rover battery" mass=".1">
+	<part name="rover battery" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>

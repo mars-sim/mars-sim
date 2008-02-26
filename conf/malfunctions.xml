@@ -159,7 +159,6 @@
 			<part name="valve" number="1" probability="20" />
 			<part name="epoxy resin bottle" number="1" probability="50" />
 			<part name="plastic tubing" number="1" probability="10" />
-			<part name="rover fuel tank" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -181,7 +180,6 @@
 			<part name="plastic tubing" number="1" probability="10" />
 			<part name="lubricant bottle" number="1" probability="30" />
 			<part name="timing belt" number="1" probability="30" />
-			<part name="rover generator" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 	
@@ -246,7 +244,6 @@
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
-			<part name="rover control panel" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 	
@@ -366,6 +363,19 @@
 		</repair-parts-list>
 	</malfunction>
 	
+	<malfunction name="EVA Radio Failure">
+		<severity value="50" />
+		<probability value="20.0" />
+		<repair-time value="20.0" />
+		<entity-list>
+			<entity name="eva suit" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="eva antenna" number="1" probability="50" />
+			<part name="eva radio" number="1" probability="10" />
+		</repair-parts-list>
+	</malfunction>
+	
 	<!-- Electrical wire short. -->
 	<malfunction name="Electrical Short">
 		<severity value="20" />
@@ -381,6 +391,38 @@
 		<repair-parts-list>
 			<part name="wire connector" number="4" probability="50" />
 			<part name="electrical wire" number="4" probability="100" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- Problems with one of the rover's electric motors. -->
+	<malfunction name="Electric Motor Failure">
+		<severity value="50" />
+		<probability value="20.0" />
+		<repair-time value="50.0" />
+		<emergency-repair-time value="50.0" />
+		<entity-list>
+			<entity name="rover" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="lubricant bottle" number="1" probability="30" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<!-- Problems with the rover's fuel pump. -->
+	<malfunction name="Fuel Pump Failure">
+		<severity value="50" />
+		<probability value="20.0" />
+		<repair-time value="100.0" />
+		<emergency-repair-time value="50.0" />
+		<entity-list>
+			<entity name="rover" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="wire connector" number="2" probability="20" />
+			<part name="fuel pump" number="1" probability="10" />
 		</repair-parts-list>
 	</malfunction>
 

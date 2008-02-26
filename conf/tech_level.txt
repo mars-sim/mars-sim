@@ -1,8 +1,8 @@
 Tech Levels
 -----------
 
-Tech levels are used to measure the capability of laboratories and 
-medical facilities in the configuration files.
+Tech levels are used to measure the capability of laboratories, 
+medical facilities and manufacturing workshops in the configuration files.
 
 Research Laboratories
 ---------------------
@@ -33,3 +33,18 @@ tech level 4: Medical facility with capacity for advanced surgery.
               
 tech level 5: Medical facility capable of advanced treatment, such
               as treating severe burn patients with skin grafts.
+              
+              
+Manufacturing Workshops
+-----------------------
+
+tech level 1: Basic processing of regolith and ores to produce metals
+              and other resources.
+              
+tech level 2: Advanced metal working and simple glass production.
+
+tech level 3: Advanced glass production including fiberglass.  Basic
+              plastics production.
+              
+tech level 4: Advanced plastics production.  Fiberglass cloth weaving
+              and reinforced fiberglass.

@@ -1,11 +1,24 @@
 <?xml version="1.0" ?>
 
+<!-- List of all manufacturing processes. -->
 <manufacturing-processes>
 
+	<!-- Process for extracting iron oxide from regolith. -->
+	<!-- tech - The minimum workshop tech level required to perform the process. (see tech_level.txt) -->
+	<!-- skill - The minimum person skill level in materials science to perform the process. -->
+	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled -->
+	<!--             workers will produce more effort time than lower skilled workers. -->
+	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<process name="extract iron oxide from regolith" tech="1" skill="1" work-time="100" process-time="0">
+		
+		<!-- List of inputs for the process (resources and parts). -->
 		<inputs>
+		
+			<!-- amount - The amount of the resource in kilograms. -->
 			<resource name="regolith" amount="50.0" />
 		</inputs>
+		
+		<!-- List of outputs from the process (resources, parts, equipment and vehicles). -->
 		<outputs>
 			<resource name="iron oxide" amount="7.0" />
 			<resource name="sand" amount="40.0" />
@@ -54,6 +67,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 5kg iron ingot. -->
 	<process name="iron ingot casting" tech="1" skill="2" work-time="100" process-time="200">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
@@ -63,6 +77,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1m x 2m x 1mm (15kg) sheet of iron. -->
 	<process name="iron sheet manufacturing" tech="2" skill="2" work-time="200" process-time="200">
 		<inputs>
 			<resource name="iron powder" amount="15.0" />
@@ -72,6 +87,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1m x 2m x 1mm (15kg) sheet of iron. -->
 	<process name="iron sheet rolling" tech="2" skill="2" work-time="200" process-time="200">
 		<inputs>
 			<part name="iron ingot" number="3" />
@@ -82,6 +98,7 @@
 	</process>
 	
 	<!-- Al2O3 + 3C -> 2Al + 3CO -->
+	<!-- Produces 1kg ingot of aluminum. -->
 	<process name="aluminum ingot casting" tech="1" skill="2" work-time="100" process-time="200">
 		<inputs>
 			<resource name="aluminum oxide" amount="9.5" />
@@ -94,6 +111,7 @@
 	</process>
 	
 	<!-- Al2O3 + 3C -> 2Al + 3CO -->
+	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
 	<process name="aluminum sheet manufacturing" tech="2" skill="2" work-time="200" process-time="200">
 		<inputs>
 			<resource name="aluminum oxide" amount="9.5" />
@@ -105,6 +123,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
 	<process name="aluminum sheet rolling" tech="2" skill="2" work-time="200" process-time="200">
 		<inputs>
 			<part name="aluminum ingot" number="5" />
@@ -114,6 +133,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1kg spool of thin aluminum wire. -->
 	<process name="aluminum wire drawing" tech="2" skill="3" work-time="300" process-time="200">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
@@ -134,6 +154,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 5kg ingot of steel. -->
 	<process name="steel ingot alloying" tech="1" skill="3" work-time="100" process-time="100">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
@@ -144,6 +165,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1m x 2m x 1mm (15kg) sheet of steel. -->
 	<process name="steel sheet manufacturing" tech="2" skill="3" work-time="200" process-time="200">
 		<inputs>
 			<resource name="iron powder" amount="15.0" />
@@ -154,6 +176,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1m x 2m x 1mm (15kg) sheet of steel. -->
 	<process name="steel sheet rolling" tech="2" skill="2" work-time="200" process-time="200">
 		<inputs>
 			<part name="steel ingot" number="3" />
@@ -163,6 +186,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1kg spool of thick steel wire. -->
 	<process name="steel wire drawing" tech="2" skill="3" work-time="300" process-time="200">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -172,6 +196,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 5kg of steel cable. -->
 	<process name="steel cable winding" tech="2" skill="3" work-time="100" process-time="0">
 		<inputs>
 			<part name="steel wire" number="5" />
@@ -181,6 +206,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 10kg steel pipe. -->
 	<process name="steel pipe manufacturing" tech="2" skill="2" work-time="200" process-time="200">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -190,6 +216,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 10kg iron pipe. -->
 	<process name="iron pipe manufacturing" tech="2" skill="2" work-time="200" process-time="200">
 		<inputs>
 			<part name="iron sheet" number="2" />
@@ -199,6 +226,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 10kg steel canister. -->
 	<process name="steel canister manufacturing" tech="2" skill="2" work-time="250" process-time="200">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -327,6 +355,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1kg plastic pipe. -->
 	<process name="plastic pipe manufacturing" tech="4" skill="3" work-time="100" process-time="400">
 		<inputs>
 			<resource name="polyethylene" amount="10.0" />
@@ -494,9 +523,10 @@
 		</outputs>
 	</process>
 	
-	<!-- Use fiberglass + styrene? -->
+	<!-- Use fiberglass & styrene to make belt. -->
 	<process name="timing belt manufacturing" tech="4" skill="2" work-time="100" process-time="200">
 		<inputs>
+			<part name="fiberglass cloth" number="1" />
 			<resource name="styrene" amount="1.0" />
 		</inputs>
 		<outputs>
@@ -617,6 +647,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1kg spool of fiber glass. -->
 	<process name="optical fiber glass drawing" tech="3" skill="3" work-time="300" process-time="300">
 		<inputs>
 			<resource name="sand" amount="2.0" />
@@ -626,6 +657,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1kg spool of fiber glass. -->
 	<process name="dark fiber glass drawing" tech="3" skill="3" work-time="300" process-time="300">
 		<inputs>
 			<resource name="regolith" amount="2.0" />
@@ -635,6 +667,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1m x 1m woven fiberglass cloth. -->
 	<process name="fiberglass cloth weaving" tech="4" skill="4" work-time="400" process-time="400">
 		<inputs>
 			<part name="fiberglass" number="1" />
@@ -644,6 +677,7 @@
 		</outputs>
 	</process>
 
+	<!-- Produces 1m x 1m thin sheet of plastic. -->
 	<process name="plastic sheet extrusion" tech="4" skill="3" work-time="200" process-time="200">
 		<inputs>
 			<resource name="polyester resin" amount="10.0" />
@@ -664,6 +698,7 @@
 		</outputs>
 	</process>
 	
+	<!-- Produces 1m x 1m x 1cm (26kg) sheet of glass. -->
 	<process name="sheet glass manufacturing" tech="3" skill="3" work-time="200" process-time="300">
 		<inputs>
 			<resource name="sand" amount="26.0" />
