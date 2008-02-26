@@ -172,6 +172,15 @@
 		</outputs>
 	</process>
 	
+	<process name="steel cable winding" tech="2" skill="3" work-time="100" process-time="0">
+		<inputs>
+			<part name="steel wire" number="5" />
+		</inputs>
+		<outputs>
+			<part name="steel cable" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="steel pipe manufacturing" tech="2" skill="2" work-time="200" process-time="200">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -788,6 +797,263 @@
 		</inputs>
 		<outputs>
 			<equipment name="eva suit" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="large vehicle frame manufacturing" tech="4" skill="4" work-time="500" process-time="500">
+		<inputs>
+			<part name="steel ingot" number="1000" />
+		</inputs>
+		<outputs>
+			<part name="large vehicle frame" number="1" />
+		</outputs>
+	</process>
+
+	<process name="rover chasis panel manufacturing" tech="4" skill="4" work-time="200" process-time="400">
+		<inputs>
+			<part name="fiberglass" number="50" />
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="25.0" />
+		</inputs>
+		<outputs>
+			<part name="rover chasis panel" number="1" />
+		</outputs>
+	</process>
+
+	<process name="rover windshield manufacturing" tech="3" skill="4" work-time="400" process-time="600">
+		<inputs>
+			<part name="glass sheet" number="4" />
+		</inputs>
+		<outputs>
+			<part name="rover windshield" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="rover window manufacturing" tech="3" skill="4" work-time="400" process-time="600">
+		<inputs>
+			<part name="glass sheet" number="2" />
+		</inputs>
+		<outputs>
+			<part name="rover windshield" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="winch manufacturing" tech="2" skill="3" work-time="200" process-time="100">
+		<inputs>
+			<part name="steel sheet" number="2" />
+			<part name="steel cable" number="9" />
+		</inputs>
+		<outputs>
+			<part name="winch" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="rover generator manufacturing" tech="4" skill="4" work-time="600" process-time="600">
+		<inputs>
+			<part name="steel ingot" number="90" />
+			<part name="valve" number="6" />
+			<part name="gasket" number="6" />
+			<part name="plastic tubing" number="6" />
+			<part name="steel pipe" number="4" />
+			<part name="power cable" number="2" />
+			<part name="spark plug" number="6" />
+			<part name="lubricant bottle" number="5" />
+			<part name="coolant bottle" number="2" />
+			<part name="electrical wire" number="6" />
+			<part name="wire connector" number="6" />
+			<part name="timing belt" number="1" />
+		</inputs>
+		<outputs>
+			<part name="rover generator" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="large electric motor manufacturing" tech="4" skill="4" work-time="400" process-time="400">
+		<inputs>
+			<part name="iron sheet" number="2" />
+			<part name="iron ingot" number="2" />
+			<part name="aluminum wire" number="25" />
+			<part name="steel sheet" number="2" />
+			<part name="electrical wire" number="4" />
+			<part name="wire connector" number="4" />
+		</inputs>
+		<outputs>
+			<part name="large electric motor" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="rover control panel manufacturing" tech="4" skill="4" work-time="400" process-time="400">
+		<inputs>
+			<resource name="polyethylene" amount="3.0" />
+			<resource name="polyester resin" amount="20.0" />
+			<resource name="styrene" amount="20.0" />
+			<part name="fiberglass" number="40" />
+			<part name="navigation circuit board" number="1" />
+			<part name="communications circuit board" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="epoxy resin bottle" number="1" />
+		</inputs>
+		<outputs>
+			<part name="rover control panel" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="rover fuel tank manufacturing" tech="2" skill="3" work-time="300" process-time="200">
+		<inputs>
+			<part name="steel sheet" number="4" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="plastic tubing" number="1" />
+			<part name="epoxy resin bottle" number="1" />
+		</inputs>
+		<outputs>
+			<part name="rover fuel tank" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="rover oxygen tank manufacturing" tech="2" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<part name="steel sheet" number="2" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="plastic tubing" number="1" />
+			<part name="epoxy resin bottle" number="1" />
+		</inputs>
+		<outputs>
+			<part name="rover oxygen tank" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="rover water tank manufacturing" tech="2" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<part name="steel sheet" number="2" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="plastic tubing" number="1" />
+			<part name="epoxy resin bottle" number="1" />
+		</inputs>
+		<outputs>
+			<part name="rover water tank" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="fuel pump manufacturing" tech="4" skill="4" work-time="200" process-time="100">
+		<inputs>
+			<part name="iron ingot" number="3" />
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</inputs>
+		<outputs>
+			<part name="fuel pump" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="oxygen pump manufacturing" tech="4" skill="4" work-time="200" process-time="100">
+		<inputs>
+			<part name="iron ingot" number="3" />
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</inputs>
+		<outputs>
+			<part name="oxygen pump" number="5" />
+		</outputs>
+	</process>
+	
+	<process name="explorer rover assembly" tech="4" skill="4" work-time="1000" process-time="0">
+		<inputs>
+			<part name="large vehicle frame" number="1" />
+			<part name="rover chasis panel" number="10" />
+			<part name="rover windshield" number="1" />
+			<part name="rover window" number="5" />
+			<part name="winch" number="1" />
+			<part name="rover generator" number="1" />
+			<part name="large electric motor" number="5" />
+			<part name="rover battery" number="6" />
+			<part name="rover control panel" number="1" />
+			<part name="rover fuel tank" number="1" />
+			<part name="rover oxygen tank" number="1" />
+			<part name="rover water tank" number="1" />
+			<part name="fuel pump" number="1" />
+			<part name="oxygen pump" number="1" />
+			<part name="satellite dish" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="plastic tubing" number="5" />
+			<part name="plastic pipe" number="2" />
+			<part name="steel pipe" number="2" />
+			<part name="epoxy resin bottle" number="5" />
+			<part name="lubricant bottle" number="2" />
+		</inputs>
+		<outputs>
+			<vehicle name="explorer rover" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="transport rover assembly" tech="4" skill="4" work-time="1000" process-time="0">
+		<inputs>
+			<part name="large vehicle frame" number="1" />
+			<part name="rover chasis panel" number="10" />
+			<part name="rover windshield" number="1" />
+			<part name="rover window" number="5" />
+			<part name="winch" number="1" />
+			<part name="rover generator" number="1" />
+			<part name="large electric motor" number="5" />
+			<part name="rover battery" number="6" />
+			<part name="rover control panel" number="1" />
+			<part name="rover fuel tank" number="1" />
+			<part name="rover oxygen tank" number="1" />
+			<part name="rover water tank" number="1" />
+			<part name="fuel pump" number="1" />
+			<part name="oxygen pump" number="1" />
+			<part name="satellite dish" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="plastic tubing" number="5" />
+			<part name="plastic pipe" number="2" />
+			<part name="steel pipe" number="2" />
+			<part name="epoxy resin bottle" number="5" />
+			<part name="lubricant bottle" number="2" />
+		</inputs>
+		<outputs>
+			<vehicle name="transport rover" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="cargo rover assembly" tech="4" skill="4" work-time="1000" process-time="0">
+		<inputs>
+			<part name="large vehicle frame" number="1" />
+			<part name="rover chasis panel" number="10" />
+			<part name="rover windshield" number="1" />
+			<part name="rover window" number="5" />
+			<part name="winch" number="1" />
+			<part name="rover generator" number="1" />
+			<part name="large electric motor" number="5" />
+			<part name="rover battery" number="6" />
+			<part name="rover control panel" number="1" />
+			<part name="rover fuel tank" number="1" />
+			<part name="rover oxygen tank" number="1" />
+			<part name="rover water tank" number="1" />
+			<part name="fuel pump" number="1" />
+			<part name="oxygen pump" number="1" />
+			<part name="satellite dish" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="plastic tubing" number="5" />
+			<part name="plastic pipe" number="2" />
+			<part name="steel pipe" number="2" />
+			<part name="epoxy resin bottle" number="5" />
+			<part name="lubricant bottle" number="2" />
+		</inputs>
+		<outputs>
+			<vehicle name="cargo rover" number="1" />
 		</outputs>
 	</process>
 

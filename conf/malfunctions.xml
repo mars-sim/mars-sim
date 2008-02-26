@@ -159,11 +159,12 @@
 			<part name="valve" number="1" probability="20" />
 			<part name="epoxy resin bottle" number="1" probability="50" />
 			<part name="plastic tubing" number="1" probability="10" />
+			<part name="rover fuel tank" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Problems with the rover's engine. -->
-	<malfunction name="Engine Problems">
+	<!-- Problems with the rover's generator. -->
+	<malfunction name="Generator Problems">
 		<severity value="50" />
 		<probability value="40.0" />
 		<repair-time value="50.0" />
@@ -180,6 +181,7 @@
 			<part name="plastic tubing" number="1" probability="10" />
 			<part name="lubricant bottle" number="1" probability="30" />
 			<part name="timing belt" number="1" probability="30" />
+			<part name="rover generator" number="1" probability="5" />
 		</repair-parts-list>
 	</malfunction>
 	
@@ -234,6 +236,20 @@
 		</repair-parts-list>
 	</malfunction>
 	
+	<malfunction name="Control Panel Malfunction">
+		<severity value="35" />
+		<probability value="2.0" />
+		<repair-time value="100.0" />
+		<entity-list>
+			<entity name="rover" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="wire connector" number="2" probability="30" />
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="rover control panel" number="1" probability="5" />
+		</repair-parts-list>
+	</malfunction>
+	
 	<!-- Leak in the water reserves. -->
 	<malfunction name="Water Leak">
 		<severity value="50" />
@@ -252,6 +268,7 @@
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
+			<part name="plastic tubing" number="2" probability="20" />
 			<part name="epoxy resin bottle" number="1" probability="50" />
 			<part name="copper pipe" number="1" probability="10" />
 		</repair-parts-list>

@@ -81,6 +81,18 @@
 			<part type="eva antenna" number="10" />
 			<part type="eva battery" number="10" />
 			<part type="eva radio" number="10" />
+			<part type="fuel pump" number="10" />
+			<part type="oxygen pump" number="10" />
+			<part type="rover windshield" number="1" />
+			<part type="rover window" number="1" />
+			<part type="winch" number="1" />
+			<part type="large electric motor" number="1" />
+			<part type="rover chasis panel" number="1" />
+			<part type="rover generator" number="1" />
+			<part type="rover control panel" number="1" />
+			<part type="rover fuel tank" number="1" />
+			<part type="rover oxygen tank" number="1" />
+			<part type="rover water tank" number="1" />
 			
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
@@ -145,6 +157,18 @@
 			<part type="eva antenna" number="20" />
 			<part type="eva battery" number="20" />
 			<part type="eva radio" number="20" />
+			<part type="fuel pump" number="20" />
+			<part type="oxygen pump" number="20" />
+			<part type="rover windshield" number="2" />
+			<part type="rover window" number="2" />
+			<part type="winch" number="2" />
+			<part type="large electric motor" number="2" />
+			<part type="rover chasis panel" number="2" />
+			<part type="rover generator" number="2" />
+			<part type="rover control panel" number="2" />
+			<part type="rover fuel tank" number="2" />
+			<part type="rover oxygen tank" number="2" />
+			<part type="rover water tank" number="2" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -203,6 +227,18 @@
 			<part type="eva antenna" number="30" />
 			<part type="eva battery" number="30" />
 			<part type="eva radio" number="30" />
+			<part type="fuel pump" number="30" />
+			<part type="oxygen pump" number="30" />
+			<part type="rover windshield" number="2" />
+			<part type="rover window" number="3" />
+			<part type="winch" number="3" />
+			<part type="large electric motor" number="3" />
+			<part type="rover chasis panel" number="3" />
+			<part type="rover generator" number="3" />
+			<part type="rover control panel" number="3" />
+			<part type="rover fuel tank" number="3" />
+			<part type="rover oxygen tank" number="3" />
+			<part type="rover water tank" number="3" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -270,6 +306,18 @@
 			<part type="eva antenna" number="40" />
 			<part type="eva battery" number="40" />
 			<part type="eva radio" number="40" />
+			<part type="fuel pump" number="40" />
+			<part type="oxygen pump" number="40" />
+			<part type="rover windshield" number="4" />
+			<part type="rover window" number="4" />
+			<part type="winch" number="4" />
+			<part type="large electric motor" number="4" />
+			<part type="rover chasis panel" number="4" />
+			<part type="rover generator" number="4" />
+			<part type="rover control panel" number="4" />
+			<part type="rover fuel tank" number="4" />
+			<part type="rover oxygen tank" number="4" />
+			<part type="rover water tank" number="4" />
 		</template>
 	
 	</settlement-template-list>
@@ -351,6 +399,18 @@
 			<part type="eva antenna" number="20" />
 			<part type="eva battery" number="20" />
 			<part type="eva radio" number="20" />
+			<part type="fuel pump" number="20" />
+			<part type="oxygen pump" number="20" />
+			<part type="rover windshield" number="2" />
+			<part type="rover window" number="2" />
+			<part type="winch" number="2" />
+			<part type="large electric motor" number="2" />
+			<part type="rover chasis panel" number="2" />
+			<part type="rover generator" number="2" />
+			<part type="rover control panel" number="2" />
+			<part type="rover fuel tank" number="2" />
+			<part type="rover oxygen tank" number="2" />
+			<part type="rover water tank" number="2" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 2">
@@ -403,6 +463,18 @@
 			<part type="eva antenna" number="30" />
 			<part type="eva battery" number="30" />
 			<part type="eva radio" number="30" />
+			<part type="fuel pump" number="30" />
+			<part type="oxygen pump" number="30" />
+			<part type="rover windshield" number="3" />
+			<part type="rover window" number="3" />
+			<part type="winch" number="3" />
+			<part type="large electric motor" number="3" />
+			<part type="rover chasis panel" number="3" />
+			<part type="rover generator" number="3" />
+			<part type="rover control panel" number="3" />
+			<part type="rover fuel tank" number="3" />
+			<part type="rover oxygen tank" number="3" />
+			<part type="rover water tank" number="3" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 3">
@@ -459,6 +531,18 @@
 			<part type="eva antenna" number="40" />
 			<part type="eva battery" number="40" />
 			<part type="eva radio" number="40" />
+			<part type="fuel pump" number="40" />
+			<part type="oxygen pump" number="40" />
+			<part type="rover windshield" number="4" />
+			<part type="rover window" number="4" />
+			<part type="winch" number="4" />
+			<part type="large electric motor" number="4" />
+			<part type="rover chasis panel" number="4" />
+			<part type="rover generator" number="4" />
+			<part type="rover control panel" number="4" />
+			<part type="rover fuel tank" number="4" />
+			<part type="rover oxygen tank" number="4" />
+			<part type="rover water tank" number="4" />
 		</resupply>
 	
 	</resupply-list>
