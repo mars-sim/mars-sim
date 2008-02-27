@@ -346,7 +346,11 @@ public class MalfunctionManager implements Serializable {
         double chance = time * .0000001D * effectiveTimeSinceLastMaintenance;
 
         if (RandomUtil.lessThanRandPercent(chance)) {
-            logger.info(entity.getName() + " has maintenance-triggered malfunction: " + effectiveTimeSinceLastMaintenance);
+        	int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
+            logger.info(entity.getName() + 
+            		" has maintenance-triggered malfunction: " + 
+            		"time since late maintenance: " + 
+            		solsLastMaint + " Sols.");
             addMalfunction();
         }
     }
