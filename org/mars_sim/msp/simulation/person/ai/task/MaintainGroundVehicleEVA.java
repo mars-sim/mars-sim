@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.82 2007-11-05
+ * @version 2.83 2008-02-27
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
@@ -39,7 +40,12 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  * preventive maintenance on ground vehicles outside a settlement.
  */
 public class MaintainGroundVehicleEVA extends EVAOperation implements Serializable {
- 
+
+    private static String CLASS_NAME = 
+        "org.mars_sim.msp.simulation.person.ai.task.MaintainGroundVehicleEVA";
+	
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+	
     // Phase names
     private static final String MAINTAIN_VEHICLE = "Maintain Vehicle";
  
@@ -66,7 +72,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         // Initialize phase.
         addPhase(MAINTAIN_VEHICLE);
         
-        // logger.info(person.getName() + " starting MaintainGroundVehicleEVA task.");
+        logger.finest(person.getName() + " starting MaintainGroundVehicleEVA task.");
     }
     
     /** 
