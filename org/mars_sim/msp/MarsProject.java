@@ -1,15 +1,12 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 2.76 2004-06-01
+ * @version 2.83 2008-02-26
  * @author Scott Davis
  */
 package org.mars_sim.msp;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
