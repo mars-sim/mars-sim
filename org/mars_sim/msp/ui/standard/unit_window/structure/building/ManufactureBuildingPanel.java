@@ -228,7 +228,10 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 				}
 			}
 			catch (Exception e) {
-				// logger.log(Level.SEVERE, "get available processes", e);
+				// Note: Exceptions here are due to concurrency errors between
+				// this UI thread querying an Inventory object and the simulation
+				// thread changing it at the same time.
+				logger.log(Level.SEVERE, "get available processes", e);
 			}
 		}
 		
