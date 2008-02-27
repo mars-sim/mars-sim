@@ -290,7 +290,7 @@ public class ManufactureTabPanel extends TabPanel {
 			}
 		}
 		catch (Exception e) {
-			logger.log(Level.SEVERE, "get available processes", e);
+			// logger.log(Level.SEVERE, "get available processes", e);
 		}
 		
 		return result;

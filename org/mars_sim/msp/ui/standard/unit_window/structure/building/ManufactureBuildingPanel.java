@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -217,9 +218,9 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 		
 		if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
 			try {
-				Iterator<ManufactureProcessInfo> i = 
+				Iterator<ManufactureProcessInfo> i = Collections.unmodifiableList(
 					ManufactureUtil.getManufactureProcessesForTechLevel(
-							workshop.getTechLevel()).iterator();
+							workshop.getTechLevel())).iterator();
 				while (i.hasNext()) {
 					ManufactureProcessInfo process = i.next();
 					if (ManufactureUtil.canProcessBeStarted(process, workshop)) 
@@ -227,7 +228,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 				}
 			}
 			catch (Exception e) {
-				logger.log(Level.SEVERE, "get available processes", e);
+				// logger.log(Level.SEVERE, "get available processes", e);
 			}
 		}
 		
