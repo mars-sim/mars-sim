@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.82 2007-11-05
+ * @version 2.83 2008-02-27
  * @author Scott Davis
  */
 
@@ -42,10 +42,10 @@ import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
  */
 public class MaintainGroundVehicleGarage extends Task implements Serializable {
     
-    	private static String CLASS_NAME = 
-    	    "org.mars_sim.msp.simulation.person.ai.task.MaintainGroundVehicleGarage";
+    private static String CLASS_NAME = 
+        "org.mars_sim.msp.simulation.person.ai.task.MaintainGroundVehicleGarage";
 	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String MAINTAIN_VEHICLE = "Maintaining Vehicle";
@@ -110,7 +110,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         addPhase(MAINTAIN_VEHICLE);
         setPhase(MAINTAIN_VEHICLE);
         
-        logger.info(person.getName() + " starting MaintainGroundVehicleGarage task.");
+        logger.finest(person.getName() + " starting MaintainGroundVehicleGarage task.");
     }
 
     /** 
@@ -147,6 +147,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         
 		// Determine if settlement has available space in garage.
 		boolean garageSpace = false;
+		boolean needyVehicleInGarage = false;
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {	
 			Settlement settlement = person.getSettlement();
 			Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
@@ -155,11 +156,16 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 					Building building = (Building) j.next();
 					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
 					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) garageSpace = true;
+					
+					VehicleIterator i = garage.getVehicles().iterator();
+					while (i.hasNext()) {
+						if (i.next().isReservedForMaintenance()) needyVehicleInGarage = true;
+					}
 				}
 				catch (Exception e) {}
 			}
 		}
-		if (!garageSpace) result = 0D;
+		if (!garageSpace && !needyVehicleInGarage) result = 0D;
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
