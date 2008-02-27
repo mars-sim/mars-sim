@@ -187,7 +187,8 @@ public abstract class Mission implements Serializable {
 			fireMissionUpdate(REMOVE_MEMBER_EVENT, person);
 
             if (people.size() == 0) endMission("Not enough members.");
-             logger.warning(person.getName() + " removed from mission: " + name);
+            
+            logger.finer(person.getName() + " removed from mission: " + name);
         }
     }
 

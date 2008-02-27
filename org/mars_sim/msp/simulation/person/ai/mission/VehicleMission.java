@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.83 2008-02-03
+ * @version 2.83 2008-02-26
  * @author Scott Davis
  */
 
@@ -627,23 +627,35 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	
     	// Determine closest settlement.
     	Settlement newDestination = findClosestSettlement();
-    	
-    	// Check if enough resources to get to settlement.
-    	double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
-    	if (hasEnoughResources(getResourcesNeededForTrip(false, false, distance)) && !hasEmergencyAllCrew()) {
-    		 logger.info(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
+    	if (newDestination != null) {
     		
-    		// Creating emergency destination mission event.
-            HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_DESTINATION);
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+    		// Check if enough resources to get to settlement.
+    		double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
+    		if (hasEnoughResources(getResourcesNeededForTrip(false, false, distance)) && !hasEmergencyAllCrew()) {
+    				
+    			// Check if closest settlement is already the next navpoint.
+    	    	boolean sameDestination = false;
+    	    	NavPoint nextNav = getNextNavpoint();
+    	    	if ((nextNav != null) && (newDestination == nextNav.getSettlement())) 
+    	    		sameDestination = true; 
+    			
+    	    	if (!sameDestination) {
+    				logger.info(vehicle.getName() + " setting emergency destination to " + newDestination.getName() + ".");
     		
-    		// Set the new destination as the travel mission's next and final navpoint.
-    		clearRemainingNavpoints();
-    		addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination, 
-    				"emergency destination: " + newDestination.getName()));
-    		associateAllMembersWithSettlement(newDestination);
+    				// Creating emergency destination mission event.
+    				HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_DESTINATION);
+    				Simulation.instance().getEventManager().registerNewEvent(newEvent);
+    		
+    				// Set the new destination as the travel mission's next and final navpoint.
+    				clearRemainingNavpoints();
+    				addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination, 
+    						"emergency destination: " + newDestination.getName()));
+    				associateAllMembersWithSettlement(newDestination);
+    			}
+    		}
+    		else endMission("Not enough resources to continue.");
     	}
-    	else endMission("Not enough resources to continue.");
+    	else endMission("No emergency settlement destination found.");
     }
     
     /**
@@ -656,6 +668,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Creating mission emergency beacon event.
         HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_BEACON);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		logger.info("Emergency beacon activated on " + vehicle.getName());
 		
 		vehicle.setEmergencyBeacon(beaconOn);
     }
