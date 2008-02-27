@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.78 2005-08-09
+ * @version 2.83 2008-02-27
  * @author Scott Davis
  */
 
@@ -215,14 +215,20 @@ public class MissionManager implements Serializable {
         Object[] parametersForInvokingConstructor = { person };
 
         // Construct the mission
-        try {
-            Constructor construct = (selectedMission.getConstructor(parametersForFindingConstructor));
-            return (Mission) construct.newInstance(parametersForInvokingConstructor);
+        if (selectedMission != null) {
+        	try {
+        		Constructor construct = (selectedMission.getConstructor(parametersForFindingConstructor));
+        		return (Mission) construct.newInstance(parametersForInvokingConstructor);
+        	}
+        	catch (Exception e) {
+        		logger.log(Level.SEVERE, "MissionManager.getNewMission()", e);
+        		return null;
+        	}
         }
-        catch (Exception e) {
-            logger.log(Level.SEVERE, "MissionManager.getNewMission()", e);
-            return null;
-        } 
+        else {
+        	logger.log(Level.SEVERE, "MissionManager.getNewMission() - selected mission is null");
+        	return null;
+        }
     }
     
     /**
