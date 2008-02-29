@@ -91,9 +91,10 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 		buf.append("  Dima Stephanchuk - Java Programmer, sound\n");
 		buf.append("  Paula Jenkins - Voice Actress\n");
 		buf.append("  Daniel Ferenc - Parts (repair/maintenance)\n");
-		buf.append("  Sebastien Venot - Research into Java WebStart\n\n");
+		buf.append("  Sebastien Venot - Java Programmer, sound, logging\n\n");
 
         buf.append("Testing and Recommendations:\n");
+        buf.append("  Jim Brown - Manufacturing expertise\n");
         buf.append("  Karen Andersen\n");
         buf.append("  Trey Monty\n");
         buf.append("  Rik Declercq\n");
@@ -143,6 +144,11 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
         buf.append("Map images and data courtesy of NASA JPL ");
         buf.append("(www.jpl.nasa.gov) and Malin Space Science Systems ");
         buf.append("(www.msss.com).\n\n");
+        
+        buf.append("Plastics manufacturing techniques:\n");
+        buf.append("Polymer Synthesis & Manufacturing Systems\n");
+        buf.append("Frank Crossman and Robert Milligan\n");
+        buf.append("http://www.marshome.org/files2/MarsHomestead-Polymers.ppt\n\n");
 
         buf.append("This program is free software; you can redistribute it ");
         buf.append("and/or modify it under the terms of the GNU General ");
