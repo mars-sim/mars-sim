@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutDialog.java
- * @version 2.78 2005-08-22
+ * @version 2.83 2008-02-29
  * @author Scott Davis
  */
 

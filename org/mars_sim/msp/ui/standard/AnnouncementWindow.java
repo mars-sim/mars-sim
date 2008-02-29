@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AnnouncementWindow.java
- * @version 2.78 2005-09-21
+ * @version 2.83 2008-02-29
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.standard;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.util.logging.Logger;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -21,11 +20,6 @@ import javax.swing.border.EmptyBorder;
  * in the main desktop pane.
  */
 public class AnnouncementWindow extends JInternalFrame {
-    
-    private static String CLASS_NAME = 
-	"org.mars_sim.msp.ui.standard.AnnouncementWindow";
-	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	JLabel announcementLabel;
 	

@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * ImageLoader.java
- * @version 2.81 2007-08-27
+ * @version 2.83 2008-02-29
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.ui.standard;
 
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import java.awt.Image;
@@ -22,11 +21,6 @@ import java.net.URL;
  * can be easily implemented within this class.
  */
 public class ImageLoader {
-    
-    private static String CLASS_NAME = 
-	"org.mars_sim.msp.ui.standard.ImageLoader";
-	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     private static HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
     private static HashMap<String, Image> imageCache = new HashMap<String, Image>();

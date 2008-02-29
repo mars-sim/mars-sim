@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NumberCellRenderer.java
- * @version 2.75 2003-05-19
+ * @version 2.83 2008-02-29
  * @author Scott Davis
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.standard;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.logging.Logger;
 
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -18,11 +17,6 @@ import javax.swing.table.DefaultTableCellRenderer;
  * The NumberCellRenderer class renders table cells containing Number objects.
  */
 public class NumberCellRenderer extends DefaultTableCellRenderer {
-    
-    private static String CLASS_NAME = 
-	"org.mars_sim.msp.ui.standard.NumberCellRenderer";
-	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
     
     private DecimalFormat dec1Formatter = new DecimalFormat("0.0");
     private DecimalFormat dec2Formatter = new DecimalFormat("0.00");
