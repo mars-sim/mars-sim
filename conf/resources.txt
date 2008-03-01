@@ -4,7 +4,7 @@ Resources
 Resources are materials that are used and stored in the simulation.  
 Resources are measured in kg.
 
-Here are the resources used in version 2.80:
+Here are the resources used in version 2.83:
 
 Water
 Hydrogen
@@ -17,6 +17,18 @@ Rock Samples
 Waste Water
 Ice
 Regolith
+Iron Oxide
+Carbon
+Sand
+Iron Powder
+Aluminum Oxide
+Ethylene
+Polyethylene
+Gypsum
+Calcium Carbonate
+Lime
+Styrene
+Polyester Resin
 
 The food resource represents dried or frozen food that will not spoil with time.  
 Food is harvested from crops in a greenhouse.
@@ -31,5 +43,7 @@ in the ice prospecting mission.  It can be melted and filtered to produce
 potable/drinking water.
 
 The regolith resource is Martian soil.
+
+The sand resource is Martian soil with iron oxide removed.  It can be used to make optical glass.
 
 The resource names in the configuration files are not case-sensitive.
