@@ -60,7 +60,7 @@ public class CollectRegolith  extends CollectResourcesMission {
      * Constructor with explicit data.
      * @param members collection of mission members.
      * @param startingSettlement the starting settlement.
-     * @param iceCollectionSites the sites to collect ice.
+     * @param regolithCollectionSites the sites to collect regolith.
      * @param rover the rover to use.
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
