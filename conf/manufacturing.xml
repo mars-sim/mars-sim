@@ -869,7 +869,7 @@
 			<part name="glass sheet" number="2" />
 		</inputs>
 		<outputs>
-			<part name="rover windshield" number="1" />
+			<part name="rover window" number="1" />
 		</outputs>
 	</process>
 	
