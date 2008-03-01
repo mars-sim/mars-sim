@@ -20,6 +20,8 @@ landmarks.xml:    Modify or add landmarks.
 malfunctions.xml: Modify or create new malfunctions that can occur
                   in the simulation.
                   
+manufacturing.xml: Modify or create new manufacturing processes.  
+                  
 medical.xml:      Modify or create new illnesses or treatments.
 
 parts.xml:        Modify or create new parts.
