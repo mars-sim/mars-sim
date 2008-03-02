@@ -26,23 +26,23 @@ public class AllJUnitTests extends TestCase {
 		TestSuite suite = new TestSuite(thisClass);
 
 		suite.addTestSuite(org.mars_sim.msp.simulation.TestInventory.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.equipment.JUnitTests.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.events.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.equipment.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.events.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.simulation.malfunction.TestMalfunctionManager.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.person.JUnitTests.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.person.ai.JUnitTests.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.person.ai.mission.JUnitTests.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.person.ai.task.JUnitTests.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.person.medical.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.person.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.person.ai.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.person.ai.mission.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.person.ai.task.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.person.medical.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.simulation.resource.TestAmountResourceStorage.class);
 		suite.addTestSuite(org.mars_sim.msp.simulation.resource.TestAmountResourcePhaseStorage.class);
 		suite.addTestSuite(org.mars_sim.msp.simulation.resource.TestAmountResourceTypeStorage.class);
 		suite.addTestSuite(org.mars_sim.msp.simulation.resource.TestItemResource.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.structure.JUnitTests.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.structure.building.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.structure.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.structure.building.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.simulation.structure.goods.TestGoods.class);
 		suite.addTestSuite(org.mars_sim.msp.simulation.structure.goods.TestCreditManager.class);
-		//suite.addTestSuite(org.mars_sim.msp.simulation.vehicle.JUnitTests.class);
+		suite.addTestSuite(org.mars_sim.msp.simulation.vehicle.JUnitTests.class);
 
 		return suite;
 	}
