@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 2.81 2007-08-19
+ * @version 2.83 2008-03-01
  * @author Dima Stepanchuk
  * @author Sebastien Venot
  */
@@ -34,9 +34,8 @@ import org.mars_sim.msp.ui.standard.UIConfig;
  */
 public class AudioPlayer implements LineListener {
     
-    	private static String CLASS_NAME = 
+	private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.sound.AudioPlayer";
-	
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Data members
@@ -44,13 +43,13 @@ public class AudioPlayer implements LineListener {
 	private Clip currentClip; // The current sound clip.
 	private boolean mute; // Is the audio player muted?
 	private float volume; // The volume of the audio player (0.0 to 1.0)
-	private ConcurrentHashMap < String, Clip > audioCache  
-	= new ConcurrentHashMap<String, Clip>();
+	private ConcurrentHashMap < String, Clip > audioCache = 
+		new ConcurrentHashMap<String, Clip>();
 	private boolean looping = false;
 	
 	public AudioPlayer() {
-	       currentClip = null;
-	       currentLine = null;
+	    currentClip = null;
+	    currentLine = null;
 	       
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			setMute(false);
@@ -112,18 +111,18 @@ public class AudioPlayer implements LineListener {
 		
 	    	currentClip = clip;
 	    	currentClip.addLineListener(this);
-		setVolume(volume);
-		setMute(mute);
+	    	setVolume(volume);
+	    	setMute(mute);
 		
-		if (loop){
-		    clip.loop(Clip.LOOP_CONTINUOUSLY); 
-		} else { 		   
-		    clip.start();
-		}
-	} 
-	catch (Exception e) {
-	    logger.log(Level.SEVERE,"Issues whhen playing WAV sound",e);
-	}
+	    	if (loop){
+	    		clip.loop(Clip.LOOP_CONTINUOUSLY); 
+	    	} else { 		   
+	    		clip.start();
+	    	}
+	    } 
+	    catch (Exception e) {
+	    	logger.log(Level.SEVERE,"Issues when playing WAV sound",e);
+	    }
 	    
 	}
 	
@@ -161,10 +160,13 @@ public class AudioPlayer implements LineListener {
 			if(currentLine != null) {
 				currentLine.addLineListener(this);
 				currentLine.open(decodedFormat);
+				setVolume(volume);
+		    	setMute(mute);
 				
 				byte[] data = new byte[4096];
 				// Start
 				currentLine.start();
+				
 				int nBytesRead = 0;
 
             		       while ((nBytesRead = din.read(data, 0, data.length)) != -1) {
