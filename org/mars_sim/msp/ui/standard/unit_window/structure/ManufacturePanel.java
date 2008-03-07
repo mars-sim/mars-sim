@@ -137,7 +137,7 @@ public class ManufacturePanel extends JPanel {
     	result.append("Effort Time Required: " + info.getWorkTimeRequired() + " millisols<br>");
     	result.append("Process Time Required: " + info.getProcessTimeRequired() + " millisols<br>");
     	result.append("Building Tech Level Required: " + info.getTechLevelRequired() + "<br>");
-    	result.append("Engineering Skill Level Required: " + info.getSkillLevelRequired() + "<br>");
+    	result.append("Materials Science Skill Level Required: " + info.getSkillLevelRequired() + "<br>");
     	
     	// Add process inputs.
     	result.append("Process Inputs:<br>");
