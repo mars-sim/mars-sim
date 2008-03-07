@@ -844,14 +844,14 @@
 		</outputs>
 	</process>
 
-	<process name="rover chasis panel manufacturing" tech="4" skill="4" work-time="200" process-time="400">
+	<process name="rover chassis panel manufacturing" tech="4" skill="4" work-time="200" process-time="400">
 		<inputs>
 			<part name="fiberglass" number="50" />
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="25.0" />
 		</inputs>
 		<outputs>
-			<part name="rover chasis panel" number="1" />
+			<part name="rover chassis panel" number="1" />
 		</outputs>
 	</process>
 
@@ -1002,7 +1002,7 @@
 	<process name="explorer rover assembly" tech="4" skill="4" work-time="1000" process-time="0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
-			<part name="rover chasis panel" number="10" />
+			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="5" />
 			<part name="winch" number="1" />
@@ -1033,7 +1033,7 @@
 	<process name="transport rover assembly" tech="4" skill="4" work-time="1000" process-time="0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
-			<part name="rover chasis panel" number="10" />
+			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="5" />
 			<part name="winch" number="1" />
@@ -1064,7 +1064,7 @@
 	<process name="cargo rover assembly" tech="4" skill="4" work-time="1000" process-time="0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
-			<part name="rover chasis panel" number="10" />
+			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="5" />
 			<part name="winch" number="1" />
