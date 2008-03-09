@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,14 +24,15 @@ public abstract class MspCollection implements java.io.Serializable {
 
     // We can replace this with another type of collection if we need to.
     private List<Unit> elements;  // Used internally to hold elements.
-
+    
     /**
      * Constructs a MspCollection object.
      */
     public MspCollection() {
 
         // Array lists are suited to List that have dynamic contents
-        elements = new ArrayList<Unit>();
+	//thread safe...
+        elements =  Collections.synchronizedList(new ArrayList<Unit>());
     }
 
     /**

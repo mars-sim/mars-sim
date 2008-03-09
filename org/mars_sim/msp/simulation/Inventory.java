@@ -8,11 +8,11 @@
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -37,17 +37,17 @@ public class Inventory implements Serializable {
     // Data members
     private Unit owner; // The unit that owns this inventory. 
     private UnitCollection containedUnits = null; // Collection of units in inventory.
-    private Map<ItemResource, Integer> containedItemResources = null; // Map of item resources.
+    private ConcurrentHashMap<ItemResource, Integer> containedItemResources = null; // Map of item resources.
     private double generalCapacity = 0D; // General mass capacity of inventory.
     private AmountResourceStorage resourceStorage = null; // Resource storage.
     
     // Cache capacity variables.
-    private transient Map<AmountResource, Double> amountResourceCapacityCache = new HashMap<AmountResource, Double>(10);
-    private transient Map<AmountResource, Double> amountResourceStoredCache = new HashMap<AmountResource, Double>(10);
+    private transient ConcurrentHashMap<AmountResource, Double> amountResourceCapacityCache = new ConcurrentHashMap<AmountResource, Double>(10);
+    private transient ConcurrentHashMap<AmountResource, Double> amountResourceStoredCache = new ConcurrentHashMap<AmountResource, Double>(10);
 	private transient Set<AmountResource> allStoredAmountResourcesCache = null;
 	private transient double totalAmountResourcesStored = -1D;
 	private transient boolean totalAmountResourcesStoredSet = false;
-	private transient Map<AmountResource, Double> amountResourceRemainingCache = new HashMap<AmountResource, Double>(10);
+	private transient ConcurrentHashMap<AmountResource, Double> amountResourceRemainingCache = new ConcurrentHashMap<AmountResource, Double>(10);
     
     /** 
      * Constructor
@@ -147,7 +147,7 @@ public class Inventory implements Serializable {
     				if ((capacity + containedCapacity) > amount) result = true;
     			}
     			if (amountResourceCapacityCache == null) 
-    				amountResourceCapacityCache = new HashMap<AmountResource, Double>(10);
+    				amountResourceCapacityCache = new ConcurrentHashMap<AmountResource, Double>(10);
     			amountResourceCapacityCache.put(resource, capacity);
     		}
     		return result;
@@ -180,7 +180,7 @@ public class Inventory implements Serializable {
     				}
     			}
     			if (amountResourceCapacityCache == null) 
-    				amountResourceCapacityCache = new HashMap<AmountResource, Double>(10);
+    				amountResourceCapacityCache = new ConcurrentHashMap<AmountResource, Double>(10);
     			amountResourceCapacityCache.put(resource, result);
     		}
     		return result;
@@ -208,7 +208,7 @@ public class Inventory implements Serializable {
     				while (i.hasNext()) result += i.next().getInventory().getAmountResourceStored(resource);
     			}
     			if (amountResourceStoredCache == null) 
-    				amountResourceStoredCache = new HashMap<AmountResource, Double>(10);
+    				amountResourceStoredCache = new ConcurrentHashMap<AmountResource, Double>(10);
     			amountResourceStoredCache.put(resource, result);
     		}
     		return result;
@@ -225,7 +225,7 @@ public class Inventory implements Serializable {
      */
     public synchronized Set<AmountResource> getAllAmountResourcesStored() throws InventoryException {
     	try {
-    		if (allStoredAmountResourcesCache != null) return new HashSet<AmountResource>(allStoredAmountResourcesCache);
+    	if (allStoredAmountResourcesCache != null) return new HashSet<AmountResource>(allStoredAmountResourcesCache);
     		else {
     			allStoredAmountResourcesCache = new HashSet<AmountResource>(1, 1);
     			if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
@@ -290,7 +290,7 @@ public class Inventory implements Serializable {
     			if (result > getContainerUnitGeneralCapacityLimit()) result = getContainerUnitGeneralCapacityLimit();
     		
     			if (useContainedUnits) {
-    				if (amountResourceRemainingCache == null) amountResourceRemainingCache = new HashMap<AmountResource, Double>(10);
+    				if (amountResourceRemainingCache == null) amountResourceRemainingCache = new ConcurrentHashMap<AmountResource, Double>(10);
     				amountResourceRemainingCache.put(resource, result);
     			}
     		}
@@ -543,7 +543,7 @@ public class Inventory implements Serializable {
     	if (number < 0) throw new InventoryException("Cannot store negative number of resources.");
     	double totalMass = resource.getMassPerItem() * number;
     	if (totalMass <= getRemainingGeneralCapacity()) {
-    		if (containedItemResources == null) containedItemResources = new HashMap<ItemResource, Integer>();
+    		if (containedItemResources == null) containedItemResources = new ConcurrentHashMap<ItemResource, Integer>();
     		int totalNum = number + getItemResourceNum(resource);
     		if (totalNum > 0) containedItemResources.put(resource, totalNum);
     		
@@ -934,14 +934,14 @@ public class Inventory implements Serializable {
     	Inventory result = new Inventory(owner);
     	result.addGeneralCapacity(getGeneralCapacity());
     	
-    	Map<AmountResource, Double> typeCapacities = resourceStorage.getAmountResourceTypeCapacities();
+    	Map<AmountResource, Double> typeCapacities =(Map<AmountResource, Double>) resourceStorage.getAmountResourceTypeCapacities();
     	Iterator<AmountResource> i = typeCapacities.keySet().iterator();
     	while (i.hasNext()) {
     		AmountResource type = i.next();
     		result.addAmountResourceTypeCapacity(type, typeCapacities.get(type));
     	}
     	
-    	Map<Phase, Double> phaseCapacities = resourceStorage.getAmountResourcePhaseCapacities();
+    	Map<Phase, Double> phaseCapacities = (Map<Phase, Double>) resourceStorage.getAmountResourcePhaseCapacities();
     	Iterator<Phase> j = phaseCapacities.keySet().iterator();
     	while (j.hasNext()) {
     		Phase phase = j.next();
