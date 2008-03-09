@@ -50,7 +50,7 @@ public abstract class MspCollection implements java.io.Serializable {
      *  @param o element whose presence in this collection is to be ensured
      *  @return true if this collection changed as a result of the call
      */
-    public boolean add(Unit o) {
+    synchronized public boolean add(Unit o) {
         boolean result = elements.add(o);
 	    // fireMspCollectionEvent(MspCollectionEvent.ADD, o);
         return result;
@@ -60,7 +60,7 @@ public abstract class MspCollection implements java.io.Serializable {
      *  @param o element whose presence in this collection is to be tested
      *  @return true if this collection contains the specified element
      */
-    public boolean contains(Unit o) {
+    synchronized public boolean contains(Unit o) {
         return elements.contains(o);
     }
     
@@ -69,7 +69,7 @@ public abstract class MspCollection implements java.io.Serializable {
      * @param o the unit to search for.
      * @return the index of the unit or -1 if not in collection.
      */
-    public int indexOf(Unit o) {
+    synchronized public int indexOf(Unit o) {
     	return elements.indexOf(o);
     }
     
@@ -78,7 +78,7 @@ public abstract class MspCollection implements java.io.Serializable {
      * @param index the index of the unit.
      * @return the unit or null if invalid index.
      */
-    public Unit get(int index) {
+    synchronized public Unit get(int index) {
     	Unit result = null;
     	if ((index > -1) && (index < elements.size())) result = elements.get(index);
     	return result;
@@ -87,7 +87,7 @@ public abstract class MspCollection implements java.io.Serializable {
     /** Returns true if this collection has no elements.
      *  @return true if this collection contains no elements
      */
-    public boolean isEmpty() {
+    synchronized public boolean isEmpty() {
         return elements.isEmpty();
     }
 
@@ -96,7 +96,7 @@ public abstract class MspCollection implements java.io.Serializable {
      *  @param o element to be removed from this collection, if present
      *  @return true if this collection changed as a result of the call
      */
-    public boolean remove(Unit o) {
+    synchronized public boolean remove(Unit o) {
         boolean result = elements.remove(o);
 	    // fireMspCollectionEvent(MspCollectionEvent.REMOVE, o);
         return result;
@@ -105,7 +105,7 @@ public abstract class MspCollection implements java.io.Serializable {
     /** Returns the number of elements in this collection.
      *  @return the number of elements in this collection
      */
-    public int size() {
+    synchronized public int size() {
         return elements.size();
     }
 
@@ -113,7 +113,7 @@ public abstract class MspCollection implements java.io.Serializable {
      * Convert the internal collection to an array of Units.
      * @return Array of Units.
      */
-    public Object[] toArray() {
+    synchronized public Object[] toArray() {
         return elements.toArray();
     }
 
@@ -121,12 +121,12 @@ public abstract class MspCollection implements java.io.Serializable {
      * Return the internal List of Units.
      * @return Unit list.
      */
-    protected List getUnits() {
+    synchronized protected List getUnits() {
         return elements;
     }
 
     /** Removes all of the elements from this collection. */
-    public void clear() {
+    synchronized public void clear() {
         elements.clear();
 	    // fireMspCollectionEvent(MspCollectionEvent.CLEAR, null);
     }
@@ -166,7 +166,7 @@ public abstract class MspCollection implements java.io.Serializable {
  	 * Checks if an object is a MSP collection with identical contents.
  	 * @return true if contents are the same.
  	 */
-    public boolean equals(Object object) {
+    synchronized public boolean equals(Object object) {
     	boolean result = false;
     	
     	if (object instanceof MspCollection) {
@@ -188,7 +188,7 @@ public abstract class MspCollection implements java.io.Serializable {
      * Gets the generic iterator for this collection.
      * @return iterator
      */
-    public Iterator getIterator() {
+    synchronized public Iterator getIterator() {
     	return elements.iterator();
     }
 }
