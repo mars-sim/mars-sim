@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,10 +30,10 @@ import org.mars_sim.msp.simulation.resource.ResourceException;
  */
 public class Inventory implements Serializable {
 	
-	// Unit events
-	public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
-	public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
-	public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
+    // Unit events
+    public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
+    public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
+    public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
 	
     // Data members
     private Unit owner; // The unit that owns this inventory. 
@@ -42,12 +43,15 @@ public class Inventory implements Serializable {
     private AmountResourceStorage resourceStorage = null; // Resource storage.
     
     // Cache capacity variables.
-    private transient ConcurrentHashMap<AmountResource, Double> amountResourceCapacityCache = new ConcurrentHashMap<AmountResource, Double>(10);
-    private transient ConcurrentHashMap<AmountResource, Double> amountResourceStoredCache = new ConcurrentHashMap<AmountResource, Double>(10);
-	private transient Set<AmountResource> allStoredAmountResourcesCache = null;
-	private transient double totalAmountResourcesStored = -1D;
-	private transient boolean totalAmountResourcesStoredSet = false;
-	private transient ConcurrentHashMap<AmountResource, Double> amountResourceRemainingCache = new ConcurrentHashMap<AmountResource, Double>(10);
+    private transient ConcurrentHashMap<AmountResource, Double> amountResourceCapacityCache 
+    				= new ConcurrentHashMap<AmountResource, Double>(10);
+    private transient ConcurrentHashMap<AmountResource, Double> amountResourceStoredCache 
+    				= new ConcurrentHashMap<AmountResource, Double>(10);
+    private transient Set<AmountResource> allStoredAmountResourcesCache = null;
+    private transient double totalAmountResourcesStored = -1D;
+    private transient boolean totalAmountResourcesStoredSet = false;
+    private transient ConcurrentHashMap<AmountResource, Double> amountResourceRemainingCache 
+    				= new ConcurrentHashMap<AmountResource, Double>(10);
     
     /** 
      * Constructor
@@ -225,15 +229,15 @@ public class Inventory implements Serializable {
      */
     public synchronized Set<AmountResource> getAllAmountResourcesStored() throws InventoryException {
     	try {
-    	if (allStoredAmountResourcesCache != null) return new HashSet<AmountResource>(allStoredAmountResourcesCache);
+    	if (allStoredAmountResourcesCache != null) return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
     		else {
-    			allStoredAmountResourcesCache = new HashSet<AmountResource>(1, 1);
+    			allStoredAmountResourcesCache = Collections.synchronizedSet(new HashSet<AmountResource>(1, 1));
     			if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
     			if (containedUnits != null) {
     				UnitIterator i = containedUnits.iterator();
     				while (i.hasNext()) allStoredAmountResourcesCache.addAll(i.next().getInventory().getAllAmountResourcesStored());
     			}
-    			return new HashSet<AmountResource>(allStoredAmountResourcesCache);
+    			return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
     		}
     	}
     	catch(Exception e) {
@@ -502,8 +506,8 @@ public class Inventory implements Serializable {
      */
     public Set<ItemResource> getAllItemResourcesStored() throws InventoryException {
     	try {
-    		if (containedItemResources != null) return new HashSet<ItemResource>(containedItemResources.keySet());
-    		else return new HashSet<ItemResource>(0);
+    		if (containedItemResources != null) return Collections.synchronizedSet(new HashSet<ItemResource>(containedItemResources.keySet()));
+    		else return Collections.synchronizedSet(new HashSet<ItemResource>(0));
     	}
     	catch (Exception e) {
     		throw new InventoryException(e);
@@ -934,14 +938,16 @@ public class Inventory implements Serializable {
     	Inventory result = new Inventory(owner);
     	result.addGeneralCapacity(getGeneralCapacity());
     	
-    	Map<AmountResource, Double> typeCapacities =(Map<AmountResource, Double>) resourceStorage.getAmountResourceTypeCapacities();
+    	Map<AmountResource, Double> typeCapacities =(Map<AmountResource, Double>) 
+    					resourceStorage.getAmountResourceTypeCapacities();
     	Iterator<AmountResource> i = typeCapacities.keySet().iterator();
     	while (i.hasNext()) {
     		AmountResource type = i.next();
     		result.addAmountResourceTypeCapacity(type, typeCapacities.get(type));
     	}
     	
-    	Map<Phase, Double> phaseCapacities = (Map<Phase, Double>) resourceStorage.getAmountResourcePhaseCapacities();
+    	Map<Phase, Double> phaseCapacities = (Map<Phase, Double>) 
+    					resourceStorage.getAmountResourcePhaseCapacities();
     	Iterator<Phase> j = phaseCapacities.keySet().iterator();
     	while (j.hasNext()) {
     		Phase phase = j.next();
