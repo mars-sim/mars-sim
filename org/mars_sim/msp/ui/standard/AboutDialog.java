@@ -3,6 +3,7 @@
  * AboutDialog.java
  * @version 2.83 2008-02-29
  * @author Scott Davis
+ * @author Lars Naesbye Christensen
  */
 
 package org.mars_sim.msp.ui.standard;
@@ -15,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.io.IOException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,11 +25,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
+import javax.swing.JEditorPane;
 import javax.swing.JViewport;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
 
 import org.mars_sim.msp.simulation.Simulation;
 
@@ -59,116 +60,12 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
         setContentPane(mainPane);
 
         // Create the text panel
-        // I'd like to replace this with an HTML parser text pane sometime <Scott>
-        JTextPane textPane = new JTextPane();
-        DefaultStyledDocument document = new DefaultStyledDocument();
-        textPane.setStyledDocument(document);
-        textPane.setBackground(Color.lightGray);
-        textPane.setBorder(new EmptyBorder(2, 2, 2, 2));
-        textPane.setEditable(false);
+        JEditorPane editorPane = new JEditorPane();
+        editorPane.setBackground(Color.lightGray);
+        editorPane.setBorder(new EmptyBorder(2, 2, 2, 2));
+        editorPane.setEditable(false);
 
-        // Create the document contents string
-        StringBuffer buf = new StringBuffer();
-        buf.append("The Mars Simulation Project v" + Simulation.VERSION + "\n\n");
-        buf.append("Web Site: http://mars-sim.sourceforge.net\n\n");
-
-        buf.append("Developers:\n");
-        buf.append("  Scott Davis - Java programming, graphics\n");
-		buf.append("  Greg Whelan - Java programming, zoom map\n");
-		buf.append("  Barry Evans - Java Programming\n");
-        buf.append("  James Barnard - 3D graphics\n");
-		buf.append("  Jani Patokallio - Java Programming\n");
-		buf.append("  Dalen Kruse - Java Programming, debugging\n");
-		buf.append("  Brian Donovan - Java programming\n");
-		buf.append("  Jarred McCaffrey - Java programming\n");
-        buf.append("  Cameron Riley - Ant script programming\n");
-        buf.append("  Mike Jones - Orbital equations\n");
-        buf.append("  Daniel L. Thomas - Java Programming\n");
-		buf.append("  Hartmut Prochaska - Java Programming\n");
-		buf.append("  Mihaly Gyulai - Java Programming\n");
-		buf.append("  Kyur Thadeshwar - Java Programming\n");
-		buf.append("  Kent Primrose - Java Programming, JUnit tests\n");
-		buf.append("  Dima Stephanchuk - Java Programmer, sound\n");
-		buf.append("  Paula Jenkins - Voice Actress\n");
-		buf.append("  Daniel Ferenc - Parts (repair/maintenance)\n");
-		buf.append("  Sebastien Venot - Java Programmer, sound, logging\n\n");
-
-        buf.append("Testing and Recommendations:\n");
-        buf.append("  Jim Brown - Manufacturing expertise\n");
-        buf.append("  Karen Andersen\n");
-        buf.append("  Trey Monty\n");
-        buf.append("  Rik Declercq\n");
-        buf.append("  Claude David\n");
-        buf.append("  Paul Speed\n");
-        buf.append("  Allen Bryan\n");
-        buf.append("  Brian K. Smith\n");
-        buf.append("  Dan Sepanski\n");
-        buf.append("  Joe Wagner\n");
-        buf.append("  Tom Zanoni\n\n");
-
-        buf.append("8xZoom map results courtesy of the USGS PDS Planetary Atlas:\n");
-		buf.append("http://pdsmaps.wr.usgs.gov/maps.html\n\n");
-	
-		buf.append("The following open source libraries are used in this project:\n");
-		buf.append("JFreeChart: http://www.jfree.org/jfreechart/\n");
-		buf.append("JUnit: http://www.junit.org\n");
-		buf.append("Plexus: http://plexus.sourceforge.net\n");
-		buf.append("Commons Collections: http://jakarta.apache.org/commons/collections/\n");
-		buf.append("Log4J: http://logging.apache.org/log4j/\n\n");
-	
-        buf.append("Martian clock/calendar based on calendars by\n");
-        buf.append("Shaun Moss: Areosynchronous Calendar\n(http://www.virtualmars.net/Calendar.asp)\n");
-        buf.append("Tom Gangale: Darian Calendar\n(http://www.martiana.org/mars/mst/calendar_clock.htm)\n");
-        buf.append("Frans Blok: The Rotterdam System\n(http://www.geocities.com/fra_nl/rotmonth.html)\n");
-        buf.append("Bruce Mackenzie: Metric Time for Mars\n(http://members.nbci.com/_XMCM/mars_ultor/mars/other/mcknzfrm.htm)\n\n");
-
-        buf.append("Sounds in the Mars Simulation Project are licensed under the Creative Commons Sampling Plus 1.0 License.\n");
-        buf.append("http://creativecommons.org/licenses/sampling+/1.0/\n\n");
-        
-        buf.append("Vehicle sounds created from the following base sounds:\n\n");
-        
-        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=6086\n");
-        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=2885\n");
-        buf.append("Vance Dylan - Sonic Valley Productions: http://www.sonicvalley.com\n\n");
-        
-        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=515\n");
-        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=517\n");
-        buf.append("http://freesound.iua.upf.edu/samplesViewSingle.php?id=518\n");
-        buf.append("Jen Carlile: http://www.atonaltrek.com\n\n");
-        
-        buf.append("Female settler voice by Paula Jenkins\n");
-        buf.append("Male settler voice by Scott Davis\n\n");
-        
-        buf.append("The FreeSound Project: http://freesound.iua.upf.edu\n\n");
-        
-        buf.append("Map images and data courtesy of NASA JPL ");
-        buf.append("(www.jpl.nasa.gov) and Malin Space Science Systems ");
-        buf.append("(www.msss.com).\n\n");
-        
-        buf.append("Plastics manufacturing techniques:\n");
-        buf.append("Polymer Synthesis & Manufacturing Systems\n");
-        buf.append("Frank Crossman and Robert Milligan\n");
-        buf.append("http://www.marshome.org/files2/MarsHomestead-Polymers.ppt\n\n");
-
-        buf.append("This program is free software; you can redistribute it ");
-        buf.append("and/or modify it under the terms of the GNU General ");
-        buf.append("Public License as published by the Free Software ");
-        buf.append("Foundation; either version 2 of the License, or (at your ");
-        buf.append("option) any later version.\n\n");
-
-        buf.append("This program is distributed in the hope that it will be ");
-        buf.append("useful, but WITHOUT ANY WARRANTY; without even the implied ");
-        buf.append("warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR ");
-        buf.append("PURPOSE.  See the GNU General Public License for more details.");
-
-        // Create the document
-        try {
-            document.insertString(0, buf.toString(), null);
-        } catch (BadLocationException e) {
-            logger.log(Level.SEVERE,e.toString());
-        }
-
-        JScrollPane scrollPane = new JScrollPane(textPane);
+        JScrollPane scrollPane = new JScrollPane(editorPane);
         viewPort = scrollPane.getViewport();
         viewPort.addComponentListener(this);
         viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
@@ -188,6 +85,19 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
         // Set the size of the window
         setSize(400, 400);
 
+    // Try to load the About text
+java.net.URL aboutURL = AboutDialog.class.getResource(
+                                "about.html");
+if (aboutURL != null) {
+    try {
+        editorPane.setPage(aboutURL);
+    } catch (IOException e) {
+        System.err.println("Attempted to read a bad URL: " + aboutURL);
+    }
+} else {
+    System.err.println("Couldn't find file: about.html");
+}
+
         // Center the window on the parent window.
         Point parentLocation = mainWindow.getLocation();
         int Xloc = (int) parentLocation.getX() + ((mainWindow.getWidth() - 350) / 2);
@@ -199,7 +109,8 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
 
         // Show the window
         setVisible(true);
-    }
+
+}
 
     // Implementing ActionListener method
     public void actionPerformed(ActionEvent event) {
