@@ -58,26 +58,31 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         // Create new menu item
         newItem = new JMenuItem("New");
         newItem.addActionListener(this);
+        newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.META_DOWN_MASK, false));
         fileMenu.add(newItem);
 
         // Create load menu item
         loadItem = new JMenuItem("Load");
         loadItem.addActionListener(this);
+        loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.META_DOWN_MASK, false));
         fileMenu.add(loadItem);
 
         // Create save menu item
         saveItem = new JMenuItem("Save");
         saveItem.addActionListener(this);
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.META_DOWN_MASK, false));
         fileMenu.add(saveItem);
 
         // Create save as menu item
         saveAsItem = new JMenuItem("Save As");
         saveAsItem.addActionListener(this);
+        saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.META_DOWN_MASK, false));
         fileMenu.add(saveAsItem);
 
         // Create exit menu item
         exitItem = new JMenuItem("Exit");
         exitItem.addActionListener(this);
+        exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK, false));
         fileMenu.add(exitItem);
 
         // Create tools menu
@@ -88,31 +93,37 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         // Create Mars navigator menu item
         marsNavigatorItem = new JCheckBoxMenuItem(NavigatorWindow.NAME);
         marsNavigatorItem.addActionListener(this);
+        marsNavigatorItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false));
         toolsMenu.add(marsNavigatorItem);
 
         // Create search tool menu item
         searchToolItem = new JCheckBoxMenuItem(SearchWindow.NAME);
         searchToolItem.addActionListener(this);
+        searchToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false));
         toolsMenu.add(searchToolItem);
 
         // Create time tool menu item
         timeToolItem = new JCheckBoxMenuItem(TimeWindow.NAME);
         timeToolItem.addActionListener(this);
+        timeToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false));
         toolsMenu.add(timeToolItem);
 
         // Create monitor tool menu item
         monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.NAME);
         monitorToolItem.addActionListener(this);
+        monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
         toolsMenu.add(monitorToolItem);
 
         // Create sound tool menu item
         soundToolItem = new JCheckBoxMenuItem(SoundWindow.NAME);
         soundToolItem.addActionListener(this);
+        soundToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
         toolsMenu.add(soundToolItem);
         
         // Create mission tool menu item
         missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME);
         missionToolItem.addActionListener(this);
+        missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
         toolsMenu.add(missionToolItem);
         
 		// Create option menu
