@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.76 2004-06-07
+ * @version 2.84 2008-03-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.mars;
@@ -18,10 +18,8 @@ public class Mars implements Serializable {
 	
 	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2D * Math.PI;
 
-    // Transient Data members
-    private transient SurfaceFeatures surfaceFeatures; // Surface features
-
-    // Persistent Data members
+    // Data members
+    private SurfaceFeatures surfaceFeatures; // Surface features
     private OrbitInfo orbitInfo; // Orbital information
     private Weather weather; // Martian weather
 
@@ -46,10 +44,9 @@ public class Mars implements Serializable {
 	 * @throws Exception if transient data could not be constructed.
 	 */
 	public void initializeTransientData() throws Exception {
-		
-		// Initialize surface features
-		surfaceFeatures = new SurfaceFeatures();
-	}    
+		// Initialize surface features transient data.
+		surfaceFeatures.initializeTransientData();
+	}
 
     /** Returns the orbital information
      *  @return orbital information

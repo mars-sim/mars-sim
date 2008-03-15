@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.76 2004-06-01
+ * @version 2.84 2008-03-15
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.simulation.mars;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.simulation.Coordinates;
@@ -16,11 +17,12 @@ import org.mars_sim.msp.simulation.SimulationConfig;
 /** 
  * SurfaceFeatures represents the surface terrain and landmarks of the virtual Mars. 
  */
-public class SurfaceFeatures {
+public class SurfaceFeatures implements Serializable {
     
     // Data members 
-    private TerrainElevation surfaceTerrain;
+    private transient TerrainElevation surfaceTerrain;
     private List landmarks;
+    private MineralMap mineralMap;
     
     /** 
      * Constructor 
@@ -29,6 +31,7 @@ public class SurfaceFeatures {
     public SurfaceFeatures() throws Exception {
         
         surfaceTerrain = new TerrainElevation();
+        mineralMap = new RandomMineralMap();
 
 		try {
 			landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
@@ -37,6 +40,16 @@ public class SurfaceFeatures {
 			throw new Exception("Landmarks could not be loaded: " + e.getMessage());
 		}
     }
+    
+	/**
+	 * Initialize transient data in the simulation.
+	 * @throws Exception if transient data could not be constructed.
+	 */
+	public void initializeTransientData() throws Exception {
+		
+		// Initialize surface terrain.
+		surfaceTerrain = new TerrainElevation();
+	}    
     
     /** Returns the surface terrain
      *  @return surface terrain
@@ -120,5 +133,13 @@ public class SurfaceFeatures {
      */
     public List getLandmarks() {
     	return landmarks;
+    }
+    
+    /**
+     * Gets the mineral map.
+     * @return mineral map.
+     */
+    public MineralMap getMineralMap() {
+    	return mineralMap;
     }
 }
