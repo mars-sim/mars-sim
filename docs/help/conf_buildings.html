@@ -1,0 +1,124 @@
+<HTML>
+<HEADER>
+<TITLE>Configuration Guide Buildings</TITLE>
+</HEADER>
+<BODY BGCOLOR="BLACK" TEXT="#00FF00" LINK="#00FF00" VLINK="00CC00">
+
+<CENTER>
+<BR><BR>
+<TABLE BORDER="0" WIDTH="500">
+<TR>
+<TD>
+<FONT FACE="Helvetica">
+
+<CENTER>
+<P><H2>Mars Simulation Project<BR>
+Configuration Guide</H2>
+<H3>Updated for version 2.83</H3></P>
+<P><H3>buildings.xml</H3></P>
+</CENTER>
+
+<BR>
+
+<P>The buildings.xml configuration file contains configuration for settlement buildings.  Buildings can be edited
+and new types of buildings can be defined here.</P>
+
+<P>Each building is defined within "building" tags and must have a unique "name" attribute.</P>
+
+<P>The "power-required" tag is required and describes the the buildings power requirements.  The "base-power" attribute
+is the base-line power (kW) required by the building when it is fully powered, not including the additional power required 
+for specific activities (such as life support).  The "base-power-down-power" attribute is the base-line power (kW) required by
+the building when it is powered down.</P>
+
+<P>Each building has a list of functions that the building is capable of performing.  The "functions" tag is required, but it
+may be empty if the building performs no functions.  A building can have any of the possible functions, but each function may
+only be listed in the "functions" tag once.</P>
+
+<P>Here is a list of possible building functions and their details.</P>
+
+<UL>
+<LI><B>life-support:</B> This function indicates that the building is inhabitable by people.  The "capacity" attribute is the number
+of people the building is designed to accommodate.  Additional people can inhabit the building, but it will be overcrowded.  The
+"power-required" attribute is the additional power (kW) required for life support to function.</LI><BR>
+
+<LI><B>living-accommodations:</B> This function indicates that the building has sleeping quarters.  The "beds" attribute is the number
+of sleeping quarters the building has.</LI><BR>
+
+<LI><B>research:</B> This function indicates that the building has a research laboratory.  The "tech-level" attribute is the technology
+level of the lab.  Tech levels are described in the "conf/tech_level.txt" file.  The "capacity" attribute is the number of researchers
+who can use the lab at the same time.  A lab has one or more "research-speciality" elements that describe the sciences it supports.
+Sciences that currently can be supported by labs are "Areology", "Botany" and "Medicine".</LI><BR>
+
+<LI><B>communication:</B> This function indicates that the building has radio/satellite communication equipment to communicate with 
+rovers, other settlements and Earth.  (note: This functionality isn't fully implemented in the simulation yet but is here as a 
+placeholder.)</LI><BR>
+
+<LI><B>EVA:</B> This function indicates that the building has EVA (Extra Vehicle Activity) facilities, including an EVA suit storage area 
+and an airlock.  The "airlock-capacity" attribute is the number of people who can use the airlock at the same time.
+</LI><BR>
+
+<LI><B>recreation:</B> This function indicates that the building has recreation facilities such as movies, games, music, etc. that let
+people relax and de-stress.</LI><BR>
+
+<LI><B>dining:</B> This function indicates that the building has facilities for eating meals.</LI><BR>
+
+<LI><B>cooking:</B> This function indicates that the building has facilities for cooking meals.  The "capacity" attribute is the number
+of cooks who can use the facility at a time.</LI><BR>
+
+<LI><B>exercise:</B> This function indicates that the building has exercise equipment.  The "capacity" attribute is the number of people
+who can use the exercise equipment at once.</LI><BR>
+
+<LI><B>resource-processing:</B> This function indicates that the building has equipment capable of processing resources.  The 
+"power-down-level" attribute is the proportional efficiency of resource processes when the building is in power-down mode.  Each process
+defined must have a unique name (for this building).  It can have one or several "input" and "output" elements that represent resources
+being consumed or produced by the process.  Resources can be any of the types defined in "conf/resources.txt".  The rate of an input
+or output resource in a process is the amount of the resource (kg) consumed/produced per millisol (see 
+<A HREF="conf_time.html">"conf/time.txt"</A>).  The "ambient"
+attribute for input resources means that the resource is drawn in from outside the building (such as CO2 from the air outside) and for 
+output resources it means that the resource is discarded outside the building.</LI><BR>
+
+<LI><B>storage:</B> This function indicates that the building is capable of storing certain resources.  See 
+<A HREF="conf_resources.html">"conf/resources.txt"</A> for 
+a list of all resources.  The "resource-storage" element shows the buildings capacity (kg) to store a particular resource.  The 
+"resource-initial" is the amount (kg) of a particular resource that the building starts with in storage.</LI><BR>
+
+<LI><B>power-generation:</B> This function indicates that the building is capable of producing power.  The buiding can have multiple
+power sources.  Each "power-source" has a type and power (kW) attribute.  Current power source types supported in the simulation are
+"Standard Power Source" that has consistant power generation and "Solar Power Source" that only generates power when sunlight is 
+available.</LI><BR> 
+
+<LI><B>medical-care:</B> This function indicates that the building has a medical treatment facility.  The "tech-level" attribute is
+the treatment technology of the building (see <A HREF="conf_tech_level.html">"conf/tech_level.txt"</A>).  The "beds" attribute is 
+the number of people who can be treated in this building at once.</LI><BR>
+
+<LI><B>farming:</B> This function indicates that the building is capable of growing crops.  The "crops" attribute is the number of crops
+that can be grown at a time in the building.  The "power-sustaining-crops" attribute is the power (kW) required to sustain each 
+growing crop.  The "growing-area" is the total surface area (square meters) for growing crops.</LI><BR>
+
+<LI><B>ground-vehicle-maintenance:</B> This function indicates that the building has garage facilities for a ground vehicle.  This allows 
+a vehicle to be maintained without requiring an EVA (extra vehicle activity) to do so.  The "capacity" attribute is the mass (kg) of 
+vehicles that can be contained in the building at once.</LI><BR>
+
+<LI><B>manufacture:</B> This function indicates that the building has facilities for manufacturing.  This allows people to perform
+manufacturing processes.  The "tech-level" attribute is the manufacturing technology capability of the building (see 
+<A HREF="conf_tech_level.html">"conf/tech_level.txt"</A>).  The "concurrent-processes" attribute is the number of manufacturing processes
+that can be performed in the building at once.</LI><BR>
+</UL>
+
+<P><BR><CENTER><A HREF="conf_main.html">Back</A>
+
+<BR><BR><BR><BR>
+<CENTER>
+<FONT SIZE="+0">
+<P>Please send questions or comments to <A HREF="MAILTO:mars-sim-users@lists.sourceforge.net">mars-sim-users@lists.sourceforge.net</A>
+<P>Mars Simulation Project copyright &copy; Scott Davis, 2008<BR>
+Map data courtesy of <A HREF="http://www.jpl.nasa.gov/" TARGET="_top">NASA Jet Propulsion Laboratory</A>
+</CENTER>
+</FONT>
+
+</FONT>
+</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
