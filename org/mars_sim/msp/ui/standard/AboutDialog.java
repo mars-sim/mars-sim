@@ -85,7 +85,7 @@ public class AboutDialog extends JDialog implements ActionListener, ComponentLis
     setSize(400, 400);
 
     // Try to load the About text
-    java.net.URL aboutURL = AboutDialog.class.getResource("about.html");
+    java.net.URL aboutURL = AboutDialog.class.getResource("../../../../../docs/help/about.html");
                        
    if (aboutURL != null) {
       try {
