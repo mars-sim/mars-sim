@@ -74,7 +74,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         fileMenu.add(saveItem);
 
         // Create save as menu item
-        saveAsItem = new JMenuItem("Save As");
+        saveAsItem = new JMenuItem("Save As...");
         saveAsItem.addActionListener(this);
         saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.META_DOWN_MASK, false));
         fileMenu.add(saveAsItem);
