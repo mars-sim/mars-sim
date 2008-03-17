@@ -58,31 +58,31 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         // Create new menu item
         newItem = new JMenuItem("New");
         newItem.addActionListener(this);
-        newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.META_DOWN_MASK, false));
+        newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(newItem);
 
         // Create load menu item
         loadItem = new JMenuItem("Load");
         loadItem.addActionListener(this);
-        loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.META_DOWN_MASK, false));
+        loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(loadItem);
 
         // Create save menu item
         saveItem = new JMenuItem("Save");
         saveItem.addActionListener(this);
-        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.META_DOWN_MASK, false));
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(saveItem);
 
         // Create save as menu item
         saveAsItem = new JMenuItem("Save As...");
         saveAsItem.addActionListener(this);
-        saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.META_DOWN_MASK, false));
+        saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(saveAsItem);
 
         // Create exit menu item
         exitItem = new JMenuItem("Exit");
         exitItem.addActionListener(this);
-        exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK, false));
+        exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(exitItem);
 
         // Create tools menu
