@@ -75,7 +75,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 			if (mineralConcentration.getMineralType().equals(mineralType)) {
 				double phiDiff = Math.abs(location.getPhi() - mineralConcentration.getLocation().getPhi());
 				double thetaDiff = Math.abs(location.getTheta() - mineralConcentration.getLocation().getTheta());
-				double diffLimit = .01D;
+				double diffLimit = .04D;
 				if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
 					double distance = location.getDistance(mineralConcentration.getLocation());
 					double concentrationRange = mineralConcentration.getConcentration();
