@@ -30,9 +30,13 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	RandomMineralMap() {
 		mineralConcentrations = new ArrayList<MineralConcentration>(1000);
 		
+		// Determine mineral concentrations.
 		determineMineralConcentrations();
 	}
 	
+	/**
+	 * Determine all mineral concentrations.
+	 */
 	private void determineMineralConcentrations() {
 		// Determine hematite concentrations.
 		int concentrationNumber = 1000;
@@ -73,9 +77,13 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		while (i.hasNext()) {
 			MineralConcentration mineralConcentration = i.next();
 			if (mineralConcentration.getMineralType().equals(mineralType)) {
-				double phiDiff = Math.abs(location.getPhi() - mineralConcentration.getLocation().getPhi());
-				double thetaDiff = Math.abs(location.getTheta() - mineralConcentration.getLocation().getTheta());
+				double concentrationPhi = mineralConcentration.getLocation().getPhi();
+				double concentrationTheta = mineralConcentration.getLocation().getTheta();
+				double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
+				double thetaDiff = Math.abs(location.getTheta() - concentrationTheta);
 				double diffLimit = .04D;
+				if ((concentrationPhi < Math.PI / 7D) || concentrationPhi > Math.PI - (Math.PI / 7D))
+					diffLimit+= Math.abs(Math.cos(concentrationPhi));
 				if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
 					double distance = location.getDistance(mineralConcentration.getLocation());
 					double concentrationRange = mineralConcentration.getConcentration();
