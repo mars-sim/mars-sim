@@ -18,6 +18,7 @@ import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
+import org.mars_sim.msp.ui.standard.tool.about.AboutWindow;
 
 /** The MainWindowMenu class is the menu for the main window.
  */
@@ -37,7 +38,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem soundToolItem;      // Sound tool menu item
     private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
     private JCheckBoxMenuItem lookAndFeelItem;    // Look and feel menu item
-    private JMenuItem aboutMspItem;               // About Mars Simulation Project menu item
+    private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
 
     /** 
      * Constructor
@@ -139,10 +140,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
         // Create help menu
         JMenu helpMenu = new JMenu("Help");
+        helpMenu.addMenuListener(this);
         add(helpMenu);
 
         // Create about Mars Simulation Project menu item
-        aboutMspItem = new JMenuItem("About The Mars Simulation Project");
+        aboutMspItem = new JCheckBoxMenuItem("About The Mars Simulation Project");
         aboutMspItem.addActionListener(this);
         helpMenu.add(aboutMspItem);
     }
@@ -196,7 +198,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             else mainWindow.getDesktop().closeToolWindow(MissionWindow.NAME);
         }
 
-        if (selectedItem == aboutMspItem) new AboutDialog(mainWindow);
+        if (selectedItem == aboutMspItem) {
+            if (aboutMspItem.isSelected()) 
+                mainWindow.getDesktop().openToolWindow(AboutWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(AboutWindow.NAME);
+        }
     }
 
     // MenuListener method overriding
@@ -213,6 +219,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         	mainWindow.getDesktop().isToolWindowOpen(SoundWindow.NAME));
         missionToolItem.setSelected(
         	mainWindow.getDesktop().isToolWindowOpen(MissionWindow.NAME));
+        aboutMspItem.setSelected(
+        	mainWindow.getDesktop().isToolWindowOpen(AboutWindow.NAME));
     }
 
     public void menuCanceled(MenuEvent event) {}
