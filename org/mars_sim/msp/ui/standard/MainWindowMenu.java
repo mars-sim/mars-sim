@@ -68,6 +68,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(loadItem);
 
+        fileMenu.add(new JSeparator());
+
         // Create save menu item
         saveItem = new JMenuItem("Save");
         saveItem.addActionListener(this);
@@ -79,6 +81,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         saveAsItem.addActionListener(this);
         saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(saveAsItem);
+
+        fileMenu.add(new JSeparator());
 
         // Create exit menu item
         exitItem = new JMenuItem("Exit");
@@ -147,6 +151,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         aboutMspItem = new JCheckBoxMenuItem("About The Mars Simulation Project");
         aboutMspItem.addActionListener(this);
         helpMenu.add(aboutMspItem);
+
+        fileMenu.add(new JSeparator());
+
     }
 
     // ActionListener method overriding
