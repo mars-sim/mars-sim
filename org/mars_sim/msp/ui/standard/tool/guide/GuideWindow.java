@@ -27,11 +27,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JEditorPane;
-import javax.swing.JToolBar;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
@@ -41,7 +41,7 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 /** The GuideWindow is a tool window that displays
  *  the built-in User Guide.
  */
-public class GuideWindow extends ToolWindow implements ActionListener, ComponentListener {
+public class GuideWindow extends ToolWindow implements ActionListener, HyperlinkListener, ComponentListener {
 
 	// Tool name
 	public static final String NAME = "User Guide";
@@ -52,9 +52,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Component
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
-    private JButton topButton; // The button that takes you back to the top
     private JViewport viewPort; // The view port for the text pane
-
+    private JEditorPane editorPane; // our HTML content pane
 
     /** Constructs a TableWindow object
      *  @param desktop the desktop pane
@@ -94,17 +93,24 @@ public class GuideWindow extends ToolWindow implements ActionListener, Component
 
 
     //A toolbar to hold all our buttons
-    JToolBar toolBar = new JToolBar();
-    toolBar.setFloatable(false); // could be removed
-    toolBar.add(topButton);
-    toolBar.add(backButton);
-    toolBar.add(forwardButton);
+    JPanel toolPanel = new JPanel();
+    toolPanel.add(topButton);
+    toolPanel.add(backButton);
+    toolPanel.add(forwardButton);
 
-    // Create the text panel
-    JEditorPane editorPane = new JEditorPane();
+
+    try {
+        editorPane = new JEditorPane(GuideWindow.class.getResource("../../../../../../../docs/help/userguide.html"));
+        editorPane.setEditable(false);
+        editorPane.addHyperlinkListener(this);
+    } catch(IOException ioe) {
+       // loging here
+    }
+
     editorPane.setBackground(Color.lightGray);
     editorPane.setBorder(new EmptyBorder(2, 2, 2, 2));
     editorPane.setEditable(false);
+    editorPane.addHyperlinkListener(this);
 
     JScrollPane scrollPane = new JScrollPane(editorPane);
     viewPort = scrollPane.getViewport();
@@ -112,7 +118,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Component
     viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 
     mainPane.add(scrollPane);
-    mainPane.add(toolBar, BorderLayout.NORTH);
+    mainPane.add(toolPanel, BorderLayout.NORTH);
 
         // Have to define a starting size
         setSize(new Dimension(475, 375));
@@ -138,6 +144,17 @@ public class GuideWindow extends ToolWindow implements ActionListener, Component
     setVisible(true);
 
 }
+
+  public void hyperlinkUpdate(HyperlinkEvent event) {
+    if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+      try {
+        editorPane.setPage(event.getURL());
+      } catch(IOException ioe) {
+         //logging here?
+      }
+    }
+  }
+
 
   // Implementing ActionListener method
   public void actionPerformed(ActionEvent event) {
