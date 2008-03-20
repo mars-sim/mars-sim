@@ -30,6 +30,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import com.sun.java.swing.SwingUtilities2;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
@@ -74,6 +75,7 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
     editorPane.setBackground(Color.lightGray);
     editorPane.setBorder(new EmptyBorder(2, 2, 2, 2));
     editorPane.setEditable(false);
+    editorPane.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true));
 
     JScrollPane scrollPane = new JScrollPane(editorPane);
     viewPort = scrollPane.getViewport();
