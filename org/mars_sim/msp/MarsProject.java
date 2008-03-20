@@ -106,6 +106,7 @@ public class MarsProject {
      */
     public static void main(String args[]) {	
 	//starting the simulation
+        System.setProperty("swing.aatext","true");
         new MarsProject(args);
     }
 }
