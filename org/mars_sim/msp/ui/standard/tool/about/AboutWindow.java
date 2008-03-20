@@ -51,9 +51,7 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
-    private JButton closeButton; // The close button
     private JViewport viewPort; // The view port for the text pane
-    private JEditorPane contentPane;
 
 
     /** Constructs a TableWindow object
@@ -75,7 +73,6 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
     editorPane.setBackground(Color.lightGray);
     editorPane.setBorder(new EmptyBorder(2, 2, 2, 2));
     editorPane.setEditable(false);
-   // editorPane.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true));
 
     JScrollPane scrollPane = new JScrollPane(editorPane);
     viewPort = scrollPane.getViewport();
