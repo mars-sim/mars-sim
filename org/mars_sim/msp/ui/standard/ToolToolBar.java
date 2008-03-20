@@ -18,6 +18,7 @@ import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
+import org.mars_sim.msp.ui.standard.tool.guide.GuideWindow;
 
 /** The ToolToolBar class is a UI toolbar for holding tool buttons.
  *  The should only be one instance and is contained in the MainWindow instance.
@@ -125,6 +126,15 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		missionButton.addActionListener(this);
 		add(missionButton);
 		toolButtons.addElement(missionButton);
+
+        addSeparator();
+
+		// Add guide button
+		ToolButton guideButton = new ToolButton(GuideWindow.NAME, "Guide");
+		guideButton.addActionListener(this);
+		add(guideButton);
+		toolButtons.addElement(guideButton);
+
 	}
 
 	/** ActionListener method overriden */
