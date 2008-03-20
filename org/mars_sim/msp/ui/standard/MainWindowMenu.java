@@ -19,6 +19,7 @@ import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.standard.tool.about.AboutWindow;
+import org.mars_sim.msp.ui.standard.tool.guide.GuideWindow;
 
 /** The MainWindowMenu class is the menu for the main window.
  */
@@ -39,6 +40,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
     private JCheckBoxMenuItem lookAndFeelItem;    // Look and feel menu item
     private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
+    private JCheckBoxMenuItem guideItem;          // User Guide menu item
 
     /** 
      * Constructor
@@ -152,7 +154,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         aboutMspItem.addActionListener(this);
         helpMenu.add(aboutMspItem);
 
-        fileMenu.add(new JSeparator());
+        helpMenu.add(new JSeparator());
+
+        // Create User Guide menu item
+        guideItem = new JCheckBoxMenuItem("User Guide");
+        guideItem.addActionListener(this);
+        guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false));
+        helpMenu.add(guideItem);
 
     }
 
@@ -209,6 +217,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             if (aboutMspItem.isSelected()) 
                 mainWindow.getDesktop().openToolWindow(AboutWindow.NAME);
             else mainWindow.getDesktop().closeToolWindow(AboutWindow.NAME);
+        }
+
+        if (selectedItem == guideItem) {
+            if (guideItem.isSelected()) 
+                mainWindow.getDesktop().openToolWindow(GuideWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(GuideWindow.NAME);
         }
     }
 

@@ -44,6 +44,7 @@ import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.standard.tool.about.AboutWindow;
+import org.mars_sim.msp.ui.standard.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindowFactory;
@@ -229,6 +230,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         try { aboutWindow.setClosed(true); }
         catch (PropertyVetoException e) { }
         toolWindows.add(aboutWindow);
+
+        // Prepare guide tool window
+        GuideWindow guideWindow = new GuideWindow(this);
+        try { guideWindow.setClosed(true); }
+        catch (PropertyVetoException e) { }
+        toolWindows.add(guideWindow);
     }
 
     /** Returns a tool window for a given tool name
