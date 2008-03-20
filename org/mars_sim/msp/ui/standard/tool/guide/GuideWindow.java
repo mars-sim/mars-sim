@@ -54,7 +54,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     // Data members
     private JViewport viewPort; // The view port for the text pane
     private JEditorPane editorPane; // our HTML content pane
-
+    private java.net.URL guideURL = GuideWindow.class.getResource("../../../../../../../docs/help/userguide.html");
     /** Constructs a TableWindow object
      *  @param desktop the desktop pane
      */
@@ -74,11 +74,19 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     topButton.setToolTipText("Go to Top");
     topButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
+    try {
+    editorPane.setPage(guideURL);
+    } catch(IOException ioe) {
+          logger.log(Level.SEVERE, "Attempted to read a bad URL: userguide.html", ioe);
+    }
 				}
         });
+
+
     JButton backButton = new JButton ("Back");
     backButton.setActionCommand("back");
     backButton.setToolTipText("Back");
+    backButton.setEnabled(false);
     backButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
 				}
@@ -86,6 +94,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     JButton forwardButton = new JButton ("Forward");
     forwardButton.setActionCommand("forward");
     forwardButton.setToolTipText("Forward");
+    forwardButton.setEnabled(false);
     forwardButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
 				}
@@ -100,11 +109,11 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 
     try {
-        editorPane = new JEditorPane(GuideWindow.class.getResource("../../../../../../../docs/help/userguide.html"));
+        editorPane = new JEditorPane(guideURL);
         editorPane.setEditable(false);
         editorPane.addHyperlinkListener(this);
     } catch(IOException ioe) {
-       // loging here
+          logger.log(Level.SEVERE, "Attempted to read a bad URL: userguide.html", ioe);
     }
 
     editorPane.setBackground(Color.lightGray);
@@ -123,18 +132,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
         // Have to define a starting size
         setSize(new Dimension(475, 375));
 
-    // Try to load the Guide text
-    java.net.URL guideURL = GuideWindow.class.getResource("../../../../../../../docs/help/userguide.html");
-                       
-   if (guideURL != null) {
-      try {
-          editorPane.setPage(guideURL);
-        } catch (IOException e) {
-          logger.log(Level.SEVERE, "Attempted to read a bad URL: " + guideURL, e);
-        }
-    } else {
-       logger.log(Level.SEVERE, "Couldn't find file: userguide.html");
-    }
 
     // Allow the window to be resized by the user.
     setResizable(true);
@@ -150,7 +147,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
       try {
         editorPane.setPage(event.getURL());
       } catch(IOException ioe) {
-         //logging here?
+          logger.log(Level.SEVERE, "Attempted to read a bad URL: " + event.getURL(), ioe);
       }
     }
   }
