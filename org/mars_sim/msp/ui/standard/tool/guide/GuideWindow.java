@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JEditorPane;
+import javax.swing.JToolBar;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -51,9 +52,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Component
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
-    private JButton closeButton; // The close button
+    private JButton topButton; // The button that takes you back to the top
     private JViewport viewPort; // The view port for the text pane
-    private JEditorPane contentPane;
 
 
     /** Constructs a TableWindow object
@@ -70,6 +70,36 @@ public class GuideWindow extends ToolWindow implements ActionListener, Component
     mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
     setContentPane(mainPane);
 
+    JButton topButton = new JButton ("Top");
+    topButton.setActionCommand("top");
+    topButton.setToolTipText("Go to Top");
+    topButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+				}
+        });
+    JButton backButton = new JButton ("Back");
+    backButton.setActionCommand("back");
+    backButton.setToolTipText("Back");
+    backButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+				}
+        });
+    JButton forwardButton = new JButton ("Forward");
+    forwardButton.setActionCommand("forward");
+    forwardButton.setToolTipText("Forward");
+    forwardButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+				}
+        });
+
+
+    //A toolbar to hold all our buttons
+    JToolBar toolBar = new JToolBar();
+    toolBar.setFloatable(false); // could be removed
+    toolBar.add(topButton);
+    toolBar.add(backButton);
+    toolBar.add(forwardButton);
+
     // Create the text panel
     JEditorPane editorPane = new JEditorPane();
     editorPane.setBackground(Color.lightGray);
@@ -82,6 +112,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Component
     viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 
     mainPane.add(scrollPane);
+    mainPane.add(toolBar, BorderLayout.NORTH);
 
         // Have to define a starting size
         setSize(new Dimension(475, 375));
