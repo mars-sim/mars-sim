@@ -3,6 +3,7 @@
  * Weather.java
  * @version 2.76 2004-06-01
  * @author Scott Davis
+ * @author Hartmut Prochaska
  */
  
 package org.mars_sim.msp.simulation.mars;
