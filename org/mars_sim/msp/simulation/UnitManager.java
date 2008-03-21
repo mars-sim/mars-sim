@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.equipment.Equipment;
-import org.mars_sim.msp.simulation.equipment.EquipmentCollection;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonCollection;
@@ -604,15 +604,15 @@ public class UnitManager implements Serializable {
      * @return number
      */
     public int getEquipmentNum() {
-    	return units.getEquipment().size();
+    	return CollectionUtils.getEquipment(units.getUnits()).size();
     }
     
     /**
      * Get a collection of equipment.
      * @return collection
      */
-    public EquipmentCollection getEquipment() {
-    	return units.getEquipment();
+    public Collection getEquipment() {
+    	return CollectionUtils.getEquipment(units.getUnits());
     }
 
     /** The total number of units

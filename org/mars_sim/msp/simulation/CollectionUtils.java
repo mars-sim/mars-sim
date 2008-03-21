@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * MspCollection.java
+ * @version 2.83 20.3.2008
+ * @author Sebastien Venot
+ */
 package org.mars_sim.msp.simulation;
 
 import java.util.Collection;
@@ -5,12 +11,9 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.simulation.equipment.Equipment;
-import org.mars_sim.msp.simulation.equipment.EquipmentIterator;
 
 /**
- * @author Sebastien Venot
- * @version 1.0
- * @date 20.3.2008
+ * This class gather general collection manipulation methods
  */
 public class CollectionUtils {
 
