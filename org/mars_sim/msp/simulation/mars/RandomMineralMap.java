@@ -7,14 +7,25 @@
 
 package org.mars_sim.msp.simulation.mars;
 
+import java.awt.Image;
+import java.awt.image.ImageObserver;
+import java.awt.image.PixelGrabber;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.ImageIcon;
 
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.RandomUtil;
 
 /**
@@ -22,6 +33,10 @@ import org.mars_sim.msp.simulation.RandomUtil;
  */
 public class RandomMineralMap implements Serializable, MineralMap {
 
+	private static String CLASS_NAME = 
+		"org.mars_sim.msp.simulation.mars.RandomMineralMap";
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	
 	private List<MineralConcentration> mineralConcentrations;
 	
 	/**
@@ -38,16 +53,73 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * Determine all mineral concentrations.
 	 */
 	private void determineMineralConcentrations() {
+		// Load topographical regions.
+		Set<Coordinates> craterRegionSet = getTopoRegionSet("TopographyCrater.gif");
+		Set<Coordinates> volcanicRegionSet = getTopoRegionSet("TopographyVolcanic.gif");
+		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet("TopographySedimentary.gif");
+		
+		// Create super set of topographical regions.
+		Set<Coordinates> regionSet = new HashSet<Coordinates>(3000);
+		// regionSet.addAll(craterRegionSet);
+		regionSet.addAll(volcanicRegionSet);
+		// regionSet.addAll(sedimentaryRegionSet);
+		Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
+		
 		// Determine hematite concentrations.
-		int concentrationNumber = 1000;
+		int concentrationNumber = Math.round((float) regionArray.length / 10F);
 		for (int x = 0; x < concentrationNumber; x++) {
+			int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
+			Coordinates regionLocation = regionArray[regionLocationIndex];
+			Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
+			double pixelRadius = (Mars.MARS_CIRCUMFERENCE / 300D) / 2D;
+			double distance = RandomUtil.getRandomDouble(pixelRadius);
+			Coordinates location = regionLocation.getNewLocation(direction, distance);
+			double concentration = RandomUtil.getRandomDouble(100D);
+			mineralConcentrations.add(new MineralConcentration(
+					location, concentration, MineralMap.HEMATITE));
+			
+			/*
 			double phi = Coordinates.getRandomLatitude();
 			double theta = Coordinates.getRandomLongitude();
 			Coordinates location = new Coordinates(phi, theta);
 			double concentration = RandomUtil.getRandomDouble(100D);
 			mineralConcentrations.add(new MineralConcentration(
 					location, concentration, MineralMap.HEMATITE));
+			*/
 		}
+	}
+	
+	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
+		Set<Coordinates> result = new HashSet<Coordinates>(3000);
+		
+		URL imageMapURL = ClassLoader.getSystemResource("images/" + imageMapName);
+		ImageIcon mapIcon = new ImageIcon(imageMapURL);
+		Image mapImage = mapIcon.getImage();
+		int[] mapPixels = new int[300 * 150];
+		PixelGrabber topoGrabber = new PixelGrabber(mapImage, 0, 0, 300, 150, mapPixels, 0, 300);
+		try {
+			topoGrabber.grabPixels();
+        } catch (InterruptedException e) {
+            logger.log(Level.SEVERE,"grabber error" + e);
+        }
+        if ((topoGrabber.status() & ImageObserver.ABORT) != 0)
+            logger.info("grabber error");
+        
+        for (int x = 0; x < 150; x++) {
+        	for (int y = 0; y < 300; y++) {
+        		int pixel = mapPixels[(x * 300) + y];
+        		int alpha = (pixel >> 24) & 0xFF;
+        		if (alpha == 255) {
+        			double pixel_offset = (Math.PI / 150D) / 2D;
+        			double phi = (((double) x / 150D) * Math.PI) + pixel_offset;
+        			double theta = (((double) y / 150D) * Math.PI) + Math.PI + pixel_offset;
+        			if (theta > (2D * Math.PI)) theta -= (2D * Math.PI);
+        			result.add(new Coordinates(phi, theta));
+        		}
+        	}
+        }
+		
+		return result;
 	}
 	
     /**
