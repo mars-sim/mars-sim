@@ -242,7 +242,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         	mainWindow.getDesktop().isToolWindowOpen(MissionWindow.NAME));
         aboutMspItem.setSelected(
         	mainWindow.getDesktop().isToolWindowOpen(AboutWindow.NAME));
-    }
+        guideItem.setSelected(
+        	mainWindow.getDesktop().isToolWindowOpen(GuideWindow.NAME));
+   }
 
     public void menuCanceled(MenuEvent event) {}
     public void menuDeselected(MenuEvent event) {}
