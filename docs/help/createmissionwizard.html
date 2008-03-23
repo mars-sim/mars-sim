@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Mars Simulation Project - Create Mission Wizard</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<TABLE BORDER="0" WIDTH="500">
+  <TR>
+    <TD><H2>Mars Simulation Project<BR>
+        User Guide</H2>
+      <H3>Create Mission Wizard</H3>
+      <P>The create new mission wizard allows the user to create new missions.</P>
+      <TABLE CELLPADDING="0" CELLSPACING="0">
+        <TR>
+          <TD><IMG SRC="images/ug_createmissionwizard1.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 1"></TD>
+        </TR>
+        <TR>
+          <TD>Create Mission Wizard: First Panel</TD>
+        </TR>
+      </TABLE>
+      <P>The first panel allows the user to select the type of mission from the following options:</P>
+      <UL>
+        <LI>Travel To Settlement - A rover mission to travel from one settlement to another.</LI>
+        <LI>Exploration - A rover mission to travel to and explore one or more sites and collect rock samples.</LI>
+        <LI>Ice Prospecting - A rover mission to travel to a site and collect permafrost ice.</LI>
+        <LI>Regolith Prospecting - A rover mission to travel to a site and collect mineral-rich regolith.</LI>
+        <LI>Rescue/Salvage Vehicle - A rover mission to rescue or salvage a vehicle with its emergency beacon activated.</LI>
+        <LI>Trade - A rover mission to travel to a nearby settlement and trade goods.</LI>
+      </UL>
+      <P>The mission description defaults to the selected mission type, but can be edited by the user.</P>
+      <TABLE CELLPADDING="0" CELLSPACING="0">
+        <TR>
+          <TD><IMG SRC="images/ug_createmissionwizard2.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 2"></TD>
+        </TR>
+        <TR>
+          <TD>Create Mission Wizard: Select Starting Settlement</TD>
+        </TR>
+      </TABLE>
+      <P>The select starting panel allows the user to select a starting settlement for the mission from a list of all the 
+        settlements in the simulation.  Settlement rows with one or more red cells cannot be selected as starting settlements.</P>
+      <TABLE CELLPADDING="0" CELLSPACING="0">
+        <TR>
+          <TD><IMG SRC="images/ug_createmissionwizard3.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 3"></TD>
+        </TR>
+        <TR>
+          <TD>Create Mission Wizard: Select Rover</TD>
+        </TR>
+      </TABLE>
+      <P>The select rover panel allows the user to select a rover for the mission from a list of rovers at the starting 
+        settlement.  Rover rows with one or more red cells cannot be selected for the mission.</P>
+      <TABLE CELLPADDING="0" CELLSPACING="0">
+        <TR>
+          <TD><IMG SRC="images/ug_createmissionwizard4.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 4"></TD>
+        </TR>
+        <TR>
+          <TD>Create Mission Wizard: Select Members</TD>
+        </TR>
+      </TABLE>
+      <P>The select members panel allows the user to select a group of members participating in the mission from a list of 
+        people at the starting settlement.</P>
+      <P>One or more people can be selected from the Available People list and added to the
+        Mission Members list by clicking the Add Members button.  Any people rows in the Available People list with red cells
+        cannot be added to the mission.</P>
+      <P>Remaining rover capacity is displayed above the Mission Members list.  This capacity limits the number of available people
+        who can be added to the mission.</P>
+      <P>One or more people in the Mission Members can be selected and removed as members by clicking the Remove Members button.</P>
+      <TABLE CELLPADDING="0" CELLSPACING="0">
+        <TR>
+          <TD><IMG SRC="../images/ug_createmissionwizard5.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 5"></TD>
+        </TR>
+        <TR>
+          <TD>Create Mission Wizard: Select Destination Settlement</TD>
+        </TR>
+      </TABLE>
+      <P>The select destination settlement panel is the final panel when creating a Travel to Settlement mission or a Trade mission.  
+        It allows the user to select a destination settlement for the mission.</P>
+      <P>The user can select a destination settlement from the list of settlements that are ordered by distance from the mission's 
+        starting settlement.  Settlement rows with red cells cannot be selected as destination settlements.</P>
+      <P>If no settlements are selectable as a destination, the user may wish to go back and select if different starting settlement
+        or a mission rover with greater range.</P>
+      <TABLE CELLPADDING="0" CELLSPACING="0">
+        <TR>
+          <TD><IMG SRC="../images/ug_createmissionwizard6.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 6"></TD>
+        </TR>
+        <TR>
+          <TD>Create Mission Wizard: Choose Exploration Sites</TD>
+        </TR>
+      </TABLE>
+      <P>The choose exploration sites panel is the final panel when creating an Exploration mission.  It allows the user to choose one
+        or more exploration sites for the mission.</P>
+      <P>The user can click on the blue navpoint flag at an exploration site and drag it to move the location of the site.  A green ellipse
+        shows the range boundry of where the navpoint can be dragged.</P>
+      <P>The Add Site button will add a new exploration site to the mission at a default location.  The new site will be added to the list of
+        exploration sites and a blue navpoint flag will be added to the map.</P>
+      <P>Additional exploration sites can be removed from the exploration site list with the Remove button.</P>
+      <TABLE CELLPADDING="0" CELLSPACING="0">
+        <TR>
+          <TD><IMG SRC="../images/ug_createmissionwizard7.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 7"></TD>
+        </TR>
+        <TR>
+          <TD>Create Mission Wizard: Choose Prospecting Sites</TD>
+        </TR>
+      </TABLE>
+      <P>The choose prospecting sites panel is the final panel when creating an Ice Prospecting mission or a Regolith Prospecting mission.  
+        It allows the user to choose an ice prospecting site for the mission.</P>
+      <P>An ice prospecting site is created at a default location.  The user can click on the blue navpoint flag and drag it to move the location
+        of the site.  A green circle shows the range boundry of where the navpoint can be dragged.</P>
+      <TABLE CELLPADDING="0" CELLSPACING="0">
+        <TR>
+          <TD><IMG SRC="images/ug_createmissionwizard8.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 8"></TD>
+        </TR>
+        <TR>
+          <TD>Create Mission Wizard: Select Rover to Rescue/Salvage</TD>
+        </TR>
+      </TABLE>
+      <P>The select rover to rescue/salvage panel is the final panel when creating a Rescue/Salvage Vehicle mission.  It allows the user
+        to select a rover to be rescued/salvaged for the mission.</P>
+      <P>The user can select the rover from the list of rovers in the simulation that have their emergency beacons activated.  Rover rows with
+        red cells cannot be selected.</P>
+      <P>If there are no rescue/salvage rovers available, the user may wish to go back and select a different starting settlement or a mission 
+        rover with greater range.  If there are no rescue/salvage rovers at all in the simulation, the user may wish to end a nearby mission in
+        the Mission tool so that it is rescuable.</P>
+        <TABLE CELLPADDING="0" CELLSPACING="0">
+          <TR>
+            <TD><IMG SRC="images/ug_createmissionwizard9.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 9"></TD>
+          </TR>
+          <TR>
+            <TD>Create Mission Wizard: Select Goods to Sell</TD>
+          </TR>
+        </TABLE>
+      <P>The select goods to sell panel panel lets the user determine what trade goods to sell to the destination settlement.</P>
+      <P>The user can select the trade good from the list of available goods on the left, type the number of goods in the center text field, and click
+        the right button to add a number of goods to the sell list.  The user can also select a trade good from the sell list to remove a number of them
+        from the sell list.</P>
+      <P>Red text will display at the bottom of the panel if there is an error in the trade goods the user selected.</P>
+        <TABLE CELLPADDING="0" CELLSPACING="0">
+          <TR>
+            <TD><IMG SRC="images/ug_createmissionwizard10.png" WIDTH="716" HEIGHT="515" ALT="Create Mission Wizard Image 10"></TD>
+          </TR>
+          <TR>
+            <TD>Create Mission Wizard: Select Goods to Buy</TD>
+          </TR>
+        </TABLE>
+      <P>The select goods to buy panel panel lets the user determine what trade goods to buy from the destination settlement.</P>
+      <P>The user can select the trade good from the list of available goods on the left, type the number of goods in the center text field, and click
+        the right button to add a number of goods to the buy list.  The user can also select a trade good from the buy list to remove a number of them
+        from the buy list.</P>
+      <P>Red text will display at the bottom of the panel if there is an error in the trade goods the user selected.</P>
+      <P><BR>
+        <A HREF="missiontool.html">Back</A></P>
+      <BR>
+      <BR>
+      <BR>
+      <BR>
+      <P>Please send questions or comments to mars-sim-users@lists.sourceforge.net</P>
+      <P>Mars Simulation Project copyright &copy; Scott Davis, 2008<BR>
+        Map data courtesy of NASA Jet Propulsion Laboratory</P></TD>
+  </TR>
+</TABLE>
+</BODY>
+</HTML>
