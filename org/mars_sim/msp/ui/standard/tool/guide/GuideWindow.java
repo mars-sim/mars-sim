@@ -115,13 +115,11 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     toolPanel.add(forwardButton);
 
     htmlPane = new HTMLContentPane();
-    htmlPane.setEditable(false);
     htmlPane.addHyperlinkListener(this);
-	htmlPane.goToURL(guideURL);
+    htmlPane.goToURL(guideURL);
 
     htmlPane.setBackground(Color.lightGray);
     htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
-    htmlPane.addHyperlinkListener(this);
 
     JScrollPane scrollPane = new JScrollPane(htmlPane);
     viewPort = scrollPane.getViewport();
