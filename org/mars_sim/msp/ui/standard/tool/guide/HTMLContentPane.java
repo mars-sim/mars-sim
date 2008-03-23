@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * GuideWindow.java
+ * @version 2.84 2008-03-24
+ * @author Lars Naesbye Christensen
+ */
+
 package org.mars_sim.msp.ui.standard.tool.guide;
 
 import java.net.URL;
@@ -8,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JEditorPane;
-
 
 class HTMLContentPane extends JEditorPane {
 
