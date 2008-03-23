@@ -20,6 +20,10 @@ import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+
+import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -37,6 +41,8 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.tool.guide.HTMLContentPane;
+
 
 /** The GuideWindow is a tool window that displays
  *  the built-in User Guide.
@@ -45,7 +51,9 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 	// Tool name
 	public static final String NAME = "User Guide";
-	
+        private List history = new ArrayList();
+        private int historyIndex;
+
     private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.tool.guide.GuideWindow";
 
@@ -53,8 +61,11 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
     // Data members
     private JViewport viewPort; // The view port for the text pane
-    private JEditorPane editorPane; // our HTML content pane
-    private java.net.URL guideURL = GuideWindow.class.getResource("../../../../../../../docs/help/userguide.html");
+    private HTMLContentPane htmlPane; // our HTML content pane
+    private URL guideURL = GuideWindow.class.getResource("../../../../../../../docs/help/userguide.html");
+    private URL tempURL; // for debugging
+
+
     /** Constructs a TableWindow object
      *  @param desktop the desktop pane
      */
@@ -74,29 +85,25 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     topButton.setToolTipText("Go to Top");
     topButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-    try {
-    editorPane.setPage(guideURL);
-    } catch(IOException ioe) {
-          logger.log(Level.SEVERE, "Attempted to read a bad URL: userguide.html", ioe);
-    }
+    htmlPane.goToURL(guideURL);
 				}
-        });
-
+        }
+    );
 
     JButton backButton = new JButton ("Back");
     backButton.setActionCommand("back");
     backButton.setToolTipText("Back");
-    backButton.setEnabled(false);
     backButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
+	URL tempURL= htmlPane.back();			
 				}
         });
     JButton forwardButton = new JButton ("Forward");
     forwardButton.setActionCommand("forward");
     forwardButton.setToolTipText("Forward");
-    forwardButton.setEnabled(false);
     forwardButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
+	URL tempURL= htmlPane.forward();
 				}
         });
 
@@ -107,21 +114,16 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     toolPanel.add(backButton);
     toolPanel.add(forwardButton);
 
+    htmlPane = new HTMLContentPane();
+    htmlPane.setEditable(false);
+    htmlPane.addHyperlinkListener(this);
+	htmlPane.goToURL(guideURL);
 
-    try {
-        editorPane = new JEditorPane(guideURL);
-        editorPane.setEditable(false);
-        editorPane.addHyperlinkListener(this);
-    } catch(IOException ioe) {
-          logger.log(Level.SEVERE, "Attempted to read a bad URL: userguide.html", ioe);
-    }
+    htmlPane.setBackground(Color.lightGray);
+    htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
+    htmlPane.addHyperlinkListener(this);
 
-    editorPane.setBackground(Color.lightGray);
-    editorPane.setBorder(new EmptyBorder(2, 2, 2, 2));
-    editorPane.setEditable(false);
-    editorPane.addHyperlinkListener(this);
-
-    JScrollPane scrollPane = new JScrollPane(editorPane);
+    JScrollPane scrollPane = new JScrollPane(htmlPane);
     viewPort = scrollPane.getViewport();
     viewPort.addComponentListener(this);
     viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
@@ -144,11 +146,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
   public void hyperlinkUpdate(HyperlinkEvent event) {
     if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-      try {
-        editorPane.setPage(event.getURL());
-      } catch(IOException ioe) {
-          logger.log(Level.SEVERE, "Attempted to read a bad URL: " + event.getURL(), ioe);
-      }
+        htmlPane.goToURL(event.getURL());
     }
   }
 
