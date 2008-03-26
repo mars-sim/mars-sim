@@ -1,17 +1,20 @@
 /**
  * Mars Simulation Project
  * MineralMapLayer.java
- * @version 2.84 2008-03-17
+ * @version 2.84 2008-03-26
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.map;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,6 +59,9 @@ public class MineralMapLayer implements MapLayer {
 		if (!mapCenter.equals(mapCenterCache) || !mapType.equals(mapTypeCache)) {
 			mapCenterCache = new Coordinates(mapCenter);
 			mapTypeCache = mapType;
+			
+			// Clear map concentration array.
+			Arrays.fill(mineralConcentrationArray, 0);
 		
 			int centerX = 150;
 			int centerY = 150;
@@ -64,19 +70,36 @@ public class MineralMapLayer implements MapLayer {
 			if (USGSMarsMap.TYPE.equals(mapType)) rho = USGSMarsMap.PIXEL_RHO;
 			else rho = CannedMarsMap.PIXEL_RHO;
         
+			int totalMineralTypeNum = mineralMap.getMineralTypeNames().length;
+			
 			Coordinates location = new Coordinates(0D, 0D);
 			for (int x = 0; x < Map.DISPLAY_WIDTH; x+=2) {
 				for (int y = 0; y < Map.DISPLAY_HEIGHT; y+=2) {
 					mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
-					double concentration = mineralMap.getMineralConcentration(MineralMap.HEMATITE, location);
-					int concentrationInt = (int) (255 * (concentration / 100D));
-					int concentrationColor = (concentrationInt << 24) | 0x000000FF;
+					java.util.Map<String, Double> mineralConcentrations = 
+						mineralMap.getAllMineralConcentrations(location);
+					int count = 0;
+					Iterator<String> i = mineralConcentrations.keySet().iterator();
+					while (i.hasNext()) {
+						// count++;
+						String mineralType = i.next();
+						double concentration = mineralConcentrations.get(mineralType);
+						if (concentration > 0D) {
+							int concentrationInt = (int) (255 * (concentration / 100D));
+							int baseColor = Color.HSBtoRGB(((float) count / (float) totalMineralTypeNum), 1F, 1F);
+							// int concentrationColor = (concentrationInt << 24) | 0x000000FF;
+							int concentrationColor = (concentrationInt << 24) | (baseColor & 0x00FFFFFF);
                
-					mineralConcentrationArray[x + (y * Map.DISPLAY_WIDTH)] = concentrationColor;
-					mineralConcentrationArray[x + 1 + (y * Map.DISPLAY_WIDTH)] = concentrationColor;
-					if (y < Map.DISPLAY_HEIGHT -1) {
-						mineralConcentrationArray[x + ((y + 1) * Map.DISPLAY_WIDTH)] = concentrationColor;
-						mineralConcentrationArray[x + 1 + ((y + 1) * Map.DISPLAY_WIDTH)] = concentrationColor;
+							int index = x + (y * Map.DISPLAY_WIDTH);
+							addColorToMineralConcentrationArray(index, concentrationColor);
+							addColorToMineralConcentrationArray((index + 1), concentrationColor);
+							if (y < Map.DISPLAY_HEIGHT -1) {
+								int indexNextLine = x + ((y + 1) * Map.DISPLAY_WIDTH);
+								addColorToMineralConcentrationArray(indexNextLine, concentrationColor);
+								addColorToMineralConcentrationArray((indexNextLine + 1), concentrationColor);
+							}
+						}
+						count++;
 					}
 				}
 			}
@@ -98,5 +121,10 @@ public class MineralMapLayer implements MapLayer {
 
         // Draw the mineral concentration image
         g.drawImage(mineralConcentrationMap, 0, 0, displayComponent);
+	}
+	
+	private void addColorToMineralConcentrationArray(int index, int color) {
+		int currentColor = mineralConcentrationArray[index];
+		mineralConcentrationArray[index] = currentColor | color;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.83 2008-01-17
+ * @version 2.84 2008-03-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -44,6 +44,7 @@ public class SimulationConfig implements Serializable {
 	private static final String MALFUNCTION_FILE = "malfunctions";
 	private static final String CROP_FILE = "crops";
 	private static final String LANDMARK_FILE = "landmarks";
+	private static final String MINERAL_MAP_FILE = "minerals";
 	private static final String BUILDING_FILE = "buildings";
 	private static final String PART_FILE = "parts";
 	private static final String MANUFACTURE_FILE = "manufacturing";
@@ -65,6 +66,7 @@ public class SimulationConfig implements Serializable {
 	private PersonConfig personConfig;
 	private MedicalConfig medicalConfig;
 	private LandmarkConfig landmarkConfig;
+	private MineralMapConfig mineralMapConfig;
 	private MalfunctionConfig malfunctionConfig;
 	private CropConfig cropConfig;
 	private VehicleConfig vehicleConfig;
@@ -86,6 +88,7 @@ public class SimulationConfig implements Serializable {
 			personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
 			medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
 			landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARK_FILE));
+			mineralMapConfig = new MineralMapConfig(parseXMLFile(MINERAL_MAP_FILE));
 			malfunctionConfig = new MalfunctionConfig(parseXMLFile(MALFUNCTION_FILE));
 			cropConfig = new CropConfig(parseXMLFile(CROP_FILE));
 			vehicleConfig = new VehicleConfig(parseXMLFile(VEHICLE_FILE));
@@ -238,6 +241,14 @@ public class SimulationConfig implements Serializable {
 	 */
 	public LandmarkConfig getLandmarkConfiguration() {
 		return landmarkConfig;
+	}
+	
+	/**
+	 * Gets the mineral map config subset.
+	 * @return mineral map config
+	 */
+	public MineralMapConfig getMineralMapConfiguration() {
+		return mineralMapConfig;
 	}
 	
 	/**

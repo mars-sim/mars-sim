@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMap.java
- * @version 2.84 2008-03-15
+ * @version 2.84 2008-03-26
  * @author Scott Davis
  */
 
@@ -27,6 +27,8 @@ import javax.swing.ImageIcon;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.mars.MineralMapConfig.MineralType;
 
 /**
  * A randomly generated mineral map of Mars.
@@ -37,6 +39,18 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		"org.mars_sim.msp.simulation.mars.RandomMineralMap";
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
+	// Topographical Region Strings
+	private static final String CRATER_REGION = "crater";
+	private static final String VOLCANIC_REGION = "volcanic";
+	private static final String SEDIMENTARY_REGION = "sedimentary";
+	
+	// Frequency Strings
+	private static final String COMMON_FREQUENCY = "common";
+	private static final String UNCOMMON_FREQUENCY = "uncommon";
+	private static final String RARE_FREQUENCY = "rare";
+	private static final String VERY_RARE_FREQUENCY = "very rare";
+	
+	// List of all mineral concentrations.
 	private List<MineralConcentration> mineralConcentrations;
 	
 	/**
@@ -58,35 +72,67 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		Set<Coordinates> volcanicRegionSet = getTopoRegionSet("TopographyVolcanic.gif");
 		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet("TopographySedimentary.gif");
 		
-		// Create super set of topographical regions.
-		Set<Coordinates> regionSet = new HashSet<Coordinates>(3000);
-		// regionSet.addAll(craterRegionSet);
-		regionSet.addAll(volcanicRegionSet);
-		// regionSet.addAll(sedimentaryRegionSet);
-		Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
-		
-		// Determine hematite concentrations.
-		int concentrationNumber = Math.round((float) regionArray.length / 10F);
-		for (int x = 0; x < concentrationNumber; x++) {
-			int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
-			Coordinates regionLocation = regionArray[regionLocationIndex];
-			Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
-			double pixelRadius = (Mars.MARS_CIRCUMFERENCE / 300D) / 2D;
-			double distance = RandomUtil.getRandomDouble(pixelRadius);
-			Coordinates location = regionLocation.getNewLocation(direction, distance);
-			double concentration = RandomUtil.getRandomDouble(100D);
-			mineralConcentrations.add(new MineralConcentration(
-					location, concentration, MineralMap.HEMATITE));
-			
-			/*
-			double phi = Coordinates.getRandomLatitude();
-			double theta = Coordinates.getRandomLongitude();
-			Coordinates location = new Coordinates(phi, theta);
-			double concentration = RandomUtil.getRandomDouble(100D);
-			mineralConcentrations.add(new MineralConcentration(
-					location, concentration, MineralMap.HEMATITE));
-			*/
+		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
+		try {
+			Iterator<MineralType> i = config.getMineralTypes().iterator();
+			while (i.hasNext()) {
+				MineralType mineralType = i.next();
+				
+				// Create super set of topographical regions.
+				Set<Coordinates> regionSet = new HashSet<Coordinates>(4000);
+				Iterator<String> j = mineralType.locals.iterator();
+				while (j.hasNext()) {
+					String local = j.next().trim();
+					if (CRATER_REGION.equalsIgnoreCase(local)) regionSet.addAll(craterRegionSet);
+					else if (VOLCANIC_REGION.equalsIgnoreCase(local)) regionSet.addAll(volcanicRegionSet);
+					else if (SEDIMENTARY_REGION.equalsIgnoreCase(local)) regionSet.addAll(sedimentaryRegionSet);
+				}
+				Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
+				
+				if (regionArray.length > 0) {
+					// Determine individual mineral concentrations.
+					int concentrationNumber = Math.round((float) regionArray.length / 
+							10F / getFrequencyModifier(mineralType.frequency));
+					for (int x = 0; x < concentrationNumber; x++) {
+						int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
+						Coordinates regionLocation = regionArray[regionLocationIndex];
+						Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
+						double pixelRadius = (Mars.MARS_CIRCUMFERENCE / 300D) / 2D;
+						double distance = RandomUtil.getRandomDouble(pixelRadius);
+						Coordinates location = regionLocation.getNewLocation(direction, distance);
+						double concentration = RandomUtil.getRandomDouble(100D);
+						mineralConcentrations.add(new MineralConcentration(
+								location, concentration, mineralType.name));
+					}
+				}
+				else {
+					// If no locals, randomly distribute mineral on surface.
+					int concentrationNumber = Math.round(100F / 
+							getFrequencyModifier(mineralType.frequency));
+					for (int x = 0; x < concentrationNumber; x++) {
+						double phi = Coordinates.getRandomLatitude();
+						double theta = Coordinates.getRandomLongitude();
+						Coordinates location = new Coordinates(phi, theta);
+						double concentration = RandomUtil.getRandomDouble(100D);
+						mineralConcentrations.add(new MineralConcentration(
+								location, concentration, mineralType.name));
+					}
+				}
+			}
 		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Error creating random mineral map.", e);
+			e.printStackTrace();
+		}
+	}
+	
+	private float getFrequencyModifier(String frequency) {
+		float result = 1F;
+		if (COMMON_FREQUENCY.equalsIgnoreCase(frequency.trim())) result = 1F;
+		else if (UNCOMMON_FREQUENCY.equalsIgnoreCase(frequency.trim())) result = 5F;
+		else if (RARE_FREQUENCY.equalsIgnoreCase(frequency.trim())) result = 10F;
+		else if (VERY_RARE_FREQUENCY.equalsIgnoreCase(frequency.trim())) result = 15F;
+		return result;
 	}
 	
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
@@ -123,22 +169,32 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	}
 	
     /**
+     * Gets all of the mineral concentrations at a given location.
+     * @param location the coordinate location.
+     * @return map of mineral types and percentage concentration (0 to 100.0)
+     */
+	public Map<String, Double> getAllMineralConcentrations(Coordinates location) {
+		Map<String, Double> result = new HashMap<String, Double>();
+		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
+		try {
+			Iterator<MineralType> i = config.getMineralTypes().iterator();
+			while (i.hasNext()) {
+				MineralType mineralType = i.next();
+				double concentration = getMineralConcentration(mineralType.name, location);
+				result.put(mineralType.name, concentration);
+			}
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Error getting mineral types.", e);
+		}
+		return result;
+	}
+
+    /**
      * Gets the mineral concentration at a given location.
      * @param mineralType the mineral type (see MineralMap.java)
      * @param location the coordinate location.
      * @return percentage concentration (0 to 100.0)
-     */
-	public Map<String, Double> getAllMineralConcentration(Coordinates location) {
-		Map<String, Double> result = new HashMap<String, Double>();
-		double hematiteConcentration = getMineralConcentration(MineralMap.HEMATITE, location);
-		result.put(MineralMap.HEMATITE, hematiteConcentration);
-		return result;
-	}
-
-	/**
-     * Gets all of the mineral concentrations at a given location.
-     * @param location the coordinate location.
-     * @return map of mineral types and percentage concentration (0 to 100.0)
      */
 	public double getMineralConcentration(String mineralType,
 			Coordinates location) {
@@ -148,7 +204,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		Iterator<MineralConcentration> i = mineralConcentrations.iterator();
 		while (i.hasNext()) {
 			MineralConcentration mineralConcentration = i.next();
-			if (mineralConcentration.getMineralType().equals(mineralType)) {
+			if (mineralConcentration.getMineralType().equalsIgnoreCase(mineralType)) {
 				double concentrationPhi = mineralConcentration.getLocation().getPhi();
 				double concentrationTheta = mineralConcentration.getLocation().getTheta();
 				double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
@@ -169,6 +225,26 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		
 		return result;
 	}
+	
+    /**
+     * Gets an array of all mineral type names.
+     * @return array of name strings.
+     */
+    public String[] getMineralTypeNames() {
+    	String[] result = new String[0];
+    	MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
+    	try {
+    		List<MineralType> mineralTypes = config.getMineralTypes();
+    		result = new String[mineralTypes.size()];
+    		for (int x = 0; x < mineralTypes.size(); x++)
+    			result[x] = mineralTypes.get(x).name;
+    	}
+    	catch (Exception e) {
+    		logger.log(Level.SEVERE, "Error getting mineral types.", e);
+    	}
+    	
+    	return result;
+    }
 	
 	private class MineralConcentration implements Serializable {
 		private Coordinates location;
