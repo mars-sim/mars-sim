@@ -1,10 +1,32 @@
+/**
+ * Mars Simulation Project
+ * msp.css
+ * @version 2.84 2008-03-26
+ * @author Lars Naesbye Christensen
+ */
+
+/* In type selection, prefer humanist sans-serif typefaces for readable, easy-on-the-eyes body text. Ranked with most modern fonts first*/
+
 body {
-  font-family: Helvetica, sans-serif;
-  color: #00FF00;
-  background-color: #000000; }
+  font-family: "Calibri", "Lucida Grande", "Trebuchet MS", Myriad, Frutiger, sans-serif;
+  font-size: 12pt;
+  color: #000000;
+  background-color: #CCCCCC;
+}
+
+h2 {
+  font-size: 14pt;
+  text-align: center;
+}
+
+h3 {
+  font-size: 13pt;
+}
 
 a:link {
-  color: #00FF00 }
+  color: #0000FF;
+}
 
 a:visited {
-  color: #00C000 }
+  color: #F000F0;
+ }
