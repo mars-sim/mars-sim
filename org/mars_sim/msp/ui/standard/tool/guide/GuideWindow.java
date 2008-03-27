@@ -33,7 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JEditorPane;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
 
@@ -122,6 +122,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
     JScrollPane scrollPane = new JScrollPane(htmlPane);
+    scrollPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
+                new LineBorder(Color.green)));
     viewPort = scrollPane.getViewport();
     viewPort.addComponentListener(this);
     viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
