@@ -14,6 +14,7 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -71,6 +72,12 @@ public class MineralMapLayer implements MapLayer {
 			else rho = CannedMarsMap.PIXEL_RHO;
         
 			int totalMineralTypeNum = mineralMap.getMineralTypeNames().length;
+			java.util.Map<String, Integer> mineralColors = new HashMap<String, Integer>(totalMineralTypeNum);
+			for (int x = 0; x < totalMineralTypeNum; x++) {
+				String mineralTypeName = mineralMap.getMineralTypeNames()[x];
+				int mineralColor = Color.HSBtoRGB(((float) x / (float) totalMineralTypeNum), 1F, 1F);
+				mineralColors.put(mineralTypeName, mineralColor);
+			}
 			
 			Coordinates location = new Coordinates(0D, 0D);
 			for (int x = 0; x < Map.DISPLAY_WIDTH; x+=2) {
@@ -78,28 +85,26 @@ public class MineralMapLayer implements MapLayer {
 					mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
 					java.util.Map<String, Double> mineralConcentrations = 
 						mineralMap.getAllMineralConcentrations(location);
-					int count = 0;
-					Iterator<String> i = mineralConcentrations.keySet().iterator();
-					while (i.hasNext()) {
-						// count++;
-						String mineralType = i.next();
-						double concentration = mineralConcentrations.get(mineralType);
-						if (concentration > 0D) {
-							int concentrationInt = (int) (255 * (concentration / 100D));
-							int baseColor = Color.HSBtoRGB(((float) count / (float) totalMineralTypeNum), 1F, 1F);
-							// int concentrationColor = (concentrationInt << 24) | 0x000000FF;
-							int concentrationColor = (concentrationInt << 24) | (baseColor & 0x00FFFFFF);
+					if (mineralConcentrations.size() > 0) {
+						Iterator<String> i = mineralConcentrations.keySet().iterator();
+						while (i.hasNext()) {
+							String mineralType = i.next();
+							double concentration = mineralConcentrations.get(mineralType);
+							if (concentration > 0D) {
+								int concentrationInt = (int) (255 * (concentration / 100D));
+								int baseColor = mineralColors.get(mineralType);
+								int concentrationColor = (concentrationInt << 24) | (baseColor & 0x00FFFFFF);
                
-							int index = x + (y * Map.DISPLAY_WIDTH);
-							addColorToMineralConcentrationArray(index, concentrationColor);
-							addColorToMineralConcentrationArray((index + 1), concentrationColor);
-							if (y < Map.DISPLAY_HEIGHT -1) {
-								int indexNextLine = x + ((y + 1) * Map.DISPLAY_WIDTH);
-								addColorToMineralConcentrationArray(indexNextLine, concentrationColor);
-								addColorToMineralConcentrationArray((indexNextLine + 1), concentrationColor);
+								int index = x + (y * Map.DISPLAY_WIDTH);
+								addColorToMineralConcentrationArray(index, concentrationColor);
+								addColorToMineralConcentrationArray((index + 1), concentrationColor);
+								if (y < Map.DISPLAY_HEIGHT -1) {
+									int indexNextLine = x + ((y + 1) * Map.DISPLAY_WIDTH);
+									addColorToMineralConcentrationArray(indexNextLine, concentrationColor);
+									addColorToMineralConcentrationArray((indexNextLine + 1), concentrationColor);
+								}
 							}
 						}
-						count++;
 					}
 				}
 			}

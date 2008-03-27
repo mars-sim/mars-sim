@@ -13,6 +13,7 @@ import java.awt.image.PixelGrabber;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -174,18 +175,24 @@ public class RandomMineralMap implements Serializable, MineralMap {
      * @return map of mineral types and percentage concentration (0 to 100.0)
      */
 	public Map<String, Double> getAllMineralConcentrations(Coordinates location) {
-		Map<String, Double> result = new HashMap<String, Double>();
-		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
-		try {
-			Iterator<MineralType> i = config.getMineralTypes().iterator();
-			while (i.hasNext()) {
-				MineralType mineralType = i.next();
-				double concentration = getMineralConcentration(mineralType.name, location);
-				result.put(mineralType.name, concentration);
+		Map<String, Double> result = Collections.emptyMap();
+		boolean emptyMap = true;
+		Iterator<MineralConcentration> i = mineralConcentrations.iterator();
+		while (i.hasNext()) {
+			MineralConcentration mineralConcentration = i.next();
+			double effect = getMineralConcentrationEffect(mineralConcentration, location);
+			if (effect > 0D) {
+				if (emptyMap) {
+					result = new HashMap<String, Double>();
+					emptyMap = false;
+				}
+				double totalConcentration = 0D;
+				if (result.containsKey(mineralConcentration.mineralType)) 
+					totalConcentration = result.get(mineralConcentration.mineralType);
+				totalConcentration += effect;
+				if (totalConcentration > 100D) totalConcentration = 100D;
+				result.put(mineralConcentration.mineralType, totalConcentration);
 			}
-		}
-		catch (Exception e) {
-			logger.log(Level.SEVERE, "Error getting mineral types.", e);
 		}
 		return result;
 	}
@@ -198,29 +205,37 @@ public class RandomMineralMap implements Serializable, MineralMap {
      */
 	public double getMineralConcentration(String mineralType,
 			Coordinates location) {
-		
 		double result = 0D;
 		
 		Iterator<MineralConcentration> i = mineralConcentrations.iterator();
 		while (i.hasNext()) {
 			MineralConcentration mineralConcentration = i.next();
 			if (mineralConcentration.getMineralType().equalsIgnoreCase(mineralType)) {
-				double concentrationPhi = mineralConcentration.getLocation().getPhi();
-				double concentrationTheta = mineralConcentration.getLocation().getTheta();
-				double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
-				double thetaDiff = Math.abs(location.getTheta() - concentrationTheta);
-				double diffLimit = .04D;
-				if ((concentrationPhi < Math.PI / 7D) || concentrationPhi > Math.PI - (Math.PI / 7D))
-					diffLimit+= Math.abs(Math.cos(concentrationPhi));
-				if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
-					double distance = location.getDistance(mineralConcentration.getLocation());
-					double concentrationRange = mineralConcentration.getConcentration();
-					if (distance < concentrationRange) {
-						result += (1D - (distance / concentrationRange)) * mineralConcentration.getConcentration();
-						if (result > 100D) result = 100D;
-					}
-				}
+				result += getMineralConcentrationEffect(mineralConcentration, location);
+				if (result > 100D) result = 100D;
 			}
+		}
+		
+		return result;
+	}
+	
+	private double getMineralConcentrationEffect(MineralConcentration concentration, 
+			Coordinates location) {
+		double result = 0D;
+		
+		double concentrationPhi = concentration.getLocation().getPhi();
+		double concentrationTheta = concentration.getLocation().getTheta();
+		double phiDiff = Math.abs(location.getPhi() - concentrationPhi);
+		double thetaDiff = Math.abs(location.getTheta() - concentrationTheta);
+		double diffLimit = .04D;
+		if ((concentrationPhi < Math.PI / 7D) || concentrationPhi > Math.PI - (Math.PI / 7D))
+			diffLimit+= Math.abs(Math.cos(concentrationPhi));
+		if ((phiDiff < diffLimit) && (thetaDiff < diffLimit)) {
+			double distance = location.getDistance(concentration.getLocation());
+			double concentrationRange = concentration.getConcentration();
+			if (distance < concentrationRange) 
+				result = (1D - (distance / concentrationRange)) * 
+						concentration.getConcentration();
 		}
 		
 		return result;

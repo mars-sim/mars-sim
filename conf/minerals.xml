@@ -51,7 +51,7 @@
 	
 	<!-- Kamacite is an iron-nickel mineral found in meteorites. -->
 	<!-- http://en.wikipedia.org/wiki/Kamacite -->
-	<mineral name="kamacite" frequency="rare">
+	<mineral name="kamacite" frequency="uncommon">
 		<local-list>
 			<local name="crater" />
 		</local-list>
@@ -59,7 +59,7 @@
 	
 	<!-- Taenite is an iron-nickel mineral found in meteorites. -->
 	<!-- http://en.wikipedia.org/wiki/Taenite -->
-	<mineral name="taenite" frequency="rare">
+	<mineral name="taenite" frequency="uncommon">
 		<local-list>
 			<local name="crater" />
 		</local-list>
