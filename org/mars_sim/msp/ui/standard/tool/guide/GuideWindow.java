@@ -30,7 +30,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JEditorPane;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.border.*;

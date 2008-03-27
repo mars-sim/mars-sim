@@ -20,13 +20,13 @@ import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JEditorPane;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.border.*;
@@ -36,6 +36,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.HTMLContentPane;
 
 /** The AboutWindow is a tool window that displays credits
  *  for the Mars Simulation Project.
@@ -52,7 +53,8 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
 
     // Data members
     private JViewport viewPort; // The view port for the text pane
-
+    private HTMLContentPane editorPane; // our HTML content pane
+    private URL guideURL = AboutWindow.class.getResource("../../../../../../../docs/help/about.html");
 
     /** Constructs a TableWindow object
      *  @param desktop the desktop pane
@@ -69,7 +71,7 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
     setContentPane(mainPane);
 
     // Create the text panel
-    JEditorPane editorPane = new JEditorPane();
+    editorPane = new HTMLContentPane();
     editorPane.setBackground(Color.lightGray);
     editorPane.setBorder(new EmptyBorder(2, 2, 2, 2));
     editorPane.setEditable(false);
@@ -89,15 +91,7 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
     // Try to load the About text
     java.net.URL aboutURL = AboutWindow.class.getResource("../../../../../../../docs/help/about.html");
                        
-   if (aboutURL != null) {
-      try {
-          editorPane.setPage(aboutURL);
-        } catch (IOException e) {
-          logger.log(Level.SEVERE, "Attempted to read a bad URL: " + aboutURL, e);
-        }
-    } else {
-       logger.log(Level.SEVERE, "Couldn't find file: about.html");
-    }
+    editorPane.goToURL(aboutURL);
 
     // Prevent the window from being resized by the user.
     setResizable(false);
