@@ -5,7 +5,7 @@
  * @author Lars Naesbye Christensen
  */
 
-package org.mars_sim.msp.ui.standard.tool.guide;
+package org.mars_sim.msp.ui.standard;
 
 import java.net.URL;
 import java.io.IOException;
@@ -16,11 +16,11 @@ import java.util.Iterator;
 import java.util.List;
 import javax.swing.JEditorPane;
 
-class HTMLContentPane extends JEditorPane {
+public class HTMLContentPane extends JEditorPane {
 
   private List history = new ArrayList();
     private static String CLASS_NAME = 
-	    "org.mars_sim.msp.ui.standard.tool.guide.HTMLContentPane";
+	    "org.mars_sim.msp.ui.standard.HTMLContentPane";
 
   private static Logger logger = Logger.getLogger(CLASS_NAME);
 

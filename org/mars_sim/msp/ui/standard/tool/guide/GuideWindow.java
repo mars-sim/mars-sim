@@ -41,7 +41,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
-import org.mars_sim.msp.ui.standard.tool.guide.HTMLContentPane;
+import org.mars_sim.msp.ui.standard.HTMLContentPane;
 
 
 /** The GuideWindow is a tool window that displays
