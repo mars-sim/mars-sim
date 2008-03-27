@@ -7,86 +7,73 @@
 <LINK rel="stylesheet" href="msp.css">
 </HEAD>
 <BODY>
-<TABLE BORDER="0" WIDTH="500">
+<H2>Mars Simulation Project<BR>
+  User Guide</H2>
+<H3>Mission Tool</H3>
+<P>The Mission tool displays information about current missions and allows the user to create, modify and delete missions.</P>
+<P>The left mission list shows all current missions in the simulation.  The user can select a mission and its information will 
+  be displayed in the right panel.</P>
+<TABLE CELLPADDING="0" CELLSPACING="0">
   <TR>
-    <TD><H2>Mars Simulation Project<BR>
-        User Guide</H2>
-      <H3>Mission Tool</H3>
-      <P>The Mission tool displays information about current missions and allows the user to create, modify and delete missions.</P>
-      <P>The left mission list shows all current missions in the simulation.  The user can select a mission and its information will 
-        be displayed in the right panel.</P>
-      <TABLE CELLPADDING="0" CELLSPACING="0">
-        <TR>
-          <TD><IMG SRC="images/ug_missiontool1.png" WIDTH="572" HEIGHT="554" ALT="Mission Tool Image 1"></TD>
-        </TR>
-        <TR>
-          <TD>Mission Tool: Info Tab</TD>
-        </TR>
-      </TABLE>
-      <P>The Info tab panel shows text information about the selected mission.</P>
-      <P>The top box shows the mission description, type, and current phase.</P>
-      <P>The middle box shows the current number of mission members, as well as the minimum and maximum allowed for the mission.  There's a list of
-        the names of mission members and the tasks they're currently performing.  If the user clicks on a member in the list, the person's info window
-        will open.</P>
-      <P>The bottom box shows a button name of the vehicle used in the mission.  If the user clicks on the button, the vehicle info window will open.
-        Below that the vehicle's current status and speed are displayed as well as the distance to the next navpoint as well as the total distance traveled</P>
-      <TABLE CELLPADDING="0" CELLSPACING="0">
-        <TR>
-          <TD><IMG SRC="images/ug_missiontool2.png" WIDTH="572" HEIGHT="554" ALT="Mission Tool Image 2"></TD>
-        </TR>
-        <TR>
-          <TD>Mission Tool: Navpoints Tab</TD>
-        </TR>
-      </TABLE>
-      <P>The Navpoint tab panel shows information about the mission's navpoint destinations.</P>
-      <P>The mission navpoints are marked by blue flags on the map.  Directional arrow buttons on the edges of the map will recenter the map to their 
-        respective direction.  Below the map is a list of the mission's navpoints.  If a mission on the list is selected, the map is recentered on that 
-        navpoint.</P>
-      <BR>
-      <P>The buttons at the bottom of the mission tool:</P>
-      <UL>
-        <LI>Create New Mission - This button will pause the simulation and open the <A HREF="createmissionwizard.html">create new mission wizard</A>.</LI>
-        <LI>Modify Mission - This button will pause the simulation and open the edit mission dialog (see below) for the selected mission.</LI>
-        <LI>End Mission - This button will end the selected mission.  If the mission is currently outside a settlement, the vehicle's emergency
-          beacon will bet turned on.</LI>
-      </UL>
-      <TABLE CELLPADDING="0" CELLSPACING="0">
-        <TR>
-          <TD><IMG SRC="images/ug_missiontool3.png" WIDTH="356" HEIGHT="295" ALT="Mission Tool Image 3"></TD>
-        </TR>
-        <TR>
-          <TD>Edit Mission Dialog</TD>
-        </TR>
-      </TABLE>
-      <P>The Edit Mission dialog allows the user to edit a current mission.</P>
-      <P>The mission description text can be edited at the top.</P>
-      <P>The action dropdown has one or more of the following actions that can be taken, based on the mission's current situation:</P>
-      <UL>
-        <LI>None - No action will be taken (default).</LI>
-        <LI>End EVA and Continue to Next Site - The mission will end the current extra vehicular activity and, once all the mission members are back onboard
-          the rover, continue on to the next navpoint site.</LI>
-        <LI>Return to Home Settlement and End Mission - The mission will return back to its home settlement and disembark.</LI>
-        <LI>Go to Nearest Settlement and End Mission - The mission will travel to the nearest settlement and disembark.</LI>
-      </UL>
-      <P>The members table lists all current mission members.</P>
-      <P>If there are people at the mission's current location who can be added as members, the Add Members button is enabled.  Pressing the Add Members button 
-        will open a dialog listing available people to add to the mission.  One or more can be selected from the list and added to the mission.</P>
-      <P>The Remove Members button will remove any members selected in the members list from the mission.  If the mission is currently at a settlement, the 
-        removed members will remain at the settlement.  If the mission is currently away from a settlement, the removed members will remain in the rover,
-        but will not be a part of the mission.  If all mission members are removed, the mission will end and the rover emergency beacon will be turned on if
-        the mission is away from a settlement.</P>
-      <P>The Modify button at the bottom of the Edit Mission dialog will close the dialog, commit any changes made to the mission and unpause the simulation.</P>
-      <P>The Cancel button at the bottom of the Edit Mission dialog will close the dialog, not make any changes to the mission and unpause the simulation.</P>
-      <BR>
-      <A HREF="ui.html">Back</A>
-      <BR>
-      <BR>
-      <BR>
-      <BR>
-      <P>Please send questions or comments to mars-sim-users@lists.sourceforge.net</P>
-      <P>Mars Simulation Project copyright &copy; Scott Davis, 2008<BR>
-        Map data courtesy of NASA Jet Propulsion Laboratory</P></TD>
+    <TD><IMG SRC="images/ug_missiontool1.png" WIDTH="572" HEIGHT="554" ALT="Mission Tool Image 1"></TD>
+  </TR>
+  <TR>
+    <TD>Mission Tool: Info Tab</TD>
   </TR>
 </TABLE>
+<P>The Info tab panel shows text information about the selected mission.</P>
+<P>The top box shows the mission description, type, and current phase.</P>
+<P>The middle box shows the current number of mission members, as well as the minimum and maximum allowed for the mission.  There's a list of
+  the names of mission members and the tasks they're currently performing.  If the user clicks on a member in the list, the person's info window
+  will open.</P>
+<P>The bottom box shows a button name of the vehicle used in the mission.  If the user clicks on the button, the vehicle info window will open.
+  Below that the vehicle's current status and speed are displayed as well as the distance to the next navpoint as well as the total distance traveled</P>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+  <TR>
+    <TD><IMG SRC="images/ug_missiontool2.png" WIDTH="572" HEIGHT="554" ALT="Mission Tool Image 2"></TD>
+  </TR>
+  <TR>
+    <TD>Mission Tool: Navpoints Tab</TD>
+  </TR>
+</TABLE>
+<P>The Navpoint tab panel shows information about the mission's navpoint destinations.</P>
+<P>The mission navpoints are marked by blue flags on the map.  Directional arrow buttons on the edges of the map will recenter the map to their 
+  respective direction.  Below the map is a list of the mission's navpoints.  If a mission on the list is selected, the map is recentered on that 
+  navpoint.</P>
+<BR>
+<P>The buttons at the bottom of the mission tool:</P>
+<UL>
+  <LI>Create New Mission - This button will pause the simulation and open the <A HREF="createmissionwizard.html">create new mission wizard</A>.</LI>
+  <LI>Modify Mission - This button will pause the simulation and open the edit mission dialog (see below) for the selected mission.</LI>
+  <LI>End Mission - This button will end the selected mission.  If the mission is currently outside a settlement, the vehicle's emergency
+    beacon will bet turned on.</LI>
+</UL>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+  <TR>
+    <TD><IMG SRC="images/ug_missiontool3.png" WIDTH="356" HEIGHT="295" ALT="Mission Tool Image 3"></TD>
+  </TR>
+  <TR>
+    <TD>Edit Mission Dialog</TD>
+  </TR>
+</TABLE>
+<P>The Edit Mission dialog allows the user to edit a current mission.</P>
+<P>The mission description text can be edited at the top.</P>
+<P>The action dropdown has one or more of the following actions that can be taken, based on the mission's current situation:</P>
+<UL>
+  <LI>None - No action will be taken (default).</LI>
+  <LI>End EVA and Continue to Next Site - The mission will end the current extra vehicular activity and, once all the mission members are back onboard
+    the rover, continue on to the next navpoint site.</LI>
+  <LI>Return to Home Settlement and End Mission - The mission will return back to its home settlement and disembark.</LI>
+  <LI>Go to Nearest Settlement and End Mission - The mission will travel to the nearest settlement and disembark.</LI>
+</UL>
+<P>The members table lists all current mission members.</P>
+<P>If there are people at the mission's current location who can be added as members, the Add Members button is enabled.  Pressing the Add Members button 
+  will open a dialog listing available people to add to the mission.  One or more can be selected from the list and added to the mission.</P>
+<P>The Remove Members button will remove any members selected in the members list from the mission.  If the mission is currently at a settlement, the 
+  removed members will remain at the settlement.  If the mission is currently away from a settlement, the removed members will remain in the rover,
+  but will not be a part of the mission.  If all mission members are removed, the mission will end and the rover emergency beacon will be turned on if
+  the mission is away from a settlement.</P>
+<P>The Modify button at the bottom of the Edit Mission dialog will close the dialog, commit any changes made to the mission and unpause the simulation.</P>
+<P>The Cancel button at the bottom of the Edit Mission dialog will close the dialog, not make any changes to the mission and unpause the simulation.</P>
 </BODY>
 </HTML>

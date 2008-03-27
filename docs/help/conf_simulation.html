@@ -7,32 +7,20 @@
 <LINK rel="stylesheet" href="msp.css">
 </HEAD>
 <BODY>
-<TABLE BORDER="0" WIDTH="500">
-  <TR>
-    <TD><H2>Mars Simulation Project<BR>
-        Configuration Guide</H2>
-      <H3>Updated for version 2.83</H3>
-      <H3>simulation.xml</H3>
-      <BR>
-      <P>The simulation.xml configuration file contains configuration for the simulation.  At the moment we only have time-related configuration
-        for the simulation, but we expect additional configuration here later.</P>
-      <P>The "time-configuration" element is a group of time-related configuration elements.  It has the following child elements:</P>
-      <UL>
-        <LI><B>time-ratio:</B> This element is the ratio between simulation-time and real-time.  For example, if its value is "1000.0", time in the
-          simulation moves 1000 times faster than in the real world.</LI>
-        <LI><B>earth-start-date-time:</B> This element is the starting time of the simulation in Earth-time.  The format is "MM/dd/yyyy hh:mm:ss". </LI>
-        <LI><B>mars-start-date-time:</B> This element is the starting time of the simulation in Mars-time.  The format is in 
-          "orbit-month-sol:millisol" (see <A HREF="conf_time.html">conf/time.txt</A>).</LI>
-      </UL>
-      <P><BR>
-        <A HREF="conf_main.html">Back</A> <BR>
-        <BR>
-        <BR>
-        <BR>
-      <P>Please send questions or comments to mars-sim-users@lists.sourceforge.net</P>
-      <P>Mars Simulation Project copyright &copy; Scott Davis, 2008<BR>
-        Map data courtesy of NASA Jet Propulsion Laboratory</P></TD>
-  </TR>
-</TABLE>
+<H2>Mars Simulation Project<BR>
+  Configuration Guide</H2>
+<H3>Updated for version 2.83</H3>
+<H3>simulation.xml</H3>
+<BR>
+<P>The simulation.xml configuration file contains configuration for the simulation.  At the moment we only have time-related configuration
+  for the simulation, but we expect additional configuration here later.</P>
+<P>The "time-configuration" element is a group of time-related configuration elements.  It has the following child elements:</P>
+<UL>
+  <LI><B>time-ratio:</B> This element is the ratio between simulation-time and real-time.  For example, if its value is "1000.0", time in the
+    simulation moves 1000 times faster than in the real world.</LI>
+  <LI><B>earth-start-date-time:</B> This element is the starting time of the simulation in Earth-time.  The format is "MM/dd/yyyy hh:mm:ss". </LI>
+  <LI><B>mars-start-date-time:</B> This element is the starting time of the simulation in Mars-time.  The format is in 
+    "orbit-month-sol:millisol" (see <A HREF="conf_time.html">conf/time.txt</A>).</LI>
+</UL>
 </BODY>
 </HTML>

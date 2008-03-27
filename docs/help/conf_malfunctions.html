@@ -7,78 +7,66 @@
 <LINK rel="stylesheet" href="msp.css">
 </HEAD>
 <BODY>
-<TABLE BORDER="0" WIDTH="500">
-  <TR>
-    <TD><H2>Mars Simulation Project<BR>
-        Configuration Guide</H2>
-      <H3>Updated for version 2.83</H3>
-      <H3>malfunctions.xml</H3>
-      <BR>
-      <P>The malfunctions.xml configuration file contains configuration for malfunctions that can occur in buildings, 
-        vehicles and equipment.  New malfunctions can be added and existing ones edited.</P>
-      <P>A "malfunction" element has a unique "name" attribute.  It also has the following child elements:</P>
-      <UL>
-        <LI><B>severity:</B> The severity of the malfunction as an integer value between 1 and 100 (100 being most-severe).
-          This is used to determine the order that people will attempt to fix multiple malfunctions.  This element is required
-          for all malfunctions.</LI>
-        <LI><B>probability:</B> The probability weight of the malfunction happening as a decimal value between 1.0 and 100.0
-          (100.0 being most probable).  This is its probability relative to other possible malfunctions for an entity.  This
-          element is required for all malfunctions.</LI>
-        <LI><B>repair-time:</B> The normal repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) required 
-          to fix the malfunction. This element is optional and its absence means the malfunction doesn't need normal repairs.</LI>
-        <LI><B>emergency-repair-time:</B> The emergency repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) 
-          required to fix the malfunction. This element is optional and its absence means the malfunction doesn't need emergency 
-          repairs.</LI>
-        <LI><B>eva-repair-time:</B> The EVA (Extra Vehicular Activity) repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) required 
-          to fix the malfunction. This element is optional and its absence means the malfunction doesn't need EVA repairs.</LI>
-        <LI><B>entity-list:</B> This is a list of entities that are susceptible to this malfunction.  The malfunction must have at least
-          one entity in the list.  The following entities are supported:<BR>
-          <UL>
-            <LI><B>Vehicle:</B> Any vehicle.</LI>
-            <LI><B>Rover:</B> A pressurized, long-range, all-terrain, ground vehicle that carries a crew.</LI>
-            <LI><B>EVA Suit:</B> An Extra Vehicular Activity suit.</LI>
-            <LI><B>Building:</B> This represents any building, regardless of its functions.</LI>
-            <LI><B>Life Support:</B> A building with the "life-support" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Living Accommodations:</B> A building that has the "living-accommodations" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Research:</B> A building that has the "research" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Communication:</B> A building that has the "communication" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>EVA:</B> A building that has the "EVA" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Recreation:</B> A building that has the "recreation" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Dining:</B> A building that has the "dining" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Cooking:</B> A building that has the "cooking" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Exercise:</B> A building that has the "exercise" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Resource Processing:</B> A building that has the "resource-processing" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Storage:</B> A building that has the "storage" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Power Generation:</B> A building that has the "power-generation" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Medical Care:</B> A building that has the "medical-care" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Farming:</B> A building that has the "farming" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Ground Vehicle Maintenance:</B> A building that has the "ground-vehicle-maintenance" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-            <LI><B>Manufacture:</B> A building that has the "manufacture" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
-          </UL>
-          Basically any building function is supported as a malfunctionable entity, only replace the hyphens in the function name with spaces.
-          As we add more vehicles, equipment and building functions, they well be supported malfunctionable entities as well. </LI>
-        <LI><B>effects-list:</B> A list of effects that this malfunction will produce.  The "effect" element has a "type" attribute that can have 
-          the value of either "resource" or "life support".<BR>
-          Resource effects mean that the malfunction is causing a reduction of a resource in the entity's inventory.  Any valid resource can be 
-          used for the "name" attribute (see <A HREF="conf_resources.html">"conf/resources.txt"</A>).  The "change-rate" attribute is the amount 
-          the resource changes (kg) per millisol (see <A HREF="conf_time.html">"conf/time.txt"</A>).<BR>
-          Life support effects mean that the malfunction is changing the life support system in the entity.  The "name" attribute can be any of the 
-          following: "Oxygen", "Water", "Temperature" or "Air Pressure".  Oxygen and water affect the rate that people can consume those resources 
-          from the life support system.  Temperature affects the temperature of the life support system and is in degrees of Celsius per millisol.
-          Air pressure affects the air pressure of the life support system and is in Atm per millisol.</LI>
-        <LI><B>medical-complaint-list:</B> A list of possible medical problems that can be directly caused by this malfunction (see <A HREF="conf_medical.html">medical.xml</A>).  The "medical-complaint" element has a name that must match a medical complaint
-          in the medical.xml configuration file.  The "probability" attribute is the percentage chance that any person directly affected by the 
-          malfunction will get this medical complaint.  It is possible a person can get multiple medical complaints from one malfunction.</LI>
-      </UL>
-      <BR>
-      <A HREF="conf_main.html">Back</A> <BR>
-      <BR>
-      <BR>
-      <BR>
-      <P>Please send questions or comments to mars-sim-users@lists.sourceforge.net</P>
-      <P>Mars Simulation Project copyright &copy; Scott Davis, 2008<BR>
-        Map data courtesy of NASA Jet Propulsion Laboratory</P></TD>
-  </TR>
-</TABLE>
+<H2>Mars Simulation Project<BR>
+  Configuration Guide</H2>
+<H3>Updated for version 2.83</H3>
+<H3>malfunctions.xml</H3>
+<BR>
+<P>The malfunctions.xml configuration file contains configuration for malfunctions that can occur in buildings, 
+  vehicles and equipment.  New malfunctions can be added and existing ones edited.</P>
+<P>A "malfunction" element has a unique "name" attribute.  It also has the following child elements:</P>
+<UL>
+  <LI><B>severity:</B> The severity of the malfunction as an integer value between 1 and 100 (100 being most-severe).
+    This is used to determine the order that people will attempt to fix multiple malfunctions.  This element is required
+    for all malfunctions.</LI>
+  <LI><B>probability:</B> The probability weight of the malfunction happening as a decimal value between 1.0 and 100.0
+    (100.0 being most probable).  This is its probability relative to other possible malfunctions for an entity.  This
+    element is required for all malfunctions.</LI>
+  <LI><B>repair-time:</B> The normal repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) required 
+    to fix the malfunction. This element is optional and its absence means the malfunction doesn't need normal repairs.</LI>
+  <LI><B>emergency-repair-time:</B> The emergency repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) 
+    required to fix the malfunction. This element is optional and its absence means the malfunction doesn't need emergency 
+    repairs.</LI>
+  <LI><B>eva-repair-time:</B> The EVA (Extra Vehicular Activity) repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) required 
+    to fix the malfunction. This element is optional and its absence means the malfunction doesn't need EVA repairs.</LI>
+  <LI><B>entity-list:</B> This is a list of entities that are susceptible to this malfunction.  The malfunction must have at least
+    one entity in the list.  The following entities are supported:<BR>
+    <UL>
+      <LI><B>Vehicle:</B> Any vehicle.</LI>
+      <LI><B>Rover:</B> A pressurized, long-range, all-terrain, ground vehicle that carries a crew.</LI>
+      <LI><B>EVA Suit:</B> An Extra Vehicular Activity suit.</LI>
+      <LI><B>Building:</B> This represents any building, regardless of its functions.</LI>
+      <LI><B>Life Support:</B> A building with the "life-support" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Living Accommodations:</B> A building that has the "living-accommodations" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Research:</B> A building that has the "research" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Communication:</B> A building that has the "communication" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>EVA:</B> A building that has the "EVA" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Recreation:</B> A building that has the "recreation" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Dining:</B> A building that has the "dining" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Cooking:</B> A building that has the "cooking" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Exercise:</B> A building that has the "exercise" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Resource Processing:</B> A building that has the "resource-processing" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Storage:</B> A building that has the "storage" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Power Generation:</B> A building that has the "power-generation" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Medical Care:</B> A building that has the "medical-care" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Farming:</B> A building that has the "farming" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Ground Vehicle Maintenance:</B> A building that has the "ground-vehicle-maintenance" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+      <LI><B>Manufacture:</B> A building that has the "manufacture" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+    </UL>
+    Basically any building function is supported as a malfunctionable entity, only replace the hyphens in the function name with spaces.
+    As we add more vehicles, equipment and building functions, they well be supported malfunctionable entities as well. </LI>
+  <LI><B>effects-list:</B> A list of effects that this malfunction will produce.  The "effect" element has a "type" attribute that can have 
+    the value of either "resource" or "life support".<BR>
+    Resource effects mean that the malfunction is causing a reduction of a resource in the entity's inventory.  Any valid resource can be 
+    used for the "name" attribute (see <A HREF="conf_resources.html">"conf/resources.txt"</A>).  The "change-rate" attribute is the amount 
+    the resource changes (kg) per millisol (see <A HREF="conf_time.html">"conf/time.txt"</A>).<BR>
+    Life support effects mean that the malfunction is changing the life support system in the entity.  The "name" attribute can be any of the 
+    following: "Oxygen", "Water", "Temperature" or "Air Pressure".  Oxygen and water affect the rate that people can consume those resources 
+    from the life support system.  Temperature affects the temperature of the life support system and is in degrees of Celsius per millisol.
+    Air pressure affects the air pressure of the life support system and is in Atm per millisol.</LI>
+  <LI><B>medical-complaint-list:</B> A list of possible medical problems that can be directly caused by this malfunction (see <A HREF="conf_medical.html">medical.xml</A>).  The "medical-complaint" element has a name that must match a medical complaint
+    in the medical.xml configuration file.  The "probability" attribute is the percentage chance that any person directly affected by the 
+    malfunction will get this medical complaint.  It is possible a person can get multiple medical complaints from one malfunction.</LI>
+</UL>
 </BODY>
 </HTML>

@@ -7,76 +7,64 @@
 <LINK rel="stylesheet" href="msp.css">
 </HEAD>
 <BODY>
-<TABLE BORDER="0" WIDTH="500">
-  <TR>
-    <TD><H2>Mars Simulation Project<BR>
-        Configuration Guide</H2>
-      <H3>Updated for version 2.83</H3>
-      <H3>settlements.xml</H3>
-      <BR>
-      <P>The settlements.xml configuration file contains configuration for settlements, settlement templates, resupply missions and a list of
-        random settlement names.</P>
-      <P>The "settlement-template-list" element is a list of templates that define the building and power configuration of settlements.  Every 
-        settlement is based on a settlement template.</P>
-      <P>The "template" element has a unique "name" attribute.  Settlements use this name to indicate which template they're based on.  It also
-        has the following elements:</P>
-      <UL>
-        <LI><B>building:</B> A settlement template may have one or more building elements that comprise the settlement.  Each building element
-          must have a "type" attribute that matches a building name in <A HREF="conf_buildings.html">conf/buildings.xml</A>.  The "number" attribute
-          is the number of this type of building at the settlement.  A settlement should not have more than one "building" element for a specific
-          type of building, but should use the "number" attribute for multiples of a building type.</LI>
-        <LI><B>vehicle:</B> A settlement template may have one or more vehicle elements.  Each vehicle element must have a type that matches a 
-          rover type in <A HREF="conf_vehicles.html">conf/vehicles.xml</A>.  The "number" attribute is the number of this type of vehicle at the 
-          settlement.  A settlement should not have more than one "vehicle" element for a specific type of vehicle, but should use the "number"
-          attribute for multiples of a vehicle type.</LI>
-        <LI><B>equipment:</B> A settlement template may have one or more equipment elements.  Each equipment element must have a "type" attribute
-          that matches an equipment type.  The "number" attribute is the number of this type of equipment at the settlement.  A settlement should
-          not have more than one "equipment" element for a specific type of equipment, but should use the "number" attribute for multiples of a
-          equipment type.</LI>
-        <LI><B>part:</B> A settlement template may have one or more part elements.  Each part element must have a "type" attribute
-          that matches a part type (see <A HREF="conf_parts.html">conf/parts.xml</A>).  The "number" attribute is the number of this type of part 
-          at the settlement.  A settlement should not have more than one "part" element for a specific type of part, but should use the "number" 
-          attribute for multiples of a part type.</LI>
-        <LI><B>resupply:</B> The resupply element is a list of resupply missions scheduled for this settlement template.  This element is optional
-          and its absence means that the settlement template has no scheduled resupplies.  Each "resupply-mission" element must have a name that 
-          matches a resupply mission name in the "resupply-list" below.  The "arrival-time" is the number of Sols (see <A HREF="conf_time.html">"conf/time.txt"</A>) from the beginning of the simulation until the resupply mission is scheduled to 
-          arrive.</LI>
-      </UL>
-      <P>The "resupply-list" element is a list of resupply missions from Earth that can be scheduled for settlement templates.</P>
-      <P>The "resupply" element must have a unique "name" attribute that is used by the settlement templates to refer to this mission.  Resupply
-        missions can have the following elements:</P>
-      <UL>
-        <LI><B>building:</B> A resupply mission may provide buildings to a settlement.  Each building element must have a "type" attribute that matches a 
-          building name in <A HREF="conf_buildings.html">conf/buildings.xml</A>.  The "number" attribute is the number of this type of building
-          in the resupply mission.</LI>
-        <LI><B>vehicle:</B> A resupply mission may provide vehicles to a settlement.  Each vehicle element must have a type that matches a rover type in <A HREF="conf_vehicles.html">conf/vehicles.xml</A>.  The "number" attribute is the number of this type of vehicle in the resupply mission. </LI>
-        <LI><B>equipment:</B> A resupply mission may provide equipment to a settlement.  Each equipment element must have a "type" that matches an equipment
-          type.  The "number" attribute is the number of this type of equipment in the resupply mission.</LI>
-        <LI><B>person:</B> A resupply mission may provide immigrants from Earth to a settlement.  The "number" attribute is the number of immigrants in this 
-          resupply mission.</LI>
-        <LI><B>resource:</B> A resupply mission may provide resources to a settlement.  Each resource element must have a valid resource "type"
-          (see <A HREF="conf_resources.html">conf/resources.txt</A>).  The "amount" is the amount (kg) of the resource provided.</LI>
-        <LI><B>part:</B> A resupply mission may provide parts to a settlement.  Each part element must have a valid part "type"
-          (see <A HREF="conf_parts.html">conf/parts.xml</A>).  The "number" attribute is the number of the part provided.</LI>
-      </UL>
-      <P>The "initial-settlement-list" is a list of settlements in the simulation.</P>
-      <P>Each "settlement" element has a "name" and a "template" attribute, as well as a "location" element.  The "name" attribute is either a
-        unique name for the settlement, or "random", indicating that the name will be randomly selected from the "settlement-name-list" below.
-        The "template" attribute must match a settlement template name (see above).</P>
-      <P>The "location" element is the longitude and latitude of the settlement.  The "longitude" and "latitude" attributes must have the location 
-        degrees followed by the direction ("E" or "W" for longitude and "N" or "S" for latitude).  Alternatively they can have a value of "random", 
-        indicating a random longitude or latitude.</P>
-      <P>The "settlement-name-list" is a list of settlement names that can be selected from for random settlement names.  Each "settlement-name"
-        element must have a unique value and must not match a name of a settlement in the "initial-settlement-list".</P>
-      <BR>
-      <A HREF="conf_main.html">Back</A> <BR>
-      <BR>
-      <BR>
-      <BR>
-      <P>Please send questions or comments to mars-sim-users@lists.sourceforge.net</P>
-      <P>Mars Simulation Project copyright &copy; Scott Davis, 2008<BR>
-        Map data courtesy of NASA Jet Propulsion Laboratory</P></TD>
-  </TR>
-</TABLE>
+<H2>Mars Simulation Project<BR>
+  Configuration Guide</H2>
+<H3>Updated for version 2.83</H3>
+<H3>settlements.xml</H3>
+<BR>
+<P>The settlements.xml configuration file contains configuration for settlements, settlement templates, resupply missions and a list of
+  random settlement names.</P>
+<P>The "settlement-template-list" element is a list of templates that define the building and power configuration of settlements.  Every 
+  settlement is based on a settlement template.</P>
+<P>The "template" element has a unique "name" attribute.  Settlements use this name to indicate which template they're based on.  It also
+  has the following elements:</P>
+<UL>
+  <LI><B>building:</B> A settlement template may have one or more building elements that comprise the settlement.  Each building element
+    must have a "type" attribute that matches a building name in <A HREF="conf_buildings.html">conf/buildings.xml</A>.  The "number" attribute
+    is the number of this type of building at the settlement.  A settlement should not have more than one "building" element for a specific
+    type of building, but should use the "number" attribute for multiples of a building type.</LI>
+  <LI><B>vehicle:</B> A settlement template may have one or more vehicle elements.  Each vehicle element must have a type that matches a 
+    rover type in <A HREF="conf_vehicles.html">conf/vehicles.xml</A>.  The "number" attribute is the number of this type of vehicle at the 
+    settlement.  A settlement should not have more than one "vehicle" element for a specific type of vehicle, but should use the "number"
+    attribute for multiples of a vehicle type.</LI>
+  <LI><B>equipment:</B> A settlement template may have one or more equipment elements.  Each equipment element must have a "type" attribute
+    that matches an equipment type.  The "number" attribute is the number of this type of equipment at the settlement.  A settlement should
+    not have more than one "equipment" element for a specific type of equipment, but should use the "number" attribute for multiples of a
+    equipment type.</LI>
+  <LI><B>part:</B> A settlement template may have one or more part elements.  Each part element must have a "type" attribute
+    that matches a part type (see <A HREF="conf_parts.html">conf/parts.xml</A>).  The "number" attribute is the number of this type of part 
+    at the settlement.  A settlement should not have more than one "part" element for a specific type of part, but should use the "number" 
+    attribute for multiples of a part type.</LI>
+  <LI><B>resupply:</B> The resupply element is a list of resupply missions scheduled for this settlement template.  This element is optional
+    and its absence means that the settlement template has no scheduled resupplies.  Each "resupply-mission" element must have a name that 
+    matches a resupply mission name in the "resupply-list" below.  The "arrival-time" is the number of Sols (see <A HREF="conf_time.html">"conf/time.txt"</A>) from the beginning of the simulation until the resupply mission is scheduled to 
+    arrive.</LI>
+</UL>
+<P>The "resupply-list" element is a list of resupply missions from Earth that can be scheduled for settlement templates.</P>
+<P>The "resupply" element must have a unique "name" attribute that is used by the settlement templates to refer to this mission.  Resupply
+  missions can have the following elements:</P>
+<UL>
+  <LI><B>building:</B> A resupply mission may provide buildings to a settlement.  Each building element must have a "type" attribute that matches a 
+    building name in <A HREF="conf_buildings.html">conf/buildings.xml</A>.  The "number" attribute is the number of this type of building
+    in the resupply mission.</LI>
+  <LI><B>vehicle:</B> A resupply mission may provide vehicles to a settlement.  Each vehicle element must have a type that matches a rover type in <A HREF="conf_vehicles.html">conf/vehicles.xml</A>.  The "number" attribute is the number of this type of vehicle in the resupply mission. </LI>
+  <LI><B>equipment:</B> A resupply mission may provide equipment to a settlement.  Each equipment element must have a "type" that matches an equipment
+    type.  The "number" attribute is the number of this type of equipment in the resupply mission.</LI>
+  <LI><B>person:</B> A resupply mission may provide immigrants from Earth to a settlement.  The "number" attribute is the number of immigrants in this 
+    resupply mission.</LI>
+  <LI><B>resource:</B> A resupply mission may provide resources to a settlement.  Each resource element must have a valid resource "type"
+    (see <A HREF="conf_resources.html">conf/resources.txt</A>).  The "amount" is the amount (kg) of the resource provided.</LI>
+  <LI><B>part:</B> A resupply mission may provide parts to a settlement.  Each part element must have a valid part "type"
+    (see <A HREF="conf_parts.html">conf/parts.xml</A>).  The "number" attribute is the number of the part provided.</LI>
+</UL>
+<P>The "initial-settlement-list" is a list of settlements in the simulation.</P>
+<P>Each "settlement" element has a "name" and a "template" attribute, as well as a "location" element.  The "name" attribute is either a
+  unique name for the settlement, or "random", indicating that the name will be randomly selected from the "settlement-name-list" below.
+  The "template" attribute must match a settlement template name (see above).</P>
+<P>The "location" element is the longitude and latitude of the settlement.  The "longitude" and "latitude" attributes must have the location 
+  degrees followed by the direction ("E" or "W" for longitude and "N" or "S" for latitude).  Alternatively they can have a value of "random", 
+  indicating a random longitude or latitude.</P>
+<P>The "settlement-name-list" is a list of settlement names that can be selected from for random settlement names.  Each "settlement-name"
+  element must have a unique value and must not match a name of a settlement in the "initial-settlement-list".</P>
 </BODY>
 </HTML>
