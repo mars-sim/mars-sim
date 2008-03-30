@@ -11,6 +11,9 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.simulation.equipment.Equipment;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /**
  * This class gather general collection manipulation methods
@@ -32,7 +35,7 @@ public class CollectionUtils {
     }
 
     public static void mergeEquipments(Collection<Unit> units,
-	    Collection<Equipment> equipments) {
+	    			       Collection<Equipment> equipments) {
 
 	Iterator<Equipment> i = equipments.iterator();
 
@@ -43,29 +46,159 @@ public class CollectionUtils {
 	}
     }
 
-    public Collection<Unit> sortByName(Collection<Unit> collection) {
-	ConcurrentLinkedQueue<Unit> sorted = new ConcurrentLinkedQueue<Unit>();
-	Iterator<Unit> outer = collection.iterator();
+    
+    public static Collection<Vehicle> getVehicle(Collection<Unit> units) {
 
-	while (outer.hasNext()) {
-	    outer.next();
-	    String leastName = "ZZZZZZZZZZZZZZZZZZZ";
-	    Unit leastUnit = null;
-	    Iterator<Unit> inner = collection.iterator();
+	ConcurrentLinkedQueue<Vehicle> vehicles = new ConcurrentLinkedQueue<Vehicle>();
 
-	    while (inner.hasNext()) {
-		Unit tempUnit = inner.next();
-		String name = tempUnit.getName();
-		if ((name.compareTo(leastName) < 0)
-			&& !sorted.contains(tempUnit)) {
-		    leastName = name;
-		    leastUnit = tempUnit;
-		}
-	    }
-	    sorted.add(leastUnit);
+	Iterator<Unit> i = units.iterator();
+	while (i.hasNext()) {
+	    Unit unit = i.next();
+	    if (unit instanceof Vehicle)
+		vehicles.add((Vehicle) unit);
 	}
-
-	return sorted;
+	return vehicles;
     }
 
+    public static void mergeVehicles(Collection<Unit> units,
+	    			     Collection<Vehicle> vehicles) {
+
+	Iterator<Vehicle> i = vehicles.iterator();
+
+	while (i.hasNext()) {
+	    Vehicle vehicleUnit = i.next();
+	    
+	    if (!units.contains(vehicleUnit))
+		units.add(vehicleUnit);
+	}
+    }
+    
+    public static Collection<Person> getPerson(Collection<Unit> units) {
+
+	ConcurrentLinkedQueue<Person> persons = new ConcurrentLinkedQueue<Person>();
+
+	Iterator<Unit> i = units.iterator();
+	while (i.hasNext()) {
+	    Unit unit = i.next();
+	    if (unit instanceof Person)
+		persons.add((Person) unit);
+	}
+	return persons;
+    }
+
+    public static void mergePersons(Collection<Unit> units,
+	    			     Collection<Person> persons) {
+
+	Iterator<Person> i = persons.iterator();
+
+	while (i.hasNext()) {
+	    Person personUnit = i.next();
+	    
+	    if (!units.contains(personUnit))
+		units.add(personUnit);
+	}
+    }
+    
+    public static Collection<Settlement> getSettlement(Collection<Unit> units) {
+
+	ConcurrentLinkedQueue<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
+
+	Iterator<Unit> i = units.iterator();
+	while (i.hasNext()) {
+	    Unit unit = i.next();
+	    if (unit instanceof Settlement)
+		settlements.add((Settlement) unit);
+	}
+	return settlements;
+    }
+
+    public static void mergeSettlements(Collection<Unit> units,
+	    			        Collection<Settlement> settlements) {
+
+	Iterator<Settlement> i = settlements.iterator();
+
+	while (i.hasNext()) {
+	    Settlement settlementUnit = i.next();
+	    
+	    if (!units.contains(settlementUnit))
+		units.add(settlementUnit);
+	}
+    }
+    
+ 
+    public static Settlement getRandomSettlement(Collection collection) {
+	Object [] array = collection.toArray();
+        int r = RandomUtil.getRandomInt(collection.size() - 1);
+        return (Settlement)  array[r];
+    }
+
+
+    public static Settlement getRandomRegressionSettlement(Collection collection) {
+        Settlement result = null;
+        int size = collection.size();
+        if (size > 0) {
+            Object [] array = collection.toArray();
+            int chosenSettlementNum = RandomUtil.getRandomRegressionInteger(size);
+            result = (Settlement) array[chosenSettlementNum - 1];
+        }
+        
+        return result;
+    }
+    
+    public static Settlement getSettlement(Collection collection, String name) {
+        Iterator i = collection.iterator();
+        Settlement result = null;
+        while (i.hasNext()) {
+            Settlement settlement = (Settlement)i.next();
+            if (name.equals(settlement.getName())) result = settlement;
+        }
+        return result;
+    }
+    
+    public static Collection sortByName(Collection collection) {
+	ConcurrentLinkedQueue<Unit> sorted = new ConcurrentLinkedQueue<Unit>();
+	
+        Iterator outer = collection.iterator();
+        while (outer.hasNext()) {
+            outer.next();
+            String leastName = "ZZZZZZZZZZZZZZZZZZZ";
+            Unit leastUnit = null;
+            Iterator inner = collection.iterator();
+            while (inner.hasNext()) {
+                Unit tempUnit = (Unit) inner.next();
+                String name = tempUnit.getName();
+                if ((name.compareToIgnoreCase(leastName) < 0) && !sorted.contains(tempUnit)) {
+                    leastName = name;
+                    leastUnit = tempUnit;
+                }
+            }
+            sorted.add(leastUnit);
+        }
+
+        return sorted;
+    }
+    
+    public static Collection sortByProximity(Collection collection, Coordinates location) {
+	ConcurrentLinkedQueue<Unit> sorted = new ConcurrentLinkedQueue<Unit>();
+
+        Iterator outer = collection.iterator();
+        
+        while (outer.hasNext()) {
+            outer.next();
+            double closestDistance = Double.MAX_VALUE;
+            Unit closestUnit = null;
+            Iterator inner = collection.iterator();
+            while (inner.hasNext()) {
+                Unit tempUnit = (Unit) inner.next();
+                double distance = location.getDistance(tempUnit.getCoordinates());
+                if ((distance < closestDistance) && !sorted.contains(tempUnit)) {
+                    closestDistance = distance;
+                    closestUnit = tempUnit;
+                }
+            }
+            sorted.add(closestUnit);
+        }
+
+        return sorted;
+    }
 }
