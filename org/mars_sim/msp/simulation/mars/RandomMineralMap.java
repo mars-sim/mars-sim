@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMap.java
- * @version 2.84 2008-03-31
+ * @version 2.84 2008-04-01
  * @author Scott Davis
  */
 
@@ -127,6 +127,11 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		}
 	}
 	
+	/**
+	 * Gets the dividend due to frequency of mineral type.
+	 * @param frequency the frequency ("common", "uncommon", "rare" or "very rare").
+	 * @return frequency modifier.
+	 */
 	private float getFrequencyModifier(String frequency) {
 		float result = 1F;
 		if (COMMON_FREQUENCY.equalsIgnoreCase(frequency.trim())) result = 1F;
@@ -136,6 +141,11 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		return result;
 	}
 	
+	/**
+	 * Gets a set of location coordinates representing a topographical region.
+	 * @param imageMapName the topographical region map image.
+	 * @return set of location coordinates.
+	 */
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
 		Set<Coordinates> result = new HashSet<Coordinates>(3000);
 		
@@ -219,6 +229,12 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		return result;
 	}
 	
+	/**
+	 * Gets the effect of a given mineral concentration on a location.
+	 * @param concentration the mineral concentration.
+	 * @param location the location to affect.
+	 * @return concentration effect (0% - 100%).
+	 */
 	private double getMineralConcentrationEffect(MineralConcentration concentration, 
 			Coordinates location) {
 		double result = 0D;
@@ -261,6 +277,9 @@ public class RandomMineralMap implements Serializable, MineralMap {
     	return result;
     }
 	
+    /**
+     * Internal class representing a mineral concentration.
+     */
 	private class MineralConcentration implements Serializable {
 		private Coordinates location;
 		private double concentration;
