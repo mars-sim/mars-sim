@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.84 2008-03-17
+ * @version 2.84 2008-03-31
  * @author Scott Davis
  */
 
@@ -9,6 +9,9 @@ package org.mars_sim.msp.ui.standard.tool.navigator;
   
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.MemoryImageSource;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -54,6 +57,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     private JButton goThere; // Location entry submit button
     private JButton optionsButton; // Options for map display
     private JPopupMenu optionsMenu; // Map options menu
+    private JButton mineralsButton; // Minerals button
     private JCheckBoxMenuItem topoItem; //Topographical map menu item.
     private JCheckBoxMenuItem unitLabelItem; // Show unit labels menu item.
     private JCheckBoxMenuItem dayNightItem; // Day/night tracking menu item.
@@ -164,13 +168,33 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         mainPane.add(topoPane);
 
         // Prepare options panel
-        JPanel optionsPane = new JPanel(new BorderLayout());
+        JPanel optionsPane = new JPanel(new GridLayout(2, 1));
         topoPane.add(optionsPane, BorderLayout.CENTER);
 
 		// Prepare options button.
 		optionsButton = new JButton("Map Options");
-		optionsButton.addActionListener(this);
-		optionsPane.add(optionsButton, BorderLayout.NORTH);
+		optionsButton.setToolTipText("Options for displaying map.");
+		optionsButton.addActionListener(
+			new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					if (optionsMenu == null) createOptionsMenu();
+			       	optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
+				}
+			});
+		optionsPane.add(optionsButton);
+		
+		// Prepare minerals button.
+		mineralsButton = new JButton("Minerals");
+		mineralsButton.setToolTipText("Options for displaying minerals on map.");
+		mineralsButton.setEnabled(false);
+		mineralsButton.addActionListener(
+			new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					JPopupMenu mineralsMenu = createMineralsMenu();
+					mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
+				}
+			});
+		optionsPane.add(mineralsButton);
 	
         // Prepare legend icon
         legend = new LegendDisplay();
@@ -275,14 +299,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
                 }
             } catch (NumberFormatException e) {}
         }
-        else if (source == optionsButton) {
-        	if (optionsMenu == null) {
-        		// Create options menu.
-        		createOptionsMenu();
-        		optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
-        	}
-        	else optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
-        }
         else if (source == topoItem) {
         	if (topoItem.isSelected()) {
         		map.setMapType(TopoMarsMap.TYPE);
@@ -313,7 +329,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         else if (source == trailItem) setMapLayer(trailItem.isSelected(), trailLayer);
         else if (source == landmarkItem) setMapLayer(landmarkItem.isSelected(), landmarkLayer);
         else if (source == navpointItem) setMapLayer(navpointItem.isSelected(), navpointLayer);
-        else if (source == mineralItem) setMapLayer(mineralItem.isSelected(), mineralLayer);
+        else if (source == mineralItem) {
+        	setMapLayer(mineralItem.isSelected(), mineralLayer);
+        	mineralsButton.setEnabled(mineralItem.isSelected());
+        }
     }
     
     /**
@@ -374,6 +393,52 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsMenu.add(mineralItem);
 		
 		optionsMenu.pack();
+    }
+    
+    /**
+     * Creates the minerals menu.
+     */
+    private JPopupMenu createMineralsMenu() {
+    	// Create the mineral options menu.
+    	JPopupMenu mineralsMenu = new JPopupMenu();
+    	
+    	// Create each mineral check box item.
+    	MineralMapLayer mineralMapLayer = (MineralMapLayer) mineralLayer;
+    	java.util.Map<String, Color> mineralColors = mineralMapLayer.getMineralColors();
+    	Iterator<String> i = mineralColors.keySet().iterator();
+    	while (i.hasNext()) {
+    		String mineralName = i.next();
+    		Color mineralColor = mineralColors.get(mineralName);
+    		boolean isMineralDisplayed = mineralMapLayer.isMineralDisplayed(mineralName);
+    		JCheckBoxMenuItem mineralItem = new JCheckBoxMenuItem(mineralName, isMineralDisplayed);
+    		mineralItem.setIcon(createColorLegendIcon(mineralColor, mineralItem));
+    		mineralItem.addActionListener(
+    			new ActionListener() {
+    				public void actionPerformed(ActionEvent event) {
+    					JCheckBoxMenuItem checkboxItem = (JCheckBoxMenuItem) event.getSource();
+    					((MineralMapLayer) mineralLayer).setMineralDisplayed(checkboxItem.getText(), 
+    							checkboxItem.isSelected());
+    				}
+    			});
+    		mineralsMenu.add(mineralItem);
+    	}
+    	
+    	mineralsMenu.pack();
+    	return mineralsMenu;
+    }
+    
+    /**
+     * Creates an icon representing a color.
+     * @param color the color for the icon.
+     * @param displayComponent the component to display the icon on.
+     * @return the color icon.
+     */
+    private Icon createColorLegendIcon(Color color, Component displayComponent) {
+    	int[] imageArray = new int[10 * 10];
+    	Arrays.fill(imageArray, color.getRGB());
+    	Image image = displayComponent.createImage(
+    			new MemoryImageSource(10, 10, imageArray, 0, 10));
+    	return new ImageIcon(image);
     }
 
     /** 

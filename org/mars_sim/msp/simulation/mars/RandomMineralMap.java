@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMap.java
- * @version 2.84 2008-03-26
+ * @version 2.84 2008-03-31
  * @author Scott Davis
  */
 
