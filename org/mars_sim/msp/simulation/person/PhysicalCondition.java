@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.81 2007-08-26
+ * @version 2.84 2008-04-02
  * @author Barry Evans
  */
 
@@ -17,8 +17,8 @@ import org.mars_sim.msp.simulation.person.medical.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 
 /**
- * This class represents the Physical Condition of a Person. It is models the
- * Persons health and physical charactertics.
+ * This class represents the Physical Condition of a Person. It models the
+ * Persons health and physical characteristics.
  */
 public class PhysicalCondition implements Serializable {
     
