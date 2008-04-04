@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.84 2008-03-15
+ * @version 2.84 2008-04-03
  * @author Scott Davis
  */
  
@@ -23,6 +23,7 @@ public class SurfaceFeatures implements Serializable {
     private transient TerrainElevation surfaceTerrain;
     private List landmarks;
     private MineralMap mineralMap;
+    private List<ExploredLocation> exploredLocations;
     
     /** 
      * Constructor 
@@ -32,6 +33,7 @@ public class SurfaceFeatures implements Serializable {
         
         surfaceTerrain = new TerrainElevation();
         mineralMap = new RandomMineralMap();
+        exploredLocations = new ArrayList<ExploredLocation>();
 
 		try {
 			landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
@@ -141,5 +143,25 @@ public class SurfaceFeatures implements Serializable {
      */
     public MineralMap getMineralMap() {
     	return mineralMap;
+    }
+    
+    /**
+     * Adds an explored location.
+     * @param location the location coordinates.
+     * @param estimatedMineralConcentrations a map of all mineral types 
+     * and their estimated concentrations (0% -100%)
+     */
+    public void addExploredLocation(Coordinates location, 
+    		Map<String, Double> estimatedMineralConcentrations) {
+    	exploredLocations.add(
+    			new ExploredLocation(location, estimatedMineralConcentrations));
+    }
+    
+    /**
+     * Gets a list of all explored locations on Mars.
+     * @return list of explored locations.
+     */
+    public List<ExploredLocation> getExploredLocations() {
+    	return exploredLocations;
     }
 }
