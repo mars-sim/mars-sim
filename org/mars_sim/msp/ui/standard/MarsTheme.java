@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsTheme.java
- * @version 2.74 2002-03-17
+ * @version 2.84 2008-04-04
  * @author Scott Davis
  */
 
@@ -17,9 +17,9 @@ import javax.swing.plaf.metal.*;
 public class MarsTheme extends DefaultMetalTheme {
 	
     // Set primary colors for theme 
-    private final ColorUIResource primary1 = new ColorUIResource(0, 150, 0);
-    private final ColorUIResource primary2 = new ColorUIResource(0, 150, 0);
-    private final ColorUIResource primary3 = new ColorUIResource(0, 190, 0);
+    private final ColorUIResource primary1 = new ColorUIResource(0, 153, 0);
+    private final ColorUIResource primary2 = new ColorUIResource(17, 153, 17);
+    private final ColorUIResource primary3 = new ColorUIResource(17, 204, 17);
 	
     protected ColorUIResource getPrimary1() { return primary1; }
     protected ColorUIResource getPrimary2() { return primary2; }
