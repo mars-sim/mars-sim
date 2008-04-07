@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 2.78 2005-10-10
+ * @version 2.84 2008-04-07
  * @author Dima Stepanchuk
  */
 package org.mars_sim.msp.ui.standard.sound;
@@ -33,7 +33,7 @@ public interface SoundConstants {
     // Unit window sounds for equipment.
     public final static String SND_EQUIPMENT = "";
     
-    // Supported sound frmats
+    // Supported sound formats
     public final static String SND_FORMAT_WAV = ".wav";
     public final static String SND_FORMAT_MP3 = ".mp3";
     public final static String SND_FORMAT_OGG = ".ogg";
