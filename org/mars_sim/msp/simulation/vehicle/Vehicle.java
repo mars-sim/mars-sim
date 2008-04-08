@@ -9,6 +9,8 @@ package org.mars_sim.msp.simulation.vehicle;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.*;
 import org.mars_sim.msp.simulation.person.*;
@@ -402,11 +404,11 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public PersonCollection getAffectedPeople() {
-        PersonCollection people = new PersonCollection();
+    public Collection getAffectedPeople() {
+        Collection people = new ConcurrentLinkedQueue();
 
         // Check all people.
-        PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
+        Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
         while (i.hasNext()) {
             Person person = i.next();
             Task task = person.getMind().getTaskManager().getTask();

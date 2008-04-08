@@ -7,7 +7,9 @@
 
 package org.mars_sim.msp.simulation.vehicle;
 
-import org.mars_sim.msp.simulation.person.*;
+import java.util.Collection;
+
+import org.mars_sim.msp.simulation.person.Person;
 
 /**
  * The Crewable interface represents a vehicle that is capable
@@ -32,9 +34,9 @@ public interface Crewable {
 
     /**
      * Gets a collection of the crewmembers.
-     * @return crewmembers as PersonCollection
+     * @return crewmembers as Collection
      */
-    public PersonCollection getCrew();
+    public Collection getCrew();
 
     /**
      * Checks if person is a crewmember.

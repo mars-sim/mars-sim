@@ -7,11 +7,21 @@
 
 package org.mars_sim.msp.simulation.vehicle;
 
-import org.mars_sim.msp.simulation.*;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.CollectionUtils;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
+import org.mars_sim.msp.simulation.Lab;
+import org.mars_sim.msp.simulation.LifeSupport;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.PersonConfig;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -123,10 +133,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 
     /**
      * Gets a collection of the crewmembers.
-     * @return crewmembers as PersonCollection
+     * @return crewmembers as Collection
      */
-    public PersonCollection getCrew() {
-        return getInventory().getContainedUnits().getPeople();
+    public Collection getCrew() {
+        return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
 
     /**
@@ -245,11 +255,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public PersonCollection getAffectedPeople() {
-        PersonCollection people = super.getAffectedPeople();
+    public Collection getAffectedPeople() {
+        Collection people = super.getAffectedPeople();
         
-        PersonCollection crew = getCrew();
-        PersonIterator i = crew.iterator();
+        Collection crew = getCrew();
+        Iterator<Person> i = crew.iterator();
         while (i.hasNext()) {
             Person person = i.next();
             if (!people.contains(person)) people.add(person);
