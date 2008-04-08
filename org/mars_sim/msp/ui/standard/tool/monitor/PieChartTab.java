@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * PieChartView.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-04-09
  * @author Barry Evans
  */
 
@@ -29,8 +29,8 @@ import org.jfree.data.PieDataset;
  * chart is extracted from a TableModel. The data from a single column is
  * collated into a category based on the distinct values in the column.
  *
- * The column specified should idealy not return a Number value since the
- * alogrithm works best on a distinct data set values.
+ * The column specified should ideally not return a Number value since the
+ * algorithm works best on a distinct data set values.
  */
 class PieChartTab extends MonitorTab {
 
@@ -99,7 +99,7 @@ class PieChartTab extends MonitorTab {
 
         /**
          * Set the column that is displayed in the Pie chart. It results in
-         * this values being recalculated.
+         * the values being recalculated.
          *
          * @param column New column index in the table model.
          */
@@ -110,10 +110,10 @@ class PieChartTab extends MonitorTab {
         }
 
         /**
-         * Specify the model to monitor. This class will attached itself as
+         * Specify the model to monitor. This class will attach itself as
          * a listener. If a model is already attached, this one will be
-         * deattached before this.
-         * This action triggers the reloading of the catagories.
+         * detached before this.
+         * This action triggers the reloading of the categories.
          * @param newModel New table model to monitor.
          */
         public void setModel(TableModel newModel) {
@@ -129,7 +129,7 @@ class PieChartTab extends MonitorTab {
         }
 
         /**
-         * The underlying model has changed
+         * The underlying model has changed.
          */
         public void tableChanged(TableModelEvent e) {
             calculate();
@@ -232,7 +232,7 @@ class PieChartTab extends MonitorTab {
     private ChartPanel chartpanel = null;
 
     /**
-     * Create a PieChart view that display the data in a particular column.
+     * Create a PieChart view that displays the data in a particular column.
      *
      * @param model Data source.
      * @param column Index of the column to collate.
@@ -294,7 +294,7 @@ class PieChartTab extends MonitorTab {
     }
 
     /**
-     * The tab has been remove
+     * The tab has been removed.
      */
     public void removeTab() {
         chart = null;

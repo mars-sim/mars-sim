@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BarChartTab.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-04-09
  * @author Barry Evans
  */
 
@@ -201,10 +201,10 @@ class BarChartTab extends MonitorTab {
         }
 
         /**
-         * Specify the model to monitor. This class will attached itself as
+         * Specify the model to monitor. This class will attach itself as
          * a listener. If a model is already attached, this one will be
-         * deattached before this.
-         * This action triggers the reloading of the catagories.
+         * detached before this.
+         * This action triggers the reloading of the categories.
          * @param newModel New table model to monitor.
          */
         public void setModel(TableModel newModel) {
@@ -220,7 +220,7 @@ class BarChartTab extends MonitorTab {
         }
 
         /**
-         * The underlying model has changed
+         * The underlying model has changed.
          */
         public void tableChanged(TableModelEvent e) {
             if ((e.getType() == TableModelEvent.INSERT) ||
@@ -243,7 +243,7 @@ class BarChartTab extends MonitorTab {
     private JFreeChart chart = null;
 
     /**
-     * Create a PieChart view that display the data in a particular column.
+     * Create a PieChart view that displays the data in a particular column.
      *
      * @param model Data source.
      * @param columns Indexes of columns to display.
@@ -315,7 +315,7 @@ class BarChartTab extends MonitorTab {
     }
 
     /**
-     * The tab has been remove
+     * The tab has been removed.
      */
     public void removeTab() {
         chart = null;
