@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +15,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitEvent;
+import org.mars_sim.msp.simulation.UnitManager;
+import org.mars_sim.msp.simulation.UnitManagerEvent;
+import org.mars_sim.msp.simulation.UnitManagerListener;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.person.Person;
@@ -27,7 +36,8 @@ import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.vehicle.Crewable;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.
@@ -317,8 +327,8 @@ public class VehicleTableModel extends UnitTableModel {
 	/**
 	 * Defines the source data from this table
 	 */
-	private void setSource(VehicleCollection source) {
-		VehicleIterator iter = source.iterator();
+	private void setSource(Collection source) {
+		Iterator<Vehicle> iter = source.iterator();
 		while(iter.hasNext()) addUnit(iter.next());
 	}
 	

@@ -8,9 +8,13 @@
 package org.mars_sim.msp.ui.standard.tool.map;
 
 import java.awt.Graphics;
+import java.util.Iterator;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.ui.standard.unit_display_info.*;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo;
+import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
 
 /**
  * The UnitMapLayer is an abstract graphics layer to display units.
@@ -40,7 +44,7 @@ abstract class UnitMapLayer implements MapLayer {
      */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 		
-		UnitIterator i = Simulation.instance().getUnitManager().getUnits().iterator();
+		Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
         while (i.hasNext()) {
             Unit unit = i.next();
             UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);

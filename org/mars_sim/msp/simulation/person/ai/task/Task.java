@@ -431,7 +431,7 @@ public abstract class Task implements Serializable, Comparable {
 			if (building.hasFunction(LifeSupport.NAME)) {
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				double totalOpinion = 0D;
-				PersonIterator i = lifeSupport.getOccupants().iterator();
+				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Person occupant = i.next();
 					if (person != occupant) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, occupant) - 50D) / 50D);

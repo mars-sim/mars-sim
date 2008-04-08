@@ -230,7 +230,7 @@ public class PersonalityType implements Serializable {
 	 */
 	public void updateStress(double time) throws Exception {
 		
-		PersonCollection localGroup = person.getLocalGroup();
+		Collection localGroup = person.getLocalGroup();
 		PhysicalCondition condition = person.getPhysicalCondition();
 		
 		// Introverts reduce stess when alone.

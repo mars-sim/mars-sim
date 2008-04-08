@@ -320,7 +320,8 @@ public class AudioPlayer implements LineListener {
 	 * end of sound...
 	 */
 	public void update(LineEvent event) {
-	   if (event.getType() == LineEvent.Type.STOP){
+	   if (event.getType() == LineEvent.Type.STOP ||
+	       event.getType() == LineEvent.Type.CLOSE){
 	       
 	       if (currentClip != null) {
 		    currentClip.stop();

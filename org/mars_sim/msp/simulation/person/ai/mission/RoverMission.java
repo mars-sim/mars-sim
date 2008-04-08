@@ -7,12 +7,12 @@
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
@@ -27,7 +27,9 @@ import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -124,7 +126,7 @@ public abstract class RoverMission extends VehicleMission {
 	protected final static Vehicle getVehicleWithGreatestRange(Settlement settlement) throws Exception {
 		Vehicle result = null;
 
-		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			
@@ -152,7 +154,7 @@ public abstract class RoverMission extends VehicleMission {
 		
 		boolean result = false;
 		
-		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			
@@ -193,7 +195,7 @@ public abstract class RoverMission extends VehicleMission {
      */
     protected final boolean isEveryoneInRover() {
         boolean result = true;
-        PersonIterator i = getPeople().iterator();
+        Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
             if (!i.next().getLocationSituation().equals(Person.INVEHICLE)) result = false;
         }
@@ -206,7 +208,7 @@ public abstract class RoverMission extends VehicleMission {
      */
     protected final boolean isNoOneInRover() {
     	boolean result = true;
-        PersonIterator i = getPeople().iterator();
+        Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
             if (i.next().getLocationSituation().equals(Person.INVEHICLE)) result = false;
         }
@@ -347,7 +349,7 @@ public abstract class RoverMission extends VehicleMission {
         Rover rover = (Rover) getVehicle();
         if (rover != null) {
         	if (isNoOneInRover() && (rover.getCrewNum() > 0)) {
-        		PersonIterator i = rover.getCrew().iterator();
+        		Iterator<Person> i = rover.getCrew().iterator();
         		while (i.hasNext()) {
         			Person crewmember = i.next();
         			try {
@@ -430,7 +432,7 @@ public abstract class RoverMission extends VehicleMission {
 		boolean result = false;
 		
 		if (settlement != null) {
-			PersonIterator i = settlement.getInhabitants().iterator();
+			Iterator<Person> i = settlement.getInhabitants().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
 				if ((inhabitant != person) && !inhabitant.getMind().hasActiveMission()) result = true;
@@ -451,7 +453,7 @@ public abstract class RoverMission extends VehicleMission {
 		
 		if (settlement != null) {
 			int numAvailable = 0;
-			PersonIterator i = settlement.getInhabitants().iterator();
+			Iterator<Person> i = settlement.getInhabitants().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
 				if (!inhabitant.getMind().hasActiveMission()) numAvailable++;
@@ -470,7 +472,7 @@ public abstract class RoverMission extends VehicleMission {
 		boolean result = false;
 		if (getAssociatedSettlement() != null) {
 			if (getAssociatedSettlement().getCurrentPopulationNum() == 1) {
-				Person person = (Person) getAssociatedSettlement().getInhabitants().get(0);
+				Person person = (Person) getAssociatedSettlement().getInhabitants().toArray()[0];
 				if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = true;
 			}
 		}
@@ -532,7 +534,7 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	public void endMission(String reason) {
 		// If at a settlement, associate all members with the settlement.
-		PersonIterator i = getPeople().iterator();
+		Iterator<Person> i = getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT))

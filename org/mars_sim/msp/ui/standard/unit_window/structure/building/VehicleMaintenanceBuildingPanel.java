@@ -6,11 +6,23 @@
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
 /**
@@ -24,7 +36,7 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
 	private int vehicleNumberCache = 0;
 	private JList vehicleList;
 	private DefaultListModel vehicleListModel;
-	private VehicleCollection vehicleCache;
+	private Collection vehicleCache;
 
 	/**
 	 * Constructor
@@ -71,8 +83,8 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
         
 		// Create vehicle list model
 		vehicleListModel = new DefaultListModel();
-		vehicleCache = new VehicleCollection(garage.getVehicles());
-		VehicleIterator i = vehicleCache.iterator();
+		vehicleCache = garage.getVehicles();
+		Iterator<Vehicle> i = vehicleCache.iterator();
 		while (i.hasNext()) vehicleListModel.addElement(i.next());
         
 		// Create vehicle list
@@ -87,9 +99,9 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
 	public void update() {
 		// Update vehicle list and vehicle mass label
 		if (!vehicleCache.equals(garage.getVehicles())) {
-			vehicleCache = new VehicleCollection(garage.getVehicles());
+			vehicleCache = garage.getVehicles();
 			vehicleListModel.clear();
-			VehicleIterator i = vehicleCache.iterator();
+			Iterator<Vehicle> i = vehicleCache.iterator();
 			while (i.hasNext()) vehicleListModel.addElement(i.next());
             
             vehicleNumberCache = garage.getCurrentVehicleNumber();

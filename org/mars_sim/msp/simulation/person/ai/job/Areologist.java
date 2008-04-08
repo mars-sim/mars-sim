@@ -7,6 +7,7 @@
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,8 +38,6 @@ import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The Areologist class represents a job for an areologist, one who studies the rocks and landforms of Mars.
@@ -121,8 +120,8 @@ public class Areologist extends Job implements Serializable {
 		}
 		
 		// Add number of exploration-capable rovers parked at the settlement.
-		VehicleCollection vehicles = settlement.getParkedVehicles();
-		VehicleIterator j = vehicles.iterator();
+		Collection vehicles = settlement.getParkedVehicles();
+		Iterator<Vehicle> j = vehicles.iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			if (vehicle instanceof Rover) {

@@ -10,6 +10,9 @@ package org.mars_sim.msp.ui.standard.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,11 +20,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.structure.goods.CreditEvent;
 import org.mars_sim.msp.simulation.structure.goods.CreditListener;
 import org.mars_sim.msp.simulation.structure.goods.CreditManager;
@@ -91,7 +93,7 @@ public class CreditTabPanel extends TabPanel {
     	
     	// Data members
     	CreditManager manager;
-    	SettlementCollection settlements;
+    	Collection settlements;
     	Settlement thisSettlement;
     	
     	private CreditTableModel(Settlement thisSettlement) {
@@ -99,8 +101,8 @@ public class CreditTabPanel extends TabPanel {
     		manager = Simulation.instance().getCreditManager();
     		
     		// Get collection of all other settlements.
-    		settlements = new SettlementCollection();
-    		SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().sortByName().iterator();
+    		settlements = new ConcurrentLinkedQueue();
+    		Iterator<Settlement> i = CollectionUtils.sortByName(Simulation.instance().getUnitManager().getSettlements()).iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			if (settlement != thisSettlement) settlements.add(settlement);
@@ -134,7 +136,7 @@ public class CreditTabPanel extends TabPanel {
         
         public Object getValueAt(int row, int column) {
         	if (row < getRowCount()) {
-        		Settlement settlement = (Settlement) settlements.get(row);
+        		Settlement settlement = (Settlement) settlements.toArray()[row];
         		if (column == 0) return settlement.getName();
         		else {
         			double credit = 0D;

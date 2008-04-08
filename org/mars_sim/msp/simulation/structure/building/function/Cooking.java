@@ -80,7 +80,7 @@ public class Cooking extends Function implements Serializable {
 		if (getBuilding().hasFunction(LifeSupport.NAME)) {
 			try {
 				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
-				PersonIterator i = lifeSupport.getOccupants().iterator();
+				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Task task = i.next().getMind().getTaskManager().getTask();
 					if (task instanceof CookMeal) result++;
@@ -102,7 +102,7 @@ public class Cooking extends Function implements Serializable {
 		if (getBuilding().hasFunction(LifeSupport.NAME)) {
 			try {
 				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
-				PersonIterator i = lifeSupport.getOccupants().iterator();
+				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Person person = i.next();
 					Task task = person.getMind().getTaskManager().getTask();

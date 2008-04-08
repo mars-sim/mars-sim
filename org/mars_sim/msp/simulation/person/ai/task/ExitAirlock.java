@@ -8,12 +8,16 @@
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -173,7 +177,7 @@ public class ExitAirlock extends Task implements Serializable {
 
         EVASuit result = null;
         
-        UnitIterator i = inv.findAllUnitsOfClass(EVASuit.class).iterator();
+        Iterator<Unit> i = inv.findAllUnitsOfClass(EVASuit.class).iterator();
         while (i.hasNext() && (result == null)) {
             EVASuit suit = (EVASuit) i.next();
             boolean malfunction = suit.getMalfunctionManager().hasMalfunction();

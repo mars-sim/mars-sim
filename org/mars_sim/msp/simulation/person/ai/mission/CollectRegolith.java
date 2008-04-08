@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
@@ -65,7 +65,7 @@ public class CollectRegolith  extends CollectResourcesMission {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public CollectRegolith (PersonCollection members, Settlement startingSettlement, 
+    public CollectRegolith (Collection members, Settlement startingSettlement, 
     		List regolithCollectionSites, Rover rover, String description) 
     		throws MissionException {
     	

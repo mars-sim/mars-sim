@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.SimulationConfig;
@@ -269,14 +270,14 @@ public class Building implements Malfunctionable, Serializable {
      * Children buildings should add additional people as necessary.
      * @return person collection
      */
-    public PersonCollection getAffectedPeople() {
-        PersonCollection people = new PersonCollection();
+    public Collection getAffectedPeople() {
+        Collection people = new ConcurrentLinkedQueue();
 
 		// If building has life support, add all occupants of the building.
 		if (hasFunction(LifeSupport.NAME)) {
 			try {
 				LifeSupport lifeSupport = (LifeSupport) getFunction(LifeSupport.NAME);
-				PersonIterator i = lifeSupport.getOccupants().iterator();
+				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Person occupant = i.next();
 					if (!people.contains(occupant)) people.add(occupant);
@@ -286,7 +287,7 @@ public class Building implements Malfunctionable, Serializable {
 		}
 
         // Check all people in settlement.
-        PersonIterator i = manager.getSettlement().getInhabitants().iterator();
+        Iterator<Person> i = manager.getSettlement().getInhabitants().iterator();
         while (i.hasNext()) {
             Person person = i.next();
             Task task = person.getMind().getTaskManager().getTask();

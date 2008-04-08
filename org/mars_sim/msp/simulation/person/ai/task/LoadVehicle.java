@@ -8,7 +8,12 @@
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,11 +22,12 @@ import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.UnitCollection;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
-import org.mars_sim.msp.simulation.equipment.EVASuit;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
@@ -30,7 +36,8 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -393,11 +400,13 @@ public class LoadVehicle extends Task implements Serializable {
         	int numAlreadyLoaded = vInv.findNumUnitsOfClass(equipmentType);
         	if (numAlreadyLoaded < numNeededTotal) {
         		int numNeeded = numNeededTotal - numAlreadyLoaded;
-        		UnitCollection units = sInv.findAllUnitsOfClass(equipmentType);
+        		Collection units = sInv.findAllUnitsOfClass(equipmentType);
+        		Object[] array  = units.toArray();
+        		
         		if (units.size() >= numNeeded) {
         			int loaded = 0;
         			for (int x = 0; (x < units.size()) && (loaded < numNeeded) && (amountLoading > 0D); x++) {
-        				Equipment eq = (Equipment) units.get(x);
+        				Equipment eq = (Equipment) array[x];
         				
         				boolean isEmpty = true;
         				Inventory eInv = eq.getInventory();
@@ -414,18 +423,26 @@ public class LoadVehicle extends Task implements Serializable {
         					else endTask();
         				}
         			}
+        			
+        			array = null;
         		}
-        		else endTask();
+        		else {
+        		    endTask();
+        		}
         	}
     		else if (numAlreadyLoaded > numNeededTotal) {
     			// In case vehicle wasn't fully unloaded first.
     			int numToRemove = numAlreadyLoaded - numNeededTotal;
-    			UnitCollection units = vInv.findAllUnitsOfClass(equipmentType);
+    			Collection units = vInv.findAllUnitsOfClass(equipmentType);
+    			Object[] array = units.toArray();
+    			
     			for (int x = 0; x < numToRemove; x++) {
-    				Equipment eq = (Equipment) units.get(x);
+    				Equipment eq = (Equipment) array[x];
     				vInv.retrieveUnit(eq);
     				sInv.storeUnit(eq);
     			}
+    			
+    			array = null;
     		}
         }
         

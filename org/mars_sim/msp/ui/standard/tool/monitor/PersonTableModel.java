@@ -7,6 +7,9 @@
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
@@ -16,8 +19,6 @@ import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.UnitManagerEvent;
 import org.mars_sim.msp.simulation.UnitManagerListener;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
@@ -174,8 +175,8 @@ public class PersonTableModel extends UnitTableModel {
     /**
      * Defines the source data from this table
      */
-    private void setSource(PersonCollection source) {
-        PersonIterator iter = source.iterator();
+    private void setSource(Collection source) {
+        Iterator<Person> iter = source.iterator();
         while(iter.hasNext()) addUnit(iter.next());
     }
 	

@@ -7,10 +7,15 @@
 
 package org.mars_sim.msp.simulation;
 
-import org.mars_sim.msp.simulation.person.*;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.simulation.person.Person;
+
 
 /** 
  * The Airlock class represents an airlock to a vehicle or structure.
@@ -30,7 +35,7 @@ public abstract class Airlock implements Serializable {
     private boolean outerDoorOpen; // True if outer door is open.
     private int capacity;          // Number of people who can use the airlock at once;
     private double activationTime; // Amount of time airlock has been activated. (in millisols)
-    private PersonCollection occupants; // People currently in airlock.
+    private Collection occupants; // People currently in airlock.
     private double operationalTime;
     
     /**
@@ -46,7 +51,7 @@ public abstract class Airlock implements Serializable {
         else this.capacity = capacity;
         pressurized = true;
         innerDoorOpen = true;
-        occupants = new PersonCollection();
+        occupants = new ConcurrentLinkedQueue();
     }
 
     /**
@@ -131,7 +136,7 @@ public abstract class Airlock implements Serializable {
             pressurized = !pressurized;
             if (pressurized) innerDoorOpen = true;
             else outerDoorOpen = true;
-            PersonIterator i = occupants.iterator();
+            Iterator<Person> i = occupants.iterator();
             while (i.hasNext()) {
                 try {
                     exitAirlock(i.next());
@@ -182,7 +187,7 @@ public abstract class Airlock implements Serializable {
         	if (occupants.size() == 0) deactivateAirlock();
         	else {
         		boolean allDead = true;
-        		PersonIterator i = occupants.iterator();
+        		Iterator<Person> i = occupants.iterator();
         		while (i.hasNext()) {
         			if (!i.next().getPhysicalCondition().isDead()) allDead = false;
         		}

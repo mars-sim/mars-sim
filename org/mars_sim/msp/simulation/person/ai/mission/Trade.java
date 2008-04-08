@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,8 +20,6 @@ import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
@@ -41,7 +40,6 @@ import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /**
  * A mission for trading between two settlements.
@@ -166,11 +164,11 @@ public class Trade extends RoverMission implements Serializable {
      * @param buyGoods map of mission buy goods and integer amounts
      * @throws MissionException if error constructing mission.
      */
-    public Trade(PersonCollection members, Settlement startingSettlement, Settlement tradingSettlement, 
+    public Trade(Collection members, Settlement startingSettlement, Settlement tradingSettlement, 
     		Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) 
     		throws MissionException {
     	// Use RoverMission constructor.
-    	super(description, (Person) members.get(0), 1, rover);
+    	super(description, (Person) members.toArray()[0], 1, rover);
     	
     	outbound = true;
     	doNegotiation = false;
@@ -189,7 +187,7 @@ public class Trade extends RoverMission implements Serializable {
 				tradingSettlement.getName()));
 
     	// Add mission members.
-    	PersonIterator i = members.iterator();
+    	Iterator<Person> i = members.iterator();
     	while (i.hasNext()) i.next().getMind().setMission(this);
     	
     	// Set trade goods.
@@ -680,7 +678,7 @@ public class Trade extends RoverMission implements Serializable {
 			if (buy) settlement = tradingSettlement;
 			else settlement = getStartingSettlement();
 			
-			VehicleIterator j = settlement.getParkedVehicles().iterator();
+			Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
 			while (j.hasNext()) {
 				Vehicle vehicle = j.next();
 				if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
@@ -795,7 +793,14 @@ public class Trade extends RoverMission implements Serializable {
 		// Make sure there is at least one person left at the starting settlement.
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
 			// Remove last person added to the mission.
-			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
+			Person lastPerson = null;
+			int amount = getPeopleNumber() - 1;
+			Object[] array = getPeople().toArray();
+			
+			if(amount >=0 && amount < array.length) {
+			    lastPerson = (Person) array[amount];
+			}
+			
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
 				if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");
@@ -841,7 +846,7 @@ public class Trade extends RoverMission implements Serializable {
 		Person bestTrader = null;
 		int bestTradeSkill = -1;
 		
-		PersonIterator i = getPeople().iterator();
+		Iterator<Person> i = getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			int tradeSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING);
@@ -862,7 +867,7 @@ public class Trade extends RoverMission implements Serializable {
 		Person bestTrader = null;
 		int bestTradeSkill = -1;
 		
-		PersonIterator i = tradingSettlement.getInhabitants().iterator();
+		Iterator<Person> i = tradingSettlement.getInhabitants().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (!getPeople().contains(person)) {

@@ -12,13 +12,14 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
@@ -174,7 +175,7 @@ public class EditMissionDialog extends JDialog {
 		}
 		
 		// Remove old members.
-		PersonIterator i = mission.getPeople().iterator();
+		Iterator<Person> i = mission.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (!infoPane.memberListModel.contains(person)) person.getMind().setMission(null);

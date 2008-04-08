@@ -7,11 +7,12 @@
 
 package org.mars_sim.msp.ui.standard.tool.mission;
 
-import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -24,7 +25,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.RoverMission;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -208,7 +208,7 @@ public class MissionWindow extends ToolWindow {
 				Rover rover = roverMission.getRover();
 				Settlement settlement = rover.getSettlement();
 				if (settlement != null) {
-					PersonIterator i = rover.getCrew().iterator();
+					Iterator<Person> i = rover.getCrew().iterator();
 					while (i.hasNext()) {
 	        			Person crewmember = i.next();
 	        			try {

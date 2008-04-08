@@ -8,21 +8,22 @@
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.vehicle.Airlockable;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
@@ -68,7 +69,7 @@ public class EnterAirlock extends Task implements Serializable {
 	
         // Determine airlock from other people on mission.
         if (person.getMind().getMission() != null) {
-            PersonIterator i = person.getMind().getMission().getPeople().iterator();
+            Iterator<Person> i = person.getMind().getMission().getPeople().iterator();
             while (i.hasNext() && (airlock == null)) {
                 Person p = i.next();
                 if (p != person) {
@@ -87,7 +88,7 @@ public class EnterAirlock extends Task implements Serializable {
 
         // If not look for any settlements at person's location.
         if (airlock == null) {
-            SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().iterator();
+            Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
             while (i.hasNext() && (airlock == null)) {
                 Settlement settlement = i.next();
                 if (person.getCoordinates().equals(settlement.getCoordinates())) 
@@ -97,7 +98,7 @@ public class EnterAirlock extends Task implements Serializable {
 
         // If not look for any airlockable vehicles at person's location.
         if (airlock == null) {
-            VehicleIterator i = Simulation.instance().getUnitManager().getVehicles().iterator();
+            Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
             while (i.hasNext() && (airlock == null)) {
                 Vehicle vehicle = i.next();
                 if (person.getCoordinates().equals(vehicle.getCoordinates())) {

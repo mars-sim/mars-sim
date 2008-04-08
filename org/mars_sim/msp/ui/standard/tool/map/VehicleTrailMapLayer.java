@@ -16,7 +16,6 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.IntPoint;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /**
  * The VehicleTrailMapLayer is a graphics layer to display vehicle trails.
@@ -50,7 +49,7 @@ public class VehicleTrailMapLayer implements MapLayer {
         // Draw trail
         if (singleVehicle != null) displayTrail(singleVehicle, mapCenter, mapType, g);
         else {
-        	VehicleIterator i = Simulation.instance().getUnitManager().getVehicles().iterator();
+        	Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
         	while (i.hasNext()) displayTrail((Vehicle) i.next(), mapCenter, mapType, g);
         }
     }

@@ -8,11 +8,13 @@
 package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.UnitCollection;
 
 /**
  * An abstract table model for unit tables in create mission wizard.
@@ -20,7 +22,7 @@ import org.mars_sim.msp.simulation.UnitCollection;
 abstract class UnitTableModel extends AbstractTableModel {
 
 	// Data members.
-	protected UnitCollection units;
+	protected Collection units;
 	protected List<String> columns;
 	
 	/**
@@ -31,7 +33,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 		super();
 		
 		// Initialize data members.
-		units = new UnitCollection();
+		units = new ConcurrentLinkedQueue();
 		columns = new ArrayList<String>();
 	}
 	
@@ -67,7 +69,8 @@ abstract class UnitTableModel extends AbstractTableModel {
 	 */
 	Unit getUnit(int row) {
 		Unit result = null;
-		if ((row > -1) && (row < getRowCount())) result = units.get(row);
+		Object[] array = units.toArray();
+		if ((row > -1) && (row < getRowCount())) result = (Unit) array[row];
 		return result;
 	}
 	

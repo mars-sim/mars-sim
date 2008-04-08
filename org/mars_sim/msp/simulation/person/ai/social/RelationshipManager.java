@@ -7,6 +7,22 @@
 
 package org.mars_sim.msp.simulation.person.ai.social;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
+import org.mars_sim.msp.simulation.person.ai.PersonalityType;
+import org.mars_sim.msp.simulation.structure.Settlement;
+
 import com.phoenixst.plexus.DefaultGraph;
 import com.phoenixst.plexus.EdgePredicate;
 import com.phoenixst.plexus.EdgePredicateFactory;
@@ -14,20 +30,6 @@ import com.phoenixst.plexus.Graph;
 import com.phoenixst.plexus.GraphUtils;
 import com.phoenixst.plexus.NoSuchNodeException;
 import com.phoenixst.plexus.Traverser;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
-import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.PhysicalCondition;
-import org.mars_sim.msp.simulation.person.ai.PersonalityType;
-import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
  * The RelationshipManager class keeps track of all the social 
@@ -97,7 +99,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person the person to add.
 	 * @param immigrantGroup the groups of immigrants this person belongs to.
 	 */
-	public void addNewImmigrant(Person person, PersonCollection immigrantGroup) {
+	public void addNewImmigrant(Person person, Collection immigrantGroup) {
 		addPerson(person, immigrantGroup);
 	}
 	
@@ -106,14 +108,14 @@ public class RelationshipManager implements Serializable {
 	 * @param person the new person
 	 * @param initialGroup the group that this person has existing relationships with.
 	 */
-	private void addPerson(Person person, PersonCollection initialGroup) {
+	private void addPerson(Person person, Collection initialGroup) {
 		if ((person == null) || (initialGroup == null)) 
 			throw new IllegalArgumentException("RelationshipManager.addPerson(): null parameter.");
 		
 		if (!relationshipGraph.containsNode(person)) {
 			relationshipGraph.addNode(person);
 			
-			PersonIterator i = initialGroup.iterator();
+			Iterator<Person> i = initialGroup.iterator();
 			while (i.hasNext()) {
 				Person person2 = i.next();
 				if (person2 != person) {
@@ -189,8 +191,8 @@ public class RelationshipManager implements Serializable {
 	 * @param person the person
 	 * @return a list of the people the person knows.
 	 */
-	public PersonCollection getAllKnownPeople(Person person) {
-		PersonCollection result = new PersonCollection();
+	public Collection getAllKnownPeople(Person person) {
+		Collection result = new ConcurrentLinkedQueue();
 		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
 			Person knownPerson = (Person) traverser.next();
@@ -224,13 +226,13 @@ public class RelationshipManager implements Serializable {
 	 * @param people the collection of people who the opinion is of.
 	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close friend).
 	 */
-	public double getAverageOpinionOfPeople(Person person1, PersonCollection people) {
+	public double getAverageOpinionOfPeople(Person person1, Collection people) {
 		
 		if (people == null) throw new IllegalArgumentException("people is null");
 		
 		if (people.size() > 0) {
 			double result = 0D;
-			PersonIterator i = people.iterator();
+			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) {
 				Person person2 = i.next();
 				result+= getOpinionOfPerson(person1, person2);
@@ -268,10 +270,10 @@ public class RelationshipManager implements Serializable {
 		double personStress = person.getPhysicalCondition().getStress();
 		
 		// Get the person's local group of people.
-		PersonCollection localGroup = person.getLocalGroup();
+		Collection localGroup = person.getLocalGroup();
 		
 		// Go through each person in local group.
-		PersonIterator i = localGroup.iterator();
+		Iterator<Person> i = localGroup.iterator();
 		int count2 = 0;
 		while (i.hasNext()) {
 			Person localPerson = i.next();
@@ -359,7 +361,7 @@ public class RelationshipManager implements Serializable {
 	private void modifyStress(Person person, double time) throws Exception {
 		double stressModifier = 0D;
 		
-		PersonIterator i = person.getLocalGroup().iterator();
+		Iterator<Person> i = person.getLocalGroup().iterator();
 		while (i.hasNext()) stressModifier-= ((getOpinionOfPerson(person, i.next()) - 50D) / 50D);
 		
 		stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;

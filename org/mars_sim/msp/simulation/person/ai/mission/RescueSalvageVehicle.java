@@ -8,9 +8,11 @@
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
@@ -19,21 +21,16 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.job.Driver;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The RescueSalvageRover class is a mission to rescue the crew of a vehicle 
@@ -136,11 +133,11 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public RescueSalvageVehicle(PersonCollection members, Settlement startingSettlement, 
+    public RescueSalvageVehicle(Collection members, Settlement startingSettlement, 
     		Vehicle vehicleTarget, Rover rover, String description) throws MissionException {
     	
        	// Use RoverMission constructor.
-    	super(description, (Person) members.get(0), 1, rover);
+    	super(description, (Person) members.toArray()[0], 1, rover);
     	
     	setStartingSettlement(startingSettlement);
     	this.vehicleTarget = vehicleTarget;
@@ -153,7 +150,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
 		
     	// Add mission members.
-    	PersonIterator i = members.iterator();
+    	Iterator<Person> i = members.iterator();
     	while (i.hasNext()) i.next().getMind().setMission(this);
     	
 		// Add rendezvous phase.
@@ -388,7 +385,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     		// Unload any crew at settlement.
     		if (towedVehicle instanceof Crewable) {
     			Crewable crewVehicle = (Crewable) towedVehicle;
-				PersonIterator i = crewVehicle.getCrew().iterator();
+				Iterator<Person> i = crewVehicle.getCrew().iterator();
 				while (i.hasNext()) {
 					Person crewmember = i.next();
         			towedVehicle.getInventory().retrieveUnit(crewmember);
@@ -450,11 +447,11 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     	Vehicle result = null;
     	double halfRange = range / 2D;
     	
-    	VehicleCollection emergencyBeaconVehicles = new VehicleCollection();
-    	VehicleCollection vehiclesNeedingRescue = new VehicleCollection();
+    	Collection emergencyBeaconVehicles = new ConcurrentLinkedQueue();
+    	Collection vehiclesNeedingRescue = new ConcurrentLinkedQueue();
     	
     	// Find all available vehicles.
-    	VehicleIterator iV = Simulation.instance().getUnitManager().getVehicles().iterator();
+    	Iterator<Vehicle> iV = Simulation.instance().getUnitManager().getVehicles().iterator();
     	while (iV.hasNext()) {
     		Vehicle vehicle = iV.next();
     		if (vehicle.isEmergencyBeacon() && !isVehicleAlreadyMissionTarget(vehicle)) {
@@ -514,10 +511,10 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
      * @param vehicles the vehicle collection.
      * @return closest vehicle.
      */
-    private static Vehicle findClosestVehicle(Coordinates location, VehicleCollection vehicles) {
+    private static Vehicle findClosestVehicle(Coordinates location, Collection vehicles) {
     	Vehicle closest = null;
     	double closestDistance = Double.MAX_VALUE;
-    	VehicleIterator i = vehicles.iterator();
+    	Iterator<Vehicle> i = vehicles.iterator();
     	while (i.hasNext()) {
     		Vehicle vehicle = i.next();
     		double vehicleDistance = location.getDistance(vehicle.getCoordinates());
@@ -652,14 +649,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		
 		double distance = thisSettlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
 		
-		SettlementIterator iS = Simulation.instance().getUnitManager().getSettlements().iterator();
+		Iterator<Settlement> iS = Simulation.instance().getUnitManager().getSettlements().iterator();
 		while (iS.hasNext() && result) {
 			Settlement settlement = iS.next();
 			if (settlement != thisSettlement) {
 				double settlementDistance = settlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
 				if (settlementDistance < distance) {
 					if (settlement.getCurrentPopulationNum() >= MISSION_MIN_MEMBERS) {
-						VehicleIterator iV = settlement.getParkedVehicles().iterator();
+						Iterator<Vehicle> iV = settlement.getParkedVehicles().iterator();
 						while (iV.hasNext() && result) {
 							Vehicle vehicle = iV.next();
 							if (vehicle instanceof Rover) {
@@ -686,7 +683,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		if (!rescue) {
 			if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
 				// Remove last person added to the mission.
-				Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
+			    	Object[] array = getPeople().toArray();
+				Person lastPerson = null;
+				int amount = getPeopleNumber() - 1;
+				
+				if(amount > 0 && amount < array.length){
+				    lastPerson= (Person) array[amount];
+				}
+				
 				if (lastPerson != null) {
 					lastPerson.getMind().setMission(null);
 					if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");

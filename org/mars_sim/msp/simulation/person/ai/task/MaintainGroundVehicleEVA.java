@@ -9,18 +9,20 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
@@ -32,8 +34,6 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
@@ -86,7 +86,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 
 		// Get all vehicles needing maintenance.
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			VehicleIterator i = getAllVehicleCandidates(person).iterator();
+			Iterator<Vehicle> i = getAllVehicleCandidates(person).iterator();
 			while (i.hasNext()) {
 				MalfunctionManager manager = i.next().getMalfunctionManager();
 				double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 20D);
@@ -299,12 +299,12 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @param person person checking.
      * @return collection of ground vehicles available for maintenance.
      */
-    private static VehicleCollection getAllVehicleCandidates(Person person) {
-        VehicleCollection result = new VehicleCollection();
+    private static Collection getAllVehicleCandidates(Person person) {
+        Collection result = new ConcurrentLinkedQueue();
         
         Settlement settlement = person.getSettlement();
         if (settlement != null) {
-        	VehicleIterator vI = settlement.getParkedVehicles().iterator();
+        	Iterator<Vehicle> vI = settlement.getParkedVehicles().iterator();
         	while (vI.hasNext()) {
         		Vehicle vehicle = vI.next();
         		if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
@@ -326,11 +326,11 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         GroundVehicle result = null;
 
         // Find all vehicles that can be maintained.
-        VehicleCollection availableVehicles = getAllVehicleCandidates(person);
+        Collection availableVehicles = getAllVehicleCandidates(person);
         
         // Determine total probability weight.
         double totalProbWeight = 0D;
-        VehicleIterator i = availableVehicles.iterator();
+        Iterator<Vehicle> i = availableVehicles.iterator();
         while (i.hasNext()) {
             totalProbWeight += getProbabilityWeight(i.next());
         }
@@ -339,7 +339,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         double rand = RandomUtil.getRandomDouble(totalProbWeight);
         
         // Determine which vehicle was picked.
-        VehicleIterator i2 = availableVehicles.iterator();
+        Iterator<Vehicle> i2 = availableVehicles.iterator();
         while (i2.hasNext() && (result == null)) {
             Vehicle vehicle = i2.next();
             double probWeight = getProbabilityWeight(vehicle);

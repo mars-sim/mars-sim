@@ -8,12 +8,12 @@
 package org.mars_sim.msp.ui.standard.tool.mission.create;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
@@ -45,7 +45,7 @@ class MissionDataBean {
 	private String description;
 	private Settlement startingSettlement;
 	private Rover rover;
-	private PersonCollection members;
+	private Collection members;
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
 	private Coordinates iceCollectionSite;
@@ -185,7 +185,7 @@ class MissionDataBean {
 	 * Gets the mission members.
 	 * @return the members.
 	 */
-	PersonCollection getMembers() {
+	Collection getMembers() {
 		return members;
 	}
 	
@@ -193,7 +193,7 @@ class MissionDataBean {
 	 * Sets the mission members.
 	 * @param members the members.
 	 */
-	void setMembers(PersonCollection members) {
+	void setMembers(Collection members) {
 		this.members = members;
 	}
 	

@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.equipment.Barrel;
 import org.mars_sim.msp.simulation.equipment.Equipment;
@@ -26,7 +25,6 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Phase;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.structure.goods.CreditManager;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
@@ -70,7 +68,7 @@ public final class TradeUtil {
     	double bestProfit = 0D;
     	Settlement bestSettlement = null;
     	
-    	SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().iterator();
+    	Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
     	while (i.hasNext()) {
     		Settlement settlement = i.next();
     		if (settlement != startingSettlement) {
@@ -468,7 +466,7 @@ public final class TradeUtil {
     		return inventory.findNumUnitsOfClass(good.getClassType());
     	else if (good.getCategory().equals(Good.VEHICLE)) {
     		int count = 0;
-    		UnitIterator i = inventory.findAllUnitsOfClass(good.getClassType()).iterator();
+    		Iterator i = inventory.findAllUnitsOfClass(good.getClassType()).iterator();
     		while (i.hasNext()) {
     			Vehicle vehicle = (Vehicle) i.next();
     			if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved()) count++;

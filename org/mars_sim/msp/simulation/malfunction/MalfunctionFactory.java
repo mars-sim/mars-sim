@@ -18,10 +18,7 @@ import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.UnitCollection;
-import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.ItemResource;
@@ -108,16 +105,16 @@ public final class MalfunctionFactory implements Serializable {
         if (location.equals(Person.INVEHICLE)) entities.add(person.getVehicle());
 
         if (!location.equals(Person.OUTSIDE)) {
-            UnitIterator i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
+            Iterator<Unit> i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unit instanceof Malfunctionable) entities.add((Malfunctionable) unit);
             }
         }
 
-        UnitCollection inventoryUnits = person.getInventory().getContainedUnits();
+        Collection inventoryUnits = person.getInventory().getContainedUnits();
         if (inventoryUnits.size() > 0) {
-            UnitIterator i = inventoryUnits.iterator();
+            Iterator<Unit> i = inventoryUnits.iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unit instanceof Malfunctionable) entities.add((Malfunctionable)unit);
@@ -143,9 +140,9 @@ public final class MalfunctionFactory implements Serializable {
             while (i.hasNext()) entities.add(i.next());
         }
 
-        UnitCollection inventoryUnits = entity.getInventory().getContainedUnits();
+        Collection inventoryUnits = entity.getInventory().getContainedUnits();
         if (inventoryUnits.size() > 0) {
-            UnitIterator i = inventoryUnits.iterator();
+            Iterator<Unit> i = inventoryUnits.iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unit instanceof Malfunctionable) entities.add((Malfunctionable)unit);
@@ -177,7 +174,7 @@ public final class MalfunctionFactory implements Serializable {
 		}
 		
 		// Get entities carried by people on EVA.
-		PersonIterator j = settlement.getAllAssociatedPeople().iterator();
+		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.getLocationSituation().equals(Person.OUTSIDE)) 

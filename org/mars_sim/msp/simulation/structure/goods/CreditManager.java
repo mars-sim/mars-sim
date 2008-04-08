@@ -9,14 +9,13 @@ package org.mars_sim.msp.simulation.structure.goods;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 
 import com.phoenixst.plexus.DefaultGraph;
 import com.phoenixst.plexus.EdgePredicate;
@@ -47,12 +46,12 @@ public class CreditManager implements Serializable {
 	 * Constructor
 	 * @param settlements collection of settlements to use.
 	 */
-	public CreditManager(SettlementCollection settlements) {
+	public CreditManager(Collection settlements) {
 		// Create new graph for credit.
 		creditGraph = new DefaultGraph();
 		
 		// Add all settlements as nodes.
-		SettlementIterator i = settlements.iterator();
+		Iterator i = settlements.iterator();
 		while (i.hasNext()) creditGraph.addNode(i.next());
 	}
 	

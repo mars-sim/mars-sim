@@ -12,6 +12,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -23,14 +25,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /**
@@ -227,8 +228,8 @@ class VehiclePanel extends WizardPanel {
     	void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		VehicleCollection vehicles = startingSettlement.getParkedVehicles().sortByName();
-    		VehicleIterator i = vehicles.iterator();
+    		Collection vehicles = CollectionUtils.sortByName(startingSettlement.getParkedVehicles());
+    		Iterator<Vehicle> i = vehicles.iterator();
     		while (i.hasNext()) units.add(i.next());
     		fireTableDataChanged();
     	}

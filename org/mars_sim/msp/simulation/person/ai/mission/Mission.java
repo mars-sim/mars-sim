@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,8 +23,6 @@ import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
@@ -55,7 +54,7 @@ public abstract class Mission implements Serializable {
 	public static final String END_MISSION_EVENT = "end mission";
 	
     // Data members
-    private PersonCollection people; // People in mission
+    private Collection people; // People in mission
     private String name; // Name of mission
     private String description; // Description of the mission
     private int minPeople; // The minimum number of people for mission.
@@ -79,7 +78,7 @@ public abstract class Mission implements Serializable {
         // Initialize data members
         this.name = name;
         description = name;
-        people = new PersonCollection();
+        people = new ConcurrentLinkedQueue();
         done = false;
         phase = null;
         phaseDescription = null;
@@ -230,8 +229,8 @@ public abstract class Mission implements Serializable {
      * Gets a collection of the people in the mission.
      * @return collection of people
      */
-    public final PersonCollection getPeople() {
-        return new PersonCollection(people);
+    public final Collection getPeople() {
+        return people;
     }
 
     /** 
@@ -429,7 +428,7 @@ public abstract class Mission implements Serializable {
 	 */
 	protected final boolean hasDangerousMedicalProblems() {
 		boolean result = false;
-		PersonIterator i = people.iterator();
+		Iterator<Person> i = people.iterator();
 		while (i.hasNext()) {
 			if (i.next().getPhysicalCondition().hasSeriousMedicalProblems()) result = true;
 		}
@@ -444,7 +443,7 @@ public abstract class Mission implements Serializable {
 	 */
 	protected final boolean hasDangerousMedicalProblemsAllCrew() {
 		boolean result = true;
-		PersonIterator i = people.iterator();
+		Iterator<Person> i = people.iterator();
 		while (i.hasNext()) {
 			if (!i.next().getPhysicalCondition().hasSeriousMedicalProblems()) result = false;
 		}
@@ -478,8 +477,8 @@ public abstract class Mission implements Serializable {
 			count++;
 			
 			// Get all people qualified for the mission.
-			PersonCollection qualifiedPeople = new PersonCollection();
-			PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
+			Collection qualifiedPeople = new ConcurrentLinkedQueue();
+			Iterator <Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
 				if (isCapableOfMission(person)) qualifiedPeople.add(person);
@@ -490,7 +489,7 @@ public abstract class Mission implements Serializable {
 				while (qualifiedPeople.size() > 0) {
 					double bestPersonValue = 0D;
 					Person bestPerson = null;
-					PersonIterator j = qualifiedPeople.iterator();
+					Iterator<Person> j = qualifiedPeople.iterator();
 					while (j.hasNext() && (getPeopleNumber() < getMissionCapacity())) {
 						Person person = j.next();
 						// Determine the person's mission qualification.
@@ -642,7 +641,7 @@ public abstract class Mission implements Serializable {
      * @param settlement the associated settlement.
      */
     public void associateAllMembersWithSettlement(Settlement settlement) {
-    	PersonIterator i = getPeople().iterator();
+    	Iterator<Person> i = getPeople().iterator();
     	while (i.hasNext()) i.next().setAssociatedSettlement(settlement);
     }
     
@@ -652,7 +651,7 @@ public abstract class Mission implements Serializable {
 	 * @throws Exception if error determining location.
 	 */
 	public final Coordinates getCurrentMissionLocation() throws Exception {
-		if (getPeopleNumber() > 0) return getPeople().get(0).getCoordinates();
+		if (getPeopleNumber() > 0) return ((Person)getPeople().toArray()[0]).getCoordinates();
 		throw new Exception("No people in the mission.");
 	}
 }

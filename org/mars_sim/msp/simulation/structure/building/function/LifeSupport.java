@@ -8,9 +8,11 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.person.*;
@@ -31,7 +33,7 @@ public class LifeSupport extends Function implements Serializable {
 	// Data members
 	private int occupantCapacity;
 	private double powerRequired;
-	private PersonCollection occupants;
+	private Collection occupants;
 
 	/**
 	 * Constructor
@@ -42,7 +44,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Call Function constructor.
 		super(NAME, building);
 		
-		occupants = new PersonCollection();
+		occupants = new ConcurrentLinkedQueue();
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
@@ -69,7 +71,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Use Function constructor
 		super(NAME, building);
 		
-		occupants = new PersonCollection();
+		occupants = new ConcurrentLinkedQueue();
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
 	}
@@ -113,8 +115,8 @@ public class LifeSupport extends Function implements Serializable {
 	 * Gets a collection of occupants in the building.
 	 * @return collection of occupants
 	 */
-	public PersonCollection getOccupants() {
-		return new PersonCollection(occupants);
+	public Collection getOccupants() {
+		return CollectionUtils.getPerson(occupants);
 	}
 	
 	/**
@@ -167,7 +169,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.
 		Inventory inv = getBuilding().getInventory();
-		PersonIterator i = occupants.iterator();
+		Iterator<Person> i = occupants.iterator();
 		while (i.hasNext()) {
 			if (!inv.containsUnit(i.next())) i.remove();
 		}
@@ -180,7 +182,7 @@ public class LifeSupport extends Function implements Serializable {
 		    	    logger.finest("Overcrowding at " + getBuilding());
 		    	}
 			double stressModifier = .1D * overcrowding * time;
-			PersonIterator j = getOccupants().iterator();
+			Iterator<Person> j = getOccupants().iterator();
 			while (j.hasNext()) {
 				PhysicalCondition condition = j.next().getPhysicalCondition();
 				condition.setStress(condition.getStress() + stressModifier);

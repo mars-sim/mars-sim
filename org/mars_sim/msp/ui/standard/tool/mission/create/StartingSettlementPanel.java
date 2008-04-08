@@ -12,6 +12,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -23,6 +25,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Simulation;
@@ -34,8 +37,6 @@ import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /**
@@ -170,8 +171,8 @@ class StartingSettlementPanel extends WizardPanel {
     		
     		// Add all settlements to table sorted by name.
     		UnitManager manager = Simulation.instance().getUnitManager();
-    		SettlementCollection settlements = manager.getSettlements().sortByName();
-    		SettlementIterator i = settlements.iterator();
+    		Collection settlements = CollectionUtils.sortByName(manager.getSettlements());
+    		Iterator<Settlement> i = settlements.iterator();
     		while (i.hasNext()) units.add(i.next());
     		
     		// Add columns.

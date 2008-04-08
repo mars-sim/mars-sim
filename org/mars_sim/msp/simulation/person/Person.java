@@ -8,17 +8,30 @@
 package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.CollectionUtils;
+import org.mars_sim.msp.simulation.InventoryException;
+import org.mars_sim.msp.simulation.LifeSupport;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.vehicle.Medical;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleOperator;
 
 /** 
  * The Person class represents a person on Mars. It keeps
@@ -277,7 +290,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      */
     private LifeSupport getLifeSupport() {
 
-        UnitCollection lifeSupportUnits = new UnitCollection();
+        Collection lifeSupportUnits = new ConcurrentLinkedQueue();
 
 	    // Get all container units.
 	    Unit container = getContainerUnit();
@@ -287,7 +300,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	    }
 
 	    // Get all contained units.
-        UnitIterator i = getInventory().getContainedUnits().iterator();
+          Iterator<Unit> i = getInventory().getContainedUnits().iterator();
 	    while (i.hasNext()) {
 	        Unit contained = i.next();
 	        if (contained instanceof LifeSupport) lifeSupportUnits.add(contained);
@@ -336,8 +349,8 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	 * @return collection of people in person's location.
 	 * @throws Exception if error
 	 */
-	public PersonCollection getLocalGroup() throws Exception {
-		PersonCollection localGroup = new PersonCollection();
+	public Collection getLocalGroup() throws Exception {
+		Collection localGroup = new ConcurrentLinkedQueue();
 		
 		if (getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Building building = BuildingManager.getBuilding(this);
@@ -346,13 +359,13 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 					org.mars_sim.msp.simulation.structure.building.function.LifeSupport lifeSupport = 
 						(org.mars_sim.msp.simulation.structure.building.function.LifeSupport) 
 						building.getFunction(org.mars_sim.msp.simulation.structure.building.function.LifeSupport.NAME);
-					localGroup = new PersonCollection(lifeSupport.getOccupants());
+					localGroup = CollectionUtils.getPerson(lifeSupport.getOccupants());
 				}
 			}
 		}
 		else if (getLocationSituation().equals(Person.INVEHICLE)) {
 			Rover rover = (Rover) getVehicle();
-			localGroup = new PersonCollection(rover.getCrew());
+			localGroup = CollectionUtils.getPerson(rover.getCrew());
 		}
 		
 		if (localGroup.contains(this)) localGroup.remove(this);

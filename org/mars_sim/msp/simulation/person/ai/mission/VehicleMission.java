@@ -7,9 +7,11 @@
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
@@ -23,7 +25,6 @@ import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.task.LoadVehicle;
 import org.mars_sim.msp.simulation.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -31,12 +32,9 @@ import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleOperator;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 import org.mars_sim.msp.simulation.time.MarsClock;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.simulation.vehicle.VehicleOperator;
 
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
@@ -224,14 +222,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected final boolean reserveVehicle(Person person) throws Exception {
 		
-		VehicleCollection bestVehicles = new VehicleCollection();
+		Collection bestVehicles = new ConcurrentLinkedQueue();
 		
 		// Create list of best unreserved vehicles for the mission.
-		VehicleIterator i = getAvailableVehicles(person.getSettlement()).iterator();
+		Iterator<Vehicle> i = getAvailableVehicles(person.getSettlement()).iterator();
 		while (i.hasNext()) {
 			Vehicle availableVehicle = i.next();
 			if (bestVehicles.size() > 0) {
-				int comparison = compareVehicles(availableVehicle, (Vehicle) bestVehicles.get(0));
+				int comparison = compareVehicles(availableVehicle, (Vehicle) bestVehicles.toArray()[0]);
 				if (comparison == 0) bestVehicles.add(availableVehicle);
 				else if (comparison == 1) {
 					 bestVehicles.clear();
@@ -245,7 +243,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (bestVehicles.size() > 0) {
 			int bestVehicleIndex = RandomUtil.getRandomInt(bestVehicles.size() - 1);
 			try {
-				setVehicle((Vehicle) bestVehicles.get(bestVehicleIndex));
+				setVehicle((Vehicle) bestVehicles.toArray()[bestVehicleIndex]);
 			}
 			catch (Exception e) {}
 		}
@@ -259,10 +257,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return list of available vehicles.
 	 * @throws Exception if problem determining if vehicles are usable.
 	 */
-	private final VehicleCollection getAvailableVehicles(Settlement settlement) throws Exception {
-		VehicleCollection result = new VehicleCollection();
+	private final Collection getAvailableVehicles(Settlement settlement) throws Exception {
+		Collection result = new ConcurrentLinkedQueue();
 		
-		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			if (isUsableVehicle(vehicle)) result.add(vehicle);
@@ -506,7 +504,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     protected final double getAverageVehicleSpeedForOperators() {
     	
     	double totalSpeed = 0D;
-    	PersonIterator i = getPeople().iterator();
+    	Iterator<Person> i = getPeople().iterator();
     	while (i.hasNext()) totalSpeed += getAverageVehicleSpeedForOperator(i.next());
     	
     	return totalSpeed / getPeopleNumber();
@@ -691,7 +689,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	Coordinates location = getCurrentMissionLocation();
     	double closestDistance = Double.MAX_VALUE;
     	
-    	SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().iterator();
+    	Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
     	while (i.hasNext()) {
     		Settlement settlement = i.next();
     		double distance = settlement.getCoordinates().getDistance(location);

@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.standard.tool.monitor;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
@@ -51,7 +52,7 @@ public class MissionTab extends TableTab {
         if (it.hasNext()) {
             Mission mission = (Mission) it.next();
             if (mission.getPeopleNumber() > 0) 
-            	desktop.centerMapGlobe(mission.getPeople().get(0).getCoordinates());
+            	desktop.centerMapGlobe(((Unit)mission.getPeople().toArray()[0]).getCoordinates());
         }
     }
 }

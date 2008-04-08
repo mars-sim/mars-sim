@@ -168,7 +168,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		Unit result = null;
 		double mostCapacity = 0D;
 		
-		UnitIterator i = inv.findAllUnitsOfClass(containerType).iterator();
+		Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
 		while (i.hasNext()) {
 			Unit container = i.next();
 			try {
@@ -257,7 +257,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			
 			if (pInv.containsUnitClass(containerType)) {
 				// Load containers in rover.
-				UnitIterator i = pInv.findAllUnitsOfClass(containerType).iterator();
+				Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
 				while (i.hasNext()) {
 					Unit container = i.next();
 					pInv.retrieveUnit(container);

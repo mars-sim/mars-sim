@@ -1,7 +1,10 @@
 package org.mars_sim.msp.simulation;
 
+import java.util.Collection;
 import java.util.Set;
+
 import junit.framework.TestCase;
+
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Phase;
@@ -555,7 +558,7 @@ public class TestInventory extends TestCase {
 		Unit testUnit2 = new MockUnit1();
 		inventory.storeUnit(testUnit1);
 		inventory.storeUnit(testUnit2);
-		UnitCollection units = inventory.findAllUnitsOfClass(MockUnit1.class);
+		Collection units = inventory.findAllUnitsOfClass(MockUnit1.class);
 		assertEquals("Found correct number of units.", 2, units.size());
 		assertTrue("Found test unit 1", units.contains(testUnit1));
 		assertTrue("Found test unit 2", units.contains(testUnit2));
@@ -564,7 +567,7 @@ public class TestInventory extends TestCase {
 	public void testInventoryFindAllUnitsFail() throws Exception {
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(20D);
-		UnitCollection units = inventory.findAllUnitsOfClass(MockUnit1.class);
+		Collection units = inventory.findAllUnitsOfClass(MockUnit1.class);
 		assertEquals("Could not fine units of class", 0, units.size());
 	}
 	

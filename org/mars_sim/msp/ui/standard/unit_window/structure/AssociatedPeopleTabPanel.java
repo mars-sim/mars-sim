@@ -7,13 +7,29 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.ImageLoader;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
@@ -26,7 +42,7 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
 	// Data members
 	private DefaultListModel populationListModel;
 	private JList populationList;
-	private PersonCollection populationCache;
+	private Collection populationCache;
 
 	/**
 	 * Constructor
@@ -59,8 +75,8 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
         
 		// Create population list model
 		populationListModel = new DefaultListModel();
-		populationCache = new PersonCollection(settlement.getAllAssociatedPeople());
-		PersonIterator i = populationCache.iterator();
+		populationCache = settlement.getAllAssociatedPeople();
+		Iterator<Person> i = populationCache.iterator();
 		while (i.hasNext()) populationListModel.addElement(i.next());
         
 		// Create population list
@@ -84,9 +100,9 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
 
 		// Update population list
 		if (!populationCache.equals(settlement.getAllAssociatedPeople())) {
-			populationCache = new PersonCollection(settlement.getAllAssociatedPeople());
+			populationCache = settlement.getAllAssociatedPeople();
 			populationListModel.clear();
-			PersonIterator i = populationCache.iterator();
+			Iterator<Person> i = populationCache.iterator();
 			while (i.hasNext()) populationListModel.addElement(i.next());
 		}
 	}

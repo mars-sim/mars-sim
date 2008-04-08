@@ -8,6 +8,8 @@ package org.mars_sim.msp.simulation.structure;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
@@ -153,7 +155,7 @@ public class Resupply implements Serializable {
 		}
 		
 		// Deliver immigrants.
-		PersonCollection immigrants = new PersonCollection();
+		Collection immigrants = new ConcurrentLinkedQueue();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		for (int x = 0; x < newImmigrantNum; x++) {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();

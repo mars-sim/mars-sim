@@ -1,16 +1,18 @@
 package org.mars_sim.msp.simulation.structure.goods;
 
-import org.mars_sim.msp.simulation.structure.MockSettlement;
-import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import junit.framework.TestCase;
+
+import org.mars_sim.msp.simulation.structure.MockSettlement;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 public class TestCreditManager extends TestCase {
 
 	public void testSetCredit() {
 		try {
-			SettlementCollection settlements = new SettlementCollection();
+		    	Collection settlements = new ConcurrentLinkedQueue();
 			Settlement settlement1 = new MockSettlement();
 			settlements.add(settlement1);
 			Settlement settlement2 = new MockSettlement();

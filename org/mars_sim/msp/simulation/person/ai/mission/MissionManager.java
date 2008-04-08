@@ -50,7 +50,7 @@ public class MissionManager implements Serializable {
     private double totalProbCache;
 
     // Array of potential new missions
-    Class[] potentialMissions = { TravelToSettlement.class, Exploration.class, 
+    Class[] potentialMissions = { TravelToSettlement.class, 
     		CollectIce.class, RescueSalvageVehicle.class, 
     		Trade.class, CollectRegolith.class };
     

@@ -82,7 +82,7 @@ public final class JobManager implements Serializable {
 		double result = job.getSettlementNeed(settlement);
 		
 		// Check all people associated with the settlement.
-		PersonIterator i = settlement.getAllAssociatedPeople().iterator();
+		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (person.getMind().getJob() == job) result-= job.getCapability(person);

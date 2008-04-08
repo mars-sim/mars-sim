@@ -14,7 +14,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -31,8 +35,6 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.RoverMission;
@@ -129,7 +131,7 @@ public class InfoPanel extends JPanel {
         
         // Create member list model
         memberListModel = new DefaultListModel();
-        PersonIterator i = mission.getPeople().iterator();
+        Iterator<Person> i = mission.getPeople().iterator();
         while (i.hasNext()) memberListModel.addElement(i.next());
         
         // Create member list
@@ -252,14 +254,14 @@ public class InfoPanel extends JPanel {
 	 * Gets a collection of people available to be added to the mission.
 	 * @return collection of available people.
 	 */
-	private PersonCollection getAvailablePeople() {
-		PersonCollection result = new PersonCollection();
+	private Collection getAvailablePeople() {
+		Collection result = new ConcurrentLinkedQueue();
 	
 		// Add people in the settlement or rover.
 		if (mission instanceof RoverMission) {
 			Rover rover = ((RoverMission) mission).getRover();
 			String phase = mission.getPhase();
-			PersonCollection peopleAtLocation = null;
+			Collection peopleAtLocation = null;
 			if (phase.equals(RoverMission.EMBARKING) || phase.equals(RoverMission.DISEMBARKING)) {
 				// Add available people at the local settlement.
 				peopleAtLocation = rover.getSettlement().getInhabitants();
@@ -270,7 +272,7 @@ public class InfoPanel extends JPanel {
 			}
 			
 			// Add people.
-			PersonIterator i = peopleAtLocation.iterator();
+			Iterator<Person> i = peopleAtLocation.iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
 				if (!memberListModel.contains(person)) result.add(person);
@@ -280,7 +282,7 @@ public class InfoPanel extends JPanel {
 		// Add people who are outside at this location as well.
 		try {
 			Coordinates missionLocation = mission.getCurrentMissionLocation();
-			PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
+			Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
 				if (person.getLocationSituation().equals(Person.OUTSIDE)) {

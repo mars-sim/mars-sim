@@ -13,6 +13,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -25,8 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
@@ -49,7 +50,7 @@ class AddMembersDialog extends JDialog {
 	 * @param memberListModel the member list model in the edit mission dialog.
 	 * @param availablePeople the available people to add.
 	 */
-	public AddMembersDialog(Dialog owner, Mission mission, DefaultListModel memberListModel, PersonCollection availablePeople) {
+	public AddMembersDialog(Dialog owner, Mission mission, DefaultListModel memberListModel, Collection availablePeople) {
 		// Use JDialog constructor
 		super(owner, "Add Members", true);
 		
@@ -78,7 +79,7 @@ class AddMembersDialog extends JDialog {
         
         // Create available list model
         availableListModel = new DefaultListModel();
-        PersonIterator i = availablePeople.iterator();
+        Iterator<Person> i = availablePeople.iterator();
         while (i.hasNext()) availableListModel.addElement(i.next());
         
         // Create member list

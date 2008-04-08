@@ -6,14 +6,24 @@
  */
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.util.Collection;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.social.*;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
 
@@ -81,7 +91,7 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 	private class RelationshipTableModel extends AbstractTableModel {
 	
 		RelationshipManager manager;
-		PersonCollection knownPeople;
+		Collection knownPeople;
 		Person person;
 		
 		private RelationshipTableModel(Person person) {
@@ -112,16 +122,16 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 		}
 		
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return knownPeople.get(row);
+			if (column == 0) return knownPeople.toArray()[row];
 			else if (column == 1) {
-				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.get(row));
+				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);
 				return getRelationshipString(opinion);
 			} 
 			else return "unknown";
 		}
 		
 		public void update() {
-			PersonCollection newKnownPeople = manager.getAllKnownPeople(person);
+			Collection newKnownPeople = manager.getAllKnownPeople(person);
 			if (!knownPeople.equals(newKnownPeople)) {
 				knownPeople = newKnownPeople;
 				fireTableDataChanged();

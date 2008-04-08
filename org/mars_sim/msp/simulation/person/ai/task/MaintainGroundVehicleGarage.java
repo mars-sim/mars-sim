@@ -9,17 +9,19 @@ package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.RandomUtil;
-import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -33,8 +35,6 @@ import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMain
 import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
@@ -125,7 +125,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         try {
         	// Get all vehicles requiring maintenance.
         	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-        		VehicleIterator i = getAllVehicleCandidates(person).iterator();
+        		Iterator<Vehicle> i = getAllVehicleCandidates(person).iterator();
         		while (i.hasNext()) {
         			Vehicle vehicle = i.next();
         			MalfunctionManager manager = vehicle.getMalfunctionManager();
@@ -157,7 +157,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
 					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) garageSpace = true;
 					
-					VehicleIterator i = garage.getVehicles().iterator();
+					Iterator<Vehicle> i = garage.getVehicles().iterator();
 					while (i.hasNext()) {
 						if (i.next().isReservedForMaintenance()) needyVehicleInGarage = true;
 					}
@@ -305,11 +305,11 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @param person person checking.
      * @return collection of ground vehicles available for maintenance.
      */
-    private static VehicleCollection getAllVehicleCandidates(Person person) {
-		VehicleCollection result = new VehicleCollection();
+    private static Collection getAllVehicleCandidates(Person person) {
+		Collection result = new ConcurrentLinkedQueue();
         
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			VehicleIterator vI = person.getSettlement().getParkedVehicles().iterator();
+			Iterator<Vehicle> vI = person.getSettlement().getParkedVehicles().iterator();
 			while (vI.hasNext()) {
 				Vehicle vehicle = vI.next();
 				if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
@@ -331,11 +331,11 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         GroundVehicle result = null;
 
         // Find all vehicles that can be maintained.
-        VehicleCollection availableVehicles = getAllVehicleCandidates(person);
+        Collection availableVehicles = getAllVehicleCandidates(person);
         
         // Determine total probability weight.
         double totalProbWeight = 0D;
-        VehicleIterator i = availableVehicles.iterator();
+        Iterator<Vehicle> i = availableVehicles.iterator();
         while (i.hasNext()) {
             totalProbWeight += getProbabilityWeight(i.next());
         }
@@ -344,7 +344,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         double rand = RandomUtil.getRandomDouble(totalProbWeight);
         
         // Determine which vehicle was picked.
-        VehicleIterator i2 = availableVehicles.iterator();
+        Iterator<Vehicle> i2 = availableVehicles.iterator();
         while (i2.hasNext() && (result == null)) {
             Vehicle vehicle = i2.next();
             double probWeight = getProbabilityWeight(vehicle);

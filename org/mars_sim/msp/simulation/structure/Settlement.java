@@ -7,19 +7,20 @@
 
 package org.mars_sim.msp.simulation.structure;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Airlock;
+import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
@@ -34,7 +35,6 @@ import org.mars_sim.msp.simulation.structure.building.function.EVA;
 import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 
 
 
@@ -134,10 +134,10 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     }
 
     /** Gets a collection of the inhabitants of the settlement.
-     *  @return PersonCollection of inhabitants
+     *  @return Collection of inhabitants
      */
-    public PersonCollection getInhabitants() {
-        return getInventory().getContainedUnits().getPeople();
+    public Collection getInhabitants() {
+        return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
     
     /** Gets the current available population capacity
@@ -152,9 +152,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      *  @return array of inhabitants
      */
     public Person[] getInhabitantArray() {
-        PersonCollection people = getInhabitants();
+        Collection people = getInhabitants();
         Person[] personArray = new Person[people.size()];
-        PersonIterator i = people.iterator();
+        Iterator<Person> i = people.iterator();
         int count = 0;
         while (i.hasNext()) {
             personArray[count] = i.next();
@@ -164,10 +164,10 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     }
 
     /** Gets a collection of vehicles parked at the settlement.
-     *  @return VehicleCollection of parked vehicles
+     *  @return Collection of parked vehicles
      */
-    public VehicleCollection getParkedVehicles() {
-        return getInventory().getContainedUnits().getVehicles();
+    public Collection getParkedVehicles() {
+        return CollectionUtils.getVehicle(getInventory().getContainedUnits());
     }
 
     /** Gets the number of vehicles parked at the settlement.
@@ -301,7 +301,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
 		if (overCrowding > 0) {
 			double stressModifier = .1D * overCrowding * time;
-			PersonIterator i = getInhabitants().iterator();
+			Iterator<Person> i = getInhabitants().iterator();
 			while (i.hasNext()) {
 				PhysicalCondition condition = i.next().getPhysicalCondition();
 				condition.setStress(condition.getStress() + stressModifier);
@@ -345,11 +345,11 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public PersonCollection getAffectedPeople() {
-        PersonCollection people = new PersonCollection(getInhabitants());
+    public Collection getAffectedPeople() {
+        Collection people = CollectionUtils.getPerson(getInhabitants());
 
         // Check all people.
-        PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
+        Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
         while (i.hasNext()) {
             Person person = i.next();
             Task task = person.getMind().getTaskManager().getTask();
@@ -443,10 +443,10 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * Gets all people associated with this settlement, even if they are out on missions.
      * @return collection of associated people.
      */
-    public PersonCollection getAllAssociatedPeople() {
-    	PersonCollection result = new PersonCollection();
+    public Collection getAllAssociatedPeople() {
+    	Collection result = new ConcurrentLinkedQueue();
     	
-    	PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator();
+    	Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
     	while (i.hasNext()) {
     		Person person = i.next();
     		if (person.getAssociatedSettlement() == this) result.add(person);
@@ -459,8 +459,8 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * Gets all vehicles associated with this settlement, even if they are out on missions.
      * @return collection of associated vehicles.
      */
-    public VehicleCollection getAllAssociatedVehicles() {
-    	VehicleCollection result = getParkedVehicles();
+    public Collection getAllAssociatedVehicles() {
+    	Collection result = getParkedVehicles();
     	
     	// Also add vehicle mission vehicles not parked at settlement.
 		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(this).iterator();

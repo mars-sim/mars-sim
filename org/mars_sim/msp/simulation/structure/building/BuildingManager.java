@@ -336,7 +336,7 @@ public class BuildingManager implements Serializable {
 			while (i.hasNext()) {
 				LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(LifeSupport.NAME);
 				double buildingRelationships = 0D;
-				PersonIterator j = lifeSupport.getOccupants().iterator();
+				Iterator<Person> j = lifeSupport.getOccupants().iterator();
 				while (j.hasNext()) {
 					Person occupant = j.next();
 					if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
@@ -350,7 +350,7 @@ public class BuildingManager implements Serializable {
 				Building building = i.next();
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				double buildingRelationships = 0D;
-				PersonIterator j = lifeSupport.getOccupants().iterator();
+				Iterator<Person> j = lifeSupport.getOccupants().iterator();
 				while (j.hasNext()) {
 					Person occupant = j.next();
 					if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);

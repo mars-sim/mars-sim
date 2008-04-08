@@ -8,7 +8,9 @@
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,15 +20,11 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.job.Driver;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
@@ -113,10 +111,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public TravelToSettlement(PersonCollection members, Settlement startingSettlement, 
+    public TravelToSettlement(Collection members, Settlement startingSettlement, 
     		Settlement destinationSettlement, Rover rover, String description) throws MissionException {
     	// Use RoverMission constructor.
-    	super(description, (Person) members.get(0), 1, rover);
+    	super(description, (Person) members.toArray()[0], 1, rover);
     	
     	// Initialize data members
     	setStartingSettlement(startingSettlement);
@@ -132,7 +130,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     		getDestinationSettlement().getName()));
     	
     	// Add mission members.
-    	PersonIterator i = members.iterator();
+    	Iterator<Person> i = members.iterator();
     	while (i.hasNext()) i.next().getMind().setMission(this);
     	
         // Set initial phase
@@ -283,7 +281,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     	Map<Settlement, Double> result = new HashMap<Settlement, Double>();
     	
     	UnitManager unitManager = startingSettlement.getUnitManager();
-    	SettlementIterator i = new SettlementCollection(unitManager.getSettlements()).iterator();
+    	Iterator<Settlement> i = unitManager.getSettlements().iterator();
+    	
 		while (i.hasNext()) {
 			Settlement settlement = i.next();
 			double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
@@ -368,7 +367,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			
 			// Add modifier for average relationship with inhabitants of destination settlement.
 			if (getDestinationSettlement() != null) {
-				PersonCollection destinationInhabitants = getDestinationSettlement().getAllAssociatedPeople();
+				Collection destinationInhabitants = getDestinationSettlement().getAllAssociatedPeople();
 				double destinationSocialModifier = (relationshipManager.getAverageOpinionOfPeople(person, 
 						destinationInhabitants) - 50D) / 50D;
 				result += destinationSocialModifier;
@@ -376,8 +375,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			
 			// Subtract modifier for average relationship with non-mission inhabitants of starting settlement.
 			if (getStartingSettlement() != null) {
-				PersonCollection startingInhabitants = getStartingSettlement().getAllAssociatedPeople();
-				PersonIterator i = startingInhabitants.iterator();
+				Collection startingInhabitants = getStartingSettlement().getAllAssociatedPeople();
+				Iterator<Person> i = startingInhabitants.iterator();
 				while (i.hasNext()) {
 					if (hasPerson(i.next())) i.remove();
 				}
@@ -403,7 +402,13 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		// Make sure there is at least one person left at the starting settlement.
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
 			// Remove last person added to the mission.
-			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
+		    	Object [] array = getPeople().toArray();
+		    	int amount = getPeopleNumber() - 1;
+		    	Person lastPerson = null;
+		    	if(amount >= 0 && amount < array.length){
+		    	    lastPerson = (Person) array[amount];
+		    	}
+	
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
 				if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");

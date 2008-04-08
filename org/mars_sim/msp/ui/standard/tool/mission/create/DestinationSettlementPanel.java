@@ -12,6 +12,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,8 +27,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /**
@@ -202,14 +202,14 @@ class DestinationSettlementPanel extends WizardPanel {
     	void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();    		
-    		SettlementCollection settlements = Simulation.instance().getUnitManager().getSettlements();
+    		Collection settlements = Simulation.instance().getUnitManager().getSettlements();
     		settlements.remove(startingSettlement);
     		
     		// Add all settlements sorted by distance from mission starting point.
     		while (settlements.size() > 0) {
     			double smallestDistance = Double.MAX_VALUE;
     			Settlement smallestDistanceSettlement = null;
-    			SettlementIterator i = settlements.iterator();
+    			Iterator<Settlement> i = settlements.iterator();
     			while (i.hasNext()) {
     				Settlement settlement = i.next();
     				double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());

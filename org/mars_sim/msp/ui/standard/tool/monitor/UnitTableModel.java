@@ -7,11 +7,14 @@
 
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
-import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.UnitCollection;
-import org.mars_sim.msp.simulation.UnitIterator;
-import org.mars_sim.msp.simulation.UnitListener;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitListener;
 
 /**
  * The UnitTableModel that maintains a table model of Units objects.
@@ -21,7 +24,7 @@ abstract public class UnitTableModel extends AbstractTableModel
             implements MonitorModel, UnitListener {
 
     // Data members
-    private UnitCollection units;   // Collection of units
+    private Collection units;   // Collection of units
     private String name;            // Model name
     private String statusSuffix;    // Suffix to added to status message
     private String columnNames[];   // Names of the displayed columns
@@ -41,7 +44,7 @@ abstract public class UnitTableModel extends AbstractTableModel
         // Initialize data members
         this.name = name;
         this.statusSuffix = suffix;
-        this.units = new UnitCollection();
+        this.units = new ConcurrentLinkedQueue();
         this.columnNames = names;
         this.columnTypes = types;
     }
@@ -66,7 +69,8 @@ abstract public class UnitTableModel extends AbstractTableModel
      */
     protected void removeUnit(Unit oldUnit) {
         if (units.contains(oldUnit)) {
-            int index = units.indexOf(oldUnit);
+            int index = getIndex(oldUnit);
+            
             units.remove(oldUnit);
             oldUnit.removeUnitListener(this);
 
@@ -75,12 +79,29 @@ abstract public class UnitTableModel extends AbstractTableModel
         }
     }
     
+    private int getIndex(Unit unit) {
+	Object[] array = units.toArray();
+	int size = array.length;
+	int result = 0;
+	
+	for(int i = 0; i < size; i++) {
+	    Unit temp = (Unit) array[i];
+	    
+	    if(temp.equals(unit)) {
+		result = i;
+		break;
+	    }
+	}
+	
+	return result;
+    }
+    
     /**
      * Adds a collection of units to the model.
      * @param newUnits the units to add.
      */
-    protected void addAll(UnitCollection newUnits) {
-    	UnitIterator i = newUnits.iterator();
+    protected void addAll(Collection newUnits) {
+    	Iterator<Unit> i = newUnits.iterator();
     	while (i.hasNext()) addUnit(i.next());
     }
     
@@ -88,7 +109,7 @@ abstract public class UnitTableModel extends AbstractTableModel
      * Clears out units from the model.
      */
     protected void clear() {
-    	UnitIterator i = units.iterator();
+    	Iterator<Unit> i = units.iterator();
     	while (i.hasNext()) i.next().removeUnitListener(this);
     	units.clear();
     	fireTableDataChanged();
@@ -175,7 +196,8 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return Unit matching row
      */
     protected Unit getUnit(int index) {
-        return (Unit)units.get(index);
+	Object [] array = units.toArray();
+        return (Unit)array[index];
     }
     
     /**
@@ -184,8 +206,10 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return the row index or -1 if not in table model.
      */
     protected int getUnitIndex(Unit unit) {
-    	if ((units != null) && units.contains(unit)) return units.indexOf(unit);
-    	else return -1;
+    	if ((units != null) && units.contains(unit)) 
+    	    return getIndex(unit);
+    	else 
+    	    return -1;
     }
 
     /**
@@ -194,7 +218,8 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return Unit at specified position.
      */
     public Object getObject(int row) {
-        return units.get(row);
+	Object array[] = units.toArray();
+        return array[row];
     }
     
     /**

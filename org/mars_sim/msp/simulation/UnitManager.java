@@ -15,15 +15,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
 import org.mars_sim.msp.simulation.person.PersonConfig;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.job.JobManager;
@@ -32,13 +31,10 @@ import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.vehicle.Rover;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
+
 
 /** The UnitManager class contains and manages all units in virtual
  *  Mars. It has methods for getting information about units. It is
@@ -59,7 +55,7 @@ public class UnitManager implements Serializable {
     public static final String EQUIPMENT = "equipment";
     
     // Data members
-    private UnitCollection units; // Collection of all units
+    private Collection units; // Collection of all units
     private List<String> settlementNames; // List of possible settlement names
     private List<String> vehicleNames; // List of possible vehicle names
     private List<String> personMaleNames; // List of possible male person names
@@ -73,7 +69,7 @@ public class UnitManager implements Serializable {
     UnitManager() {
    
         // Initialize unit collection
-        units = new UnitCollection();
+        units = new ConcurrentLinkedQueue();
         listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
         equipmentNumberMap = new HashMap<String, Integer>();
     }
@@ -157,7 +153,7 @@ public class UnitManager implements Serializable {
     public void addUnit(Unit unit) {
         if (!units.contains(unit)) {
             units.add(unit);
-            UnitIterator i = unit.getInventory().getContainedUnits().iterator();
+            Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
             while (i.hasNext()) addUnit(i.next());
             
             // Fire unit manager event.
@@ -181,13 +177,13 @@ public class UnitManager implements Serializable {
         
         if (unitType.equals(SETTLEMENT)) {
             initialNameList = settlementNames;
-            SettlementIterator si = getSettlements().iterator();
+            Iterator<Unit> si = getSettlements().iterator();
             while (si.hasNext()) usedNames.add(si.next().getName());
             unitName = "Settlement";
         }
         else if (unitType.equals(VEHICLE)) {
             initialNameList = vehicleNames;
-            VehicleIterator vi = getVehicles().iterator();
+            Iterator<Unit> vi = getVehicles().iterator();
             while (vi.hasNext()) usedNames.add(vi.next().getName());
             unitName = "Vehicle";
         }
@@ -195,7 +191,7 @@ public class UnitManager implements Serializable {
         	if (Person.MALE.equals(gender)) initialNameList = personMaleNames;
         	else if (Person.FEMALE.equals(gender)) initialNameList = personFemaleNames;
         	else throw new IllegalArgumentException("Improper gender for person unitType: " + gender);
-            PersonIterator pi = getPeople().iterator();
+        	Iterator<Unit> pi = getPeople().iterator();
             while (pi.hasNext()) usedNames.add(pi.next().getName());
             unitName = "Person";
         }
@@ -272,7 +268,7 @@ public class UnitManager implements Serializable {
 		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
-    		SettlementIterator i = getSettlements().iterator();
+    	       Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			List vehicleTypes = config.getTemplateVehicleTypes(settlement.getTemplate());
@@ -297,7 +293,7 @@ public class UnitManager implements Serializable {
 		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
-    		SettlementIterator i = getSettlements().iterator();
+    	       Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			Map equipmentMap = config.getTemplateEquipment(settlement.getTemplate());
@@ -329,7 +325,7 @@ public class UnitManager implements Serializable {
 		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
-    		SettlementIterator i = getSettlements().iterator();
+    	    	Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			Map resourceMap = config.getTemplateResources(settlement.getTemplate());
@@ -358,7 +354,7 @@ public class UnitManager implements Serializable {
     	SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
-    		SettlementIterator i = getSettlements().iterator();
+    	    	Iterator<Settlement>i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			Map<String, Integer> partMap = config.getTemplateParts(settlement.getTemplate());
@@ -391,7 +387,7 @@ public class UnitManager implements Serializable {
 		
 		// Randomly create all remaining people to fill the settlements to capacity.
     	try {
-    		SettlementIterator i = getSettlements().iterator();
+    	    	Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			
@@ -435,8 +431,15 @@ public class UnitManager implements Serializable {
 				// Get person's settlement or randomly determine it if not configured.
 				String settlementName = personConfig.getConfiguredPersonSettlement(x);
 				Settlement settlement = null;
-				if (settlementName != null) settlement = getSettlements().getSettlement(settlementName);
-				else settlement = getSettlements().getRandomSettlement();
+				if (settlementName != null) {
+				    Collection col = CollectionUtils.getSettlement(units);
+				    settlement = CollectionUtils.getSettlement(col,settlementName);
+				}
+				else {
+				    Collection col = CollectionUtils.getSettlement(units);
+				    settlement = CollectionUtils.getRandomRegressionSettlement(col);
+				}
+				   
 
 				// Create person and add to the unit manager.
 				Person person = new Person(name, gender, settlement);
@@ -503,7 +506,7 @@ public class UnitManager implements Serializable {
 				
 				// Get the person
 				Person person = null;
-				PersonIterator j = getPeople().iterator();
+				Iterator<Person> j = getPeople().iterator();
 				while (j.hasNext()) {
 					Person tempPerson = j.next();
 					if (tempPerson.getName().equals(name)) person = tempPerson;
@@ -519,7 +522,7 @@ public class UnitManager implements Serializable {
 						
 						// Get the other person in the relationship.
 						Person relationshipPerson = null;
-						PersonIterator k = getPeople().iterator();
+						Iterator<Person> k = getPeople().iterator();
 						while (k.hasNext()) {
 							Person tempPerson = k.next();
 							if (tempPerson.getName().equals(relationshipName)) relationshipPerson = tempPerson;
@@ -553,7 +556,7 @@ public class UnitManager implements Serializable {
      * @throws Exception if error during time passing.
      */
     void timePassing(double time) throws Exception {
-        UnitIterator i = getUnits().iterator();
+        Iterator<Unit> i = getUnits().iterator();
         while (i.hasNext()) i.next().timePassing(time);
     }
 
@@ -561,42 +564,42 @@ public class UnitManager implements Serializable {
      *  @return the number of settlements
      */
     public int getSettlementNum() {
-        return units.getSettlements().size();
+        return CollectionUtils.getSettlement(units).size();
     }
 
     /** Get settlements in vitual Mars
-     *  @return SettlementCollection of settlements
+     *  @return Collection of settlements
      */
-    public SettlementCollection getSettlements() {
-        return units.getSettlements();
+    public Collection getSettlements() {
+        return CollectionUtils.getSettlement(units);
     }
 
     /** Get number of vehicles
      *  @return the number of vehicles
      */
     public int getVehicleNum() {
-        return units.getVehicles().size();
+        return CollectionUtils.getVehicle(units).size();
     }
 
     /** Get vehicles in virtual Mars
-     *  @return VehicleCollection of vehicles
+     *  @return Collection of vehicles
      */
-    public VehicleCollection getVehicles() {
-        return units.getVehicles();
+    public Collection getVehicles() {
+        return CollectionUtils.getVehicle(units);
     }
 
     /** Get number of people
      *  @return the number of people
      */
     public int getPeopleNum() {
-        return units.getPeople().size();
+        return CollectionUtils.getPerson(units).size();
     }
 
     /** Get people in virtual Mars
-     *  @return PersonCollection of people
+     *  @return Collection of people
      */
-    public PersonCollection getPeople() {
-        return units.getPeople();
+    public Collection getPeople() {
+        return CollectionUtils.getPerson(units);
     }
     
     /**
@@ -604,7 +607,7 @@ public class UnitManager implements Serializable {
      * @return number
      */
     public int getEquipmentNum() {
-    	return CollectionUtils.getEquipment(units.getUnits()).size();
+    	return CollectionUtils.getEquipment(units).size();
     }
     
     /**
@@ -612,7 +615,7 @@ public class UnitManager implements Serializable {
      * @return collection
      */
     public Collection getEquipment() {
-    	return CollectionUtils.getEquipment(units.getUnits());
+    	return CollectionUtils.getEquipment(units);
     }
 
     /** The total number of units
@@ -623,10 +626,10 @@ public class UnitManager implements Serializable {
     }
 
     /** Get all units in virtual Mars
-     *  @return UnitColleciton of units
+     *  @return Colleciton of units
      */
-    public UnitCollection getUnits() {
-        return new UnitCollection(units);
+    public Collection getUnits() {
+        return units;
     }
     
     /**
@@ -668,7 +671,7 @@ public class UnitManager implements Serializable {
      */
 	public Unit findUnit(String name) {
 		Unit result = null;
-		UnitIterator i = units.iterator();
+		Iterator<Unit> i = units.iterator();
 		while (i.hasNext() && (result == null)) {
 			Unit unit = i.next();
 			if (unit.getName().equals(name)) result = unit;

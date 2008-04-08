@@ -8,12 +8,14 @@
 package org.mars_sim.msp.simulation;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -37,7 +39,7 @@ public class Inventory implements Serializable {
 	
     // Data members
     private Unit owner; // The unit that owns this inventory. 
-    private UnitCollection containedUnits = null; // Collection of units in inventory.
+    private Collection containedUnits = null; // Collection of units in inventory.
     private ConcurrentHashMap<ItemResource, Integer> containedItemResources = null; // Map of item resources.
     private double generalCapacity = 0D; // General mass capacity of inventory.
     private AmountResourceStorage resourceStorage = null; // Resource storage.
@@ -111,7 +113,7 @@ public class Inventory implements Serializable {
     		else {
     			if ((resourceStorage != null) && resourceStorage.hasAmountResourceCapacity(resource)) result = true;
     			else if ((containedUnits != null) && (getRemainingGeneralCapacity() > 0D)) {
-    				UnitIterator i = containedUnits.iterator();
+    				Iterator<Unit> i = containedUnits.iterator();
     				while (i.hasNext()) {
     					if (i.next().getInventory().hasAmountResourceCapacity(resource)) result = true;
     				}
@@ -144,7 +146,7 @@ public class Inventory implements Serializable {
     			if (amount < capacity) result = true;
     			else if ((containedUnits != null) && (getRemainingGeneralCapacity() > 0D)) {
     				double containedCapacity = 0D;
-    				UnitIterator i = containedUnits.iterator();
+    				Iterator<Unit> i = containedUnits.iterator();
     				while (i.hasNext()) containedCapacity += i.next().getInventory().getAmountResourceCapacity(resource);
     				if (containedCapacity > getGeneralCapacity()) containedCapacity = getGeneralCapacity();
     				capacity += containedCapacity;
@@ -177,7 +179,7 @@ public class Inventory implements Serializable {
     				if (resourceStorage != null) result += resourceStorage.getAmountResourceCapacity(resource);
     				if ((containedUnits != null) && (generalCapacity > 0D)) {
     					double containedCapacity = 0D;
-    					UnitIterator i = containedUnits.iterator();
+    					Iterator<Unit> i = containedUnits.iterator();
     					while (i.hasNext()) containedCapacity += i.next().getInventory().getAmountResourceCapacity(resource);
     					if (containedCapacity > getGeneralCapacity()) containedCapacity = getGeneralCapacity();
     					result += containedCapacity;
@@ -208,7 +210,7 @@ public class Inventory implements Serializable {
     		else {
     			if (resourceStorage != null) result += resourceStorage.getAmountResourceStored(resource);
     			if (containedUnits != null) {
-    				UnitIterator i = containedUnits.iterator();
+    			    	Iterator<Unit> i = containedUnits.iterator();
     				while (i.hasNext()) result += i.next().getInventory().getAmountResourceStored(resource);
     			}
     			if (amountResourceStoredCache == null) 
@@ -234,7 +236,7 @@ public class Inventory implements Serializable {
     			allStoredAmountResourcesCache = Collections.synchronizedSet(new HashSet<AmountResource>(1, 1));
     			if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
     			if (containedUnits != null) {
-    				UnitIterator i = containedUnits.iterator();
+    			    	Iterator<Unit> i = containedUnits.iterator();
     				while (i.hasNext()) allStoredAmountResourcesCache.addAll(i.next().getInventory().getAllAmountResourcesStored());
     			}
     			return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
@@ -257,7 +259,7 @@ public class Inventory implements Serializable {
     		else {
     			if (resourceStorage != null) result += resourceStorage.getTotalAmountResourcesStored();
     			if (containedUnits != null) {
-    				UnitIterator i = containedUnits.iterator();
+    			    	Iterator<Unit> i = containedUnits.iterator();
     				while (i.hasNext()) result += i.next().getInventory().getTotalAmountResourcesStored();
     			}
     			totalAmountResourcesStored = result;
@@ -286,7 +288,7 @@ public class Inventory implements Serializable {
     			if (resourceStorage != null) result += resourceStorage.getAmountResourceRemainingCapacity(resource);
     			if (useContainedUnits && (containedUnits != null)) {
     				double containedRemainingCapacity = 0D;
-    				UnitIterator i = containedUnits.iterator();
+    				Iterator<Unit> i = containedUnits.iterator();
     				while (i.hasNext()) containedRemainingCapacity += i.next().getInventory().getAmountResourceRemainingCapacity(resource, true);
     				if (containedRemainingCapacity > getRemainingGeneralCapacity()) containedRemainingCapacity = getRemainingGeneralCapacity();
     				result += containedRemainingCapacity;
@@ -329,7 +331,7 @@ public class Inventory implements Serializable {
     			
     				// Store remaining resource in contained units in general capacity.
     				if (useContainedUnits && (remainingAmount > 0D) && (containedUnits != null)) {
-    					UnitIterator i = containedUnits.iterator();
+    					Iterator<Unit> i = containedUnits.iterator();
     					while (i.hasNext()) {
     						Inventory unitInventory = i.next().getInventory();
     						double remainingUnitCapacity = unitInventory.getAmountResourceRemainingCapacity(resource, true);
@@ -381,7 +383,7 @@ public class Inventory implements Serializable {
     			
     			// Retrieve remaining resource from contained units.
     			if ((remainingAmount > 0D) && (containedUnits != null)) {
-       				UnitIterator i = containedUnits.iterator();
+    			Iterator<Unit> i = containedUnits.iterator();
     	    		while (i.hasNext()) {
     	    			Inventory unitInventory = i.next().getInventory();
     	    			double resourceStored = unitInventory.getAmountResourceStored(resource);
@@ -465,7 +467,7 @@ public class Inventory implements Serializable {
     			if (containedItemResources.get(resource) > 0) result = true;
     		}
     		else if (containedUnits != null) {
-    			UnitIterator i = containedUnits.iterator();
+    		        Iterator<Unit> i = containedUnits.iterator();
     			while (i.hasNext()) {
     				if (i.next().getInventory().hasItemResource(resource)) result = true;
     			}
@@ -489,7 +491,7 @@ public class Inventory implements Serializable {
     		if ((containedItemResources != null) && containedItemResources.containsKey(resource)) 
     			result += containedItemResources.get(resource);
     		if (containedUnits != null) {
-    			UnitIterator i = containedUnits.iterator();
+    			Iterator<Unit> i = containedUnits.iterator();
     			while (i.hasNext()) result += i.next().getInventory().getItemResourceNum(resource);
     		}
     		return result;
@@ -580,7 +582,7 @@ public class Inventory implements Serializable {
     		
     		// Retrieve resources from contained units.
 			if ((remainingNum > 0) && (containedUnits != null)) {
-   				UnitIterator i = containedUnits.iterator();
+			    Iterator<Unit> i = containedUnits.iterator();
 	    		while (i.hasNext()) {
 	    			Inventory unitInventory = i.next().getInventory();
 	    			if (unitInventory.hasItemResource(resource)) {
@@ -610,7 +612,7 @@ public class Inventory implements Serializable {
     	try {
     		double totalMass = 0D;
     		if (containedUnits != null) {
-    			UnitIterator unitIt = containedUnits.iterator();
+    		        Iterator<Unit> unitIt = containedUnits.iterator();
     			while (unitIt.hasNext()) totalMass += unitIt.next().getMass();
     		}
     		return totalMass;
@@ -622,11 +624,14 @@ public class Inventory implements Serializable {
 
     /** 
      * Gets a collection of all the stored units.
-     * @return UnitCollection of all units
+     * @return Collection of all units
      */
-    public UnitCollection getContainedUnits() {
-    	if (containedUnits != null) return new UnitCollection(containedUnits);
-    	return new UnitCollection();
+    public Collection getContainedUnits() {
+    	if (containedUnits != null) {
+    	    return containedUnits;
+    	}
+    	
+    	return new ConcurrentLinkedQueue();
     }
     
     /** 
@@ -651,7 +656,7 @@ public class Inventory implements Serializable {
     private boolean containsUnitClassLocal(Class unitClass) {
     	boolean result = false;
     	if (containedUnits != null) {
-    		UnitIterator i = containedUnits.iterator();
+    		Iterator<Unit> i = containedUnits.iterator();
     		while (i.hasNext()) {
     			if (unitClass.isInstance(i.next())) result = true;
     		}
@@ -681,7 +686,7 @@ public class Inventory implements Serializable {
     public Unit findUnitOfClass(Class unitClass) {
     	Unit result = null;
         if (containsUnitClass(unitClass)) {
-            UnitIterator i = containedUnits.iterator();
+            Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unitClass.isInstance(unit)) result = unit;
@@ -695,10 +700,10 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return collection of units or empty collection if none.
      */
-    public UnitCollection findAllUnitsOfClass(Class unitClass) {
-    	UnitCollection result = new UnitCollection();
+    public Collection findAllUnitsOfClass(Class unitClass) {
+    	Collection result = new ConcurrentLinkedQueue();
         if (containsUnitClass(unitClass)) {
-            UnitIterator i = containedUnits.iterator();
+            Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unitClass.isInstance(unit)) result.add(unit);
@@ -715,7 +720,7 @@ public class Inventory implements Serializable {
     public int findNumUnitsOfClass(Class unitClass) {
     	int result = 0;
     	if (containsUnitClass(unitClass)) {
-    		UnitIterator i = containedUnits.iterator();
+    	    	Iterator<Unit> i = containedUnits.iterator();
     		while (i.hasNext()) {
     			Unit unit = i.next();
     			if (unitClass.isInstance(unit)) result++;
@@ -734,7 +739,7 @@ public class Inventory implements Serializable {
     public int findNumEmptyUnitsOfClass(Class unitClass) throws InventoryException {
     	int result = 0;
     	if (containsUnitClass(unitClass)) {
-    		UnitIterator i = containedUnits.iterator();
+    	    	Iterator<Unit> i = containedUnits.iterator();
     		while (i.hasNext()) {
     			Unit unit = i.next();
     			if (unitClass.isInstance(unit)) {
@@ -776,7 +781,10 @@ public class Inventory implements Serializable {
      */
     public void storeUnit(Unit unit) throws InventoryException {
         if (canStoreUnit(unit)) {
-        	if (containedUnits == null) containedUnits = new UnitCollection();
+        	if (containedUnits == null) {
+        	    containedUnits = new ConcurrentLinkedQueue();
+        	}
+        	
             containedUnits.add(unit);
             unit.setContainerUnit(owner);
             
@@ -845,7 +853,7 @@ public class Inventory implements Serializable {
      */
     public void setCoordinates(Coordinates newLocation) {
     	if (containedUnits != null) {
-    		UnitIterator i = containedUnits.iterator();
+    	    	Iterator<Unit> i = containedUnits.iterator();
     		while (i.hasNext()) {
     			i.next().setCoordinates(newLocation);
     		}

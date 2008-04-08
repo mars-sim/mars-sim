@@ -1,6 +1,9 @@
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Simulation;
@@ -8,8 +11,6 @@ import org.mars_sim.msp.simulation.UnitEvent;
 import org.mars_sim.msp.simulation.UnitListener;
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementCollection;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
@@ -19,7 +20,7 @@ public class TradeTableModel extends AbstractTableModel implements
 	
 	// Data members
 	List<Good> goodsList;
-	SettlementCollection settlements;
+	Collection settlements;
 	
 	/**
 	 * Constructor
@@ -33,7 +34,7 @@ public class TradeTableModel extends AbstractTableModel implements
 		settlements = Simulation.instance().getUnitManager().getSettlements();
 		
 		// Add table as listener to each settlement.
-		SettlementIterator i = settlements.iterator();
+		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) i.next().addUnitListener(this);
 	}
 	
@@ -44,7 +45,7 @@ public class TradeTableModel extends AbstractTableModel implements
 
 	public void destroy() {
 		// Remove as listener for all settlements.
-		SettlementIterator i = settlements.iterator();
+		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) i.next().removeUnitListener(this);
 	}
 
@@ -72,7 +73,7 @@ public class TradeTableModel extends AbstractTableModel implements
     public String getColumnName(int columnIndex) {
     	if (columnIndex == 0) return "Trade Good";
     	else if (columnIndex == 1) return "Category";
-    	else return settlements.get(columnIndex - 2).getName();
+    	else return ((Settlement)settlements.toArray()[columnIndex - 2]).getName();
     }
     
     /**
@@ -98,7 +99,7 @@ public class TradeTableModel extends AbstractTableModel implements
 		else if (columnIndex == 1) return (getGoodCategory((Good) goodsList.get(rowIndex)));
 		else {
 			try {
-				Settlement settlement = (Settlement) settlements.get(columnIndex - 2);
+				Settlement settlement = (Settlement) settlements.toArray()[columnIndex - 2];
 				Good good = (Good) goodsList.get(rowIndex);
 				double result = settlement.getGoodsManager().getGoodValuePerItem(good);
 				return new Double(result);

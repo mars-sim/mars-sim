@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -26,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
@@ -212,7 +214,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 						navpointLayer.setSelectedNavpoint(null);
 						navpointTableModel.updateNavpoints();
 					}
-					mapPane.showMap(currentMission.getPeople().get(0).getCoordinates());
+					mapPane.showMap(((Unit)currentMission.getPeople().toArray()[0]).getCoordinates());
 				}
 			}
 		}

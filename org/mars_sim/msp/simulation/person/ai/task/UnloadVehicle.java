@@ -7,7 +7,9 @@
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,9 +17,10 @@ import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.UnitIterator;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.equipment.Equipment;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
@@ -25,9 +28,9 @@ import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /** 
  * The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle.
@@ -140,7 +143,7 @@ public class UnloadVehicle extends Task implements Serializable {
     	Vehicle result = null;
     	
     	if (settlement != null) {
-    		VehicleIterator i = settlement.getParkedVehicles().iterator();
+    		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
     		while (i.hasNext()) {
     			Vehicle vehicle = i.next();
     			try {
@@ -242,7 +245,7 @@ public class UnloadVehicle extends Task implements Serializable {
         
         // Unload equipment.
         if (amountUnloading > 0D) {
-        	UnitIterator k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
+        	Iterator<Unit> k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
         	while (k.hasNext() && (amountUnloading > 0D)) {
         		Equipment equipment = (Equipment) k.next();
         		

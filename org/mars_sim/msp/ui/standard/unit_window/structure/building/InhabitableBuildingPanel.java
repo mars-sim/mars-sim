@@ -6,10 +6,22 @@
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.mars_sim.msp.simulation.person.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
@@ -22,7 +34,7 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
     private LifeSupport inhabitable; // The inhabitable building.
     private DefaultListModel inhabitantListModel;
     private JList inhabitantList;
-    private PersonCollection inhabitantCache;
+    private Collection inhabitantCache;
     private JLabel numberLabel;
     
     /**
@@ -71,7 +83,7 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
         // Create inhabitant list model
         inhabitantListModel = new DefaultListModel();
         inhabitantCache = inhabitable.getOccupants();
-        PersonIterator i = inhabitantCache.iterator();
+        Iterator i = inhabitantCache.iterator();
         while (i.hasNext()) inhabitantListModel.addElement(i.next());
         
         // Create inhabitant list
@@ -87,9 +99,9 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
         
         // Update population list and number label
         if (!inhabitantCache.equals(inhabitable.getOccupants())) {
-            inhabitantCache = new PersonCollection(inhabitable.getOccupants());
+            inhabitantCache = inhabitable.getOccupants();
             inhabitantListModel.clear();
-            PersonIterator i = inhabitantCache.iterator();
+            Iterator<Person> i = inhabitantCache.iterator();
             while (i.hasNext()) inhabitantListModel.addElement(i.next());
             
             numberLabel.setText("Number: " + inhabitantCache.size());

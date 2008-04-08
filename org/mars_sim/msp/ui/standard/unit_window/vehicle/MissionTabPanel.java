@@ -16,6 +16,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -27,8 +30,6 @@ import javax.swing.JTextArea;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.ui.standard.ImageLoader;
@@ -53,7 +54,7 @@ public class MissionTabPanel extends TabPanel {
 	// Cache
 	private String missionCache = "";
     private String missionPhaseCache = "";
-    private PersonCollection memberCache;
+    private Collection memberCache;
 	
     /**
      * Constructor
@@ -124,9 +125,9 @@ public class MissionTabPanel extends TabPanel {
         
         // Create member list model
         memberListModel = new DefaultListModel();
-        if (mission != null) memberCache = new PersonCollection(mission.getPeople());
-        else memberCache = new PersonCollection();
-        PersonIterator i = memberCache.iterator();
+        if (mission != null) memberCache = mission.getPeople();
+        else memberCache = new ConcurrentLinkedQueue();
+        Iterator i = memberCache.iterator();
         while (i.hasNext()) memberListModel.addElement(i.next());
         
         // Create member list
@@ -196,13 +197,13 @@ public class MissionTabPanel extends TabPanel {
             missionPhaseTextArea.setText(missionPhaseCache);
 		
         // Update member list
-		PersonCollection tempCollection = null;
+		Collection tempCollection = null;
 		if (mission != null) tempCollection = mission.getPeople();
-		else tempCollection = new PersonCollection();
+		else tempCollection = new ConcurrentLinkedQueue();
         if (!memberCache.equals(tempCollection)) {
-            memberCache = new PersonCollection(tempCollection);
+            memberCache = tempCollection;
             memberListModel.clear();
-            PersonIterator i = memberCache.iterator();
+            Iterator i = memberCache.iterator();
             while (i.hasNext()) memberListModel.addElement(i.next());
         }
         

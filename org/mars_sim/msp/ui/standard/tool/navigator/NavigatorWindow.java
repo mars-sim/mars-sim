@@ -463,7 +463,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     					(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
     			boolean unitsClicked = false;
 
-    			UnitIterator i = Simulation.instance().getUnitManager().getUnits().iterator();
+    			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
 
     			// Open window if unit is clicked on the map
     			while (i.hasNext()) {

@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,8 +32,6 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.UnitCollection;
-import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
@@ -230,7 +229,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     private class EquipmentTableModel extends AbstractTableModel {
         
         Inventory inventory;
-        UnitCollection equipment;
+        Collection equipment;
         
         private EquipmentTableModel(Inventory inventory) {
             this.inventory = inventory;
@@ -259,7 +258,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             if (row < equipment.size()) {
                 Unit result = null;
                 int count = 0;
-                UnitIterator i = equipment.iterator();
+                Iterator<Unit> i = equipment.iterator();
                 while (i.hasNext()) {
                     Unit item = i.next();
                     if (count == row) result = item;
@@ -271,7 +270,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
   
         public void update() {
-            UnitCollection newEquipment = inventory.findAllUnitsOfClass(Equipment.class);
+            Collection newEquipment = inventory.findAllUnitsOfClass(Equipment.class);
             if (!equipment.equals(newEquipment)) {
                 equipment = newEquipment;
                 fireTableDataChanged();

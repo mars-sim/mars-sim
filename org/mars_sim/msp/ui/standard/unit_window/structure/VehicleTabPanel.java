@@ -7,14 +7,25 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.vehicle.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
 
 /** 
  * The VehicleTabPanel is a tab panel for parked vehicle information.
@@ -23,7 +34,7 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
     
     private DefaultListModel vehicleListModel;
     private JList vehicleList;
-    private VehicleCollection vehicleCache;
+    private Collection vehicleCache;
     
     /**
      * Constructor
@@ -57,8 +68,8 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
         
         // Create vehicle list model
         vehicleListModel = new DefaultListModel();
-        vehicleCache = new VehicleCollection(settlement.getParkedVehicles());
-        VehicleIterator i = vehicleCache.iterator();
+        vehicleCache = settlement.getParkedVehicles();
+        Iterator i = vehicleCache.iterator();
         while (i.hasNext()) vehicleListModel.addElement(i.next());
         
         // Create vehicle list
@@ -75,9 +86,9 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
         
         // Update vehicle list
         if (!vehicleCache.equals(settlement.getParkedVehicles())) {
-            vehicleCache = new VehicleCollection(settlement.getParkedVehicles());
+            vehicleCache = settlement.getParkedVehicles();
             vehicleListModel.clear();
-            VehicleIterator i = vehicleCache.iterator();
+            Iterator i = vehicleCache.iterator();
             while (i.hasNext()) vehicleListModel.addElement(i.next());
         }
     }

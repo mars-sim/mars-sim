@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.goods;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,8 +21,6 @@ import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.UnitCollection;
-import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.equipment.Container;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
@@ -35,13 +34,12 @@ import org.mars_sim.msp.simulation.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.simulation.manufacture.ManufactureUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonConfig;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.job.Areologist;
 import org.mars_sim.msp.simulation.person.ai.job.Driver;
 import org.mars_sim.msp.simulation.person.ai.job.Trader;
+import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
-import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
@@ -49,7 +47,6 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.SettlementIterator;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Crop;
@@ -58,9 +55,7 @@ import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 
 /**
  * A manager for goods values at a settlement.
@@ -303,7 +298,7 @@ public class GoodsManager implements Serializable {
 	private double getVehicleDemand(AmountResource resource) throws Exception {
 		double demand = 0D;
 		if (resource.isLifeSupport() || resource.equals(AmountResource.METHANE)) {
-			VehicleIterator i = getAssociatedVehicles().iterator();
+			Iterator<Vehicle> i = getAssociatedVehicles().iterator();
 			while (i.hasNext()) demand += i.next().getInventory().getAmountResourceCapacity(resource);
 		}
 		return demand;
@@ -313,9 +308,9 @@ public class GoodsManager implements Serializable {
 	 * Gets all vehicles associated with the settlement.
 	 * @return collection of vehicles.
 	 */
-	private VehicleCollection getAssociatedVehicles() {
+	private Collection getAssociatedVehicles() {
 		// Start with parked vehicles at settlement.
-		VehicleCollection vehicles = settlement.getParkedVehicles();
+		Collection vehicles = settlement.getParkedVehicles();
 		
 		// Add associated vehicles out on missions.
 		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
@@ -567,7 +562,7 @@ public class GoodsManager implements Serializable {
 		}
 		
 		// Get amount of resource carried by people on EVA.
-		PersonIterator j = settlement.getAllAssociatedPeople().iterator();
+		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.getLocationSituation().equals(Person.OUTSIDE)) 
@@ -826,7 +821,7 @@ public class GoodsManager implements Serializable {
 		}
 		
 		// Get number of resources carried by people on EVA.
-		PersonIterator j = settlement.getAllAssociatedPeople().iterator();
+		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.getLocationSituation().equals(Person.OUTSIDE)) 
@@ -917,7 +912,7 @@ public class GoodsManager implements Serializable {
 		int result = 0;
 		
 		Inventory inv = settlement.getInventory();
-		UnitCollection equipmentList = inv.findAllUnitsOfClass(equipmentClass);
+		Collection equipmentList = inv.findAllUnitsOfClass(equipmentClass);
 		MissionManager missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
@@ -926,7 +921,7 @@ public class GoodsManager implements Serializable {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
 					Inventory vehicleInv = vehicle.getInventory();
-					UnitIterator j = vehicleInv.findAllUnitsOfClass(equipmentClass).iterator();
+					Iterator <Unit> j = vehicleInv.findAllUnitsOfClass(equipmentClass).iterator();
 					while (j.hasNext()) {
 						Unit equipment = j.next();
 						if (!equipmentList.contains(equipment)) equipmentList.add(equipment);
@@ -935,7 +930,7 @@ public class GoodsManager implements Serializable {
 			}
 		}
 		
-		UnitIterator k = equipmentList.iterator();
+		Iterator<Unit> k = equipmentList.iterator();
 		while (k.hasNext()) {
 			if (k.next().getInventory().getAllAmountResourcesStored().size() > 0D) result++;
 		}
@@ -949,7 +944,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private int getAreologistNum() {
 		int result = 0;
-		PersonIterator i = settlement.getAllAssociatedPeople().iterator();
+		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			if (i.next().getMind().getJob() instanceof Areologist) result ++;
 		}
@@ -962,7 +957,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private int getDriverNum() {
 		int result = 0;
-		PersonIterator i = settlement.getAllAssociatedPeople().iterator();
+		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			if (i.next().getMind().getJob() instanceof Driver) result ++;
 		}
@@ -975,7 +970,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private int getTraderNum() {
 		int result = 0;
-		PersonIterator i = settlement.getAllAssociatedPeople().iterator();
+		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			if (i.next().getMind().getJob() instanceof Trader) result ++;
 		}
@@ -1006,7 +1001,7 @@ public class GoodsManager implements Serializable {
 		}
 		
 		// Get number of resource carried by people on EVA.
-		PersonIterator j = settlement.getAllAssociatedPeople().iterator();
+		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
 			if (person.getLocationSituation().equals(Person.OUTSIDE)) 
@@ -1082,7 +1077,7 @@ public class GoodsManager implements Serializable {
 		
 		double currentCapacity = 0D;
 		boolean soldFlag = false;
-		VehicleIterator i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {
 			String type = i.next().getDescription().toLowerCase();
 			if (!buy && !soldFlag && (type.equals(vehicleType))) soldFlag = true;
@@ -1221,7 +1216,7 @@ public class GoodsManager implements Serializable {
 	private double getNumberOfVehiclesForSettlement(String vehicleType) throws InventoryException {
 		double number = 0D;
 		
-		VehicleIterator i = settlement.getAllAssociatedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) number += 1D;
@@ -1245,7 +1240,7 @@ public class GoodsManager implements Serializable {
 		else {
 			double bestTradeValue = 0D;
 		
-			SettlementIterator i = Simulation.instance().getUnitManager().getSettlements().iterator();
+			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement tempSettlement = i.next();
 				if (tempSettlement != settlement) {

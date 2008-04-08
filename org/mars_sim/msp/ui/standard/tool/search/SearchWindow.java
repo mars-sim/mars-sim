@@ -7,13 +7,36 @@
 
 package org.mars_sim.msp.ui.standard.tool.search;  
  
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.PersonIterator;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import org.mars_sim.msp.simulation.CollectionUtils;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
@@ -102,7 +125,9 @@ public class SearchWindow extends ToolWindow {
         // Create unit list
         unitListModel = new DefaultListModel();
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        PersonIterator people = unitManager.getPeople().sortByName().iterator();
+        Collection persons = CollectionUtils.sortByName(unitManager.getPeople());
+        Iterator people = persons.iterator();
+        
         while (people.hasNext()) unitListModel.addElement(people.next());
         unitList = new JList(unitListModel);
         unitList.setSelectedIndex(0);
@@ -165,16 +190,24 @@ public class SearchWindow extends ToolWindow {
      * Retrieve info on all units of selected category.
      */
     private void search() {
-        UnitCollection units = new UnitCollection();
+        Collection units = null;
         String category = (String) searchForSelect.getSelectedItem();
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        if (category.equals("People"))
-            units.mergePeople(unitManager.getPeople().sortByName());
-        if (category.equals("Settlements"))
-            units.mergeSettlements(unitManager.getSettlements().sortByName());
-        if (category.equals("Vehicles"))
-            units.mergeVehicles(unitManager.getVehicles().sortByName());
-        UnitIterator unitI = units.iterator();
+        if (category.equals("People")) {
+            Collection people = unitManager.getPeople();
+            units = CollectionUtils.sortByName(people);
+        }
+        if (category.equals("Settlements")) {
+            Collection settlement= unitManager.getSettlements();
+            units = CollectionUtils.sortByName(settlement);
+        }
+        
+        if (category.equals("Vehicles")) {
+            Collection vehicle = unitManager.getVehicles();
+            units = CollectionUtils.sortByName(vehicle); 
+        }
+  
+        Iterator<Unit> unitI = units.iterator();
 
         // If entered text equals the name of a unit in this category, take appropriate action.
         boolean foundUnit = false;
@@ -205,15 +238,25 @@ public class SearchWindow extends ToolWindow {
     private void changeCategory(String category) {
         // Change unitList to the appropriate category list
         unitListModel.clear();
-        UnitCollection units = new UnitCollection();
+        Collection units = null;
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        if (category.equals("People"))
-            units.mergePeople(unitManager.getPeople().sortByName());
-        if (category.equals("Settlements"))
-            units.mergeSettlements(unitManager.getSettlements().sortByName());
-        if (category.equals("Vehicles"))
-            units.mergeVehicles(unitManager.getVehicles().sortByName());
-        UnitIterator unitI = units.iterator();
+        if (category.equals("People")) {
+            Collection people = unitManager.getPeople();
+            units = CollectionUtils.sortByName(people);
+        
+        }
+        
+        if (category.equals("Settlements")) {
+            Collection settlement = unitManager.getSettlements();
+            units = CollectionUtils.sortByName(settlement);
+        }
+        
+        if (category.equals("Vehicles")) {
+            Collection vehicle= unitManager.getVehicles();
+            units = CollectionUtils.sortByName(vehicle);
+        }
+
+        Iterator<Unit> unitI = units.iterator();
 
         lockUnitList = true;
         while (unitI.hasNext()) unitListModel.addElement(unitI.next());

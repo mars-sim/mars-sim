@@ -8,12 +8,17 @@
 package org.mars_sim.msp.simulation.equipment;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.InventoryException;
+import org.mars_sim.msp.simulation.LifeSupport;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 
 /** 
@@ -211,8 +216,8 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public PersonCollection getAffectedPeople() {
-        PersonCollection people = super.getAffectedPeople();
+    public Collection getAffectedPeople() {
+        Collection people = super.getAffectedPeople();
         if (getContainerUnit() instanceof Person) {
             if (!people.contains((Person) getContainerUnit()))
                 people.add((Person) getContainerUnit());

@@ -7,14 +7,20 @@
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.PersonIterator;
-import org.mars_sim.msp.simulation.person.ai.task.*;
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.task.Task;
+import org.mars_sim.msp.simulation.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.time.MarsClock;
  
 /**
@@ -154,7 +160,7 @@ public class Farming extends Function implements Serializable {
 		if (getBuilding().hasFunction(LifeSupport.NAME)) {
 			try {
 				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
-				PersonIterator i = lifeSupport.getOccupants().iterator();
+				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Task task = i.next().getMind().getTaskManager().getTask();
 					if (task instanceof TendGreenhouse) result++;

@@ -12,7 +12,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -34,8 +36,6 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-import org.mars_sim.msp.simulation.vehicle.VehicleCollection;
-import org.mars_sim.msp.simulation.vehicle.VehicleIterator;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /**
@@ -228,13 +228,13 @@ class RendezvousVehiclePanel extends WizardPanel {
     		units.clear();
     		
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		VehicleCollection emergencyVehicles = getEmergencyBeaconVehicles();
+    		Collection emergencyVehicles = getEmergencyBeaconVehicles();
     		
     		// Sort by distance from starting settlement.
     		while (emergencyVehicles.size() > 0) {
     			Vehicle closestVehicle = null;
     			double closestDistance = Double.MAX_VALUE;
-    			VehicleIterator i = emergencyVehicles.iterator();
+    			Iterator<Vehicle> i = emergencyVehicles.iterator();
     			while (i.hasNext()) {
     				Vehicle vehicle = i.next();
     				double distance = startingSettlement.getCoordinates().getDistance(vehicle.getCoordinates());
@@ -254,9 +254,9 @@ class RendezvousVehiclePanel extends WizardPanel {
     	 * Gets a collection of all the vehicles with emergency beacons on.
     	 * @return collection of vehicles.
     	 */
-    	private VehicleCollection getEmergencyBeaconVehicles() {
-    		VehicleCollection result = new VehicleCollection();
-        	VehicleIterator i = Simulation.instance().getUnitManager().getVehicles().iterator();
+    	private Collection getEmergencyBeaconVehicles() {
+    		Collection result = new ConcurrentLinkedQueue();
+        	Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
         	while (i.hasNext()) {
         		Vehicle vehicle = i.next();
         		if (vehicle.isEmergencyBeacon()) result.add(vehicle);

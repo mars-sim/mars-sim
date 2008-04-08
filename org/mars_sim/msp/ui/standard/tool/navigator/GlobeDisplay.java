@@ -15,6 +15,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.image.MemoryImageSource;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,6 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.IntPoint;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.UnitIterator;
 import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfoFactory;
@@ -219,7 +219,7 @@ class GlobeDisplay extends JComponent implements Runnable {
      *  @param g graphics context
      */
     protected void drawUnits(Graphics g) {
-        UnitIterator i = Simulation.instance().getUnitManager().getUnits().iterator();
+        Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
         while (i.hasNext()) {
             Unit unit = i.next();
             UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);

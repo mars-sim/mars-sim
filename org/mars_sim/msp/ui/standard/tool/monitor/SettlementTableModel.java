@@ -261,8 +261,8 @@ public class SettlementTableModel extends UnitTableModel {
 	/**
 	 * Defines the source data from this table
 	 */
-	private void setSource(SettlementCollection source) {
-		SettlementIterator iter = source.iterator();
+	private void setSource(Collection source) {
+		Iterator<Settlement> iter = source.iterator();
 		while(iter.hasNext()) addUnit(iter.next());
 	}
 	

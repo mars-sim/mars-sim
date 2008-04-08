@@ -340,7 +340,7 @@ public class MedicalAssistance extends Task implements Serializable {
     	boolean result = false;
     	
     	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-    		PersonIterator i = person.getSettlement().getInhabitants().iterator();
+    		Iterator<Person> i = person.getSettlement().getInhabitants().iterator();
     		while (i.hasNext()) {
     			Person inhabitant = i.next();
     			if ((inhabitant != person) && (inhabitant.getMind().getJob()) 
@@ -350,7 +350,7 @@ public class MedicalAssistance extends Task implements Serializable {
     	else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
     		if (person.getVehicle() instanceof Rover) {
     			Rover rover = (Rover) person.getVehicle();
-    			PersonIterator i = rover.getCrew().iterator();
+    			Iterator<Person> i = rover.getCrew().iterator();
     			while (i.hasNext()) {
     				Person crewmember = i.next(); 
     				if ((crewmember != person) && (crewmember.getMind().getJob() instanceof Doctor))

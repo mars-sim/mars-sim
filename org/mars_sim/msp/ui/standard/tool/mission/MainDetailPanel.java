@@ -15,12 +15,15 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JList;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -34,8 +37,6 @@ import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitEvent;
 import org.mars_sim.msp.simulation.UnitListener;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
-import org.mars_sim.msp.simulation.person.PersonIterator;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
@@ -447,14 +448,14 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	
     	// Private members.
     	Mission mission;
-    	PersonCollection members;
+    	Collection members;
     	
     	/**
     	 * Constructor
     	 */
     	private MemberTableModel() {
     		mission = null;
-    		members = new PersonCollection();
+    		members = new ConcurrentLinkedQueue();
     	}
     	
     	/**
@@ -492,7 +493,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	 */
     	public Object getValueAt(int row, int column) {
             if (row < members.size()) {
-            	Person person = (Person) members.get(row);
+        	Object array[] = members.toArray();
+            	Person person = (Person) array[row];
             	if (column == 0) return person.getName();
             	else return person.getMind().getTaskManager().getTaskDescription();
             }   
@@ -515,10 +517,25 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	public void unitUpdate(UnitEvent event) {
     		String type = event.getType();
     		Person person = (Person) event.getSource();
-    		int index = members.indexOf(person);
+    		int index = getIndex(members,person);
     		if (type.equals(Unit.NAME_EVENT)) fireTableCellUpdated(index, 0);
     		else if (type.equals(Task.TASK_DESC_EVENT) || type.equals(TaskManager.TASK_EVENT)) 
     			fireTableCellUpdated(index, 1);
+    	}
+    	
+    	private int getIndex(Collection col, Object obj) {
+    	    int result = -1;
+    	    Object array[] = col.toArray();
+    	    int size = array.length;
+    	    
+    	    for(int i = 0; i <size;i++){
+    		if(array[i].equals(obj)){
+    		    result = i;
+    		    break;
+    		}
+    	    }
+    	    
+    	    return result;    
     	}
     	
     	/**
@@ -528,7 +545,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     		if (mission != null) {
     			clearMembers();
     			members = mission.getPeople();
-    			PersonIterator i = members.iterator();
+    			Iterator<Person> i = members.iterator();
     			while (i.hasNext()) i.next().addUnitListener(this);
     			fireTableDataChanged();
     		}
@@ -545,7 +562,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	 */
     	private void clearMembers() {
     		if (members != null) {
-    			PersonIterator i = members.iterator();
+    			Iterator<Person> i = members.iterator();
     			while (i.hasNext()) i.next().removeUnitListener(this);
     			members.clear();
     		}
@@ -557,8 +574,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	 * @return the mission member.
     	 */
     	Person getMemberAtIndex(int index) {
-    		if (index < members.size()) return (Person) members.get(index);
-    		else return null;
+    		if (index < members.size()) {
+    		    return (Person) members.toArray()[index];
+    		} 
+    		else {
+    		    return null;
+    		}
     	}
     }
 }

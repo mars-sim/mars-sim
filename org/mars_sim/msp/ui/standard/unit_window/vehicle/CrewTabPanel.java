@@ -7,14 +7,32 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.vehicle;
 
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.ui.standard.*;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.vehicle.Crewable;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.ui.standard.ImageLoader;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
 
 /** 
  * The CrewTabPanel is a tab panel for a vehicle's crew information.
@@ -25,7 +43,7 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
     private JLabel crewCapLabel;
     private DefaultListModel crewListModel;
     private JList crewList;
-    private PersonCollection crewCache;
+    private Collection crewCache;
     private int crewNumCache;
     private int crewCapacityCache;
     
@@ -68,8 +86,8 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
         
         // Create crew list model
         crewListModel = new DefaultListModel();
-        crewCache = new PersonCollection(crewable.getCrew());
-        PersonIterator i = crewCache.iterator();
+        crewCache = crewable.getCrew();
+        Iterator i = crewCache.iterator();
         while (i.hasNext()) crewListModel.addElement(i.next());
         
         // Create crew list
@@ -106,9 +124,9 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
         
         // Update crew list
         if (!crewCache.equals(crewable.getCrew())) {
-            crewCache = new PersonCollection(crewable.getCrew());
+            crewCache = crewable.getCrew();
             crewListModel.clear();
-            PersonIterator i = crewCache.iterator();
+            Iterator i = crewCache.iterator();
             while (i.hasNext()) crewListModel.addElement(i.next());
         }
         

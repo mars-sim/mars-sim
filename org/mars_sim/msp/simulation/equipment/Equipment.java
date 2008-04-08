@@ -7,9 +7,17 @@
  
 package org.mars_sim.msp.simulation.equipment;
 
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.ai.task.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
+import org.mars_sim.msp.simulation.person.ai.task.Repair;
+import org.mars_sim.msp.simulation.person.ai.task.Task;
 
 /** 
  * The Equipment class is an abstract class that represents  
@@ -30,11 +38,11 @@ public abstract class Equipment extends Unit {
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public PersonCollection getAffectedPeople() {
-        PersonCollection people = new PersonCollection();
+    public Collection getAffectedPeople() {
+        Collection people = new ConcurrentLinkedQueue();
 
 		// Check all people.
-        PersonIterator i = Simulation.instance().getUnitManager().getPeople().iterator(); 
+        Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator(); 
         while (i.hasNext()) {
 	    	Person person = i.next();
 	    	Task task = person.getMind().getTaskManager().getTask();

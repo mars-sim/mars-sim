@@ -146,12 +146,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param iceCollectionSites the sites to collect ice.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, PersonCollection members, Settlement startingSettlement, 
+	CollectResourcesMission(String missionName, Collection members, Settlement startingSettlement, 
 			AmountResource resourceType, double siteResourceGoal, double resourceCollectionRate, Class containerType, 
 			int containerNum, int numSites, int minPeople, Rover rover, List collectionSites) throws MissionException {
 		
 		// Use RoverMission constructor
-		super(missionName, (Person) members.get(0), minPeople, rover);
+		super(missionName, (Person) members.toArray()[0], minPeople, rover);
 		
 		setStartingSettlement(startingSettlement);
 		
@@ -174,7 +174,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
 		
     	// Add mission members.
-    	PersonIterator i = members.iterator();
+    	Iterator<Person> i = members.iterator();
     	while (i.hasNext()) i.next().getMind().setMission(this);
     	
 		// Add collecting phase.
@@ -286,7 +286,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     	endCollectingSite = true;
     	
     	// End each member's collection task.
-    	PersonIterator i = getPeople().iterator();
+    	Iterator<Person> i = getPeople().iterator();
     	while (i.hasNext()) {
     		Task task = i.next().getMind().getTaskManager().getTask();
     		if (task instanceof CollectResources) 
@@ -330,7 +330,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 			// Determine if no one can start the collect resources task.
 			boolean nobodyCollect = true;
-			PersonIterator j = getPeople().iterator();
+			Iterator<Person> j = getPeople().iterator();
 			while (j.hasNext()) {
 				if (CollectResources.canCollectResources(j.next(), getRover(), containerType, resourceType)) 
 					nobodyCollect = false;
@@ -504,7 +504,14 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		// Make sure there is at least one person left at the starting settlement.
 		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
 			// Remove last person added to the mission.
-			Person lastPerson = (Person) getPeople().get(getPeopleNumber() - 1);
+		    	Object[] array = getPeople().toArray();
+		    	int amount = getPeopleNumber() - 1;
+		    	Person lastPerson = null;
+		    	
+		    	if(amount >= 0 && amount < array.length){
+		    	    lastPerson = (Person)array[amount];
+		    	}
+			
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
 				if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");

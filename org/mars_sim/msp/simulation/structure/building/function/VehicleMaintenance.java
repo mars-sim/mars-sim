@@ -7,11 +7,14 @@
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.simulation.vehicle.*;
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
  
 /**
  * The VehicleMaintenance interface is a building function for a building
@@ -25,7 +28,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
     private static Logger logger = Logger.getLogger(CLASS_NAME);
         
     protected int vehicleCapacity;
-	private VehicleCollection vehicles;
+	private Collection vehicles;
         
     /**
      * Constructor
@@ -36,7 +39,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
     	// Use Function constructor.
     	super(name, building);
     	
-    	vehicles = new VehicleCollection();
+    	vehicles = new ConcurrentLinkedQueue();
     }
         
     /** 
@@ -112,7 +115,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
      * Gets a collection of vehicles in the building.
      * @return Collection of vehicles in the building.
      */
-    public VehicleCollection getVehicles() {
+    public Collection getVehicles() {
     	return vehicles;
     }
     
@@ -124,7 +127,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	public void timePassing(double time) throws BuildingException { 
 	
 		// Check to see if any vehicles are in the garage that don't need to be.
-		VehicleIterator i = (new VehicleCollection(vehicles)).iterator();
+		Iterator<Vehicle> i = vehicles.iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			if (!vehicle.isReserved()) removeVehicle(vehicle); 

@@ -7,15 +7,32 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.ImageLoader;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
 
 /** 
  * The PopulationTabPanel is a tab panel for population information.
@@ -26,7 +43,7 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
     private JLabel populationCapLabel;
     private DefaultListModel populationListModel;
     private JList populationList;
-    private PersonCollection populationCache;
+    private Collection populationCache;
     private int populationNumCache;
     private int populationCapacityCache;
     
@@ -69,8 +86,8 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
         
         // Create population list model
         populationListModel = new DefaultListModel();
-        populationCache = new PersonCollection(settlement.getInhabitants());
-        PersonIterator i = populationCache.iterator();
+        populationCache = settlement.getInhabitants();
+        Iterator<Person> i = populationCache.iterator();
         while (i.hasNext()) populationListModel.addElement(i.next());
         
         // Create population list
@@ -106,9 +123,9 @@ public class PopulationTabPanel extends TabPanel implements MouseListener, Actio
         
         // Update population list
         if (!populationCache.equals(settlement.getInhabitants())) {
-            populationCache = new PersonCollection(settlement.getInhabitants());
+            populationCache = settlement.getInhabitants();
             populationListModel.clear();
-            PersonIterator i = populationCache.iterator();
+            Iterator i = populationCache.iterator();
             while (i.hasNext()) populationListModel.addElement(i.next());
         }
         

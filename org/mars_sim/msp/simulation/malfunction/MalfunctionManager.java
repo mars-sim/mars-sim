@@ -499,8 +499,8 @@ public class MalfunctionManager implements Serializable {
         }
         
 		// Add stress to people affected by the accident.
-		PersonCollection people = entity.getAffectedPeople();
-		PersonIterator i = people.iterator();
+		Collection people = entity.getAffectedPeople();
+		Iterator<Person> i = people.iterator();
 		while (i.hasNext()) {
 			PhysicalCondition condition = i.next().getPhysicalCondition();
 			condition.setStress(condition.getStress() + PhysicalCondition.ACCIDENT_STRESS);
@@ -578,7 +578,7 @@ public class MalfunctionManager implements Serializable {
             Complaint complaint = medic.getComplaintByName(complaintName);
             if (complaint != null) {
             	// Get people who can be affected by this malfunction.
-                PersonIterator i2 = entity.getAffectedPeople().iterator();
+                Iterator<Person> i2 = entity.getAffectedPeople().iterator();
                 while (i2.hasNext()) {
                     Person person = i2.next();
                     if (RandomUtil.lessThanRandPercent(probability)) {

@@ -10,11 +10,13 @@ package org.mars_sim.msp.simulation.person.medical;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import org.mars_sim.msp.simulation.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.simulation.person.PersonCollection;
 
 /**
  * This class represents a medical station.
@@ -86,8 +88,8 @@ public class MedicalStation implements MedicalAid, Serializable {
      * Gets the patients at this medical station.
      * @return Collection of People.
      */
-    public PersonCollection getPatients() {
-        PersonCollection result = new PersonCollection();
+    public Collection getPatients() {
+        Collection result = new ConcurrentLinkedQueue();
         Iterator i = problemsBeingTreated.iterator();
         while (i.hasNext()) {
             Person patient = ((HealthProblem) i.next()).getSufferer();
