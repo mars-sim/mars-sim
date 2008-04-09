@@ -4,7 +4,7 @@ Resources
 Resources are materials that are used and stored in the simulation.  
 Resources are measured in kg.
 
-Here are the resources used in version 2.83:
+Here are the resources used in version 2.84:
 
 Water
 Hydrogen
