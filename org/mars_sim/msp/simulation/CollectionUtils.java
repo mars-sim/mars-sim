@@ -20,7 +20,7 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class CollectionUtils {
 
-    public static Collection<Equipment> getEquipment(Collection<Unit> units) {
+    public synchronized static Collection<Equipment> getEquipment(Collection<Unit> units) {
 
 	ConcurrentLinkedQueue<Equipment> equipment = new ConcurrentLinkedQueue<Equipment>();
 
@@ -34,7 +34,7 @@ public class CollectionUtils {
 
     }
 
-    public static void mergeEquipments(Collection<Unit> units,
+    public synchronized static void mergeEquipments(Collection<Unit> units,
 	    			       Collection<Equipment> equipments) {
 
 	Iterator<Equipment> i = equipments.iterator();
@@ -47,7 +47,7 @@ public class CollectionUtils {
     }
 
     
-    public static Collection<Vehicle> getVehicle(Collection<Unit> units) {
+    public synchronized static Collection<Vehicle> getVehicle(Collection<Unit> units) {
 
 	ConcurrentLinkedQueue<Vehicle> vehicles = new ConcurrentLinkedQueue<Vehicle>();
 
@@ -60,7 +60,7 @@ public class CollectionUtils {
 	return vehicles;
     }
 
-    public static void mergeVehicles(Collection<Unit> units,
+    public synchronized static void mergeVehicles(Collection<Unit> units,
 	    			     Collection<Vehicle> vehicles) {
 
 	Iterator<Vehicle> i = vehicles.iterator();
@@ -73,7 +73,7 @@ public class CollectionUtils {
 	}
     }
     
-    public static Collection<Person> getPerson(Collection<Unit> units) {
+    public synchronized static Collection<Person> getPerson(Collection<Unit> units) {
 
 	ConcurrentLinkedQueue<Person> persons = new ConcurrentLinkedQueue<Person>();
 
@@ -86,7 +86,7 @@ public class CollectionUtils {
 	return persons;
     }
 
-    public static void mergePersons(Collection<Unit> units,
+    public synchronized static void mergePersons(Collection<Unit> units,
 	    			     Collection<Person> persons) {
 
 	Iterator<Person> i = persons.iterator();
@@ -99,7 +99,7 @@ public class CollectionUtils {
 	}
     }
     
-    public static Collection<Settlement> getSettlement(Collection<Unit> units) {
+    public synchronized static Collection<Settlement> getSettlement(Collection<Unit> units) {
 
 	ConcurrentLinkedQueue<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
 
@@ -112,7 +112,7 @@ public class CollectionUtils {
 	return settlements;
     }
 
-    public static void mergeSettlements(Collection<Unit> units,
+    public synchronized static void mergeSettlements(Collection<Unit> units,
 	    			        Collection<Settlement> settlements) {
 
 	Iterator<Settlement> i = settlements.iterator();
@@ -126,14 +126,14 @@ public class CollectionUtils {
     }
     
  
-    public static Settlement getRandomSettlement(Collection collection) {
+    public synchronized static Settlement getRandomSettlement(Collection collection) {
 	Object [] array = collection.toArray();
         int r = RandomUtil.getRandomInt(collection.size() - 1);
         return (Settlement)  array[r];
     }
 
 
-    public static Settlement getRandomRegressionSettlement(Collection collection) {
+    public synchronized static Settlement getRandomRegressionSettlement(Collection collection) {
         Settlement result = null;
         int size = collection.size();
         if (size > 0) {
@@ -145,7 +145,7 @@ public class CollectionUtils {
         return result;
     }
     
-    public static Settlement getSettlement(Collection collection, String name) {
+    public synchronized static Settlement getSettlement(Collection collection, String name) {
         Iterator i = collection.iterator();
         Settlement result = null;
         while (i.hasNext()) {
@@ -155,7 +155,7 @@ public class CollectionUtils {
         return result;
     }
     
-    public static Collection sortByName(Collection collection) {
+    public synchronized static Collection sortByName(Collection collection) {
 	ConcurrentLinkedQueue<Unit> sorted = new ConcurrentLinkedQueue<Unit>();
 	
         Iterator outer = collection.iterator();
@@ -178,7 +178,7 @@ public class CollectionUtils {
         return sorted;
     }
     
-    public static Collection sortByProximity(Collection collection, Coordinates location) {
+    public synchronized static Collection sortByProximity(Collection collection, Coordinates location) {
 	ConcurrentLinkedQueue<Unit> sorted = new ConcurrentLinkedQueue<Unit>();
 
         Iterator outer = collection.iterator();
