@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopManager.java
- * @version 2.71 2000-10-22
+ * @version 2.84 2008-04-09
  * @author Scott Davis
  */
 
@@ -11,7 +11,7 @@ import javax.swing.*;
 
 /** The MainDesktopManager class is a custom desktop manager for the
  *  Mars Simulation Project UI that allows tool and unit detail windows
- *  to disapear when their iconify buttons are pressed.
+ *  to disappear when their iconify buttons are pressed.
  */
 class MainDesktopManager extends DefaultDesktopManager {
 
