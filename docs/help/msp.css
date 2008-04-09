@@ -15,12 +15,15 @@ body {
 }
 
 h2 {
-  font-size: 14pt;
+  font-size: 13pt;
   text-align: center;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 h3 {
-  font-size: 13pt;
+  font-size: 12pt;
+  font-weight: bold;
 }
 
 a:link {
