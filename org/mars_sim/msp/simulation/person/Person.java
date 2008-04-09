@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.79 2006-06-13
+ * @version 2.84 2008-04-08
  * @author Scott Davis
  */
 
@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.LifeSupport;
 import org.mars_sim.msp.simulation.RandomUtil;
@@ -290,7 +289,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      */
     private LifeSupport getLifeSupport() {
 
-        Collection lifeSupportUnits = new ConcurrentLinkedQueue();
+        Collection<Unit> lifeSupportUnits = new ConcurrentLinkedQueue<Unit>();
 
 	    // Get all container units.
 	    Unit container = getContainerUnit();
@@ -359,13 +358,13 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 					org.mars_sim.msp.simulation.structure.building.function.LifeSupport lifeSupport = 
 						(org.mars_sim.msp.simulation.structure.building.function.LifeSupport) 
 						building.getFunction(org.mars_sim.msp.simulation.structure.building.function.LifeSupport.NAME);
-					localGroup = CollectionUtils.getPerson(lifeSupport.getOccupants());
+					localGroup = new ConcurrentLinkedQueue<Person>(lifeSupport.getOccupants());
 				}
 			}
 		}
 		else if (getLocationSituation().equals(Person.INVEHICLE)) {
 			Rover rover = (Rover) getVehicle();
-			localGroup = CollectionUtils.getPerson(rover.getCrew());
+			localGroup = new ConcurrentLinkedQueue<Person>(rover.getCrew());
 		}
 		
 		if (localGroup.contains(this)) localGroup.remove(this);

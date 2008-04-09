@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.82 2007-11-25
+ * @version 2.84 2008-04-08
  * @author Scott Davis
  */
 
@@ -33,6 +33,7 @@ import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;
 import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 
 
@@ -55,7 +56,7 @@ public class UnitManager implements Serializable {
     public static final String EQUIPMENT = "equipment";
     
     // Data members
-    private Collection units; // Collection of all units
+    private Collection<Unit> units; // Collection of all units
     private List<String> settlementNames; // List of possible settlement names
     private List<String> vehicleNames; // List of possible vehicle names
     private List<String> personMaleNames; // List of possible male person names
@@ -69,7 +70,7 @@ public class UnitManager implements Serializable {
     UnitManager() {
    
         // Initialize unit collection
-        units = new ConcurrentLinkedQueue();
+        units = new ConcurrentLinkedQueue<Unit>();
         listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
         equipmentNumberMap = new HashMap<String, Integer>();
     }
@@ -177,13 +178,13 @@ public class UnitManager implements Serializable {
         
         if (unitType.equals(SETTLEMENT)) {
             initialNameList = settlementNames;
-            Iterator<Unit> si = getSettlements().iterator();
+            Iterator<Settlement> si = getSettlements().iterator();
             while (si.hasNext()) usedNames.add(si.next().getName());
             unitName = "Settlement";
         }
         else if (unitType.equals(VEHICLE)) {
             initialNameList = vehicleNames;
-            Iterator<Unit> vi = getVehicles().iterator();
+            Iterator<Vehicle> vi = getVehicles().iterator();
             while (vi.hasNext()) usedNames.add(vi.next().getName());
             unitName = "Vehicle";
         }
@@ -191,7 +192,7 @@ public class UnitManager implements Serializable {
         	if (Person.MALE.equals(gender)) initialNameList = personMaleNames;
         	else if (Person.FEMALE.equals(gender)) initialNameList = personFemaleNames;
         	else throw new IllegalArgumentException("Improper gender for person unitType: " + gender);
-        	Iterator<Unit> pi = getPeople().iterator();
+        	Iterator<Person> pi = getPeople().iterator();
             while (pi.hasNext()) usedNames.add(pi.next().getName());
             unitName = "Person";
         }
@@ -570,7 +571,7 @@ public class UnitManager implements Serializable {
     /** Get settlements in vitual Mars
      *  @return Collection of settlements
      */
-    public Collection getSettlements() {
+    public Collection<Settlement> getSettlements() {
         return CollectionUtils.getSettlement(units);
     }
 
@@ -584,7 +585,7 @@ public class UnitManager implements Serializable {
     /** Get vehicles in virtual Mars
      *  @return Collection of vehicles
      */
-    public Collection getVehicles() {
+    public Collection<Vehicle> getVehicles() {
         return CollectionUtils.getVehicle(units);
     }
 
@@ -598,7 +599,7 @@ public class UnitManager implements Serializable {
     /** Get people in virtual Mars
      *  @return Collection of people
      */
-    public Collection getPeople() {
+    public Collection<Person> getPeople() {
         return CollectionUtils.getPerson(units);
     }
     
@@ -614,7 +615,7 @@ public class UnitManager implements Serializable {
      * Get a collection of equipment.
      * @return collection
      */
-    public Collection getEquipment() {
+    public Collection<Equipment> getEquipment() {
     	return CollectionUtils.getEquipment(units);
     }
 
@@ -628,7 +629,7 @@ public class UnitManager implements Serializable {
     /** Get all units in virtual Mars
      *  @return Colleciton of units
      */
-    public Collection getUnits() {
+    public Collection<Unit> getUnits() {
         return units;
     }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 2.83 2007-12-24
+ * @version 2.84 2008-04-08
  * @author Scott Davis
  */
 
@@ -448,14 +448,14 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	
     	// Private members.
     	Mission mission;
-    	Collection members;
+    	Collection<Person> members;
     	
     	/**
     	 * Constructor
     	 */
     	private MemberTableModel() {
     		mission = null;
-    		members = new ConcurrentLinkedQueue();
+    		members = new ConcurrentLinkedQueue<Person>();
     	}
     	
     	/**
@@ -544,7 +544,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	void updateMembers() {
     		if (mission != null) {
     			clearMembers();
-    			members = mission.getPeople();
+    			members = new ConcurrentLinkedQueue<Person>(mission.getPeople());
     			Iterator<Person> i = members.iterator();
     			while (i.hasNext()) i.next().addUnitListener(this);
     			fireTableDataChanged();

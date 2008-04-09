@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-04-08
  * @author Scott Davis
  */
 
@@ -136,7 +136,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     /** Gets a collection of the inhabitants of the settlement.
      *  @return Collection of inhabitants
      */
-    public Collection getInhabitants() {
+    public Collection<Person> getInhabitants() {
         return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
     
@@ -152,7 +152,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      *  @return array of inhabitants
      */
     public Person[] getInhabitantArray() {
-        Collection people = getInhabitants();
+        Collection<Person> people = getInhabitants();
         Person[] personArray = new Person[people.size()];
         Iterator<Person> i = people.iterator();
         int count = 0;
@@ -166,7 +166,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     /** Gets a collection of vehicles parked at the settlement.
      *  @return Collection of parked vehicles
      */
-    public Collection getParkedVehicles() {
+    public Collection<Vehicle> getParkedVehicles() {
         return CollectionUtils.getVehicle(getInventory().getContainedUnits());
     }
 
@@ -346,7 +346,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * @return person collection
      */
     public Collection getAffectedPeople() {
-        Collection people = CollectionUtils.getPerson(getInhabitants());
+        Collection<Person> people = new ConcurrentLinkedQueue<Person>(getInhabitants());
 
         // Check all people.
         Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
@@ -444,7 +444,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * @return collection of associated people.
      */
     public Collection getAllAssociatedPeople() {
-    	Collection result = new ConcurrentLinkedQueue();
+    	Collection<Person> result = new ConcurrentLinkedQueue<Person>();
     	
     	Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
     	while (i.hasNext()) {
@@ -460,7 +460,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * @return collection of associated vehicles.
      */
     public Collection getAllAssociatedVehicles() {
-    	Collection result = getParkedVehicles();
+    	Collection<Vehicle> result = getParkedVehicles();
     	
     	// Also add vehicle mission vehicles not parked at settlement.
 		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(this).iterator();

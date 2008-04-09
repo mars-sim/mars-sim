@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resource.java
- * @version 2.81 2007-08-20
+ * @version 2.84 2008-04-08
  * @author Scott Davis 
  */
 
@@ -39,7 +39,7 @@ public class Inventory implements Serializable {
 	
     // Data members
     private Unit owner; // The unit that owns this inventory. 
-    private Collection containedUnits = null; // Collection of units in inventory.
+    private Collection<Unit> containedUnits = null; // Collection of units in inventory.
     private ConcurrentHashMap<ItemResource, Integer> containedItemResources = null; // Map of item resources.
     private double generalCapacity = 0D; // General mass capacity of inventory.
     private AmountResourceStorage resourceStorage = null; // Resource storage.
@@ -626,12 +626,11 @@ public class Inventory implements Serializable {
      * Gets a collection of all the stored units.
      * @return Collection of all units
      */
-    public Collection getContainedUnits() {
+    public Collection<Unit> getContainedUnits() {
     	if (containedUnits != null) {
     	    return containedUnits;
     	}
-    	
-    	return new ConcurrentLinkedQueue();
+    	else return Collections.emptySet();
     }
     
     /** 
@@ -700,8 +699,8 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return collection of units or empty collection if none.
      */
-    public Collection findAllUnitsOfClass(Class unitClass) {
-    	Collection result = new ConcurrentLinkedQueue();
+    public Collection<Unit> findAllUnitsOfClass(Class unitClass) {
+    	Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -782,7 +781,7 @@ public class Inventory implements Serializable {
     public void storeUnit(Unit unit) throws InventoryException {
         if (canStoreUnit(unit)) {
         	if (containedUnits == null) {
-        	    containedUnits = new ConcurrentLinkedQueue();
+        	    containedUnits = new ConcurrentLinkedQueue<Unit>();
         	}
         	
             containedUnits.add(unit);

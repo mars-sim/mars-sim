@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.83 2008-02-26
+ * @version 2.84 2008-04-08
  * @author Scott Davis
  */
 
@@ -222,7 +222,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected final boolean reserveVehicle(Person person) throws Exception {
 		
-		Collection bestVehicles = new ConcurrentLinkedQueue();
+		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
 		
 		// Create list of best unreserved vehicles for the mission.
 		Iterator<Vehicle> i = getAvailableVehicles(person.getSettlement()).iterator();
@@ -257,8 +257,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return list of available vehicles.
 	 * @throws Exception if problem determining if vehicles are usable.
 	 */
-	private final Collection getAvailableVehicles(Settlement settlement) throws Exception {
-		Collection result = new ConcurrentLinkedQueue();
+	private final Collection<Vehicle> getAvailableVehicles(Settlement settlement) throws Exception {
+		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
 		
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 		while (i.hasNext()) {

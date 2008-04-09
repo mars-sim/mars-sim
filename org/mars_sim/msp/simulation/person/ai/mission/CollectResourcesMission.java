@@ -146,7 +146,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param iceCollectionSites the sites to collect ice.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, Collection members, Settlement startingSettlement, 
+	CollectResourcesMission(String missionName, Collection<Person> members, Settlement startingSettlement, 
 			AmountResource resourceType, double siteResourceGoal, double resourceCollectionRate, Class containerType, 
 			int containerNum, int numSites, int minPeople, Rover rover, List collectionSites) throws MissionException {
 		

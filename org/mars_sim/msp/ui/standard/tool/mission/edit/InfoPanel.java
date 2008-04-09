@@ -255,13 +255,13 @@ public class InfoPanel extends JPanel {
 	 * @return collection of available people.
 	 */
 	private Collection getAvailablePeople() {
-		Collection result = new ConcurrentLinkedQueue();
+		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 	
 		// Add people in the settlement or rover.
 		if (mission instanceof RoverMission) {
 			Rover rover = ((RoverMission) mission).getRover();
 			String phase = mission.getPhase();
-			Collection peopleAtLocation = null;
+			Collection<Person> peopleAtLocation = null;
 			if (phase.equals(RoverMission.EMBARKING) || phase.equals(RoverMission.DISEMBARKING)) {
 				// Add available people at the local settlement.
 				peopleAtLocation = rover.getSettlement().getInhabitants();

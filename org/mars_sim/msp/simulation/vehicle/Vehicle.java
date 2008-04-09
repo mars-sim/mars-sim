@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-04-08
  * @author Scott Davis
  */
 
@@ -404,8 +404,8 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public Collection getAffectedPeople() {
-        Collection people = new ConcurrentLinkedQueue();
+    public Collection<Person> getAffectedPeople() {
+        Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
         // Check all people.
         Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();

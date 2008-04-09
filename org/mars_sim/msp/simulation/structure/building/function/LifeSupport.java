@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.person.*;
@@ -33,7 +32,7 @@ public class LifeSupport extends Function implements Serializable {
 	// Data members
 	private int occupantCapacity;
 	private double powerRequired;
-	private Collection occupants;
+	private Collection<Person> occupants;
 
 	/**
 	 * Constructor
@@ -44,7 +43,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Call Function constructor.
 		super(NAME, building);
 		
-		occupants = new ConcurrentLinkedQueue();
+		occupants = new ConcurrentLinkedQueue<Person>();
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
@@ -71,7 +70,7 @@ public class LifeSupport extends Function implements Serializable {
 		// Use Function constructor
 		super(NAME, building);
 		
-		occupants = new ConcurrentLinkedQueue();
+		occupants = new ConcurrentLinkedQueue<Person>();
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
 	}
@@ -115,8 +114,8 @@ public class LifeSupport extends Function implements Serializable {
 	 * Gets a collection of occupants in the building.
 	 * @return collection of occupants
 	 */
-	public Collection getOccupants() {
-		return CollectionUtils.getPerson(occupants);
+	public Collection<Person> getOccupants() {
+		return new ConcurrentLinkedQueue<Person>(occupants);
 	}
 	
 	/**

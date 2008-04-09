@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.80 2006-12-03
+ * @version 2.84 2008-04-08
  * @author Scott Davis
  */
 
@@ -135,7 +135,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * Gets a collection of the crewmembers.
      * @return crewmembers as Collection
      */
-    public Collection getCrew() {
+    public Collection<Person> getCrew() {
         return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
 
@@ -255,10 +255,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public Collection getAffectedPeople() {
-        Collection people = super.getAffectedPeople();
+    public Collection<Person> getAffectedPeople() {
+        Collection<Person> people = super.getAffectedPeople();
         
-        Collection crew = getCrew();
+        Collection<Person> crew = getCrew();
         Iterator<Person> i = crew.iterator();
         while (i.hasNext()) {
             Person person = i.next();

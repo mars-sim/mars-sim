@@ -54,7 +54,7 @@ public abstract class Mission implements Serializable {
 	public static final String END_MISSION_EVENT = "end mission";
 	
     // Data members
-    private Collection people; // People in mission
+    private Collection<Person> people; // People in mission
     private String name; // Name of mission
     private String description; // Description of the mission
     private int minPeople; // The minimum number of people for mission.
@@ -78,7 +78,7 @@ public abstract class Mission implements Serializable {
         // Initialize data members
         this.name = name;
         description = name;
-        people = new ConcurrentLinkedQueue();
+        people = new ConcurrentLinkedQueue<Person>();
         done = false;
         phase = null;
         phaseDescription = null;
@@ -229,8 +229,8 @@ public abstract class Mission implements Serializable {
      * Gets a collection of the people in the mission.
      * @return collection of people
      */
-    public final Collection getPeople() {
-        return people;
+    public final Collection<Person> getPeople() {
+        return new ConcurrentLinkedQueue<Person>(people);
     }
 
     /** 
@@ -477,7 +477,7 @@ public abstract class Mission implements Serializable {
 			count++;
 			
 			// Get all people qualified for the mission.
-			Collection qualifiedPeople = new ConcurrentLinkedQueue();
+			Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
 			Iterator <Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
@@ -641,7 +641,7 @@ public abstract class Mission implements Serializable {
      * @param settlement the associated settlement.
      */
     public void associateAllMembersWithSettlement(Settlement settlement) {
-    	Iterator<Person> i = getPeople().iterator();
+    	Iterator<Person> i = people.iterator();
     	while (i.hasNext()) i.next().setAssociatedSettlement(settlement);
     }
     
@@ -651,7 +651,7 @@ public abstract class Mission implements Serializable {
 	 * @throws Exception if error determining location.
 	 */
 	public final Coordinates getCurrentMissionLocation() throws Exception {
-		if (getPeopleNumber() > 0) return ((Person)getPeople().toArray()[0]).getCoordinates();
+		if (getPeopleNumber() > 0) return ((Person) people.toArray()[0]).getCoordinates();
 		throw new Exception("No people in the mission.");
 	}
 }
