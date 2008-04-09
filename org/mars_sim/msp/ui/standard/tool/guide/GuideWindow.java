@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 2.84 2008-03-19
+ * @version 2.84 2008-04-10
  * @author Lars Naesbye Christensen
  */
 
@@ -79,10 +79,10 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
     setContentPane(mainPane);
 
-    JButton topButton = new JButton ("Top");
-    topButton.setActionCommand("top");
-    topButton.setToolTipText("Go to Top");
-    topButton.addActionListener(new ActionListener() {
+    JButton homeButton = new JButton ("Home");
+    homeButton.setActionCommand("home");
+    homeButton.setToolTipText("Go to Home");
+    homeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
     htmlPane.goToURL(guideURL);
 				}
@@ -109,7 +109,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
     //A toolbar to hold all our buttons
     JPanel toolPanel = new JPanel();
-    toolPanel.add(topButton);
+    toolPanel.add(homeButton);
     toolPanel.add(backButton);
     toolPanel.add(forwardButton);
 
