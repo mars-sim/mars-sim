@@ -23,6 +23,7 @@ import javax.sound.sampled.BooleanControl;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.SourceDataLine;
@@ -133,6 +134,7 @@ public class AudioPlayer implements LineListener {
 	 * @param loop Should the sound clip be looped?
 	 */
 	public void startPlayCompressedSound(String filepath, boolean loop) {
+	    	stop();
 	 
 		AudioInputStream din = null;
 		looping = loop;
@@ -153,7 +155,7 @@ public class AudioPlayer implements LineListener {
 			
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, 
 							       decodedFormat);
-			
+		
 			currentLine = 
 			(SourceDataLine) AudioSystem.getLine(info);
 		
@@ -161,9 +163,10 @@ public class AudioPlayer implements LineListener {
 				currentLine.addLineListener(this);
 				currentLine.open(decodedFormat);
 				setVolume(volume);
-		    	setMute(mute);
-				
-				byte[] data = new byte[4096];
+				setMute(mute);
+				System.out.println("buffer size: " + decodedFormat.getSampleSizeInBits());
+			
+				byte[] data = new byte[decodedFormat.getSampleSizeInBits()];
 				// Start
 				currentLine.start();
 				
@@ -173,6 +176,8 @@ public class AudioPlayer implements LineListener {
             			   	currentLine.write(data, 0, nBytesRead);
 				}
             		       
+            		      currentLine.drain();
+            		      currentLine.stop();
 				
 			}
 			
@@ -187,10 +192,12 @@ public class AudioPlayer implements LineListener {
 				 } 
 				catch(IOException e) { }
 			}
+		       
 		}
 		} while (looping);
 	    
-	    
+		
+	  
 	}
 	
 	
@@ -323,17 +330,9 @@ public class AudioPlayer implements LineListener {
 	   if (event.getType() == LineEvent.Type.STOP ||
 	       event.getType() == LineEvent.Type.CLOSE){
 	       
-	       if (currentClip != null) {
-		    currentClip.stop();
-		    currentClip.removeLineListener(this);
-		    currentClip = null;
-		}
-		
-		if (currentLine != null) {
-		    currentLine.close();
-		    currentLine.removeLineListener(this);
-		    currentLine = null;
-		}
+	       Line line = event.getLine();
+	       line.close();
+	       line.removeLineListener(this);  
 	   }    
 	}
 }
