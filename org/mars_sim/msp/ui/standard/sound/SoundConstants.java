@@ -15,7 +15,7 @@ public interface SoundConstants {
 	public final static String SOUNDS_ROOT_PATH = "sounds/";
 	
 	// Unit window sounds for rovers.
-	public final static String SND_ROVER_MOVING = "rover_moving.ogg";
+    public final static String SND_ROVER_MOVING = "rover_moving.ogg";
     public final static String SND_ROVER_MALFUNCTION = "rover_malfunction.ogg";
     public final static String SND_ROVER_MAINTENANCE = "rover_maintenance.ogg";
     public final static String SND_ROVER_PARKED = "";
@@ -34,7 +34,11 @@ public interface SoundConstants {
     public final static String SND_EQUIPMENT = "";
     
     // Supported sound formats
-    public final static String SND_FORMAT_WAV = ".wav";
-    public final static String SND_FORMAT_MP3 = ".mp3";
-    public final static String SND_FORMAT_OGG = ".ogg";
+    public final static String SND_FORMAT_WAV  = ".wav";
+    public final static String SND_FORMAT_MP3  = ".mp3";
+    public final static String SND_FORMAT_OGG  = ".ogg";
+    public final static String SND_FORMAT_MIDI = ".mid";
+    
+    //maximum amount of clips in cache
+    public final static int MAX_CACHE_SIZE = 5;
 }
