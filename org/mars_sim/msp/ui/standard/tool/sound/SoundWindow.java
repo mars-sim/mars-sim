@@ -102,6 +102,7 @@ public class SoundWindow extends ToolWindow {
 	 * Prepare tool window for deletion.
 	 */
 	public void destroy() {
+	    	soundPlayer.cleanAudioPlayer();
 		soundPlayer = null;
 	}
 }
