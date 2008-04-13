@@ -96,29 +96,28 @@ public class AudioPlayer implements LineListener {
 	 */
 	public void startPlayWavSound(String filepath, boolean loop) {
 	    try {
-	        Clip clip = null;
 	    	if (!audioCache.containsKey(filepath)) {
 	    	    logger.info(filepath);
 	    	    File soundFile = new File(filepath);
 	    	    AudioInputStream audioInputStream = 
 	    		AudioSystem.getAudioInputStream(soundFile);
-	    	    clip = AudioSystem.getClip();
-	    	    clip.open(audioInputStream);
-	    	    audioCache.put(filepath, clip);
+	    	    currentClip = AudioSystem.getClip();
+	    	    currentClip.open(audioInputStream);
+	    	    audioCache.put(filepath, currentClip);
 	    	} else {
-	    	    clip = audioCache.get(filepath);
-	    	    clip.setFramePosition(0);  
+	    	    currentClip = audioCache.get(filepath);
+	    	    currentClip.setFramePosition(0);  
+	    	    currentClip.stop();
 	    	}
 		
-	    	currentClip = clip;
 	    	currentClip.addLineListener(this);
 	    	setVolume(volume);
 	    	setMute(mute);
 		
 	    	if (loop){
-	    		clip.loop(Clip.LOOP_CONTINUOUSLY); 
+	    	    currentClip.loop(Clip.LOOP_CONTINUOUSLY); 
 	    	} else { 		   
-	    		clip.start();
+	    	    currentClip.start();
 	    	}
 	    } 
 	    catch (Exception e) {
@@ -164,7 +163,6 @@ public class AudioPlayer implements LineListener {
 				currentLine.open(decodedFormat);
 				setVolume(volume);
 				setMute(mute);
-				System.out.println("buffer size: " + decodedFormat.getSampleSizeInBits());
 			
 				byte[] data = new byte[decodedFormat.getSampleSizeInBits()];
 				// Start
@@ -330,9 +328,15 @@ public class AudioPlayer implements LineListener {
 	   if (event.getType() == LineEvent.Type.STOP ||
 	       event.getType() == LineEvent.Type.CLOSE){
 	       
-	       Line line = event.getLine();
-	       line.close();
-	       line.removeLineListener(this);  
+	       if(event.getSource().equals(currentClip)) {
+		   currentClip.stop();
+	       } else {
+		   Line line = event.getLine();
+		   line.close();
+		   line.removeLineListener(this);  
+	       }
+	       
+	      
 	   }    
 	}
 }
