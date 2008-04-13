@@ -16,6 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.sound.midi.MetaEventListener;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -33,7 +38,7 @@ import org.mars_sim.msp.ui.standard.UIConfig;
 /**
  * A class to play sound files.
  */
-public class AudioPlayer implements LineListener {
+public class AudioPlayer implements LineListener, MetaEventListener {
     
 	private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.sound.AudioPlayer";
@@ -42,11 +47,14 @@ public class AudioPlayer implements LineListener {
 	// Data members
 	private SourceDataLine currentLine; // The current compressed sound.
 	private Clip currentClip; // The current sound clip.
+	private Sequencer sequencer; // for midi sounds
 	private boolean mute; // Is the audio player muted?
 	private float volume; // The volume of the audio player (0.0 to 1.0)
 	private ConcurrentHashMap < String, Clip > audioCache = 
-		new ConcurrentHashMap<String, Clip>();
+				new ConcurrentHashMap<String, Clip>();
 	private boolean looping = false;
+	private  Thread sound_player;
+	
 	
 	public AudioPlayer() {
 	    currentClip = null;
@@ -71,7 +79,7 @@ public class AudioPlayer implements LineListener {
 	    
 	    //if the sound is long(the whole UI get stuck, so we play
 	    //the sound within his own thread
-	    Thread sound_player = new Thread() {
+	    sound_player = new Thread() {
 	        public void run() {
 	    	if ((filepath != null) && !filepath.equals("")) {
 			   if (filepath.endsWith(SoundConstants.SND_FORMAT_WAV)) {
@@ -80,12 +88,17 @@ public class AudioPlayer implements LineListener {
 			       startPlayCompressedSound(filepath, loop);
 			   } else if(filepath.endsWith(SoundConstants.SND_FORMAT_OGG)) {
 			       startPlayCompressedSound(filepath, loop);    
+			   } else if(filepath.endsWith(SoundConstants.SND_FORMAT_MIDI)) {
+			       startMidiSound(filepath, loop);    
 			   }
 			}
 	        }
 	    
 	    };
 	    
+	    sound_player.setPriority(Thread.MIN_PRIORITY);
+	    sound_player.setName(filepath);
+	    sound_player.setDaemon(true);
 	    sound_player.start();	
 	}
 	
@@ -97,13 +110,18 @@ public class AudioPlayer implements LineListener {
 	public void startPlayWavSound(String filepath, boolean loop) {
 	    try {
 	    	if (!audioCache.containsKey(filepath)) {
-	    	    logger.info(filepath);
 	    	    File soundFile = new File(filepath);
 	    	    AudioInputStream audioInputStream = 
 	    		AudioSystem.getAudioInputStream(soundFile);
 	    	    currentClip = AudioSystem.getClip();
 	    	    currentClip.open(audioInputStream);
 	    	    audioCache.put(filepath, currentClip);
+	    	    
+	    	    if(audioCache.size() > SoundConstants.MAX_CACHE_SIZE) {
+	    		Object[] keys = audioCache.keySet().toArray();
+	    		audioCache.remove(keys[0]);
+	    		keys = null;
+	    	    }
 	    	} else {
 	    	    currentClip = audioCache.get(filepath);
 	    	    currentClip.setFramePosition(0);  
@@ -198,7 +216,41 @@ public class AudioPlayer implements LineListener {
 	  
 	}
 	
+	/**
+	 * Play compressed sound (mp3 or ogg files)
+	 * The sounds are not cached in this case.
+	 * @param filepath filepath the file path to the sound
+	 * @param loop Should the sound clip be looped?
+	 */
+	public void startMidiSound(String filepath, boolean loop) {
 	
+		looping = loop;
+		
+		try {
+		        //From file
+		        Sequence sequence = MidiSystem.getSequence(new File(filepath));
+		        
+		        // Create a sequencer for the sequence
+		        sequencer = MidiSystem.getSequencer();
+		        sequencer.open();
+		        sequencer.setSequence(sequence);
+		        sequencer.addMetaEventListener(this);
+		        
+		        if(looping) {
+		            sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+		            sequencer.start();
+		        } else {
+			    sequencer.start();
+		        }
+		}
+		catch(Exception e) {
+		  logger.log(Level.SEVERE, "Issues when playing compressed sound", e);
+		} 
+		
+	    
+		
+	  
+	}
 	/**
 	 * Play a clip once.
 	 * @param filepath the filepath to the sound file.
@@ -229,9 +281,17 @@ public class AudioPlayer implements LineListener {
 		}
 		
 		if (currentLine != null) {
+		    currentLine.drain();
 		    currentLine.close();
 		    currentLine.removeLineListener(this);
 		    currentLine = null;
+		}
+		
+		if(sequencer != null) {
+		    sequencer.stop();
+	            sequencer.close();
+	            sequencer.removeMetaEventListener(this);
+	            sequencer = null;
 		}
 		
 	}
@@ -335,8 +395,27 @@ public class AudioPlayer implements LineListener {
 		   line.close();
 		   line.removeLineListener(this);  
 	       }
-	       
-	      
 	   }    
+	}
+	
+	public void cleanAudioPlayer(){
+	    stop();
+	    audioCache.clear();
+	    sound_player = null;
+	}
+
+	/* 
+	 * For handling midi player events
+	 */
+	public void meta(MetaMessage meta) {
+	    if(meta.getType() == 47 ){
+		if(sequencer != null) {
+		    sequencer.stop();
+	            sequencer.close();
+	            sequencer.removeMetaEventListener(this);
+	            sequencer = null;
+		}
+	    }
+	    
 	}
 }
