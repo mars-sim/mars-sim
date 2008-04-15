@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.83 2008-02-03
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -91,7 +91,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (TravelToSettlement)");
         	}
         	catch (Exception e) {
-        		throw new MissionException(null, e);
+        		throw new MissionException(getPhase(), e);
         	}
         }
         
@@ -111,7 +111,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public TravelToSettlement(Collection members, Settlement startingSettlement, 
+    public TravelToSettlement(Collection<Person> members, Settlement startingSettlement, 
     		Settlement destinationSettlement, Rover rover, String description) throws MissionException {
     	// Use RoverMission constructor.
     	super(description, (Person) members.toArray()[0], 1, rover);
@@ -144,7 +144,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     		}
     	}
     	catch (Exception e) {
-    		throw new MissionException(null, e);
+    		throw new MissionException(getPhase(), e);
     	}
     }
 
@@ -250,7 +250,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @return randomly determined settlement
      * @throws MissionException if problem determining destination settlement.
      */
-    private Settlement getRandomDestinationSettlement(Person person, Settlement startingSettlement) throws MissionException {
+    private Settlement getRandomDestinationSettlement(Person person, Settlement startingSettlement) 
+    		throws MissionException {
     	
     	try {
     		double range = getVehicle().getRange();
@@ -260,12 +261,13 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     		Map desirableSettlements = getDestinationSettlements(person, startingSettlement, range);
         
     		// Randomly select a desirable settlement.
-    		if (desirableSettlements.size() > 0) result = (Settlement) RandomUtil.getWeightedRandomObject(desirableSettlements);
+    		if (desirableSettlements.size() > 0) 
+    			result = (Settlement) RandomUtil.getWeightedRandomObject(desirableSettlements);
     
     		return result;
     	}
     	catch (Exception e) {
-    		throw new MissionException(VehicleMission.EMBARKING, e);
+    		throw new MissionException(getPhase(), e);
     	}
     }
     
@@ -332,7 +334,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		double crowdingFactor = destinationCrowding - startingCrowding;
 		
 		// Return the sum of the factors with modifiers.
-		return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER) + (crowdingFactor * CROWDING_MODIFIER);
+		return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER) + 
+				(crowdingFactor * CROWDING_MODIFIER);
 	}
 	
 	/**
@@ -375,7 +378,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			
 			// Subtract modifier for average relationship with non-mission inhabitants of starting settlement.
 			if (getStartingSettlement() != null) {
-				Collection startingInhabitants = getStartingSettlement().getAllAssociatedPeople();
+				Collection<Person> startingInhabitants = getStartingSettlement().getAllAssociatedPeople();
 				Iterator<Person> i = startingInhabitants.iterator();
 				while (i.hasNext()) {
 					if (hasPerson(i.next())) i.remove();
@@ -428,9 +431,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * Gets the number and types of equipment needed for the mission.
      * @param useBuffer use time buffer in estimation if true.
      * @return map of equipment class and Integer number.
-     * @throws Exception if error determining needed equipment.
+     * @throws MissionException if error determining needed equipment.
      */
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
+    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) 
+    		throws MissionException {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
     		Map<Class, Integer> result = new HashMap<Class, Integer>();
@@ -452,9 +456,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 * 0 if vehicle are equal in quality,
 	 * and 1 if the first vehicle is better than the second vehicle.
 	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
-	 * @throws Exception if error comparing vehicles.
+	 * @throws MissionException if error comparing vehicles.
 	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws 
+			MissionException {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
 		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
@@ -464,8 +469,13 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 				
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange() > secondVehicle.getRange()) result = 1;
-				else if (firstVehicle.getRange() < secondVehicle.getRange()) result = -1;
+				try {
+					if (firstVehicle.getRange() > secondVehicle.getRange()) result = 1;
+					else if (firstVehicle.getRange() < secondVehicle.getRange()) result = -1;
+				}
+				catch (Exception e) {
+					throw new MissionException(getPhase(), e);
+				}
 			}
 		}
 		

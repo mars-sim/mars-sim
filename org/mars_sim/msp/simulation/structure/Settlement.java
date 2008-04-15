@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.84 2008-04-08
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -443,7 +443,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * Gets all people associated with this settlement, even if they are out on missions.
      * @return collection of associated people.
      */
-    public Collection getAllAssociatedPeople() {
+    public Collection<Person> getAllAssociatedPeople() {
     	Collection<Person> result = new ConcurrentLinkedQueue<Person>();
     	
     	Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.83 2008-02-03
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -164,7 +164,7 @@ public class Trade extends RoverMission implements Serializable {
      * @param buyGoods map of mission buy goods and integer amounts
      * @throws MissionException if error constructing mission.
      */
-    public Trade(Collection members, Settlement startingSettlement, Settlement tradingSettlement, 
+    public Trade(Collection<Person> members, Settlement startingSettlement, Settlement tradingSettlement, 
     		Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) 
     		throws MissionException {
     	// Use RoverMission constructor.
@@ -373,7 +373,7 @@ public class Trade extends RoverMission implements Serializable {
     			tradingSettlement.getInventory().storeUnit(getVehicle());
     		}
     		catch (InventoryException e) {
-    			throw new MissionException(VehicleMission.DISEMBARKING, e);
+    			throw new MissionException(getPhase(), e);
     		}
     		
     		// Add vehicle to a garage if available.
@@ -439,7 +439,7 @@ public class Trade extends RoverMission implements Serializable {
     						assignTask(person, negotiationTask);
     					}
     					catch (Exception e) {
-    						throw new MissionException(TRADE_NEGOTIATING, e);
+    						throw new MissionException(getPhase(), e);
     					}
     				}
     				else {
@@ -487,7 +487,7 @@ public class Trade extends RoverMission implements Serializable {
     		else setPhaseEnded(true);
     	}
     	catch (Exception e) {
-    		throw new MissionException(UNLOAD_GOODS, e);
+    		throw new MissionException(getPhase(), e);
     	}
     }
     
@@ -515,7 +515,7 @@ public class Trade extends RoverMission implements Serializable {
     			else setPhaseEnded(true);
     		}
     		catch (Exception e) {
-    			throw new MissionException(VehicleMission.EMBARKING, e);
+    			throw new MissionException(getPhase(), e);
     		}
     	}
     }
@@ -589,7 +589,7 @@ public class Trade extends RoverMission implements Serializable {
     		}
 		}
     	catch (Exception e) {
-    		throw new MissionException(TRADE_EMBARKING, e);
+    		throw new MissionException(getPhase(), e);
     	}
     }
     
@@ -694,9 +694,9 @@ public class Trade extends RoverMission implements Serializable {
      * Gets the number and types of equipment needed for the mission.
      * @param useBuffer use time buffers in estimation if true.
      * @return map of equipment class and Integer number.
-     * @throws Exception if error determining needed equipment.
+     * @throws MissionException if error determining needed equipment.
      */
-	public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
+	public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws MissionException {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
     		Map<Class, Integer> result = new HashMap<Class, Integer>();
@@ -731,9 +731,10 @@ public class Trade extends RoverMission implements Serializable {
 	 * @param useBuffer should a buffer be used when determining resources?
 	 * @param parts include parts.
 	 * @param distance the distance of the trip.
+	 * @throws MissionException if error determining resources.
 	 */
     public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, boolean parts, double distance) 
-    		throws Exception {
+    		throws MissionException {
     	Map<Resource, Number> result = super.getResourcesNeededForTrip(useBuffer, parts, distance);
     	
     	// Add buy/sell load.
@@ -816,9 +817,9 @@ public class Trade extends RoverMission implements Serializable {
 	 * 0 if vehicle are equal in quality,
 	 * and 1 if the first vehicle is better than the second vehicle.
 	 * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
-	 * @throws Exception if error comparing vehicles.
+	 * @throws MissionException if error comparing vehicles.
 	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws MissionException {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
 		if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
@@ -830,8 +831,13 @@ public class Trade extends RoverMission implements Serializable {
 				
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange() > secondVehicle.getRange()) result = 1;
-				else if (firstVehicle.getRange() < secondVehicle.getRange()) result = -1;
+				try {
+					if (firstVehicle.getRange() > secondVehicle.getRange()) result = 1;
+					else if (firstVehicle.getRange() < secondVehicle.getRange()) result = -1;
+				}
+				catch (Exception e) {
+					throw new MissionException(getPhase(), e);
+				}
 			}
 		}
 		

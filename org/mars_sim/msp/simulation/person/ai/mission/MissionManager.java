@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.83 2008-02-27
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -50,9 +50,9 @@ public class MissionManager implements Serializable {
     private double totalProbCache;
 
     // Array of potential new missions
-    Class[] potentialMissions = { TravelToSettlement.class, 
-    		CollectIce.class, RescueSalvageVehicle.class, 
-    		Trade.class, CollectRegolith.class };
+    Class[] potentialMissions = { TravelToSettlement.class, Exploration.class,
+    		CollectIce.class, RescueSalvageVehicle.class, Trade.class, 
+    		CollectRegolith.class };
     
     /** 
      * Constructor

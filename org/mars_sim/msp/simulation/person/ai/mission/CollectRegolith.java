@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 2.83 2008-01-24
+ * @version 2.84 2008-04-14
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -65,7 +65,7 @@ public class CollectRegolith  extends CollectResourcesMission {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public CollectRegolith (Collection members, Settlement startingSettlement, 
+    public CollectRegolith (Collection<Person> members, Settlement startingSettlement, 
     		List regolithCollectionSites, Rover rover, String description) 
     		throws MissionException {
     	

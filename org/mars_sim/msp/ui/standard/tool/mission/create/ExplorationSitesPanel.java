@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @version 2.80 2007-03-22
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -270,9 +270,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 * @return time (millisols)
 	 */
 	private double getTimePerSite() {
-    	double timePerPerson = (Exploration.SITE_GOAL / Exploration.COLLECTION_RATE) * 
-    			CollectResourcesMission.EVA_COLLECTION_OVERHEAD;
-    	return timePerPerson / getWizard().getMissionData().getMembers().size();
+    	return Exploration.EXPLORING_SITE_TIME;
 	}
 	
 	/**

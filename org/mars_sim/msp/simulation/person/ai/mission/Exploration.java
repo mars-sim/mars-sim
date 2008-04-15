@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.84 2008-04-08
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Coordinates;
@@ -24,12 +25,15 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
+import org.mars_sim.msp.simulation.mars.ExploredLocation;
 import org.mars_sim.msp.simulation.mars.Mars;
+import org.mars_sim.msp.simulation.mars.MineralMap;
+import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
-import org.mars_sim.msp.simulation.person.ai.task.CollectResources;
+import org.mars_sim.msp.simulation.person.ai.task.ExploreSite;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Resource;
@@ -46,7 +50,7 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 public class Exploration extends RoverMission {
 
 	private static String CLASS_NAME = 
-		"org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission";
+		"org.mars_sim.msp.simulation.person.ai.mission.Exploration";
 	
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
@@ -54,13 +58,7 @@ public class Exploration extends RoverMission {
 	public static final String DEFAULT_DESCRIPTION = "Exploration";
 	
 	// Mission phases
-	final public static String COLLECT_RESOURCES = "Collecting Resources";
-	
-	// Amount of rock samples to be gathered at a given site (kg). 
-	public static final double SITE_GOAL = 40D;
-	
-	// Collection rate of rock samples during EVA (kg/millisol).
-	public static final double COLLECTION_RATE = .1D;
+	final public static String EXPLORE_SITE = "Exploring Site";
 	
 	// Number of specimen containers required for the mission. 
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
@@ -71,16 +69,17 @@ public class Exploration extends RoverMission {
 	// Minimum number of people to do mission.
 	private final static int MIN_PEOPLE = 2;
 	
+	// Amount of time to explore a site.
+	public final static double EXPLORING_SITE_TIME = 1000D;
+	
+	// Maximum mineral concentration estimation diff from actual.
+	private final static double MINERAL_ESTIMATION_CEILING = 20D;
+	
 	// Data members
-	private AmountResource resourceType; // The type of resource to collect.
-	private double siteCollectedResources; // The amount of resources (kg) collected at a collection site.
-	private double collectingStart; // The starting amount of resources in a rover at a collection site.
-	private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
-	private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol).
-	private Class containerType; // The type of container needed for the mission or null if none.
-	private int containerNum; // The number of containers needed for the mission.
-	private MarsClock collectionSiteStartTime; // The start time at the current collection site.
-	private boolean endCollectingSite; // External flag for ending collection at the current site.
+	private MarsClock explorationSiteStartTime; // The start time at the current exploration site.
+	private ExploredLocation currentSite; // The current exploration site.
+	private List<ExploredLocation> exploredSites; // List of sites explored by this mission.
+	private boolean endExploringSite; // External flag for ending exploration at the current site.
 
 	/**
 	 * Constructor
@@ -101,46 +100,35 @@ public class Exploration extends RoverMission {
 		
 			// Initialize data members.
 			setStartingSettlement(startingPerson.getSettlement());
-			this.resourceType = AmountResource.ROCK_SAMPLES;
-			this.siteResourceGoal = SITE_GOAL;
-			this.resourceCollectionRate = COLLECTION_RATE;
-			this.containerType = SpecimenContainer.class;
-			this.containerNum = REQUIRED_SPECIMEN_CONTAINERS;
+			exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
 			
 			// Recruit additional people to mission.
         	recruitPeopleForMission(startingPerson);
 			
-			// Determine collection sites
-			try {
-				if (hasVehicle()) determineCollectionSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(), 
-						getPeopleNumber(), true), NUM_SITES);
-			}
-			catch (Exception e) {
-				throw new MissionException(null, e);
-			}
+			// Determine exploration sites
+        	try {
+        		if (hasVehicle()) determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(), 
+        			getPeopleNumber(), true), NUM_SITES);
+        	}
+        	catch (Exception e) {
+        		throw new MissionException(getPhase(), e);
+        	}
 			
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
 					getStartingSettlement(), getStartingSettlement().getName()));
 			
         	// Check if vehicle can carry enough supplies for the mission.
-        	try {
-        		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (CollectingResourcesMission)");
-        	}
-        	catch (Exception e) {
-        		throw new MissionException(null, e);
-        	}
+        	if (hasVehicle() && !isVehicleLoadable()) 
+        		endMission("Vehicle is not loadable. (Exploration)");
 		}
 		
-		// Add collecting phase.
-		addPhase(COLLECT_RESOURCES);
+		// Add exploring site phase.
+		addPhase(EXPLORE_SITE);
 		
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription("Embarking from " + getStartingSettlement().getName());
-		
-		// int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
-		// logger.info("Starting " + getName() + " with " + emptyContainers + " " + containerType);
 	}
 	
     /**
@@ -165,15 +153,12 @@ public class Exploration extends RoverMission {
 		int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
     	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
     	
-		this.resourceType = AmountResource.ROCK_SAMPLES;
-		this.siteResourceGoal = SITE_GOAL;
-		this.resourceCollectionRate = COLLECTION_RATE;
-		this.containerType = SpecimenContainer.class;
-		this.containerNum = REQUIRED_SPECIMEN_CONTAINERS;
+    	// Initialize explored sites.
+    	exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
 		
-		// Set collection navpoints.
+		// Set exploration navpoints.
 		for (int x = 0; x < explorationSites.size(); x++) 
-			addNavpoint(new NavPoint((Coordinates) explorationSites.get(x), getCollectionSiteDescription(x + 1)));
+			addNavpoint(new NavPoint((Coordinates) explorationSites.get(x), "exploration site " + (x + 1)));
 		
 		// Add home navpoint.
 		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
@@ -182,8 +167,8 @@ public class Exploration extends RoverMission {
     	Iterator<Person> i = members.iterator();
     	while (i.hasNext()) i.next().getMind().setMission(this);
     	
-		// Add collecting phase.
-		addPhase(COLLECT_RESOURCES);
+		// Add exploring site phase.
+		addPhase(EXPLORE_SITE);
 		
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
@@ -191,10 +176,10 @@ public class Exploration extends RoverMission {
 
        	// Check if vehicle can carry enough supplies for the mission.
        	try {
-       		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (CollectingResourcesMission)");
+       		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (Exploration)");
        	}
        	catch (Exception e) {
-       		throw new MissionException(null, e);
+       		throw new MissionException(getPhase(), e);
        	}
     }
 
@@ -220,10 +205,11 @@ public class Exploration extends RoverMission {
 			// Check if there are enough specimen containers at the settlement for collecting rock samples.
 			boolean enoughContainers = false;
 			try {
-				enoughContainers = (numCollectingContainersAvailable(settlement, SpecimenContainer.class) >= REQUIRED_SPECIMEN_CONTAINERS);
+				int numContainers = settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class);
+				enoughContainers = (numContainers >= REQUIRED_SPECIMEN_CONTAINERS);
 			}
-			catch (Exception e) {
-				e.printStackTrace(System.err);
+			catch (InventoryException e) {
+				logger.log(Level.SEVERE, "Error checking if enough collecting containers available.");
 			}
 			
 			// Check for embarking missions.
@@ -261,12 +247,11 @@ public class Exploration extends RoverMission {
 				setPhaseDescription("Disembarking at " + getCurrentNavpoint().getSettlement().getName());
 			}
 			else {
-				setPhase(COLLECT_RESOURCES);
-				setPhaseDescription("Collecting resources at " + getCurrentNavpoint().getDescription());
-				collectionSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+				setPhase(EXPLORE_SITE);
+				setPhaseDescription("Exploring site at " + getCurrentNavpoint().getDescription());
 			}
 		}
-		else if (COLLECT_RESOURCES.equals(getPhase())) {
+		else if (EXPLORE_SITE.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
@@ -277,71 +262,68 @@ public class Exploration extends RoverMission {
     @Override
     protected void performPhase(Person person) throws MissionException {
     	super.performPhase(person);
-    	if (COLLECT_RESOURCES.equals(getPhase())) collectingPhase(person);
+    	if (EXPLORE_SITE.equals(getPhase())) exploringPhase(person);
     }
     
-    public void endCollectingAtSite() {
-    	logger.info("Collecting phase ended due to external trigger.");
-    	endCollectingSite = true;
+    /**
+     * Ends the exploration at a site.
+     */
+    public void endExplorationAtSite() {
+    	logger.info("Explore site phase ended due to external trigger.");
+    	endExploringSite = true;
     	
-    	// End each member's collection task.
+    	// End each member's explore site task.
     	Iterator<Person> i = getPeople().iterator();
     	while (i.hasNext()) {
     		Task task = i.next().getMind().getTaskManager().getTask();
-    		if (task instanceof CollectResources) 
-    			((CollectResources) task).endEVA();
+    		if (task instanceof ExploreSite) ((ExploreSite) task).endEVA();
     	}
     }
     
 	/** 
-	 * Performs the collecting phase of the mission.
+	 * Performs the explore site phase of the mission.
 	 * @param person the person currently performing the mission
-	 * @throws MissionException if problem performing collecting phase.
+	 * @throws MissionException if problem performing phase.
 	 */
-	private final void collectingPhase(Person person) throws MissionException {
-		Inventory inv = getRover().getInventory();
-		double resourcesCollected = 0D;
-		double resourcesCapacity = 0D;
-		try {
-			resourcesCollected = inv.getAmountResourceStored(resourceType);
-			resourcesCapacity = inv.getAmountResourceCapacity(resourceType);
-		}
-		catch (InventoryException e) {
-			throw new MissionException(getPhase(), e);
-		}
-	
-		// Calculate resources collected at the site so far.
-		siteCollectedResources = resourcesCollected - collectingStart;
+	private final void exploringPhase(Person person) throws MissionException {
 
+		// Add new explored site if just starting exploring.
+		if (currentSite == null) {
+			createNewExploredSite();
+			explorationSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		}
+		
+		// Check if crew has been at site for more than one sol.
+		boolean timeExpired = false;
+		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		if (MarsClock.getTimeDiff(currentTime, explorationSiteStartTime) >= EXPLORING_SITE_TIME) 
+			timeExpired = true;
+		
 		if (isEveryoneInRover()) {
 
-			// Check if end collecting flag is set.
-			if (endCollectingSite) {
-				endCollectingSite = false;
+			// Check if end exploring flag is set.
+			if (endExploringSite) {
+				endExploringSite = false;
 				setPhaseEnded(true);
 			}
 			
-			// Check if rover capacity for resources is met, then end this phase.
-			if (resourcesCollected >= resourcesCapacity) setPhaseEnded(true);
+			// Check if crew has been at site for more than one sol, then end this phase.
+			if (timeExpired) setPhaseEnded(true);
 
-			// If collected resources are sufficient for this site, end the collecting phase.
-			if (siteCollectedResources >= siteResourceGoal) setPhaseEnded(true);
-
-			// Determine if no one can start the collect resources task.
-			boolean nobodyCollect = true;
+			// Determine if no one can start the explore site task.
+			boolean nobodyExplore = true;
 			Iterator<Person> j = getPeople().iterator();
 			while (j.hasNext()) {
-				if (CollectResources.canCollectResources(j.next(), getRover(), containerType, resourceType)) 
-					nobodyCollect = false;
+				if (ExploreSite.canExploreSite(j.next(), getRover())) nobodyExplore = false;
 			}
 	    
-			// If no one can collect resources and this is not due to it just being
-			// night time, end the collecting phase.
+			// If no one can explore the site and this is not due to it just being
+			// night time, end the exploring phase.
 			try {
 				Mars mars = Simulation.instance().getMars();
 				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
 				double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
-				if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
+				if (nobodyExplore && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
 			} 
 			catch (Exception e) {
 				throw new MissionException(getPhase(), e);
@@ -359,34 +341,61 @@ public class Exploration extends RoverMission {
 				}
 			}
 			catch (Exception e) {
-				throw new MissionException(e.getMessage(), getPhase());
+				throw new MissionException(getPhase(), e.getMessage());
+			}
+		}
+		else {
+			// If exploration time has expired for the site, have everyone end their exploration tasks.
+			if (timeExpired) {
+				Iterator<Person> i = getPeople().iterator();
+				while (i.hasNext()) {
+					Task task = i.next().getMind().getTaskManager().getTask();
+					if ((task != null) && (task instanceof ExploreSite))
+						((ExploreSite) task).endEVA();
+				}
 			}
 		}
 
 		if (!getPhaseEnded()) {
-			if ((siteCollectedResources < siteResourceGoal) && !endCollectingSite) {
-				// If person can collect resources, start him/her on that task.
-				if (CollectResources.canCollectResources(person, getRover(), containerType, resourceType)) {
+			
+			if (!endExploringSite && !timeExpired) {
+				// If person can explore the site, start that task.
+				if (ExploreSite.canExploreSite(person, getRover())) {
 					try {
-						CollectResources collectResources = new CollectResources("Collecting Resources", person, 
-							getRover(), resourceType, resourceCollectionRate, 
-							siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceType), containerType);
-						assignTask(person, collectResources);
+						assignTask(person, new ExploreSite(person, currentSite, (Rover) getVehicle()));
 					}
-					catch (Exception e) {
-						throw new MissionException(COLLECT_RESOURCES, e);
+					catch(Exception e) {
+						throw new MissionException(getPhase(), e);
 					}
 				}
 			}
 		}
-		else {
-			// If the rover is full of resources, head home.
-			if (siteCollectedResources >= resourcesCapacity) {
-				setNextNavpointIndex(getNumberOfNavpoints() - 2);
-				updateTravelDestination();
-				siteCollectedResources = 0D;
-			}
+		else currentSite = null;
+	}
+	
+	/**
+	 * Creates a new explored site at the current location, creates initial estimates for mineral
+	 * concentrations, and adds it to the explored site list.
+	 * @throws MissionException if error creating explored site.
+	 */
+	private void createNewExploredSite() throws MissionException {
+		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		MineralMap mineralMap = surfaceFeatures.getMineralMap();
+		String[] mineralTypes = mineralMap.getMineralTypeNames();
+		Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
+		for (int x = 0; x < mineralTypes.length; x++) {
+			double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_CEILING * 2D) - 
+					MINERAL_ESTIMATION_CEILING;
+			double actualConcentration = 
+					mineralMap.getMineralConcentration(mineralTypes[x], getCurrentMissionLocation());
+			estimation += actualConcentration;
+			if (estimation < 0D) estimation = 0D - estimation;
+			else if (estimation > 100D) estimation = 100D - estimation;
+			initialMineralEstimations.put(mineralTypes[x], estimation);
 		}
+		currentSite = surfaceFeatures.addExploredLocation(
+				new Coordinates(getCurrentMissionLocation()), initialMineralEstimations);
+		exploredSites.add(currentSite);
 	}
 	
 	@Override
@@ -415,62 +424,65 @@ public class Exploration extends RoverMission {
 	}
 	
 	@Override
-    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws Exception {
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException {
     	double result = super.getEstimatedRemainingMissionTime(useBuffer);
-    	
-    	result += getEstimatedRemainingCollectionSiteTime(useBuffer);
-    	
+    	result += getEstimatedRemainingExplorationSiteTime();
     	return result;
     }
 	
     /**
-     * Gets the estimated time remaining for collection sites in the mission.
-     * @param useBuffer use time buffer in estimations if true.
+     * Gets the estimated time remaining for exploration sites in the mission.
      * @return time (millisols)
-     * @throws Exception if error estimating time.
+     * @throws MissionException if error estimating time.
      */
-    private final double getEstimatedRemainingCollectionSiteTime(boolean useBuffer) throws Exception {
+    private final double getEstimatedRemainingExplorationSiteTime() throws MissionException {
     	double result = 0D;
     	
-    	// Add estimated remaining collection time at current site if still there.
-    	if (COLLECT_RESOURCES.equals(getPhase())) {
+    	// Add estimated remaining exploration time at current site if still there.
+    	if (EXPLORE_SITE.equals(getPhase())) {
     		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-    		double timeSpentAtCollectionSite = MarsClock.getTimeDiff(currentTime, collectionSiteStartTime);
-    		double remainingTime = getEstimatedTimeAtCollectionSite(useBuffer) - timeSpentAtCollectionSite;
+    		double timeSpentAtExplorationSite = MarsClock.getTimeDiff(currentTime, explorationSiteStartTime);
+    		double remainingTime = EXPLORING_SITE_TIME - timeSpentAtExplorationSite;
     		if (remainingTime > 0D) result += remainingTime;
     	}
     	
-    	// Add estimated collection time at sites that haven't been visited yet.
-    	int remainingCollectionSites = getNumCollectionSites() - getNumCollectionSitesVisited();
-    	result += getEstimatedTimeAtCollectionSite(useBuffer) * remainingCollectionSites;
+    	// Add estimated exploration time at sites that haven't been visited yet.
+    	int remainingExplorationSites = getNumExplorationSites() - getNumExplorationSitesVisited();
+    	result += EXPLORING_SITE_TIME * remainingExplorationSites;
     	
     	return result;
     }
     
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, boolean parts) throws Exception {
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
+    		boolean parts) throws MissionException {
     	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
     	
-    	double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
-    	double timeSols = collectionSitesTime / 1000D;
+    	double explorationSitesTime = getEstimatedRemainingExplorationSiteTime();
+    	double timeSols = explorationSitesTime / 1000D;
     	
     	int crewNum = getPeopleNumber();
     	
     	// Determine life support supplies needed for trip.
-    	double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-    	if (result.containsKey(AmountResource.OXYGEN)) 
-    		oxygenAmount += ((Double) result.get(AmountResource.OXYGEN)).doubleValue();
-    	result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
+    	try {
+    		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
+    		if (result.containsKey(AmountResource.OXYGEN)) 
+    			oxygenAmount += ((Double) result.get(AmountResource.OXYGEN)).doubleValue();
+    		result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
     		
-    	double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-    	if (result.containsKey(AmountResource.WATER)) 
-    		waterAmount += ((Double) result.get(AmountResource.WATER)).doubleValue();
-    	result.put(AmountResource.WATER, new Double(waterAmount));
+    		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
+    		if (result.containsKey(AmountResource.WATER)) 
+    			waterAmount += ((Double) result.get(AmountResource.WATER)).doubleValue();
+    		result.put(AmountResource.WATER, new Double(waterAmount));
     		
-    	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-    	if (result.containsKey(AmountResource.FOOD)) 
-    		foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
-    	result.put(AmountResource.FOOD, new Double(foodAmount));
+    		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
+    		if (result.containsKey(AmountResource.FOOD)) 
+    			foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
+    		result.put(AmountResource.FOOD, new Double(foodAmount));
+    	}
+    	catch(Exception e) {
+    		throw new MissionException(getPhase(), e);
+    	}
     	
     	return result;
     }
@@ -481,7 +493,7 @@ public class Exploration extends RoverMission {
 	}
 	
 	@Override
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws Exception {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws MissionException {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
 		// Check of one rover has a research lab and the other one doesn't.
@@ -496,57 +508,34 @@ public class Exploration extends RoverMission {
 	}
     
     /**
-     * Gets the estimated time spent at a collection site.
-     * @param useBuffer use time buffers in estimation if true.
+     * Gets the estimated time spent at all exploration sites.
      * @return time (millisols)
      */
-    protected double getEstimatedTimeAtCollectionSite(boolean useBuffer) {
-    	double result = 0D;
-    	
-    	// Add estimated remaining collection time at current site if still there.
-    	if (COLLECT_RESOURCES.equals(getPhase())) {
-    		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-    		double timeSpentAtCollectionSite = MarsClock.getTimeDiff(currentTime, collectionSiteStartTime);
-    		double remainingTime = getEstimatedTimeAtCollectionSite(useBuffer) - timeSpentAtCollectionSite;
-    		if (remainingTime > 0D) result += remainingTime;
-    	}
-    	
-    	// Add estimated collection time at sites that haven't been visited yet.
-    	int remainingCollectionSites = getNumCollectionSites() - getNumCollectionSitesVisited();
-    	result += getEstimatedTimeAtCollectionSite(useBuffer) * remainingCollectionSites;
-    	
-    	return result;
+    protected double getEstimatedTimeAtExplorationSites() {
+    	return EXPLORING_SITE_TIME * getNumExplorationSites();
     }
     
     /**
-     * Gets the total number of collection sites for this mission.
+     * Gets the total number of exploration sites for this mission.
      * @return number of sites.
      */
-    public final int getNumCollectionSites() {
+    public final int getNumExplorationSites() {
     	return getNumberOfNavpoints() - 2;
     }
     
     /**
-     * Gets the number of collection sites that have been currently visited by the mission.
+     * Gets the number of exploration sites that have been currently visited by the mission.
      * @return number of sites.
      */
-    public final int getNumCollectionSitesVisited() {
+    public final int getNumExplorationSitesVisited() {
     	int result = getCurrentNavpointIndex();
     	if (result == (getNumberOfNavpoints() - 1)) result -= 1;
     	return result;
     }
     
-    /**
-     * Gets the description of a collection site.
-     * @param siteNum the number of the site.
-     * @return description
-     */
-    protected String getCollectionSiteDescription(int siteNum) {
-    	return "exploration site " + siteNum;
-    }
-    
     @Override
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception {
+    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) 
+    		throws MissionException {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
     		Map<Class, Integer> result = new HashMap<Class, Integer>();
@@ -554,32 +543,22 @@ public class Exploration extends RoverMission {
         	// Include one EVA suit per person on mission.
         	result.put(EVASuit.class, new Integer(getPeopleNumber()));
     		
-    		// Include required number of containers.
-    		result.put(containerType, new Integer(containerNum));
+    		// Include required number of specimen containers.
+    		result.put(SpecimenContainer.class, new Integer(REQUIRED_SPECIMEN_CONTAINERS));
     	
     		equipmentNeededCache = result;
     		return result;
     	}
     }
-    
-	/**
-	 * Gets the number of empty containers of given type at the settlement.
-	 * @param settlement the settlement
-	 * @param containerType the type of container
-	 * @return number of empty containers.
-	 */
-	protected static int numCollectingContainersAvailable(Settlement settlement, 
-			Class containerType) throws Exception {
-		return settlement.getInventory().findNumEmptyUnitsOfClass(containerType); 
-	}
 	
     /**
      * Gets the time limit of the trip based on life support capacity.
      * @param useBuffer use time buffer in estimation if true.
      * @return time (millisols) limit.
-     * @throws Exception if error determining time limit.
+     * @throws MissionException if error determining time limit.
      */
-    public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) throws Exception {
+    public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) 
+    		throws MissionException {
     	
     	Inventory vInv = rover.getInventory();
     	
@@ -587,23 +566,28 @@ public class Exploration extends RoverMission {
     	
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 		
-    	// Check food capacity as time limit.
-    	double foodConsumptionRate = config.getFoodConsumptionRate();
-    	double foodCapacity = vInv.getAmountResourceCapacity(AmountResource.FOOD);
-    	double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
-    	if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
+    	try {
+    		// Check food capacity as time limit.
+    		double foodConsumptionRate = config.getFoodConsumptionRate();
+    		double foodCapacity = vInv.getAmountResourceCapacity(AmountResource.FOOD);
+    		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
+    		if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
     		
-    	// Check water capacity as time limit.
-    	double waterConsumptionRate = config.getWaterConsumptionRate();
-    	double waterCapacity = vInv.getAmountResourceCapacity(AmountResource.WATER);
-    	double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
-    	if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
+    		// Check water capacity as time limit.
+    		double waterConsumptionRate = config.getWaterConsumptionRate();
+    		double waterCapacity = vInv.getAmountResourceCapacity(AmountResource.WATER);
+    		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
+    		if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
     		
-    	// Check oxygen capacity as time limit.
-    	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
-    	double oxygenCapacity = vInv.getAmountResourceCapacity(AmountResource.OXYGEN);
-    	double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
-    	if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
+    		// Check oxygen capacity as time limit.
+    		double oxygenConsumptionRate = config.getOxygenConsumptionRate();
+    		double oxygenCapacity = vInv.getAmountResourceCapacity(AmountResource.OXYGEN);
+    		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
+    		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(null, e);
+    	}
     	
     	// Convert timeLimit into millisols and use error margin.
     	timeLimit = (timeLimit * 1000D);
@@ -613,25 +597,26 @@ public class Exploration extends RoverMission {
     }
     
 	/** 
-	 * Determine the locations of the sample collection sites.
+	 * Determine the locations of the exploration sites.
 	 * @param roverRange the rover's driving range
-	 * @param numSites the number of collection sites
-	 * @throws MissionException of collection sites can not be determined.
+	 * @param numSites the number of exploration sites
+	 * @throws MissionException if exploration sites can not be determined.
 	 */
-	private void determineCollectionSites(double roverRange, double tripTimeLimit, int numSites) throws MissionException {
+	private void determineExplorationSites(double roverRange, double tripTimeLimit, int numSites) 
+			throws MissionException {
 
 		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
 		
-		// Determining the actual travelling range.
+		// Determining the actual traveling range.
 		double range = roverRange;
-		double timeRange = getTripTimeRange(tripTimeLimit, numSites, true);
+		double timeRange = getTripTimeRange(tripTimeLimit);
     	if (timeRange < range) range = timeRange;
         
     	try {
     		// Get the current location.
     		Coordinates startingLocation = getCurrentMissionLocation();
         
-    		// Determine the first collection site.
+    		// Determine the first exploration site.
     		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
     		double limit = range / 4D;
     		double siteDistance = RandomUtil.getRandomDouble(limit);
@@ -639,7 +624,7 @@ public class Exploration extends RoverMission {
     		unorderedSites.add(newLocation);
     		Coordinates currentLocation = newLocation;
         
-    		// Determine remaining collection sites.
+    		// Determine remaining exploration sites.
     		double remainingRange = (range / 2D) - siteDistance;
     		for (int x=1; x < numSites; x++) {
     			double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
@@ -657,7 +642,7 @@ public class Exploration extends RoverMission {
     		}
 
     		// Reorder sites for shortest distance.
-    		int collectionSiteNum = 1;
+    		int explorationSiteNum = 1;
     		currentLocation = startingLocation;
     		while (unorderedSites.size() > 0) {
     			Coordinates shortest = unorderedSites.get(0);
@@ -667,10 +652,10 @@ public class Exploration extends RoverMission {
     				if (currentLocation.getDistance(site) < currentLocation.getDistance(shortest)) 
     					shortest = site;
     			}
-    			addNavpoint(new NavPoint(shortest, getCollectionSiteDescription(collectionSiteNum)));
+    			addNavpoint(new NavPoint(shortest, "exploration site " + explorationSiteNum));
     			unorderedSites.remove(shortest);
     			currentLocation = shortest;
-    			collectionSiteNum++;
+    			explorationSiteNum++;
     		}
     	}
     	catch (Exception e) {
@@ -679,14 +664,12 @@ public class Exploration extends RoverMission {
 	}
 	
 	/**
-	 * Gets the range of a trip based on its time limit and collection sites.
+	 * Gets the range of a trip based on its time limit and exploration sites.
 	 * @param tripTimeLimit time (millisols) limit of trip.
-	 * @param numSites the number of collection sites.
-	 * @param useBuffer Use time buffer in estimations if true.
 	 * @return range (km) limit.
 	 */
-	private double getTripTimeRange(double tripTimeLimit, int numSites, boolean useBuffer) {
-		double timeAtSites = getEstimatedTimeAtCollectionSite(useBuffer) * numSites;
+	private double getTripTimeRange(double tripTimeLimit) {
+		double timeAtSites = getEstimatedTimeAtExplorationSites();
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
     	double averageSpeed = getAverageVehicleSpeedForOperators();
     	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);

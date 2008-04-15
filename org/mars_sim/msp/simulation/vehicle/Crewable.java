@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crewable.java
- * @version 2.80 2006-12-03
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -36,7 +36,7 @@ public interface Crewable {
      * Gets a collection of the crewmembers.
      * @return crewmembers as Collection
      */
-    public Collection getCrew();
+    public Collection<Person> getCrew();
 
     /**
      * Checks if person is a crewmember.

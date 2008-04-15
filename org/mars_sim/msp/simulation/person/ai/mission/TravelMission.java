@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelMission.java
- * @version 2.81 2007-08-12
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -56,7 +56,7 @@ public abstract class TravelMission extends Mission {
 			lastStopNavpoint = startingNavPoint;
 		}
 		catch (Exception e) {
-			throw new MissionException(null, e);
+			throw new MissionException(getPhase(), e);
 		}
 		
 		setTravelStatus(AT_NAVPOINT);
@@ -219,9 +219,9 @@ public abstract class TravelMission extends Mission {
 	
 	/**
 	 * The mission has reached the next navpoint.
-	 * @throws Exception if error determining mission location.
+	 * @throws MisisonException if error determining mission location.
 	 */
-	protected final void reachedNextNode() throws Exception {
+	protected final void reachedNextNode() throws MissionException {
 		setTravelStatus(AT_NAVPOINT);
 		lastStopNavpoint = getCurrentNavpoint();
 	}
@@ -255,9 +255,9 @@ public abstract class TravelMission extends Mission {
 	/**
 	 * Gets the remaining distance for the current leg of the mission.
 	 * @return distance (km) or 0 if not in the travelling phase.
-	 * @throws Exception if error determining distance.
+	 * @throws MissionException if error determining distance.
 	 */
-	public final double getCurrentLegRemainingDistance() throws Exception {
+	public final double getCurrentLegRemainingDistance() throws MissionException {
 		if (getTravelStatus().equals(TRAVEL_TO_NAVPOINT))
 			return getCurrentMissionLocation().getDistance(getNextNavpoint().getLocation());
 		else return 0D;
@@ -283,9 +283,9 @@ public abstract class TravelMission extends Mission {
 	/**
 	 * Gets the total remaining distance to travel in the mission.
 	 * @return distance (km).
-	 * @throws Exception if error determining distance.
+	 * @throws MissionException if error determining distance.
 	 */
-	public final double getTotalRemainingDistance() throws Exception {
+	public final double getTotalRemainingDistance() throws MissionException {
 		double result = getCurrentLegRemainingDistance();
 		
 		int index = 0;
@@ -314,18 +314,18 @@ public abstract class TravelMission extends Mission {
      * Gets the estimated time remaining for the mission.
      * @param useBuffer use a time buffer in estimation if true.
      * @return time (millisols)
-     * @throws Exception
+     * @throws MissionException
      */
-    public abstract double getEstimatedRemainingMissionTime(boolean useBuffer) throws Exception;
+    public abstract double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException;
     
     /**
      * Gets the estimated time for a trip.
      * @param useBuffer use time buffers in estimation if true.
      * @param distance the distance of the trip.
      * @return time (millisols)
-     * @throws Exception
+     * @throws MissionException
      */
-    public abstract double getEstimatedTripTime(boolean useBuffer, double distance) throws Exception;
+    public abstract double getEstimatedTripTime(boolean useBuffer, double distance) throws MissionException;
     
     /**
      * Update mission to the next navpoint destination.

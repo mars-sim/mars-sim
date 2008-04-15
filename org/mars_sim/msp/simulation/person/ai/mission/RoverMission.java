@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.80 2006-09-08
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -181,9 +181,9 @@ public abstract class RoverMission extends VehicleMission {
 	 * (This method should be overridden by children)
 	 * @param newVehicle the vehicle to check
 	 * @return true if vehicle is usable.
-	 * @throws Exception if problem determining if vehicle is usable.
+	 * @throws MissionException if problem determining if vehicle is usable.
 	 */
-	protected boolean isUsableVehicle(Vehicle newVehicle) throws Exception {
+	protected boolean isUsableVehicle(Vehicle newVehicle) throws MissionException {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		if (!(newVehicle instanceof Rover)) usable = false;
 		return usable;
@@ -233,7 +233,7 @@ public abstract class RoverMission extends VehicleMission {
     	try {
     		Settlement settlement = getVehicle().getSettlement();
     		if (settlement == null) 
-    			throw new MissionException(VehicleMission.EMBARKING, "Vehicle is not at a settlement.");
+    			throw new MissionException(getPhase(), "Vehicle is not at a settlement.");
     	
     		// Add the rover to a garage if possible.
     		if (BuildingManager.getBuilding(getVehicle()) != null) {
@@ -286,7 +286,7 @@ public abstract class RoverMission extends VehicleMission {
     		}
     	}
     	catch (Exception e) {
-    		throw new MissionException(VehicleMission.EMBARKING, e);
+    		throw new MissionException(getPhase(), e);
     	}
     }
     
@@ -308,7 +308,7 @@ public abstract class RoverMission extends VehicleMission {
     			disembarkSettlement.getInventory().storeUnit(getVehicle());
     		}
     		catch (InventoryException e) {
-    			throw new MissionException(VehicleMission.DISEMBARKING, e);
+    			throw new MissionException(getPhase(), e);
     		}
     		
     		// Add vehicle to a garage if available.
@@ -327,7 +327,7 @@ public abstract class RoverMission extends VehicleMission {
         		disembarkSettlement.getInventory().storeUnit(person);
         	}
         	catch (InventoryException e) {
-        		throw new MissionException(VehicleMission.DISEMBARKING, e);
+        		throw new MissionException(getPhase(), e);
         	}
             
             // Add the person to the rover's garage if it's in one.
@@ -341,7 +341,7 @@ public abstract class RoverMission extends VehicleMission {
                 else BuildingManager.addToRandomBuilding(person, disembarkSettlement);
             }
             catch (BuildingException e) {
-            	throw new MissionException(VehicleMission.DISEMBARKING, e);
+            	throw new MissionException(getPhase(), e);
             } 
         }
         
@@ -358,7 +358,7 @@ public abstract class RoverMission extends VehicleMission {
         				BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
         			}
         			catch (Exception e) {
-        				throw new MissionException(VehicleMission.DISEMBARKING, e);
+        				throw new MissionException(getPhase(), e);
         			}
         		}
         	}
@@ -375,7 +375,7 @@ public abstract class RoverMission extends VehicleMission {
         		}
         	}
         	catch (Exception e) {
-        		throw new MissionException(VehicleMission.DISEMBARKING, e);
+        		throw new MissionException(getPhase(), e);
         	}
         
         	// If everyone has left the rover, end the phase.
@@ -405,18 +405,23 @@ public abstract class RoverMission extends VehicleMission {
      * Gets a new instance of an OperateVehicle task for the person.
      * @param person the person operating the vehicle.
      * @return an OperateVehicle task for the person.
-     * @throws Exception if error creating OperateVehicle task.
+     * @throws MissionException if error creating OperateVehicle task.
      */
     protected OperateVehicle getOperateVehicleTask(Person person, String lastOperateVehicleTaskPhase) 
-    		throws Exception {
+    		throws MissionException {
     	OperateVehicle result = null;
-    	if (lastOperateVehicleTaskPhase != null) {
-    		result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(), 
-    				getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
+    	try {
+    		if (lastOperateVehicleTaskPhase != null) {
+    			result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(), 
+    					getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
+    		}
+    		else {
+    			result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
+    					getCurrentLegStartingTime(), getCurrentLegDistance());
+    		}
     	}
-    	else {
-    		result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
-    				getCurrentLegStartingTime(), getCurrentLegDistance());
+    	catch (Exception e) {
+    		throw new MissionException(getPhase(), e);
     	}
     	
     	return result;
@@ -494,8 +499,10 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param useBuffer should a buffer be used when determining resources?
 	 * @param parts include parts.
 	 * @param distance the distance of the trip.
+	 * @throws MissionException if error determining resources.
 	 */
-    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, boolean parts, double distance) throws Exception {
+    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, boolean parts, 
+    		double distance) throws MissionException {
     	Map<Resource, Number> result = super.getResourcesNeededForTrip(useBuffer, parts, distance);
     	
     	// Determine estimate time for trip.
@@ -505,17 +512,22 @@ public abstract class RoverMission extends VehicleMission {
     	int crewNum = getPeopleNumber();
     	
     	// Determine life support supplies needed for trip.
-    	double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-    	if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    	result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
+    	try {
+    		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
+    		if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    		result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
     		
-    	double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-    	if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    	result.put(AmountResource.WATER, new Double(waterAmount));
+    		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
+    		if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    		result.put(AmountResource.WATER, new Double(waterAmount));
     		
-    	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-    	if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    	result.put(AmountResource.FOOD, new Double(foodAmount));
+    		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
+    		if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    		result.put(AmountResource.FOOD, new Double(foodAmount));
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(getPhase(), e);
+    	}
     	
     	return result;
     }
@@ -524,9 +536,10 @@ public abstract class RoverMission extends VehicleMission {
      * Gets the number and types of equipment needed for the mission.
      * @param useBuffer use time buffers in estimation if true.
      * @return map of equipment class and Integer number.
-     * @throws Exception if error determining needed equipment.
+     * @throws MissionException if error determining needed equipment.
      */
-    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) throws Exception;
+    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(
+    		boolean useBuffer) throws MissionException;
     
 	/** 
 	 * Finalizes the mission 

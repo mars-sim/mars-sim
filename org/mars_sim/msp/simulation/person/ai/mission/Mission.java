@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.80 2006-09-08
+ * @version 2.84 2008-04-14
  * @author Scott Davis
  */
 
@@ -35,10 +35,10 @@ import org.mars_sim.msp.simulation.structure.Settlement;
  * A Mission may have one or more people associated with it.
  */
 public abstract class Mission implements Serializable {
-    	private static String CLASS_NAME = 
-    	    "org.mars_sim.msp.simulation.person.ai.mission.Mission";
+	private static String CLASS_NAME = 
+		"org.mars_sim.msp.simulation.person.ai.mission.Mission";
     	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
     
     	
 	// Mission event types
@@ -615,18 +615,19 @@ public abstract class Mission implements Serializable {
 	 * @param useBuffer use time buffers in estimation if true.
 	 * @param parts include parts.
 	 * @return map of amount and item resources and their Double amount or Integer number.
-	 * @throws Exception if error determining needed resources.
+	 * @throws MissionException if error determining needed resources.
 	 */
-    public abstract Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, boolean parts) throws Exception ;
+    public abstract Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
+    		boolean parts) throws MissionException ;
     
     /**
      * Gets the number and types of equipment needed for the mission.
      * @param useBuffer use time buffers in estimation if true.
      * @return map of equipment class and Integer number.
-     * @throws Exception if error determining needed equipment.
+     * @throws MissionException if error determining needed equipment.
      */
     public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) 
-    throws Exception;
+    		throws MissionException;
     
     /** 
      * Time passing for mission.
@@ -648,10 +649,10 @@ public abstract class Mission implements Serializable {
 	/**
 	 * Gets the current location of the mission.
 	 * @return coordinate location.
-	 * @throws Exception if error determining location.
+	 * @throws MissionException if error determining location.
 	 */
-	public final Coordinates getCurrentMissionLocation() throws Exception {
+	public final Coordinates getCurrentMissionLocation() throws MissionException {
 		if (getPeopleNumber() > 0) return ((Person) people.toArray()[0]).getCoordinates();
-		throw new Exception("No people in the mission.");
+		throw new MissionException(getPhase(), "No people in the mission.");
 	}
 }
