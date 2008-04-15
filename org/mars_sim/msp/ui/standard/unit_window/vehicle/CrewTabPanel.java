@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -43,7 +44,7 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
     private JLabel crewCapLabel;
     private DefaultListModel crewListModel;
     private JList crewList;
-    private Collection crewCache;
+    private Collection<Person> crewCache;
     private int crewNumCache;
     private int crewCapacityCache;
     
@@ -87,7 +88,7 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
         // Create crew list model
         crewListModel = new DefaultListModel();
         crewCache = crewable.getCrew();
-        Iterator i = crewCache.iterator();
+        Iterator<Person> i = crewCache.iterator();
         while (i.hasNext()) crewListModel.addElement(i.next());
         
         // Create crew list
@@ -123,10 +124,10 @@ public class CrewTabPanel extends TabPanel implements MouseListener, ActionListe
         }
         
         // Update crew list
-        if (!crewCache.equals(crewable.getCrew())) {
+        if (!Arrays.equals(crewCache.toArray(), crewable.getCrew().toArray())) {
             crewCache = crewable.getCrew();
             crewListModel.clear();
-            Iterator i = crewCache.iterator();
+            Iterator<Person> i = crewCache.iterator();
             while (i.hasNext()) crewListModel.addElement(i.next());
         }
         

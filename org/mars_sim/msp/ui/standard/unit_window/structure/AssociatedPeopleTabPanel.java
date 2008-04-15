@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -42,7 +43,7 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
 	// Data members
 	private DefaultListModel populationListModel;
 	private JList populationList;
-	private Collection populationCache;
+	private Collection<Person> populationCache;
 
 	/**
 	 * Constructor
@@ -99,7 +100,7 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
 		Settlement settlement = (Settlement) unit;
 
 		// Update population list
-		if (!populationCache.equals(settlement.getAllAssociatedPeople())) {
+		if (!Arrays.equals(populationCache.toArray(), settlement.getAllAssociatedPeople().toArray())) {
 			populationCache = settlement.getAllAssociatedPeople();
 			populationListModel.clear();
 			Iterator<Person> i = populationCache.iterator();

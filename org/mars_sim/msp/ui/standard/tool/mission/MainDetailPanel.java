@@ -574,7 +574,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	 * @return the mission member.
     	 */
     	Person getMemberAtIndex(int index) {
-    		if (index < members.size()) {
+    		if ((index >= 0) && (index < members.size())) {
     		    return (Person) members.toArray()[index];
     		} 
     		else {

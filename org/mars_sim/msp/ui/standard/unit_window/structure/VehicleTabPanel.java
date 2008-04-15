@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -34,7 +35,7 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
     
     private DefaultListModel vehicleListModel;
     private JList vehicleList;
-    private Collection vehicleCache;
+    private Collection<Vehicle> vehicleCache;
     
     /**
      * Constructor
@@ -85,7 +86,7 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
         Settlement settlement = (Settlement) unit;
         
         // Update vehicle list
-        if (!vehicleCache.equals(settlement.getParkedVehicles())) {
+        if (!Arrays.equals(vehicleCache.toArray(), settlement.getParkedVehicles().toArray())) {
             vehicleCache = settlement.getParkedVehicles();
             vehicleListModel.clear();
             Iterator i = vehicleCache.iterator();

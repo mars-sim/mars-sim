@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -54,7 +55,7 @@ public class MissionTabPanel extends TabPanel {
 	// Cache
 	private String missionCache = "";
     private String missionPhaseCache = "";
-    private Collection memberCache;
+    private Collection<Person> memberCache;
 	
     /**
      * Constructor
@@ -126,7 +127,7 @@ public class MissionTabPanel extends TabPanel {
         // Create member list model
         memberListModel = new DefaultListModel();
         if (mission != null) memberCache = mission.getPeople();
-        else memberCache = new ConcurrentLinkedQueue();
+        else memberCache = new ConcurrentLinkedQueue<Person>();
         Iterator i = memberCache.iterator();
         while (i.hasNext()) memberListModel.addElement(i.next());
         
@@ -197,10 +198,10 @@ public class MissionTabPanel extends TabPanel {
             missionPhaseTextArea.setText(missionPhaseCache);
 		
         // Update member list
-		Collection tempCollection = null;
+		Collection<Person> tempCollection = null;
 		if (mission != null) tempCollection = mission.getPeople();
-		else tempCollection = new ConcurrentLinkedQueue();
-        if (!memberCache.equals(tempCollection)) {
+		else tempCollection = new ConcurrentLinkedQueue<Person>();
+        if (!Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
             memberCache = tempCollection;
             memberListModel.clear();
             Iterator i = memberCache.iterator();
