@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 2.84 2008-04-10
+ * @version 2.84 2008-04-17
  * @author Lars Naesbye Christensen
  */
 
@@ -50,19 +50,19 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 	// Tool name
 	public static final String NAME = "User Guide";
-        private List history = new ArrayList();
-        private int historyIndex;
 
     private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.tool.guide.GuideWindow";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+   private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private JViewport viewPort; // The view port for the text pane
     private HTMLContentPane htmlPane; // our HTML content pane
     private URL guideURL = GuideWindow.class.getResource("../../../../../../../docs/help/userguide.html");
     private URL tempURL; // for debugging
+    private JButton homeButton = new JButton ("Home");
+    private JButton backButton = new JButton ("Back");
+    private JButton forwardButton = new JButton ("Forward");
 
 
     /** Constructs a TableWindow object
@@ -79,31 +79,29 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
     setContentPane(mainPane);
 
-    JButton homeButton = new JButton ("Home");
     homeButton.setActionCommand("home");
     homeButton.setToolTipText("Go to Home");
     homeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
     htmlPane.goToURL(guideURL);
-				}
+    updateButtons();			}
         }
     );
 
-    JButton backButton = new JButton ("Back");
     backButton.setActionCommand("back");
     backButton.setToolTipText("Back");
     backButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
 	URL tempURL= htmlPane.back();			
-				}
+	updateButtons();		}
         });
-    JButton forwardButton = new JButton ("Forward");
+
     forwardButton.setActionCommand("forward");
     forwardButton.setToolTipText("Forward");
     forwardButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
 	URL tempURL= htmlPane.forward();
-				}
+	updateButtons();	}
         });
 
 
@@ -137,6 +135,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     // Allow the window to be resized by the user.
     setResizable(true);
     setMaximizable(true);
+    updateButtons();
 
     // Show the window
     setVisible(true);
@@ -146,9 +145,15 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
   public void hyperlinkUpdate(HyperlinkEvent event) {
     if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
         htmlPane.goToURL(event.getURL());
+        updateButtons();
     }
   }
 
+  public void updateButtons() {
+    homeButton.setEnabled(true);
+    backButton.setEnabled(!htmlPane.isFirst());
+    forwardButton.setEnabled(!htmlPane.isLast());
+  }
 
   // Implementing ActionListener method
   public void actionPerformed(ActionEvent event) {
