@@ -1,21 +1,19 @@
 /**
  * Mars Simulation Project
  * ResearchBotany.java
- * @version 2.81 2007-08-12
+ * @version 2.84 2008-04-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
-import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
@@ -36,7 +34,7 @@ public class ResearchBotany extends ResearchScience implements Serializable {
 	 * @throws Exception if error constructing task.
 	 */
 	public ResearchBotany(Person person) throws Exception {
-		super(Skill.BOTANY, person, false, null, 0D);
+		super(Skill.BOTANY, person);
 	}
 	
 	/** 
@@ -48,7 +46,7 @@ public class ResearchBotany extends ResearchScience implements Serializable {
 		double result = 0D;
 
 		try {
-			Lab lab = getLocalLab(person, Skill.BOTANY, false, null);
+			Lab lab = getLocalLab(person, Skill.BOTANY);
 			if (lab != null) {
 				result = 25D; 
 		
@@ -80,25 +78,5 @@ public class ResearchBotany extends ResearchScience implements Serializable {
 		if (job != null) result *= job.getStartTaskProbabilityModifier(ResearchBotany.class);		
 
 		return result;
-	}
-	
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(Skill.BOTANY);
-	}  
-	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(1);
-		results.add(Skill.BOTANY);
-		return results;
 	}
 }

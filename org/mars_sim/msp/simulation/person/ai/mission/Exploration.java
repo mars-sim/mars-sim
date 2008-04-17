@@ -394,7 +394,8 @@ public class Exploration extends RoverMission {
 			initialMineralEstimations.put(mineralTypes[x], estimation);
 		}
 		currentSite = surfaceFeatures.addExploredLocation(
-				new Coordinates(getCurrentMissionLocation()), initialMineralEstimations);
+				new Coordinates(getCurrentMissionLocation()), initialMineralEstimations, 
+				getAssociatedSettlement());
 		exploredSites.add(currentSite);
 	}
 	
@@ -675,5 +676,13 @@ public class Exploration extends RoverMission {
     	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
     	double averageSpeedMillisol = averageSpeed / millisolsInHour;
     	return tripTimeTravellingLimit * averageSpeedMillisol;
+	}
+	
+	/**
+	 * Gets a list of sites explored by the mission so far.
+	 * @return list of explored sites.
+	 */
+	public List<ExploredLocation> getExploredSites() {
+		return exploredSites;
 	}
 }

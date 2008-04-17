@@ -42,7 +42,7 @@ public class TaskManager implements Serializable {
                                        MaintainGroundVehicleEVA.class,
                                        Sleep.class, EatMeal.class,
                                        MedicalAssistance.class,
-                                       StudyRockSamples.class,
+                                       ResearchAreology.class,
                                        RepairMalfunction.class,
                                        RepairEVAMalfunction.class,
                                        EnterAirlock.class,

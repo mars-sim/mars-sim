@@ -28,7 +28,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.person.ai.task.CollectResources;
 import org.mars_sim.msp.simulation.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.simulation.person.ai.task.ExitAirlock;
-import org.mars_sim.msp.simulation.person.ai.task.StudyRockSamples;
+import org.mars_sim.msp.simulation.person.ai.task.ResearchAreology;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
@@ -56,7 +56,7 @@ public class Areologist extends Job implements Serializable {
 		super("Areologist");
 		
 		// Add areologist-related tasks.
-		jobTasks.add(StudyRockSamples.class);
+		jobTasks.add(ResearchAreology.class);
 		jobTasks.add(CollectResources.class);
 		jobTasks.add(EnterAirlock.class);
 		jobTasks.add(ExitAirlock.class);

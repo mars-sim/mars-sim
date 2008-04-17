@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /**
  * A class representing an explored location.
@@ -25,17 +26,20 @@ public class ExploredLocation implements Serializable {
 	private Coordinates location;
 	private Map<String, Double> estimatedMineralConcentrations;
 	private boolean mined;
+	private Settlement settlement;
 	
 	/**
 	 * Constructor
 	 * @param location the location coordinates.
 	 * @param estimatedMineralConcentrations a map of all mineral types 
      * and their estimated concentrations (0% -100%)
+     * @param the settlement the exploring mission is from.
 	 */
 	ExploredLocation(Coordinates location, 
-			Map<String, Double> estimatedMineralConcentrations) {
+			Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
 		this.location = new Coordinates(location);
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
+		this.settlement = settlement;
 		mined = false;
 	}
 	
@@ -70,5 +74,13 @@ public class ExploredLocation implements Serializable {
 	 */
 	public boolean isMined() {
 		return mined;
+	}
+	
+	/**
+	 * The settlement that explored this site.
+	 * @return settlement
+	 */
+	public Settlement getSettlement() {
+		return settlement;
 	}
 }

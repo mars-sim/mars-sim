@@ -40,7 +40,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	
 	// Static members
 	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 10D;
-	private static final double AVERAGE_ROCK_SAMPLE_MASS = .5D;
+	public static final double AVERAGE_ROCK_SAMPLE_MASS = .5D;
 	
 	// Data members
 	private ExploredLocation site;

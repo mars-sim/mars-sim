@@ -13,6 +13,7 @@ import java.util.*;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
  * SurfaceFeatures represents the surface terrain and landmarks of the virtual Mars. 
@@ -150,11 +151,13 @@ public class SurfaceFeatures implements Serializable {
      * @param location the location coordinates.
      * @param estimatedMineralConcentrations a map of all mineral types 
      * and their estimated concentrations (0% -100%)
+     * @param the settlement the exploring mission is from.
      * @return the explored location
      */
     public ExploredLocation addExploredLocation(Coordinates location, 
-    		Map<String, Double> estimatedMineralConcentrations) {
-    	ExploredLocation result = new ExploredLocation(location, estimatedMineralConcentrations);
+    		Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
+    	ExploredLocation result = new ExploredLocation(location, 
+    			estimatedMineralConcentrations, settlement);
     	exploredLocations.add(result);
     	return result;
     }

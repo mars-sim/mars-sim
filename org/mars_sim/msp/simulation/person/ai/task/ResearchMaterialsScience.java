@@ -1,22 +1,19 @@
 /**
  * Mars Simulation Project
  * ResearchMaterialsScience.java
- * @version 2.83 2008-01-19
+ * @version 2.84 2008-04-16
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
-import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -39,7 +36,7 @@ public class ResearchMaterialsScience extends ResearchScience implements
 	 * @throws Exception if error constructing task.
 	 */
 	public ResearchMaterialsScience(Person person) throws Exception {
-		super(Skill.MATERIALS_SCIENCE, person, false, null, 0D);
+		super(Skill.MATERIALS_SCIENCE, person);
 	}
 	
 	/** 
@@ -51,7 +48,7 @@ public class ResearchMaterialsScience extends ResearchScience implements
 		double result = 0D;
 
 		try {
-			Lab lab = getLocalLab(person, Skill.MATERIALS_SCIENCE, false, null);
+			Lab lab = getLocalLab(person, Skill.MATERIALS_SCIENCE);
 			if (lab != null) {
 				result = 25D; 
 		
@@ -83,25 +80,5 @@ public class ResearchMaterialsScience extends ResearchScience implements
 		if (job != null) result *= job.getStartTaskProbabilityModifier(ResearchMaterialsScience.class);		
 
 		return result;
-	}
-	
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
-	}  
-	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(1);
-		results.add(Skill.MATERIALS_SCIENCE);
-		return results;
 	}
 }
