@@ -81,12 +81,12 @@ public class RandomMineralMap implements Serializable, MineralMap {
 				
 				// Create super set of topographical regions.
 				Set<Coordinates> regionSet = new HashSet<Coordinates>(4000);
-				Iterator<String> j = mineralType.locals.iterator();
+				Iterator<String> j = mineralType.locales.iterator();
 				while (j.hasNext()) {
-					String local = j.next().trim();
-					if (CRATER_REGION.equalsIgnoreCase(local)) regionSet.addAll(craterRegionSet);
-					else if (VOLCANIC_REGION.equalsIgnoreCase(local)) regionSet.addAll(volcanicRegionSet);
-					else if (SEDIMENTARY_REGION.equalsIgnoreCase(local)) regionSet.addAll(sedimentaryRegionSet);
+					String locale = j.next().trim();
+					if (CRATER_REGION.equalsIgnoreCase(locale)) regionSet.addAll(craterRegionSet);
+					else if (VOLCANIC_REGION.equalsIgnoreCase(locale)) regionSet.addAll(volcanicRegionSet);
+					else if (SEDIMENTARY_REGION.equalsIgnoreCase(locale)) regionSet.addAll(sedimentaryRegionSet);
 				}
 				Coordinates[] regionArray = regionSet.toArray(new Coordinates[regionSet.size()]);
 				
@@ -107,7 +107,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 					}
 				}
 				else {
-					// If no locals, randomly distribute mineral on surface.
+					// If no locales, randomly distribute mineral on surface.
 					int concentrationNumber = Math.round(100F / 
 							getFrequencyModifier(mineralType.frequency));
 					for (int x = 0; x < concentrationNumber; x++) {

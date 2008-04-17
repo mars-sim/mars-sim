@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMap.java
- * @version 2.84 2008-03-26
+ * @version 2.84 2008-04-17
  * @author Scott Davis
  */
 
@@ -21,8 +21,8 @@ public class MineralMapConfig implements Serializable {
 	private static final String MINERAL = "mineral";
 	private static final String NAME = "name";
 	private static final String FREQUENCY = "frequency";
-	private static final String LOCAL_LIST = "local-list";
-	private static final String LOCAL = "local";
+	private static final String LOCALE_LIST = "locale-list";
+	private static final String LOCALE = "locale";
 
 	private Document mineralDoc;
 	private List<MineralType> mineralTypes;
@@ -58,13 +58,13 @@ public class MineralMapConfig implements Serializable {
 					// Create mineralType.
 					MineralType mineralType = new MineralType(name, frequency);
 				
-					// Get locals.
-					Element localList = (Element) mineral.getElementsByTagName(LOCAL_LIST).item(0);
-					NodeList locals = localList.getElementsByTagName(LOCAL);
-					for (int y = 0; y < locals.getLength(); y++) {
-						Element local = (Element) locals.item(y);
-						String localName = local.getAttribute(NAME).toLowerCase().trim();
-						mineralType.addLocal(localName);
+					// Get locales.
+					Element localeList = (Element) mineral.getElementsByTagName(LOCALE_LIST).item(0);
+					NodeList locales = localeList.getElementsByTagName(LOCALE);
+					for (int y = 0; y < locales.getLength(); y++) {
+						Element locale = (Element) locales.item(y);
+						String localeName = locale.getAttribute(NAME).toLowerCase().trim();
+						mineralType.addLocale(localeName);
 					}
 				
 					// Add mineral type to list.
@@ -83,16 +83,16 @@ public class MineralMapConfig implements Serializable {
 		
 		String name;
 		String frequency;
-		List<String> locals;
+		List<String> locales;
 		
 		private MineralType(String name, String frequency) {
 			this.name = name;
 			this.frequency = frequency;
-			locals = new ArrayList<String>(3);
+			locales = new ArrayList<String>(3);
 		}
 		
-		private void addLocal(String localName) {
-			locals.add(localName);
+		private void addLocale(String localeName) {
+			locales.add(localeName);
 		}
 	}
 }
