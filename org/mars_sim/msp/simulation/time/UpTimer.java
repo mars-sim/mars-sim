@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UpTimer.java
- * @version 2.72 2001-04-07
+ * @version 2.84 2008-04-17
  * @author Scott Davis
  */
 
@@ -9,7 +9,7 @@ package org.mars_sim.msp.simulation.time;
 
 import java.io.Serializable;
 
-/** The UpTimer class keeps track of how long a instance of the simulation 
+/** The UpTimer class keeps track of how long an instance of the simulation 
  *  has been running in real time.
  */
 public class UpTimer implements Serializable {

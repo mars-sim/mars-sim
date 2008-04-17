@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * IntPoint.java
- * @version 2.71 2000-10-12
+ * @version 2.84 2008-04-17
  * @author Greg Whelan
  */
 
@@ -10,7 +10,7 @@ package org.mars_sim.msp.simulation;
 import java.awt.Point;
 
 /** The IntPoint class is an extension of
- *  of java.awt.Point that returns int typed
+ *  java.awt.Point that returns int typed
  *  X and Y coordinates.
  */
 

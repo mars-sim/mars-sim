@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 2.74 2002-01-30
+ * @version 2.84 2008-04-17
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.simulation;
 
 /**
- * This interface represents a Life Support system that provide Oxygen, Water
+ * This interface represents a Life Support system that provides Oxygen, Water
  * Temperature and Air Pressure to a Person. Implementations of this interface 
  * are used by the PhysicalCondition entity.
  *
@@ -24,14 +24,14 @@ public interface LifeSupport {
      */
     public boolean lifeSupportCheck() throws Exception;
 	
-    /** Gets the number of people the life support can provide for.
+    /** Gets the number of people the life support system can provide for.
      *  @return the capacity of the life support system
      */
     public int getLifeSupportCapacity();
 	
     /** Gets oxygen from system.
      *  @param amountRequested the amount of oxygen requested from system (kg)
-     *  @return the amount of oxgyen actually received from system (kg)
+     *  @return the amount of oxygen actually received from system (kg)
      *  @throws Exception if error providing oxygen.
      */
     public double provideOxygen(double amountRequested) throws Exception;
