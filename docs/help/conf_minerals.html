@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Configuration Guide Minerals</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<H2>minerals.xml</H2>
+<P>The minerals.xml configuration file contains configuration for mineral concentrations that can be mined by 
+  settlers.  Mineral concentrations can be added, edited, or deleted.</P>
+<P>A "mineral" element has the following attributes: "name" and "frequency".  The 
+  "name" attribute has to be a unique name for the mineral.  The "frequency" attribute is how common the concentrations are
+  for this mineral type.  Valid values are "common", "uncommon", "rare" or "very rare".</P>
+<P>The "mineral" element has the following child elements:</P>
+<UL>
+  <LI><B>locale-list:</B> This is a list of locales where the mineral concentrations are located.  The locale-list element is required, but there
+    can be zero to many child locale elements.  If there are zero locale elements, the mineral concentrations are randomly distributed about the planet.
+    <UL>
+      <LI><B>locale:</B> The locale element represents a topographical region that mineral concentrations are located.  It has a "name" attribute and the 
+        following locale names are currently supported: "volcanic", "sedimentary", and "crater".</LI>
+    </UL>
+  </LI>
+</UL>
+</BODY>
+</HTML>
