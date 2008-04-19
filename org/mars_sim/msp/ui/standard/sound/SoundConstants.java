@@ -37,7 +37,8 @@ public interface SoundConstants {
     public final static String SND_FORMAT_WAV  = ".wav";
     public final static String SND_FORMAT_MP3  = ".mp3";
     public final static String SND_FORMAT_OGG  = ".ogg";
-    public final static String SND_FORMAT_MIDI = ".mid";
+    public final static String SND_FORMAT_MID =  ".mid";
+    public final static String SND_FORMAT_MIDI = ".midi";
     
     //maximum amount of clips in cache
     public final static int MAX_CACHE_SIZE = 5;

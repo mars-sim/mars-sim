@@ -75,7 +75,9 @@ public class MarsProject {
             	Simulation.instance().loadSimulation(null);
             }
             catch (Exception e) {
-            	logger.log(Level.SEVERE, "Problem loading default simulation", e);
+        	if(!(e instanceof java.io.InvalidClassException)){
+            	   logger.log(Level.SEVERE, "Problem loading default simulation", e);
+        	}
         	
             	try {
             		// If error reading default saved file, create new simulation.
