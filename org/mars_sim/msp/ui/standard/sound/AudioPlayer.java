@@ -18,9 +18,13 @@ import java.util.logging.Logger;
 
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
+import javax.sound.midi.Transmitter;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -45,21 +49,48 @@ public class AudioPlayer implements LineListener, MetaEventListener {
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Data members
-	private SourceDataLine currentLine; // The current compressed sound.
-	private Clip currentClip; // The current sound clip.
-	private Sequencer sequencer; // for midi sounds
-	private boolean mute; // Is the audio player muted?
-	private float volume; // The volume of the audio player (0.0 to 1.0)
+	/**The current compressed sound.*/
+	private SourceDataLine currentLine; 
+	
+	/**The current clip sound.*/
+	private Clip currentClip; 
+	
+	/**The current midi sound.*/
+	private Sequencer sequencer; 
+	
+	/**midi sound synthetiser*/
+	private Synthesizer synthesizer;
+	
+	/**midi sound receiver*/
+        private Receiver synthReceiver;     
+	 
+        /**midi sound transmitter*/
+        private Transmitter seqTransmitter;
+	
+	/**Is the audio player muted?*/
+	private boolean mute; 
+	
+	/**The volume of the audio player (0.0 to 1.0)*/
+	private float volume; 
+	
+	/**Audio cache collection*/
 	private ConcurrentHashMap < String, Clip > audioCache = 
 				new ConcurrentHashMap<String, Clip>();
-	private boolean looping = false;
-	private  Thread sound_player;
 	
+	/**looping mode*/
+	private boolean looping = false;
+	
+	/**sound player thread instance*/
+	private  Thread sound_player;
 	
 	public AudioPlayer() {
 	    currentClip = null;
 	    currentLine = null;
-	       
+	    sequencer   = null;
+	    synthesizer = null;
+	    synthReceiver = null;
+	    seqTransmitter = null;
+	    
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			setMute(false);
 			setVolume(.5F);
@@ -84,11 +115,11 @@ public class AudioPlayer implements LineListener, MetaEventListener {
 	    	if ((filepath != null) && !filepath.equals("")) {
 			   if (filepath.endsWith(SoundConstants.SND_FORMAT_WAV)) {
 			       startPlayWavSound(filepath,loop);
-			   } else if (filepath.endsWith(SoundConstants.SND_FORMAT_MP3)){
+			   } else if (filepath.endsWith(SoundConstants.SND_FORMAT_MP3) ||
+				     filepath.endsWith(SoundConstants.SND_FORMAT_OGG)){
 			       startPlayCompressedSound(filepath, loop);
-			   } else if(filepath.endsWith(SoundConstants.SND_FORMAT_OGG)) {
-			       startPlayCompressedSound(filepath, loop);    
-			   } else if(filepath.endsWith(SoundConstants.SND_FORMAT_MIDI)) {
+			   } else if(filepath.endsWith(SoundConstants.SND_FORMAT_MIDI) ||
+				     filepath.endsWith(SoundConstants.SND_FORMAT_MID)) {
 			       startMidiSound(filepath, loop);    
 			   }
 			}
@@ -227,15 +258,23 @@ public class AudioPlayer implements LineListener, MetaEventListener {
 		looping = loop;
 		
 		try {
+		    //--This tells you what your MidiDevices are     
+		    	sequencer = MidiSystem.getSequencer();
+		    	synthesizer = MidiSystem.getSynthesizer();
+		    	sequencer.open();
+			synthesizer.open();
+			
+			 synthReceiver = synthesizer.getReceiver();    
+			 seqTransmitter = sequencer.getTransmitter();     
+			 seqTransmitter.setReceiver(synthReceiver);
+			        
 		        //From file
 		        Sequence sequence = MidiSystem.getSequence(new File(filepath));
-		        
-		        // Create a sequencer for the sequence
-		        sequencer = MidiSystem.getSequencer();
-		        sequencer.open();
+		 		       
 		        sequencer.setSequence(sequence);
 		        sequencer.addMetaEventListener(this);
-		        
+		        setVolume(volume);
+		    	setMute(mute);
 		        if(looping) {
 		            sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
 		            sequencer.start();
@@ -346,6 +385,10 @@ public class AudioPlayer implements LineListener, MetaEventListener {
 					FloatControl.Type.MASTER_GAIN);
 			gainControl.setValue(gain);
 		}
+		
+		if(sequencer != null) {
+		    setVolumeSequencer(volume);
+		}
 	}
 	
 	/**
@@ -377,8 +420,32 @@ public class AudioPlayer implements LineListener, MetaEventListener {
 						 BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
 		}
+		
+		if(sequencer != null) {
+		    muteSequencer(mute);
+		}
 	}
 
+	private void muteSequencer(boolean mute){
+	    Sequence sequence = sequencer.getSequence();
+	    int tracks = sequence.getTracks().length;
+	    
+	    for(int i = 0 ; i < tracks; i++) {
+		sequencer.setTrackMute(i, mute);
+	    }
+	}
+	
+	
+	private void setVolumeSequencer(float volume){
+	    //convert to a range 0 to 127
+	    int convert = (int) (volume * 127);
+	    MidiChannel[] channels = synthesizer.getChannels();  
+	    for (int i = 0; i < channels.length; i++){          
+		channels[i].controlChange(7, convert);
+	    }
+	    
+	}
+	
 	/**
 	 * LineListener interface. This method is called when
 	 * an event occurs during the sound playing:
