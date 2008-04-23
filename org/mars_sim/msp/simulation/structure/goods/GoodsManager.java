@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.83 2008-02-02
+ * @version 2.84 2008-04-21
  * @author Scott Davis
  */
 
@@ -308,9 +308,9 @@ public class GoodsManager implements Serializable {
 	 * Gets all vehicles associated with the settlement.
 	 * @return collection of vehicles.
 	 */
-	private Collection getAssociatedVehicles() {
+	private Collection<Vehicle> getAssociatedVehicles() {
 		// Start with parked vehicles at settlement.
-		Collection vehicles = settlement.getParkedVehicles();
+		Collection<Vehicle> vehicles = settlement.getParkedVehicles();
 		
 		// Add associated vehicles out on missions.
 		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
@@ -912,7 +912,7 @@ public class GoodsManager implements Serializable {
 		int result = 0;
 		
 		Inventory inv = settlement.getInventory();
-		Collection equipmentList = inv.findAllUnitsOfClass(equipmentClass);
+		Collection<Unit> equipmentList = inv.findAllUnitsOfClass(equipmentClass);
 		MissionManager missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {

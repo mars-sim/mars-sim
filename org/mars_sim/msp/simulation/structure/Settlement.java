@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.84 2008-04-14
+ * @version 2.84 2008-04-21
  * @author Scott Davis
  */
 
@@ -337,7 +337,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     
     private void updateGoodsManager(double time) throws Exception {
     	
-    	// Randomly update goods manager five times per Sol.
+    	// Randomly update goods manager 5 times per Sol.
     	if ((time * 5D) >= RandomUtil.getRandomDouble(1000D)) goodsManager.timePassing(time);
     }
 
@@ -459,7 +459,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * Gets all vehicles associated with this settlement, even if they are out on missions.
      * @return collection of associated vehicles.
      */
-    public Collection getAllAssociatedVehicles() {
+    public Collection<Vehicle> getAllAssociatedVehicles() {
     	Collection<Vehicle> result = getParkedVehicles();
     	
     	// Also add vehicle mission vehicles not parked at settlement.

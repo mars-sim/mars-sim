@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 2.83 2008-02-03
+ * @version 2.84 2008-04-23
  * @author Scott Davis
  */
 
@@ -38,10 +38,10 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public final class TradeUtil {
     
-    	private static String CLASS_NAME = 
-    	    "org.mars_sim.msp.simulation.person.ai.mission.TradeUtil";
+	private static String CLASS_NAME = 
+		"org.mars_sim.msp.simulation.person.ai.mission.TradeUtil";
 	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Performance cache for equipment goods.
 	private final static Map <Class, Equipment> equipmentGoodCache = new HashMap<Class, Equipment>(5);
@@ -220,25 +220,34 @@ public final class TradeUtil {
     	
     	// Get rover inventory clone.
     	Inventory inventory = new Inventory(null);
-    	inventory.addGeneralCapacity(rover.getInventory().getGeneralCapacity());
+    	double massCapacity = rover.getInventory().getGeneralCapacity();
+    	
+    	// Subtract mission parts mass (estimated).
+    	massCapacity -= 300D;
+    	if (massCapacity < 0D) massCapacity = 0D;
+    	inventory.addGeneralCapacity(massCapacity);
     	
     	// Determine the load.
     	boolean done = false;
     	double loadValue = 0D;
+    	Good previousGood = null;
     	while (!done && (valueLimit > loadValue)) {
     		double goodValueLimit = valueLimit - loadValue;
     		Good good = findBestTradeGood(sellingSettlement, buyingSettlement, tradeList, inventory, hasRover, rover, 
-    				goodValueLimit);
+    				goodValueLimit, previousGood);
     		if (good != null) {
     			try {
+    				boolean isAmountResource = good.getCategory().equals(Good.AMOUNT_RESOURCE);
+    				boolean isItemResource = good.getCategory().equals(Good.ITEM_RESOURCE);
+    				
     				// Add resource container if needed.
-    				if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
+    				if (isAmountResource) {
     					AmountResource resource = (AmountResource) good.getObject();
     					if (inventory.getAmountResourceRemainingCapacity(resource, true) < getResourceTradeAmount(resource)) {
     						Equipment container = getAvailableContainerForResource(resource, sellingSettlement, tradeList);
     						if (container != null) {
     							Good containerGood = GoodsUtil.getEquipmentGood(container.getClass());
-    							addToInventory(containerGood, inventory);
+    							addToInventory(containerGood, inventory, 1);
     							int containerNum = 0;
     							if (tradeList.containsKey(containerGood)) containerNum = tradeList.get(containerGood).intValue();
     							double containerSupply = manager.getAmountOfGoodForSettlement(containerGood);
@@ -250,20 +259,33 @@ public final class TradeUtil {
     					}
     				}
     				
+    				int itemResourceNum = 0;
+    				if (isItemResource) {
+    					itemResourceNum = getNumItemResourcesToTrade(good, sellingSettlement, buyingSettlement, tradeList, 
+    							inventory, goodValueLimit);
+    				}
+    				
     				// Add good.
     				if (good.getCategory().equals(Good.VEHICLE)) hasRover = true;
-    				else addToInventory(good, inventory);
+    				else {
+    					int number = 1;
+    					if (isAmountResource) number = (int) getResourceTradeAmount((AmountResource) good.getObject());
+    					else if (isItemResource) number = itemResourceNum;
+    					addToInventory(good, inventory, number);
+    				}
     				int currentNum = 0;
     				if (tradeList.containsKey(good)) currentNum = tradeList.get(good).intValue();
     				double supply = manager.getAmountOfGoodForSettlement(good);
     	    		double goodMass = GoodsUtil.getGoodMassPerItem(good);
-    	    		boolean isAmountResource = good.getCategory().equals(Good.AMOUNT_RESOURCE);
-    	    		if (isAmountResource) goodMass*= getResourceTradeAmount((AmountResource) good.getObject());
+    	    		if (isAmountResource) goodMass *= getResourceTradeAmount((AmountResource) good.getObject());
+    	    		if (isItemResource) goodMass *= itemResourceNum;
     	    		double goodValue = manager.getGoodValuePerItem(good, (supply + (currentNum * goodMass)));
-    	    		if (isAmountResource) goodValue*= getResourceTradeAmount((AmountResource) good.getObject());
-    	    		loadValue+= goodValue;
+    	    		if (isAmountResource) goodValue *= getResourceTradeAmount((AmountResource) good.getObject());
+    	    		if (isItemResource) goodValue *= itemResourceNum;
+    	    		loadValue += goodValue;
     	    		int newNumber = currentNum + 1;
     	    		if (isAmountResource) newNumber = currentNum + (int) getResourceTradeAmount((AmountResource) good.getObject());
+    	    		if (isItemResource) newNumber = currentNum + itemResourceNum;
     	    		tradeList.put(good, newNumber);
     			}
     			catch (Exception e) {
@@ -271,6 +293,8 @@ public final class TradeUtil {
     			}
     		}
     		else done = true;
+    		
+    		previousGood = good;
     	}
     	
     	return tradeList;
@@ -332,83 +356,32 @@ public final class TradeUtil {
      * @param hasVehicle true if a vehicle is in the trade goods.
      * @param missionRover the rover carrying the goods.
      * @param valueLimit the value limit of the trade.
+     * @param previousGood the previous trade good used in the trade.
      * @return best good to trade or null if none found.
      * @throws Exception if error determining best trade good.
      */
     private static Good findBestTradeGood(Settlement sellingSettlement, Settlement buyingSettlement, 
     		Map<Good, Integer> tradedGoods, Inventory roverInventory, boolean hasVehicle, Rover missionRover, 
-    		double valueLimit) throws Exception {
+    		double valueLimit, Good previousGood) throws Exception {
     	
     	Good result = null;
-    	double bestValue = 0D;
     	
-    	GoodsManager sManager = sellingSettlement.getGoodsManager();
-    	GoodsManager bManager = buyingSettlement.getGoodsManager();
-    	
-    	Map<Good, Double> sellingInvCache = new HashMap<Good, Double>(GoodsUtil.getGoodsList().size());
-    	Map<Good, Double> buyingInvCache = new HashMap<Good, Double>(GoodsUtil.getGoodsList().size());
+    	// Check previous good first.
+    	if (previousGood != null) {
+    		double previousGoodValue = getTradeValue(previousGood, sellingSettlement, buyingSettlement, tradedGoods, 
+    				roverInventory, hasVehicle, missionRover, valueLimit);
+    		if (previousGoodValue > 0D) result = previousGood;
+    	}
     	
     	// Check all goods.
-    	Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
-    	while (i.hasNext()) {
-    		Good good = i.next();
-    		
-    		double amountTraded = 0D;
-    		if (tradedGoods.containsKey(good)) amountTraded += tradedGoods.get(good).doubleValue();
-    		
-    		double sellingInventory = 0D;
-    		if (sellingInvCache.containsKey(good)) sellingInventory = sellingInvCache.get(good).doubleValue();
-    		else {
-    			sellingInventory = getNumInInventory(good, sellingSettlement.getInventory());
-    			sellingInvCache.put(good, new Double(sellingInventory));
-    		}
-    		double sellingSupplyAmount = GoodsUtil.getGoodMassPerItem(good) * (sellingInventory - amountTraded);
-    		double sellingValue = sManager.getGoodValuePerItem(good, sellingSupplyAmount);
-    		if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
-    			sellingValue*= getResourceTradeAmount((AmountResource) good.getObject());
-    		
-    		boolean allTraded = (sellingInventory <= amountTraded); 
-    		
-    		double buyingInventory = 0D;
-    		if (buyingInvCache.containsKey(good)) buyingInventory = buyingInvCache.get(good).doubleValue();
-    		else {
-    			buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
-    			buyingInvCache.put(good, new Double(buyingInventory));
-    		}
-    		double buyingSupplyAmount = GoodsUtil.getGoodMassPerItem(good) * (buyingInventory + amountTraded);
-    		double buyingValue = bManager.getGoodValuePerItem(good, buyingSupplyAmount);
-    		if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
-    			buyingValue*= getResourceTradeAmount((AmountResource) good.getObject());
-    		
-    		if ((buyingValue > sellingValue) && !allTraded) {
-    			// Check if rover inventory has capacity for the good.
-    			boolean isRoverCapacity = hasCapacityInInventory(good, roverInventory, hasVehicle);
-    
-    			boolean isContainerAvailable = false;
-    			if (good.getCategory().equals(Good.AMOUNT_RESOURCE) && !isRoverCapacity) {
-    				Equipment container = getAvailableContainerForResource((AmountResource) good.getObject(), 
-    						sellingSettlement, tradedGoods);
-    				isContainerAvailable = (container != null);
-    			}
-    			
-    			boolean isMissionRover = false;
-    			if (good.getCategory().equals(Good.VEHICLE)) {
-    				if (good.getName().toLowerCase().equals(missionRover.getDescription().toLowerCase())) {
-    					if (sellingInventory == 1D) isMissionRover = true;
-    				}
-    			}
-    			
-    			boolean inValueLimit = buyingValue < valueLimit;
-    			
-    			boolean enoughResourceForContainer = true;
-    			if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
-    				enoughResourceForContainer = 
-    					(sellingSupplyAmount >= getResourceTradeAmount((AmountResource) good.getObject()));
-    			}
-    	    	
-    			if ((isRoverCapacity || isContainerAvailable) && !isMissionRover && inValueLimit && 
-    					enoughResourceForContainer) {
-    				double tradeValue = buyingValue - sellingValue;
+    	if (result == null) {
+    		double bestValue = 0D;
+    		Iterator<Good> i = GoodsUtil.getGoodsList().iterator();
+    		while (i.hasNext()) {
+    			Good good = i.next();
+    			if (!tradedGoods.containsKey(good)) {
+    				double tradeValue = getTradeValue(good, sellingSettlement, buyingSettlement, tradedGoods, 
+    						roverInventory, hasVehicle, missionRover, valueLimit);
     				if (tradeValue > bestValue) {
     					result = good;
     					bestValue = tradeValue;
@@ -417,10 +390,132 @@ public final class TradeUtil {
     		}
     	}
     	
-    	sellingInvCache.clear();
-    	buyingInvCache.clear();
-    	
     	return result;
+    }
+    
+    /**
+     * Gets the number of an item resource good that should be traded.
+     * @param itemResourceGood the item resource good.
+     * @param sellingSettlement the settlement selling the good.
+     * @param buyingSettlement the settlement buying the good.
+     * @param tradeList the map of goods traded so far.
+     * @param roverInventory the inventory of the rover carrying the goods.
+     * @param valueLimit the value limit of the trade.
+     * @return number of goods to trade.
+     * @throws Exception if error determining number of goods.
+     */
+    private static int getNumItemResourcesToTrade(Good itemResourceGood, Settlement sellingSettlement, 
+    		Settlement buyingSettlement, Map<Good, Integer>tradeList, Inventory roverInventory, 
+    		double valueLimit) throws Exception {
+    	
+    	int result = 0;
+    	
+    	ItemResource item = (ItemResource) itemResourceGood.getObject();
+    	
+    	int sellingInventory = sellingSettlement.getInventory().getItemResourceNum(item);
+    	int buyingInventory = buyingSettlement.getInventory().getItemResourceNum(item);
+    	
+    	int numberTraded = 0;
+    	if (tradeList.containsKey(itemResourceGood)) numberTraded = tradeList.get(itemResourceGood);
+    	
+    	int roverLimit = (int) (roverInventory.getRemainingGeneralCapacity() / item.getMassPerItem());
+    	
+    	int totalTraded = numberTraded;
+    	double totalBuyingValue = 0D;
+    	boolean limitReached = false;
+    	while (!limitReached) {
+    		
+    		double sellingSupplyAmount = (sellingInventory - totalTraded - 1) * item.getMassPerItem();
+    		double sellingValue = sellingSettlement.getGoodsManager().getGoodValuePerItem(itemResourceGood, sellingSupplyAmount);
+    		double buyingSupplyAmount = (buyingInventory + totalTraded + 1) * item.getMassPerItem();
+    		double buyingValue = buyingSettlement.getGoodsManager().getGoodValuePerItem(itemResourceGood, buyingSupplyAmount);
+    		
+    		if (buyingValue <= sellingValue) limitReached = true;
+    		if (totalBuyingValue + buyingValue > valueLimit) limitReached = true;
+    		if (totalTraded + 1 > sellingInventory) limitReached = true;
+    		if (totalTraded + 1 > roverLimit) limitReached = true;
+    		
+    		if (!limitReached) {
+    			result++;
+    			totalTraded = numberTraded + result;
+    			totalBuyingValue += buyingValue;
+    		}
+    	}
+    	
+    	// Result shouldn't be zero, but just in case it is.
+    	if (result == 0) result = 1;
+    	return result;
+    }
+    
+    /**
+     * Gets the trade value of a good.
+     * @param good the good
+     * @param sellingSettlement the settlement selling the good.
+     * @param buyingSettlement the settlement buying the good.
+     * @param tradedGoods the map of goods traded so far.
+     * @param roverInventory the inventory of the rover carrying the goods.
+     * @param hasVehicle true if a vehicle is in the trade goods.
+     * @param missionRover the rover carrying the goods.
+     * @param valueLimit the value limit of the trade.
+     * @return trade value of good.
+     * @throws Exception if error determining trade value.
+     */
+    private static double getTradeValue(Good good, Settlement sellingSettlement, Settlement buyingSettlement, 
+    		Map<Good, Integer> tradedGoods, Inventory roverInventory, boolean hasVehicle, Rover missionRover, 
+    		double valueLimit) throws Exception {
+    	
+    	double result = 0D;
+    	
+		double amountTraded = 0D;
+		if (tradedGoods.containsKey(good)) amountTraded += tradedGoods.get(good).doubleValue();
+		
+		double sellingInventory = getNumInInventory(good, sellingSettlement.getInventory());
+		double sellingSupplyAmount = GoodsUtil.getGoodMassPerItem(good) * (sellingInventory - amountTraded - 1D);
+		double sellingValue = sellingSettlement.getGoodsManager().getGoodValuePerItem(good, sellingSupplyAmount);
+		if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
+			sellingValue*= getResourceTradeAmount((AmountResource) good.getObject());
+		
+		boolean allTraded = (sellingInventory <= amountTraded); 
+		
+		double buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
+		double buyingSupplyAmount = GoodsUtil.getGoodMassPerItem(good) * (buyingInventory + amountTraded + 1D);
+		double buyingValue = buyingSettlement.getGoodsManager().getGoodValuePerItem(good, buyingSupplyAmount);
+		if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
+			buyingValue*= getResourceTradeAmount((AmountResource) good.getObject());
+		
+		if ((buyingValue > sellingValue) && !allTraded) {
+			// Check if rover inventory has capacity for the good.
+			boolean isRoverCapacity = hasCapacityInInventory(good, roverInventory, hasVehicle);
+
+			boolean isContainerAvailable = false;
+			if (good.getCategory().equals(Good.AMOUNT_RESOURCE) && !isRoverCapacity) {
+				Equipment container = getAvailableContainerForResource((AmountResource) good.getObject(), 
+						sellingSettlement, tradedGoods);
+				isContainerAvailable = (container != null);
+			}
+			
+			boolean isMissionRover = false;
+			if (good.getCategory().equals(Good.VEHICLE)) {
+				if (good.getName().toLowerCase().equals(missionRover.getDescription().toLowerCase())) {
+					if (sellingInventory == 1D) isMissionRover = true;
+				}
+			}
+			
+			boolean inValueLimit = buyingValue < valueLimit;
+			
+			boolean enoughResourceForContainer = true;
+			if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
+				enoughResourceForContainer = 
+					(sellingSupplyAmount >= getResourceTradeAmount((AmountResource) good.getObject()));
+			}
+	    	
+			if ((isRoverCapacity || isContainerAvailable) && !isMissionRover && inValueLimit && 
+					enoughResourceForContainer) {
+				result = buyingValue - sellingValue;
+			}
+		}
+		
+		return result;
     }
     
     /**
@@ -480,20 +575,25 @@ public final class TradeUtil {
      * Adds a good to a inventory.
      * @param good the good to add.
      * @param inventory the inventory.
+     * @param number the number of the good to add.
      * @throws Exception if error adding good to the inventory.
      */
-    private static void addToInventory(Good good, Inventory inventory) throws Exception {	
+    private static void addToInventory(Good good, Inventory inventory, int number) throws Exception {	
     	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
     		AmountResource resource = (AmountResource) good.getObject();
-    		double amount = getResourceTradeAmount(resource);
+    		double amount = (double) number;
     		double capacity = inventory.getAmountResourceRemainingCapacity(resource, true);
     		if (amount > capacity) amount = capacity;
     		inventory.storeAmountResource(resource, amount, true);
     	}
-    	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
-    		inventory.storeItemResources((ItemResource) good.getObject(), 1);
-    	else if (good.getCategory().equals(Good.EQUIPMENT)) 
-    		inventory.storeUnit(EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0D, 0D), false));
+    	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) {
+    		inventory.storeItemResources((ItemResource) good.getObject(), number);
+    	}
+    	else if (good.getCategory().equals(Good.EQUIPMENT)) {
+    		for (int x = 0; x < number; x++) {
+    			inventory.storeUnit(EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0D, 0D), false));
+    		}
+    	}
     }
     
     /**

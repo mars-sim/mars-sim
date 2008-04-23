@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.Inventory;
@@ -29,6 +31,9 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
  */
 public class EnterAirlock extends Task implements Serializable {
+	
+	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.EnterAirlock";	
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Task phase
 	private static final String ENTERING_AIRLOCK = "Entering Airlock";
@@ -236,7 +241,9 @@ public class EnterAirlock extends Task implements Serializable {
         	personInv.retrieveUnit(suit);
         	entityInv.storeUnit(suit);
         }
-        else throw new Exception("Person doesn't have an EVA suit to put away.");
+        else {
+        	logger.log(Level.SEVERE, "Person doesn't have an EVA suit to put away.");
+        }
     }
 
     /**

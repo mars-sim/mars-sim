@@ -248,29 +248,29 @@ public class Trade extends RoverMission implements Serializable {
 	    	try {
 	    		Rover rover = (Rover) getVehicleWithGreatestRange(settlement);
 	    		if (rover != null) {
-	    			// Only check once a Sol, else use cache.
+	    			// Only check a few times a Sol, else use cache.
 	    			// Note: this method is very CPU intensive.
 	    			boolean useCache = false;
 	    			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	    			if (TRADE_PROFIT_CACHE.containsKey(person)) {
 	    				TradeProfitInfo profitInfo = TRADE_PROFIT_CACHE.get(person);
 	    				double timeDiff = MarsClock.getTimeDiff(currentTime, profitInfo.time);
-	    				if (timeDiff < 1000D) {
+	    				if (timeDiff < 200D) {
 	    					tradeProfit = profitInfo.profit;
 	    					useCache = true;
 	    				}
 	    			}
 	    			
 	    			if (!useCache) {
+	    				double startTime = System.currentTimeMillis();
 	    				tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
-	    				TRADE_PROFIT_CACHE.put(person, new TradeProfitInfo(tradeProfit, (MarsClock) currentTime.clone()));
+	    				double endTime = System.currentTimeMillis();
+	    				logger.info(person.getName() + " getBestTradeProfit: " + (endTime - startTime) + 
+	    						" millisols - TP: " + (int) tradeProfit + " VP");
+	    				TRADE_PROFIT_CACHE.put(person, new TradeProfitInfo(tradeProfit, 
+	    						(MarsClock) currentTime.clone()));
 	    				TRADE_SETTLEMENT_CACHE.put(person, TradeUtil.bestTradeSettlementCache);
 	    			}
-	    			
-	    			// double startTime = System.currentTimeMillis();
-	    			// tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
-	    			// double endTime = System.currentTimeMillis();
-	    			// logger.info(person.getName() + " getBestTradeProfit: " + (endTime - startTime) + " - TP: " + tradeProfit);	    			
 	    		}
 	    	}
 	    	catch (Exception e) {

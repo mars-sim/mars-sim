@@ -344,7 +344,7 @@ public class Inventory implements Serializable {
     					}
     				}
     				
-    				if (remainingAmount <= 0D) clearAmountResourceStoredCache();
+    				if (remainingAmount <= .000001D) clearAmountResourceStoredCache();
     				else throw new InventoryException(resource.getName() + 
     						" could not be totally stored. Remaining: " + remainingAmount);
     				
