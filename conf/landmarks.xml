@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
 <!-- Landmark coordinates from USGS Astrogeology Research Program. -->
-<!-- http://planetarynames.wr.usgs.gov/mars/marssysTOC.html -->
+<!-- http://planetarynames.wr.usgs.gov/mars/marssysTOC.html (FIXME: link is dead!)-->
 
 <!-- Landmarks to be displayed in the user interface. -->
 <landmark-list>
@@ -86,10 +86,15 @@
 	<landmark name="Gusev Crater" longitude="175.4 E" latitude="14.5 S" />
 	<landmark name="Gale Crater" longitude="137.6 E" latitude="5.3 S" />
 	
-	<!-- Martian Landers -->
-	<landmark name="Viking Lander 1" longitude="48.2 W" latitude="22.7 N" />
-	<landmark name="Viking Lander 2" longitude="134.0 E" latitude="48.3 N" />
-	<landmark name="Mars Pathfinder" longitude="33.6 W" latitude="19.3 N" />
-	<landmark name="Mars Exploration Rover Spirit" longitude="175.5 E" latitude="14.6 S" />
-	<landmark name="Mars Exploration Rover Opportunity" longitude="5.5 W" latitude="1.9 S" />
+	<!-- Martian Landers (http://www.google.com/mars/) -->
+	<landmark name="Viking Lander 1" longitude="48.0 W" latitude="22.5 N" />
+	<landmark name="Viking Lander 2" longitude="133.7 E" latitude="47.9 N" />
+	<landmark name="Mars Pathfinder Rover" longitude="33.3 W" latitude="19.3 N" />
+	<landmark name="MER Spirit Rover" longitude="175.5 E" latitude="14.6 S" />
+	<landmark name="MER Opportunity Rover" longitude="5.5 W" latitude="2.0 S" />
+	<landmark name="Mars 2 Lander" longitude="47.0 E" latitude="45.0 S" />
+	<landmark name="Mars 3 Lander" longitude="158.0 W" latitude="45.0 S" />
+	<landmark name="Mars 6 Lander" longitude="19.5 W" latitude="23.9 S" />
+	<landmark name="Mars Polar Lander" longitude="164.7 E" latitude="76.7 S" />
+	<landmark name="Beagle 2 Lander" longitude="90.0 E" latitude="10.6 N" />
 </landmark-list>
