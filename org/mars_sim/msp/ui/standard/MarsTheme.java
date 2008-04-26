@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsTheme.java
- * @version 2.84 2008-04-04
+ * @version 2.84 2008-04-27
  * @author Scott Davis
  */
 
@@ -20,10 +20,18 @@ public class MarsTheme extends DefaultMetalTheme {
     private final ColorUIResource primary1 = new ColorUIResource(0, 153, 0);
     private final ColorUIResource primary2 = new ColorUIResource(17, 153, 17);
     private final ColorUIResource primary3 = new ColorUIResource(17, 204, 17);
+
+    private final ColorUIResource secondary1 = new ColorUIResource(102, 119, 102);
+    private final ColorUIResource secondary2 = new ColorUIResource(153, 170, 153);
+    private final ColorUIResource secondary3 = new ColorUIResource(204, 221, 204);
 	
     protected ColorUIResource getPrimary1() { return primary1; }
     protected ColorUIResource getPrimary2() { return primary2; }
     protected ColorUIResource getPrimary3() { return primary3; }
+
+    protected ColorUIResource getSecondary1() { return secondary1; }
+    protected ColorUIResource getSecondary2() { return secondary2; }
+    protected ColorUIResource getSecondary3() { return secondary3; }
 
     // Set default fonts for theme
     private final FontUIResource defaultFont = new FontUIResource("SansSerif", Font.PLAIN, 11);
