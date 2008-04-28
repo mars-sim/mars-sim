@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
 <!-- Landmark coordinates from USGS Astrogeology Research Program. -->
-<!-- http://planetarynames.wr.usgs.gov/mars/marssysTOC.html (FIXME: link is dead!)-->
+<!-- http://planetarynames.wr.usgs.gov/jsp/SystemSearch2.jsp?System=Mars -->
 
 <!-- Landmarks to be displayed in the user interface. -->
 <landmark-list>
