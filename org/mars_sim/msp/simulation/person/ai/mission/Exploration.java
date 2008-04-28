@@ -66,9 +66,6 @@ public class Exploration extends RoverMission {
 	//	Number of collection sites.
 	private static final int NUM_SITES = 5;
 	
-	// Minimum number of people to do mission.
-	private final static int MIN_PEOPLE = 2;
-	
 	// Amount of time to explore a site.
 	public final static double EXPLORING_SITE_TIME = 1000D;
 	
@@ -89,7 +86,7 @@ public class Exploration extends RoverMission {
 	public Exploration(Person startingPerson) throws MissionException {
 		
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_PEOPLE);
 		
 		if (!isDone()) {
 			
@@ -141,7 +138,7 @@ public class Exploration extends RoverMission {
      * @throws MissionException if error constructing mission.
      */
     public Exploration(Collection<Person> members, Settlement startingSettlement, 
-    		List explorationSites, Rover rover, String description) throws MissionException {
+    		List<Coordinates> explorationSites, Rover rover, String description) throws MissionException {
     	
        	// Use RoverMission constructor.
     	super(description, (Person) members.toArray()[0], 1, rover);
@@ -158,7 +155,7 @@ public class Exploration extends RoverMission {
 		
 		// Set exploration navpoints.
 		for (int x = 0; x < explorationSites.size(); x++) 
-			addNavpoint(new NavPoint((Coordinates) explorationSites.get(x), "exploration site " + (x + 1)));
+			addNavpoint(new NavPoint(explorationSites.get(x), "exploration site " + (x + 1)));
 		
 		// Add home navpoint.
 		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
@@ -196,11 +193,11 @@ public class Exploration extends RoverMission {
 			Settlement settlement = person.getSettlement();
 	    
 			// Check if a mission-capable rover is available.
-			boolean reservableRover = areVehiclesAvailable(settlement);
+			boolean reservableRover = RoverMission.areVehiclesAvailable(settlement);
 			
 			// Check if minimum number of people are available at the settlement.
 			// Plus one to hold down the fort.
-			boolean minNum = minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
+			boolean minNum = RoverMission.minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
 			
 			// Check if there are enough specimen containers at the settlement for collecting rock samples.
 			boolean enoughContainers = false;
@@ -228,7 +225,8 @@ public class Exploration extends RoverMission {
 		
 		if (result > 0D) {
 			// Check if min number of EVA suits at settlement.
-			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
+			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) 
+				result = 0D;
 		}
 		
 		return result;
