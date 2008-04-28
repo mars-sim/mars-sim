@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsTheme.java
- * @version 2.84 2008-04-27
+ * @version 2.84 2008-04-28
  * @author Scott Davis
  */
 
@@ -14,7 +14,7 @@ import javax.swing.plaf.metal.*;
 /** The MarsTheme class provides a custom color theme to the project
  *  UI.
  */
-public class MarsTheme extends DefaultMetalTheme {
+public class MarsTheme extends OceanTheme {
 	
     // Set primary colors for theme 
     private final ColorUIResource primary1 = new ColorUIResource(0, 153, 0);
