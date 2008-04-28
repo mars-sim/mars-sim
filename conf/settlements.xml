@@ -639,6 +639,8 @@
 		<settlement-name value="Robinson Camp" />
 		<settlement-name value="Hartmann Base" />
 		<settlement-name value="Shoemaker Base" />
+		<!-- http://en.wikipedia.org/wiki/Zzyzx%2C_California -->
+		<settlement-name value="New Zzyzx" />
 																
 	</settlement-name-list>
 
