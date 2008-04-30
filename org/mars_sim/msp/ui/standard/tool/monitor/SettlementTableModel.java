@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -92,7 +92,7 @@ public class SettlementTableModel extends UnitTableModel {
      * @param unitManager Unit manager that holds settlements.
      */
     public SettlementTableModel(UnitManager unitManager) {
-        super("All Settlement", " settlements", columnNames, columnTypes);
+        super("All Settlements", " settlements", columnNames, columnTypes);
 
 		setSource(unitManager.getSettlements());
 		unitManagerListener = new LocalUnitManagerListener();
