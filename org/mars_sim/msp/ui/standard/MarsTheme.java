@@ -42,7 +42,7 @@ public class MarsTheme extends OceanTheme {
     private final FontUIResource defaultBoldFont = new FontUIResource("SansSerif", Font.BOLD, 12);
     private final FontUIResource defaultSmallFont = new FontUIResource("SansSerif", Font.PLAIN, 10);
 
-    public FontUIResource getControlTextFont() { return defaultFont; }
+    public FontUIResource getControlTextFont() { return defaultBoldFont; }
     public FontUIResource getSystemTextFont() { return defaultFont; }
     public FontUIResource getUserTextFont() { return defaultSmallFont; }
     public FontUIResource getMenuTextFont() { return defaultBoldFont; }
