@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsTheme.java
- * @version 2.84 2008-04-28
+ * @version 2.84 2008-04-30
  * @author Scott Davis
  */
 
@@ -17,13 +17,15 @@ import javax.swing.plaf.metal.*;
 public class MarsTheme extends OceanTheme {
 	
     // Set primary colors for theme 
-    private final ColorUIResource primary1 = new ColorUIResource(0, 153, 0);
-    private final ColorUIResource primary2 = new ColorUIResource(17, 153, 17);
-    private final ColorUIResource primary3 = new ColorUIResource(17, 204, 17);
+    private final ColorUIResource primary1 = new ColorUIResource(17, 119, 17);
+    private final ColorUIResource primary2 = new ColorUIResource(34, 119, 34);
+    private final ColorUIResource primary3 = new ColorUIResource(34, 170, 34);
 
     private final ColorUIResource secondary1 = new ColorUIResource(102, 119, 102);
     private final ColorUIResource secondary2 = new ColorUIResource(153, 170, 153);
     private final ColorUIResource secondary3 = new ColorUIResource(204, 221, 204);
+
+    private final ColorUIResource black = new ColorUIResource(0, 0, 0);
 	
     protected ColorUIResource getPrimary1() { return primary1; }
     protected ColorUIResource getPrimary2() { return primary2; }
@@ -32,6 +34,8 @@ public class MarsTheme extends OceanTheme {
     protected ColorUIResource getSecondary1() { return secondary1; }
     protected ColorUIResource getSecondary2() { return secondary2; }
     protected ColorUIResource getSecondary3() { return secondary3; }
+
+    protected ColorUIResource getBlack() { return black; }
 
     // Set default fonts for theme
     private final FontUIResource defaultFont = new FontUIResource("SansSerif", Font.PLAIN, 11);
