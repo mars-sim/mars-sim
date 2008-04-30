@@ -15,13 +15,15 @@ import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.mars.ExploredLocation;
+import org.mars_sim.msp.simulation.mars.Mars;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonConfig;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.task.CollectResources;
-import org.mars_sim.msp.simulation.person.ai.task.ExploreSite;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
@@ -45,10 +47,13 @@ public class Mining extends RoverMission {
 	
 	private static final double MINERAL_BASE_AMOUNT = 1000D;
 	
+	private static final double MINING_SITE_TIME = 3000D;
+	
 	// Data members
 	private ExploredLocation miningSite;
 	private MarsClock miningSiteStartTime;
 	private boolean endMiningSite;
+	private Map<AmountResource, Double> excavatedResources;
 	
 	/**
 	 * Constructor
@@ -248,7 +253,106 @@ public class Mining extends RoverMission {
     
     private final void miningPhase(Person person) throws MissionException {
     	
-    	// TODO implement
+    	// Set the mining site start time if necessary.
+    	if (miningSiteStartTime == null) 
+    		miningSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+    	
+    	// Initialize the excavated resources if necessary.
+    	if (excavatedResources == null)
+    		excavatedResources = new HashMap<AmountResource, Double>(1);
+    	
+		// Check if crew has been at site for more than three sols.
+		boolean timeExpired = false;
+		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		if (MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME) 
+			timeExpired = true;
+		
+		if (isEveryoneInRover()) {
+			
+			// Check if end mining flag is set.
+			if (endMiningSite) {
+				endMiningSite = false;
+				setPhaseEnded(true);
+			}
+			
+			// Check if crew has been at site for more than three sols, then end this phase.
+			if (timeExpired) setPhaseEnded(true);
+
+			// Determine if no one can start the mine site or collect resources tasks.
+			boolean nobodyMineOrCollect = true;
+			Iterator<Person> i = getPeople().iterator();
+			while (i.hasNext()) {
+				Person personTemp = i.next();
+				// TODO
+				/*
+				if (MineSite.canMineSite(personTemp, getRover())) nobodyMineOrCollect = false;
+				if (CollectResources.canCollectResources(personTemp, getRover(), Bag.class, resourceType)) 
+					nobodyMineOrCollect = false;
+				*/
+			}
+	    
+			// If no one can mine or collect minerals at the site and this is not due to it just being
+			// night time, end the mining phase.
+			try {
+				Mars mars = Simulation.instance().getMars();
+				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
+				double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
+				if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
+			} 
+			catch (Exception e) {
+				throw new MissionException(getPhase(), e);
+			}
+			
+			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
+			if (hasEmergency()) setPhaseEnded(true);
+			
+			try {
+				// Check if enough resources for remaining trip.
+				if (!hasEnoughResourcesForRemainingMission(false)) {
+					// If not, determine an emergency destination.
+					determineEmergencyDestination(person);
+					setPhaseEnded(true);
+				}
+			}
+			catch (Exception e) {
+				throw new MissionException(getPhase(), e.getMessage());
+			}
+		}
+		else {
+			// If mining time has expired for the site, have everyone end their 
+			// mining and collection tasks.
+			if (timeExpired) {
+				Iterator<Person> i = getPeople().iterator();
+				while (i.hasNext()) {
+					Task task = i.next().getMind().getTaskManager().getTask();
+		    		// TODO: Add MineSite task.
+		    		// if (task instanceof MineSite) ((MineSite) task).endEVA();
+		    		if (task instanceof CollectResources) ((CollectResources) task).endEVA();
+				}
+			}
+		}
+
+		if (!getPhaseEnded()) {
+			
+			// If mining is still needed at site, assign tasks.
+			if (!endMiningSite && !timeExpired) {
+				try {
+					// If person can collect minerals the site, start that task.
+					// TODO
+					/*
+					if (canCollectMinerals(person)) {
+						assignTask(person, new CollectResources(person, ));
+					}
+					else if (MineSite.canMineSite(person, getRover())) {
+						assignTask(person, new MineSite(person, currentSite, (Rover) getVehicle()));
+					}
+					*/
+				}
+				catch(Exception e) {
+					throw new MissionException(getPhase(), e);
+				}
+			}
+		}
     }
     
     /**
@@ -399,5 +503,106 @@ public class Mining extends RoverMission {
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return getStartingSettlement();
+	}
+	
+	@Override
+	protected boolean isCapableOfMission(Person person) {
+		if (super.isCapableOfMission(person)) {
+			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+				if (person.getSettlement() == getStartingSettlement()) return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	protected void recruitPeopleForMission(Person startingPerson) {
+		super.recruitPeopleForMission(startingPerson);
+		
+		// Make sure there is at least one person left at the starting settlement.
+		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
+			// Remove last person added to the mission.
+			Person lastPerson = (Person) getPeople().toArray()[getPeopleNumber() - 1];
+			if (lastPerson != null) {
+				lastPerson.getMind().setMission(null);
+				if (getPeopleNumber() < getMinPeople()) endMission("Not enough members.");
+			}
+		}
+	}
+	
+	@Override
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException {
+    	double result = super.getEstimatedRemainingMissionTime(useBuffer);
+    	result += getEstimatedRemainingMiningSiteTime();
+    	return result;
+    }
+	
+    /**
+     * Gets the estimated time remaining at mining site in the mission.
+     * @return time (millisols)
+     */
+	private double getEstimatedRemainingMiningSiteTime() {
+		double result = 0D;
+		
+    	// Use estimated remaining mining time at site if still there.
+    	if (MINING_SITE.equals(getPhase())) {
+    		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+    		double timeSpentAtMiningSite = MarsClock.getTimeDiff(currentTime, miningSiteStartTime);
+    		double remainingTime = MINING_SITE_TIME - timeSpentAtMiningSite;
+    		if (remainingTime > 0D) result = remainingTime;
+    	}
+    	else {
+    		// If mission hasn't reached mining site yet, use estimated mining site time.
+    		if (miningSiteStartTime == null) result = MINING_SITE_TIME;
+    	}
+		
+		return result;
+	}
+	
+    @Override
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
+    		boolean parts) throws MissionException {
+    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
+    	
+    	double miningSiteTime = getEstimatedRemainingMiningSiteTime();
+    	double timeSols = miningSiteTime / 1000D;
+    	
+    	int crewNum = getPeopleNumber();
+    	
+    	// Determine life support supplies needed for trip.
+    	try {
+    		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
+    		if (result.containsKey(AmountResource.OXYGEN)) 
+    			oxygenAmount += ((Double) result.get(AmountResource.OXYGEN)).doubleValue();
+    		result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
+    		
+    		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
+    		if (result.containsKey(AmountResource.WATER)) 
+    			waterAmount += ((Double) result.get(AmountResource.WATER)).doubleValue();
+    		result.put(AmountResource.WATER, new Double(waterAmount));
+    		
+    		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
+    		if (result.containsKey(AmountResource.FOOD)) 
+    			foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
+    		result.put(AmountResource.FOOD, new Double(foodAmount));
+    	}
+    	catch(Exception e) {
+    		throw new MissionException(getPhase(), e);
+    	}
+    	
+    	return result;
+    }
+    
+	/**
+	 * Gets the range of a trip based on its time limit and mining site.
+	 * @param tripTimeLimit time (millisols) limit of trip.
+	 * @return range (km) limit.
+	 */
+	private double getTripTimeRange(double tripTimeLimit) {
+		double tripTimeTravellingLimit = tripTimeLimit - MINING_SITE_TIME;
+    	double averageSpeed = getAverageVehicleSpeedForOperators();
+    	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+    	double averageSpeedMillisol = averageSpeed / millisolsInHour;
+    	return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 }
