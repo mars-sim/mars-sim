@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 2.78 2005-08-22
+ * @version 2.84 2008-05-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,6 +19,7 @@ import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.person.ai.mission.Mining;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
@@ -71,6 +71,8 @@ public class Areologist extends Job implements Serializable {
 		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
+		jobMissionStarts.add(Mining.class);
+		jobMissionJoins.add(Mining.class);
 	}
 
 	/**
@@ -120,8 +122,7 @@ public class Areologist extends Job implements Serializable {
 		}
 		
 		// Add number of exploration-capable rovers parked at the settlement.
-		Collection vehicles = settlement.getParkedVehicles();
-		Iterator<Vehicle> j = vehicles.iterator();
+		Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
 			if (vehicle instanceof Rover) {

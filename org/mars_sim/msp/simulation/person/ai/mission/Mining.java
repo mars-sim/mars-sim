@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * Mining.java
+ * @version 2.84 2008-04-01
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.util.Collection;
@@ -10,6 +17,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.Bag;
@@ -20,7 +28,8 @@ import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
-import org.mars_sim.msp.simulation.person.ai.task.CollectResources;
+import org.mars_sim.msp.simulation.person.ai.task.CollectMinedMinerals;
+import org.mars_sim.msp.simulation.person.ai.task.MineSite;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Resource;
@@ -30,6 +39,9 @@ import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
+/**
+ * Mission for mining mineral concentrations at an explored site.
+ */
 public class Mining extends RoverMission {
 
 	private static String CLASS_NAME = 
@@ -49,11 +61,13 @@ public class Mining extends RoverMission {
 	
 	private static final double MINING_SITE_TIME = 3000D;
 	
+	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
+	
 	// Data members
 	private ExploredLocation miningSite;
 	private MarsClock miningSiteStartTime;
 	private boolean endMiningSite;
-	private Map<AmountResource, Double> excavatedResources;
+	private Map<AmountResource, Double> excavatedMinerals;
 	
 	/**
 	 * Constructor
@@ -80,8 +94,8 @@ public class Mining extends RoverMission {
         	// Determine mining site.
         	try {
         		if (hasVehicle()) {
-        			double range = getVehicle().getRange();
-        			miningSite = determineBestMiningSite(range, getStartingSettlement());
+        			miningSite = determineBestMiningSite(getRover(), getStartingSettlement());
+        			miningSite.setMined(true);
         			addNavpoint(new NavPoint(miningSite.getLocation(), "mining site"));
         		}
         	}
@@ -124,6 +138,7 @@ public class Mining extends RoverMission {
     	// Initialize data members.
 		setStartingSettlement(startingSettlement);
 		this.miningSite = miningSite;
+		miningSite.setMined(true);
 		
 		// Set mission capacity.
 		setMissionCapacity(getRover().getCrewCapacity());
@@ -191,10 +206,9 @@ public class Mining extends RoverMission {
 					if (rover != null) {
 				
 						// Find best mining site.
-						ExploredLocation miningSite = determineBestMiningSite(rover.getRange(), settlement);
-						if (miningSite != null) {
-							result = getMiningSiteValue(miningSite, settlement) * 50D;
-						}
+						ExploredLocation miningSite = determineBestMiningSite(rover, settlement);
+						if (miningSite != null) 
+							result = getMiningSiteValue(miningSite, settlement);
 					}
 				}
 				catch (Exception e) {
@@ -251,15 +265,22 @@ public class Mining extends RoverMission {
     	if (MINING_SITE.equals(getPhase())) miningPhase(person);
     }
     
+    /**
+     * Perform the mining phase.
+     * @param person the person performing the mining phase.
+     * @throws MissionException if error performing the mining phase.
+     */
     private final void miningPhase(Person person) throws MissionException {
     	
     	// Set the mining site start time if necessary.
     	if (miningSiteStartTime == null) 
     		miningSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
     	
-    	// Initialize the excavated resources if necessary.
-    	if (excavatedResources == null)
-    		excavatedResources = new HashMap<AmountResource, Double>(1);
+    	// Initialize the excavated minerals if necessary.
+    	if (excavatedMinerals == null)
+    		excavatedMinerals = new HashMap<AmountResource, Double>(1);
+    	
+    	// TODO detach towed light utility vehicle if necessary.
     	
 		// Check if crew has been at site for more than three sols.
 		boolean timeExpired = false;
@@ -283,12 +304,8 @@ public class Mining extends RoverMission {
 			Iterator<Person> i = getPeople().iterator();
 			while (i.hasNext()) {
 				Person personTemp = i.next();
-				// TODO
-				/*
 				if (MineSite.canMineSite(personTemp, getRover())) nobodyMineOrCollect = false;
-				if (CollectResources.canCollectResources(personTemp, getRover(), Bag.class, resourceType)) 
-					nobodyMineOrCollect = false;
-				*/
+				if (canCollectExcavatedMinerals(personTemp)) nobodyMineOrCollect = false;
 			}
 	    
 			// If no one can mine or collect minerals at the site and this is not due to it just being
@@ -325,37 +342,77 @@ public class Mining extends RoverMission {
 				Iterator<Person> i = getPeople().iterator();
 				while (i.hasNext()) {
 					Task task = i.next().getMind().getTaskManager().getTask();
-		    		// TODO: Add MineSite task.
-		    		// if (task instanceof MineSite) ((MineSite) task).endEVA();
-		    		if (task instanceof CollectResources) ((CollectResources) task).endEVA();
+		    		if (task instanceof MineSite) ((MineSite) task).endEVA();
+		    		if (task instanceof CollectMinedMinerals) ((CollectMinedMinerals) task).endEVA();
 				}
 			}
 		}
 
 		if (!getPhaseEnded()) {
 			
-			// If mining is still needed at site, assign tasks.
-			if (!endMiningSite && !timeExpired) {
-				try {
-					// If person can collect minerals the site, start that task.
-					// TODO
-					/*
-					if (canCollectMinerals(person)) {
-						assignTask(person, new CollectResources(person, ));
+			// 75% chance of assigning task, otherwise allow break.
+			if (RandomUtil.lessThanRandPercent(75D)) {
+				// If mining is still needed at site, assign tasks.
+				if (!endMiningSite && !timeExpired) {
+					try {
+						// If person can collect minerals the site, start that task.
+						if (canCollectExcavatedMinerals(person)) {
+							AmountResource mineralToCollect = getMineralToCollect(person);
+							assignTask(person, new CollectMinedMinerals(person, getRover(), 
+									excavatedMinerals, mineralToCollect));
+						}
+						// Otherwise start the mining task if it can be done.
+						else if (MineSite.canMineSite(person, getRover())) {
+							assignTask(person, new MineSite(person, miningSite.getLocation(), 
+									(Rover) getVehicle(), excavatedMinerals));
+						}
 					}
-					else if (MineSite.canMineSite(person, getRover())) {
-						assignTask(person, new MineSite(person, currentSite, (Rover) getVehicle()));
+					catch(Exception e) {
+						throw new MissionException(getPhase(), e);
 					}
-					*/
-				}
-				catch(Exception e) {
-					throw new MissionException(getPhase(), e);
 				}
 			}
 		}
+		else {
+			// TODO attach light utility vehicle for towing.
+		}
     }
     
-    /**
+    private boolean canCollectExcavatedMinerals(Person person) {
+    	boolean result = false;
+    	
+    	Iterator<AmountResource> i = excavatedMinerals.keySet().iterator();
+    	while (i.hasNext()) {
+    		AmountResource resource = i.next();
+    		if ((excavatedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT) && 
+    				CollectMinedMinerals.canCollectMinerals(person, getRover(), resource))
+    			result = true;
+    	}
+    	
+    	return result;
+	}
+    
+    private AmountResource getMineralToCollect(Person person) {
+    	AmountResource result = null;
+    	double largestAmount = 0D;
+    	
+    	Iterator<AmountResource> i = excavatedMinerals.keySet().iterator();
+    	while (i.hasNext()) {
+    		AmountResource resource = i.next();
+    		if ((excavatedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT) && 
+    				CollectMinedMinerals.canCollectMinerals(person, getRover(), resource)) {
+    			double amount = excavatedMinerals.get(resource);
+    			if (amount > largestAmount) {
+    				result = resource;
+    				largestAmount = amount;
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+
+	/**
      * Ends mining at a site.
      */
     public void endMiningAtSite() {
@@ -366,9 +423,8 @@ public class Mining extends RoverMission {
     	Iterator<Person> i = getPeople().iterator();
     	while (i.hasNext()) {
     		Task task = i.next().getMind().getTaskManager().getTask();
-    		// TODO: Add MineSite task.
-    		// if (task instanceof MineSite) ((MineSite) task).endEVA();
-    		if (task instanceof CollectResources) ((CollectResources) task).endEVA();
+    		if (task instanceof MineSite) ((MineSite) task).endEVA();
+    		if (task instanceof CollectMinedMinerals) ((CollectMinedMinerals) task).endEVA();
     	}
     }
     
@@ -379,27 +435,38 @@ public class Mining extends RoverMission {
 	 * @return best explored location for mining, or null if none found.
 	 * @throws MissionException if error determining mining site.
 	 */
-	private static ExploredLocation determineBestMiningSite(double roverRange, Settlement homeSettlement) 
+	private static ExploredLocation determineBestMiningSite(Rover rover, Settlement homeSettlement) 
 			throws MissionException {
 		
 		ExploredLocation result = null;
 		double bestValue = 0D;
 		
-		Iterator<ExploredLocation> i = 
-			Simulation.instance().getMars().getSurfaceFeatures().getExploredLocations().iterator();
-		while (i.hasNext()) {
-			ExploredLocation site = i.next();
-			if (!site.isMined()) {
-				Coordinates siteLocation = site.getLocation();
-				Coordinates homeLocation = homeSettlement.getCoordinates();
-				if (homeLocation.getDistance(siteLocation) <= roverRange) {
-					double value = getMiningSiteValue(site, homeSettlement);
-					if (value > bestValue) {
-						result = site;
-						bestValue = value;
+		try {
+			double roverRange = rover.getRange();
+			double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
+			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
+			double range = roverRange;
+			if (tripRange < range) range = tripRange;
+		
+			Iterator<ExploredLocation> i = 
+				Simulation.instance().getMars().getSurfaceFeatures().getExploredLocations().iterator();
+			while (i.hasNext()) {
+				ExploredLocation site = i.next();
+				if (!site.isMined()) {
+					Coordinates siteLocation = site.getLocation();
+					Coordinates homeLocation = homeSettlement.getCoordinates();
+					if (homeLocation.getDistance(siteLocation) <= (range / 2D)) {
+						double value = getMiningSiteValue(site, homeSettlement);
+						if (value > bestValue) {
+							result = site;
+							bestValue = value;
+						}
 					}
 				}
 			}
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Error determining best mining site.");
 		}
 		
 		return result;
@@ -596,11 +663,11 @@ public class Mining extends RoverMission {
 	/**
 	 * Gets the range of a trip based on its time limit and mining site.
 	 * @param tripTimeLimit time (millisols) limit of trip.
+	 * @param averageSpeed the average speed of the vehicle.
 	 * @return range (km) limit.
 	 */
-	private double getTripTimeRange(double tripTimeLimit) {
+	private static double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
 		double tripTimeTravellingLimit = tripTimeLimit - MINING_SITE_TIME;
-    	double averageSpeed = getAverageVehicleSpeedForOperators();
     	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
     	double averageSpeedMillisol = averageSpeed / millisolsInHour;
     	return tripTimeTravellingLimit * averageSpeedMillisol;
