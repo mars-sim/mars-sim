@@ -1091,5 +1091,38 @@
 			<vehicle name="cargo rover" number="1" />
 		</outputs>
 	</process>
+	
+	<process name="hematite smelting" tech="1" skill="2" work-time="100" process-time="100">
+		<inputs>
+			<resource name="hematite" amount="50.0" />
+			<resource name="carbon monoxide" amount=".5" />
+		</inputs>
+		<outputs>
+			<resource name="iron powder" amount="25.0" />
+			<resource name="carbon dioxide" amount="1.0" />
+		</outputs>
+	</process>
+	
+	<process name="magnetite smelting" tech="1" skill="2" work-time="200" process-time="200">
+		<inputs>
+			<resource name="magnetite" amount="50.0" />
+			<resource name="carbon monoxide" amount=".5" />
+		</inputs>
+		<outputs>
+			<resource name="iron powder" amount="30.0" />
+			<resource name="carbon dioxide" amount="1.0" />
+		</outputs>
+	</process>
+	
+	<process name="goethite smelting" tech="1" skill="2" work-time="150" process-time="150">
+		<inputs>
+			<resource name="goethite" amount="50.0" />
+			<resource name="carbon monoxide" amount=".5" />
+		</inputs>
+		<outputs>
+			<resource name="iron powder" amount="27.0" />
+			<resource name="carbon dioxide" amount="1.0" />
+		</outputs>
+	</process>
 
 </manufacturing-processes>
