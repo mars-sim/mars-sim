@@ -55,6 +55,11 @@ public final class AmountResource implements Resource, Serializable {
     public static final AmountResource TAENITE = new AmountResource("taenite", Phase.SOLID);
     public static final AmountResource CHALCOPYRITE = new AmountResource("chalcopyrite", Phase.SOLID);
     public static final AmountResource MALACHITE = new AmountResource("malachite", Phase.SOLID);
+    public static final AmountResource NICKEL = new AmountResource("nickel", Phase.SOLID);
+    public static final AmountResource SULFUR = new AmountResource("sulfur", Phase.SOLID);
+    public static final AmountResource MAGNESIUM = new AmountResource("magnesium", Phase.SOLID);
+    public static final AmountResource SILICON = new AmountResource("silicon", Phase.SOLID);
+    public static final AmountResource COPPER = new AmountResource("copper", Phase.SOLID);
     
 	// Data members
 	private String name;
