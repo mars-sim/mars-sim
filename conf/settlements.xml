@@ -93,6 +93,7 @@
 			<part type="rover fuel tank" number="1" />
 			<part type="rover oxygen tank" number="1" />
 			<part type="rover water tank" number="1" />
+			<part type="electric heating element" number="5" />
 			
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
@@ -169,6 +170,7 @@
 			<part type="rover fuel tank" number="2" />
 			<part type="rover oxygen tank" number="2" />
 			<part type="rover water tank" number="2" />
+			<part type="electric heating element" number="10" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
@@ -239,6 +241,7 @@
 			<part type="rover fuel tank" number="3" />
 			<part type="rover oxygen tank" number="3" />
 			<part type="rover water tank" number="3" />
+			<part type="electric heating element" number="15" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
 			</resupply>
@@ -318,6 +321,7 @@
 			<part type="rover fuel tank" number="4" />
 			<part type="rover oxygen tank" number="4" />
 			<part type="rover water tank" number="4" />
+			<part type="electric heating element" number="20" />
 		</template>
 	
 	</settlement-template-list>
@@ -411,6 +415,7 @@
 			<part type="rover fuel tank" number="2" />
 			<part type="rover oxygen tank" number="2" />
 			<part type="rover water tank" number="2" />
+			<part type="electric heating element" number="10" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 2">
@@ -475,6 +480,7 @@
 			<part type="rover fuel tank" number="3" />
 			<part type="rover oxygen tank" number="3" />
 			<part type="rover water tank" number="3" />
+			<part type="electric heating element" number="15" />
 		</resupply>
 		
 		<resupply name="Mars Direct Base resupply 3">
@@ -543,6 +549,7 @@
 			<part type="rover fuel tank" number="4" />
 			<part type="rover oxygen tank" number="4" />
 			<part type="rover water tank" number="4" />
+			<part type="electric heating element" number="20" />
 		</resupply>
 	
 	</resupply-list>
