@@ -212,12 +212,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     	}
     }
 
-    /**
-     * Gets a collection of people affected by this entity.
-     * @return person collection
-     */
-    public Collection getAffectedPeople() {
-        Collection people = super.getAffectedPeople();
+    @Override
+    public Collection<Person> getAffectedPeople() {
+        Collection<Person> people = super.getAffectedPeople();
         if (getContainerUnit() instanceof Person) {
             if (!people.contains((Person) getContainerUnit()))
                 people.add((Person) getContainerUnit());

@@ -38,8 +38,8 @@ public abstract class Equipment extends Unit {
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public Collection getAffectedPeople() {
-        Collection people = new ConcurrentLinkedQueue();
+    public Collection<Person> getAffectedPeople() {
+        Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		// Check all people.
         Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator(); 
