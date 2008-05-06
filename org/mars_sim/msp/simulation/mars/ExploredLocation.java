@@ -26,6 +26,7 @@ public class ExploredLocation implements Serializable {
 	private Coordinates location;
 	private Map<String, Double> estimatedMineralConcentrations;
 	private boolean mined;
+	private boolean explored;
 	private Settlement settlement;
 	
 	/**
@@ -41,6 +42,7 @@ public class ExploredLocation implements Serializable {
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
 		this.settlement = settlement;
 		mined = false;
+		explored = false;
 	}
 	
 	/**
@@ -74,6 +76,22 @@ public class ExploredLocation implements Serializable {
 	 */
 	public boolean isMined() {
 		return mined;
+	}
+	
+	/**
+	 * Sets if the location has been explored or not.
+	 * @param explored true if explored.
+	 */
+	public void setExplored(boolean explored) {
+		this.explored = explored;
+	}
+	
+	/**
+	 * Checks if the location has been explored of not.
+	 * @return true if explored.
+	 */
+	public boolean isExplored() {
+		return explored;
 	}
 	
 	/**

@@ -452,7 +452,7 @@ public class Mining extends RoverMission {
 				Simulation.instance().getMars().getSurfaceFeatures().getExploredLocations().iterator();
 			while (i.hasNext()) {
 				ExploredLocation site = i.next();
-				if (!site.isMined()) {
+				if (!site.isMined() && site.isExplored()) {
 					Coordinates siteLocation = site.getLocation();
 					Coordinates homeLocation = homeSettlement.getCoordinates();
 					if (homeLocation.getDistance(siteLocation) <= (range / 2D)) {

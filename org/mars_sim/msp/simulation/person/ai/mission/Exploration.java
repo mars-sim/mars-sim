@@ -368,7 +368,10 @@ public class Exploration extends RoverMission {
 				}
 			}
 		}
-		else currentSite = null;
+		else {
+			currentSite.setExplored(true);
+			currentSite = null;
+		}
 	}
 	
 	/**
