@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-09
  * @author Barry Evans
  */
 
@@ -114,7 +114,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         // Create buttons based on selection
         mapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         mapButton.setMargin(new Insets(3, 4, 4, 4));
-        mapButton.setToolTipText("Locate selected unit in Mars navigator.");
+        mapButton.setToolTipText("Locate selected unit in Mars Navigator.");
         mapButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             centerMap();
@@ -123,7 +123,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         toolbar.add(mapButton);
 
         detailsButton = new JButton(ImageLoader.getIcon("ShowDetails"));
-        detailsButton.setToolTipText("Open unit dialog for selected unit.");
+        detailsButton.setToolTipText("Open unit window for selected unit.");
         detailsButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             displayDetails();
