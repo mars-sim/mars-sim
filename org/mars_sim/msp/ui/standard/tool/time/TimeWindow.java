@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.76 2004-06-02
+ * @version 2.84 2008-05-10
  * @author Scott Davis
  */
 
@@ -18,6 +18,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.time.*;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /** 
  * The TimeWindow is a tool window that displays the current 
@@ -68,7 +69,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPane.setBorder(new MarsPanelBorder());
         setContentPane(mainPane);
 
         // Create Martian time panel

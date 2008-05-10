@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TableTab.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-10
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -15,7 +15,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -27,6 +26,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.UIManager;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -260,7 +260,7 @@ abstract class TableTab extends MonitorTab {
 
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);
-        scroller.setBorder(new EtchedBorder());
+        scroller.setBorder(new MarsPanelBorder());
         add(scroller, "Center");
 
         setName(model.getName());

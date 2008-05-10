@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.76 2004-06-02
+ * @version 2.84 2008-05-10
  * @author Scott Davis
  */
 
@@ -39,6 +39,7 @@ import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /** 
  * The SearchWindow is a tool window that allows the user to search
@@ -83,7 +84,7 @@ public class SearchWindow extends ToolWindow {
 
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPane.setBorder(new MarsPanelBorder());
         setContentPane(mainPane);
 
         // Create search for panel

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundWindow.java
- * @version 2.78 2005-09-05
+ * @version 2.84 2008-05-10
  * @author Scott Davis
  */
 
@@ -15,14 +15,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /** 
  * The SoundWindow is a tool window that allows the user to adjust the volume
@@ -54,12 +52,12 @@ public class SoundWindow extends ToolWindow {
 		
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPane.setBorder(new MarsPanelBorder());
         setContentPane(mainPane);
         
         // Create volume panel.
         JPanel volumePane = new JPanel(new BorderLayout());
-        volumePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        volumePane.setBorder(new MarsPanelBorder());
         mainPane.add(volumePane, BorderLayout.NORTH);
         
         // Create volume label.
@@ -82,7 +80,7 @@ public class SoundWindow extends ToolWindow {
         
         // Create mute panel.
         JPanel mutePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        mutePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        mutePane.setBorder(new MarsPanelBorder());
         mainPane.add(mutePane, BorderLayout.SOUTH);
         
         // Create mute checkbox.

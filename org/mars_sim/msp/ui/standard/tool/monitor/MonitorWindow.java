@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.84 2008-05-09
+ * @version 2.84 2008-05-10
  * @author Barry Evans
  */
 
@@ -23,7 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -34,6 +33,7 @@ import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /** The MonitorWindow is a tool window that displays a selection of tables
  *  each of which monitor a set of Units.
@@ -69,7 +69,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
 
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPane.setBorder(new MarsPanelBorder());
         setContentPane(mainPane);
 
         // Create toolbar
