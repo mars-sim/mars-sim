@@ -400,4 +400,15 @@
 		</maintenance-entity-list>
 	</part>
 	
+	<!-- Attachment part for light utility vehicle. -->
+	<part name="pneumatic drill" mass="25.0" />
+	
+	<!-- Attachment part for light utility vehicle. -->
+	<part name="backhoe" mass="35.0" />
+	
+	<!-- Attachment part for light utility vehicle. -->
+	<part name="bulldozer blade" mass="40.0" />
+	
+	<part name="small electric motor" mass="10.0" />
+	
 </part-list>

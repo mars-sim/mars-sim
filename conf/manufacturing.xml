@@ -902,11 +902,25 @@
 		</outputs>
 	</process>
 	
+	<process name="small electric motor manufacturing" tech="3" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<part name="iron sheet" number="1" />
+			<part name="iron ingot" number="1" />
+			<part name="copper wire" number="10" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="8" />
+			<part name="wire connector" number="8" />
+		</inputs>
+		<outputs>
+			<part name="small electric motor" number="4" />
+		</outputs>
+	</process>
+	
 	<process name="large electric motor manufacturing" tech="4" skill="4" work-time="400" process-time="400">
 		<inputs>
 			<part name="iron sheet" number="2" />
 			<part name="iron ingot" number="2" />
-			<part name="aluminum wire" number="25" />
+			<part name="copper wire" number="25" />
 			<part name="steel sheet" number="2" />
 			<part name="electrical wire" number="4" />
 			<part name="wire connector" number="4" />
@@ -1274,6 +1288,44 @@
 		</inputs>
 		<outputs>
 			<part name="electric heating element" number="2" />
+		</outputs>
+	</process>
+	
+	<process name="pneumatic drill manufacturing" tech="3" skill="4" work-time="400" process-time="400">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="steel ingot" number="1" />
+			<part name="electrical wire" number="2" />
+			<part name="wire connector" number="2" />
+			<part name="gasket" number="5" />
+			<part name="valve" number="5" />
+			<part name="plastic tubing" number="5" />
+			<part name="oxygen pump" number="1" />
+		</inputs>
+		<outputs>
+			<part name="pneumatic drill" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="backhoe manufacturing" tech="3" skill="4" work-time="400" process-time="400">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="2" />
+			<part name="wire connector" number="2" />
+			<part name="small electric motor" number="1" />
+			<part name="steel wire" number="1" />
+		</inputs>
+		<outputs>
+			<part name="backhoe" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="bulldozer blade manufacturing" tech="2" skill="3" work-time="300" process-time="300">
+		<inputs>
+			<part name="steel sheet" number="2" />
+		</inputs>
+		<outputs>
+			<part name="bulldozer blade" number="1" />
 		</outputs>
 	</process>
 
