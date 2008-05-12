@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutWindow.java
- * @version 2.84 2008-03-19
+ * @version 2.84 2008-05-12
  * @author Lars Naesbye Christensen
  */
 
@@ -10,30 +10,19 @@ package org.mars_sim.msp.ui.standard.tool.about;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Point;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
-import javax.swing.SwingConstants;
 import javax.swing.border.*;
 
-
-import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.HTMLContentPane;

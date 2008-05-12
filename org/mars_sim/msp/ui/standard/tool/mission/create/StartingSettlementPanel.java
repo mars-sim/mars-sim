@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 2.83 2008-02-10
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -171,7 +171,7 @@ class StartingSettlementPanel extends WizardPanel {
     		
     		// Add all settlements to table sorted by name.
     		UnitManager manager = Simulation.instance().getUnitManager();
-    		Collection settlements = CollectionUtils.sortByName(manager.getSettlements());
+    		Collection<Settlement> settlements = CollectionUtils.sortByName(manager.getSettlements());
     		Iterator<Settlement> i = settlements.iterator();
     		while (i.hasNext()) units.add(i.next());
     		

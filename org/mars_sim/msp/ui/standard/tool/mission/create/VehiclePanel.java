@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclePanel.java
- * @version 2.80 2007-03-23
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -228,7 +228,7 @@ class VehiclePanel extends WizardPanel {
     	void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		Collection vehicles = CollectionUtils.sortByName(startingSettlement.getParkedVehicles());
+    		Collection<Vehicle> vehicles = CollectionUtils.sortByName(startingSettlement.getParkedVehicles());
     		Iterator<Vehicle> i = vehicles.iterator();
     		while (i.hasNext()) units.add(i.next());
     		fireTableDataChanged();

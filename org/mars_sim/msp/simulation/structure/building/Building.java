@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.83 2008-01-17
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
  
@@ -270,8 +270,8 @@ public class Building implements Malfunctionable, Serializable {
      * Children buildings should add additional people as necessary.
      * @return person collection
      */
-    public Collection getAffectedPeople() {
-        Collection people = new ConcurrentLinkedQueue();
+    public Collection<Person> getAffectedPeople() {
+        Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		// If building has life support, add all occupants of the building.
 		if (hasFunction(LifeSupport.NAME)) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.84 2008-04-14
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -370,7 +370,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			
 			// Add modifier for average relationship with inhabitants of destination settlement.
 			if (getDestinationSettlement() != null) {
-				Collection destinationInhabitants = getDestinationSettlement().getAllAssociatedPeople();
+				Collection<Person> destinationInhabitants = getDestinationSettlement().getAllAssociatedPeople();
 				double destinationSocialModifier = (relationshipManager.getAverageOpinionOfPeople(person, 
 						destinationInhabitants) - 50D) / 50D;
 				result += destinationSocialModifier;

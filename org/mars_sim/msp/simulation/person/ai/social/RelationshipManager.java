@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 2.81 2007-08-20
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -99,7 +99,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person the person to add.
 	 * @param immigrantGroup the groups of immigrants this person belongs to.
 	 */
-	public void addNewImmigrant(Person person, Collection immigrantGroup) {
+	public void addNewImmigrant(Person person, Collection<Person> immigrantGroup) {
 		addPerson(person, immigrantGroup);
 	}
 	
@@ -108,7 +108,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person the new person
 	 * @param initialGroup the group that this person has existing relationships with.
 	 */
-	private void addPerson(Person person, Collection initialGroup) {
+	private void addPerson(Person person, Collection<Person> initialGroup) {
 		if ((person == null) || (initialGroup == null)) 
 			throw new IllegalArgumentException("RelationshipManager.addPerson(): null parameter.");
 		
@@ -191,8 +191,8 @@ public class RelationshipManager implements Serializable {
 	 * @param person the person
 	 * @return a list of the people the person knows.
 	 */
-	public Collection getAllKnownPeople(Person person) {
-		Collection result = new ConcurrentLinkedQueue();
+	public Collection<Person> getAllKnownPeople(Person person) {
+		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
 			Person knownPerson = (Person) traverser.next();
@@ -226,7 +226,7 @@ public class RelationshipManager implements Serializable {
 	 * @param people the collection of people who the opinion is of.
 	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close friend).
 	 */
-	public double getAverageOpinionOfPeople(Person person1, Collection people) {
+	public double getAverageOpinionOfPeople(Person person1, Collection<Person> people) {
 		
 		if (people == null) throw new IllegalArgumentException("people is null");
 		
@@ -270,7 +270,7 @@ public class RelationshipManager implements Serializable {
 		double personStress = person.getPhysicalCondition().getStress();
 		
 		// Get the person's local group of people.
-		Collection localGroup = person.getLocalGroup();
+		Collection<Person> localGroup = person.getLocalGroup();
 		
 		// Go through each person in local group.
 		Iterator<Person> i = localGroup.iterator();

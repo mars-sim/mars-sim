@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.83 2008-02-10
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
@@ -45,7 +46,7 @@ class MissionDataBean {
 	private String description;
 	private Settlement startingSettlement;
 	private Rover rover;
-	private Collection members;
+	private Collection<Person> members;
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
 	private Coordinates iceCollectionSite;
@@ -185,7 +186,7 @@ class MissionDataBean {
 	 * Gets the mission members.
 	 * @return the members.
 	 */
-	Collection getMembers() {
+	Collection<Person> getMembers() {
 		return members;
 	}
 	
@@ -193,7 +194,7 @@ class MissionDataBean {
 	 * Sets the mission members.
 	 * @param members the members.
 	 */
-	void setMembers(Collection members) {
+	void setMembers(Collection<Person> members) {
 		this.members = members;
 	}
 	

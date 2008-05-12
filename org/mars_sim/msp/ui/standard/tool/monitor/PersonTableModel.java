@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.77 2004-09-14
+ * @version 2.84 2008-05-12
  * @author Barry Evans
  */
 
@@ -175,7 +175,7 @@ public class PersonTableModel extends UnitTableModel {
     /**
      * Defines the source data from this table
      */
-    private void setSource(Collection source) {
+    private void setSource(Collection<Person> source) {
         Iterator<Person> iter = source.iterator();
         while(iter.hasNext()) addUnit(iter.next());
     }

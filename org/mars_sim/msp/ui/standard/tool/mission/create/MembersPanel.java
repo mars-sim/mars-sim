@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 2.80 2007-03-22
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -163,9 +163,9 @@ class MembersPanel extends WizardPanel {
 				public void actionPerformed(ActionEvent e) {
 					// Add the selected rows in the people table to the members table.
 					int[] selectedRows = peopleTable.getSelectedRows();
-					Collection people = new ConcurrentLinkedQueue();
+					Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 					for (int x = 0; x < selectedRows.length; x++) 
-						people.add(peopleTableModel.getUnit(selectedRows[x]));
+						people.add((Person) peopleTableModel.getUnit(selectedRows[x]));
 					peopleTableModel.removePeople(people);
 					membersTableModel.addPeople(people);
 					updateRoverCapacityLabel();
@@ -181,9 +181,9 @@ class MembersPanel extends WizardPanel {
 					public void actionPerformed(ActionEvent e) {
 						// Remove the selected rows in the members table to the people table.
 						int[] selectedRows = membersTable.getSelectedRows();
-						Collection people = new ConcurrentLinkedQueue();
+						Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 						for (int x = 0; x < selectedRows.length; x++) 
-							people.add(membersTableModel.getUnit(selectedRows[x]));
+							people.add((Person) membersTableModel.getUnit(selectedRows[x]));
 						peopleTableModel.addPeople(people);
 						membersTableModel.removePeople(people);
 						updateRoverCapacityLabel();
@@ -254,9 +254,9 @@ class MembersPanel extends WizardPanel {
 	 * @retun true if changes can be committed.
 	 */
 	boolean commitChanges() {
-		Collection people = new ConcurrentLinkedQueue();
+		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 		for (int x = 0; x < membersTableModel.getRowCount(); x++) 
-			people.add(membersTableModel.getUnit(x));
+			people.add((Person) membersTableModel.getUnit(x));
 		getWizard().getMissionData().setMembers(people);
 		return true;
 	}
@@ -355,7 +355,7 @@ class MembersPanel extends WizardPanel {
     	void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		Collection people = CollectionUtils.sortByName(startingSettlement.getInhabitants());
+    		Collection<Person> people = CollectionUtils.sortByName(startingSettlement.getInhabitants());
     		Iterator<Person> i = people.iterator();
     		while (i.hasNext()) units.add(i.next());
     		fireTableDataChanged();
@@ -385,7 +385,7 @@ class MembersPanel extends WizardPanel {
     	 * Adds people to the table.
     	 * @param people the collection of people to add.
     	 */
-    	void addPeople(Collection people) {
+    	void addPeople(Collection<Person> people) {
     		Iterator<Person> i = people.iterator();
     		while (i.hasNext()) {
     			Person person = i.next();
@@ -399,7 +399,7 @@ class MembersPanel extends WizardPanel {
     	 * Removes people from the table.
     	 * @param people the collection of people to remove.
     	 */
-    	void removePeople(Collection people) {
+    	void removePeople(Collection<Person> people) {
     		Iterator<Person> i = people.iterator();
     		while (i.hasNext()) {
     			Person person = i.next();
@@ -484,7 +484,7 @@ class MembersPanel extends WizardPanel {
     	 * Adds people to the table.
     	 * @param people the collection of people to add.
     	 */
-    	void addPeople(Collection people) {
+    	void addPeople(Collection<Person> people) {
     		Iterator<Person> i = people.iterator();
     		while (i.hasNext()) {
     			Person person = i.next();
@@ -500,7 +500,7 @@ class MembersPanel extends WizardPanel {
     	 * Removes people from the list.
     	 * @param people the collection of people to remove.
     	 */
-    	void removePeople(Collection people) {
+    	void removePeople(Collection<Person> people) {
     		Iterator<Person> i = people.iterator();
     		while (i.hasNext()) {
     			Person person = i.next();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 2.77 2004-09-01
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;
@@ -155,7 +155,7 @@ public class Resupply implements Serializable {
 		}
 		
 		// Deliver immigrants.
-		Collection immigrants = new ConcurrentLinkedQueue();
+		Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		for (int x = 0; x < newImmigrantNum; x++) {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();

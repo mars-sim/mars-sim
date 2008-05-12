@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * TradeTableModel.java
+ * @version 2.84 2008-05-12
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.util.Collection;
@@ -20,7 +27,7 @@ public class TradeTableModel extends AbstractTableModel implements
 	
 	// Data members
 	List<Good> goodsList;
-	Collection settlements;
+	Collection<Settlement> settlements;
 	
 	/**
 	 * Constructor

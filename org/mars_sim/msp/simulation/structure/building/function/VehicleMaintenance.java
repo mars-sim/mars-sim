@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 2.77 2004-09-28
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -28,7 +28,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
     private static Logger logger = Logger.getLogger(CLASS_NAME);
         
     protected int vehicleCapacity;
-	private Collection vehicles;
+	private Collection<Vehicle> vehicles;
         
     /**
      * Constructor
@@ -39,7 +39,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
     	// Use Function constructor.
     	super(name, building);
     	
-    	vehicles = new ConcurrentLinkedQueue();
+    	vehicles = new ConcurrentLinkedQueue<Vehicle>();
     }
         
     /** 
@@ -115,7 +115,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
      * Gets a collection of vehicles in the building.
      * @return Collection of vehicles in the building.
      */
-    public Collection getVehicles() {
+    public Collection<Vehicle> getVehicles() {
     	return vehicles;
     }
     

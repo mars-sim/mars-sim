@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenanceBuildingPanel.java
- * @version 2.77 2004-09-28
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -36,7 +36,7 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
 	private int vehicleNumberCache = 0;
 	private JList vehicleList;
 	private DefaultListModel vehicleListModel;
-	private Collection vehicleCache;
+	private Collection<Vehicle> vehicleCache;
 
 	/**
 	 * Constructor

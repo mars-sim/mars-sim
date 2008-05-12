@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AddMembersDialog.java
- * @version 2.80 2007-03-21
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -50,7 +50,8 @@ class AddMembersDialog extends JDialog {
 	 * @param memberListModel the member list model in the edit mission dialog.
 	 * @param availablePeople the available people to add.
 	 */
-	public AddMembersDialog(Dialog owner, Mission mission, DefaultListModel memberListModel, Collection availablePeople) {
+	public AddMembersDialog(Dialog owner, Mission mission, DefaultListModel memberListModel, 
+			Collection<Person> availablePeople) {
 		// Use JDialog constructor
 		super(owner, "Add Members", true);
 		

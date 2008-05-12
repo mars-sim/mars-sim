@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 2.84 2008-04-17
+ * @version 2.84 2008-05-12
  * @author Lars Naesbye Christensen
  */
 
@@ -12,13 +12,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.JEditorPane;
 
 public class HTMLContentPane extends JEditorPane {
 
-  private List history = new ArrayList();
+  private List<URL> history = new ArrayList<URL>();
     private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.HTMLContentPane";
 

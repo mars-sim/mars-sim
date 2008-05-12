@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 2.82 2007-11-08
+ * @version 2.84 2008-05-12
  * @author Scott Davis 
  */
 
@@ -112,7 +112,7 @@ public final class MalfunctionFactory implements Serializable {
             }
         }
 
-        Collection inventoryUnits = person.getInventory().getContainedUnits();
+        Collection<Unit> inventoryUnits = person.getInventory().getContainedUnits();
         if (inventoryUnits.size() > 0) {
             Iterator<Unit> i = inventoryUnits.iterator();
             while (i.hasNext()) {
@@ -140,7 +140,7 @@ public final class MalfunctionFactory implements Serializable {
             while (i.hasNext()) entities.add(i.next());
         }
 
-        Collection inventoryUnits = entity.getInventory().getContainedUnits();
+        Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
         if (inventoryUnits.size() > 0) {
             Iterator<Unit> i = inventoryUnits.iterator();
             while (i.hasNext()) {

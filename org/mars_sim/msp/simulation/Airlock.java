@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 2.80 2007-03-29
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -35,7 +35,7 @@ public abstract class Airlock implements Serializable {
     private boolean outerDoorOpen; // True if outer door is open.
     private int capacity;          // Number of people who can use the airlock at once;
     private double activationTime; // Amount of time airlock has been activated. (in millisols)
-    private Collection occupants; // People currently in airlock.
+    private Collection<Person> occupants; // People currently in airlock.
     private double operationalTime;
     
     /**
@@ -51,7 +51,7 @@ public abstract class Airlock implements Serializable {
         else this.capacity = capacity;
         pressurized = true;
         innerDoorOpen = true;
-        occupants = new ConcurrentLinkedQueue();
+        occupants = new ConcurrentLinkedQueue<Person>();
     }
 
     /**

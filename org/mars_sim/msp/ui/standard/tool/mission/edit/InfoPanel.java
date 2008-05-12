@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InfoDialog.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -254,7 +254,7 @@ public class InfoPanel extends JPanel {
 	 * Gets a collection of people available to be added to the mission.
 	 * @return collection of available people.
 	 */
-	private Collection getAvailablePeople() {
+	private Collection<Person> getAvailablePeople() {
 		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 	
 		// Add people in the settlement or rover.

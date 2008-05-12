@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.84 2008-05-01
+ * @version 2.84 2008-05-12
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -261,7 +261,7 @@ public class SettlementTableModel extends UnitTableModel {
 	/**
 	 * Defines the source data from this table
 	 */
-	private void setSource(Collection source) {
+	private void setSource(Collection<Settlement> source) {
 		Iterator<Settlement> iter = source.iterator();
 		while(iter.hasNext()) addUnit(iter.next());
 	}

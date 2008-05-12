@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.79 2006-06-01
+ * @version 2.84 2008-05-12
  * @author Barry Evans
  */
 
@@ -327,7 +327,7 @@ public class VehicleTableModel extends UnitTableModel {
 	/**
 	 * Defines the source data from this table
 	 */
-	private void setSource(Collection source) {
+	private void setSource(Collection<Vehicle> source) {
 		Iterator<Vehicle> iter = source.iterator();
 		while(iter.hasNext()) addUnit(iter.next());
 	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.84 2008-04-08
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -348,8 +348,8 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	 * @return collection of people in person's location.
 	 * @throws Exception if error
 	 */
-	public Collection getLocalGroup() throws Exception {
-		Collection localGroup = new ConcurrentLinkedQueue();
+	public Collection<Person> getLocalGroup() throws Exception {
+		Collection<Person> localGroup = new ConcurrentLinkedQueue<Person>();
 		
 		if (getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Building building = BuildingManager.getBuilding(this);

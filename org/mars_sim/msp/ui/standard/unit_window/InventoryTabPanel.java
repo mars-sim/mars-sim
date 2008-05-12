@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -229,7 +229,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     private class EquipmentTableModel extends AbstractTableModel {
         
         Inventory inventory;
-        Collection equipment;
+        Collection<Unit> equipment;
         
         private EquipmentTableModel(Inventory inventory) {
             this.inventory = inventory;
@@ -270,7 +270,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
   
         public void update() {
-            Collection newEquipment = inventory.findAllUnitsOfClass(Equipment.class);
+            Collection<Unit> newEquipment = inventory.findAllUnitsOfClass(Equipment.class);
             if (!equipment.equals(newEquipment)) {
                 equipment = newEquipment;
                 fireTableDataChanged();

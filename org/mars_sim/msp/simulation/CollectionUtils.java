@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MspCollection.java
- * @version 2.83 20.3.2008
+ * @version 2.84 12.5.2008
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation;
@@ -155,17 +155,17 @@ public class CollectionUtils {
         return result;
     }
     
-    public synchronized static Collection sortByName(Collection collection) {
-	ConcurrentLinkedQueue<Unit> sorted = new ConcurrentLinkedQueue<Unit>();
+    public synchronized static <T extends Unit> Collection<T> sortByName(Collection<T> collection) {
+    	ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
 	
-        Iterator outer = collection.iterator();
+        Iterator<T> outer = collection.iterator();
         while (outer.hasNext()) {
             outer.next();
             String leastName = "ZZZZZZZZZZZZZZZZZZZ";
-            Unit leastUnit = null;
-            Iterator inner = collection.iterator();
+            T leastUnit = null;
+            Iterator<T> inner = collection.iterator();
             while (inner.hasNext()) {
-                Unit tempUnit = (Unit) inner.next();
+                T tempUnit = inner.next();
                 String name = tempUnit.getName();
                 if ((name.compareToIgnoreCase(leastName) < 0) && !sorted.contains(tempUnit)) {
                     leastName = name;
@@ -178,18 +178,19 @@ public class CollectionUtils {
         return sorted;
     }
     
-    public synchronized static Collection sortByProximity(Collection collection, Coordinates location) {
-	ConcurrentLinkedQueue<Unit> sorted = new ConcurrentLinkedQueue<Unit>();
+    public synchronized static <T extends Unit> Collection<T> sortByProximity(Collection<T> collection, 
+    		Coordinates location) {
+    	ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
 
         Iterator outer = collection.iterator();
         
         while (outer.hasNext()) {
             outer.next();
             double closestDistance = Double.MAX_VALUE;
-            Unit closestUnit = null;
-            Iterator inner = collection.iterator();
+            T closestUnit = null;
+            Iterator<T> inner = collection.iterator();
             while (inner.hasNext()) {
-                Unit tempUnit = (Unit) inner.next();
+                T tempUnit = inner.next();
                 double distance = location.getDistance(tempUnit.getCoordinates());
                 if ((distance < closestDistance) && !sorted.contains(tempUnit)) {
                     closestDistance = distance;

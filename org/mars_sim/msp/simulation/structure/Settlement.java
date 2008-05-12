@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.84 2008-04-21
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -345,7 +345,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      * Gets a collection of people affected by this entity.
      * @return person collection
      */
-    public Collection getAffectedPeople() {
+    public Collection<Person> getAffectedPeople() {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>(getInhabitants());
 
         // Check all people.

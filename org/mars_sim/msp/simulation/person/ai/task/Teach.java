@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 2.81 2007-08-12
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -164,12 +164,12 @@ public class Teach extends Task implements Serializable {
 	 * @param teacher the teacher looking for students.
 	 * @return collection of the best students
 	 */
-	private static Collection getBestStudents(Person teacher) {
-		Collection result = new ConcurrentLinkedQueue();
-		Collection students = getTeachableStudents(teacher);
+	private static Collection<Person> getBestStudents(Person teacher) {
+		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> students = getTeachableStudents(teacher);
 		
 		// If teacher is in a settlement, best students are in least crowded buildings.
-		Collection leastCrowded = new ConcurrentLinkedQueue();
+		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
 		if (teacher.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			try {
 				// Find the least crowded buildings that teachable students are in.
@@ -205,7 +205,7 @@ public class Teach extends Task implements Serializable {
 		
 		// Get the teacher's favorite students.
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-		Collection favoriteStudents = new ConcurrentLinkedQueue();
+		Collection<Person> favoriteStudents = new ConcurrentLinkedQueue<Person>();
 		
 		// Find favorite opinion.
 		double favorite = Double.NEGATIVE_INFINITY;
@@ -234,8 +234,8 @@ public class Teach extends Task implements Serializable {
 	 * @param teacher the teacher looking for students.
 	 * @return collection of students
 	 */
-	private static Collection getTeachableStudents(Person teacher) {
-		Collection result = new ConcurrentLinkedQueue();
+	private static Collection<Person> getTeachableStudents(Person teacher) {
+		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 		
 		Iterator<Person> i = getLocalPeople(teacher).iterator();
 		while (i.hasNext()) {
@@ -263,8 +263,8 @@ public class Teach extends Task implements Serializable {
 	 * @param person the person checking
 	 * @return collection of people
 	 */
-	private static Collection getLocalPeople(Person person) {
-		Collection people = new ConcurrentLinkedQueue();
+	private static Collection<Person> getLocalPeople(Person person) {
+		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 		
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Iterator<Person> i = person.getSettlement().getInhabitants().iterator();

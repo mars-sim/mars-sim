@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 2.84 2008-05-10
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -28,7 +28,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -37,6 +36,9 @@ import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitManager;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
@@ -191,24 +193,23 @@ public class SearchWindow extends ToolWindow {
      * Retrieve info on all units of selected category.
      */
     private void search() {
-        Collection units = null;
+        Collection<? extends Unit> units = null;
         String category = (String) searchForSelect.getSelectedItem();
         UnitManager unitManager = Simulation.instance().getUnitManager();
         if (category.equals("People")) {
-            Collection people = unitManager.getPeople();
+            Collection<Person> people = unitManager.getPeople();
             units = CollectionUtils.sortByName(people);
         }
-        if (category.equals("Settlements")) {
-            Collection settlement= unitManager.getSettlements();
+        else if (category.equals("Settlements")) {
+            Collection<Settlement> settlement = unitManager.getSettlements();
             units = CollectionUtils.sortByName(settlement);
         }
-        
-        if (category.equals("Vehicles")) {
-            Collection vehicle = unitManager.getVehicles();
+        else if (category.equals("Vehicles")) {
+            Collection<Vehicle> vehicle = unitManager.getVehicles();
             units = CollectionUtils.sortByName(vehicle); 
         }
   
-        Iterator<Unit> unitI = units.iterator();
+        Iterator<? extends Unit> unitI = units.iterator();
 
         // If entered text equals the name of a unit in this category, take appropriate action.
         boolean foundUnit = false;
@@ -239,25 +240,22 @@ public class SearchWindow extends ToolWindow {
     private void changeCategory(String category) {
         // Change unitList to the appropriate category list
         unitListModel.clear();
-        Collection units = null;
+        Collection<? extends Unit> units = null;
         UnitManager unitManager = Simulation.instance().getUnitManager();
         if (category.equals("People")) {
-            Collection people = unitManager.getPeople();
-            units = CollectionUtils.sortByName(people);
-        
+            Collection<Person> people = unitManager.getPeople();
+            units = CollectionUtils.sortByName(people);   
         }
-        
-        if (category.equals("Settlements")) {
-            Collection settlement = unitManager.getSettlements();
+        else if (category.equals("Settlements")) {
+            Collection<Settlement> settlement = unitManager.getSettlements();
             units = CollectionUtils.sortByName(settlement);
         }
-        
-        if (category.equals("Vehicles")) {
-            Collection vehicle= unitManager.getVehicles();
+        else if (category.equals("Vehicles")) {
+            Collection<Vehicle> vehicle= unitManager.getVehicles();
             units = CollectionUtils.sortByName(vehicle);
         }
 
-        Iterator<Unit> unitI = units.iterator();
+        Iterator<? extends Unit> unitI = units.iterator();
 
         lockUnitList = true;
         while (unitI.hasNext()) unitListModel.addElement(unitI.next());

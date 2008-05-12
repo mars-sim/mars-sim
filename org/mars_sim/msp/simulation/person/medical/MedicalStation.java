@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -88,8 +88,8 @@ public class MedicalStation implements MedicalAid, Serializable {
      * Gets the patients at this medical station.
      * @return Collection of People.
      */
-    public Collection getPatients() {
-        Collection result = new ConcurrentLinkedQueue();
+    public Collection<Person> getPatients() {
+        Collection<Person> result = new ConcurrentLinkedQueue<Person>();
         Iterator i = problemsBeingTreated.iterator();
         while (i.hasNext()) {
             Person patient = ((HealthProblem) i.next()).getSufferer();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTableModel.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -22,7 +22,7 @@ import org.mars_sim.msp.simulation.Unit;
 abstract class UnitTableModel extends AbstractTableModel {
 
 	// Data members.
-	protected Collection units;
+	protected Collection<Unit> units;
 	protected List<String> columns;
 	
 	/**
@@ -33,7 +33,7 @@ abstract class UnitTableModel extends AbstractTableModel {
 		super();
 		
 		// Initialize data members.
-		units = new ConcurrentLinkedQueue();
+		units = new ConcurrentLinkedQueue<Unit>();
 		columns = new ArrayList<String>();
 	}
 	

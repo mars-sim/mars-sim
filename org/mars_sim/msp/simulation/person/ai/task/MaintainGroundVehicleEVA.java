@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 2.83 2008-02-27
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -299,8 +299,8 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @param person person checking.
      * @return collection of ground vehicles available for maintenance.
      */
-    private static Collection getAllVehicleCandidates(Person person) {
-        Collection result = new ConcurrentLinkedQueue();
+    private static Collection<Vehicle> getAllVehicleCandidates(Person person) {
+        Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
         
         Settlement settlement = person.getSettlement();
         if (settlement != null) {
@@ -326,7 +326,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         GroundVehicle result = null;
 
         // Find all vehicles that can be maintained.
-        Collection availableVehicles = getAllVehicleCandidates(person);
+        Collection<Vehicle> availableVehicles = getAllVehicleCandidates(person);
         
         // Determine total probability weight.
         double totalProbWeight = 0D;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditTabPanel.java
- * @version 2.81 2007-08-25
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -93,7 +93,7 @@ public class CreditTabPanel extends TabPanel {
     	
     	// Data members
     	CreditManager manager;
-    	Collection settlements;
+    	Collection<Settlement> settlements;
     	Settlement thisSettlement;
     	
     	private CreditTableModel(Settlement thisSettlement) {
@@ -101,7 +101,7 @@ public class CreditTabPanel extends TabPanel {
     		manager = Simulation.instance().getCreditManager();
     		
     		// Get collection of all other settlements.
-    		settlements = new ConcurrentLinkedQueue();
+    		settlements = new ConcurrentLinkedQueue<Settlement>();
     		Iterator<Settlement> i = CollectionUtils.sortByName(Simulation.instance().getUnitManager().getSettlements()).iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();

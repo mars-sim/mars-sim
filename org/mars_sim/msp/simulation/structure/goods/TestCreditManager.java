@@ -12,7 +12,7 @@ public class TestCreditManager extends TestCase {
 
 	public void testSetCredit() {
 		try {
-		    	Collection settlements = new ConcurrentLinkedQueue();
+			Collection<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
 			Settlement settlement1 = new MockSettlement();
 			settlements.add(settlement1);
 			Settlement settlement2 = new MockSettlement();

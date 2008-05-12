@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTableModel.java
- * @version 2.77 2004-08-11
+ * @version 2.84 2008-05-12
  * @author Barry Evans
  */
 
@@ -24,7 +24,7 @@ abstract public class UnitTableModel extends AbstractTableModel
             implements MonitorModel, UnitListener {
 
     // Data members
-    private Collection units;   // Collection of units
+    private Collection<Unit> units;   // Collection of units
     private String name;            // Model name
     private String statusSuffix;    // Suffix to added to status message
     private String columnNames[];   // Names of the displayed columns
@@ -44,7 +44,7 @@ abstract public class UnitTableModel extends AbstractTableModel
         // Initialize data members
         this.name = name;
         this.statusSuffix = suffix;
-        this.units = new ConcurrentLinkedQueue();
+        this.units = new ConcurrentLinkedQueue<Unit>();
         this.columnNames = names;
         this.columnTypes = types;
     }
@@ -100,7 +100,7 @@ abstract public class UnitTableModel extends AbstractTableModel
      * Adds a collection of units to the model.
      * @param newUnits the units to add.
      */
-    protected void addAll(Collection newUnits) {
+    protected void addAll(Collection<Unit> newUnits) {
     	Iterator<Unit> i = newUnits.iterator();
     	while (i.hasNext()) addUnit(i.next());
     }

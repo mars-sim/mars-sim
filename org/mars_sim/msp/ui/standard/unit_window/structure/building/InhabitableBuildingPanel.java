@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InhabitableBuildingPanel.java
- * @version 2.77 2004-09-27
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -34,7 +34,7 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
     private LifeSupport inhabitable; // The inhabitable building.
     private DefaultListModel inhabitantListModel;
     private JList inhabitantList;
-    private Collection inhabitantCache;
+    private Collection<Person> inhabitantCache;
     private JLabel numberLabel;
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RendezvousVehiclePanel.java
- * @version 2.80 2007-03-22
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -228,7 +228,7 @@ class RendezvousVehiclePanel extends WizardPanel {
     		units.clear();
     		
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		Collection emergencyVehicles = getEmergencyBeaconVehicles();
+    		Collection<Vehicle> emergencyVehicles = getEmergencyBeaconVehicles();
     		
     		// Sort by distance from starting settlement.
     		while (emergencyVehicles.size() > 0) {
@@ -254,8 +254,8 @@ class RendezvousVehiclePanel extends WizardPanel {
     	 * Gets a collection of all the vehicles with emergency beacons on.
     	 * @return collection of vehicles.
     	 */
-    	private Collection getEmergencyBeaconVehicles() {
-    		Collection result = new ConcurrentLinkedQueue();
+    	private Collection<Vehicle> getEmergencyBeaconVehicles() {
+    		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
         	Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
         	while (i.hasNext()) {
         		Vehicle vehicle = i.next();

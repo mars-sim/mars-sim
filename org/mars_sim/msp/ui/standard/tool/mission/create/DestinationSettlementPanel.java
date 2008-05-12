@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DestinationSettlementPanel.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-12
  * @author Scott Davis
  */
 
@@ -202,7 +202,7 @@ class DestinationSettlementPanel extends WizardPanel {
     	void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();    		
-    		Collection settlements = Simulation.instance().getUnitManager().getSettlements();
+    		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
     		settlements.remove(startingSettlement);
     		
     		// Add all settlements sorted by distance from mission starting point.
