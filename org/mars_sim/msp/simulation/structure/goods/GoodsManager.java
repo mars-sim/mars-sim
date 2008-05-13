@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.84 2008-04-21
+ * @version 2.84 2008-05-13
  * @author Scott Davis
  */
 
@@ -71,6 +71,8 @@ public class GoodsManager implements Serializable {
 	private static final String COLLECT_ICE_MISSION = "collect ice";
 	private static final String RESCUE_SALVAGE_MISSION = "rescue/salvage mission";
 	private static final String TRADE_MISSION = "trade";
+	private static final String COLLECT_REGOLITH_MISSION = "collect regolith";
+	private static final String MINING_MISSION = "mining";
 	
 	// Number modifiers for outstanding repair and maintenance parts.
 	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 100;
@@ -1059,6 +1061,12 @@ public class GoodsManager implements Serializable {
 			double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
 			if (tradeMissionValue > value) value = tradeMissionValue;
 			
+			double collectRegolithMissionValue = determineMissionVehicleValue(COLLECT_REGOLITH_MISSION, vehicleType, buy);
+			if (collectRegolithMissionValue > value) value = collectRegolithMissionValue;
+			
+			double miningMissionValue = determineMissionVehicleValue(MINING_MISSION, vehicleType, buy);
+			if (miningMissionValue > value) value = miningMissionValue;
+			
 			// Add trade value.
 			value += determineTradeValue(vehicleGood, useCache);
 			// double tradeValue = determineTradeValue(vehicleGood, useCache);
@@ -1109,6 +1117,12 @@ public class GoodsManager implements Serializable {
 		else if (TRADE_MISSION.equals(missionType)) {
 			demand = getTraderNum();
 		}
+		else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
+			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.REGOLITH));
+		}
+		else if (MINING_MISSION.equals(missionType)) {
+			demand = getAreologistNum() / 2D;
+		}
 		
 		return demand;
 	}
@@ -1137,12 +1151,18 @@ public class GoodsManager implements Serializable {
 				if (config.getLabTechSpecialities(vehicleType).contains("Areology")) hasAreologyLab = true;
 			}
 			if (!hasAreologyLab) capacity /= 2D;
+			
+			double range = getVehicleRange(vehicleType);
+			if (range == 0D) capacity = 0D;
 		}
 		else if (COLLECT_ICE_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2) capacity = 1D;
 			
 			double cargoCapacity = config.getTotalCapacity(vehicleType);
 			if (cargoCapacity < 1250D) capacity = 0D;
+			
+			double range = getVehicleRange(vehicleType);
+			if (range == 0D) capacity = 0D;
 		}
 		else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2) capacity = 1D;
@@ -1158,6 +1178,30 @@ public class GoodsManager implements Serializable {
 			
 			double range = getVehicleRange(vehicleType);
 			capacity *= range / 2000D;
+		}
+		else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
+			if (crewCapacity >= 2) capacity = 1D;
+			
+			double cargoCapacity = config.getTotalCapacity(vehicleType);
+			if (cargoCapacity < 1250D) capacity = 0D;
+			
+			double range = getVehicleRange(vehicleType);
+			if (range == 0D) capacity = 0D;
+		}
+		else if (MINING_MISSION.equals(missionType)) {
+			// One light utility vehicle needed for a mining mission.
+			if (vehicleType.equalsIgnoreCase("light utility vehicle")) { 
+				capacity = 1D;
+			}
+			else {
+				if (crewCapacity >= 2) capacity = 1D;
+				
+				double cargoCapacity = config.getTotalCapacity(vehicleType);
+				if (cargoCapacity < 1000D) capacity = 0D;
+				
+				double range = getVehicleRange(vehicleType);
+				if (range == 0D) capacity = 0D;
+			}
 		}
 		
 		return capacity;
