@@ -161,7 +161,7 @@ public class GoodsUtil {
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		
 		try {
-			Iterator i = config.getRoverTypes().iterator();
+			Iterator i = config.getVehicleTypes().iterator();
 			while (i.hasNext()) goodsList.add(getVehicleGood((String) i.next()));
 		}
 		catch (Exception e) {

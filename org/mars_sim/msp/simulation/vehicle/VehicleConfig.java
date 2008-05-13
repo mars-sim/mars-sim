@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.vehicle;
@@ -17,7 +17,7 @@ import org.w3c.dom.*;
 public class VehicleConfig implements Serializable {
 
 	// Element names
-	private static final String ROVER = "rover";
+	private static final String VEHICLE = "vehicle";
 	private static final String TYPE = "type";
 	private static final String FUEL_EFFICIENCY = "fuel-efficiency";
 	private static final String BASE_SPEED = "base-speed";
@@ -36,129 +36,129 @@ public class VehicleConfig implements Serializable {
 	private static final String ROVER_NAME_LIST = "rover-name-list";
 	private static final String ROVER_NAME = "rover-name";
 
-	private Document roverDoc;
+	private Document vehicleDoc;
 	private List<String> roverNames;
 	
 	/**
 	 * Constructor
-	 * @param roverDoc DOM document with rover configuration.
+	 * @param vehicleDoc DOM document with vehicle configuration.
 	 */
-	public VehicleConfig(Document roverDoc) {
-		this.roverDoc = roverDoc;
+	public VehicleConfig(Document vehicleDoc) {
+		this.vehicleDoc = vehicleDoc;
 	}
 	
 	/**
-	 * Returns a set of all rover types.
-	 * @return set of rover types as strings.
-	 * @throws Exception if error retrieving rover types.
+	 * Returns a set of all vehicle types.
+	 * @return set of vehicle types as strings.
+	 * @throws Exception if error retrieving vehicle types.
 	 */
-	public Set<String> getRoverTypes() throws Exception {
-		Element root = roverDoc.getDocumentElement();
-		NodeList roverNodes = root.getElementsByTagName(ROVER);
-		Set<String> types = new HashSet<String>(roverNodes.getLength());
-		for (int x=0; x < roverNodes.getLength(); x++) {
-			Element roverElement = (Element) roverNodes.item(x);
-			types.add(roverElement.getAttribute(TYPE));
+	public Set<String> getVehicleTypes() throws Exception {
+		Element root = vehicleDoc.getDocumentElement();
+		NodeList vehicleNodes = root.getElementsByTagName(VEHICLE);
+		Set<String> types = new HashSet<String>(vehicleNodes.getLength());
+		for (int x=0; x < vehicleNodes.getLength(); x++) {
+			Element vehicleElement = (Element) vehicleNodes.item(x);
+			types.add(vehicleElement.getAttribute(TYPE));
 		}
 		return types;
 	}
 	
 	/**
-	 * Gets a rover DOM element for a particular rover type.
-	 * @param roverType the rover type
-	 * @return rover element
-	 * @throws Exception if rover type could not be found.
+	 * Gets a vehicle DOM element for a particular vehicle type.
+	 * @param vehicleType the vehicle type
+	 * @return vehicle element
+	 * @throws Exception if vehicle type could not be found.
 	 */
-	private Element getRoverElement(String roverType) throws Exception {
+	private Element getVehicleElement(String vehicleType) throws Exception {
 		Element result = null;
 		
-		Element root = roverDoc.getDocumentElement();
-		NodeList roverNodes = root.getElementsByTagName(ROVER);
-		for (int x=0; x < roverNodes.getLength(); x++) {
-			Element roverElement = (Element) roverNodes.item(x);
-			String type = roverElement.getAttribute(TYPE);
-			if (roverType.equalsIgnoreCase(type)) result = roverElement;
+		Element root = vehicleDoc.getDocumentElement();
+		NodeList vehicleNodes = root.getElementsByTagName(VEHICLE);
+		for (int x=0; x < vehicleNodes.getLength(); x++) {
+			Element vehicleElement = (Element) vehicleNodes.item(x);
+			String type = vehicleElement.getAttribute(TYPE);
+			if (vehicleType.equalsIgnoreCase(type)) result = vehicleElement;
 		}
 		
-		if (result == null) throw new Exception("Rover type: " + roverType + 
+		if (result == null) throw new Exception("Vehicle type: " + vehicleType + 
 			" could not be found in vehicles.xml.");
 		
 		return result;
 	}
 	
 	/**
-	 * Gets the rover's fuel efficiency.
-	 * @param roverType the rover type
+	 * Gets the vehicle's fuel efficiency.
+	 * @param vehicleType the vehicle type
 	 * @return fuel efficiency in km/kg.
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getFuelEfficiency(String roverType) throws Exception {
-		Element roverElement = getRoverElement(roverType);
-		Element fuelEfficiencyElement = (Element) roverElement.getElementsByTagName(FUEL_EFFICIENCY).item(0);
+	public double getFuelEfficiency(String vehicleType) throws Exception {
+		Element vehicleElement = getVehicleElement(vehicleType);
+		Element fuelEfficiencyElement = (Element) vehicleElement.getElementsByTagName(FUEL_EFFICIENCY).item(0);
 		return Double.parseDouble(fuelEfficiencyElement.getAttribute(VALUE));
 	}
 	
 	/**
-	 * Gets the rover's base speed.
-	 * @param roverType the rover type
+	 * Gets the vehicle's base speed.
+	 * @param vehicleType the vehicle type
 	 * @return base speed in km/hr.
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getBaseSpeed(String roverType) throws Exception {
-		Element roverElement = getRoverElement(roverType);
-		Element baseSpeedElement = (Element) roverElement.getElementsByTagName(BASE_SPEED).item(0);
+	public double getBaseSpeed(String vehicleType) throws Exception {
+		Element vehicleElement = getVehicleElement(vehicleType);
+		Element baseSpeedElement = (Element) vehicleElement.getElementsByTagName(BASE_SPEED).item(0);
 		return Double.parseDouble(baseSpeedElement.getAttribute(VALUE));
 	}
 	
 	/**
-	 * Gets the rover's mass when empty.
-	 * @param roverType the rover type
+	 * Gets the vehicle's mass when empty.
+	 * @param vehicleType the vehicle type
 	 * @return empty mass in kg.
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getEmptyMass(String roverType) throws Exception {
-		Element roverElement = getRoverElement(roverType);
-		Element emptyMassElement = (Element) roverElement.getElementsByTagName(EMPTY_MASS).item(0);
+	public double getEmptyMass(String vehicleType) throws Exception {
+		Element vehicleElement = getVehicleElement(vehicleType);
+		Element emptyMassElement = (Element) vehicleElement.getElementsByTagName(EMPTY_MASS).item(0);
 		return Double.parseDouble(emptyMassElement.getAttribute(VALUE));
 	}
 	
 	/**
-	 * Gets the rover's maximum crew size.
-	 * @param roverType the rover type
+	 * Gets the vehicle's maximum crew size.
+	 * @param vehicleType the vehicle type
 	 * @return crew size
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getCrewSize(String roverType) throws Exception {
-		Element roverElement = getRoverElement(roverType);
-		Element crewSizeElement = (Element) roverElement.getElementsByTagName(CREW_SIZE).item(0);
+	public int getCrewSize(String vehicleType) throws Exception {
+		Element vehicleElement = getVehicleElement(vehicleType);
+		Element crewSizeElement = (Element) vehicleElement.getElementsByTagName(CREW_SIZE).item(0);
 		return Integer.parseInt(crewSizeElement.getAttribute(VALUE));
 	}
 	
 	/**
-	 * Gets the rover's total cargo capacity.
-	 * @param roverType the rover type
+	 * Gets the vehicle's total cargo capacity.
+	 * @param vehicleType the vehicle type
 	 * @return total cargo capacity
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getTotalCapacity(String roverType) throws Exception {
-		Element roverElement = getRoverElement(roverType);
-		Element cargoElement = (Element) roverElement.getElementsByTagName(CARGO).item(0);
+	public double getTotalCapacity(String vehicleType) throws Exception {
+		Element vehicleElement = getVehicleElement(vehicleType);
+		Element cargoElement = (Element) vehicleElement.getElementsByTagName(CARGO).item(0);
 		return Double.parseDouble(cargoElement.getAttribute(TOTAL_CAPACITY));
 	}
 	
 	/**
-	 * Gets the rover's capacity for a resource.
-	 * @param roverType the rover type
+	 * Gets the vehicle's capacity for a resource.
+	 * @param vehicleType the vehicle type
 	 * @param resource the resource
-	 * @return rover capacity for resource
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @return vehicle capacity for resource
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getCargoCapacity(String roverType, String resource) throws Exception {
+	public double getCargoCapacity(String vehicleType, String resource) throws Exception {
 		
 		double resourceCapacity = 0D;
 		
-		Element roverElement = getRoverElement(roverType);
-		Element cargoElement = (Element) roverElement.getElementsByTagName(CARGO).item(0);
+		Element vehicleElement = getVehicleElement(vehicleType);
+		Element cargoElement = (Element) vehicleElement.getElementsByTagName(CARGO).item(0);
 		NodeList capacityList = cargoElement.getElementsByTagName(CAPACITY);
 		for (int x=0; x < capacityList.getLength(); x++) {
 			Element capacityElement = (Element) capacityList.item(x);
@@ -170,33 +170,33 @@ public class VehicleConfig implements Serializable {
 	}
 	
 	/**
-	 * Checks if the rover has a sickbay.
-	 * @param roverType the rover type
+	 * Checks if the vehicle has a sickbay.
+	 * @param vehicleType the vehicle type
 	 * @return true if sickbay
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public boolean hasSickbay(String roverType) throws Exception {
+	public boolean hasSickbay(String vehicleType) throws Exception {
 		boolean result = false;
 		
-		Element roverElement = getRoverElement(roverType);
-		NodeList sickbayNodes = roverElement.getElementsByTagName(SICKBAY);
+		Element vehicleElement = getVehicleElement(vehicleType);
+		NodeList sickbayNodes = vehicleElement.getElementsByTagName(SICKBAY);
 		if (sickbayNodes.getLength() > 0) result = true;
 		
 		return result;
 	}
 	
 	/**
-	 * Gets the rover's sickbay tech level.
-	 * @param roverType the rover type
+	 * Gets the vehicle's sickbay tech level.
+	 * @param vehicleType the vehicle type
 	 * @return tech level or -1 if no sickbay.
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getSickbayTechLevel(String roverType) throws Exception {
+	public int getSickbayTechLevel(String vehicleType) throws Exception {
 		int sickbayTechLevel = -1;
 		
-		Element roverElement = getRoverElement(roverType);
+		Element vehicleElement = getVehicleElement(vehicleType);
 		try {
-			Element sickbayElement = (Element) roverElement.getElementsByTagName(SICKBAY).item(0);
+			Element sickbayElement = (Element) vehicleElement.getElementsByTagName(SICKBAY).item(0);
 			sickbayTechLevel = Integer.parseInt(sickbayElement.getAttribute(TECH_LEVEL));
 		}
 		catch (NullPointerException e) {}
@@ -205,17 +205,17 @@ public class VehicleConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets the rover's sickbay bed number.
-	 * @param roverType the rover type
+	 * Gets the vehicle's sickbay bed number.
+	 * @param vehicleType the vehicle type
 	 * @return number of sickbay beds or -1 if no sickbay.
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getSickbayBeds(String roverType) throws Exception {
+	public int getSickbayBeds(String vehicleType) throws Exception {
 		int sickbayBeds = -1;
 		
-		Element roverElement = getRoverElement(roverType);
+		Element vehicleElement = getVehicleElement(vehicleType);
 		try {
-			Element sickbayElement = (Element) roverElement.getElementsByTagName(SICKBAY).item(0);
+			Element sickbayElement = (Element) vehicleElement.getElementsByTagName(SICKBAY).item(0);
 			sickbayBeds = Integer.parseInt(sickbayElement.getAttribute(BEDS));
 		}
 		catch (NullPointerException e) {}
@@ -224,33 +224,33 @@ public class VehicleConfig implements Serializable {
 	}
 	
 	/**
-	 * Checks if the rover has a lab.
-	 * @param roverType the rover type
+	 * Checks if the vehicle has a lab.
+	 * @param vehicleType the vehicle type
 	 * @return true if lab
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public boolean hasLab(String roverType) throws Exception {
+	public boolean hasLab(String vehicleType) throws Exception {
 		boolean result = false;
 		
-		Element roverElement = getRoverElement(roverType);
-		NodeList labNodes = roverElement.getElementsByTagName(LAB);
+		Element vehicleElement = getVehicleElement(vehicleType);
+		NodeList labNodes = vehicleElement.getElementsByTagName(LAB);
 		if (labNodes.getLength() > 0) result = true;
 		
 		return result;
 	}	
 	
 	/**
-	 * Gets the rover's lab tech level.
-	 * @param roverType the rover type
+	 * Gets the vehicle's lab tech level.
+	 * @param vehicleType the vehicle type
 	 * @return lab tech level or -1 if no lab.
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getLabTechLevel(String roverType) throws Exception {
+	public int getLabTechLevel(String vehicleType) throws Exception {
 		int labTechLevel = -1;
 		
-		Element roverElement = getRoverElement(roverType);
+		Element vehicleElement = getVehicleElement(vehicleType);
 		try {
-			Element labElement = (Element) roverElement.getElementsByTagName(LAB).item(0);
+			Element labElement = (Element) vehicleElement.getElementsByTagName(LAB).item(0);
 			labTechLevel = Integer.parseInt(labElement.getAttribute(TECH_LEVEL));
 		}
 		catch (NullPointerException e) {}
@@ -259,17 +259,17 @@ public class VehicleConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of the rover's lab tech specialities.
-	 * @param roverType the rover type
+	 * Gets a list of the vehicle's lab tech specialities.
+	 * @param vehicleType the vehicle type
 	 * @return list of lab tech speciality strings.
-	 * @throws Exception if rover type could not be found or XML parsing error.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public List<String> getLabTechSpecialities(String roverType) throws Exception {
+	public List<String> getLabTechSpecialities(String vehicleType) throws Exception {
 		List<String> specialities = new ArrayList<String>();
 		
-		Element roverElement = getRoverElement(roverType);
+		Element vehicleElement = getVehicleElement(vehicleType);
 		try {
-			Element labElement = (Element) roverElement.getElementsByTagName(LAB).item(0);
+			Element labElement = (Element) vehicleElement.getElementsByTagName(LAB).item(0);
 			NodeList techSpecialityNodes = labElement.getElementsByTagName(TECH_SPECIALITY);
 			for (int x=0; x < techSpecialityNodes.getLength(); x++) {
 				Element techSpecialityElement = (Element) techSpecialityNodes.item(x);
@@ -291,12 +291,12 @@ public class VehicleConfig implements Serializable {
 		if (roverNames == null) {
 			roverNames = new ArrayList<String>();
 			
-			Element root = roverDoc.getDocumentElement();
-			Element roverNameListElement = (Element) root.getElementsByTagName(ROVER_NAME_LIST).item(0);
-			NodeList roverNameNodes = roverNameListElement.getElementsByTagName(ROVER_NAME);
-			for (int x=0; x < roverNameNodes.getLength(); x++) {
-				Element roverNameElement = (Element) roverNameNodes.item(x);
-				roverNames.add(roverNameElement.getAttribute(VALUE));
+			Element root = vehicleDoc.getDocumentElement();
+			Element vehicleNameListElement = (Element) root.getElementsByTagName(ROVER_NAME_LIST).item(0);
+			NodeList vehicleNameNodes = vehicleNameListElement.getElementsByTagName(ROVER_NAME);
+			for (int x=0; x < vehicleNameNodes.getLength(); x++) {
+				Element vehicleNameElement = (Element) vehicleNameNodes.item(x);
+				roverNames.add(vehicleNameElement.getAttribute(VALUE));
 			}
 		}
 		
