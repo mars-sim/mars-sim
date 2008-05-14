@@ -644,6 +644,9 @@ public class GoodsManager implements Serializable {
 			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity));
 		}
 		
+		// Add demand for vehicle attachment parts.
+		sumPartsDemand(partsProbDemand, getVehicleAttachmentParts());
+		
 		// Store in parts demand cache.
 		Iterator<Part> j = partsProbDemand.keySet().iterator();
 		while (j.hasNext()) {
@@ -732,6 +735,32 @@ public class GoodsManager implements Serializable {
 			Part part = i.next();
 			int number = maintParts.get(part) * OUTSTANDING_MAINT_PART_MODIFIER;
 			result.put(part, number);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the part demand for vehicle attachments.
+	 * @return map of parts and demand number.
+	 * @throws Exception if error getting parts.
+	 */
+	private Map<Part, Number> getVehicleAttachmentParts() throws Exception {
+		Map<Part, Number> result = new HashMap<Part, Number>();
+		
+		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
+		while (i.hasNext()) {
+			String type = i.next().getDescription().toLowerCase();
+			if (config.hasPartAttachments(type)) {
+				Iterator<Part> j = config.getAttachableParts(type).iterator();
+				while (j.hasNext()) {
+					Part part = j.next();
+					int demand = 1;
+					if (result.containsKey(part)) demand += result.get(part).intValue();
+					result.put(part, demand);
+				}
+			}
 		}
 		
 		return result;

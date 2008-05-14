@@ -8,6 +8,8 @@ package org.mars_sim.msp.simulation.vehicle;
 
 import java.io.Serializable;
 import java.util.*;
+
+import org.mars_sim.msp.simulation.resource.Part;
 import org.w3c.dom.*;
 
 /**
@@ -33,6 +35,10 @@ public class VehicleConfig implements Serializable {
 	private static final String TECH_LEVEL = "tech-level";
 	private static final String BEDS = "beds";
 	private static final String TECH_SPECIALITY = "tech-speciality";
+	private static final String PART_ATTACHMENT = "part-attachment";
+	private static final String NUMBER_SLOTS = "number-slots";
+	private static final String PART = "part";
+	private static final String NAME = "name";
 	private static final String ROVER_NAME_LIST = "rover-name-list";
 	private static final String ROVER_NAME = "rover-name";
 
@@ -279,6 +285,66 @@ public class VehicleConfig implements Serializable {
 		catch (NullPointerException e) {}
 		
 		return specialities;
+	}
+	
+	/**
+	 * Checks if a vehicle type has the ability to attach parts.
+	 * @param vehicleType the vehicle type
+	 * @return true if can attach parts.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
+	 */
+	public boolean hasPartAttachments(String vehicleType) throws Exception {
+		boolean result = false;
+		
+		Element vehicleElement = getVehicleElement(vehicleType);
+		NodeList partAttachmentNodes = vehicleElement.getElementsByTagName(PART_ATTACHMENT);
+		if (partAttachmentNodes.getLength() > 0) result = true;
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the number of part attachment slots for a vehicle.
+	 * @param vehicleType the vehicle type.
+	 * @return number of part attachment slots.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
+	 */
+	public int getPartAttachmentSlotNumber(String vehicleType) throws Exception {
+		int result = 0;
+		
+		Element vehicleElement = getVehicleElement(vehicleType);
+		try {
+			Element partAttachmentElement = (Element) vehicleElement.getElementsByTagName(PART_ATTACHMENT).item(0);
+			result = Integer.parseInt(partAttachmentElement.getAttribute(NUMBER_SLOTS));
+		}
+		catch (NullPointerException e) {}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets all of the parts that can be attached to a vehicle.
+	 * @param vehicleType the vehicle type
+	 * @return collection of parts that are attachable.
+	 * @throws Exception if vehicle type could not be found or XML parsing error.
+	 */
+	public Collection<Part> getAttachableParts(String vehicleType) throws Exception {
+		Collection<Part> result = new ArrayList<Part>();
+		
+		Element vehicleElement = getVehicleElement(vehicleType);
+		try {
+			Element partAttachmentElement = (Element) vehicleElement.getElementsByTagName(PART_ATTACHMENT).item(0);
+			NodeList partNodes = partAttachmentElement.getElementsByTagName(PART);
+			for (int x=0; x < partNodes.getLength(); x++) {
+				Element partElement = (Element) partNodes.item(x);
+				String partName = partElement.getAttribute(NAME);
+				Part part = (Part) Part.findItemResource(partName);
+				result.add(part);
+			}
+		}
+		catch (NullPointerException e) {}
+		
+		return result;
 	}
 	
 	/**
