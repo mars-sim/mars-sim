@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * msp.css
- * @version 2.84 2008-05-14
+ * @version 2.84 2008-05-15
  * @author Lars Naesbye Christensen
  */
 
@@ -9,7 +9,7 @@
 
 body {
   font-family: "Calibri", "Lucida Grande", "Trebuchet MS", Myriad, Frutiger, sans-serif;
-  font-size: 12pt;
+  font-size: 12px;
   color: #000000;
   background-color: #CCDDCC;
 }
@@ -19,14 +19,14 @@ p {
 }
 
 h2 {
-  font-size: 13pt;
+  font-size: 14px;
   text-align: center;
   font-weight: bold;
   text-decoration: underline;
 }
 
 h3 {
-  font-size: 12pt;
+  font-size: 12px;
   font-weight: bold;
 }
 
