@@ -9,7 +9,7 @@
 
 body {
   font-family: "Calibri", "Lucida Grande", "Trebuchet MS", Myriad, Frutiger, sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   color: #000000;
   background-color: #CCDDCC;
 }
@@ -19,14 +19,14 @@ p {
 }
 
 h2 {
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
   font-weight: bold;
   text-decoration: underline;
 }
 
 h3 {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
 }
 
