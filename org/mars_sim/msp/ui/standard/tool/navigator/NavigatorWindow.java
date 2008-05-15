@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.84 2008-03-31
+ * @version 2.84 2008-05-15
  * @author Scott Davis
  */
 
@@ -19,6 +19,7 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.tool.map.CannedMarsMap;
+import org.mars_sim.msp.ui.standard.tool.map.ExploredSiteMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.LandmarkMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.Map;
 import org.mars_sim.msp.ui.standard.tool.map.MapLayer;
@@ -65,6 +66,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     private JCheckBoxMenuItem trailItem; // Show vehicle trails menu item.
     private JCheckBoxMenuItem landmarkItem; // Show landmarks menu item. 
     private JCheckBoxMenuItem navpointItem; // Show navpoints menu item.
+    private JCheckBoxMenuItem exploredSiteItem;  // Show explored sites menu item.
     private JCheckBoxMenuItem mineralItem; // Show minerals menu item.
     private MapLayer unitIconLayer;
     private MapLayer unitLabelLayer;
@@ -73,6 +75,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     private MapLayer trailLayer;
     private MapLayer navpointLayer;
     private MapLayer landmarkLayer;
+    private MapLayer exploredSiteLayer;
     
 
     /** Constructs a NavigatorWindow object 
@@ -144,6 +147,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         navpointLayer = new NavpointMapLayer(map);
         trailLayer = new VehicleTrailMapLayer();
         landmarkLayer = new LandmarkMapLayer();
+        exploredSiteLayer = new ExploredSiteMapLayer(map);
         
         // Add default map layers.
         map.addMapLayer(unitIconLayer);
@@ -329,6 +333,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         else if (source == trailItem) setMapLayer(trailItem.isSelected(), trailLayer);
         else if (source == landmarkItem) setMapLayer(landmarkItem.isSelected(), landmarkLayer);
         else if (source == navpointItem) setMapLayer(navpointItem.isSelected(), navpointLayer);
+        else if (source == exploredSiteItem) setMapLayer(exploredSiteItem.isSelected(), exploredSiteLayer);
         else if (source == mineralItem) {
         	setMapLayer(mineralItem.isSelected(), mineralLayer);
         	mineralsButton.setEnabled(mineralItem.isSelected());
@@ -386,6 +391,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		navpointItem = new JCheckBoxMenuItem("Show Mission Navpoints", map.hasMapLayer(navpointLayer));
 		navpointItem.addActionListener(this);
 		optionsMenu.add(navpointItem);
+		
+		// Create explored site menu item.
+		exploredSiteItem = new JCheckBoxMenuItem("Show Explored Sites", map.hasMapLayer(exploredSiteLayer));
+		exploredSiteItem.addActionListener(this);
+		optionsMenu.add(exploredSiteItem);
 		
 		// Create minerals menu item.
 		mineralItem = new JCheckBoxMenuItem("Show Minerals", map.hasMapLayer(mineralLayer));

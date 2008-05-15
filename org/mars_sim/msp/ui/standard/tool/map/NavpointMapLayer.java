@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * LandmarkMapLayer.java
- * @version 2.80 2006-10-29
+ * NavpointMapLayer.java
+ * @version 2.84 2008-05-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.map;
