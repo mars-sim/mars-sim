@@ -26,7 +26,7 @@
   <LI><B>living-accommodations:</B> This function indicates that the building has sleeping quarters.  The "beds" attribute is the number
     of sleeping quarters the building has.</LI>
   <LI><B>research:</B> This function indicates that the building has a research laboratory.  The "tech-level" attribute is the technology
-    level of the lab.  Tech levels are described in the "conf/tech_level.txt" file.  The "capacity" attribute is the number of researchers
+    level of the lab.  Tech levels are described in the Tech Levels file.  The "capacity" attribute is the number of researchers
     who can use the lab at the same time.  A lab has one or more "research-speciality" elements that describe the sciences it supports.
     Sciences that currently can be supported by labs are "Areology", "Botany" and "Medicine".</LI>
   <LI><B>communication:</B> This function indicates that the building has radio/satellite communication equipment to communicate with 
@@ -44,19 +44,19 @@
   <LI><B>resource-processing:</B> This function indicates that the building has equipment capable of processing resources.  The 
     "power-down-level" attribute is the proportional efficiency of resource processes when the building is in power-down mode.  Each process
     defined must have a unique name (for this building).  It can have one or several "input" and "output" elements that represent resources
-    being consumed or produced by the process.  Resources can be any of the types defined in "conf/resources.txt".  The rate of an input
-    or output resource in a process is the amount of the resource (kg) consumed/produced per millisol (see <A HREF="conf_time.html">"conf/time.txt"</A>).  The "ambient"
+    being consumed or produced by the process.  Resources can be any of the types defined in Resources.  The rate of an input
+    or output resource in a process is the amount of the resource (kg) consumed/produced per millisol (see <A HREF="conf_time.html">Time</A>).  The "ambient"
     attribute for input resources means that the resource is drawn in from outside the building (such as CO2 from the air outside) and for 
     output resources it means that the resource is discarded outside the building.</LI>
-  <LI><B>storage:</B> This function indicates that the building is capable of storing certain resources.  See <A HREF="conf_resources.html">"conf/resources.txt"</A> for 
+  <LI><B>storage:</B> This function indicates that the building is capable of storing certain resources.  See <A HREF="conf_resources.html">Resources</A> for 
     a list of all resources.  The "resource-storage" element shows the buildings capacity (kg) to store a particular resource.  The 
     "resource-initial" is the amount (kg) of a particular resource that the building starts with in storage.</LI>
-  <LI><B>power-generation:</B> This function indicates that the building is capable of producing power.  The buiding can have multiple
+  <LI><B>power-generation:</B> This function indicates that the building is capable of producing power.  The building can have multiple
     power sources.  Each "power-source" has a type and power (kW) attribute.  Current power source types supported in the simulation are
-    "Standard Power Source" that has consistant power generation and "Solar Power Source" that only generates power when sunlight is 
+    "Standard Power Source" that has consistent power generation and "Solar Power Source" that only generates power when sunlight is 
     available.</LI>
   <LI><B>medical-care:</B> This function indicates that the building has a medical treatment facility.  The "tech-level" attribute is
-    the treatment technology of the building (see <A HREF="conf_tech_level.html">"conf/tech_level.txt"</A>).  The "beds" attribute is 
+    the treatment technology of the building (see <A HREF="conf_tech_level.html">Tech Levels</A>).  The "beds" attribute is 
     the number of people who can be treated in this building at once.</LI>
   <LI><B>farming:</B> This function indicates that the building is capable of growing crops.  The "crops" attribute is the number of crops
     that can be grown at a time in the building.  The "power-sustaining-crops" attribute is the power (kW) required to sustain each 
@@ -65,7 +65,7 @@
     a vehicle to be maintained without requiring an EVA (extra vehicle activity) to do so.  The "capacity" attribute is the mass (kg) of 
     vehicles that can be contained in the building at once.</LI>
   <LI><B>manufacture:</B> This function indicates that the building has facilities for manufacturing.  This allows people to perform
-    manufacturing processes.  The "tech-level" attribute is the manufacturing technology capability of the building (see <A HREF="conf_tech_level.html">"conf/tech_level.txt"</A>).  The "concurrent-processes" attribute is the number of manufacturing processes
+    manufacturing processes.  The "tech-level" attribute is the manufacturing technology capability of the building (see <A HREF="conf_tech_level.html">Tech Levels</A>).  The "concurrent-processes" attribute is the number of manufacturing processes
     that can be performed in the building at once.</LI>
 </UL>
 </BODY>

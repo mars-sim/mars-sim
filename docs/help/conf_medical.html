@@ -15,10 +15,10 @@
   <LI><B>seriousness:</B> The seriousness of the malfunction as an integer value between 1 and 100 (100 being most serious).
     This is used to determine the order that doctors will attempt to treat multiple medical problems.  This element is required
     for all medical complaints.</LI>
-  <LI><B>degrade-time:</B> The time (sols) (see <A HREF="conf_time.html">"conf/time.txt"</A>) before this medical problem 
+  <LI><B>degrade-time:</B> The time (sols) (see <A HREF="conf_time.html">Time</A>) before this medical problem 
     degrades to a more serious medical problem or death if left untreated.  This element is optional and is only for degrading 
     medical problems.</LI>
-  <LI><B>recovery-time:</B> The time (sols) (see <A HREF="conf_time.html">"conf/time.txt"</A>) for the person to recover from the affects of the medical
+  <LI><B>recovery-time:</B> The time (sols) (see <A HREF="conf_time.html">Time</A>) for the person to recover from the affects of the medical
     problem after it has been treated.  This element is required for all medical complaints.</LI>
   <LI><B>probability:</B> The probability weight of the malfunction happening as a decimal value from 0.0 (no chance) to 100.0
     (very likely).  This is its probability that this medical problem can happen to a person randomly without an outside cause (such 
@@ -39,8 +39,8 @@
   <LI><B>skill:</B> The "medical" skill a person needs to perform this treatment.  This element is optional and its absence means that
     this treatment has no medical skill requirement.</LI>
   <LI><B>medical-tech-level:</B> The technology level of the medical facility required for this treatment (see 
-    "conf/tech_level.txt").  This element is optional and its absence means that this treatment can be performed at any medical facility. </LI>
-  <LI><B>treatment-time:</B> The time (millisols) (see <A HREF="conf_time.html">"conf/time.txt"</A>) required to perform this treatment 
+    Tech Levels).  This element is optional and its absence means that this treatment can be performed at any medical facility. </LI>
+  <LI><B>treatment-time:</B> The time (millisols) (see <A HREF="conf_time.html">Time</A>) required to perform this treatment 
     on a medical problem.  This element is optional and its absence means that the treatment is instantaneous</LI>
   <LI><B>retainaid:</B> Does the patient need to stay at the medical facility after treatment during the recovery process?  Valid values
     are "true" and "false".  This element is optional and its absence means that retainaid is not required.</LI>

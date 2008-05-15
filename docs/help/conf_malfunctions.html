@@ -18,12 +18,12 @@
   <LI><B>probability:</B> The probability weight of the malfunction happening as a decimal value between 1.0 and 100.0
     (100.0 being most probable).  This is its probability relative to other possible malfunctions for an entity.  This
     element is required for all malfunctions.</LI>
-  <LI><B>repair-time:</B> The normal repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) required 
+  <LI><B>repair-time:</B> The normal repair time (millisols) (See <A HREF="conf_time.html">Time</A>) required 
     to fix the malfunction. This element is optional and its absence means the malfunction doesn't need normal repairs.</LI>
-  <LI><B>emergency-repair-time:</B> The emergency repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) 
+  <LI><B>emergency-repair-time:</B> The emergency repair time (millisols) (See <A HREF="conf_time.html">Time</A>) 
     required to fix the malfunction. This element is optional and its absence means the malfunction doesn't need emergency 
     repairs.</LI>
-  <LI><B>eva-repair-time:</B> The EVA (Extra Vehicular Activity) repair time (millisols) (See <A HREF="conf_time.html">"conf/time.txt"</A>) required 
+  <LI><B>eva-repair-time:</B> The EVA (Extra Vehicular Activity) repair time (millisols) (See <A HREF="conf_time.html">Time</A>) required 
     to fix the malfunction. This element is optional and its absence means the malfunction doesn't need EVA repairs.</LI>
   <LI><B>entity-list:</B> This is a list of entities that are susceptible to this malfunction.  The malfunction must have at least
     one entity in the list.  The following entities are supported:<BR>
@@ -54,8 +54,8 @@
   <LI><B>effects-list:</B> A list of effects that this malfunction will produce.  The "effect" element has a "type" attribute that can have 
     the value of either "resource" or "life support".<BR>
     Resource effects mean that the malfunction is causing a reduction of a resource in the entity's inventory.  Any valid resource can be 
-    used for the "name" attribute (see <A HREF="conf_resources.html">"conf/resources.txt"</A>).  The "change-rate" attribute is the amount 
-    the resource changes (kg) per millisol (see <A HREF="conf_time.html">"conf/time.txt"</A>).<BR>
+    used for the "name" attribute (see <A HREF="conf_resources.html">Resources</A>).  The "change-rate" attribute is the amount 
+    the resource changes (kg) per millisol (see <A HREF="conf_time.html">Time</A>).<BR>
     Life support effects mean that the malfunction is changing the life support system in the entity.  The "name" attribute can be any of the 
     following: "Oxygen", "Water", "Temperature" or "Air Pressure".  Oxygen and water affect the rate that people can consume those resources 
     from the life support system.  Temperature affects the temperature of the life support system and is in degrees of Celsius per millisol.

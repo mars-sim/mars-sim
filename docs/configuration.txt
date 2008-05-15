@@ -24,6 +24,8 @@ manufacturing.xml: Modify or create new manufacturing processes.
                   
 medical.xml:      Modify or create new illnesses or treatments.
 
+minerals.xml:     Modify or create new mineral types.
+
 parts.xml:        Modify or create new parts.
 
 people.xml:       Modify properties related to people, or add new 
