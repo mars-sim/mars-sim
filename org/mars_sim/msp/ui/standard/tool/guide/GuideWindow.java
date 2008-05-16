@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-05-16
  * @author Lars Naesbye Christensen
  */
 
@@ -27,9 +27,10 @@ import javax.swing.border.*;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
 
-import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.HTMLContentPane;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 
 /** The GuideWindow is a tool window that displays
@@ -42,7 +43,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
     private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.tool.guide.GuideWindow";
-   private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private JViewport viewPort; // The view port for the text pane
@@ -65,7 +66,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
     // Create the main panel
     JPanel mainPane = new JPanel(new BorderLayout());
-    mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+    mainPane.setBorder(new MarsPanelBorder());
     setContentPane(mainPane);
 
     homeButton.setActionCommand("home");

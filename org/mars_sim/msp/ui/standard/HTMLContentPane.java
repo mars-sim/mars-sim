@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-05-16
  * @author Lars Naesbye Christensen
  */
 
@@ -31,8 +31,20 @@ public class HTMLContentPane extends JEditorPane {
 
   public void goToURL(URL url) {
     displayPage(url);
+    if (historyIndex < history.size()-1)
+      {
+    historyIndex++;
+    history.set(historyIndex, url);
+    while (historyIndex < history.size()-1)
+         {
+           history.remove(historyIndex+1);
+         }
+      }
+    else
+      {
     history.add(url);
     historyIndex = history.size() - 1;
+      }
   }
 
   public URL forward() {
