@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 2.84 2008-03-15
+ * @version 2.84 2008-05-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.mars;
@@ -76,5 +76,6 @@ public class Mars implements Serializable {
      */
     public void timePassing(double time) throws Exception {
     	orbitInfo.addTime(time);
+    	surfaceFeatures.timePassing(time);
     }
 }

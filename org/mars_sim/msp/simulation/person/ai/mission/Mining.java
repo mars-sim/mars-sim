@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 2.84 2008-04-01
+ * @version 2.84 2008-05-15
  * @author Scott Davis
  */
 
@@ -95,7 +95,7 @@ public class Mining extends RoverMission {
         	try {
         		if (hasVehicle()) {
         			miningSite = determineBestMiningSite(getRover(), getStartingSettlement());
-        			miningSite.setMined(true);
+        			miningSite.setReserved(true);
         			addNavpoint(new NavPoint(miningSite.getLocation(), "mining site"));
         		}
         	}
@@ -138,7 +138,7 @@ public class Mining extends RoverMission {
     	// Initialize data members.
 		setStartingSettlement(startingSettlement);
 		this.miningSite = miningSite;
-		miningSite.setMined(true);
+		miningSite.setReserved(true);
 		
 		// Set mission capacity.
 		setMissionCapacity(getRover().getCrewCapacity());
@@ -374,6 +374,9 @@ public class Mining extends RoverMission {
 			}
 		}
 		else {
+			// Mark site as mined.
+			miningSite.setMined(true);
+			
 			// TODO attach light utility vehicle for towing.
 		}
     }
@@ -452,7 +455,7 @@ public class Mining extends RoverMission {
 				Simulation.instance().getMars().getSurfaceFeatures().getExploredLocations().iterator();
 			while (i.hasNext()) {
 				ExploredLocation site = i.next();
-				if (!site.isMined() && site.isExplored()) {
+				if (!site.isMined() && !site.isReserved() && site.isExplored()) {
 					Coordinates siteLocation = site.getLocation();
 					Coordinates homeLocation = homeSettlement.getCoordinates();
 					if (homeLocation.getDistance(siteLocation) <= (range / 2D)) {
@@ -671,5 +674,20 @@ public class Mining extends RoverMission {
     	double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
     	double averageSpeedMillisol = averageSpeed / millisolsInHour;
     	return tripTimeTravellingLimit * averageSpeedMillisol;
+	}
+	
+	/**
+	 * Gets the mission mining site.
+	 * @return mining site.
+	 */
+	public ExploredLocation getMiningSite() {
+		return miningSite;
+	}
+	
+	@Override
+	public void endMission(String reason) {
+		super.endMission(reason);
+		
+		miningSite.setReserved(false);
 	}
 }

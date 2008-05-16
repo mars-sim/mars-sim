@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.84 2008-04-11
+ * @version 2.84 2008-05-15
  * @author Scott Davis
  */
  
@@ -13,6 +13,9 @@ import java.util.*;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.person.ai.mission.Mining;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /** 
@@ -168,5 +171,34 @@ public class SurfaceFeatures implements Serializable {
      */
     public List<ExploredLocation> getExploredLocations() {
     	return exploredLocations;
+    }
+    
+    /**
+     * Time passing in the simulation.
+     * @param time time in millisols
+     * @throws Exception if error during time.
+     */
+    public void timePassing(double time) throws Exception {
+    	// Update any reserved explored locations.
+    	Iterator<ExploredLocation> i = exploredLocations.iterator();
+    	while (i.hasNext()) {
+    		ExploredLocation site = i.next();
+    		if (site.isReserved()) {
+    			// Check if site is reserved by a current mining mission.
+    			// If not, mark as unreserved.
+    			boolean goodMission = false;
+    			MissionManager missionManager = Simulation.instance().getMissionManager();
+    			Iterator<Mission> j = missionManager.getMissions().iterator();
+    			while (j.hasNext()) {
+    				Mission mission = j.next();
+    				if (mission instanceof Mining) {
+    					if (site.equals(((Mining) mission).getMiningSite())) goodMission = true;
+    				}
+    			}
+    			if (!goodMission) {
+    				site.setReserved(false);
+    			}
+    		}
+    	}
     }
 }
