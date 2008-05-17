@@ -1,5 +1,7 @@
 package org.mars_sim.msp.simulation.vehicle;
 
+import org.mars_sim.msp.simulation.structure.MockSettlement;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -57,5 +59,18 @@ public class JUnitTests extends TestCase {
 	 * Any others begining with "test..." will be automatically included as well.
 	 */
 	public void testNothing() {
+	}
+	
+	public void testLightUtilityVehicle() {
+	    try {
+		LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru","Light Utility Vehicle", new MockSettlement());
+		int crewCapacity = vehicle.getCrewCapacity();
+		int slots = vehicle.getSlotNumber();
+		
+		assertEquals("Wrong crew capacity", 1, crewCapacity);
+		assertEquals("Wrong slot number", 2, slots);
+		
+	    } catch (Exception e) {
+	    }
 	}
 }
