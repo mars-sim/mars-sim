@@ -3,49 +3,18 @@
 <HTML>
 <HEAD>
 <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>Configuration Guide Resources.txt</TITLE>
+<TITLE>Configuration Guide Resources</TITLE>
 <LINK rel="stylesheet" href="msp.css">
 </HEAD>
 <BODY>
-<H2>Resources</H2>
+<H2>resources.xml</H2>
 <P>Resources are materials that are used and stored in the simulation.  
   Resources are measured in kg.</P>
-<P>Here are the resources used in version 2.84:</P>
-<UL>
-  <LI>Water</LI>
-  <LI>Hydrogen</LI>
-  <LI>Oxygen</LI>
-  <LI>Methane</LI>
-  <LI>Carbon Dioxide</LI>
-  <LI>Carbon Monoxide</LI>
-  <LI>Food</LI>
-  <LI>Rock Samples</LI>
-  <LI>Waste Water</LI>
-  <LI>Ice</LI>
-  <LI>Regolith</LI>
-  <LI>Iron Oxide</LI>
-  <LI>Carbon</LI>
-  <LI>Sand</LI>
-  <LI>Iron Powder</LI>
-  <LI>Aluminum Oxide</LI>
-  <LI>Ethylene</LI>
-  <LI>Polyethylene</LI>
-  <LI>Gypsum</LI>
-  <LI>Calcium Carbonate</LI>
-  <LI>Lime</LI>
-  <LI>Styrene</LI>
-  <LI>Polyester Resin</LI>
-</UL>
-<P>The food resource represents dried or frozen food that will not spoil with time.  
-  Food is harvested from crops in a greenhouse.</P>
-<P>The rock samples resource are rock specimens collected for areological research.</P>
-<P>The waste water resource is sewage water that can be used as fertilizer for crops.
-  The crops help filter the waste water back to potable/drinking water.</P>
-<P>The ice resource is actually an ice/soil mixture collected from Martian permafrost
-  in the ice prospecting mission.  It can be melted and filtered to produce 
-  potable/drinking water.</P>
-<P>The regolith resource is Martian soil.</P>
-<P>The sand resource is Martian soil with iron oxide removed.  It can be used to make optical glass.</P>
-<P>The resource names in the configuration files are not case-sensitive.</P>
+<P>The resources.xml configuration file contains configuration for all the resources used in the simulation.</P>
+<P>A "resource" element has a unique "name" attribute.</P>
+<P>It has a required "phase" attribute that represents the phase of matter which it is stored and used in the simulation.  Possible
+values are "solid", "liquid" and "gas".</P>
+<P>It has a required "life-support" attribute represents if the resource is used for life support purposes or not.  Possible values
+are "true" and "false".</P>
 </BODY>
 </HTML>
