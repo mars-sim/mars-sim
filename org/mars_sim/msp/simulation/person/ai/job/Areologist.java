@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 2.84 2008-05-01
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -127,10 +127,11 @@ public class Areologist extends Job implements Serializable {
 			Vehicle vehicle = j.next();
 			if (vehicle instanceof Rover) {
 				try {
-					if (vehicle.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) result++;
+					if (vehicle.getInventory().hasAmountResourceCapacity(
+							AmountResource.findAmountResource("rock samples"))) result++;
 				}
 				catch (Exception e) {
-					e.printStackTrace(System.err);
+					logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
 				}
 			}
 		}
@@ -143,19 +144,24 @@ public class Areologist extends Job implements Serializable {
 			if (mission instanceof RoverMission) {
 				Rover rover = ((RoverMission) mission).getRover();
 				try {
-					if ((rover != null) && rover.getInventory().hasAmountResourceCapacity(AmountResource.ROCK_SAMPLES)) result++;
+					if ((rover != null) && rover.getInventory().hasAmountResourceCapacity(
+							AmountResource.findAmountResource("rock samples"))) result++;
 				}
 				catch (Exception e) {
-					e.printStackTrace(System.err);
+					logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
 				}
 			}
 		}
 		
-		// Add ice value at settlement X 10.
-		Good iceGood = GoodsUtil.getResourceGood(AmountResource.ICE);
-		double iceValue = settlement.getGoodsManager().getGoodValuePerMass(iceGood);
-		result += iceValue * 10D;
-		
+		try {
+			// Add ice value at settlement X 10.
+			Good iceGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource("ice"));
+			double iceValue = settlement.getGoodsManager().getGoodValuePerMass(iceGood);
+			result += iceValue * 10D;
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
+		}
 		return result;	
 	}
 }

@@ -31,6 +31,8 @@ parts.xml:        Modify or create new parts.
 people.xml:       Modify properties related to people, or add new 
                   names to the person name list.
                   
+resources.xml:    Modify or create new resources.
+                  
 settlements.xml:  Modify or create new settlement templates an
                   define individual settlements.  Add new settlement
                   names to the names list.

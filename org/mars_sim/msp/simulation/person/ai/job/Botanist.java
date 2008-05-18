@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Botanist.java
- * @version 2.81 2007-05-17
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -115,9 +115,14 @@ public class Botanist extends Job implements Serializable {
 		}
 		
 		// Multiply by food value at settlement.
-		Good foodGood = GoodsUtil.getResourceGood(AmountResource.FOOD);
-		double foodValue = settlement.getGoodsManager().getGoodValuePerMass(foodGood);
-		result *= foodValue;
+		try {
+			Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource("food"));
+			double foodValue = settlement.getGoodsManager().getGoodValuePerMass(foodGood);
+			result *= foodValue;
+		}
+		catch (Exception e) {
+		    logger.log(Level.SEVERE, "Botanist.getSettlementNeed()", e);
+		}
 		
 		return result;	
 	}	

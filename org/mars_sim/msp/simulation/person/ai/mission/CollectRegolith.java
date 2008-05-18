@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 2.84 2008-04-14
+ * @version 2.84 2008-05-17
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.person.Person;
@@ -23,6 +25,10 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
  */
 public class CollectRegolith  extends CollectResourcesMission {
 
+	private static String CLASS_NAME = 
+		"org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith";
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Regolith Prospecting";
 	
@@ -50,7 +56,7 @@ public class CollectRegolith  extends CollectResourcesMission {
 		
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, 
-			AmountResource.REGOLITH, SITE_GOAL, 
+			getRegolithResource(), SITE_GOAL, 
 			COLLECTION_RATE, 
 			Bag.class, REQUIRED_BAGS, 
 			NUM_SITES, MIN_PEOPLE);
@@ -70,7 +76,7 @@ public class CollectRegolith  extends CollectResourcesMission {
     		throws MissionException {
     	
        	// Use CollectResourcesMission constructor.
-    	super(description, members, startingSettlement, AmountResource.REGOLITH, 
+    	super(description, members, startingSettlement, getRegolithResource(), 
     	      SITE_GOAL, COLLECTION_RATE, 
     	      Bag.class, REQUIRED_BAGS, regolithCollectionSites.size(), 
     	      1, rover, regolithCollectionSites);
@@ -87,10 +93,16 @@ public class CollectRegolith  extends CollectResourcesMission {
 				REQUIRED_BAGS, MIN_PEOPLE, CollectRegolith.class);
 		
 		if (result > 0D) {
-			// Factor the value of regolith at the settlement.
-			GoodsManager manager = person.getSettlement().getGoodsManager();
-			double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.REGOLITH));
-			result *= value * 10D;
+			try {
+				// Factor the value of regolith at the settlement.
+				GoodsManager manager = person.getSettlement().getGoodsManager();
+				AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+				double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(regolithResource));
+				result *= value * 10D;
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "Error checking good value of regolith.");
+			}
 			
 			// Check if min number of EVA suits at settlement.
 			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
@@ -106,5 +118,19 @@ public class CollectRegolith  extends CollectResourcesMission {
      */
     protected String getCollectionSiteDescription(int siteNum) {
     	return "prospecting site";
+    }
+    
+    /**
+     * Gets the regolith resource.
+     * @return regolith resource.
+     * @throws MissionException if error getting regolith resource.
+     */
+    private static AmountResource getRegolithResource() throws MissionException {
+    	try {
+    		return AmountResource.findAmountResource("regolith");
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(null, e);
+    	}
     }
 }

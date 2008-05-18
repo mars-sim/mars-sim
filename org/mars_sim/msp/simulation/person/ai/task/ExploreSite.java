@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploreSite.java
- * @version 2.84 2008-04-13
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
@@ -193,10 +192,11 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
 				Inventory inv = person.getInventory();
 				double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
+				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 				double rockSampleCapacity = inv.getAmountResourceRemainingCapacity(
-						AmountResource.ROCK_SAMPLES, true);
+						rockSamples, true);
 				if (rockSampleMass < rockSampleCapacity) 
-					inv.storeAmountResource(AmountResource.ROCK_SAMPLES, rockSampleMass, true);
+					inv.storeAmountResource(rockSamples, rockSampleMass, true);
 			}
 		}
 	}
@@ -260,15 +260,16 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		while (i.hasNext()) {
 			SpecimenContainer container = (SpecimenContainer) i.next();
 			try {
+				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 				double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(
-						AmountResource.ROCK_SAMPLES, false);
+						rockSamples, false);
 			
 				if (remainingCapacity > mostCapacity) {
 					result = container;
 					mostCapacity = remainingCapacity;
 				}
 			}
-			catch (InventoryException e) {
+			catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
 		}

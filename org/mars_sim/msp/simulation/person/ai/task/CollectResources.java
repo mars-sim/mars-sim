@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResources.java
- * @version 2.84 2008-04-11
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -219,7 +219,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
 
 		// Modify collection rate by polar region if ice collecting.
-		if (resourceType.equals(AmountResource.ICE)) {
+		if (resourceType.equals(AmountResource.findAmountResource("ice"))) {
 			if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates()))
 				samplesCollected *= 3D;
 		}

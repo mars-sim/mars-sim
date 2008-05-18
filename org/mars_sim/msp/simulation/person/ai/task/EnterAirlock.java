@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 2.81 2007-08-12
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -217,22 +217,24 @@ public class EnterAirlock extends Task implements Serializable {
         	Inventory entityInv = person.getContainerUnit().getInventory();
 
         	// Unload oxygen from suit.
-        	double oxygenAmount = suitInv.getAmountResourceStored(AmountResource.OXYGEN);
-        	double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN, true);
+        	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        	double oxygenAmount = suitInv.getAmountResourceStored(oxygen);
+        	double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygen, true);
         	if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
         	try {
-        		suitInv.retrieveAmountResource(AmountResource.OXYGEN, oxygenAmount);
-        		entityInv.storeAmountResource(AmountResource.OXYGEN, oxygenAmount, true);
+        		suitInv.retrieveAmountResource(oxygen, oxygenAmount);
+        		entityInv.storeAmountResource(oxygen, oxygenAmount, true);
         	}
         	catch (Exception e) {}
         	
         	// Unload water from suit.
-        	double waterAmount = suitInv.getAmountResourceStored(AmountResource.WATER);
-        	double waterCapacity = entityInv.getAmountResourceRemainingCapacity(AmountResource.WATER, true);
+        	AmountResource water = AmountResource.findAmountResource("water");
+        	double waterAmount = suitInv.getAmountResourceStored(water);
+        	double waterCapacity = entityInv.getAmountResourceRemainingCapacity(water, true);
         	if (waterAmount > waterCapacity) waterAmount = waterCapacity;
         	try {
-        		suitInv.retrieveAmountResource(AmountResource.WATER, waterAmount);
-        		entityInv.storeAmountResource(AmountResource.WATER, waterAmount, true);
+        		suitInv.retrieveAmountResource(water, waterAmount);
+        		entityInv.storeAmountResource(water, waterAmount, true);
         	}
         	catch (Exception e) {}
 

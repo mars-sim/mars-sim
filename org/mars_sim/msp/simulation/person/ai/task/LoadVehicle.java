@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.83 2008-02-03
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -554,9 +554,12 @@ public class LoadVehicle extends Task implements Serializable {
     	double tripTimeSols = tripTime / 1000D;
     	
     	// Only life support resources are required at settlement at this time.
-    	if (resource.equals(AmountResource.OXYGEN)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
-    	else if (resource.equals(AmountResource.WATER)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
-    	else if (resource.equals(AmountResource.FOOD)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
+    	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    	AmountResource water = AmountResource.findAmountResource("water");
+    	AmountResource food = AmountResource.findAmountResource("food");
+    	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
+    	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
+    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate();
     	
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);
     }

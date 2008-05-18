@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResearchAreology.java
- * @version 2.84 2008-04-16
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -53,13 +53,14 @@ public class ResearchAreology extends ResearchScience implements Serializable {
 		// Check if researcher has a rock sample to study.
 		Unit container = person.getContainerUnit();
 		if (container != null) {
+			AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 			Inventory inv = container.getInventory();
-			double totalRockSampleMass = inv.getAmountResourceStored(AmountResource.ROCK_SAMPLES);
+			double totalRockSampleMass = inv.getAmountResourceStored(rockSamples);
 			if (totalRockSampleMass > 0D) {
 				hasRockSample = true;
 				double rockSampleMass = RandomUtil.getRandomDouble(ExploreSite.AVERAGE_ROCK_SAMPLE_MASS * 2D);
 				if (rockSampleMass > totalRockSampleMass) rockSampleMass = totalRockSampleMass;
-				inv.retrieveAmountResource(AmountResource.ROCK_SAMPLES, rockSampleMass);
+				inv.retrieveAmountResource(rockSamples, rockSampleMass);
 			}
 		}
     }
@@ -97,7 +98,8 @@ public class ResearchAreology extends ResearchScience implements Serializable {
 			Unit container = person.getContainerUnit();
 			if (container != null) {
 				Inventory inv = container.getInventory();
-				if (inv.getAmountResourceStored(AmountResource.ROCK_SAMPLES) > 0D) result*= 10D;
+				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+				if (inv.getAmountResourceStored(rockSamples) > 0D) result*= 10D;
 			}
 			
 			// Check if on exploration mission.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -99,7 +99,8 @@ public class CookMeal extends Task implements Serializable {
 					// Check if there is enough food available to cook.
 					PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 					double foodRequired = config.getFoodConsumptionRate() * (1D / 3D);
-					double foodAvailable = person.getSettlement().getInventory().getAmountResourceStored(AmountResource.FOOD);
+					AmountResource food = AmountResource.findAmountResource("food");
+					double foodAvailable = person.getSettlement().getInventory().getAmountResourceStored(food);
 					if (foodAvailable < foodRequired) result = 0D;
 				}
 			}

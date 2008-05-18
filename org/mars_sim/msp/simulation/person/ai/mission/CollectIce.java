@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 2.84 2008-04-14
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.person.Person;
@@ -23,6 +25,10 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
  */
 public class CollectIce extends CollectResourcesMission {
 
+	private static String CLASS_NAME = 
+		"org.mars_sim.msp.simulation.person.ai.mission.CollectIce";
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Ice Prospecting";
 	
@@ -49,8 +55,8 @@ public class CollectIce extends CollectResourcesMission {
 	public CollectIce(Person startingPerson) throws MissionException {
 		
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, AmountResource.ICE, SITE_GOAL, COLLECTION_RATE, 
-				Bag.class, REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, startingPerson, getIceResource(), SITE_GOAL, 
+				COLLECTION_RATE, Bag.class, REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 	
     /**
@@ -66,7 +72,7 @@ public class CollectIce extends CollectResourcesMission {
     		List iceCollectionSites, Rover rover, String description) throws MissionException {
     	
        	// Use CollectResourcesMission constructor.
-    	super(description, members, startingSettlement, AmountResource.ICE, SITE_GOAL, COLLECTION_RATE, 
+    	super(description, members, startingSettlement, getIceResource(), SITE_GOAL, COLLECTION_RATE, 
     			Bag.class, REQUIRED_BAGS, iceCollectionSites.size(), 1, rover, iceCollectionSites);
     }
 	
@@ -81,10 +87,16 @@ public class CollectIce extends CollectResourcesMission {
 				REQUIRED_BAGS, MIN_PEOPLE, CollectIce.class);
 		
 		if (result > 0D) {
-			// Factor the value of ice at the settlement.
-			GoodsManager manager = person.getSettlement().getGoodsManager();
-			double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
-			result *= value * 10D;
+			try {
+				// Factor the value of ice at the settlement.
+				GoodsManager manager = person.getSettlement().getGoodsManager();
+				AmountResource iceResource = AmountResource.findAmountResource("ice");
+				double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(iceResource));
+				result *= value * 10D;
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "Error checking good value of ice.");
+			}
 			
 			// Check if min number of EVA suits at settlement.
 			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
@@ -100,5 +112,19 @@ public class CollectIce extends CollectResourcesMission {
      */
     protected String getCollectionSiteDescription(int siteNum) {
     	return "prospecting site";
+    }
+    
+    /**
+     * Gets the ice resource.
+     * @return ice resource.
+     * @throws MissionException if error getting ice resource.
+     */
+    private static AmountResource getIceResource() throws MissionException {
+    	try {
+    		return AmountResource.findAmountResource("ice");
+    	}
+    	catch (Exception e) {
+    		throw new MissionException(null, e);
+    	}
     }
 }

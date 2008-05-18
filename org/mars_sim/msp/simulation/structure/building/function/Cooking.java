@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -191,7 +191,8 @@ public class Cooking extends Function implements Serializable {
 			try {
 				PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 				double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-				getBuilding().getInventory().retrieveAmountResource(AmountResource.FOOD, foodAmount);
+				AmountResource food = AmountResource.findAmountResource("food");
+				getBuilding().getInventory().retrieveAmountResource(food, foodAmount);
 			}
 			catch (InventoryException e) {
 				throw new BuildingException("Not enough food in settlement to cook.");
@@ -225,10 +226,11 @@ public class Cooking extends Function implements Serializable {
 			if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
 				try {
 					PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+					AmountResource food = AmountResource.findAmountResource("food");
 					double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-					double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(AmountResource.FOOD, false);
+					double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(food, false);
 					if (foodAmount > foodCapacity) foodAmount = foodCapacity;
-					getBuilding().getInventory().storeAmountResource(AmountResource.FOOD, foodAmount, false);
+					getBuilding().getInventory().storeAmountResource(food, foodAmount, false);
 					i.remove();
 					
 					if(logger.isLoggable(Level.FINEST)) {

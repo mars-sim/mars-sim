@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-05-17
  * @author Barry Evans
  */
 
@@ -152,126 +152,131 @@ public class VehicleTableModel extends UnitTableModel {
         	Vehicle vehicle = (Vehicle)getUnit(rowIndex);
         	Map<AmountResource, Integer> resourceMap = resourceCache.get(vehicle);
 
-        	// Invoke the appropriate method, switch is the best solution
-        	// althought disliked by some
-        	switch (columnIndex) {
-            	case NAME : {
-            		result = vehicle.getName();
-            	} break;
+        	try {
+        		// Invoke the appropriate method, switch is the best solution
+        		// althought disliked by some
+        		switch (columnIndex) {
+            		case NAME : {
+            			result = vehicle.getName();
+            		} break;
 
-            	case TYPE : {
-            		result = vehicle.getDescription();
-            	} break;
+            		case TYPE : {
+            			result = vehicle.getDescription();
+            		} break;
             
-            	case CREW : {
-            		if (vehicle instanceof Crewable)
-            			result = new Integer(((Crewable) vehicle).getCrewNum());
-            		else result = new Integer(0);
-            	} break;
+            		case CREW : {
+            			if (vehicle instanceof Crewable)
+            				result = new Integer(((Crewable) vehicle).getCrewNum());
+            			else result = new Integer(0);
+            		} break;
 
-            	case WATER : {
-            		result = (Integer) resourceMap.get(AmountResource.WATER);
-            	} break;
+            		case WATER : {
+            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("water"));
+            		} break;
 
-            	case FOOD : {
-            		result = (Integer) resourceMap.get(AmountResource.FOOD);
-            	} break;
+            		case FOOD : {
+            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("food"));
+            		} break;
 
-            	case OXYGEN : {
-            		result = (Integer) resourceMap.get(AmountResource.OXYGEN);
-            	} break;
+            		case OXYGEN : {
+            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("oxygen"));
+            		} break;
 
-            	case METHANE : {
-            		result = (Integer) resourceMap.get(AmountResource.METHANE);
-            	} break;
+            		case METHANE : {
+            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("methane"));
+            		} break;
 
-            	case ROCK_SAMPLES : {
-            		result = (Integer) resourceMap.get(AmountResource.ROCK_SAMPLES);
-            	} break;
+            		case ROCK_SAMPLES : {
+            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("rock samples"));
+            		} break;
 
-            	case SPEED : {
-            		result = new Integer(new Float(vehicle.getSpeed()).intValue());
-            	} break;
+            		case SPEED : {
+            			result = new Integer(new Float(vehicle.getSpeed()).intValue());
+            		} break;
 
-            	case DRIVER : {
-            		if (vehicle.getOperator() != null) {
-            			result = vehicle.getOperator().getOperatorName();
-            		}
-            		else {
+            		case DRIVER : {
+            			if (vehicle.getOperator() != null) {
+            				result = vehicle.getOperator().getOperatorName();
+            			}
+            			else {
+            				result = null;
+            			}
+            		} break;
+
+            		// Status is a combination of Mechical failure and maintenance
+            		case STATUS : {
+            			result = vehicle.getStatus();
+            		} break;
+            
+            		case BEACON : {
+            			if (vehicle.isEmergencyBeacon()) result = "on";
+            			else result = "off";
+            		} break;
+            
+            		case RESERVED : {
+            			if (vehicle.isReserved()) result = "true";
+            			else result = "false";
+            		} break;
+
+            		case MALFUNCTION: {
+            			Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
+            			if (failure != null) result = failure.getName();
+            		} break;
+
+            		case LOCATION : {
+            			Settlement settle = vehicle.getSettlement();
+            			if (settle != null) {
+            				result = settle.getName();
+            			}
+            			else {
+            				result = vehicle.getCoordinates().getFormattedString();
+            			}
+            		} break;
+
+            		case DESTINATION : {
             			result = null;
-            		}
-            	} break;
-
-            	// Status is a combination of Mechical failure and maintenance
-            	case STATUS : {
-            		result = vehicle.getStatus();
-            	} break;
-            
-            	case BEACON : {
-            		if (vehicle.isEmergencyBeacon()) result = "on";
-            		else result = "off";
-            	} break;
-            
-            	case RESERVED : {
-            		if (vehicle.isReserved()) result = "true";
-            		else result = "false";
-            	} break;
-
-            	case MALFUNCTION: {
-            		Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
-            		if (failure != null) result = failure.getName();
-            	} break;
-
-            	case LOCATION : {
-            		Settlement settle = vehicle.getSettlement();
-            		if (settle != null) {
-            			result = settle.getName();
-            		}
-            		else {
-            			result = vehicle.getCoordinates().getFormattedString();
-            		}
-            	} break;
-
-            	case DESTINATION : {
-            		result = null;
-            		VehicleMission mission = (VehicleMission) 
-            			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            		if (mission != null) {
-            			if (mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-            				NavPoint destination = mission.getNextNavpoint();
-            				if (destination.isSettlementAtNavpoint()) result = destination.getSettlement().getName();
-            				else result = destination.getLocation().getFormattedString();
+            			VehicleMission mission = (VehicleMission) 
+            				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            			if (mission != null) {
+            				if (mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+            					NavPoint destination = mission.getNextNavpoint();
+            					if (destination.isSettlementAtNavpoint()) result = destination.getSettlement().getName();
+            					else result = destination.getLocation().getFormattedString();
+            				}
             			}
-            		}
-            	} break;
+            		} break;
 
-            	case DESTDIST : {
-            		VehicleMission mission = (VehicleMission) 
-            			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            		if (mission != null) {
-            			try {
-            				result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
+            		case DESTDIST : {
+            			VehicleMission mission = (VehicleMission) 
+            				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            			if (mission != null) {
+            				try {
+            					result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
+            				}
+            				catch (Exception e) {
+            					logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
+            					e.printStackTrace(System.err);
+            				}
             			}
-            			catch (Exception e) {
-            				logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
-            				e.printStackTrace(System.err);
+            			else result = null;
+            		} break;
+            
+            		case MISSION : {
+            			VehicleMission mission = (VehicleMission) 
+            				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            			if (mission != null) {
+            				result = mission.getName();
             			}
-            		}
-            		else result = null;
-            	} break;
+            			else result = null;
+            		} break;
             
-            	case MISSION : {
-            		VehicleMission mission = (VehicleMission) 
-            			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            		if (mission != null) {
-            			result = mission.getName();
-            		}
-            		else result = null;
-            	} break;
-            
-            	case ICE : {
-            		result = (Integer) resourceMap.get(AmountResource.ICE);
-            	} break;
+            		case ICE : {
+            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("ice"));
+            		} break;
+        		}
+        	}
+        	catch (Exception e) {
+        		logger.log(Level.SEVERE, "", e);
         	}
         }
 
@@ -302,22 +307,35 @@ public class VehicleTableModel extends UnitTableModel {
 		else if (eventType.equals(Vehicle.SPEED_EVENT)) columnNum = SPEED;
 		else if (eventType.equals(MalfunctionManager.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
 		else if (eventType.equals(Inventory.INVENTORY_RESOURCE_EVENT)) {
-			int tempColumnNum = -1;
-			if (target.equals(AmountResource.OXYGEN)) tempColumnNum = OXYGEN;
-			else if (target.equals(AmountResource.METHANE)) tempColumnNum = METHANE;
-			else if (target.equals(AmountResource.FOOD)) tempColumnNum = FOOD;
-			else if (target.equals(AmountResource.WATER)) tempColumnNum = WATER;
-			else if (target.equals(AmountResource.ROCK_SAMPLES)) tempColumnNum = ROCK_SAMPLES;
-			else if (target.equals(AmountResource.ICE)) tempColumnNum = ICE;
-			if (tempColumnNum > -1) {
-				// Only update cell if value as int has changed.
-				int currentValue = ((Integer) getValueAt(unitIndex, tempColumnNum)).intValue();
-				int newValue = getResourceStored(unit, (AmountResource) target).intValue();
-				if (currentValue != newValue) {
-					columnNum = tempColumnNum;
-					Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
-					resourceMap.put((AmountResource) target, new Integer(newValue));
+			try {
+				int tempColumnNum = -1;
+				
+				if (target.equals(AmountResource.findAmountResource("oxygen"))) 
+					tempColumnNum = OXYGEN;
+				else if (target.equals(AmountResource.findAmountResource("methane"))) 
+					tempColumnNum = METHANE;
+				else if (target.equals(AmountResource.findAmountResource("food"))) 
+					tempColumnNum = FOOD;
+				else if (target.equals(AmountResource.findAmountResource("water"))) 
+					tempColumnNum = WATER;
+				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
+					tempColumnNum = ROCK_SAMPLES;
+				else if (target.equals(AmountResource.findAmountResource("ice"))) 
+					tempColumnNum = ICE;
+				
+				if (tempColumnNum > -1) {
+					// Only update cell if value as int has changed.
+					int currentValue = ((Integer) getValueAt(unitIndex, tempColumnNum)).intValue();
+					int newValue = getResourceStored(unit, (AmountResource) target).intValue();
+					if (currentValue != newValue) {
+						columnNum = tempColumnNum;
+						Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
+						resourceMap.put((AmountResource) target, new Integer(newValue));
+					}
 				}
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "", e);
 			}
 		}
 			
@@ -339,14 +357,25 @@ public class VehicleTableModel extends UnitTableModel {
     protected void addUnit(Unit newUnit) {
     	if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
     	if (!resourceCache.containsKey(newUnit)) {
-    		Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(6);
-    		resourceMap.put(AmountResource.FOOD, getResourceStored(newUnit, AmountResource.FOOD));
-    		resourceMap.put(AmountResource.OXYGEN, getResourceStored(newUnit, AmountResource.OXYGEN));
-    		resourceMap.put(AmountResource.WATER, getResourceStored(newUnit, AmountResource.WATER));
-    		resourceMap.put(AmountResource.METHANE, getResourceStored(newUnit, AmountResource.METHANE));
-    		resourceMap.put(AmountResource.ROCK_SAMPLES, getResourceStored(newUnit, AmountResource.ROCK_SAMPLES));
-    		resourceMap.put(AmountResource.ICE, getResourceStored(newUnit, AmountResource.ICE));
-    		resourceCache.put(newUnit, resourceMap);
+    		try {
+    			Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(6);
+    			AmountResource food = AmountResource.findAmountResource("food");
+    			resourceMap.put(food, getResourceStored(newUnit, food));
+    			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    			resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
+    			AmountResource water = AmountResource.findAmountResource("water");
+    			resourceMap.put(water, getResourceStored(newUnit, water));
+    			AmountResource methane = AmountResource.findAmountResource("methane");
+    			resourceMap.put(methane, getResourceStored(newUnit, methane));
+    			AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+    			resourceMap.put(rockSamples, getResourceStored(newUnit, rockSamples));
+    			AmountResource ice = AmountResource.findAmountResource("ice");
+    			resourceMap.put(ice, getResourceStored(newUnit, ice));
+    			resourceCache.put(newUnit, resourceMap);
+    		}
+    		catch (Exception e) {
+    			logger.log(Level.SEVERE, "", e);
+    		}
     	}
     	super.addUnit(newUnit);
     }

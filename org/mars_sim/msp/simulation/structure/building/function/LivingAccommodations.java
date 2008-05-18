@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 2.76 2004-08-06
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -98,19 +98,21 @@ public class LivingAccommodations extends Function implements Serializable {
 		double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
         
 		Inventory inv = getBuilding().getInventory();
+		AmountResource water = AmountResource.findAmountResource("water");
 		double waterUsed = waterUsageBuilding;
-		double waterAvailable = inv.getAmountResourceStored(AmountResource.WATER);
+		double waterAvailable = inv.getAmountResourceStored(water);
 		if (waterUsed > waterAvailable) waterUsed = waterAvailable;
 		try {
-			inv.retrieveAmountResource(AmountResource.WATER, waterUsed);
+			inv.retrieveAmountResource(water, waterUsed);
     	}
 		catch (Exception e) {}
 		
+		AmountResource wasteWater = AmountResource.findAmountResource("waste water");
 		double wasteWaterProduced = waterUsed;
-		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.WASTE_WATER, false);
+		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(wasteWater, false);
 		if (wasteWaterProduced > wasteWaterCapacity) wasteWaterProduced = wasteWaterCapacity;
 		try {
-			inv.storeAmountResource(AmountResource.WASTE_WATER, wasteWaterProduced, false);
+			inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
 		}
 		catch (Exception e) {}
     }

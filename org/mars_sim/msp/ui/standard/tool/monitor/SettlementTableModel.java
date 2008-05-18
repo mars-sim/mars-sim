@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-05-17
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -112,98 +112,110 @@ public class SettlementTableModel extends UnitTableModel {
         	BuildingManager bMgr = settle.getBuildingManager();
         	Map<AmountResource, Integer> resourceMap = resourceCache.get(settle);
 
-        	// Invoke the appropriate method, switch is the best solution
-        	// althought disliked by some
-        	switch (columnIndex) {
-            	case NAME : {
-            		result = settle.getName();
-            	} break;
+        	try {
+        		// Invoke the appropriate method, switch is the best solution
+        		// althought disliked by some
+        		switch (columnIndex) {
+            		case NAME : {
+            			result = settle.getName();
+            		} break;
 
-            	case WATER : {
-            		result = (Integer) resourceMap.get(AmountResource.WATER);
-            	} break;
+            		case WATER : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("water"));
+            		} break;
 
-            	case FOOD : {
-            		result = (Integer) resourceMap.get(AmountResource.FOOD);
-            	} break;
+            		case FOOD : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("food"));
+            		} break;
 
-            	case OXYGEN : {
-            		result = (Integer) resourceMap.get(AmountResource.OXYGEN);
-            	} break;
+            		case OXYGEN : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("oxygen"));
+            		} break;
 
-            	case METHANE : {
-            		result = (Integer) resourceMap.get(AmountResource.METHANE);
-            	} break;
+            		case METHANE : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("methane"));
+            		} break;
 
-            	case ROCK_SAMPLES : {
-            		result = (Integer) resourceMap.get(AmountResource.ROCK_SAMPLES);
-            	} break;
+            		case ROCK_SAMPLES : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("rock samples"));
+            		} break;
 
-            	case MALFUNCTION: {
-            		int severity = 0;
-            		Malfunction malfunction = settle.getMalfunctionManager().getMostSeriousMalfunction();
-            		if (malfunction != null) severity = malfunction.getSeverity();
-            		Iterator i = settle.getBuildingManager().getBuildings().iterator();
-            		while (i.hasNext()) {
-            			Building building = (Building) i.next();
-            			Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
-            			if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
-            				malfunction = tempMalfunction;
-            				severity = tempMalfunction.getSeverity();
+            		case MALFUNCTION: {
+            			int severity = 0;
+            			Malfunction malfunction = settle.getMalfunctionManager().getMostSeriousMalfunction();
+            			if (malfunction != null) severity = malfunction.getSeverity();
+            			Iterator i = settle.getBuildingManager().getBuildings().iterator();
+            			while (i.hasNext()) {
+            				Building building = (Building) i.next();
+            				Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();
+            				if ((tempMalfunction != null) && (tempMalfunction.getSeverity() > severity)) {
+            					malfunction = tempMalfunction;
+            					severity = tempMalfunction.getSeverity();
+            				}
             			}
-            		}
-            		if (malfunction != null) result = malfunction.getName();
-            	} break;
+            			if (malfunction != null) result = malfunction.getName();
+            		} break;
 
-            	case POPULATION : {
-            		result = new Integer(settle.getCurrentPopulationNum());
-            	} break;
+            		case POPULATION : {
+            			result = new Integer(settle.getCurrentPopulationNum());
+            		} break;
 
-            	case PARKED : {
-            		result = new Integer(settle.getParkedVehicleNum());
-            	} break;
+            		case PARKED : {
+            			result = new Integer(settle.getParkedVehicleNum());
+            		} break;
             
-            	case POWER : {
-            		result = new Integer((int) settle.getPowerGrid().getGeneratedPower());
-            	} break;
+            		case POWER : {
+            			result = new Integer((int) settle.getPowerGrid().getGeneratedPower());
+            		} break;
 
-            	case GREENHOUSES : {
-            		int greenhouses = bMgr.getBuildings(Farming.NAME).size();
-            		result = new Integer(greenhouses);
-            	} break;
+            		case GREENHOUSES : {
+            			int greenhouses = bMgr.getBuildings(Farming.NAME).size();
+            			result = new Integer(greenhouses);
+            		} break;
 
-            	case CROPS : {
-            		int crops = 0;
-            		List greenhouses = bMgr.getBuildings(Farming.NAME);
-            		Iterator i = greenhouses.iterator();
-            		while (i.hasNext()) {
-            			try {
-            				Building greenhouse = (Building) i.next();
-            				Farming farm = (Farming) greenhouse.getFunction(Farming.NAME);
-            				crops += farm.getCrops().size();
+            		case CROPS : {
+            			int crops = 0;
+            			List greenhouses = bMgr.getBuildings(Farming.NAME);
+            			Iterator i = greenhouses.iterator();
+            			while (i.hasNext()) {
+            				try {
+            					Building greenhouse = (Building) i.next();
+            					Farming farm = (Farming) greenhouse.getFunction(Farming.NAME);
+            					crops += farm.getCrops().size();
+            				}
+            				catch (Exception e) {}
             			}
-            			catch (Exception e) {}
-            		}
                 
-            		result = new Integer(crops);
-            	} break;
+            			result = new Integer(crops);
+            		} break;
 
-            	case HYDROGEN : {
-            		result = (Integer) resourceMap.get(AmountResource.HYDROGEN);
-            	} break;
+            		case HYDROGEN : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("hydrogen"));
+            		} break;
 
-            	case WASTE_WATER : {
-            		result = (Integer) resourceMap.get(AmountResource.WASTE_WATER);
-            	} break;
+            		case WASTE_WATER : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("waste water"));
+            		} break;
             
-            	case CO2 : {
-            		result = (Integer) resourceMap.get(AmountResource.CARBON_DIOXIDE);
-            	} break;
+            		case CO2 : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("carbon dioxide"));
+            		} break;
             
-            	case ICE : {
-            		result = (Integer) resourceMap.get(AmountResource.ICE);
-            	} break;
+            		case ICE : {
+            			result = (Integer) resourceMap.get(
+            					AmountResource.findAmountResource("ice"));
+            		} break;
+        		}
         	}
+        	catch (Exception e) {}
         }
 
         return result;
@@ -233,26 +245,40 @@ public class SettlementTableModel extends UnitTableModel {
 		else if (eventType.equals(Farming.CROP_EVENT)) columnNum = CROPS;
 		else if (eventType.equals(MalfunctionManager.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
 		else if (eventType.equals(Inventory.INVENTORY_RESOURCE_EVENT)) {
-			int tempColumnNum = -1;
-			if (target.equals(AmountResource.OXYGEN)) tempColumnNum = OXYGEN;
-			else if (target.equals(AmountResource.HYDROGEN)) tempColumnNum = HYDROGEN;
-			else if (target.equals(AmountResource.CARBON_DIOXIDE)) tempColumnNum = CO2;
-			else if (target.equals(AmountResource.METHANE)) tempColumnNum = METHANE;
-			else if (target.equals(AmountResource.FOOD)) tempColumnNum = FOOD;
-			else if (target.equals(AmountResource.WATER)) tempColumnNum = WATER;
-			else if (target.equals(AmountResource.WASTE_WATER)) tempColumnNum = WASTE_WATER;
-			else if (target.equals(AmountResource.ROCK_SAMPLES)) tempColumnNum = ROCK_SAMPLES;
-			else if (target.equals(AmountResource.ICE)) tempColumnNum = ICE;
-			if (tempColumnNum > -1) {
-				// Only update cell if value as int has changed.
-				int currentValue = ((Integer) getValueAt(unitIndex, tempColumnNum)).intValue();
-				int newValue = getResourceStored(unit, (AmountResource) target).intValue();
-				if (currentValue != newValue) {
-					columnNum = tempColumnNum;
-					Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
-					resourceMap.put((AmountResource) target, newValue);
+			try {
+				int tempColumnNum = -1;
+				
+				if (target.equals(AmountResource.findAmountResource("oxygen"))) 
+					tempColumnNum = OXYGEN;
+				else if (target.equals(AmountResource.findAmountResource("hydrogen"))) 
+					tempColumnNum = HYDROGEN;
+				else if (target.equals(AmountResource.findAmountResource("carbon dioxide"))) 
+					tempColumnNum = CO2;
+				else if (target.equals(AmountResource.findAmountResource("methane"))) 
+					tempColumnNum = METHANE;
+				else if (target.equals(AmountResource.findAmountResource("food"))) 
+					tempColumnNum = FOOD;
+				else if (target.equals(AmountResource.findAmountResource("water"))) 
+					tempColumnNum = WATER;
+				else if (target.equals(AmountResource.findAmountResource("waste water"))) 
+					tempColumnNum = WASTE_WATER;
+				else if (target.equals(AmountResource.findAmountResource("rock samples"))) 
+					tempColumnNum = ROCK_SAMPLES;
+				else if (target.equals(AmountResource.findAmountResource("ice"))) 
+					tempColumnNum = ICE;
+				
+				if (tempColumnNum > -1) {
+					// Only update cell if value as int has changed.
+					int currentValue = ((Integer) getValueAt(unitIndex, tempColumnNum)).intValue();
+					int newValue = getResourceStored(unit, (AmountResource) target).intValue();
+					if (currentValue != newValue) {
+						columnNum = tempColumnNum;
+						Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
+						resourceMap.put((AmountResource) target, newValue);
+					}
 				}
 			}
+			catch (Exception e) {}
 		}
 			
 		if (columnNum > -1) fireTableCellUpdated(unitIndex, columnNum);
@@ -273,17 +299,29 @@ public class SettlementTableModel extends UnitTableModel {
     protected void addUnit(Unit newUnit) {
     	if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Integer>>();
     	if (!resourceCache.containsKey(newUnit)) {
-    		Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
-    		resourceMap.put(AmountResource.FOOD, getResourceStored(newUnit, AmountResource.FOOD));
-    		resourceMap.put(AmountResource.OXYGEN, getResourceStored(newUnit, AmountResource.OXYGEN));
-    		resourceMap.put(AmountResource.WATER, getResourceStored(newUnit, AmountResource.WATER));
-    		resourceMap.put(AmountResource.HYDROGEN, getResourceStored(newUnit, AmountResource.HYDROGEN));
-    		resourceMap.put(AmountResource.METHANE, getResourceStored(newUnit, AmountResource.METHANE));
-    		resourceMap.put(AmountResource.ROCK_SAMPLES, getResourceStored(newUnit, AmountResource.ROCK_SAMPLES));
-    		resourceMap.put(AmountResource.WASTE_WATER, getResourceStored(newUnit, AmountResource.WASTE_WATER));
-    		resourceMap.put(AmountResource.ICE, getResourceStored(newUnit, AmountResource.ICE));
-    		resourceMap.put(AmountResource.CARBON_DIOXIDE, getResourceStored(newUnit, AmountResource.CARBON_DIOXIDE));
-    		resourceCache.put(newUnit, resourceMap);
+    		try {
+    			Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
+    			AmountResource food = AmountResource.findAmountResource("food");
+    			resourceMap.put(food, getResourceStored(newUnit, food));
+    			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    			resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
+    			AmountResource water = AmountResource.findAmountResource("water");
+    			resourceMap.put(water, getResourceStored(newUnit, water));
+    			AmountResource hydrogen = AmountResource.findAmountResource("hydrogen");
+    			resourceMap.put(hydrogen, getResourceStored(newUnit, hydrogen));
+    			AmountResource methane = AmountResource.findAmountResource("methane");
+    			resourceMap.put(methane, getResourceStored(newUnit, methane));
+    			AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+    			resourceMap.put(rockSamples, getResourceStored(newUnit, rockSamples));
+    			AmountResource wasteWater = AmountResource.findAmountResource("waste water");
+    			resourceMap.put(wasteWater, getResourceStored(newUnit, wasteWater));
+    			AmountResource ice = AmountResource.findAmountResource("ice");
+    			resourceMap.put(ice, getResourceStored(newUnit, ice));
+    			AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+    			resourceMap.put(carbonDioxide, getResourceStored(newUnit, carbonDioxide));
+    			resourceCache.put(newUnit, resourceMap);
+    		}
+    		catch (Exception e) {}
     	}
     	super.addUnit(newUnit);
     }

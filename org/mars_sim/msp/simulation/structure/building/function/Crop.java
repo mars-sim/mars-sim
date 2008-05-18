@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 2.78 2004-11-20
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
  
@@ -233,30 +233,34 @@ public class Crop implements Serializable {
                 	
                 	// Determine harvest modifier by amount of waste water available.
                 	double wasteWaterRequired = maxPeriodHarvest * WASTE_WATER_NEEDED;
-                	double wasteWaterAvailable = inv.getAmountResourceStored(AmountResource.WASTE_WATER);
+                	AmountResource wasteWater = AmountResource.findAmountResource("waste water");
+                	AmountResource water = AmountResource.findAmountResource("water");
+                	double wasteWaterAvailable = inv.getAmountResourceStored(wasteWater);
                 	double wasteWaterUsed = wasteWaterRequired;
                 	if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
                 	double waterAmount = wasteWaterUsed * .8D;
-                	double waterCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.WATER, false);
+                	double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false);
                 	if (waterAmount > waterCapacity) waterAmount = waterCapacity;
                 	try {
-                		inv.retrieveAmountResource(AmountResource.WASTE_WATER, wasteWaterUsed);
-                		inv.storeAmountResource(AmountResource.WATER, waterAmount, false);
+                		inv.retrieveAmountResource(wasteWater, wasteWaterUsed);
+                		inv.storeAmountResource(water, waterAmount, false);
                 	}
                 	catch (Exception e) {}
                 	harvestModifier = harvestModifier * (((wasteWaterUsed / wasteWaterRequired) * .5D) + .5D);
                     
                 	// Determine harvest modifier by amount of carbon dioxide available.
+                	AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+                	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
                 	double carbonDioxideRequired = maxPeriodHarvest * CARBON_DIOXIDE_NEEDED;
-                	double carbonDioxideAvailable = inv.getAmountResourceStored(AmountResource.CARBON_DIOXIDE);
+                	double carbonDioxideAvailable = inv.getAmountResourceStored(carbonDioxide);
                 	double carbonDioxideUsed = carbonDioxideRequired;
                 	if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
                 	double oxygenAmount = carbonDioxideUsed * .9D;
-                	double oxygenCapacity = inv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN, false);
+                	double oxygenCapacity = inv.getAmountResourceRemainingCapacity(oxygen, false);
                 	if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
                 	try {
-                		inv.retrieveAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideUsed);
-                		inv.storeAmountResource(AmountResource.OXYGEN, oxygenAmount, false);
+                		inv.retrieveAmountResource(carbonDioxide, carbonDioxideUsed);
+                		inv.storeAmountResource(oxygen, oxygenAmount, false);
                 	}
                 	catch (Exception e) {}
                 	harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);   

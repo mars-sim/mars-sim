@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -35,8 +35,6 @@ import org.mars_sim.msp.simulation.structure.building.function.EVA;
 import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
-
-
 
 
 /** 
@@ -185,8 +183,10 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     public boolean lifeSupportCheck() throws Exception {
         boolean result = true;
 
-        if (getInventory().getAmountResourceStored(AmountResource.OXYGEN) <= 0D) result = false;
-        if (getInventory().getAmountResourceStored(AmountResource.WATER) <= 0D) result = false;
+        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        if (getInventory().getAmountResourceStored(oxygen) <= 0D) result = false;
+        AmountResource water = AmountResource.findAmountResource("water");
+        if (getInventory().getAmountResourceStored(water) <= 0D) result = false;
         if (getOxygenFlowModifier() < 100D) result = false;
         if (getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -208,15 +208,17 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      *  @throws Exception if error providing oxygen.
      */
     public double provideOxygen(double amountRequested) throws Exception {
+    	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     	double oxygenTaken = amountRequested;
-    	double oxygenLeft = getInventory().getAmountResourceStored(AmountResource.OXYGEN);
+    	double oxygenLeft = getInventory().getAmountResourceStored(oxygen);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
+    	AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
     	double carbonDioxideProvided = oxygenTaken;
-    	double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(AmountResource.CARBON_DIOXIDE, true);
+    	double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxide, true);
     	if (carbonDioxideProvided > carbonDioxideCapacity) carbonDioxideProvided = carbonDioxideCapacity;
     	try {
-    		getInventory().retrieveAmountResource(AmountResource.OXYGEN, oxygenTaken);
-    		getInventory().storeAmountResource(AmountResource.CARBON_DIOXIDE, carbonDioxideProvided, true);
+    		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
+    		getInventory().storeAmountResource(carbonDioxide, carbonDioxideProvided, true);
     	}
     	catch (InventoryException e) {};
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
@@ -236,11 +238,12 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      *  @throws Exception if error providing water.
      */
     public double provideWater(double amountRequested) throws Exception {
+    	AmountResource water = AmountResource.findAmountResource("water");
     	double waterTaken = amountRequested;
-    	double waterLeft = getInventory().getAmountResourceStored(AmountResource.WATER);
+    	double waterLeft = getInventory().getAmountResourceStored(water);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
     	try {
-    		getInventory().retrieveAmountResource(AmountResource.WATER, waterTaken);
+    		getInventory().retrieveAmountResource(water, waterTaken);
     	}
     	catch (InventoryException e) {};
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -214,9 +214,10 @@ class EatMeal extends Task implements Serializable {
 		if (containerUnit != null) {
 			try {
 				Inventory inv = containerUnit.getInventory();
-				if (inv.getAmountResourceStored(AmountResource.FOOD) > 0D) result = true;;
+				AmountResource food = AmountResource.findAmountResource("food");
+				if (inv.getAmountResourceStored(food) > 0D) result = true;;
 			}
-			catch (InventoryException e) {
+			catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
 		}

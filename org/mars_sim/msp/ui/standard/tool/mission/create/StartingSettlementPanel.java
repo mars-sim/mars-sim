@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -27,7 +27,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.Inventory;
-import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.equipment.Bag;
@@ -206,14 +205,22 @@ class StartingSettlementPanel extends WizardPanel {
             		result = new Integer(settlement.getParkedVehicleNum());
             	else if (column > 2) {
             		try {
-            			if (column == 3) 
-            				result = new Integer((int) inv.getAmountResourceStored(AmountResource.OXYGEN));
-            			else if (column == 4) 
-            				result = new Integer((int) inv.getAmountResourceStored(AmountResource.WATER));
-            			else if (column == 5) 
-            				result = new Integer((int) inv.getAmountResourceStored(AmountResource.FOOD));
-            			else if (column == 6) 
-            				result = new Integer((int) inv.getAmountResourceStored(AmountResource.METHANE));
+            			if (column == 3) {
+            				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+            				result = new Integer((int) inv.getAmountResourceStored(oxygen));
+            			}
+            			else if (column == 4) {
+            				AmountResource water = AmountResource.findAmountResource("water");
+            				result = new Integer((int) inv.getAmountResourceStored(water));
+            			}
+            			else if (column == 5) {
+            				AmountResource food = AmountResource.findAmountResource("food");
+            				result = new Integer((int) inv.getAmountResourceStored(food));
+            			}
+            			else if (column == 6) {
+            				AmountResource methane = AmountResource.findAmountResource("methane");
+            				result = new Integer((int) inv.getAmountResourceStored(methane));
+            			}
             			else if (column == 7) 
             				result = new Integer(inv.findNumUnitsOfClass(EVASuit.class));
             			else if (column == 8) {
@@ -225,7 +232,7 @@ class StartingSettlementPanel extends WizardPanel {
             					result = new Integer(inv.findNumEmptyUnitsOfClass(Bag.class));
             			}
             		}
-            		catch (InventoryException e) {}
+            		catch (Exception e) {}
             	}
             }
             
@@ -263,16 +270,20 @@ class StartingSettlementPanel extends WizardPanel {
     				if (settlement.getParkedVehicleNum() == 0) result = true;
     			}
     			else if (column == 3) {
-    				if (inv.getAmountResourceStored(AmountResource.OXYGEN) < 100D) result = true;
+    				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    				if (inv.getAmountResourceStored(oxygen) < 100D) result = true;
     			}
     			else if (column == 4) {
-    				if (inv.getAmountResourceStored(AmountResource.WATER) < 100D) result = true;
+    				AmountResource water = AmountResource.findAmountResource("water");
+    				if (inv.getAmountResourceStored(water) < 100D) result = true;
     			}
     			else if (column == 5) {
-    				if (inv.getAmountResourceStored(AmountResource.FOOD) < 100D) result = true;
+    				AmountResource food = AmountResource.findAmountResource("food");
+    				if (inv.getAmountResourceStored(food) < 100D) result = true;
     			}
     			else if (column == 6) {
-    				if (inv.getAmountResourceStored(AmountResource.METHANE) < 100D) result = true;
+    				AmountResource methane = AmountResource.findAmountResource("methane");
+    				if (inv.getAmountResourceStored(methane) < 100D) result = true;
     			}
     			else if (column == 7) {
     				if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
@@ -288,7 +299,7 @@ class StartingSettlementPanel extends WizardPanel {
     				}
     			}
     		}
-    		catch (InventoryException e) {}
+    		catch (Exception e) {}
     		
     		return result;
     	}

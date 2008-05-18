@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 2.81 2007-08-12
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -206,15 +206,17 @@ public class ExitAirlock extends Task implements Serializable {
     	int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
     	
     	// Check if enough oxygen.
-    	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN, true);
-    	double availableOxygen = entityInv.getAmountResourceStored(AmountResource.OXYGEN);
+    	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true);
+    	double availableOxygen = entityInv.getAmountResourceStored(oxygen);
     	// Make sure there is enough extra oxygen for everyone else.
     	availableOxygen -= (neededOxygen * otherPeopleNum);
     	boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
     	
     	// Check if enough water.
-    	double neededWater = suitInv.getAmountResourceRemainingCapacity(AmountResource.WATER, true);
-    	double availableWater = entityInv.getAmountResourceStored(AmountResource.WATER);
+    	AmountResource water = AmountResource.findAmountResource("water");
+    	double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true);
+    	double availableWater = entityInv.getAmountResourceStored(water);
     	// Make sure there is enough extra water for everyone else.
     	availableWater -= (neededWater * otherPeopleNum);
     	boolean hasEnoughWater = (availableWater >= neededWater);
@@ -233,24 +235,26 @@ public class ExitAirlock extends Task implements Serializable {
     	Inventory entityInv = person.getContainerUnit().getInventory();
     	
     	// Fill oxygen in suit from entity's inventory. 
-    	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(AmountResource.OXYGEN, true);
-    	double availableOxygen = entityInv.getAmountResourceStored(AmountResource.OXYGEN);
+    	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    	double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true);
+    	double availableOxygen = entityInv.getAmountResourceStored(oxygen);
     	double takenOxygen = neededOxygen;
     	if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
     	try {
-    		entityInv.retrieveAmountResource(AmountResource.OXYGEN, takenOxygen);
-    		suitInv.storeAmountResource(AmountResource.OXYGEN, takenOxygen, true);
+    		entityInv.retrieveAmountResource(oxygen, takenOxygen);
+    		suitInv.storeAmountResource(oxygen, takenOxygen, true);
     	}
     	catch (Exception e) {}
 
     	// Fill water in suit from entity's inventory.
-    	double neededWater = suitInv.getAmountResourceRemainingCapacity(AmountResource.WATER, true);
-    	double availableWater = entityInv.getAmountResourceStored(AmountResource.WATER);
+    	AmountResource water = AmountResource.findAmountResource("water");
+    	double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true);
+    	double availableWater = entityInv.getAmountResourceStored(water);
     	double takenWater = neededWater;
     	if (takenWater > availableWater) takenWater = availableWater;
     	try {
-    		entityInv.retrieveAmountResource(AmountResource.WATER, takenWater);
-    		suitInv.storeAmountResource(AmountResource.WATER, takenWater, true);
+    		entityInv.retrieveAmountResource(water, takenWater);
+    		suitInv.storeAmountResource(water, takenWater, true);
     	}
     	catch (Exception e) {}
     }

@@ -23,8 +23,9 @@ public class TestGoods extends TestCase {
 		assertTrue("Goods list not zero", (goodsList.size() > 0));
 	}
 	
-	public void testGoodsListContainsWater() {
-		Good waterGood = GoodsUtil.getResourceGood(AmountResource.WATER);
+	public void testGoodsListContainsWater() throws Exception {
+		AmountResource water = AmountResource.findAmountResource("water");
+		Good waterGood = GoodsUtil.getResourceGood(water);
 		assertTrue("Goods list contains water", GoodsUtil.containsGood(waterGood));
 	}
 	

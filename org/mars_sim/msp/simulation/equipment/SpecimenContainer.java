@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SpecimenContainer.java
- * @version 2.79 2006-01-02
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -29,7 +29,8 @@ public class SpecimenContainer extends Equipment implements Container, Serializa
 		setBaseMass(BASE_MASS);
 		
 		// Set the capacity of the container.
-		getInventory().addAmountResourceTypeCapacity(AmountResource.ROCK_SAMPLES, ROCK_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(
+				AmountResource.findAmountResource("rock samples"), ROCK_CAPACITY);
 	}
 	
 	/**

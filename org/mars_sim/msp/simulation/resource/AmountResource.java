@@ -21,45 +21,6 @@ public final class AmountResource implements Resource, Serializable {
 	
     // Set of all amount resources.
     private static final Set<AmountResource> resources = new HashSet<AmountResource>(10);
-	
-	// Amount resources
-    public static final AmountResource WATER = new AmountResource("water", Phase.LIQUID, true);
-    public static final AmountResource OXYGEN = new AmountResource("oxygen", Phase.GAS, true);
-    public static final AmountResource HYDROGEN = new AmountResource("hydrogen", Phase.GAS);
-    public static final AmountResource METHANE = new AmountResource("methane", Phase.GAS);
-    public static final AmountResource CARBON_DIOXIDE = new AmountResource("carbon dioxide", Phase.GAS);
-    public static final AmountResource CARBON_MONOXIDE = new AmountResource("carbon monoxide", Phase.GAS);
-    public static final AmountResource FOOD = new AmountResource("food", Phase.SOLID, true);
-    public static final AmountResource ROCK_SAMPLES = new AmountResource("rock samples", Phase.SOLID);
-    public static final AmountResource WASTE_WATER = new AmountResource("waste water", Phase.LIQUID);
-    public static final AmountResource ICE = new AmountResource("ice", Phase.SOLID);
-    public static final AmountResource REGOLITH = new AmountResource("regolith", Phase.SOLID);
-    public static final AmountResource IRON_OXIDE = new AmountResource("iron oxide", Phase.SOLID);
-    public static final AmountResource CARBON = new AmountResource("carbon", Phase.SOLID);
-    public static final AmountResource SAND = new AmountResource("sand", Phase.SOLID);
-    public static final AmountResource IRON_POWDER = new AmountResource("iron powder", Phase.SOLID);
-    public static final AmountResource ALUMINUM_OXIDE = new AmountResource("aluminum oxide", Phase.SOLID);
-    public static final AmountResource ETHYLENE = new AmountResource("ethylene", Phase.GAS);
-    public static final AmountResource POLYETHYLENE = new AmountResource("polyethylene", Phase.SOLID);
-    public static final AmountResource GYPSUM = new AmountResource("gypsum", Phase.SOLID);
-    public static final AmountResource CALCIUM_CARBONATE = new AmountResource("calcium carbonate", Phase.SOLID);
-    public static final AmountResource LIME = new AmountResource("lime", Phase.SOLID);
-    public static final AmountResource STYRENE = new AmountResource("styrene", Phase.SOLID);
-    public static final AmountResource POLYESTER_RESIN = new AmountResource("polyester resin", Phase.LIQUID);
-    public static final AmountResource HEMATITE = new AmountResource("hematite", Phase.SOLID);
-    public static final AmountResource MAGNETITE = new AmountResource("magnetite", Phase.SOLID);
-    public static final AmountResource MAGNESITE = new AmountResource("magnesite", Phase.SOLID);
-    public static final AmountResource OLIVINE = new AmountResource("olivine", Phase.SOLID);
-    public static final AmountResource GEOTHITE = new AmountResource("goethite", Phase.SOLID);
-    public static final AmountResource KAMACITE = new AmountResource("kamacite", Phase.SOLID);
-    public static final AmountResource TAENITE = new AmountResource("taenite", Phase.SOLID);
-    public static final AmountResource CHALCOPYRITE = new AmountResource("chalcopyrite", Phase.SOLID);
-    public static final AmountResource MALACHITE = new AmountResource("malachite", Phase.SOLID);
-    public static final AmountResource NICKEL = new AmountResource("nickel", Phase.SOLID);
-    public static final AmountResource SULFUR = new AmountResource("sulfur", Phase.SOLID);
-    public static final AmountResource MAGNESIUM = new AmountResource("magnesium", Phase.SOLID);
-    public static final AmountResource SILICON = new AmountResource("silicon", Phase.SOLID);
-    public static final AmountResource COPPER = new AmountResource("copper", Phase.SOLID);
     
 	// Data members
 	private String name;
@@ -72,21 +33,12 @@ public final class AmountResource implements Resource, Serializable {
 	private AmountResource() {}
 	
 	/**
-	 * Private constructor
-	 * @param name the resource's name
-	 * @param phase the material phase of the resource.
-	 */
-	private AmountResource(String name, Phase phase) {
-		this(name, phase, false);
-	}
-	
-	/**
-	 * Private constructor with life support parameter.
+	 * Constructor with life support parameter.
 	 * @param name the resource's name
 	 * @param phase the material phase of the resource.
 	 * @param lifeSupport true if life support resource.
 	 */
-	private AmountResource(String name, Phase phase, boolean lifeSupport) {
+	protected AmountResource(String name, Phase phase, boolean lifeSupport) {
 		this.name = name;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;

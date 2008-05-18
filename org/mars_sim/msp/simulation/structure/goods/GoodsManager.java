@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.84 2008-05-13
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -299,7 +299,8 @@ public class GoodsManager implements Serializable {
 	 */
 	private double getVehicleDemand(AmountResource resource) throws Exception {
 		double demand = 0D;
-		if (resource.isLifeSupport() || resource.equals(AmountResource.METHANE)) {
+		AmountResource methane = AmountResource.findAmountResource("methane");
+		if (resource.isLifeSupport() || resource.equals(methane)) {
 			Iterator<Vehicle> i = getAssociatedVehicles().iterator();
 			while (i.hasNext()) demand += i.next().getInventory().getAmountResourceCapacity(resource);
 		}
@@ -335,8 +336,11 @@ public class GoodsManager implements Serializable {
 	 */
 	private double getFarmingDemand(AmountResource resource) throws Exception {
 		double demand = 0D;
-		if (resource.equals(AmountResource.WASTE_WATER) || resource.equals(AmountResource.CARBON_DIOXIDE)) {
-			double foodValue = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.FOOD));
+		AmountResource wasteWater = AmountResource.findAmountResource("waste water");
+		AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+		AmountResource food = AmountResource.findAmountResource("food");
+		if (resource.equals(wasteWater) || resource.equals(carbonDioxide)) {
+			double foodValue = getGoodValuePerMass(GoodsUtil.getResourceGood(food));
 			
 			Iterator i = settlement.getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
@@ -345,9 +349,9 @@ public class GoodsManager implements Serializable {
 					Farming farm = (Farming) building.getFunction(Farming.NAME);
 					
 					double amountNeeded = 0D;
-					if (resource.equals(AmountResource.WASTE_WATER)) 
+					if (resource.equals(wasteWater)) 
 						amountNeeded = Crop.WASTE_WATER_NEEDED;
-					else if (resource.equals(AmountResource.CARBON_DIOXIDE))
+					else if (resource.equals(carbonDioxide))
 						amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
 					
 					demand += (farm.getEstimatedHarvestPerOrbit() * foodValue) / amountNeeded;
@@ -917,8 +921,10 @@ public class GoodsManager implements Serializable {
 		
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
-			double iceValue = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
-			double regolithValue = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.REGOLITH));
+			AmountResource ice = AmountResource.findAmountResource("ice");
+			double iceValue = getGoodValuePerMass(GoodsUtil.getResourceGood(ice));
+			AmountResource regolith = AmountResource.findAmountResource("regolith");
+			double regolithValue = getGoodValuePerMass(GoodsUtil.getResourceGood(regolith));
 			numDemand += CollectIce.REQUIRED_BAGS * areologistNum * iceValue;
 			numDemand += CollectRegolith.REQUIRED_BAGS * areologistNum * regolithValue;
 		}
@@ -1126,7 +1132,7 @@ public class GoodsManager implements Serializable {
 		return (demand / (currentCapacity + 1D)) * vehicleCapacity;
 	}
 	
-	private double determineMissionVehicleDemand(String missionType) {
+	private double determineMissionVehicleDemand(String missionType) throws Exception {
 		double demand = 0D;
 		
 		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
@@ -1138,7 +1144,8 @@ public class GoodsManager implements Serializable {
 			demand = getAreologistNum() / 2D;
 		}
 		else if (COLLECT_ICE_MISSION.equals(missionType)) {
-			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.ICE));
+			AmountResource ice = AmountResource.findAmountResource("ice");
+			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(ice));
 		}
 		else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
 			demand = getDriverNum();
@@ -1147,7 +1154,8 @@ public class GoodsManager implements Serializable {
 			demand = getTraderNum();
 		}
 		else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
-			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(AmountResource.REGOLITH));
+			AmountResource regolith = AmountResource.findAmountResource("regolith");
+			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(regolith));
 		}
 		else if (MINING_MISSION.equals(missionType)) {
 			demand = getAreologistNum() / 2D;
@@ -1246,7 +1254,7 @@ public class GoodsManager implements Serializable {
 		double range = 0D;
 		
 		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-		double fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, AmountResource.METHANE.getName());
+		double fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, "methane");
 		double fuelEfficiency = vehicleConfig.getFuelEfficiency(vehicleType);
 		range = fuelCapacity * fuelEfficiency / 1.5D;
 		
@@ -1258,21 +1266,21 @@ public class GoodsManager implements Serializable {
 		
     	// Check food capacity as range limit.
     	double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-    	double foodCapacity = vehicleConfig.getCargoCapacity(vehicleType, AmountResource.FOOD.getName());
+    	double foodCapacity = vehicleConfig.getCargoCapacity(vehicleType, "food");
     	double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
     	double foodRange = distancePerSol * foodSols / 3D;
     	if (foodRange < range) range = foodRange;
     		
     	// Check water capacity as range limit.
     	double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-    	double waterCapacity = vehicleConfig.getCargoCapacity(vehicleType, AmountResource.WATER.getName());
+    	double waterCapacity = vehicleConfig.getCargoCapacity(vehicleType, "water");
     	double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
     	double waterRange = distancePerSol * waterSols / 3D;
     	if (waterRange < range) range = waterRange;
     		
     	// Check oxygen capacity as range limit.
     	double oxygenConsumptionRate = personConfig.getOxygenConsumptionRate();
-    	double oxygenCapacity = vehicleConfig.getCargoCapacity(vehicleType, AmountResource.OXYGEN.getName());
+    	double oxygenCapacity = vehicleConfig.getCargoCapacity(vehicleType, "oxygen");
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
     	double oxygenRange = distancePerSol * oxygenSols / 3D;
     	if (oxygenRange < range) range = oxygenRange;

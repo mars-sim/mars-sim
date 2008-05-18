@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleTest.java
- * @version 2.81 2007-08-12
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -25,6 +25,11 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 public class LoadVehicleTest extends TestCase {
 
+	private static final String OXYGEN = "oxygen";
+	private static final String WATER = "water";
+	private static final String METHANE = "methane";
+	private static final String FOOD = "food";
+	
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
@@ -37,22 +42,27 @@ public class LoadVehicleTest extends TestCase {
 		
 		Inventory vehicleInv = vehicle.getInventory();
 		
-		vehicleInv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		vehicleInv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		vehicleInv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		vehicleInv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
+		vehicleInv.addAmountResourceTypeCapacity(oxygen, 100D);
+		vehicleInv.addAmountResourceTypeCapacity(food, 100D);
+		vehicleInv.addAmountResourceTypeCapacity(water, 100D);
+		vehicleInv.addAmountResourceTypeCapacity(methane, 100D);
 		vehicleInv.addGeneralCapacity(100D);
 		
 		Inventory settlementInv = settlement.getInventory();
 		
-		settlementInv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		settlementInv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
-		settlementInv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		settlementInv.storeAmountResource(AmountResource.FOOD, 100D, true);
-		settlementInv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		settlementInv.storeAmountResource(AmountResource.WATER, 100D, true);
-		settlementInv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		settlementInv.storeAmountResource(AmountResource.METHANE, 100D, true);
+		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);
+		settlementInv.storeAmountResource(oxygen, 100D, true);
+		settlementInv.addAmountResourceTypeCapacity(food, 100D);
+		settlementInv.storeAmountResource(food, 100D, true);
+		settlementInv.addAmountResourceTypeCapacity(water, 100D);
+		settlementInv.storeAmountResource(water, 100D, true);
+		settlementInv.addAmountResourceTypeCapacity(methane, 100D);
+		settlementInv.storeAmountResource(methane, 100D, true);
 		settlementInv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
@@ -60,10 +70,10 @@ public class LoadVehicleTest extends TestCase {
 		}
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
@@ -83,14 +93,19 @@ public class LoadVehicleTest extends TestCase {
 		Inventory inv = settlement.getInventory();
 		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
-		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
+		inv.addAmountResourceTypeCapacity(oxygen, 100D);
+		inv.storeAmountResource(oxygen, 100D, true);
+		inv.addAmountResourceTypeCapacity(food, 100D);
+		inv.storeAmountResource(food, 100D, true);
+		inv.addAmountResourceTypeCapacity(water, 100D);
+		inv.storeAmountResource(water, 100D, true);
+		inv.addAmountResourceTypeCapacity(methane, 100D);
+		inv.storeAmountResource(methane, 100D, true);
 		
 		inv.storeItemResources(hammer, 5);
 		
@@ -99,10 +114,10 @@ public class LoadVehicleTest extends TestCase {
 		}
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
@@ -125,11 +140,16 @@ public class LoadVehicleTest extends TestCase {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
@@ -146,24 +166,29 @@ public class LoadVehicleTest extends TestCase {
 		Inventory inv = settlement.getInventory();
 		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
-		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
+		inv.addAmountResourceTypeCapacity(oxygen, 100D);
+		inv.storeAmountResource(oxygen, 100D, true);
+		inv.addAmountResourceTypeCapacity(food, 100D);
+		inv.storeAmountResource(food, 100D, true);
+		inv.addAmountResourceTypeCapacity(water, 100D);
+		inv.storeAmountResource(water, 100D, true);
+		inv.addAmountResourceTypeCapacity(methane, 100D);
+		inv.storeAmountResource(methane, 100D, true);
 		
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
@@ -180,22 +205,27 @@ public class LoadVehicleTest extends TestCase {
 		Inventory inv = settlement.getInventory();
 		ItemResource hammer = ItemResource.getTestResourceHammer();
 		
-		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
+		inv.addAmountResourceTypeCapacity(oxygen, 100D);
+		inv.storeAmountResource(oxygen, 100D, true);
+		inv.addAmountResourceTypeCapacity(food, 100D);
+		inv.storeAmountResource(food, 100D, true);
+		inv.addAmountResourceTypeCapacity(water, 100D);
+		inv.storeAmountResource(water, 100D, true);
+		inv.addAmountResourceTypeCapacity(methane, 100D);
+		inv.storeAmountResource(methane, 100D, true);
 		
 		inv.storeItemResources(hammer, 5);
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
@@ -217,14 +247,19 @@ public class LoadVehicleTest extends TestCase {
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 		
-		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
+		inv.addAmountResourceTypeCapacity(oxygen, 100D);
+		inv.storeAmountResource(oxygen, 100D, true);
+		inv.addAmountResourceTypeCapacity(food, 100D);
+		inv.storeAmountResource(food, 100D, true);
+		inv.addAmountResourceTypeCapacity(water, 100D);
+		inv.storeAmountResource(water, 100D, true);
+		inv.addAmountResourceTypeCapacity(methane, 100D);
+		inv.storeAmountResource(methane, 100D, true);
 		inv.storeItemResources(hammer, 5);
 		
 		for (int x = 0; x < 5; x++) {
@@ -232,10 +267,10 @@ public class LoadVehicleTest extends TestCase {
 		}
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
@@ -260,11 +295,16 @@ public class LoadVehicleTest extends TestCase {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
@@ -283,24 +323,29 @@ public class LoadVehicleTest extends TestCase {
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 		
-		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
+		inv.addAmountResourceTypeCapacity(oxygen, 100D);
+		inv.storeAmountResource(oxygen, 100D, true);
+		inv.addAmountResourceTypeCapacity(food, 100D);
+		inv.storeAmountResource(food, 100D, true);
+		inv.addAmountResourceTypeCapacity(water, 100D);
+		inv.storeAmountResource(water, 100D, true);
+		inv.addAmountResourceTypeCapacity(methane, 100D);
+		inv.storeAmountResource(methane, 100D, true);
 		
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
@@ -319,21 +364,26 @@ public class LoadVehicleTest extends TestCase {
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 		
-		inv.addAmountResourceTypeCapacity(AmountResource.OXYGEN, 100D);
-		inv.storeAmountResource(AmountResource.OXYGEN, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.FOOD, 100D);
-		inv.storeAmountResource(AmountResource.FOOD, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.WATER, 100D);
-		inv.storeAmountResource(AmountResource.WATER, 100D, true);
-		inv.addAmountResourceTypeCapacity(AmountResource.METHANE, 100D);
-		inv.storeAmountResource(AmountResource.METHANE, 100D, true);
+		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+		AmountResource food = AmountResource.findAmountResource(FOOD);
+		AmountResource water = AmountResource.findAmountResource(WATER);
+		AmountResource methane = AmountResource.findAmountResource(METHANE);
+		
+		inv.addAmountResourceTypeCapacity(oxygen, 100D);
+		inv.storeAmountResource(oxygen, 100D, true);
+		inv.addAmountResourceTypeCapacity(food, 100D);
+		inv.storeAmountResource(food, 100D, true);
+		inv.addAmountResourceTypeCapacity(water, 100D);
+		inv.storeAmountResource(water, 100D, true);
+		inv.addAmountResourceTypeCapacity(methane, 100D);
+		inv.storeAmountResource(methane, 100D, true);
 		inv.storeItemResources(hammer, 5);
 		
 		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(AmountResource.OXYGEN, new Double(100D));
-		resourcesMap.put(AmountResource.FOOD, new Double(100D));
-		resourcesMap.put(AmountResource.WATER, new Double(100D));
-		resourcesMap.put(AmountResource.METHANE, new Double(100D));
+		resourcesMap.put(oxygen, new Double(100D));
+		resourcesMap.put(food, new Double(100D));
+		resourcesMap.put(water, new Double(100D));
+		resourcesMap.put(methane, new Double(100D));
 		resourcesMap.put(hammer, new Integer(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();

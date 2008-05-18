@@ -39,13 +39,6 @@ public class TestItemResource extends TestCase {
 		catch (Exception e) {}
 	}
 	
-	public void testGetItemResourcesSize() {
-		ItemResource.getTestResourceHammer();
-		ItemResource.getTestResourcePipeWrench();
-		ItemResource.getTestResourceSocketWrench();
-		assertEquals("Correct number of item resource types.", 3, ItemResource.getItemResources().size());
-	}
-	
 	public void testGetItemResourcesContents() {
 		ItemResource hammer = ItemResource.getTestResourceHammer();
 		ItemResource socketWrench = ItemResource.getTestResourceSocketWrench();

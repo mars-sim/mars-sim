@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 2.84 2008-04-14
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -435,17 +435,20 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     	
     	// Determine life support supplies needed for trip.
     	try {
+    		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum;
     		if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    		result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
+    		result.put(oxygen, new Double(oxygenAmount));
     		
+    		AmountResource water = AmountResource.findAmountResource("water");
     		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum;
     		if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    		result.put(AmountResource.WATER, new Double(waterAmount));
+    		result.put(water, new Double(waterAmount));
     		
+    		AmountResource food = AmountResource.findAmountResource("food");
     		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum;
     		if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    		result.put(AmountResource.FOOD, new Double(foodAmount));
+    		result.put(food, new Double(foodAmount));
     	}
     	catch (Exception e) {
     		throw new MissionException(getPhase(), e);
@@ -734,11 +737,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		Inventory inv = getVehicle().getInventory();
 		try {
 			result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(getVehicle().getFuelType()));
-			result.put(AmountResource.OXYGEN, inv.getAmountResourceCapacity(AmountResource.OXYGEN));
-			result.put(AmountResource.WATER, inv.getAmountResourceCapacity(AmountResource.WATER));
-			result.put(AmountResource.FOOD, inv.getAmountResourceCapacity(AmountResource.FOOD));
+			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+			result.put(oxygen, inv.getAmountResourceCapacity(oxygen));
+			AmountResource water = AmountResource.findAmountResource("water");
+			result.put(water, inv.getAmountResourceCapacity(water));
+			AmountResource food = AmountResource.findAmountResource("food");
+			result.put(food, inv.getAmountResourceCapacity(food));
 		}
-		catch (InventoryException e) {
+		catch (Exception e) {
 			throw new MissionException(getPhase(), e);
 		}
 		

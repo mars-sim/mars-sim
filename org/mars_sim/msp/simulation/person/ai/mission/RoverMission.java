@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.84 2008-04-14
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -515,15 +515,18 @@ public abstract class RoverMission extends VehicleMission {
     	try {
     		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
     		if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    		result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
+    		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+    		result.put(oxygen, new Double(oxygenAmount));
     		
     		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
     		if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    		result.put(AmountResource.WATER, new Double(waterAmount));
+    		AmountResource water = AmountResource.findAmountResource("water");
+    		result.put(water, new Double(waterAmount));
     		
     		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
     		if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
-    		result.put(AmountResource.FOOD, new Double(foodAmount));
+    		AmountResource food = AmountResource.findAmountResource("food");
+    		result.put(food, new Double(foodAmount));
     	}
     	catch (Exception e) {
     		throw new MissionException(getPhase(), e);

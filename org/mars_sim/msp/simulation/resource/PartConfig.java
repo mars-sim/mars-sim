@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PartConfig.java
- * @version 2.82 2007-10-13
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.resource;
@@ -29,7 +29,8 @@ public final class PartConfig implements Serializable {
 	
 	/**
 	 * Constructor
-	 * Private constructor for utility class.
+	 * @param itemResourceDoc the item resource XML document.
+	 * @throws Exception if error reading XML document
 	 */
 	public PartConfig(Document itemResourceDoc) throws Exception {
 		loadItemResources(itemResourceDoc);

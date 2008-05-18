@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.84 2008-04-14
+ * @version 2.84 2008-05-17
  * @author Scott Davis
  */
 
@@ -594,20 +594,23 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     	
     	// Determine life support supplies needed for trip.
     	try {
+    		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-    		if (result.containsKey(AmountResource.OXYGEN)) 
-    			oxygenAmount += ((Double) result.get(AmountResource.OXYGEN)).doubleValue();
-    		result.put(AmountResource.OXYGEN, new Double(oxygenAmount));
+    		if (result.containsKey(oxygen)) 
+    			oxygenAmount += ((Double) result.get(oxygen)).doubleValue();
+    		result.put(oxygen, new Double(oxygenAmount));
     		
+    		AmountResource water = AmountResource.findAmountResource("water");
     		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-    		if (result.containsKey(AmountResource.WATER)) 
-    			waterAmount += ((Double) result.get(AmountResource.WATER)).doubleValue();
-    		result.put(AmountResource.WATER, new Double(waterAmount));
+    		if (result.containsKey(water)) 
+    			waterAmount += ((Double) result.get(water)).doubleValue();
+    		result.put(water, new Double(waterAmount));
     		
+    		AmountResource food = AmountResource.findAmountResource("food");
     		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-    		if (result.containsKey(AmountResource.FOOD)) 
-    			foodAmount += ((Double) result.get(AmountResource.FOOD)).doubleValue();
-    		result.put(AmountResource.FOOD, new Double(foodAmount));
+    		if (result.containsKey(food)) 
+    			foodAmount += ((Double) result.get(food)).doubleValue();
+    		result.put(food, new Double(foodAmount));
     	}
     	catch (Exception e) {
     		throw new MissionException(getPhase(), e);
@@ -701,20 +704,23 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		
     	try {
     		// Check food capacity as time limit.
+    		AmountResource food = AmountResource.findAmountResource("food");
     		double foodConsumptionRate = config.getFoodConsumptionRate();
-    		double foodCapacity = vInv.getAmountResourceCapacity(AmountResource.FOOD);
+    		double foodCapacity = vInv.getAmountResourceCapacity(food);
     		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
     		if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
     		
     		// Check water capacity as time limit.
+    		AmountResource water = AmountResource.findAmountResource("water");
     		double waterConsumptionRate = config.getWaterConsumptionRate();
-    		double waterCapacity = vInv.getAmountResourceCapacity(AmountResource.WATER);
+    		double waterCapacity = vInv.getAmountResourceCapacity(water);
     		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
     		if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
     		
     		// Check oxygen capacity as time limit.
+    		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     		double oxygenConsumptionRate = config.getOxygenConsumptionRate();
-    		double oxygenCapacity = vInv.getAmountResourceCapacity(AmountResource.OXYGEN);
+    		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
     		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
     		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
     	}
