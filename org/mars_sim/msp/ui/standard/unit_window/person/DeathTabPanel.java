@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathTabPanel.java
- * @version 2.75 2003-09-10
+ * @version 2.84 2008-05-24
  * @author Scott Davis
  */
 
@@ -78,7 +78,7 @@ public class DeathTabPanel extends TabPanel implements ActionListener {
         JButton centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
-        centerMapButton.setToolTipText("Locate in Mars navigator");
+        centerMapButton.setToolTipText("Locate in Mars Navigator");
         locationLabelPanel.add(centerMapButton);
         
         // Prepare location label

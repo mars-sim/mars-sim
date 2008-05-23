@@ -50,7 +50,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
         centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
-        centerMapButton.setToolTipText("Locate in Mars navigator");
+        centerMapButton.setToolTipText("Locate in Mars Navigator");
         locationLabelPanel.add(centerMapButton);
         
         // Create location label
