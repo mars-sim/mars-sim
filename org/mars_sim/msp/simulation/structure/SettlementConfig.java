@@ -1,13 +1,17 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 2.81 2007-08-27
+ * @version 2.84 2008-05-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;
 
 import java.io.Serializable;
 import java.util.*;
+
+import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.resource.Part;
+import org.mars_sim.msp.simulation.resource.PartPackageConfig;
 import org.w3c.dom.*;
 
 /**
@@ -40,6 +44,7 @@ public class SettlementConfig implements Serializable {
 	private static final String RESOURCE = "resource";
 	private static final String AMOUNT = "amount";
 	private static final String PART = "part";
+	private static final String PART_PACKAGE = "part-package";
 	private static final String RESUPPLY_LIST = "resupply-list";
 	
 	// Random value indicator.
@@ -180,12 +185,33 @@ public class SettlementConfig implements Serializable {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		
 		Element templateElement = getSettlementTemplateElement(templateName);
-		NodeList resourceNodes = templateElement.getElementsByTagName(PART);
-		for (int x=0; x < resourceNodes.getLength(); x++) {
-			Element resourceElement = (Element) resourceNodes.item(x);
-			String type = resourceElement.getAttribute(TYPE);
-			Integer number = new Integer(resourceElement.getAttribute(NUMBER));
+		NodeList partNodes = templateElement.getElementsByTagName(PART);
+		for (int x=0; x < partNodes.getLength(); x++) {
+			Element partElement = (Element) partNodes.item(x);
+			String type = partElement.getAttribute(TYPE);
+			int number = Integer.parseInt(partElement.getAttribute(NUMBER));
 			result.put(type, number);
+		}
+		
+		// Get parts from part packages.
+		PartPackageConfig partPackageConfig = SimulationConfig.instance().getPartPackageConfig();
+		NodeList partPackageNodes = templateElement.getElementsByTagName(PART_PACKAGE);
+		for (int x = 0; x < partPackageNodes.getLength(); x++) {
+			Element partPackageElement = (Element) partPackageNodes.item(x);
+			String packageName = partPackageElement.getAttribute(NAME);
+			int packageNumber = Integer.parseInt(partPackageElement.getAttribute(NUMBER));
+			if (packageNumber > 0) {
+				for (int y = 0; y < packageNumber; y++) {
+					Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
+					Iterator<Part> i = partPackage.keySet().iterator();
+					while (i.hasNext()) {
+						Part part = i.next();
+						int partNumber = partPackage.get(part);
+						if (result.containsKey(part.getName())) partNumber += result.get(part);
+						result.put(part.getName(), partNumber);
+					}
+				}
+			}
 		}
 		
 		return result;
@@ -352,6 +378,27 @@ public class SettlementConfig implements Serializable {
 			String type = partElement.getAttribute(TYPE);
 			Integer number = new Integer(partElement.getAttribute(NUMBER));
 			result.put(type, number);
+		}
+		
+		// Get parts from part packages.
+		PartPackageConfig partPackageConfig = SimulationConfig.instance().getPartPackageConfig();
+		NodeList partPackageNodes = resupplyElement.getElementsByTagName(PART_PACKAGE);
+		for (int x = 0; x < partPackageNodes.getLength(); x++) {
+			Element partPackageElement = (Element) partPackageNodes.item(x);
+			String packageName = partPackageElement.getAttribute(NAME);
+			int packageNumber = Integer.parseInt(partPackageElement.getAttribute(NUMBER));
+			if (packageNumber > 0) {
+				for (int y = 0; y < packageNumber; y++) {
+					Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
+					Iterator<Part> i = partPackage.keySet().iterator();
+					while (i.hasNext()) {
+						Part part = i.next();
+						int partNumber = partPackage.get(part);
+						if (result.containsKey(part.getName())) partNumber += result.get(part);
+						result.put(part.getName(), partNumber);
+					}
+				}
+			}
 		}
 		
 		return result;

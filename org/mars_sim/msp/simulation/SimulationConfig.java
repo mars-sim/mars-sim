@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.84 2008-05-17
+ * @version 2.84 2008-05-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
 import org.mars_sim.msp.simulation.resource.AmountResourceConfig;
 import org.mars_sim.msp.simulation.resource.PartConfig;
+import org.mars_sim.msp.simulation.resource.PartPackageConfig;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
@@ -48,6 +49,7 @@ public class SimulationConfig implements Serializable {
 	private static final String MINERAL_MAP_FILE = "minerals";
 	private static final String BUILDING_FILE = "buildings";
 	private static final String PART_FILE = "parts";
+	private static final String PART_PACKAGE_FILE = "part_packages";
 	private static final String RESOURCE_FILE = "resources";
 	private static final String MANUFACTURE_FILE = "manufacturing";
 	
@@ -65,6 +67,7 @@ public class SimulationConfig implements Serializable {
 	
 	// Subset configuration classes
 	private PartConfig partConfig;
+	private PartPackageConfig partPackageConfig;
 	private AmountResourceConfig resourceConfig;
 	private PersonConfig personConfig;
 	private MedicalConfig medicalConfig;
@@ -89,6 +92,7 @@ public class SimulationConfig implements Serializable {
 			// Load subset configuration classes.
 			resourceConfig = new AmountResourceConfig(parseXMLFile(RESOURCE_FILE));
 			partConfig = new PartConfig(parseXMLFile(PART_FILE));
+			partPackageConfig = new PartPackageConfig(parseXMLFile(PART_PACKAGE_FILE));
 			personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
 			medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
 			landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARK_FILE));
@@ -221,6 +225,14 @@ public class SimulationConfig implements Serializable {
 	 */
 	public PartConfig getPartConfig() {
 		return partConfig;
+	}
+	
+	/**
+	 * Gets the part package configuration.
+	 * @return part package config
+	 */
+	public PartPackageConfig getPartPackageConfig() {
+		return partPackageConfig;
 	}
 	
 	/**
