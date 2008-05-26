@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-05-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;
@@ -36,8 +36,8 @@ public class Resupply implements Serializable {
 	private List<String> newVehicles;
 	private Map<String, Integer> newEquipment;
 	private int newImmigrantNum;
-	private Map<String, Double> newResources;
-	private Map<String, Integer> newParts;
+	private Map<AmountResource, Double> newResources;
+	private Map<Part, Integer> newParts;
 
 	/**
 	 * Constructor
@@ -54,7 +54,7 @@ public class Resupply implements Serializable {
 		isDelivered = false;
 		
 		// Get resupply info from the config file.
-		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
+		ResupplyConfig config = SimulationConfig.instance().getResupplyConfiguration();
 		
 		// Get new building types.
 		newBuildings = config.getResupplyBuildingTypes(resupplyName);
@@ -135,22 +135,20 @@ public class Resupply implements Serializable {
 		}
 		
 		// Deliver resources.
-		Iterator<String> resourcesI = newResources.keySet().iterator();
+		Iterator<AmountResource> resourcesI = newResources.keySet().iterator();
 		while (resourcesI.hasNext()) {
-			String resourceType = resourcesI.next();
-			double amount = newResources.get(resourceType);
-			AmountResource resource = AmountResource.findAmountResource(resourceType);
+			AmountResource resource = resourcesI.next();
+			double amount = newResources.get(resource);
 			double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
 			if (amount > capacity) amount = capacity;
 			inv.storeAmountResource(resource, amount, true);
 		}
 		
 		// Deliver parts.
-		Iterator<String> partsI = newParts.keySet().iterator();
+		Iterator<Part> partsI = newParts.keySet().iterator();
 		while (partsI.hasNext()) {
-			String partType = partsI.next();
-			int number = newParts.get(partType);
-			Part part = (Part) Part.findItemResource(partType);
+			Part part = partsI.next();
+			int number = newParts.get(part);
 			inv.storeItemResources(part, number);
 		}
 		

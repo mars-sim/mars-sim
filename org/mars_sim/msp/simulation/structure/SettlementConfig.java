@@ -1,18 +1,25 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 2.84 2008-05-24
+ * @version 2.84 2008-05-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.PartPackageConfig;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Provides configuration information about settlements.
@@ -40,46 +47,219 @@ public class SettlementConfig implements Serializable {
 	private static final String RESUPPLY = "resupply";
 	private static final String RESUPPLY_MISSION = "resupply-mission";
 	private static final String ARRIVAL_TIME = "arrival-time";
-	private static final String PERSON = "person";
 	private static final String RESOURCE = "resource";
 	private static final String AMOUNT = "amount";
 	private static final String PART = "part";
 	private static final String PART_PACKAGE = "part-package";
-	private static final String RESUPPLY_LIST = "resupply-list";
 	
 	// Random value indicator.
 	public static final String RANDOM = "random";
 	
-	private Document settlementDoc;
+	// Data members
+	private Collection<SettlementTemplate> settlementTemplates;
+	private List<InitialSettlement> initialSettlements;
+	private List<String> settlementNames;
 	
 	/**
 	 * Constructor
-	 * @param settlementDoc DOM document with building configuration
+	 * @param settlementDoc DOM document with settlement configuration.
+	 * @param partPackageConfig the part package configuration.
+	 * @throws Exception if error reading XML document.
 	 */
-	public SettlementConfig(Document settlementDoc) {
-		this.settlementDoc = settlementDoc;	
+	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) 
+			throws Exception {
+		settlementTemplates = new ArrayList<SettlementTemplate>();
+		initialSettlements = new ArrayList<InitialSettlement>();
+		settlementNames = new ArrayList<String>();
+		
+		loadSettlementTemplates(settlementDoc, partPackageConfig);	
+		loadInitialSettlements(settlementDoc);
+		loadSettlementNames(settlementDoc);
 	}
 	
 	/**
-	 * Gets a settlement template element by name.
-	 * @param name the name of the settlement template.
-	 * @return settlement template element
-	 * @throws Exception if settlement template does not exist for the name.
+	 * Load the settlement templates from the XML document.
+	 * @param settlementDoc DOM document with settlement configuration.
+	 * @param partPackageConfig the part package configuration.
+	 * @throws Exception if error reading XML document.
 	 */
-	private Element getSettlementTemplateElement(String name) throws Exception {
-		Element result = null;
+	private void loadSettlementTemplates(Document settlementDoc, PartPackageConfig partPackageConfig) 
+			throws Exception {
 		
 		Element root = settlementDoc.getDocumentElement();
 		Element templateList = (Element) root.getElementsByTagName(SETTLEMENT_TEMPLATE_LIST).item(0);
 		NodeList templateNodes = templateList.getElementsByTagName(TEMPLATE);
 		for (int x=0; x < templateNodes.getLength(); x++) {
+			SettlementTemplate template = new SettlementTemplate();
+			settlementTemplates.add(template);
+			
 			Element templateElement = (Element) templateNodes.item(x);
-			String templateName = templateElement.getAttribute(NAME);
-			if (templateName.equals(name)) result = templateElement;
+			template.name = templateElement.getAttribute(NAME);
+			
+			// Load buildings
+			NodeList buildingNodes = templateElement.getElementsByTagName(BUILDING);
+			for (int y = 0; y < buildingNodes.getLength(); y++) {
+				Element buildingElement = (Element) buildingNodes.item(y);
+				String buildingType = buildingElement.getAttribute(TYPE);
+				int buildingNumber = Integer.parseInt(buildingElement.getAttribute(NUMBER));
+				if (template.buildings.containsKey(buildingType)) 
+					buildingNumber += template.buildings.get(buildingType);
+				template.buildings.put(buildingType, buildingNumber);
+			}
+			
+			// Load vehicles
+			NodeList vehicleNodes = templateElement.getElementsByTagName(VEHICLE);
+			for (int y = 0; y < vehicleNodes.getLength(); y++) {
+				Element vehicleElement = (Element) vehicleNodes.item(y);
+				String vehicleType = vehicleElement.getAttribute(TYPE);
+				int vehicleNumber = Integer.parseInt(vehicleElement.getAttribute(NUMBER));
+				if (template.vehicles.containsKey(vehicleType)) 
+					vehicleNumber += template.vehicles.get(vehicleType);
+				template.vehicles.put(vehicleType, vehicleNumber);
+			}
+			
+			// Load equipment
+			NodeList equipmentNodes = templateElement.getElementsByTagName(EQUIPMENT);
+			for (int y = 0; y < equipmentNodes.getLength(); y++) {
+				Element equipmentElement = (Element) equipmentNodes.item(y);
+				String equipmentType = equipmentElement.getAttribute(TYPE);
+				int equipmentNumber = Integer.parseInt(equipmentElement.getAttribute(NUMBER));
+				if (template.equipment.containsKey(equipmentType)) 
+					equipmentNumber += template.equipment.get(equipmentType);
+				template.equipment.put(equipmentType, equipmentNumber);
+			}
+			
+			// Load resources
+			NodeList resourceNodes = templateElement.getElementsByTagName(RESOURCE);
+			for (int y = 0; y < resourceNodes.getLength(); y++) {
+				Element resourceElement = (Element) resourceNodes.item(y);
+				String resourceType = resourceElement.getAttribute(TYPE);
+				AmountResource resource = AmountResource.findAmountResource(resourceType);
+				double resourceAmount = Double.parseDouble(resourceElement.getAttribute(AMOUNT));
+				if (template.resources.containsKey(resource)) 
+					resourceAmount += template.resources.get(resource);
+				template.resources.put(resource, resourceAmount);
+			}
+			
+			// Load parts
+			NodeList partNodes = templateElement.getElementsByTagName(PART);
+			for (int y = 0; y < partNodes.getLength(); y++) {
+				Element partElement = (Element) partNodes.item(y);
+				String partType = partElement.getAttribute(TYPE);
+				Part part = (Part) Part.findItemResource(partType);
+				int partNumber = Integer.parseInt(partElement.getAttribute(NUMBER));
+				if (template.parts.containsKey(part)) partNumber += template.parts.get(part);
+				template.parts.put(part, partNumber);
+			}
+			
+			// Load part packages
+			NodeList partPackageNodes = templateElement.getElementsByTagName(PART_PACKAGE);
+			for (int y = 0; y < partPackageNodes.getLength(); y++) {
+				Element partPackageElement = (Element) partPackageNodes.item(y);
+				String packageName = partPackageElement.getAttribute(NAME);
+				int packageNumber = Integer.parseInt(partPackageElement.getAttribute(NUMBER));
+				if (packageNumber > 0) {
+					for (int z = 0; z < packageNumber; z++) {
+						Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
+						Iterator<Part> i = partPackage.keySet().iterator();
+						while (i.hasNext()) {
+							Part part = i.next();
+							int partNumber = partPackage.get(part);
+							if (template.parts.containsKey(part)) 
+								partNumber += template.parts.get(part);
+							template.parts.put(part, partNumber);
+						}
+					}
+				}
+			}
+			
+			// Load resupplies
+			Element resupplyList = (Element) templateElement.getElementsByTagName(RESUPPLY).item(0);
+			if (resupplyList != null) {
+				NodeList resupplyNodes = resupplyList.getElementsByTagName(RESUPPLY_MISSION);
+				for (int y = 0; y < resupplyNodes.getLength(); y++) {
+					Element resupplyMissionElement = (Element) resupplyNodes.item(y);
+					ResupplyMission resupplyMission = new ResupplyMission();
+					resupplyMission.name = resupplyMissionElement.getAttribute(NAME);
+					resupplyMission.arrivalTime = 
+						Double.parseDouble(resupplyMissionElement.getAttribute(ARRIVAL_TIME));
+					template.resupplies.add(resupplyMission);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Load initial settlements.
+	 * @param settlementDoc DOM document with settlement configuration.
+	 * @throws Exception if XML error.
+	 */
+	private void loadInitialSettlements(Document settlementDoc) throws Exception {
+		Element root = settlementDoc.getDocumentElement();
+		Element initialSettlementList = (Element) root.getElementsByTagName(INITIAL_SETTLEMENT_LIST).item(0);
+		NodeList settlementNodes = initialSettlementList.getElementsByTagName(SETTLEMENT);
+		for (int x=0; x < settlementNodes.getLength(); x++) {
+			Element settlementElement = (Element) settlementNodes.item(x);
+			InitialSettlement initialSettlement = new InitialSettlement();
+			
+			String settlementName = settlementElement.getAttribute(NAME);
+			if (settlementName.equals(RANDOM)) initialSettlement.randomName = true;
+			else initialSettlement.name = settlementName;
+			
+			initialSettlement.template = settlementElement.getAttribute(TEMPLATE);
+			
+			NodeList locationNodes = settlementElement.getElementsByTagName(LOCATION);
+			if (locationNodes.getLength() > 0) {
+				Element locationElement = (Element) locationNodes.item(0);
+				
+				String longitudeString = locationElement.getAttribute(LONGITUDE);
+				if (longitudeString.equals(RANDOM)) initialSettlement.randomLongitude = true;
+				else initialSettlement.longitude = longitudeString;
+				
+				String latitudeString = locationElement.getAttribute(LATITUDE);
+				if (latitudeString.equals(RANDOM)) initialSettlement.randomLatitude = true;
+				else initialSettlement.latitude = latitudeString;
+			}
+			else {
+				initialSettlement.randomLongitude = true;
+				initialSettlement.randomLatitude = true;
+			}
+			
+			initialSettlements.add(initialSettlement);
+		}
+	}
+	
+	/**
+	 * Load settlement names.
+	 * @param settlementDoc DOM document with settlement configuration.
+	 * @throws Exception if XML error.
+	 */
+	private void loadSettlementNames(Document settlementDoc) throws Exception {
+		Element root = settlementDoc.getDocumentElement();
+		Element settlementNameList = (Element) root.getElementsByTagName(SETTLEMENT_NAME_LIST).item(0);
+		NodeList settlementNameNodes = settlementNameList.getElementsByTagName(SETTLEMENT_NAME);
+		for (int x=0; x < settlementNameNodes.getLength(); x++) {
+			Element settlementNameElement = (Element) settlementNameNodes.item(x);
+			settlementNames.add(settlementNameElement.getAttribute(VALUE));
+		}
+	}
+	
+	/**
+	 * Gets the settlement template that matches a template name.
+	 * @param templateName the template name.
+	 * @return settlement template
+	 */
+	private SettlementTemplate getSettlementTemplate(String templateName) {
+		SettlementTemplate result = null;
+		
+		Iterator<SettlementTemplate> i = settlementTemplates.iterator();
+		while (i.hasNext()) {
+			SettlementTemplate template = i.next();
+			if (template.name.equals(templateName)) result = template; 
 		}
 		
-		if (result == null) throw new Exception("Template name: " + name + 
-			" could not be found in settlements.xml.");
+		if (result == null) throw new IllegalArgumentException("templateName: " 
+				+ templateName + " not found.");
 		
 		return result;
 	}
@@ -89,21 +269,16 @@ public class SettlementConfig implements Serializable {
 	 * If there are multiple buildings of the same type, they are separately listed.
 	 * @param templateName the name of the settlement template.
 	 * @return list of building types as strings.
-	 * @throws Exception if there isn't a settlement template with this name or
-	 * if there is an XML parsing error.
 	 */
-	public List<String> getTemplateBuildingTypes(String templateName) throws Exception {
+	public List<String> getTemplateBuildingTypes(String templateName) {
+		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
 		List<String> result = new ArrayList<String>();
-		
-		Element templateElement = getSettlementTemplateElement(templateName);
-		NodeList buildingNodes = templateElement.getElementsByTagName(BUILDING);
-		for (int x=0; x < buildingNodes.getLength(); x++) {
-			Element buildingElement = (Element) buildingNodes.item(x);
-			String type = buildingElement.getAttribute(TYPE);
-			int number = Integer.parseInt(buildingElement.getAttribute(NUMBER));
-			for (int y=0; y < number; y++) result.add(type); 
+		Iterator<String> j = foundTemplate.buildings.keySet().iterator();
+		while (j.hasNext()) {
+			String buildingType = j.next();
+			int buildingNumber = foundTemplate.buildings.get(buildingType);
+			for (int x = 0; x < buildingNumber; x++) result.add(buildingType);
 		}
-		
 		return result;
 	}
 	
@@ -112,126 +287,57 @@ public class SettlementConfig implements Serializable {
 	 * If there are multiple vehicles of the same type, they are separately listed.
 	 * @param templateName the name of the settlement template.
 	 * @return list of vehicle types as strings.
-	 * @throws Exception if there isn't a settlement template with this name or
-	 * if there is an XML parsing error.
 	 */
-	public List<String> getTemplateVehicleTypes(String templateName) throws Exception {
+	public List<String> getTemplateVehicleTypes(String templateName) {
+		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
 		List<String> result = new ArrayList<String>();
-		
-		Element templateElement = getSettlementTemplateElement(templateName);
-		NodeList vehicleNodes = templateElement.getElementsByTagName(VEHICLE);
-		for (int x=0; x < vehicleNodes.getLength(); x++) {
-			Element vehicleElement = (Element) vehicleNodes.item(x);
-			String type = vehicleElement.getAttribute(TYPE);
-			int number = Integer.parseInt(vehicleElement.getAttribute(NUMBER));
-			for (int y=0; y < number; y++) result.add(type); 
+		Iterator<String> j = foundTemplate.vehicles.keySet().iterator();
+		while (j.hasNext()) {
+			String vehicleType = j.next();
+			int vehicleNumber = foundTemplate.vehicles.get(vehicleType);
+			for (int x = 0; x < vehicleNumber; x++) result.add(vehicleType);
 		}
-		
-		return result;
+		return result;	
 	}
 	
 	/**
 	 * Gets the equipment types in a settlement template.
 	 * @param templateName the name of the settlement template.
 	 * @return map of equipment types and number.
-	 * @throws Exception if there isn't a settlement template with this name or
-	 * if there is an XML parsing error.
 	 */
-	public Map<String, Integer> getTemplateEquipment(String templateName) throws Exception {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		
-		Element templateElement = getSettlementTemplateElement(templateName);
-		NodeList equipmentNodes = templateElement.getElementsByTagName(EQUIPMENT);
-		for (int x=0; x < equipmentNodes.getLength(); x++) {
-			Element equipmentElement = (Element) equipmentNodes.item(x);
-			String type = equipmentElement.getAttribute(TYPE);
-			Integer number = new Integer(equipmentElement.getAttribute(NUMBER));
-			result.put(type, number);
-		}
-		
-		return result;
+	public Map<String, Integer> getTemplateEquipment(String templateName) {
+		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
+		return new HashMap<String, Integer>(foundTemplate.equipment);
 	}
 	
 	/**
 	 * Gets the resource types in a settlement template.
 	 * @param templateName the name of the settlement template.
-	 * @return map of resource types and amounts.
-	 * @throws Exception if there isn't a settlement template with this name or
-	 * if there is an XML parsing error.
+	 * @return map of resources and amounts.
 	 */
-	public Map<String, Double> getTemplateResources(String templateName) throws Exception {
-		Map<String, Double> result = new HashMap<String, Double>();
-		
-		Element templateElement = getSettlementTemplateElement(templateName);
-		NodeList resourceNodes = templateElement.getElementsByTagName(RESOURCE);
-		for (int x=0; x < resourceNodes.getLength(); x++) {
-			Element resourceElement = (Element) resourceNodes.item(x);
-			String type = resourceElement.getAttribute(TYPE);
-			Double amount = new Double(resourceElement.getAttribute(AMOUNT));
-			result.put(type, amount);
-		}
-		
-		return result;
+	public Map<AmountResource, Double> getTemplateResources(String templateName) {
+		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
+		return new HashMap<AmountResource, Double>(foundTemplate.resources);
 	}
 	
 	/**
 	 * Gets the part types in a settlement template.
 	 * @param templateName the name of the settlement template.
-	 * @return map of part types and number.
-	 * @throws Exception if there isn't a settlement template with this name or
-	 * if there is an XML parsing error.
+	 * @return map of parts and number.
 	 */
-	public Map<String, Integer> getTemplateParts(String templateName) throws Exception {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		
-		Element templateElement = getSettlementTemplateElement(templateName);
-		NodeList partNodes = templateElement.getElementsByTagName(PART);
-		for (int x=0; x < partNodes.getLength(); x++) {
-			Element partElement = (Element) partNodes.item(x);
-			String type = partElement.getAttribute(TYPE);
-			int number = Integer.parseInt(partElement.getAttribute(NUMBER));
-			result.put(type, number);
-		}
-		
-		// Get parts from part packages.
-		PartPackageConfig partPackageConfig = SimulationConfig.instance().getPartPackageConfig();
-		NodeList partPackageNodes = templateElement.getElementsByTagName(PART_PACKAGE);
-		for (int x = 0; x < partPackageNodes.getLength(); x++) {
-			Element partPackageElement = (Element) partPackageNodes.item(x);
-			String packageName = partPackageElement.getAttribute(NAME);
-			int packageNumber = Integer.parseInt(partPackageElement.getAttribute(NUMBER));
-			if (packageNumber > 0) {
-				for (int y = 0; y < packageNumber; y++) {
-					Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
-					Iterator<Part> i = partPackage.keySet().iterator();
-					while (i.hasNext()) {
-						Part part = i.next();
-						int partNumber = partPackage.get(part);
-						if (result.containsKey(part.getName())) partNumber += result.get(part);
-						result.put(part.getName(), partNumber);
-					}
-				}
-			}
-		}
-		
-		return result;
+	public Map<Part, Integer> getTemplateParts(String templateName) {
+		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
+		return new HashMap<Part, Integer>(foundTemplate.parts);
 	}
 	
 	/**
 	 * Gets the number of resupplies for a settlement template.
 	 * @param templateName the name of the settlement template.
 	 * @return number of resupplies
-	 * @throws Exception if XML parsing error.
 	 */
-	public int getNumberOfTemplateResupplies(String templateName) throws Exception {
-		int result = 0;
-		Element templateElement = getSettlementTemplateElement(templateName);
-		Element resupplyList = (Element) templateElement.getElementsByTagName(RESUPPLY).item(0);
-		if (resupplyList != null) {
-			NodeList resupplyNodes = resupplyList.getElementsByTagName(RESUPPLY_MISSION);
-			result = resupplyNodes.getLength();
-		}
-		return result;
+	public int getNumberOfTemplateResupplies(String templateName) {
+		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
+		return foundTemplate.resupplies.size();
 	}
 	
 	/**
@@ -239,13 +345,12 @@ public class SettlementConfig implements Serializable {
 	 * @param templateName the name of the settlement template.
 	 * @param index the index of the resupply mission.
 	 * @return name of the resupply mission.
-	 * @throws Exception if XML parsing error.
 	 */
-	public String getTemplateResupplyName(String templateName, int index) throws Exception {
-		Element templateElement = getSettlementTemplateElement(templateName);
-		Element resupplyList = (Element) templateElement.getElementsByTagName(RESUPPLY).item(0);
-		Element resupplyElement = (Element) resupplyList.getElementsByTagName(RESUPPLY_MISSION).item(index);
-		return resupplyElement.getAttribute(NAME);
+	public String getTemplateResupplyName(String templateName, int index) {
+		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
+		if ((index >= 0) && (index < foundTemplate.resupplies.size()))
+			return foundTemplate.resupplies.get(index).name;
+		else throw new IllegalArgumentException("index: " + index + " out of bounds.");
 	}
 	
 	/**
@@ -253,188 +358,20 @@ public class SettlementConfig implements Serializable {
 	 * @param templateName the name of the settlement template.
 	 * @param index then index of the resupply mission.
 	 * @return arrival time for the resupply mission (in Sols from when simulation starts).
-	 * @throws Exception if XML parsing error.
 	 */
-	public double getTemplateResupplyArrivalTime(String templateName, int index) throws Exception {
-		Element templateElement = getSettlementTemplateElement(templateName);
-		Element resupplyList = (Element) templateElement.getElementsByTagName(RESUPPLY).item(0);
-		Element resupplyElement = (Element) resupplyList.getElementsByTagName(RESUPPLY_MISSION).item(index);
-		return Double.parseDouble(resupplyElement.getAttribute(ARRIVAL_TIME));
-	}
-	
-	/**
-	 * Gets a resupply element with a given name.
-	 * @param name the name of the resupply element.
-	 * @return resupply element.
-	 * @throws Exception if resupply element could not be found.
-	 */
-	private Element getResupplyElement(String name) throws Exception {
-		Element result = null;
-		
-		Element root = settlementDoc.getDocumentElement();
-		Element resupplyList = (Element) root.getElementsByTagName(RESUPPLY_LIST).item(0);
-		NodeList resupplyNodes = resupplyList.getElementsByTagName(RESUPPLY);
-		for (int x=0; x < resupplyNodes.getLength(); x++) {
-			Element resupplyElement = (Element) resupplyNodes.item(x);
-			String resupplyName = resupplyElement.getAttribute(NAME);
-			if (resupplyName.equals(name)) result = resupplyElement;
-		}
-		
-		if (result == null) throw new Exception("Resupply name: " + name + 
-			" could not be found in settlements.xml.");
-		
-		return result;
-	}
-	
-	/**
-	 * Gets a list of building types in the resupply mission.
-	 * @param resupplyName name of the resupply mission.
-	 * @return list of building types as strings.
-	 * @throws Exception if XML parsing exception.
-	 */
-	public List<String> getResupplyBuildingTypes(String resupplyName) throws Exception {
-		List<String> result = new ArrayList<String>();
-		
-		Element resupplyElement = getResupplyElement(resupplyName);
-		NodeList buildingNodes = resupplyElement.getElementsByTagName(BUILDING);
-		for (int x = 0; x < buildingNodes.getLength(); x++) {
-			Element buildingElement = (Element) buildingNodes.item(x);
-			String type = buildingElement.getAttribute(TYPE);
-			int number = Integer.parseInt(buildingElement.getAttribute(NUMBER));
-			for (int y=0; y < number; y++) result.add(type); 
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Gets a list of vehicle types in the resupply mission.
-	 * @param resupplyName name of the resupply mission.
-	 * @return list of vehicle types as strings.
-	 * @throws Exception if XML parsing exception.
-	 */
-	public List<String> getResupplyVehicleTypes(String resupplyName) throws Exception {
-		List<String> result = new ArrayList<String>();
-		
-		Element resupplyElement = getResupplyElement(resupplyName);
-		NodeList vehicleNodes = resupplyElement.getElementsByTagName(VEHICLE);
-		for (int x = 0; x < vehicleNodes.getLength(); x++) {
-			Element vehicleElement = (Element) vehicleNodes.item(x);
-			String type = vehicleElement.getAttribute(TYPE);
-			int number = Integer.parseInt(vehicleElement.getAttribute(NUMBER));
-			for (int y=0; y < number; y++) result.add(type); 
-		}
-		
-		return result;		
-	}
-	
-	/**
-	 * Gets the equipment types in a resupply mission.
-	 * @param resupplyName the name of the resupply mission.
-	 * @return map of equipment types and number.
-	 * @throws Exception if XML parsing error.
-	 */
-	public Map<String, Integer> getResupplyEquipment(String resupplyName) throws Exception {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		
-		Element resupplyElement = getResupplyElement(resupplyName);
-		NodeList equipmentNodes = resupplyElement.getElementsByTagName(EQUIPMENT);
-		for (int x=0; x < equipmentNodes.getLength(); x++) {
-			Element equipmentElement = (Element) equipmentNodes.item(x);
-			String type = equipmentElement.getAttribute(TYPE);
-			Integer number = new Integer(equipmentElement.getAttribute(NUMBER));
-			result.put(type, number);
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Gets the number of immigrants in a resupply mission.
-	 * @param resupplyName name of the resupply mission.
-	 * @return number of immigrants
-	 * @throws Exception if XML parsing exception.
-	 */
-	public int getNumberOfResupplyImmigrants(String resupplyName) throws Exception {
-		Element resupplyElement = getResupplyElement(resupplyName);
-		Element personElement = (Element) resupplyElement.getElementsByTagName(PERSON).item(0);
-		int number = Integer.parseInt(personElement.getAttribute(NUMBER));
-		return number;
-	}
-	
-	/**
-	 * Gets a map of parts and their number in a resupply mission.
-	 * @param resupplyName the name of the resupply mission.
-	 * @return map of part types (String) and their numbers.
-	 * @throws Exception if XML parsing exception.
-	 */
-	public Map<String, Integer> getResupplyParts(String resupplyName) throws Exception {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		
-		Element resupplyElement = getResupplyElement(resupplyName);
-		NodeList partNodes = resupplyElement.getElementsByTagName(PART);
-		for (int x = 0; x < partNodes.getLength(); x++) {
-			Element partElement = (Element) partNodes.item(x);
-			String type = partElement.getAttribute(TYPE);
-			Integer number = new Integer(partElement.getAttribute(NUMBER));
-			result.put(type, number);
-		}
-		
-		// Get parts from part packages.
-		PartPackageConfig partPackageConfig = SimulationConfig.instance().getPartPackageConfig();
-		NodeList partPackageNodes = resupplyElement.getElementsByTagName(PART_PACKAGE);
-		for (int x = 0; x < partPackageNodes.getLength(); x++) {
-			Element partPackageElement = (Element) partPackageNodes.item(x);
-			String packageName = partPackageElement.getAttribute(NAME);
-			int packageNumber = Integer.parseInt(partPackageElement.getAttribute(NUMBER));
-			if (packageNumber > 0) {
-				for (int y = 0; y < packageNumber; y++) {
-					Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
-					Iterator<Part> i = partPackage.keySet().iterator();
-					while (i.hasNext()) {
-						Part part = i.next();
-						int partNumber = partPackage.get(part);
-						if (result.containsKey(part.getName())) partNumber += result.get(part);
-						result.put(part.getName(), partNumber);
-					}
-				}
-			}
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Gets a map of resources and their amounts in a resupply mission.
-	 * @param resupplyName the name of the resupply mission.
-	 * @return map of resource types (String) and their amounts (Double).
-	 * @throws Exception if XML parsing exception
-	 */
-	public Map<String, Double> getResupplyResources(String resupplyName) throws Exception {
-		Map<String, Double> result = new HashMap<String, Double>();
-		
-		Element resupplyElement = getResupplyElement(resupplyName);
-		NodeList resourceNodes = resupplyElement.getElementsByTagName(RESOURCE);
-		for (int x = 0; x < resourceNodes.getLength(); x++) {
-			Element resourceElement = (Element) resourceNodes.item(x);
-			String type = resourceElement.getAttribute(TYPE);
-			Double amount = new Double(resourceElement.getAttribute(AMOUNT));
-			result.put(type, amount);
-		}
-		
-		return result;
+	public double getTemplateResupplyArrivalTime(String templateName, int index) {
+		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
+		if ((index >= 0) && (index < foundTemplate.resupplies.size()))
+			return foundTemplate.resupplies.get(index).arrivalTime;
+		else throw new IllegalArgumentException("index: " + index + " out of bounds.");
 	}
 	
 	/**
 	 * Gets the number of initial settlements.
 	 * @return number of settlements.
-	 * @throws Exception if XML parsing error.
 	 */
-	public int getNumberOfInitialSettlements() throws Exception {
-		Element root = settlementDoc.getDocumentElement();
-		Element initialSettlementList = (Element) root.getElementsByTagName(INITIAL_SETTLEMENT_LIST).item(0);
-		NodeList settlementNodes = initialSettlementList.getElementsByTagName(SETTLEMENT);
-		return settlementNodes.getLength();
+	public int getNumberOfInitialSettlements() {
+		return initialSettlements.size();
 	}
 	
 	/**
@@ -442,28 +379,25 @@ public class SettlementConfig implements Serializable {
 	 * or 'random' if the name is to chosen randomly from the settlement name list.
 	 * @param index the index of the initial settlement.
 	 * @return settlement name
-	 * @throws Exception if index is out of range of the initial settlement list
-	 * or if there is an XML parsing error.
 	 */
-	public String getInitialSettlementName(int index) throws Exception {
-		Element root = settlementDoc.getDocumentElement();
-		Element initialSettlementList = (Element) root.getElementsByTagName(INITIAL_SETTLEMENT_LIST).item(0);
-		Element settlementElement = (Element) initialSettlementList.getElementsByTagName(SETTLEMENT).item(index);
-		return settlementElement.getAttribute(NAME);
+	public String getInitialSettlementName(int index) {
+		if ((index >= 0) && (index < initialSettlements.size())) {
+			InitialSettlement settlement = initialSettlements.get(index);
+			if (settlement.randomName) return RANDOM;
+			else return settlement.name;
+		}
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 	
 	/**
 	 * Gets the template used by an initial settlement.
 	 * @param index the index of the initial settlement.
 	 * @return settlement template name.
-	 * @throws Exception if index is out of range of the initial settlement list
-	 * or if there is an XML parsing error.
 	 */
-	public String getInitialSettlementTemplate(int index) throws Exception {
-		Element root = settlementDoc.getDocumentElement();
-		Element initialSettlementList = (Element) root.getElementsByTagName(INITIAL_SETTLEMENT_LIST).item(0);
-		Element settlementElement = (Element) initialSettlementList.getElementsByTagName(SETTLEMENT).item(index);
-		return settlementElement.getAttribute(TEMPLATE);
+	public String getInitialSettlementTemplate(int index) {
+		if ((index >= 0) && (index < initialSettlements.size()))
+			return initialSettlements.get(index).template;
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 	
 	/**
@@ -471,15 +405,14 @@ public class SettlementConfig implements Serializable {
 	 * or 'random' if the longitude is to be randomly determined.
 	 * @param index the index of the initial settlement.
 	 * @return longitude of the settlement as a string. Example: '0.0 W'
-	 * @throws Exception if index is out of range of the initial settlement list
-	 * or if there is an XML parsing error.
 	 */
-	public String getInitialSettlementLongitude(int index) throws Exception {
-		Element root = settlementDoc.getDocumentElement();
-		Element initialSettlementList = (Element) root.getElementsByTagName(INITIAL_SETTLEMENT_LIST).item(0);
-		Element settlementElement = (Element) initialSettlementList.getElementsByTagName(SETTLEMENT).item(index);
-		Element locationElement = (Element) settlementElement.getElementsByTagName(LOCATION).item(0);
-		return locationElement.getAttribute(LONGITUDE);
+	public String getInitialSettlementLongitude(int index) {
+		if ((index >= 0) && (index < initialSettlements.size())) {
+			InitialSettlement settlement = initialSettlements.get(index);
+			if (settlement.randomLongitude) return RANDOM;
+			else return settlement.longitude;
+		}
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 	
 	/**
@@ -487,32 +420,64 @@ public class SettlementConfig implements Serializable {
 	 * or 'random' if the longitude is to be randomly determined.
 	 * @param index the index of the initial settlement.
 	 * @return latitude of the settlement as a string. Example: '0.0 N'
-	 * @throws Exception if index is out of range of the initial settlement list
-	 * or if there is an XML parsing error.
 	 */
-	public String getInitialSettlementLatitude(int index) throws Exception {
-		Element root = settlementDoc.getDocumentElement();
-		Element initialSettlementList = (Element) root.getElementsByTagName(INITIAL_SETTLEMENT_LIST).item(0);
-		Element settlementElement = (Element) initialSettlementList.getElementsByTagName(SETTLEMENT).item(index);
-		Element locationElement = (Element) settlementElement.getElementsByTagName(LOCATION).item(0);
-		return locationElement.getAttribute(LATITUDE);
+	public String getInitialSettlementLatitude(int index) {
+		if ((index >= 0) && (index < initialSettlements.size())) {
+			InitialSettlement settlement = initialSettlements.get(index);
+			if (settlement.randomLatitude) return RANDOM;
+			else return settlement.latitude;
+		}
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 	
 	/**
 	 * Gets a list of possible settlement names.
 	 * @return list of settlement names as strings
-	 * @throws Exception if XML parsing error.
 	 */
 	public List<String> getSettlementNameList() throws Exception {
-		List<String> result = new ArrayList<String>();
-		Element root = settlementDoc.getDocumentElement();
-		Element settlementNameList = (Element) root.getElementsByTagName(SETTLEMENT_NAME_LIST).item(0);
-		NodeList settlementNameNodes = settlementNameList.getElementsByTagName(SETTLEMENT_NAME);
-		for (int x=0; x < settlementNameNodes.getLength(); x++) {
-			Element settlementNameElement = (Element) settlementNameNodes.item(x);
-			result.add(settlementNameElement.getAttribute(VALUE));
-		}
+		return new ArrayList<String>(settlementNames);
+	}
+	
+	/**
+	 * Private inner class for holding a settlement template.
+	 */
+	private class SettlementTemplate implements Serializable {
+		private String name;
+		private Map<String, Integer> buildings;
+		private Map<String, Integer> vehicles;
+		private Map<String, Integer> equipment;
+		private Map<AmountResource, Double> resources;
+		private Map<Part, Integer> parts;
+		private List<ResupplyMission> resupplies;
 		
-		return result;
+		private SettlementTemplate() {
+			buildings = new HashMap<String, Integer>();
+			vehicles = new HashMap<String, Integer>();
+			equipment = new HashMap<String, Integer>();
+			resources = new HashMap<AmountResource, Double>();
+			parts = new HashMap<Part, Integer>();
+			resupplies = new ArrayList<ResupplyMission>();
+		}
+	}
+	
+	/**
+	 * Private inner class for holding a resupply mission info.
+	 */
+	private class ResupplyMission implements Serializable {
+		private String name;
+		private double arrivalTime;
+	}
+	
+	/**
+	 * Private inner class for holding a initial settlement info.
+	 */
+	private class InitialSettlement implements Serializable {
+		private String name;
+		private boolean randomName = false;
+		private String template;
+		private String longitude;
+		private boolean randomLongitude = false;
+		private String latitude;
+		private boolean randomLatitude = false;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.84 2008-05-24
+ * @version 2.84 2008-05-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -19,6 +19,7 @@ import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
 import org.mars_sim.msp.simulation.resource.AmountResourceConfig;
 import org.mars_sim.msp.simulation.resource.PartConfig;
 import org.mars_sim.msp.simulation.resource.PartPackageConfig;
+import org.mars_sim.msp.simulation.structure.ResupplyConfig;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
@@ -42,6 +43,7 @@ public class SimulationConfig implements Serializable {
 	private static final String PEOPLE_FILE = "people";
 	private static final String VEHICLE_FILE = "vehicles";
 	private static final String SETTLEMENT_FILE = "settlements";
+	private static final String RESUPPLY_FILE = "resupplies";
 	private static final String MEDICAL_FILE = "medical";
 	private static final String MALFUNCTION_FILE = "malfunctions";
 	private static final String CROP_FILE = "crops";
@@ -79,6 +81,7 @@ public class SimulationConfig implements Serializable {
 	private BuildingConfig buildingConfig;
 	private SettlementConfig settlementConfig;
 	private ManufactureConfig manufactureConfig;
+	private ResupplyConfig resupplyConfig;
 
 	/**
 	 * Constructor
@@ -101,7 +104,8 @@ public class SimulationConfig implements Serializable {
 			cropConfig = new CropConfig(parseXMLFile(CROP_FILE));
 			vehicleConfig = new VehicleConfig(parseXMLFile(VEHICLE_FILE));
 			buildingConfig = new BuildingConfig(parseXMLFile(BUILDING_FILE));
-			settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE));
+			resupplyConfig = new ResupplyConfig(parseXMLFile(RESUPPLY_FILE), partPackageConfig);
+			settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE), partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFile(MANUFACTURE_FILE));
 		}
 		catch (Exception e) {
@@ -305,6 +309,14 @@ public class SimulationConfig implements Serializable {
 	 */
 	public BuildingConfig getBuildingConfiguration() {
 		return buildingConfig;
+	}
+	
+	/**
+	 * Gets the resupply configuration.
+	 * @return resupply config
+	 */
+	public ResupplyConfig getResupplyConfiguration() {
+		return resupplyConfig;
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.84 2008-04-08
+ * @version 2.84 2008-05-25
  * @author Scott Davis
  */
 
@@ -326,15 +326,14 @@ public class UnitManager implements Serializable {
 		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
-    	    	Iterator<Settlement> i = getSettlements().iterator();
+    		Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			Map resourceMap = config.getTemplateResources(settlement.getTemplate());
-    			Iterator j = resourceMap.keySet().iterator();
+    			Map<AmountResource, Double> resourceMap = config.getTemplateResources(settlement.getTemplate());
+    			Iterator<AmountResource> j = resourceMap.keySet().iterator();
     			while (j.hasNext()) {
-    				String type = (String) j.next();
-    				double amount = ((Double) resourceMap.get(type)).doubleValue();
-    				AmountResource resource = AmountResource.findAmountResource(type);
+    				AmountResource resource = j.next();
+    				double amount = resourceMap.get(resource);
     				Inventory inv = settlement.getInventory();
     				double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
     				if (amount > capacity) amount = capacity;
@@ -358,12 +357,11 @@ public class UnitManager implements Serializable {
     		Iterator<Settlement>i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			Map<String, Integer> partMap = config.getTemplateParts(settlement.getTemplate());
-    			Iterator<String> j = partMap.keySet().iterator();
+    			Map<Part, Integer> partMap = config.getTemplateParts(settlement.getTemplate());
+    			Iterator<Part> j = partMap.keySet().iterator();
     			while (j.hasNext()) {
-    				String type = (String) j.next();
-    				Integer number = partMap.get(type);
-    				Part part = (Part) Part.findItemResource(type);
+    				Part part = j.next();
+    				Integer number = partMap.get(part);
     				Inventory inv = settlement.getInventory();
     				inv.storeItemResources(part, number);
     			}
