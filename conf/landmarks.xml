@@ -97,4 +97,5 @@
 	<landmark name="Mars 6 Lander" longitude="19.5 W" latitude="23.9 S" />
 	<landmark name="Mars Polar Lander" longitude="164.7 E" latitude="76.7 S" />
 	<landmark name="Beagle 2 Lander" longitude="90.0 E" latitude="10.6 N" />
+	<landmark name="Phoenix Mars Lander" longitude="123.0 W" latitude="68.0 N" />
 </landmark-list>
