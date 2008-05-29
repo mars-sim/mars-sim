@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.80 2006-12-04
+ * @version 2.84 2008-05-29
  * @author Scott Davis
  */
 
@@ -96,6 +96,11 @@ public class Mind implements Serializable {
         if ((mission != null) && mission.isDone()) mission = null;
         boolean activeMission = (mission != null);
         
+        // Check if mission creation at settlement (if any) is overridden.
+        boolean overrideMission = false;
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT))
+        	overrideMission = person.getSettlement().getMissionCreationOverride();
+        
         // Perform a task if the person has one, or determine a new task/mission.
         try {
         	if (taskManager.hasActiveTask()) {
@@ -110,7 +115,9 @@ public class Mind implements Serializable {
             			mission.endMission(e.getMessage());
             		}
             	}
-            	if (!taskManager.hasActiveTask()) getNewAction(true, !activeMission);
+            	
+            	if (!taskManager.hasActiveTask()) 
+            		getNewAction(true, (!activeMission && !overrideMission));
             	if (taskManager.hasActiveTask()) takeAction(time);
         	}
         }

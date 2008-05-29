@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.84 2008-05-17
+ * @version 2.84 2008-05-28
  * @author Scott Davis
  */
 
@@ -61,6 +61,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     protected GoodsManager goodsManager; // The settlement's goods manager.
     protected PowerGrid powerGrid; // The settlement's building power grid.
     private String template; // The settlement template name.
+    private boolean missionCreationOverride; // Override flag for mission creation at settlement.
     
     /**
      * Constructor for subclass extension.
@@ -477,4 +478,20 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     	
     	return result;
     }
+
+    /**
+     * Sets the mission creation override flag.
+     * @param missionCreationOverride override for settlement mission creation.
+     */
+	public void setMissionCreationOverride(boolean missionCreationOverride) {
+		this.missionCreationOverride = missionCreationOverride; 
+	}
+
+	/**
+	 * Gets the mission creation override flag.
+	 * @return override for settlement mission creation.
+	 */
+	public boolean getMissionCreationOverride() {
+		return missionCreationOverride;
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * CrewTabPanel.java
- * @version 2.79 2006-07-01
+ * MissionTabPanel.java
+ * @version 2.84 2008-05-27
  * @author Scott Davis
  */
 
