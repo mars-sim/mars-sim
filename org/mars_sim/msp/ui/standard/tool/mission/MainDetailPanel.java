@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 2.84 2008-04-08
+ * @version 2.84 2008-05-30
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -39,6 +40,7 @@ import org.mars_sim.msp.simulation.UnitListener;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
 import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
@@ -46,6 +48,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
+import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
@@ -68,6 +71,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private JLabel memberNumLabel;
 	private MemberTableModel memberTableModel;
 	private JTable memberTable;
+	private JButton centerMapButton;
 	private JButton vehicleButton;
 	private JLabel vehicleStatusLabel;
 	private JLabel speedLabel;
@@ -173,8 +177,25 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		vehiclePane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehiclePane);
 		
+        // Create center map button
+        centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
+        centerMapButton.setMargin(new Insets(1, 1, 1, 1));
+        centerMapButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (currentMission != null) {
+        			try {
+        				getDesktop().centerMapGlobe(currentMission.getCurrentMissionLocation());
+        			}
+        			catch (MissionException e1) {}
+        		}
+			}
+        });
+        centerMapButton.setToolTipText("Locate in Mars navigator tool");
+        centerMapButton.setEnabled(false);
+        vehiclePane.add(centerMapButton);
+		
 		// Create the vehicle label.
-		JLabel vehicleLabel = new JLabel("Vehicle: ");
+		JLabel vehicleLabel = new JLabel(" Vehicle: ");
 		vehiclePane.add(vehicleLabel);
 		
 		// Create the vehicle panel.
@@ -252,7 +273,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			memberNumLabel.setText("Mission Members: " + memberNum + " (Min: " + minMembers + 
 					" - Max: " + maxMembers + ")");
 			memberTableModel.setMission(mission);
-		
+			centerMapButton.setEnabled(true);
+			
 			// Update mission vehicle info in UI.
 			boolean isVehicle = false;
 			if (mission instanceof VehicleMission) {
@@ -298,6 +320,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			phaseLabel.setText("Phase:");
 			memberNumLabel.setText("Mission Members:   (Min:  - Max: )");
 			memberTableModel.setMission(null);
+			centerMapButton.setEnabled(false);
 			vehicleButton.setVisible(false);
 			vehicleStatusLabel.setText("Vehicle Status:");
 			speedLabel.setText("Vehicle Speed:");
