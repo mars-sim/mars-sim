@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceBuildingPanel.java
- * @version 2.82 2007-11-17
+ * @version 2.84 2008-05-30
  * @author Scott Davis
  */
 
@@ -84,6 +84,9 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         partsLabel = new JLabel(getPartsString(), JLabel.CENTER);
         partsLabel.setPreferredSize(new Dimension(-1, -1));
         add(partsLabel);
+        
+        // Add tooltip.
+        setToolTipText(getToolTipString());
     }
     
     /**
@@ -130,5 +133,19 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
     	else buf.append("none");
     	
     	return buf.toString();
+    }
+    
+    /**
+     * Creates multi-line tool tip text.
+     */
+    private String getToolTipString() {
+    	MalfunctionManager manager = malfunctionable.getMalfunctionManager();
+    	StringBuffer result = new StringBuffer("<html>");
+    	int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
+    	result.append("Last completed maintenance: " + maintSols + " sols<br>");
+    	result.append("Repair " + getPartsString().toLowerCase());
+    	result.append("</html>");
+    	
+    	return result.toString();
     }
 }

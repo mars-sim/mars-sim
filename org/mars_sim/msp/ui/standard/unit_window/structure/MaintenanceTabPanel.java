@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 2.82 2007-11-17
+ * @version 2.84 2008-05-30
  * @author Scott Davis
  */
 
@@ -262,6 +262,9 @@ public class MaintenanceTabPanel extends TabPanel {
 	        partsLabel = new JLabel(getPartsString(manager.getMaintenanceParts()), JLabel.CENTER);
 	        partsLabel.setPreferredSize(new Dimension(-1, -1));
 	        add(partsLabel);
+	        
+	        // Add tooltip.
+	        setToolTipText(getToolTipString());
 		}
 		
 		/**
@@ -284,6 +287,19 @@ public class MaintenanceTabPanel extends TabPanel {
 	        // Update parts label.
 	        partsLabel.setText(getPartsString(manager.getMaintenanceParts()));
 		}
+		
+	    /**
+	     * Creates multi-line tool tip text.
+	     */
+	    private String getToolTipString() {
+	    	StringBuffer result = new StringBuffer("<html>");
+	    	int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
+	    	result.append("Last completed maintenance: " + maintSols + " sols<br>");
+	    	result.append("Repair " + getPartsString(manager.getMaintenanceParts()).toLowerCase());
+	    	result.append("</html>");
+	    	
+	    	return result.toString();
+	    }
 	}
 	
 	/**
@@ -348,6 +364,9 @@ public class MaintenanceTabPanel extends TabPanel {
 	        partsLabel = new JLabel(getPartsString(malfunction.getRepairParts()), JLabel.CENTER);
 	        partsLabel.setPreferredSize(new Dimension(-1, -1));
 	        add(partsLabel);
+	        
+	        // Add tooltip.
+	        setToolTipText(getToolTipString());
 		}
 		
 		/**
@@ -376,5 +395,20 @@ public class MaintenanceTabPanel extends TabPanel {
 	        // Update parts label.
 	        partsLabel.setText(getPartsString(malfunction.getRepairParts()));
 		}
+		
+	    /**
+	     * Creates multi-line tool tip text.
+	     */
+	    private String getToolTipString() {
+	    	StringBuffer result = new StringBuffer("<html>");
+	    	result.append(malfunction.getName() + "<br>");
+	    	result.append("General repair time: " + (int) malfunction.getWorkTime() + " milliols<br>");
+	    	result.append("EVA repair time: " + (int) malfunction.getEVAWorkTime() + " milliols<br>");
+	    	result.append("Emergency repair time: " + (int) malfunction.getEmergencyWorkTime() + " milliols<br>");
+	    	result.append("Repair " + getPartsString(malfunction.getRepairParts()).toLowerCase());
+	    	result.append("</html>");
+	    	
+	    	return result.toString();
+	    }
 	}
 }
