@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.84 2008-05-25
+ * @version 2.84 2008-06-01
  * @author Scott Davis
  */
 
@@ -32,6 +32,7 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;
+import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
@@ -63,6 +64,7 @@ public class UnitManager implements Serializable {
     private List<String> personFemaleNames; // List of possible female person names
     private transient List<UnitManagerListener> listeners; // List of unit manager listeners.
     private Map<String, Integer> equipmentNumberMap; // Map of equipment types and their numbers.
+    private Map<String, Integer> vehicleNumberMap; // Map of vehicle types and their numbers.
 
     /** 
      * Constructor
@@ -73,6 +75,7 @@ public class UnitManager implements Serializable {
         units = new ConcurrentLinkedQueue<Unit>();
         listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
         equipmentNumberMap = new HashMap<String, Integer>();
+        vehicleNumberMap = new HashMap<String, Integer>();
     }
     
     /**
@@ -183,10 +186,19 @@ public class UnitManager implements Serializable {
             unitName = "Settlement";
         }
         else if (unitType.equals(VEHICLE)) {
-            initialNameList = vehicleNames;
-            Iterator<Vehicle> vi = getVehicles().iterator();
-            while (vi.hasNext()) usedNames.add(vi.next().getName());
-            unitName = "Vehicle";
+        	if (baseName != null) {
+        		int number = 1;
+        		if (vehicleNumberMap.containsKey(baseName)) 
+        			number += vehicleNumberMap.get(baseName);
+        		vehicleNumberMap.put(baseName, number);
+        		return baseName + " " + number;
+        	}
+        	else {
+        		initialNameList = vehicleNames;
+        		Iterator<Vehicle> vi = getVehicles().iterator();
+        		while (vi.hasNext()) usedNames.add(vi.next().getName());
+        		unitName = "Vehicle";
+        	}
         }
         else if (unitType.equals(PERSON)) {
         	if (Person.MALE.equals(gender)) initialNameList = personMaleNames;
@@ -199,7 +211,8 @@ public class UnitManager implements Serializable {
         else if (unitType.equals(EQUIPMENT)) {
         	if (baseName != null) {
         		int number = 1;
-        		if (equipmentNumberMap.containsKey(baseName)) number = equipmentNumberMap.get(baseName) + 1;
+        		if (equipmentNumberMap.containsKey(baseName)) 
+        			number += equipmentNumberMap.get(baseName);
         		equipmentNumberMap.put(baseName, number);
         		return baseName + " " + number;
         	}
@@ -276,7 +289,14 @@ public class UnitManager implements Serializable {
     			Iterator j = vehicleTypes.iterator();
     			while (j.hasNext()) {
     				String vehicleType = (String) j.next();
-    				addUnit(new Rover(getNewName(VEHICLE, null, null), vehicleType, settlement));
+    				if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+    					String name = getNewName(VEHICLE, "LUV", null);
+    					addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
+    				}
+    				else {
+    					String name = getNewName(VEHICLE, null, null);
+    					addUnit(new Rover(name, vehicleType, settlement));
+    				}
     			}
     		}
     	}

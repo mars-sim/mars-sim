@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 2.84 2008-05-25
+ * @version 2.84 2008-06-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure;

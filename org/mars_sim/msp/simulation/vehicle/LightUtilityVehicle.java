@@ -20,6 +20,8 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 
 public class LightUtilityVehicle extends GroundVehicle implements Crewable{
     
+	public static final String NAME = "Light Utility Vehicle";
+	
     private int crewCapacity = 0; // The LightUtilityVehicle's capacity for crewmembers.
     private Collection<Part> attachments = null;
     private int slotNumber  = 0;
