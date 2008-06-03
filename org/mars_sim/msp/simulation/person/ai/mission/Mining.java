@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 2.84 2008-05-17
+ * @version 2.84 2008-06-03
  * @author Scott Davis
  */
 
@@ -32,12 +32,16 @@ import org.mars_sim.msp.simulation.person.ai.task.CollectMinedMinerals;
 import org.mars_sim.msp.simulation.person.ai.task.MineSite;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 import org.mars_sim.msp.simulation.time.MarsClock;
+import org.mars_sim.msp.simulation.vehicle.Crewable;
+import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /**
  * Mission for mining mineral concentrations at an explored site.
@@ -57,17 +61,26 @@ public class Mining extends RoverMission {
 	// Number of bags needed for mission.
 	private static final int NUMBER_OF_BAGS = 20;
 	
+	// Base amount (kg) of a type of mineral at a site.
 	private static final double MINERAL_BASE_AMOUNT = 1000D;
 	
+	// Amount of time(millisols) to spend at the mining site.
 	private static final double MINING_SITE_TIME = 3000D;
 	
+	// Minimum amount (kg) of an excavated mineral that can be collected.
 	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
+	
+	// Light utility vehicle attachment parts for mining.
+	private static final String PNEUMATIC_DRILL = "pneumatic drill";
+	private static final String BACKHOE = "backhoe";
+	private static final String BULLDOZER_BLADE = "bulldozer blade";
 	
 	// Data members
 	private ExploredLocation miningSite;
 	private MarsClock miningSiteStartTime;
 	private boolean endMiningSite;
 	private Map<AmountResource, Double> excavatedMinerals;
+	private LightUtilityVehicle luv;
 	
 	/**
 	 * Constructor
@@ -110,6 +123,10 @@ public class Mining extends RoverMission {
         	// Check if vehicle can carry enough supplies for the mission.
         	if (hasVehicle() && !isVehicleLoadable()) 
         		endMission("Vehicle is not loadable. (Mining)");
+        	
+        	// Reserve light utility vehicle.
+        	luv = reserveLightUtilityVehicle();
+        	if (luv == null) endMission("Light utility vehicle not available.");
 		}
 		
 		// Add mining site phase.
@@ -130,7 +147,8 @@ public class Mining extends RoverMission {
 	 * @throws MissionException if error constructing mission.
 	 */
 	public Mining(Collection<Person> members, Settlement startingSettlement, 
-    		ExploredLocation miningSite, Rover rover, String description) throws MissionException {
+    		ExploredLocation miningSite, Rover rover, LightUtilityVehicle luv, 
+    		String description) throws MissionException {
 		
        	// Use RoverMission constructor.
     	super(description, (Person) members.toArray()[0], 1, rover);
@@ -155,6 +173,11 @@ public class Mining extends RoverMission {
     	// Check if vehicle can carry enough supplies for the mission.
     	if (hasVehicle() && !isVehicleLoadable()) 
     		endMission("Vehicle is not loadable. (Mining)");
+    	
+    	// Reserve light utility vehicle.
+    	this.luv = luv;
+    	if (luv == null) endMission("Light utility vehicle not available.");
+    	else luv.setReservedForMission(true);
     	
 		// Add mining site phase.
 		addPhase(MINING_SITE);
@@ -196,9 +219,14 @@ public class Mining extends RoverMission {
 			// Check for embarking missions.
 			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
 	    
-			// TODO: Check for available light utility vehicles.
+			// Check if available light utility vehicles.
+			boolean reservableLUV = isLUVAvailable(settlement);
 			
-			if (reservableRover && minNum && enoughBags && !embarkingMissions) {
+			// Check if LUV attachment parts available.
+			boolean availableAttachmentParts = areAvailableAttachmentParts(settlement);
+			
+			if (reservableRover && minNum && enoughBags && !embarkingMissions && 
+					reservableLUV && availableAttachmentParts) {
 				
 				try {
 					// Get available rover.
@@ -229,6 +257,55 @@ public class Mining extends RoverMission {
 			// Check if min number of EVA suits at settlement.
 			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) 
 				result = 0D;
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Checks if a light utility vehicle (LUV) is available for the mission.
+	 * @param settlement the settlement to check.
+	 * @return true if LUV available.
+	 */
+	private static boolean isLUVAvailable(Settlement settlement) {
+		boolean result = false;
+		
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			
+			if (vehicle instanceof LightUtilityVehicle) {
+				boolean usable = true;
+				if (vehicle.isReserved()) usable = false;
+				if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
+				if (((Crewable) vehicle).getCrewNum() > 0) usable = false;
+				if (usable) result = true;
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Checks if the required attachment parts are available.
+	 * @param settlement the settlement to check.
+	 * @return true if available attachment parts.
+	 */
+	private static boolean areAvailableAttachmentParts(Settlement settlement) {
+		boolean result = true;
+		
+		Inventory inv = settlement.getInventory();
+		
+		try {
+			Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
+			if (!inv.hasItemResource(pneumaticDrill)) result = false;
+			Part backhoe = (Part) Part.findItemResource(BACKHOE);
+			if (!inv.hasItemResource(backhoe)) result = false;
+			Part bulldozerBlade = (Part) Part.findItemResource(BULLDOZER_BLADE);
+			if (!inv.hasItemResource(bulldozerBlade)) result = false;
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Error in getting parts.");
 		}
 		
 		return result;
@@ -265,6 +342,74 @@ public class Mining extends RoverMission {
     	if (MINING_SITE.equals(getPhase())) miningPhase(person);
     }
     
+    @Override
+    protected void performEmbarkFromSettlementPhase(Person person) throws MissionException {
+    	super.performEmbarkFromSettlementPhase(person);
+    	
+    	// Attach light utility vehicle for towing.
+    	if (!isDone() && (getRover().getTowedVehicle() == null)) {
+    		try {
+    			Inventory settlementInv = getStartingSettlement().getInventory();
+    			Inventory luvInv = luv.getInventory();
+    			getRover().setTowedVehicle(luv);
+        		luv.setTowingVehicle(getRover());
+				settlementInv.retrieveUnit(luv);
+				
+				// Load light utility vehicle with attachment parts.
+				Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
+				settlementInv.retrieveItemResources(pneumaticDrill, 1);
+				luvInv.storeItemResources(pneumaticDrill, 1);
+				
+				Part backhoe = (Part) Part.findItemResource(BACKHOE);
+				settlementInv.retrieveItemResources(backhoe, 1);
+				luvInv.storeItemResources(backhoe, 1);
+				
+				Part bulldozerBlade = (Part) Part.findItemResource(BULLDOZER_BLADE);
+				settlementInv.retrieveItemResources(bulldozerBlade, 1);
+				luvInv.storeItemResources(bulldozerBlade, 1);
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "Error loading light utility vehicle and attachment parts.");
+				endMission("Light utility vehicle and attachment parts could not be loaded.");
+			}
+    	}
+    }
+    
+    @Override
+    protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) 
+		throws MissionException {
+
+    	// Unload towed light utility vehicle.
+    	if (!isDone() && (getRover().getTowedVehicle() != null)) {
+    		try {
+    			Inventory settlementInv = getStartingSettlement().getInventory();
+    			Inventory luvInv = luv.getInventory();
+        		getRover().setTowedVehicle(null);
+        		luv.setTowingVehicle(null);
+    			settlementInv.storeUnit(luv);
+    			
+    			// Unload attachment parts.
+    			Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
+				luvInv.retrieveItemResources(pneumaticDrill, 1);
+				settlementInv.storeItemResources(pneumaticDrill, 1);
+				
+				Part backhoe = (Part) Part.findItemResource(BACKHOE);
+				luvInv.retrieveItemResources(backhoe, 1);
+				settlementInv.storeItemResources(backhoe, 1);
+				
+				Part bulldozerBlade = (Part) Part.findItemResource(BULLDOZER_BLADE);
+				luvInv.retrieveItemResources(bulldozerBlade, 1);
+				settlementInv.storeItemResources(bulldozerBlade, 1);
+    		}
+    		catch (Exception e) {
+    			logger.log(Level.SEVERE, "Error unloading light utility vehicle and attachment parts.");
+				endMission("Light utility vehicle and attachment parts could not be unloaded.");
+    		}
+    	}
+
+    	super.performDisembarkToSettlementPhase(person, disembarkSettlement);
+    }
+    
     /**
      * Perform the mining phase.
      * @param person the person performing the mining phase.
@@ -280,7 +425,11 @@ public class Mining extends RoverMission {
     	if (excavatedMinerals == null)
     		excavatedMinerals = new HashMap<AmountResource, Double>(1);
     	
-    	// TODO detach towed light utility vehicle if necessary.
+    	// Detach towed light utility vehicle if necessary.
+    	if (getRover().getTowedVehicle() != null) {
+    		getRover().setTowedVehicle(null);
+    		luv.setTowingVehicle(null);
+    	}
     	
 		// Check if crew has been at site for more than three sols.
 		boolean timeExpired = false;
@@ -364,7 +513,7 @@ public class Mining extends RoverMission {
 						// Otherwise start the mining task if it can be done.
 						else if (MineSite.canMineSite(person, getRover())) {
 							assignTask(person, new MineSite(person, miningSite.getLocation(), 
-									(Rover) getVehicle(), excavatedMinerals));
+									(Rover) getVehicle(), luv, excavatedMinerals));
 						}
 					}
 					catch(Exception e) {
@@ -377,7 +526,9 @@ public class Mining extends RoverMission {
 			// Mark site as mined.
 			miningSite.setMined(true);
 			
-			// TODO attach light utility vehicle for towing.
+			// Attach light utility vehicle for towing.
+	    	getRover().setTowedVehicle(luv);
+	    	luv.setTowingVehicle(getRover());
 		}
     }
     
@@ -695,5 +846,38 @@ public class Mining extends RoverMission {
 		super.endMission(reason);
 		
 		miningSite.setReserved(false);
+		luv.setReservedForMission(false);
+	}
+	
+	/**
+	 * Reserves a light utility vehicle for the mission.
+	 * @return reserved light utility vehicle or null if none.
+	 */
+	private LightUtilityVehicle reserveLightUtilityVehicle() {
+		LightUtilityVehicle result = null;
+		
+		Iterator<Vehicle> i = getStartingSettlement().getParkedVehicles().iterator();
+		while (i.hasNext() && (result == null)) {
+			Vehicle vehicle = i.next();
+			
+			if (vehicle instanceof LightUtilityVehicle) {
+				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
+				if (luvTemp.getStatus().equals(Vehicle.PARKED) && !luvTemp.isReserved() 
+						&& (luvTemp.getCrewNum() == 0)) {
+					result = luvTemp;
+					luvTemp.setReservedForMission(true);
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Gets the mission's light utility vehicle.
+	 * @return light utility vehicle.
+	 */
+	public LightUtilityVehicle getLightUtilityVehicle() {
+		return luv;
 	}
 }

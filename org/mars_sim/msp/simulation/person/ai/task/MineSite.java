@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineSite.java
- * @version 2.84 2008-05-01
+ * @version 2.84 2008-06-03
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
@@ -21,6 +22,7 @@ import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /**
@@ -38,10 +40,14 @@ public class MineSite extends EVAOperation implements Serializable {
 	// Time limit for mining (millisol)
 	private static final double MINING_TIME_LIMIT = 100D;
 	
+	// The base chance of an accident while operating LUV per millisol.
+	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
+	
 	// Data members
 	private Coordinates site;
 	private Rover rover;
-	private boolean drivingLUV;
+	private LightUtilityVehicle luv;
+	private boolean operatingLUV;
 	private Map<AmountResource, Double> excavationPile;
 	private double miningTime;
 	
@@ -50,12 +56,14 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @param person the person performing the task.
 	 * @param site the explored site to mine.
 	 * @param rover the rover used for the EVA operation.
+	 * @param luv the light utility vehicle used for mining.
 	 * @param excavationPile a map representing the mineral resources 
 	 * excavated so far and their amounts (kg).
 	 * @throws Exception if error creating task.
 	 */
 	public MineSite(Person person, Coordinates site, Rover rover, 
-			Map<AmountResource, Double> excavationPile) throws Exception {
+			LightUtilityVehicle luv, Map<AmountResource, Double> excavationPile) 
+			throws Exception {
 		
 		// Use EVAOperation parent constructor.
 		super("Mine Site", person);
@@ -63,9 +71,9 @@ public class MineSite extends EVAOperation implements Serializable {
 		// Initialize data members.
 		this.site = site;
 		this.rover = rover;
+		this.luv = luv;
 		this.excavationPile = excavationPile;
-		
-		// TODO Add light utility vehicle
+		operatingLUV = false;
 		
 		// Add task phase
 		addPhase(MINING);
@@ -149,7 +157,6 @@ public class MineSite extends EVAOperation implements Serializable {
 	private double miningPhase(double time) throws Exception {
 		
 		// Check for an accident during the EVA operation.
-		// TODO add accidents for driving LUV?
 		checkForAccident(time);
 		
 		// Add mining time.
@@ -158,13 +165,23 @@ public class MineSite extends EVAOperation implements Serializable {
 		// Check if there is reason to cut the mining phase short and return
 		// to the rover.
 		if (shouldEndEVAOperation() || (miningTime >= MINING_TIME_LIMIT)) {
-			// TODO End driving light utility vehicle.
-			drivingLUV = false;
+			// End operating light utility vehicle.
+			if (luv.getInventory().containsUnit(person)) { 
+				luv.getInventory().retrieveUnit(person);
+				luv.setOperator(null);
+				operatingLUV = false;
+			}
 			setPhase(EVAOperation.ENTER_AIRLOCK);
 			return time;
 		}
 		
-		// TODO Drive light utility vehicle if no one else driving it.
+		// Operate light utility vehicle if no one else is operating it.
+		if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0)) {
+			luv.getInventory().storeUnit(person);
+			luv.setOperator(person);
+			operatingLUV = true;
+			setDescription("Excavating site with " + luv.getName());
+		}
 		
 		// Excavate minerals.
 		excavateMinerals(time);
@@ -175,6 +192,11 @@ public class MineSite extends EVAOperation implements Serializable {
         return 0D;
 	}
 	
+	/**
+	 * Excavating minerals from the mining site.
+	 * @param time the time to excavate minerals.
+	 * @throws Exception if error excavating minerals.
+	 */
 	private void excavateMinerals(double time) throws Exception {
 		
 		Map<String, Double> minerals = Simulation.instance().getMars().getSurfaceFeatures()
@@ -183,7 +205,9 @@ public class MineSite extends EVAOperation implements Serializable {
 		while (i.hasNext()) {
 			String mineralName = i.next();
 			double amountExcavated = 0D;
-			if (drivingLUV) amountExcavated = LUV_EXCAVATION_RATE * time;
+			if (operatingLUV) {
+				amountExcavated = LUV_EXCAVATION_RATE * time;
+			}
 			else amountExcavated = HAND_EXCAVATION_RATE * time;
 			double mineralConcentration = minerals.get(mineralName);
 			amountExcavated *= mineralConcentration / 100D;
@@ -223,9 +247,11 @@ public class MineSite extends EVAOperation implements Serializable {
 			// If person is driving the light utility vehicle, add experience to driving skill.
 			// 1 base experience point per 10 millisols of mining time spent.
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double drivingExperience = time / 10D;
-			drivingExperience += drivingExperience * experienceAptitudeModifier;
-			manager.addExperience(Skill.DRIVING, drivingExperience);
+			if (operatingLUV) {
+				double drivingExperience = time / 10D;
+				drivingExperience += drivingExperience * experienceAptitudeModifier;
+				manager.addExperience(Skill.DRIVING, drivingExperience);
+			}
 		}
 	}
 
@@ -234,7 +260,7 @@ public class MineSite extends EVAOperation implements Serializable {
 		List<String> results = new ArrayList<String>(3);
 		results.add(Skill.EVA_OPERATIONS);
 		results.add(Skill.AREOLOGY);
-		if (drivingLUV) results.add(Skill.DRIVING);
+		if (operatingLUV) results.add(Skill.DRIVING);
 		return results;
 	}
 
@@ -245,7 +271,7 @@ public class MineSite extends EVAOperation implements Serializable {
 		SkillManager manager = person.getMind().getSkillManager();
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
 		int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
-		if (drivingLUV) {
+		if (operatingLUV) {
 			int drivingSkill = manager.getEffectiveSkillLevel(Skill.DRIVING);
 			result = (int) Math.round((double)(EVAOperationsSkill + areologySkill + drivingSkill) / 3D); 
 		}
@@ -262,4 +288,33 @@ public class MineSite extends EVAOperation implements Serializable {
     	if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterRover(time);
     	else return time;
 	}
+
+	@Override
+	protected void checkForAccident(double time) {
+		super.checkForAccident(time);
+		
+		// Check for light utility vehicle accident if operating one.
+		if (operatingLUV) {
+			double chance = BASE_LUV_ACCIDENT_CHANCE;
+			
+			// Driving skill modification.
+			int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+            if (skill <= 3) chance *= (4 - skill);
+            else chance /= (skill - 2);
+            
+            if (RandomUtil.lessThanRandPercent(chance * time))
+    	    	luv.getMalfunctionManager().accident();
+		}
+    }
+	
+	@Override
+	protected boolean shouldEndEVAOperation() {
+        boolean result = super.shouldEndEVAOperation();
+        
+        // If operating LUV, check if LUV has malfunction.
+        if (operatingLUV && luv.getMalfunctionManager().hasMalfunction())
+        	result = true;
+	
+        return result;
+    }
 }

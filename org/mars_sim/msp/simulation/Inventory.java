@@ -455,7 +455,7 @@ public class Inventory implements Serializable {
     }
     
     /**
-     * Checks if a person has an item resource.
+     * Checks if storage has an item resource.
      * @param resource the resource.
      * @return true if has resource.
      * @throws InventoryException if error checking resource.

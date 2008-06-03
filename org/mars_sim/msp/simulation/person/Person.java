@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-06-03
  * @author Scott Davis
  */
 
@@ -27,8 +27,8 @@ import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
+import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.Medical;
-import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleOperator;
 
@@ -363,8 +363,8 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 			}
 		}
 		else if (getLocationSituation().equals(Person.INVEHICLE)) {
-			Rover rover = (Rover) getVehicle();
-			localGroup = new ConcurrentLinkedQueue<Person>(rover.getCrew());
+			Crewable crewableVehicle = (Crewable) getVehicle();
+			localGroup = new ConcurrentLinkedQueue<Person>(crewableVehicle.getCrew());
 		}
 		
 		if (localGroup.contains(this)) localGroup.remove(this);

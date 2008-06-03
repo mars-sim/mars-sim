@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Medical.java
- * @version 2.84 2008-05-1
+ * @version 2.84 2008-06-02
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.vehicle;
@@ -17,108 +17,114 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
-
-public class LightUtilityVehicle extends GroundVehicle implements Crewable{
+/**
+ * A light utility vehicle that can be used for construction, loading and mining.
+ */
+public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     
+	// Vehicle name.
 	public static final String NAME = "Light Utility Vehicle";
 	
+	// Data members.
     private int crewCapacity = 0; // The LightUtilityVehicle's capacity for crewmembers.
     private Collection<Part> attachments = null;
     private int slotNumber  = 0;
     
     public LightUtilityVehicle(String name, String description, Settlement settlement)
-    throws Exception{
-	super(name,description,settlement);
+    		throws Exception {
+    	// Use GroundVehicle constructor.
+    	super(name, description, settlement);
 	
-	//Get vehicle configuration.
-	VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+    	// Get vehicle configuration.
+    	VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 	
-	//Add scope to malfunction manager.
-	malfunctionManager.addScopeString("LightUtilityVehicle");
-	malfunctionManager.addScopeString("Crewable");
-	malfunctionManager.addScopeString(description);
-	if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
-	if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
+    	// Add scope to malfunction manager.
+    	malfunctionManager.addScopeString("LightUtilityVehicle");
+    	malfunctionManager.addScopeString("Crewable");
+    	malfunctionManager.addScopeString(description);
+    	if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
+    	if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
 	
-	if( config.hasPartAttachments(description)) {
-	    attachments = config.getAttachableParts(description);
-	    slotNumber = config.getPartAttachmentSlotNumber(description);
+    	if (config.hasPartAttachments(description)) {
+    		attachments = config.getAttachableParts(description);
+    		slotNumber = config.getPartAttachmentSlotNumber(description);
+    	}
+	
+    	crewCapacity = config.getCrewSize(description);
+	
+    	Inventory inv = getInventory();
+    	inv.addGeneralCapacity(config.getTotalCapacity(description));
+	
+    	// Set rover terrain modifier
+    	setTerrainHandlingCapability(0D);
 	}
-	
-	crewCapacity = config.getCrewSize(description);
-	
-	Inventory inv = getInventory();
-	inv.addGeneralCapacity(config.getTotalCapacity(description));
-	
-	
-	//Set rover terrain modifier
-	setTerrainHandlingCapability(0D);
-	
-    }
 
-    /* 
-     * 
-     */
     @Override
     public AmountResource getFuelType() {
-	// TODO Auto-generated method stub
-	return null;
+    	return null;
     }
 
-    /* 
-     * 
-     */
     @Override
     public boolean isAppropriateOperator(VehicleOperator operator) {
-	if ((operator instanceof Person) && (getInventory().containsUnit((Unit) operator))) return true;
+    	if ((operator instanceof Person) && (getInventory().containsUnit((Unit) operator))) 
+    		return true;
     	else return false;
     }
 
-    /* 
-     * 
+    /**
+     * Gets a collection of the crewmembers.
+     * @return crewmembers as Collection
      */
     public Collection<Person> getCrew() {
-	  return CollectionUtils.getPerson(getInventory().getContainedUnits());
+    	return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
 
-    /* 
-     * 
+    /**
+     * Gets the number of crewmembers the vehicle can carry.
+     * @return capacity
      */
     public int getCrewCapacity() {
-	return crewCapacity;
+    	return crewCapacity;
     }
 
-    /* 
-     * 
+    /**
+     * Gets the current number of crewmembers.
+     * @return number of crewmembers
      */
     public int getCrewNum() {
-	return getCrew().size();
+    	return getCrew().size();
     }
 
-    /* 
-     * 
+    /**
+     * Checks if person is a crewmember.
+     * @param person the person to check
+     * @return true if person is a crewmember
      */
     public boolean isCrewmember(Person person) {
-	return getInventory().containsUnit(person);
+    	return getInventory().containsUnit(person);
     }
 
-    public Collection<Part> getAttachments() {
+    /**
+     * Gets a collection of parts that can be attached to this vehicle.
+     * @return collection of parts.
+     */
+    public Collection<Part> getPossibleAttachmentParts() {
         return attachments;
     }
 
-    public void setAttachments(Collection<Part> attachments) {
-        this.attachments = attachments;
-    }
-
-    public int getSlotNumber() {
+    /**
+     * Gets the number of part slots in the vehicle.
+     * @return number of part slots.
+     */
+    public int getAtachmentSlotNumber() {
         return slotNumber;
     }
-
-    public void setSlotNumber(int slotNumber) {
-        this.slotNumber = slotNumber;
+    
+    @Override
+    public void timePassing(double time) throws Exception {
+    	super.timePassing(time);
+    	
+    	// Add active time if crewed.
+    	if (getCrewNum() > 0) malfunctionManager.activeTimePassing(time);
     }
-
-    
-    
-
 }

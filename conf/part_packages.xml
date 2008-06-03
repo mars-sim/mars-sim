@@ -60,6 +60,9 @@
 		<part type="rover oxygen tank" number="1" />
 		<part type="rover water tank" number="1" />
 		<part type="electric heating element" number="5" />
+		<part type="pneumatic drill" number="1" />
+		<part type="backhoe" number="1" />
+		<part type="bulldozer blade" number="1" />
 		
 	</part-package>
 	
@@ -113,6 +116,9 @@
 		<part type="rover oxygen tank" number="2" />
 		<part type="rover water tank" number="2" />
 		<part type="electric heating element" number="10" />
+		<part type="pneumatic drill" number="1" />
+		<part type="backhoe" number="1" />
+		<part type="bulldozer blade" number="1" />
 	
 	</part-package>
 	
@@ -166,6 +172,9 @@
 		<part type="rover oxygen tank" number="3" />
 		<part type="rover water tank" number="3" />
 		<part type="electric heating element" number="15" />
+		<part type="pneumatic drill" number="2" />
+		<part type="backhoe" number="2" />
+		<part type="bulldozer blade" number="2" />
 		
 	</part-package>
 	
@@ -219,6 +228,9 @@
 		<part type="rover oxygen tank" number="4" />
 		<part type="rover water tank" number="4" />
 		<part type="electric heating element" number="20" />
+		<part type="pneumatic drill" number="3" />
+		<part type="backhoe" number="3" />
+		<part type="bulldozer blade" number="3" />
 	
 	</part-package>
 	

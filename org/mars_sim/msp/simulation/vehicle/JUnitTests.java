@@ -63,14 +63,14 @@ public class JUnitTests extends TestCase {
 	
 	public void testLightUtilityVehicle() {
 	    try {
-		LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru","Light Utility Vehicle", new MockSettlement());
-		int crewCapacity = vehicle.getCrewCapacity();
-		int slots = vehicle.getSlotNumber();
+	    	LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru", "Light Utility Vehicle", new MockSettlement());
+	    	int crewCapacity = vehicle.getCrewCapacity();
+	    	int slots = vehicle.getAtachmentSlotNumber();
 		
-		assertEquals("Wrong crew capacity", 1, crewCapacity);
-		assertEquals("Wrong slot number", 2, slots);
+	    	assertEquals("Wrong crew capacity", 1, crewCapacity);
+	    	assertEquals("Wrong slot number", 2, slots);
 		
-	    } catch (Exception e) {
+	    	} catch (Exception e) {
 	    }
 	}
 }

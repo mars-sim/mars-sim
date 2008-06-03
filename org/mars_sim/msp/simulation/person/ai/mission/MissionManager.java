@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.84 2008-05-01
+ * @version 2.84 2008-06-03
  * @author Scott Davis
  */
 
@@ -265,6 +265,9 @@ public class MissionManager implements Serializable {
     		Mission mission = i.next();
     		if (!mission.isDone() && (mission instanceof VehicleMission)) {
     			if (((VehicleMission) mission).getVehicle() == vehicle) result = mission;
+    			if (mission instanceof Mining) {
+    				if (((Mining)mission).getLightUtilityVehicle() == vehicle) result = mission;
+    			}
     		}
     	}
     	
