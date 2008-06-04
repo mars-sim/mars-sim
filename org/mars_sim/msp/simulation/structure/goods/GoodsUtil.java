@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsUtil.java
- * @version 2.81 2007-04-16
+ * @version 2.84 2008-06-04
  * @author Scott Davis
  */
 
@@ -125,6 +125,9 @@ public class GoodsUtil {
 		
 		// Populate vehicles.
 		populateVehicles();
+		
+		// Sort goods by name.
+		Collections.sort(goodsList);
 	}
 	
 	/**

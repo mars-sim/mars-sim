@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Good.java
- * @version 2.81 2007-04-26
+ * @version 2.84 2008-06-04
  * @author Scott Davis
  */
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * A meta class describing an economic good in the simulation.
  */
-public class Good implements Serializable{
+public class Good implements Serializable, Comparable<Good> {
 
 	// Good categories.
 	public static final String AMOUNT_RESOURCE = "amount resource";
@@ -148,5 +148,15 @@ public class Good implements Serializable{
 		if (getObject() != null) hashCode *= getObject().hashCode();
 		hashCode *= getCategory().hashCode();
 		return hashCode;
+	}
+	
+	/**
+	 * Compares this object with the specified object for order.
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than, 
+	 * equal to, or greater than the specified object.
+	 */
+	public int compareTo(Good o) {
+		return name.compareTo(o.getName());
 	}
 }
