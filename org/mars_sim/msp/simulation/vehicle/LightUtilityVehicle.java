@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Medical.java
- * @version 2.84 2008-06-02
+ * @version 2.84 2008-06-04
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.vehicle;
@@ -39,7 +39,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     	VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 	
     	// Add scope to malfunction manager.
-    	malfunctionManager.addScopeString("LightUtilityVehicle");
     	malfunctionManager.addScopeString("Crewable");
     	malfunctionManager.addScopeString(description);
     	if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");

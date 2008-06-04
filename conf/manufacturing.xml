@@ -150,7 +150,18 @@
 		</inputs>
 		<outputs>
 			<resource name="carbon" amount="1.0" />
-			<!-- <resource name="hydrogen" amount=".3" /> -->
+			<resource name="hydrogen" amount=".3" />
+		</outputs>
+	</process>
+	
+	<!-- CH4 -> C + 2H2 -->
+	<process name="advanced pyrolyze reaction" tech="2" skill="2" work-time="50" process-time="400">
+		<inputs>
+			<resource name="methane" amount="13.0" />
+		</inputs>
+		<outputs>
+			<resource name="carbon" amount="10.0" />
+			<resource name="hydrogen" amount="3.0" />
 		</outputs>
 	</process>
 	
@@ -1037,6 +1048,7 @@
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
+			<part name="rover wheel" number="4" />
 		</inputs>
 		<outputs>
 			<vehicle name="explorer rover" number="1" />
@@ -1068,6 +1080,7 @@
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
+			<part name="rover wheel" number="4" />
 		</inputs>
 		<outputs>
 			<vehicle name="transport rover" number="1" />
@@ -1099,6 +1112,7 @@
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
+			<part name="rover wheel" number="4" />
 		</inputs>
 		<outputs>
 			<vehicle name="cargo rover" number="1" />
@@ -1326,6 +1340,59 @@
 		</inputs>
 		<outputs>
 			<part name="bulldozer blade" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="small vehicle frame manufacturing" tech="3" skill="3" work-time="250" process-time="250">
+		<inputs>
+			<part name="steel ingot" number="50" />
+		</inputs>
+		<outputs>
+			<part name="small vehicle frame" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- Small wheels are made with steel and steel wire. -->
+	<process name="small wheel manufacturing" tech="2" skill="2" work-time="100" process-time="200">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="steel wire" number="5" />
+		</inputs>
+		<outputs>
+			<part name="small wheel" number="2" />
+		</outputs>
+	</process>
+	
+	<process name="utility vehicle control panel manufacturing" tech="3" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<resource name="polyethylene" amount=".5" />
+			<resource name="polyester resin" amount="3.0" />
+			<resource name="styrene" amount="1.0" />
+			<part name="fiberglass" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="epoxy resin bottle" number="1" />
+		</inputs>
+		<outputs>
+			<part name="utility vehicle control panel" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="light utility vehicle assembly" tech="3" skill="3" work-time="1000" process-time="0">
+		<inputs>
+			<part name="small vehicle frame" number="1" />
+			<part name="large electric motor" number="1" />
+			<part name="rover battery" number="1" />
+			<part name="utility vehicle control panel" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="epoxy resin bottle" number="1" />
+			<part name="lubricant bottle" number="1" />
+			<part name="small wheel" number="4" />
+			<part name="radio antenna" number="1" />
+		</inputs>
+		<outputs>
+			<vehicle name="light utility vehicle" number="1" />
 		</outputs>
 	</process>
 

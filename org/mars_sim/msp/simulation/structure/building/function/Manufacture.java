@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 2.83 2008-01-20
+ * @version 2.84 2008-06-04
  * @author Scott Davis
  */
 
@@ -31,6 +31,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /**
@@ -237,9 +238,14 @@ public class Manufacture extends Function implements Serializable {
 						String vehicleType = item.getName();
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
-							String vehicleName = manager.getNewName(UnitManager.VEHICLE, null, null);
-							Rover rover = new Rover(vehicleName, vehicleType, settlement);
-							manager.addUnit(rover);
+							if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+		    					String name = manager.getNewName(UnitManager.VEHICLE, "LUV", null);
+		    					manager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
+		    				}
+		    				else {
+		    					String name = manager.getNewName(UnitManager.VEHICLE, null, null);
+		    					manager.addUnit(new Rover(name, vehicleType, settlement));
+		    				}
 						}
 					}
 					else throw new BuildingException("Manufacture.addProcess(): output: " + 

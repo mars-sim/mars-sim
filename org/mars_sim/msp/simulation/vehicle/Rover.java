@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 2.84 2008-05-17
+ * @version 2.84 2008-06-04
  * @author Scott Davis
  */
 
@@ -61,7 +61,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString("Rover");
 		malfunctionManager.addScopeString("Crewable");
-		malfunctionManager.addScopeString("LifeSupport");
+		malfunctionManager.addScopeString("Life Support");
 		malfunctionManager.addScopeString(description);
 		if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
 		if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");

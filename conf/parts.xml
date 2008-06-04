@@ -55,7 +55,7 @@
 	
 	<part name="epoxy resin bottle" mass=".2">
 		<maintenance-entity-list>
-			<entity name="rover" probability="50" max-number="6" />
+			<entity name="vehicle" probability="50" max-number="6" />
 			<entity name="farming" probability="80" max-number="12" />
 			<entity name="living accomodations" probability="40" max-number="4" />
 			<entity name="manufacture" probability="80" max-number="6" />
@@ -120,6 +120,7 @@
 	<part name="rover battery" mass="50.0">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
+			<entity name="light utility vehicle" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
@@ -145,14 +146,14 @@
 	
 	<part name="communications circuit board" mass=".5">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="5" max-number="1" />
+			<entity name="rover" probability="5" max-number="1" />
 			<entity name="communication" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
 	<part name="navigation circuit board" mass=".5">
 		<maintenance-entity-list>
-			<entity name="vehicle" probability="5" max-number="1" />
+			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
@@ -409,6 +410,24 @@
 	<!-- Attachment part for light utility vehicle. -->
 	<part name="bulldozer blade" mass="40.0" />
 	
-	<part name="small electric motor" mass="10.0" />
+	<part name="small electric motor" mass="10.0" >
+		<maintenance-entity-list>
+			<entity name="light utility vehicle" probability="1" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="small vehicle frame" mass="250.0" />
+	
+	<part name="small wheel" mass="10.0" >
+		<maintenance-entity-list>
+			<entity name="light utility vehicle" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="utility vehicle control panel" mass="10" >
+		<maintenance-entity-list>
+			<entity name="light utility vehicle" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
 	
 </part-list>
