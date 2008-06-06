@@ -189,7 +189,8 @@
 		<probability value="25.0" />
 		<repair-time value="50.0" />
 		<entity-list>
-			<entity name="vehicle" />
+			<entity name="rover" />
+			<entity name="light utility vehicle" />
 		</entity-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
@@ -205,7 +206,7 @@
 		<repair-time value="50.0" />
 		<eva-repair-time value="50.0" />
 		<entity-list>
-			<entity name="vehicle" />
+			<entity name="rover" />
 			<entity name="communication" />
 		</entity-list>
 		<repair-parts-list>
@@ -224,7 +225,7 @@
 		<repair-time value="50.0" />
 		<eva-repair-time value="20.0" />
 		<entity-list>
-			<entity name="vehicle" />
+			<entity name="rover" />
 		</entity-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
@@ -240,6 +241,7 @@
 		<repair-time value="100.0" />
 		<entity-list>
 			<entity name="rover" />
+			<entity name="light utility vehicle" />
 		</entity-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
@@ -402,6 +404,7 @@
 		<emergency-repair-time value="50.0" />
 		<entity-list>
 			<entity name="rover" />
+			<entity name="light utility vehicle" />
 		</entity-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="2" probability="20" />
