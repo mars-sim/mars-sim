@@ -38,6 +38,7 @@ import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitEvent;
 import org.mars_sim.msp.simulation.UnitListener;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.mission.Mining;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
@@ -61,6 +62,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	// Custom mission panel IDs.
 	private final static String EMPTY = "empty";
 	private final static String TRADE = "trade";
+	private final static String MINING = "mining";
 	
 	// Private members
 	private Mission currentMission;
@@ -82,6 +84,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private CardLayout customPanelLayout;
 	private JPanel missionCustomPane;
 	private TradeMissionCustomInfoPanel tradePanel;
+	private MiningMissionCustomInfoPanel miningPanel;
 	
 	/**
 	 * Constructor
@@ -245,9 +248,13 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		JPanel emptyCustomPane1 = new JPanel();
 		missionCustomPane.add(emptyCustomPane1, EMPTY);
 		
-		// Create custom trade panel.
+		// Create custom trade mission panel.
 		tradePanel = new TradeMissionCustomInfoPanel();
 		missionCustomPane.add(tradePanel, TRADE);
+		
+		// Create custom mining mission panel.
+		miningPanel = new MiningMissionCustomInfoPanel(desktop);
+		missionCustomPane.add(miningPanel, MINING);
 	}
 	
 	/**
@@ -345,6 +352,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 				customPanelLayout.show(missionCustomPane, TRADE);
 				tradePanel.updateMission(mission);
 			}
+			else if (mission instanceof Mining) {
+				customPanelLayout.show(missionCustomPane, MINING);
+				miningPanel.updateMission(mission);
+			}
 			else customPanelLayout.show(missionCustomPane, EMPTY);
 		}
 		else customPanelLayout.show(missionCustomPane, EMPTY);
@@ -416,6 +427,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		Mission mission = (Mission) e.getSource();
 		
 		if (mission instanceof Trade) tradePanel.updateMissionEvent(e);
+		else if (mission instanceof Mining) miningPanel.updateMissionEvent(e);
 	}
 	
 	/**

@@ -33,13 +33,10 @@ public class TradeMissionCustomInfoPanel extends JPanel {
 
 	// Data members.
 	private Trade mission;
-	private JTable sellingGoodsTable;
 	private SellingGoodsTableModel sellingGoodsTableModel;
 	private JLabel desiredGoodsProfitLabel;
-	private JTable desiredGoodsTable;
 	private DesiredGoodsTableModel desiredGoodsTableModel;
 	private JLabel boughtGoodsProfitLabel;
-	private JTable boughtGoodsTable;
 	private BoughtGoodsTableModel boughtGoodsTableModel;
 	
 	/**
@@ -63,7 +60,7 @@ public class TradeMissionCustomInfoPanel extends JPanel {
 		
 		// Create the selling goods table and model.
 		sellingGoodsTableModel = new SellingGoodsTableModel();
-		sellingGoodsTable = new JTable(sellingGoodsTableModel);
+		JTable sellingGoodsTable = new JTable(sellingGoodsTableModel);
 		sellingGoodsScrollPane.setViewportView(sellingGoodsTable);
 		
 		// Create the desired goods panel.
@@ -89,7 +86,7 @@ public class TradeMissionCustomInfoPanel extends JPanel {
 		
 		// Create the desired goods table and model.
 		desiredGoodsTableModel = new DesiredGoodsTableModel();
-		desiredGoodsTable = new JTable(desiredGoodsTableModel);
+		JTable desiredGoodsTable = new JTable(desiredGoodsTableModel);
 		desiredGoodsScrollPane.setViewportView(desiredGoodsTable);
 		
 		// Create the bought goods panel.
@@ -115,7 +112,7 @@ public class TradeMissionCustomInfoPanel extends JPanel {
 		
 		// Create the bought goods table and model.
 		boughtGoodsTableModel = new BoughtGoodsTableModel();
-		boughtGoodsTable = new JTable(boughtGoodsTableModel);
+		JTable boughtGoodsTable = new JTable(boughtGoodsTableModel);
 		boughtGoodsScrollPane.setViewportView(boughtGoodsTable);
 	}
 	
