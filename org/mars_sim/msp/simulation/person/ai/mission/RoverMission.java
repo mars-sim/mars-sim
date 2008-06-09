@@ -323,7 +323,7 @@ public abstract class RoverMission extends VehicleMission {
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
         	try {
-        		getVehicle().getInventory().retrieveUnit(person);
+        		if (getVehicle() != null) getVehicle().getInventory().retrieveUnit(person);
         		disembarkSettlement.getInventory().storeUnit(person);
         	}
         	catch (InventoryException e) {
