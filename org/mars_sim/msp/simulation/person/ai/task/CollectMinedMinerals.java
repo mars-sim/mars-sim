@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @version 2.84 2008-05-02
+ * @version 2.84 2008-06-09
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
@@ -23,6 +22,7 @@ import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
+import org.mars_sim.msp.simulation.person.ai.mission.Mining;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
@@ -39,7 +39,6 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	
 	// Data members
 	private Rover rover; // Rover used.
-	private Map<AmountResource, Double> excavatedMinerals; 
 	protected AmountResource mineralType; 
 	
 	/**
@@ -50,15 +49,14 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @param mineralType the type of mineral to collect.
 	 * @throws Exception if error creating task.
 	 */
-	public CollectMinedMinerals(Person person, Rover rover, Map<AmountResource, Double> excavatedMinerals, 
-			AmountResource mineralType) throws Exception {
+	public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) 
+			throws Exception {
 		
 		// Use EVAOperation parent constructor.
 		super("Collect Minerals", person);
 		
 		// Initialize data members.
 		this.rover = rover;
-		this.excavatedMinerals = excavatedMinerals;
 		this.mineralType = mineralType;
 		
 		// Add task phase
@@ -165,7 +163,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			return time;
 		}
 
-		double mineralsExcavated = excavatedMinerals.get(mineralType);
+		Mining mission = (Mining) person.getMind().getMission();
+		
+		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
 		double remainingPersonCapacity = 
 			person.getInventory().getAmountResourceRemainingCapacity(mineralType, true);
 
@@ -184,10 +184,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		
 		// Collect minerals.
         person.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
-        mineralsExcavated -= mineralsCollected;
-        excavatedMinerals.put(mineralType, mineralsExcavated);
-        if ((mineralsExcavated <= 0D) || (mineralsCollected >= remainingPersonCapacity)) 
-        	setPhase(ENTER_AIRLOCK);
+        mission.collectMineral(mineralType, mineralsCollected);
+        if (((mineralsExcavated - mineralsCollected) <= 0D) || 
+        		(mineralsCollected >= remainingPersonCapacity)) setPhase(ENTER_AIRLOCK);
         
         return 0D;
 	}

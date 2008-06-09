@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResearchAreology.java
- * @version 2.84 2008-05-17
+ * @version 2.84 2008-06-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -197,7 +197,9 @@ public class ResearchAreology extends ResearchScience implements Serializable {
 			List<ExploredLocation> exploredSites = explorationMission.getExploredSites();
 			if (exploredSites.size() > 0) {
 				int siteIndex = RandomUtil.getRandomInt(exploredSites.size() - 1);
-				result = exploredSites.get(siteIndex);
+				ExploredLocation location = exploredSites.get(siteIndex);
+				if (!location.isMined() && !location.isReserved())
+					result = location;
 			}
 		}
 		
@@ -219,7 +221,8 @@ public class ResearchAreology extends ResearchScience implements Serializable {
 			Iterator<ExploredLocation> i = allExploredLocations.iterator();
 			while (i.hasNext()) {
 				ExploredLocation location = i.next();
-				if (settlement.equals(location.getSettlement()) && !location.isMined())
+				if (settlement.equals(location.getSettlement()) && !location.isMined() && 
+						!location.isReserved())
 					settlementExploredLocations.add(location);
 			}
 			

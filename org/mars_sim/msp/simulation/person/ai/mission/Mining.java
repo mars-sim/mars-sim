@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 2.84 2008-06-03
+ * @version 2.84 2008-06-09
  * @author Scott Davis
  */
 
@@ -58,6 +58,10 @@ public class Mining extends RoverMission {
 	// Mission phases
 	final public static String MINING_SITE = "Mining Site";
 	
+	// Mission event types
+	public static final String EXCAVATE_MINERALS_EVENT = "excavate minerals";
+	public static final String COLLECT_MINERALS_EVENT = "collect minerals";
+	
 	// Number of bags needed for mission.
 	private static final int NUMBER_OF_BAGS = 20;
 	
@@ -80,6 +84,7 @@ public class Mining extends RoverMission {
 	private MarsClock miningSiteStartTime;
 	private boolean endMiningSite;
 	private Map<AmountResource, Double> excavatedMinerals;
+	private Map<AmountResource, Double> totalExcavatedMinerals;
 	private LightUtilityVehicle luv;
 	
 	/**
@@ -100,6 +105,8 @@ public class Mining extends RoverMission {
         	
 			// Initialize data members.
 			setStartingSettlement(startingPerson.getSettlement());
+			excavatedMinerals = new HashMap<AmountResource, Double>(1);
+    		totalExcavatedMinerals = new HashMap<AmountResource, Double>(1);
 			
 			// Recruit additional people to mission.
         	recruitPeopleForMission(startingPerson);
@@ -421,10 +428,6 @@ public class Mining extends RoverMission {
     	if (miningSiteStartTime == null) 
     		miningSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
     	
-    	// Initialize the excavated minerals if necessary.
-    	if (excavatedMinerals == null)
-    		excavatedMinerals = new HashMap<AmountResource, Double>(1);
-    	
     	// Detach towed light utility vehicle if necessary.
     	if (getRover().getTowedVehicle() != null) {
     		getRover().setTowedVehicle(null);
@@ -508,12 +511,12 @@ public class Mining extends RoverMission {
 						if (canCollectExcavatedMinerals(person)) {
 							AmountResource mineralToCollect = getMineralToCollect(person);
 							assignTask(person, new CollectMinedMinerals(person, getRover(), 
-									excavatedMinerals, mineralToCollect));
+									mineralToCollect));
 						}
 						// Otherwise start the mining task if it can be done.
 						else if (MineSite.canMineSite(person, getRover())) {
 							assignTask(person, new MineSite(person, miningSite.getLocation(), 
-									(Rover) getVehicle(), luv, excavatedMinerals));
+									(Rover) getVehicle(), luv));
 						}
 					}
 					catch(Exception e) {
@@ -532,6 +535,11 @@ public class Mining extends RoverMission {
 		}
     }
     
+    /**
+     * Checks if a person can collect minerals from the excavation pile.
+     * @param person the person collecting.
+     * @return true if can collect minerals.
+     */
     private boolean canCollectExcavatedMinerals(Person person) {
     	boolean result = false;
     	
@@ -546,6 +554,11 @@ public class Mining extends RoverMission {
     	return result;
 	}
     
+    /**
+     * Gets the mineral resource to collect from the excavation pile.
+     * @param person the person collecting.
+     * @return mineral
+     */
     private AmountResource getMineralToCollect(Person person) {
     	AmountResource result = null;
     	double largestAmount = 0D;
@@ -879,5 +892,63 @@ public class Mining extends RoverMission {
 	 */
 	public LightUtilityVehicle getLightUtilityVehicle() {
 		return luv;
+	}
+	
+	/**
+	 * Gets the amount of a mineral currently excavated.
+	 * @param mineral the mineral resource.
+	 * @return amount (kg)
+	 */
+	public double getMineralExcavationAmount(AmountResource mineral) {
+		if (excavatedMinerals.containsKey(mineral))
+			return excavatedMinerals.get(mineral);
+		else return 0D;
+	}
+	
+	/**
+	 * Gets the total amount of a mineral that has been excavated so far.
+	 * @param mineral the mineral resource.
+	 * @return amount (kg)
+	 */
+	public double getTotalMineralExcavatedAmount(AmountResource mineral) {
+		if (totalExcavatedMinerals.containsKey(mineral))
+			return totalExcavatedMinerals.get(mineral);
+		else return 0D;
+	}
+	
+	/**
+	 * Excavates an amount of a mineral.
+	 * @param mineral the mineral resource.
+	 * @param amount the amount (kg)
+	 */
+	public void excavateMineral(AmountResource mineral, double amount) {
+		double currentExcavated = amount;
+		if (excavatedMinerals.containsKey(mineral)) 
+			currentExcavated += excavatedMinerals.get(mineral);
+		excavatedMinerals.put(mineral, currentExcavated);
+		
+		double totalExcavated = amount;
+		if (totalExcavatedMinerals.containsKey(mineral))
+			totalExcavated += totalExcavatedMinerals.get(mineral);
+		totalExcavatedMinerals.put(mineral, totalExcavated);
+		
+		fireMissionUpdate(EXCAVATE_MINERALS_EVENT);
+	}
+	
+	/**
+	 * Collects an amount of a mineral.
+	 * @param mineral the mineral resource.
+	 * @param amount the amount (kg)
+	 * @throws Exception if error collecting mineral.
+	 */
+	public void collectMineral(AmountResource mineral, double amount) throws Exception {
+		double currentExcavated = 0D;
+		if (excavatedMinerals.containsKey(mineral)) 
+			currentExcavated = excavatedMinerals.get(mineral);
+		if (currentExcavated >= amount)
+			excavatedMinerals.put(mineral, (currentExcavated - amount));
+		else throw new Exception(mineral.getName() + " amount: " + amount + 
+				" more than currently excavated.");
+		fireMissionUpdate(COLLECT_MINERALS_EVENT);
 	}
 }

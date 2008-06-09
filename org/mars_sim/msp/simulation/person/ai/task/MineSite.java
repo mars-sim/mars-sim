@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineSite.java
- * @version 2.84 2008-06-03
+ * @version 2.84 2008-06-09
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
+import org.mars_sim.msp.simulation.person.ai.mission.Mining;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
@@ -48,7 +49,6 @@ public class MineSite extends EVAOperation implements Serializable {
 	private Rover rover;
 	private LightUtilityVehicle luv;
 	private boolean operatingLUV;
-	private Map<AmountResource, Double> excavationPile;
 	private double miningTime;
 	
 	/**
@@ -57,13 +57,13 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @param site the explored site to mine.
 	 * @param rover the rover used for the EVA operation.
 	 * @param luv the light utility vehicle used for mining.
-	 * @param excavationPile a map representing the mineral resources 
+	 * @param excavationPile a map representing the mineral resources
+	 * @param totalExcavated a map representing the total minerals excavated. 
 	 * excavated so far and their amounts (kg).
 	 * @throws Exception if error creating task.
 	 */
 	public MineSite(Person person, Coordinates site, Rover rover, 
-			LightUtilityVehicle luv, Map<AmountResource, Double> excavationPile) 
-			throws Exception {
+			LightUtilityVehicle luv) throws Exception {
 		
 		// Use EVAOperation parent constructor.
 		super("Mine Site", person);
@@ -72,7 +72,6 @@ public class MineSite extends EVAOperation implements Serializable {
 		this.site = site;
 		this.rover = rover;
 		this.luv = luv;
-		this.excavationPile = excavationPile;
 		operatingLUV = false;
 		
 		// Add task phase
@@ -214,9 +213,8 @@ public class MineSite extends EVAOperation implements Serializable {
 			amountExcavated *= getEffectiveSkillLevel();
 			
 			AmountResource mineralResource = AmountResource.findAmountResource(mineralName);
-			double currentExcavated = 0D;
-			if (excavationPile.containsKey(mineralResource)) currentExcavated = excavationPile.get(mineralResource);
-			excavationPile.put(mineralResource, currentExcavated + amountExcavated);
+			Mining mission = (Mining) person.getMind().getMission();
+			mission.excavateMineral(mineralResource, amountExcavated);
 		}
 	}
 	
