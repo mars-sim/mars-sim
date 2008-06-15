@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploredSiteMapLayer.java
- * @version 2.84 2008-05-15
+ * @version 2.84 2008-06-14
  * @author Scott Davis
  */
 
@@ -25,11 +25,16 @@ public class ExploredSiteMapLayer implements MapLayer {
 	// Static members
 	private static final String EXPLORED_ICON_NAME = "SmallFlagYellow";
 	private static final String MINED_ICON_NAME = "SmallFlagGray";
+	private static final String SELECTED_ICON_NAME = "SmallFlagBlue";
 	
 	// Domain members
 	private Component displayComponent;
 	private Icon navpointIconExplored;
 	private Icon navpointIconMined;
+	private Icon navpointIconSelected;
+	private boolean displayMined;
+	private boolean displayReserved;
+	private ExploredLocation selectedSite;
 	
 	/**
 	 * Constructor
@@ -41,6 +46,34 @@ public class ExploredSiteMapLayer implements MapLayer {
 		this.displayComponent = displayComponent;
 		navpointIconExplored = ImageLoader.getIcon(EXPLORED_ICON_NAME);
 		navpointIconMined = ImageLoader.getIcon(MINED_ICON_NAME);
+		navpointIconSelected = ImageLoader.getIcon(SELECTED_ICON_NAME);
+		displayMined = true;
+		displayReserved = true;
+		selectedSite = null;
+	}
+	
+	/**
+	 * Should mined sites be displayed?
+	 * @param displayMined true if display mined sites.
+	 */
+	public void setDisplayMined(boolean displayMined) {
+		this.displayMined = displayMined;
+	}
+	
+	/**
+	 * Should reserved sites be displayed?
+	 * @param displayReserved true if display reserved sites.
+	 */
+	public void setDisplayReserved(boolean displayReserved) {
+		this.displayReserved = displayReserved;
+	}
+	
+	/**
+	 * Sets the selected site.
+	 * @param selectedSite the selected site.
+	 */
+	public void setSelectedSite(ExploredLocation selectedSite) {
+		this.selectedSite = selectedSite;
 	}
 	
 	/**
@@ -54,7 +87,11 @@ public class ExploredSiteMapLayer implements MapLayer {
 		Iterator<ExploredLocation> i = surfaceFeatures.getExploredLocations().iterator();
 		while (i.hasNext()) {
 			ExploredLocation site = i.next();
-			if (site.isExplored()) displayExploredSite(site, mapCenter, mapType, g);
+			boolean displaySite = true;
+			if (site.isReserved() && !displayReserved) displaySite = false;
+			if (site.isMined() && !displayMined) displaySite = false;
+			if (!site.isExplored()) displaySite = false;
+			if (displaySite) displayExploredSite(site, mapCenter, mapType, g);
 		}
 	}
 	
@@ -75,7 +112,8 @@ public class ExploredSiteMapLayer implements MapLayer {
 			
 			// Chose a navpoint icon based on the map type.
 			Icon navIcon = null;
-			if (site.isMined()) navIcon = navpointIconMined;
+			if (site.equals(selectedSite)) navIcon = navpointIconSelected;
+			else if (site.isMined()) navIcon = navpointIconMined;
 			else navIcon = navpointIconExplored;
 			
 			// Determine the draw location for the icon.
@@ -86,5 +124,13 @@ public class ExploredSiteMapLayer implements MapLayer {
 			// Draw the navpoint icon.
 	        navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());
 		}
+	}
+	
+	public int getIconWidth() {
+		return navpointIconExplored.getIconWidth();
+	}
+	
+	public int getIconHeight() {
+		return navpointIconExplored.getIconHeight();
 	}
 }

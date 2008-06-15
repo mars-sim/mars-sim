@@ -2,6 +2,7 @@ package org.mars_sim.msp.ui.standard.tool.map;
 
 import java.awt.Component;
 import java.awt.Graphics;
+
 import javax.swing.Icon;
 
 import org.mars_sim.msp.simulation.Coordinates;

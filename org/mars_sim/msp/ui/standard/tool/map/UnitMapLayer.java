@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * UnitMapLayer.java
- * @version 2.80 2006-10-29
+ * @version 2.84 2008-06-14
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.standard.tool.map;
 
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.mars_sim.msp.simulation.Coordinates;
@@ -23,6 +25,7 @@ abstract class UnitMapLayer implements MapLayer {
     
     // Domain data
     private boolean blinkFlag;
+    private Collection<Unit> unitsToDisplay;
 	
     public UnitMapLayer() {
     	blinkFlag = false;
@@ -37,6 +40,14 @@ abstract class UnitMapLayer implements MapLayer {
     }
     
     /**
+     * Sets the units to display in this layer.
+     * @param unitsToDisplay collection of units to display.
+     */
+    public void setUnitsToDisplay(Collection<Unit> unitsToDisplay) {
+    	this.unitsToDisplay = new ArrayList<Unit>(unitsToDisplay);
+    }
+    
+    /**
      * Displays the layer on the map image.
      * @param mapCenter the location of the center of the map.
      * @param mapType the type of map.
@@ -44,7 +55,11 @@ abstract class UnitMapLayer implements MapLayer {
      */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 		
-		Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+		Collection<Unit> units = null;
+		if (unitsToDisplay != null) units = unitsToDisplay;
+		else units = Simulation.instance().getUnitManager().getUnits();
+		
+		Iterator<Unit> i = units.iterator();
         while (i.hasNext()) {
             Unit unit = i.next();
             UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);

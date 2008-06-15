@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 2.84 2008-06-09
+ * @version 2.84 2008-06-14
  * @author Scott Davis
  */
 
@@ -75,9 +75,9 @@ public class Mining extends RoverMission {
 	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
 	
 	// Light utility vehicle attachment parts for mining.
-	private static final String PNEUMATIC_DRILL = "pneumatic drill";
-	private static final String BACKHOE = "backhoe";
-	private static final String BULLDOZER_BLADE = "bulldozer blade";
+	public static final String PNEUMATIC_DRILL = "pneumatic drill";
+	public static final String BACKHOE = "backhoe";
+	public static final String BULLDOZER_BLADE = "bulldozer blade";
 	
 	// Data members
 	private ExploredLocation miningSite;
@@ -164,6 +164,8 @@ public class Mining extends RoverMission {
 		setStartingSettlement(startingSettlement);
 		this.miningSite = miningSite;
 		miningSite.setReserved(true);
+		excavatedMinerals = new HashMap<AmountResource, Double>(1);
+		totalExcavatedMinerals = new HashMap<AmountResource, Double>(1);
 		
 		// Set mission capacity.
 		setMissionCapacity(getRover().getCrewCapacity());

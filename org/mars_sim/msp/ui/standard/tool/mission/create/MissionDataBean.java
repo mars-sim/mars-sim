@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-06-09
  * @author Scott Davis
  */
 
@@ -14,10 +14,12 @@ import java.util.Map;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.mars.ExploredLocation;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.person.ai.mission.Mining;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionException;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
@@ -26,6 +28,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.goods.Good;
+import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
 /**
@@ -40,6 +43,7 @@ class MissionDataBean {
 	final static String REGOLITH_MISSION = "Regolith Prospecting";
 	final static String RESCUE_MISSION = "Rescue/Salvage Vehicle";
 	final static String TRADE_MISSION = "Trade";
+	final static String MINING_MISSION = "Mining";
 
 	// Data members.
 	private String type;
@@ -49,9 +53,11 @@ class MissionDataBean {
 	private Collection<Person> members;
 	private Settlement destinationSettlement;
 	private Rover rescueRover;
+	private LightUtilityVehicle luv;
 	private Coordinates iceCollectionSite;
 	private Coordinates regolithCollectionSite;
 	private Coordinates[] explorationSites;
+	private ExploredLocation miningSite;
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
 	
@@ -83,6 +89,8 @@ class MissionDataBean {
 			else if (TRADE_MISSION.equals(type)) 
 				mission = new Trade(members, startingSettlement, destinationSettlement, rover, description, sellGoods, 
 						buyGoods);
+			else if (MINING_MISSION.equals(type))
+				mission = new Mining(members, startingSettlement, miningSite, rover, luv, description);
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
 			manager.addMission(mission);
@@ -98,7 +106,7 @@ class MissionDataBean {
 	 */
 	static final String[] getMissionTypes() {
 		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION, 
-				RESCUE_MISSION, TRADE_MISSION };
+				RESCUE_MISSION, TRADE_MISSION, MINING_MISSION };
 		return result;
 	}
 	
@@ -115,6 +123,7 @@ class MissionDataBean {
 		else if (missionType.equals(REGOLITH_MISSION)) result = CollectRegolith.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(RESCUE_MISSION)) result = RescueSalvageVehicle.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(TRADE_MISSION)) result = Trade.DEFAULT_DESCRIPTION;
+		else if (missionType.equals(MINING_MISSION)) result = Mining.DEFAULT_DESCRIPTION;
 		return result;
 	}
 	
@@ -308,5 +317,37 @@ class MissionDataBean {
 	 */
 	void setBuyGoods(Map<Good, Integer> buyGoods) {
 		this.buyGoods = buyGoods;
+	}
+	
+	/**
+	 * Gets the light utility vehicle.
+	 * @return light utility vehicle
+	 */
+	LightUtilityVehicle getLUV() {
+		return luv;
+	}
+	
+	/**
+	 * Sets the light utility vehicle
+	 * @param luv the light utility vehicle
+	 */
+	void setLUV(LightUtilityVehicle luv) {
+		this.luv = luv;
+	}
+	
+	/**
+	 * Gets the mining site.
+	 * @return mining site.
+	 */
+	ExploredLocation getMiningSite() {
+		return miningSite;
+	}
+	
+	/**
+	 * Sets the mining site.
+	 * @param miningSite the mining site.
+	 */
+	void setMiningSite(ExploredLocation miningSite) {
+		this.miningSite = miningSite;
 	}
 }

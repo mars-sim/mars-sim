@@ -163,6 +163,10 @@ public class CreateMissionWizard extends JDialog {
 			addWizardPanel(new TradeGoodsPanel(this, false));
 			addWizardPanel(new TradeGoodsPanel(this, true));
 		}
+		else if (missionBean.getType().equals(MissionDataBean.MINING_MISSION)) {
+			addWizardPanel(new LightUtilityVehiclePanel(this));
+			addWizardPanel(new MiningSitePanel(this));
+		}
 	}
 	
 	/**

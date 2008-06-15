@@ -133,19 +133,21 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected final void setVehicle(Vehicle newVehicle) throws MissionException {
 		if (newVehicle != null) {
+			boolean usable = false;
 			try {
-				if (isUsableVehicle(newVehicle)) {
+				usable = isUsableVehicle(newVehicle);
+				if (usable) {
 					vehicle = newVehicle;
 					startingTravelledDistance = vehicle.getTotalDistanceTraveled();
 					newVehicle.setReservedForMission(true);
 					vehicle.addUnitListener(this);
 					fireMissionUpdate(VEHICLE_EVENT);
 				}
-				else throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
 			}
 			catch (Exception e) {
 				throw new MissionException(getPhase(), "Problem determining if vehicle is usable.");
 			}
+			if (!usable) throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
 		}
 		else throw new IllegalArgumentException("newVehicle is null.");
 	}

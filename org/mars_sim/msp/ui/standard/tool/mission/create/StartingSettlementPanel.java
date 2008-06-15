@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 2.84 2008-05-17
+ * @version 2.84 2008-06-11
  * @author Scott Davis
  */
 
@@ -34,8 +34,12 @@ import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.person.ai.mission.Mining;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /**
@@ -195,45 +199,65 @@ class StartingSettlementPanel extends WizardPanel {
     		Object result = "unknown";
     		
             if (row < units.size()) {
-            	Settlement settlement = (Settlement) getUnit(row);
-            	Inventory inv = settlement.getInventory();
-            	if (column == 0) 
-            		result = settlement.getName();
-            	else if (column == 1) 
-            		result = new Integer(settlement.getCurrentPopulationNum());
-            	else if (column == 2) 
-            		result = new Integer(settlement.getParkedVehicleNum());
-            	else if (column > 2) {
-            		try {
-            			if (column == 3) {
-            				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            				result = new Integer((int) inv.getAmountResourceStored(oxygen));
+            	try {
+            		Settlement settlement = (Settlement) getUnit(row);
+            		Inventory inv = settlement.getInventory();
+            		if (column == 0) 
+            			result = settlement.getName();
+            		else if (column == 1) 
+            			result = new Integer(settlement.getCurrentPopulationNum());
+            		else if (column == 2) 
+            			result = new Integer(inv.findNumUnitsOfClass(Rover.class));
+            		if (column == 3) {
+            			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+            			result = new Integer((int) inv.getAmountResourceStored(oxygen));
+            		}
+            		else if (column == 4) {
+            			AmountResource water = AmountResource.findAmountResource("water");
+            			result = new Integer((int) inv.getAmountResourceStored(water));
+            		}
+            		else if (column == 5) {
+            			AmountResource food = AmountResource.findAmountResource("food");
+            			result = new Integer((int) inv.getAmountResourceStored(food));
+            		}
+            		else if (column == 6) {
+            			AmountResource methane = AmountResource.findAmountResource("methane");
+            			result = new Integer((int) inv.getAmountResourceStored(methane));
+            		}
+            		else if (column == 7) 
+            			result = new Integer(inv.findNumUnitsOfClass(EVASuit.class));
+            		
+            		String type = getWizard().getMissionData().getType();
+            		
+            		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
+            			if (column == 8)
+            				result = new Integer(inv.findNumEmptyUnitsOfClass(SpecimenContainer.class));
+            		}
+            		else if (type.equals(MissionDataBean.ICE_MISSION) || 
+            						type.equals(MissionDataBean.REGOLITH_MISSION)) {
+            			if (column == 8)
+            				result = new Integer(inv.findNumEmptyUnitsOfClass(Bag.class));
+            		}
+            		else if (type.equals(MissionDataBean.MINING_MISSION)) {
+            			if (column == 8)
+            				result = new Integer(inv.findNumEmptyUnitsOfClass(Bag.class));
+            			else if (column == 9)
+            				result = new Integer(inv.findNumUnitsOfClass(LightUtilityVehicle.class));
+            			else if (column == 10) {
+            				Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
+            				result = new Integer(inv.getItemResourceNum(pneumaticDrill));
             			}
-            			else if (column == 4) {
-            				AmountResource water = AmountResource.findAmountResource("water");
-            				result = new Integer((int) inv.getAmountResourceStored(water));
+            			else if (column == 11) {
+            				Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
+            				result = new Integer(inv.getItemResourceNum(backhoe));
             			}
-            			else if (column == 5) {
-            				AmountResource food = AmountResource.findAmountResource("food");
-            				result = new Integer((int) inv.getAmountResourceStored(food));
-            			}
-            			else if (column == 6) {
-            				AmountResource methane = AmountResource.findAmountResource("methane");
-            				result = new Integer((int) inv.getAmountResourceStored(methane));
-            			}
-            			else if (column == 7) 
-            				result = new Integer(inv.findNumUnitsOfClass(EVASuit.class));
-            			else if (column == 8) {
-            				String type = getWizard().getMissionData().getType();
-            				if (type.equals(MissionDataBean.EXPLORATION_MISSION))
-            					result = new Integer(inv.findNumEmptyUnitsOfClass(SpecimenContainer.class));
-            				else if (type.equals(MissionDataBean.ICE_MISSION) || 
-            						type.equals(MissionDataBean.REGOLITH_MISSION))
-            					result = new Integer(inv.findNumEmptyUnitsOfClass(Bag.class));
+            			else if (column == 12) {
+            				Part bulldozerBlade = (Part) Part.findItemResource(Mining.BULLDOZER_BLADE);
+            				result = new Integer(inv.getItemResourceNum(bulldozerBlade));
             			}
             		}
-            		catch (Exception e) {}
             	}
+            	catch (Exception e) {}
             }
             
             return result;
@@ -243,11 +267,20 @@ class StartingSettlementPanel extends WizardPanel {
     	 * Updates the table data.
     	 */
     	void updateTable() {
-    		if (columns.size() == 9) columns.remove(8);
+    		if (columns.size() > 8) {
+    			for (int x = 0; x < (columns.size() - 8); x++) columns.remove(8);
+    		}
     		String type = getWizard().getMissionData().getType();
     		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) columns.add("Specimen Containers");
     		else if (type.equals(MissionDataBean.ICE_MISSION) || 
     				type.equals(MissionDataBean.REGOLITH_MISSION)) columns.add("Bags");
+    		else if (type.equals(MissionDataBean.MINING_MISSION)) {
+    			columns.add("Bags");
+    			columns.add("Light Utility Vehicles");
+    			columns.add("Pneumatic Drills");
+    			columns.add("Backhoes");
+    			columns.add("Bulldozer Blades");
+    		}
     		fireTableStructureChanged();
     	}
     	
@@ -267,7 +300,7 @@ class StartingSettlementPanel extends WizardPanel {
     				if (settlement.getCurrentPopulationNum() == 0) result = true;
     			}
     			else if (column == 2) {
-    				if (settlement.getParkedVehicleNum() == 0) result = true;
+    				if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
     			}
     			else if (column == 3) {
     				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
@@ -288,14 +321,40 @@ class StartingSettlementPanel extends WizardPanel {
     			else if (column == 7) {
     				if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
     			}
-    			else if (column == 8) {
-    				String type = getWizard().getMissionData().getType();
-    				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
-    					if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
+    			
+    			String type = getWizard().getMissionData().getType();
+    			if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
+    				if (column == 8) {
+    					if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class) < 
+    							Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
     				}
-    				else if (type.equals(MissionDataBean.ICE_MISSION) || 
-    						type.equals(MissionDataBean.REGOLITH_MISSION)) {
-    					if (inv.findNumEmptyUnitsOfClass(Bag.class) < CollectIce.REQUIRED_BAGS) result = true;
+    			}
+    			else if (type.equals(MissionDataBean.ICE_MISSION) || 
+						type.equals(MissionDataBean.REGOLITH_MISSION)) {
+    				if (column == 8) {
+    					if (inv.findNumEmptyUnitsOfClass(Bag.class) < 
+    							CollectIce.REQUIRED_BAGS) result = true;
+    				}
+    			}
+    			else if (type.equals(MissionDataBean.MINING_MISSION)) {
+    				if (column == 8) {
+    					if (inv.findNumEmptyUnitsOfClass(Bag.class) < 
+    							CollectIce.REQUIRED_BAGS) result = true;
+    				}
+    				if (column == 9) {
+    					if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
+    				}
+    				else if (column == 10) {
+    					Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
+        				if (inv.getItemResourceNum(pneumaticDrill) == 0) result = true;
+    				}
+    				else if (column == 11) {
+    					Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
+        				if (inv.getItemResourceNum(backhoe) == 0) result = true;
+    				}
+    				else if (column == 12) {
+    					Part bulldozerBlade = (Part) Part.findItemResource(Mining.BULLDOZER_BLADE);
+        				if (inv.getItemResourceNum(bulldozerBlade) == 0) result = true;
     				}
     			}
     		}

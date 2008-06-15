@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * VehiclePanel.java
- * @version 2.84 2008-05-12
+ * LightUtilityVehiclePanel.java
+ * @version 2.84 2008-06-11
  * @author Scott Davis
  */
 
@@ -26,21 +26,20 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.simulation.CollectionUtils;
-import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 /**
- * A wizard panel for selecting the mission vehicle.
+ * A wizard panel for selecting the mission light utility vehicle.
  */
-class VehiclePanel extends WizardPanel {
+public class LightUtilityVehiclePanel extends WizardPanel {
 
 	// The wizard panel name.
-	private final static String NAME = "Rover";
+	private final static String NAME = "Light Utility Vehicle";
 	
 	// Data members.
 	private VehicleTableModel vehicleTableModel;
@@ -51,7 +50,7 @@ class VehiclePanel extends WizardPanel {
 	 * Constructor
 	 * @param wizard the create mission wizard.
 	 */
-	VehiclePanel(CreateMissionWizard wizard) {
+	LightUtilityVehiclePanel(CreateMissionWizard wizard) {
 		// User WizardPanel constructor.
 		super(wizard);
 		
@@ -62,7 +61,8 @@ class VehiclePanel extends WizardPanel {
 		setBorder(new MarsPanelBorder());
 		
 		// Create the select vehicle label.
-		JLabel selectVehicleLabel = new JLabel("Select a rover for the mission.", JLabel.CENTER);
+		JLabel selectVehicleLabel = new JLabel("Select a light utility vehicle for the mission.", 
+				JLabel.CENTER);
 		selectVehicleLabel.setFont(selectVehicleLabel.getFont().deriveFont(Font.BOLD));
 		selectVehicleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectVehicleLabel);
@@ -95,7 +95,8 @@ class VehiclePanel extends WizardPanel {
         					// Check if selected row has a failure cell.
         					if (vehicleTableModel.isFailureRow(index)) {
         						// Set the error message and disable the next button.
-        						errorMessageLabel.setText("Rover cannot be used on the mission (see red cells).");
+        						errorMessageLabel.setText("Light utility vehicle cannot be " +
+        								"used on the mission (see red cells).");
         						getWizard().setButtons(false);
         					}
         					else {
@@ -135,8 +136,9 @@ class VehiclePanel extends WizardPanel {
 	 */
 	boolean commitChanges() {
 		int selectedIndex = vehicleTable.getSelectedRow();
-		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
-		getWizard().getMissionData().setRover(selectedVehicle);
+		LightUtilityVehicle selectedVehicle = 
+			(LightUtilityVehicle) vehicleTableModel.getUnit(selectedIndex);
+		getWizard().getMissionData().setLUV(selectedVehicle);
 		return true;
 	}
 
@@ -170,12 +172,6 @@ class VehiclePanel extends WizardPanel {
     		
     		// Add columns.
     		columns.add("Name");
-    		columns.add("Type");
-    		columns.add("Crew Cap.");
-    		columns.add("Range");
-    		columns.add("Lab");
-    		columns.add("Sick Bay");
-    		columns.add("Cargo Cap.");
     		columns.add("Status");
     		columns.add("Mission");
     	}
@@ -190,28 +186,16 @@ class VehiclePanel extends WizardPanel {
     		Object result = "unknown";
     		
             if (row < units.size()) {
-            	Rover vehicle = (Rover) getUnit(row);
-            	Inventory inv = vehicle.getInventory();
+            	LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
             	
             	try {
             		if (column == 0) 
             			result = vehicle.getName();
             		else if (column == 1) 
-            			result = vehicle.getDescription();
-            		else if (column == 2) 
-            			result = new Integer(vehicle.getCrewCapacity());
-            		else if (column == 3) 
-            			result = new Integer((int) vehicle.getRange());
-            		else if (column == 4)
-            			result = new Boolean(vehicle.hasLab());
-            		else if (column == 5)
-            			result = new Boolean(vehicle.hasSickBay());
-            		else if (column == 6)
-            			result = new Integer((int) inv.getGeneralCapacity());
-            		else if (column == 7)
             			result = vehicle.getStatus();
-            		else if (column == 8) {
-            			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+            		else if (column == 2) {
+            			Mission mission = Simulation.instance().getMissionManager().
+    							getMissionForVehicle(vehicle);
             			if (mission != null) result = mission.getDescription();
             			else result = "None";
             		}
@@ -228,11 +212,12 @@ class VehiclePanel extends WizardPanel {
     	void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		Collection<Vehicle> vehicles = CollectionUtils.sortByName(startingSettlement.getParkedVehicles());
+    		Collection<Vehicle> vehicles = CollectionUtils.sortByName(
+    				startingSettlement.getParkedVehicles());
     		Iterator<Vehicle> i = vehicles.iterator();
     		while (i.hasNext()) {
     			Vehicle vehicle = i.next();
-    			if (vehicle instanceof Rover) units.add(vehicle);
+    			if (vehicle instanceof LightUtilityVehicle) units.add(vehicle);
     		}
     		fireTableDataChanged();
     	}
@@ -245,13 +230,14 @@ class VehiclePanel extends WizardPanel {
     	 */
     	boolean isFailureCell(int row, int column) {
     		boolean result = false;
-    		Rover vehicle = (Rover) getUnit(row);
+    		LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
     		
-    		if (column == 7) {
+    		if (column == 1) {
     			if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
     		}
-    		else if (column == 8) {
-    			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+    		else if (column == 2) {
+    			Mission mission = Simulation.instance().getMissionManager().
+    					getMissionForVehicle(vehicle);
     			if (mission != null) result = true;
     		}
     		

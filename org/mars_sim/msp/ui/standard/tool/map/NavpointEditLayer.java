@@ -118,7 +118,7 @@ public class NavpointEditLayer implements MapLayer {
 	 * Checks if an x,y position is over a navpoint flag.
 	 * @param x the x position
 	 * @param y the y position
-	 * @return true if over navpoint flag.
+	 * @return navpoint index the mouse is over or -1 if none.
 	 */
 	public int overNavIcon(int x, int y) {
 		int result = -1;
