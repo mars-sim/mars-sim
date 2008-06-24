@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutWindow.java
- * @version 2.84 2008-05-12
+ * @version 2.84 2008-06-24
  * @author Lars Naesbye Christensen
  */
 
@@ -15,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.util.logging.Logger;
 import java.net.URL;
 
 import javax.swing.JPanel;
@@ -34,11 +33,6 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
 
 	// Tool name
 	public static final String NAME = "About The Mars Simulation Project";
-	
-    private static String CLASS_NAME = 
-	    "org.mars_sim.msp.ui.standard.tool.about.AboutWindow";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
     private JViewport viewPort; // The view port for the text pane
@@ -74,13 +68,10 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
 
     mainPane.add(scrollPane);
 
-        // Have to define a starting size
-        setSize(new Dimension(475, 375));
+    // Have to define a starting size
+    setSize(new Dimension(475, 375));
 
-    // Try to load the About text
-    java.net.URL aboutURL = AboutWindow.class.getResource("../../../../../../../docs/help/about.html");
-                       
-    editorPane.goToURL(aboutURL);
+    editorPane.goToURL(guideURL);
 
     // Prevent the window from being resized by the user.
     setResizable(false);

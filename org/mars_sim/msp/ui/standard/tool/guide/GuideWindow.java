@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 2.84 2008-05-16
+ * @version 2.84 2008-06-24
  * @author Lars Naesbye Christensen
  */
 
@@ -15,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.util.logging.Logger;
 
 import java.net.URL;
 
@@ -41,15 +40,10 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	// Tool name
 	public static final String NAME = "User Guide";
 
-    private static String CLASS_NAME = 
-	    "org.mars_sim.msp.ui.standard.tool.guide.GuideWindow";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
-
     // Data members
     private JViewport viewPort; // The view port for the text pane
     private HTMLContentPane htmlPane; // our HTML content pane
     private URL guideURL = GuideWindow.class.getResource("../../../../../../../docs/help/userguide.html");
-    private URL tempURL; // for debugging
     private JButton homeButton = new JButton ("Home");
     private JButton backButton = new JButton ("Back");
     private JButton forwardButton = new JButton ("Forward");
@@ -81,8 +75,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     backButton.setActionCommand("back");
     backButton.setToolTipText("Back");
     backButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-	URL tempURL= htmlPane.back();			
+        public void actionPerformed(ActionEvent e) {			
 	updateButtons();		}
         });
 
@@ -90,7 +83,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     forwardButton.setToolTipText("Forward");
     forwardButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-	URL tempURL= htmlPane.forward();
 	updateButtons();	}
         });
 
