@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 2.84 2008-05-15
+ * @version 2.84 2008-06-24
  * @author Scott Davis
  */
  
@@ -154,7 +154,7 @@ public class SurfaceFeatures implements Serializable {
      * @param location the location coordinates.
      * @param estimatedMineralConcentrations a map of all mineral types 
      * and their estimated concentrations (0% -100%)
-     * @param the settlement the exploring mission is from.
+     * @param settlement the settlement the exploring mission is from.
      * @return the explored location
      */
     public ExploredLocation addExploredLocation(Coordinates location, 

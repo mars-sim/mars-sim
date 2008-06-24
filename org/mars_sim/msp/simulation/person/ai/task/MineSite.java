@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineSite.java
- * @version 2.84 2008-06-09
+ * @version 2.84 2008-06-24
  * @author Scott Davis
  */
 
@@ -57,9 +57,6 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @param site the explored site to mine.
 	 * @param rover the rover used for the EVA operation.
 	 * @param luv the light utility vehicle used for mining.
-	 * @param excavationPile a map representing the mineral resources
-	 * @param totalExcavated a map representing the total minerals excavated. 
-	 * excavated so far and their amounts (kg).
 	 * @throws Exception if error creating task.
 	 */
 	public MineSite(Person person, Coordinates site, Rover rover, 

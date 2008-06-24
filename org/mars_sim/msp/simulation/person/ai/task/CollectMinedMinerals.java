@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @version 2.84 2008-06-09
+ * @version 2.84 2008-06-24
  * @author Scott Davis
  */
 
@@ -45,7 +45,6 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * Constructor
 	 * @param person the person performing the task.
 	 * @param rover the rover used for the EVA operation.
-	 * @param excavatedMinerals the pile of excavated minerals.
 	 * @param mineralType the type of mineral to collect.
 	 * @throws Exception if error creating task.
 	 */
