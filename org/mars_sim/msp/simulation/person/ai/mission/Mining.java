@@ -172,6 +172,10 @@ public class Mining extends RoverMission {
 		int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
     	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
     	
+    	// Add mission members.
+    	Iterator<Person> i = members.iterator();
+    	while (i.hasNext()) i.next().getMind().setMission(this);
+    	
     	// Add mining site nav point.
     	addNavpoint(new NavPoint(miningSite.getLocation(), "mining site"));
     	
