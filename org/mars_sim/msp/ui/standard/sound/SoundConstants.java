@@ -15,9 +15,9 @@ public interface SoundConstants {
 	public final static String SOUNDS_ROOT_PATH = "sounds/";
 	
 	// Unit window sounds for rovers.
-    public final static String SND_ROVER_MOVING = "rover_moving.ogg";
-    public final static String SND_ROVER_MALFUNCTION = "rover_malfunction.ogg";
-    public final static String SND_ROVER_MAINTENANCE = "rover_maintenance.ogg";
+    public final static String SND_ROVER_MOVING = "rover_moving.wav";
+    public final static String SND_ROVER_MALFUNCTION = "rover_malfunction.wav";
+    public final static String SND_ROVER_MAINTENANCE = "rover_maintenance.wav";
     public final static String SND_ROVER_PARKED = "";
     
     // Unit window sound for settlements.
@@ -25,10 +25,10 @@ public interface SoundConstants {
 
     // Unit window sounds for people.
     // TODO: Add additional sounds for people based on activity.
-    public final static String SND_PERSON_FEMALE1 = "female_person1.ogg";
-    public final static String SND_PERSON_FEMALE2 = "female_person2.ogg";
-    public final static String SND_PERSON_MALE1 = "male_person1.ogg";
-    public final static String SND_PERSON_MALE2 = "male_person2.ogg";
+    public final static String SND_PERSON_FEMALE1 = "female_person1.wav";
+    public final static String SND_PERSON_FEMALE2 = "female_person2.wav";
+    public final static String SND_PERSON_MALE1 = "male_person1.wav";
+    public final static String SND_PERSON_MALE2 = "male_person2.wav";
     
     // Unit window sounds for equipment.
     public final static String SND_EQUIPMENT = "";
