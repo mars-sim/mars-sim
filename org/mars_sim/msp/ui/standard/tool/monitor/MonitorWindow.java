@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.84 2008-05-10
+ * @version 2.85 2008-06-26
  * @author Barry Evans
  */
 
@@ -174,7 +174,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         rowCount.setHorizontalAlignment(SwingConstants.LEFT);
         rowCount.setBorder(BorderFactory.createLoweredBevelBorder());
         statusPanel.add(rowCount);
-        Dimension dims = new Dimension(100, STATUSHEIGHT);
+        Dimension dims = new Dimension(150, STATUSHEIGHT);
         rowCount.setPreferredSize(dims);
 
         // Add the default table tabs
