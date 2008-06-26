@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2008-06-26
  * @author Barry Evans
  */
 
@@ -30,7 +30,7 @@ import org.mars_sim.msp.simulation.vehicle.Crewable;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults
- * the source of the lsit is the Unit Manager.
+ * the source of the list is the Unit Manager.
  * It maps key attributes of the Person into Columns.
  */
 public class PersonTableModel extends UnitTableModel {
@@ -42,7 +42,7 @@ public class PersonTableModel extends UnitTableModel {
     private final static int PERSONALITY = 3;    // Personality column
     private final static int HUNGER = 4;         // Hunger column
     private final static int FATIGUE = 5;        // Fatigue column
-	private final static int STRESS = 6;         // Stress column
+    private final static int STRESS = 6;         // Stress column
     private final static int PERFORMANCE = 7;    // Performance conlumn
     private final static int JOB = 8;            // Job column
     private final static int TASK = 9;           // Task column
@@ -138,7 +138,7 @@ public class PersonTableModel extends UnitTableModel {
      * @param allAssociated Are all people associated with this settlement to be displayed?
      */
     public PersonTableModel(Settlement settlement, boolean allAssociated) {
-    	super(settlement.getName() + (allAssociated ? " - All Associated People" : "-People"), 
+    	super(settlement.getName() + (allAssociated ? " - All Associated People" : " - People"), 
 				(allAssociated ? " associated people" : " residents"), columnNames, columnTypes);
     			
     	this.settlement = settlement;
