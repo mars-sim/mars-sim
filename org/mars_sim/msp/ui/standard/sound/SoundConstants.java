@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 2.84 2008-04-07
+ * @version 2.85 2008-06-27
  * @author Dima Stepanchuk
  */
 package org.mars_sim.msp.ui.standard.sound;
@@ -29,6 +29,7 @@ public interface SoundConstants {
     public final static String SND_PERSON_FEMALE2 = "female_person2.wav";
     public final static String SND_PERSON_MALE1 = "male_person1.wav";
     public final static String SND_PERSON_MALE2 = "male_person2.wav";
+    public final static String SND_PERSON_DEAD = "person_dead.wav";
     
     // Unit window sounds for equipment.
     public final static String SND_EQUIPMENT = "";

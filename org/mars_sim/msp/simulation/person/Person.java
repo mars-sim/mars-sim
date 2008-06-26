@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.84 2008-06-03
+ * @version 2.85 2008-06-27
  * @author Scott Davis
  */
 
@@ -386,6 +386,14 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	 */
 	public String getOperatorName() {
 		return getName();
+	}
+
+	/**
+	 * Tells if the person is dead and buried.
+	 * @return is person dead?
+	 */
+	public boolean isDead() {
+		return isBuried;
 	}
 	
 	/**

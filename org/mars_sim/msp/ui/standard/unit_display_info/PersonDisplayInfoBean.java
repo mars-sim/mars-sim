@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDisplayInfo.java
- * @version 2.78 2005-10-10
+ * @version 2.85 2008-06-27
  * @author Scott Davis
  */
 
@@ -141,6 +141,8 @@ class PersonDisplayInfoBean implements UnitDisplayInfo {
     	String result = "";
     	boolean male = Person.MALE.equals(person.getGender());
     	int randomSoundNum = RandomUtil.getRandomInt(1, 2);
+    	if (person.isDead()) result = SoundConstants.SND_PERSON_DEAD;
+    	else {
     	if (male) {
     		if (randomSoundNum == 1) result = SoundConstants.SND_PERSON_MALE1;
     		else if (randomSoundNum == 2) result = SoundConstants.SND_PERSON_MALE2;
@@ -148,6 +150,7 @@ class PersonDisplayInfoBean implements UnitDisplayInfo {
     	else {
     		if (randomSoundNum == 1) result = SoundConstants.SND_PERSON_FEMALE1;
     		else if (randomSoundNum == 2) result = SoundConstants.SND_PERSON_FEMALE2;
+    	}
     	}
     	return result;
     }
