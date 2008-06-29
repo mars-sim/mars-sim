@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HistoricalEventListener.java
- * @version 2.75 27-05-2002
+ * @version 2.85 29-06-2008
  * @author Barry Evans
  */
 
@@ -23,7 +23,7 @@ public interface HistoricalEventListener {
     public void eventAdded(int index, HistoricalEvent event);
 
     /**
-     * A consequective sequence of events have been removed from the manager.
+     * A consecutive sequence of events have been removed from the manager.
      *
      * @param startIndex First exclusive index of the event to be removed.
      * @param endIndex Last exclusive index of the event to be removed..
