@@ -18,14 +18,15 @@
   <LI><B>empty-mass:</B> This is the mass (kg) of the vehicle when it is unloaded.  This is a required element.</LI>
   <LI><B>crew-size:</B> This is the maximum number of people the vehicle can hold.  This is a required element.</LI>
   <LI><B>cargo:</B> This is the cargo capacity list for the vehicle.  The "total-capacity" element is the total mass (kg) of cargo the vehicle
-    can hold.  Each "capacity" element has a "resource" attribute that must be a valid resource (see <A HREF="conf_resources.html">Resources</A>).  The "value" attribute is the mass (kg) of that resource the vehicle can 
-    hold.</LI>
-  <LI><B>sickbay:</B> This is the vehicle's sickbay.  The "tech-level" attribute is the treatment technology level of the sickbay (see <A HREF="conf_tech_level.html">Tech Levels</A>).  The "beds" attribute is the number of beds in the sickbay.  This is an 
+    can hold.  Each "capacity" element has a "resource" attribute that must be a valid resource (see <A HREF="conf_resources.html">resources.xml</A>).
+    The "value" attribute is the mass (kg) of that resource the vehicle can hold.</LI>
+  <LI><B>sickbay:</B> This is the vehicle's sickbay.  The "tech-level" attribute is the treatment technology level of the sickbay 
+  (see <A HREF="conf_tech_level.html">Tech Levels</A>).  The "beds" attribute is the number of beds in the sickbay.  This is an 
     optional element and its absence means that the vehicle doesn't have a sickbay.</LI>
-  <LI><B>lab:</B> This is the vehicle's laboratory.  The "tech-level" attribute is the technology level of the laboratory (see <A HREF="conf_tech_level.html">Tech Levels</A>).  There is a child element for each technology speciality of the lab.  
-    The "tech-speciality" elements must have a 
-    value of one of the currently supported research areas: "Areology", "Botany" or "Medicine".  This element is optional and its absence
-    indicates that the vehicle doesn't have a laboratory.</LI>
+  <LI><B>lab:</B> This is the vehicle's laboratory.  The "tech-level" attribute is the technology level of the laboratory 
+  (see <A HREF="conf_tech_level.html">Tech Levels</A>).  There is a child element for each technology speciality of the lab.  
+    The "tech-speciality" elements must have a value of one of the currently supported research areas: "Areology", "Botany" or "Medicine".  
+    This element is optional and its absence indicates that the vehicle doesn't have a laboratory.</LI>
 </UL>
 <P>The "rover-name-list" element is a list of rover names that is randomly selected from when rovers are created for the simulation.</P>
 <P>Each "rover-name" element must have a unique "value" attribute.</P>

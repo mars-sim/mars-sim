@@ -16,11 +16,11 @@
   has the following elements:</P>
 <UL>
   <LI><B>building:</B> A settlement template may have one or more building elements that comprise the settlement.  Each building element
-    must have a "type" attribute that matches a building name in <A HREF="conf_buildings.html">conf/buildings.xml</A>.  The "number" attribute
+    must have a "type" attribute that matches a building name in <A HREF="conf_buildings.html">buildings.xml</A>.  The "number" attribute
     is the number of this type of building at the settlement.  A settlement should not have more than one "building" element for a specific
     type of building, but should use the "number" attribute for multiples of a building type.</LI>
   <LI><B>vehicle:</B> A settlement template may have one or more vehicle elements.  Each vehicle element must have a type that matches a 
-    rover type in <A HREF="conf_vehicles.html">conf/vehicles.xml</A>.  The "number" attribute is the number of this type of vehicle at the 
+    rover type in <A HREF="conf_vehicles.html">vehicles.xml</A>.  The "number" attribute is the number of this type of vehicle at the 
     settlement.  A settlement should not have more than one "vehicle" element for a specific type of vehicle, but should use the "number"
     attribute for multiples of a vehicle type.</LI>
   <LI><B>equipment:</B> A settlement template may have one or more equipment elements.  Each equipment element must have a "type" attribute
@@ -28,15 +28,15 @@
     not have more than one "equipment" element for a specific type of equipment, but should use the "number" attribute for multiples of a
     equipment type.</LI>
   <LI><B>part:</B> A settlement template may have one or more part elements.  Each part element must have a "type" attribute
-    that matches a part type (see <A HREF="conf_parts.html">conf/parts.xml</A>).  The "number" attribute is the number of this type of part 
+    that matches a part type (see <A HREF="conf_parts.html">parts.xml</A>).  The "number" attribute is the number of this type of part 
     at the settlement.</LI>
   <LI><B>part-package:</B> A resupply mission may provide packages of parts in addition to listing each part separately.  Each part-package
     element must have a "name" attribute that matches a part package defined in the part packages configuration 
-    (see <A HREF="conf_part_packages.html">conf/part_packages.xml</A>).  The "number" attribute is the number of part packages provided.</LI>
+    (see <A HREF="conf_part_packages.html">part_packages.xml</A>).  The "number" attribute is the number of part packages provided.</LI>
   <LI><B>resupply:</B> The resupply element is a list of resupply missions scheduled for this settlement template.  This element is optional
     and its absence means that the settlement template has no scheduled resupplies.  Each "resupply-mission" element must have a name that 
-    matches a resupply mission name in the "resupply-list" below.  The "arrival-time" is the number of Sols (see <A HREF="conf_time.html">Time</A>) from the beginning of the simulation until the resupply mission is scheduled to 
-    arrive.</LI>
+    matches a resupply mission name (see <A HREF="conf_resupplies.html">resupplies.xml</A>).  The "arrival-time" is the number of Sols 
+    (see <A HREF="conf_time.html">Time</A>) from the beginning of the simulation until the resupply mission is scheduled to arrive.</LI>
 </UL>
 <P>The "initial-settlement-list" is a list of settlements in the simulation.</P>
 <P>Each "settlement" element has a "name" and a "template" attribute, as well as a "location" element.  The "name" attribute is either a
