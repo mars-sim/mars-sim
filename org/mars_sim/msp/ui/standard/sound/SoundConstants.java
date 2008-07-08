@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 2.85 2008-06-27
+ * @version 2.85 2008-07-08
  * @author Dima Stepanchuk
  */
 package org.mars_sim.msp.ui.standard.sound;
@@ -21,7 +21,7 @@ public interface SoundConstants {
     public final static String SND_ROVER_PARKED = "";
     
     // Unit window sound for settlements.
-    public final static String SND_SETTLEMENT = "";
+    public final static String SND_SETTLEMENT = "settlement.wav";
 
     // Unit window sounds for people.
     // TODO: Add additional sounds for people based on activity.
