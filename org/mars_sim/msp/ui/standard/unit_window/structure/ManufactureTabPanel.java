@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureTabPanel.java
- * @version 2.83 2008-02-19
+ * @version 2.85 2008-07-09
  * @author Scott Davis
  */
 
@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -51,12 +52,14 @@ public class ManufactureTabPanel extends TabPanel {
 	// Data members
 	private Settlement settlement;
 	private JPanel manufactureListPane;
+	private JScrollPane manufactureScrollPane;
 	private List<ManufactureProcess> processCache;
 	private JComboBox buildingSelection; // Building selector.
 	private Vector<Building> buildingSelectionCache; // List of available manufacture buildings.
 	private JComboBox processSelection; // Process selector.
 	private Vector<ManufactureProcessInfo> processSelectionCache; // List of available processes.
 	private JButton newProcessButton; // Process selection button.
+	private JCheckBox overrideCheckbox;
 	
     /**
      * Constructor
@@ -78,9 +81,9 @@ public class ManufactureTabPanel extends TabPanel {
         topPane.add(manufactureLabel);
         
 		// Create scroll panel for manufacture list pane.
-        JScrollPane manufactureScrollPane = new JScrollPane();
+        manufactureScrollPane = new JScrollPane();
         manufactureScrollPane.setPreferredSize(new Dimension(220, 215));
-        topContentPanel.add(manufactureScrollPane, BorderLayout.CENTER);  
+        topContentPanel.add(manufactureScrollPane);  
 		
         // Prepare manufacture outer list pane.
         JPanel manufactureOuterListPane = new JPanel(new BorderLayout(0, 0));
@@ -98,8 +101,8 @@ public class ManufactureTabPanel extends TabPanel {
         while (i.hasNext()) manufactureListPane.add(new ManufacturePanel(i.next(), true));
         
         // Create interaction panel.
-        JPanel interactionPanel = new JPanel(new GridLayout(3, 1, 0, 0));
-        topContentPanel.add(interactionPanel, BorderLayout.SOUTH);
+        JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+        topContentPanel.add(interactionPanel);
         
         // Create new building selection.
         buildingSelectionCache = getManufacturingBuildings();
@@ -145,6 +148,18 @@ public class ManufactureTabPanel extends TabPanel {
         	}
         });
         interactionPanel.add(newProcessButton);
+        
+        // Create override check box.
+        overrideCheckbox = new JCheckBox("Override manufacturing");
+        overrideCheckbox.setToolTipText("Prevents settlement inhabitants from " +
+        		"starting new manufacturing processes.");
+        overrideCheckbox.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		setManufactureOverride(overrideCheckbox.isSelected());
+        	}
+        });
+        overrideCheckbox.setSelected(settlement.getManufactureOverride());
+        interactionPanel.add(overrideCheckbox);
 	}
 	
 	@Override
@@ -171,6 +186,8 @@ public class ManufactureTabPanel extends TabPanel {
 					if (panel != null) manufactureListPane.remove(panel);
 				}
 			}
+			
+			manufactureScrollPane.validate();
 			
 			// Update processCache
 			processCache.clear();
@@ -218,6 +235,10 @@ public class ManufactureTabPanel extends TabPanel {
 		
 		// Update new process button.
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
+		
+		// Update ooverride check box.
+		if (settlement.getManufactureOverride() != overrideCheckbox.isSelected()) 
+			overrideCheckbox.setSelected(settlement.getManufactureOverride());
 	}
 	
 	/**
@@ -297,5 +318,13 @@ public class ManufactureTabPanel extends TabPanel {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Sets the settlement manufacture override flag.
+	 * @param override the manufacture override flag.
+	 */
+	private void setManufactureOverride(boolean override) {
+		settlement.setManufactureOverride(override);
 	}
 }

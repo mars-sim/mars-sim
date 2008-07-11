@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.84 2008-05-28
+ * @version 2.85 2008-07-09
  * @author Scott Davis
  */
 
@@ -62,6 +62,8 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     protected PowerGrid powerGrid; // The settlement's building power grid.
     private String template; // The settlement template name.
     private boolean missionCreationOverride; // Override flag for mission creation at settlement.
+    private boolean manufactureOverride; // Override flag for manufacturing at settlement.
+    private boolean resourceProcessOverride; // Override flag for resource process at settlement.
     
     /**
      * Constructor for subclass extension.
@@ -493,5 +495,37 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 	 */
 	public boolean getMissionCreationOverride() {
 		return missionCreationOverride;
+	}
+	
+	/**
+	 * Sets the manufacture override flag.
+	 * @param manufactureOverride override for manufacture.
+	 */
+	public void setManufactureOverride(boolean manufactureOverride) {
+		this.manufactureOverride = manufactureOverride;
+	}
+	
+	/**
+	 * Gets the manufacture override flag.
+	 * @return override for settlement manufacture.
+	 */
+	public boolean getManufactureOverride() {
+		return manufactureOverride;
+	}
+	
+	/**
+	 * Sets the resource process override flag.
+	 * @param resourceProcessOverride override for resource processes.
+	 */
+	public void setResourceProcessOverride(boolean resourceProcessOverride) {
+		this.resourceProcessOverride = resourceProcessOverride;
+	}
+	
+	/**
+	 * Gets the resource process override flag.
+	 * @return override for settlement resource processes.
+	 */
+	public boolean getResourceProcessOverride() {
+		return resourceProcessOverride;
 	}
 }

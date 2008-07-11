@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 2.81 2007-08-12
+ * @version 2.85 2008-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -91,25 +91,28 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
     		
     		Settlement settlement = person.getSettlement();
     		
-    		try {
-    			Building building = getResourceProcessingBuilding(person);
-    			if (building != null) {
-    				ResourceProcess process = getResourceProcess(building);
-    				isEVA = !building.hasFunction(LifeSupport.NAME);
-    				double diff = getResourcesValueDiff(settlement, process);
-    				double baseProb = diff * 10000D;
-    				if (baseProb > 100D) baseProb = 100D;
-    				result += baseProb;
+    		// Check if settlement has resource process override set.
+    		if (!settlement.getResourceProcessOverride()) {
+    			try {
+    				Building building = getResourceProcessingBuilding(person);
+    				if (building != null) {
+    					ResourceProcess process = getResourceProcess(building);
+    					isEVA = !building.hasFunction(LifeSupport.NAME);
+    					double diff = getResourcesValueDiff(settlement, process);
+    					double baseProb = diff * 10000D;
+    					if (baseProb > 100D) baseProb = 100D;
+    					result += baseProb;
     				
-    				if (!isEVA) {
-    					// Factor in building crowding and relationship factors.
-    					result *= Task.getCrowdingProbabilityModifier(person, building);
-    					result *= Task.getRelationshipModifier(person, building);
+    					if (!isEVA) {
+    						// Factor in building crowding and relationship factors.
+    						result *= Task.getCrowdingProbabilityModifier(person, building);
+    						result *= Task.getRelationshipModifier(person, building);
+    					}
     				}
     			}
-    		}
-    		catch (Exception e) {
-    			e.printStackTrace(System.err);
+    			catch (Exception e) {
+    				e.printStackTrace(System.err);
+    			}
     		}
     		
     		if (isEVA) {

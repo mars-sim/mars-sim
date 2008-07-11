@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureBuildingPanel.java
- * @version 2.83 2008-02-19
+ * @version 2.85 2008-07-10
  * @author Scott Davis
  */
 
@@ -43,6 +43,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 	
 	private Manufacture workshop; // The manufacture building.
 	private JPanel processListPane; // Panel for displaying process panels.
+	private JScrollPane processScrollPane;
 	private List<ManufactureProcess> processCache; // List of manufacture processes in building.
 	private JComboBox processSelection; // Process selector.
 	private Vector<ManufactureProcessInfo> processSelectionCache; // List of available processes.
@@ -80,7 +81,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         labelPane.add(processCapacityLabel);
         
         // Create scroll pane for manufacturing processes
-        JScrollPane processScrollPane = new JScrollPane();
+        processScrollPane = new JScrollPane();
         processScrollPane.setPreferredSize(new Dimension(170, 90));
         add(processScrollPane, BorderLayout.CENTER);
         
@@ -161,6 +162,8 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 			// Update processCache
 			processCache.clear();
 			processCache.addAll(processes);
+			
+			processScrollPane.validate();
 		}
 		
 		// Update all process panels.

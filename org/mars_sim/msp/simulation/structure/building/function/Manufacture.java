@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 2.84 2008-06-04
+ * @version 2.85 2008-07-10
  * @author Scott Davis
  */
 
@@ -173,9 +173,10 @@ public class Manufacture extends Function implements Serializable {
 	
     /**
      * Checks if manufacturing function currently requires work.
+     * @param skill the person's materials science skill level.
      * @return true if manufacturing work.
      */
-    public boolean requiresWork() {
+    public boolean requiresWork(int skill) {
 		boolean result = false;
 		
 		if (concurrentProcesses > processes.size()) result = true;
@@ -183,7 +184,9 @@ public class Manufacture extends Function implements Serializable {
 			Iterator<ManufactureProcess> i = processes.iterator();
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
-				if (process.getWorkTimeRemaining() > 0D) result = true;
+				boolean workRequired = (process.getWorkTimeRemaining() > 0D);
+				boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
+				if (workRequired && skillRequired) result = true;
 			}
 		}
 		

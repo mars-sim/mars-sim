@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.83 2008-02-18
+ * @version 2.85 2008-07-09
  * @author Scott Davis
  */
 
@@ -91,24 +91,28 @@ public class ManufactureGood extends Task implements Serializable {
         
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
         	try {
-        		// See if there is an available manufacturing building.
-        		Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
-        		if (manufacturingBuilding != null) {
-        			result = 1D;
-        		
-        			// Crowding modifier.
-        			result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-        			result *= Task.getRelationshipModifier(person, manufacturingBuilding);
+       			// See if there is an available manufacturing building.
+       			Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
+       			if (manufacturingBuilding != null) {
+       				result = 1D;
+       		
+       				// Crowding modifier.
+       				result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
+       				result *= Task.getRelationshipModifier(person, manufacturingBuilding);
         			
-                	// Manufacturing good value modifier.
-                	result *= getHighestManufacturingProcessValue(person, manufacturingBuilding) * 10D;
+       				// Manufacturing good value modifier.
+       				result *= getHighestManufacturingProcessValue(person, manufacturingBuilding) * 10D;
                 	
-                	// If manufacturing building has process requiring work, add modifier.
-                	if (hasProcessRequiringWork(manufacturingBuilding)) result += 10D;
-        		}
-        	}
+       				// If manufacturing building has process requiring work, add modifier.
+       				SkillManager skillManager = person.getMind().getSkillManager();
+       				int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+       				if (hasProcessRequiringWork(manufacturingBuilding, skill)) result += 10D;
+       				// If settlement has manufacturing override, no new manufacturing processes can be created.
+       				else if (person.getSettlement().getManufactureOverride()) result = 0;
+       			}
+       		}
         	catch (BuildingException e) {
-        	    logger.log(Level.SEVERE,"ManufactureGood.getProbability()",e);
+        		logger.log(Level.SEVERE,"ManufactureGood.getProbability()",e);
         	}
         }
         
@@ -135,12 +139,15 @@ public class ManufactureGood extends Task implements Serializable {
     	
         Building result = null;
         
+        SkillManager skillManager = person.getMind().getSkillManager();
+		int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
         	BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> manufacturingBuildings = manager.getBuildings(Manufacture.NAME);
             manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
-            manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings);
-            manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings);
+            manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
+            manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
             manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
             manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
             manufacturingBuildings = BuildingManager.getBestRelationshipBuildings(person, manufacturingBuildings);
@@ -155,10 +162,11 @@ public class ManufactureGood extends Task implements Serializable {
      * Gets a list of manufacturing buildings needing work from a list of buildings 
      * with the manufacture function.
      * @param buildingList list of buildings with the manufacture function.
+     * @param skill the materials science skill level of the person.
      * @return list of manufacture buildings needing work.
      * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
-    private static List<Building> getManufacturingBuildingsNeedingWork(List<Building> buildingList) 
+    private static List<Building> getManufacturingBuildingsNeedingWork(List<Building> buildingList, int skill) 
     		throws BuildingException {
     	
     	List<Building> result = new ArrayList<Building>();
@@ -167,7 +175,7 @@ public class ManufactureGood extends Task implements Serializable {
     	while (i.hasNext()) {
     		Building building = (Building) i.next();
     		Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
-    		if (manufacturingFunction.requiresWork()) result.add(building);
+    		if (manufacturingFunction.requiresWork(skill)) result.add(building);
     	}
     	
     	return result;
@@ -176,10 +184,11 @@ public class ManufactureGood extends Task implements Serializable {
     /**
      * Gets a subset list of manufacturing buildings with processes requiring work.
      * @param buildingList the original building list.
+     * @param skill the materials science skill level of the person.
      * @return subset list of buildings with processes requiring work, or original list if none found.
      * @throws BuildingException if error determining building processes.
      */
-    private static List<Building> getBuildingsWithProcessesRequiringWork(List<Building> buildingList) 
+    private static List<Building> getBuildingsWithProcessesRequiringWork(List<Building> buildingList, int skill) 
     	throws BuildingException {
     	
     	List<Building> result = new ArrayList<Building>();
@@ -188,7 +197,7 @@ public class ManufactureGood extends Task implements Serializable {
     	Iterator i = buildingList.iterator();
     	while (i.hasNext()) {
     		Building building = (Building) i.next();
-    		if (hasProcessRequiringWork(building)) result.add(building);
+    		if (hasProcessRequiringWork(building, skill)) result.add(building);
     	}
     	
     	// If no building with processes requiring work, return original list.
@@ -200,10 +209,11 @@ public class ManufactureGood extends Task implements Serializable {
     /**
      * Checks if manufacturing building has any processes requiring work.
      * @param manufacturingBuilding the manufacturing building.
+     * @param skill the materials science skill level of the person.
      * @return true if processes requiring work.
      * @throws BuildingException if building is not manufacturing.
      */
-    private static boolean hasProcessRequiringWork(Building manufacturingBuilding) 
+    private static boolean hasProcessRequiringWork(Building manufacturingBuilding, int skill) 
     		throws BuildingException {
     	
     	boolean result = false;
@@ -211,7 +221,10 @@ public class ManufactureGood extends Task implements Serializable {
     	Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
 		Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses().iterator();
 		while (i.hasNext()) {
-			if (i.next().getWorkTimeRemaining() > 0D) result = true;
+			ManufactureProcess process = i.next();
+			boolean workRequired = (process.getWorkTimeRemaining() > 0D);
+			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
+			if (workRequired && skillRequired) result = true;
 		}
     	
     	return result;
@@ -353,7 +366,8 @@ public class ManufactureGood extends Task implements Serializable {
         			workshop.endManufacturingProcess(process);
         	}
         	else {
-        		process = createNewManufactureProcess();
+        		if (!person.getSettlement().getManufactureOverride())
+        			process = createNewManufactureProcess();
         		if (process == null) endTask();
         	}
         }

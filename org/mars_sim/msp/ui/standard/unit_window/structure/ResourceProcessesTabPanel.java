@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 2.81 2007-05-24
+ * @version 2.85 2008-07-10
  * @author Scott Davis
  */
 
@@ -11,9 +11,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -37,6 +40,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 	private List processingBuildings;
 	private JScrollPane processesScrollPanel;
 	private JPanel processListPanel;
+	private JCheckBox overrideCheckbox;
 	
     /**
      * Constructor
@@ -69,6 +73,22 @@ public class ResourceProcessesTabPanel extends TabPanel {
         processListPanel.setBorder(new MarsPanelBorder());
         processesScrollPanel.setViewportView(processListPanel);
         populateProcessList();
+        
+        // Create override check box panel.
+        JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        topContentPanel.add(overrideCheckboxPane);
+        
+        // Create override check box.
+        overrideCheckbox = new JCheckBox("Override resource process toggling");
+        overrideCheckbox.setToolTipText("Prevents settlement inhabitants from " +
+        		"toggling on/off resource processes.");
+        overrideCheckbox.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent arg0) {
+        		setResourceProcessOverride(overrideCheckbox.isSelected());
+        	}
+        });
+        overrideCheckbox.setSelected(settlement.getManufactureOverride());
+        overrideCheckboxPane.add(overrideCheckbox);
     }
     
     /**
@@ -116,6 +136,15 @@ public class ResourceProcessesTabPanel extends TabPanel {
 				label.update();
 			}
 		}
+	}
+	
+	/**
+	 * Sets the settlement resource process override flag.
+	 * @param override the resource process override flag.
+	 */
+	private void setResourceProcessOverride(boolean override) {
+		Settlement settlement = (Settlement) unit;
+		settlement.setResourceProcessOverride(override);
 	}
 	
 	/**
