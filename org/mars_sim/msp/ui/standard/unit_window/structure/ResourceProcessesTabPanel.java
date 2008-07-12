@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 2.85 2008-07-10
+ * @version 2.85 2008-07-11
  * @author Scott Davis
  */
 
@@ -11,11 +11,13 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -107,7 +109,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
     			Iterator j = processing.getProcesses().iterator();
     			while (j.hasNext()) {
     				ResourceProcess process = (ResourceProcess) j.next();
-    				processListPanel.add(new ResourceProcessLabel(process, building));
+    				processListPanel.add(new ResourceProcessPanel(process, building));
     			}
     		}
     	}
@@ -132,8 +134,8 @@ public class ResourceProcessesTabPanel extends TabPanel {
 			// Update process list.
 			Component[] components = processListPanel.getComponents();
 			for (int x = 0; x < components.length; x++) {
-				ResourceProcessLabel label = (ResourceProcessLabel) components[x];
-				label.update();
+				ResourceProcessPanel panel = (ResourceProcessPanel) components[x];
+				panel.update();
 			}
 		}
 	}
@@ -148,12 +150,14 @@ public class ResourceProcessesTabPanel extends TabPanel {
 	}
 	
 	/**
-	 * An internal class for a resource process label.
+	 * An internal class for a resource process panel.
 	 */
-	private class ResourceProcessLabel extends JLabel {
+	private class ResourceProcessPanel extends JPanel {
 		
 		// Data members.
 		private ResourceProcess process;
+		private JLabel label;
+		private JButton toggleButton;
 		private ImageIcon greenDot;
 		private ImageIcon redDot;
 		
@@ -162,25 +166,39 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		 * @param process the resource process.
 		 * @param building the building the process is in.
 		 */
-		ResourceProcessLabel(ResourceProcess process, Building building) {
-			// Use JLabel constructor.
+		ResourceProcessPanel(ResourceProcess process, Building building) {
+			// Use JPanel constructor.
 			super();
 			
+			setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			
 			this.process = process;
+			
+	        toggleButton = new JButton();
+	        toggleButton.setMargin(new Insets(0, 0, 0, 0));
+	        toggleButton.addActionListener(new ActionListener() {
+	        	public void actionPerformed(ActionEvent event) {
+	        		ResourceProcess process = getProcess();
+	        		process.setProcessRunning(!process.isProcessRunning());
+	        		update();
+	        	}
+	        });
+	        add(toggleButton);
+	        
+	        label = new JLabel(" " + building.getName() + ": " + process.getProcessName());
+	        add(label);
 			
 			// Load green and red dots.
 	        greenDot = new ImageIcon("images/GreenDot.gif", "Process is running.");
 	        redDot = new ImageIcon("images/RedDot.gif", "Process is not running");
-			
-			setText(building.getName() + ": " + process.getProcessName());
-			
+	        
 			if (process.isProcessRunning()) {
-				setIcon(greenDot);
-				setToolTipText(getText() + " process is running.");
+				toggleButton.setIcon(greenDot);
+				setToolTipText(label.getText() + " process is running.");
 			}
 			else {
-				setIcon(redDot);
-				setToolTipText(getText() + " process is not running.");
+				toggleButton.setIcon(redDot);
+				setToolTipText(label.getText() + " process is not running.");
 			}
 		}
 		
@@ -189,13 +207,17 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		 */
 		void update() {
 			if (process.isProcessRunning()) {
-				setIcon(greenDot);
-				setToolTipText(getText() + " process is running.");
+				toggleButton.setIcon(greenDot);
+				setToolTipText(label.getText() + " process is running.");
 			}
 			else {
-				setIcon(redDot);
-				setToolTipText(getText() + " process is not running.");
+				toggleButton.setIcon(redDot);
+				setToolTipText(label.getText() + " process is not running.");
 			}
+		}
+		
+		private ResourceProcess getProcess() {
+			return process;
 		}
 	}
 }

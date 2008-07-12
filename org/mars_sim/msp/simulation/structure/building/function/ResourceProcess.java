@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 2.81 2007-04-23
+ * @version 2.85 2008-07-11
  * @author Scott Davis
  */
  
@@ -109,6 +109,14 @@ public class ResourceProcess implements Serializable {
      */
     public boolean isProcessRunning() {
         return runningProcess;
+    }
+    
+    /**
+     * Sets if the process is running or not.
+     * @param runningProcess true if process is running.
+     */
+    public void setProcessRunning(boolean runningProcess) {
+    	this.runningProcess = runningProcess;
     }
     
     /**
