@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureTabPanel.java
- * @version 2.85 2008-07-09
+ * @version 2.85 2008-07-12
  * @author Scott Davis
  */
 
@@ -24,10 +24,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -98,7 +101,7 @@ public class ManufactureTabPanel extends TabPanel {
         // Create the process panels.
         processCache = getManufactureProcesses();
         Iterator<ManufactureProcess> i = processCache.iterator();
-        while (i.hasNext()) manufactureListPane.add(new ManufacturePanel(i.next(), true));
+        while (i.hasNext()) manufactureListPane.add(new ManufacturePanel(i.next(), true, 34));
         
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
@@ -119,6 +122,7 @@ public class ManufactureTabPanel extends TabPanel {
         Building workshopBuilding = (Building) buildingSelection.getSelectedItem();
         processSelectionCache = getAvailableProcesses(workshopBuilding);
         processSelection = new JComboBox(processSelectionCache);
+        processSelection.setRenderer(new ManufactureSelectionListCellRenderer());
         processSelection.setToolTipText("Select an available manufacturing process");
         interactionPanel.add(processSelection);
         
@@ -174,7 +178,7 @@ public class ManufactureTabPanel extends TabPanel {
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				if (!processCache.contains(process)) 
-					manufactureListPane.add(new ManufacturePanel(process, true));
+					manufactureListPane.add(new ManufacturePanel(process, true, 34));
 			}
 			
 			// Remove manufacture panels for old processes.
@@ -326,5 +330,26 @@ public class ManufactureTabPanel extends TabPanel {
 	 */
 	private void setManufactureOverride(boolean override) {
 		settlement.setManufactureOverride(override);
+	}
+	
+	/**
+	 * Inner class for the manufacture selection list cell renderer.
+	 */
+	private class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
+		
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, 
+				boolean isSelected, boolean cellHasFocus) {
+			Component result = super.getListCellRendererComponent(list, value, index, isSelected, 
+					cellHasFocus);
+			ManufactureProcessInfo info = (ManufactureProcessInfo) value;
+			if (info != null) {
+				String processName = info.getName();
+				if (processName.length() > 40) processName = processName.substring(0, 40) + "...";
+				((JLabel) result).setText(processName);
+				((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
+			}
+			return result;
+		}
 	}
 }

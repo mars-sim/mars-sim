@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufacturePanel.java
- * @version 2.83 2008-02-18
+ * @version 2.85 2008-07-12
  * @author Scott Davis
  */
 
@@ -19,6 +19,7 @@ import javax.swing.JProgressBar;
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcess;
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcessItem;
+import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 public class ManufacturePanel extends JPanel {
@@ -33,7 +34,7 @@ public class ManufacturePanel extends JPanel {
 	 * @param process the manufacturing process.
 	 * @param showBuilding is the building name shown?
 	 */
-	public ManufacturePanel(ManufactureProcess process, boolean showBuilding) {
+	public ManufacturePanel(ManufactureProcess process, boolean showBuilding, int processStringWidth) {
 		// Call JPanel constructor
 		super();
 		
@@ -53,6 +54,7 @@ public class ManufacturePanel extends JPanel {
         	String firstLetter = name.substring(0, 1).toUpperCase();
         	name = firstLetter + name.substring(1);
         }
+        if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
         JLabel nameLabel = new JLabel(name, JLabel.CENTER);
         add(nameLabel);
 
@@ -95,7 +97,7 @@ public class ManufacturePanel extends JPanel {
         update();
         
         // Add tooltip.
-        setToolTipText(getToolTipString());
+        setToolTipText(getToolTipString(process.getInfo(), process.getWorkshop().getBuilding()));
 	}
 	
     /**
@@ -126,14 +128,15 @@ public class ManufacturePanel extends JPanel {
     }
     
     /**
-     * Adds the tool tip for the manufacturing panel.
+     * Gets a tool tip string for a manufacturing process.
+     * @param info the manufacture process info.
+     * @param building the manufacturing building (or null if none).
      */
-    private String getToolTipString() {
+    public static String getToolTipString(ManufactureProcessInfo info, Building building) {
     	StringBuffer result = new StringBuffer("<html>");
     	
-    	ManufactureProcessInfo info = process.getInfo();
     	result.append("Manufacturing Process: " + info.getName() + "<br>");
-    	result.append("Manufacture Building: " + process.getWorkshop().getBuilding().getName() + "<br>");
+    	if (building != null) result.append("Manufacture Building: " + building.getName() + "<br>");
     	result.append("Effort Time Required: " + info.getWorkTimeRequired() + " millisols<br>");
     	result.append("Process Time Required: " + info.getProcessTimeRequired() + " millisols<br>");
     	result.append("Building Tech Level Required: " + info.getTechLevelRequired() + "<br>");
@@ -160,7 +163,12 @@ public class ManufacturePanel extends JPanel {
     	return result.toString();
     }
     
-    private String getItemAmountString(ManufactureProcessItem item) {
+    /**
+     * Gets a string representing an manufacture process item amount.
+     * @param item the manufacture process item.
+     * @return amount string.
+     */
+    private static String getItemAmountString(ManufactureProcessItem item) {
     	String result = "";
     	if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) 
 			result = item.getAmount() + " kg";

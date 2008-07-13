@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureBuildingPanel.java
- * @version 2.85 2008-07-10
+ * @version 2.85 2008-07-12
  * @author Scott Davis
  */
 
@@ -22,9 +22,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -97,7 +100,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         // Create process panels
         processCache = new ArrayList<ManufactureProcess>(workshop.getProcesses());
         Iterator<ManufactureProcess> i = processCache.iterator();
-        while (i.hasNext()) processListPane.add(new ManufacturePanel(i.next(), false));
+        while (i.hasNext()) processListPane.add(new ManufacturePanel(i.next(), false, 25));
         
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -106,6 +109,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         // Create new manufacture process selection.
         processSelectionCache = getAvailableProcesses();
         processSelection = new JComboBox(processSelectionCache);
+        processSelection.setRenderer(new ManufactureSelectionListCellRenderer());
         processSelection.setToolTipText("Select an available manufacturing process");
         interactionPanel.add(processSelection);
         
@@ -146,7 +150,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				if (!processCache.contains(process)) 
-					processListPane.add(new ManufacturePanel(process, false));
+					processListPane.add(new ManufacturePanel(process, false, 25));
 			}
 			
 			// Remove process panels for old processes.
@@ -247,5 +251,26 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 	 */
 	private Manufacture getWorkshop() {
 		return workshop;
+	}
+	
+	/**
+	 * Inner class for the manufacture selection list cell renderer.
+	 */
+	private class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
+		
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, 
+				boolean isSelected, boolean cellHasFocus) {
+			Component result = super.getListCellRendererComponent(list, value, index, isSelected, 
+					cellHasFocus);
+			ManufactureProcessInfo info = (ManufactureProcessInfo) value;
+			if (info != null) {
+				String processName = info.getName();
+				if (processName.length() > 28) processName = processName.substring(0, 28) + "...";
+				((JLabel) result).setText(processName);
+				((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
+			}
+			return result;
+		}
 	}
 }
