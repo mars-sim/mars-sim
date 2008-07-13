@@ -101,7 +101,7 @@ public class ManufactureTabPanel extends TabPanel {
         // Create the process panels.
         processCache = getManufactureProcesses();
         Iterator<ManufactureProcess> i = processCache.iterator();
-        while (i.hasNext()) manufactureListPane.add(new ManufacturePanel(i.next(), true, 34));
+        while (i.hasNext()) manufactureListPane.add(new ManufacturePanel(i.next(), true, 30));
         
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
@@ -178,7 +178,7 @@ public class ManufactureTabPanel extends TabPanel {
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				if (!processCache.contains(process)) 
-					manufactureListPane.add(new ManufacturePanel(process, true, 34));
+					manufactureListPane.add(new ManufacturePanel(process, true, 30));
 			}
 			
 			// Remove manufacture panels for old processes.

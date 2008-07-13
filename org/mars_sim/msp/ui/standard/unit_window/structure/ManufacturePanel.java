@@ -9,9 +9,14 @@ package org.mars_sim.msp.ui.standard.unit_window.structure;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
 
 import javax.swing.BoundedRangeModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -20,6 +25,7 @@ import org.mars_sim.msp.simulation.manufacture.ManufactureProcess;
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 
 public class ManufacturePanel extends JPanel {
@@ -48,15 +54,33 @@ public class ManufacturePanel extends JPanel {
         // Set border
         setBorder(new MarsPanelBorder());
         
+        // Prepare name panel.
+        JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
+        add(namePane);
+        
+        // Prepare cancel button.
+        JButton cancelButton = new JButton(new ImageIcon("images/CancelSmall.gif"));
+        cancelButton.setMargin(new Insets(0, 0, 0, 0));
+        cancelButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {
+        		try {
+        			getManufactureProcess().getWorkshop().endManufacturingProcess(getManufactureProcess());
+        		}
+        		catch (BuildingException e) {}
+	        }
+        });
+        cancelButton.setToolTipText("Cancel manufacturing process");
+        namePane.add(cancelButton);
+        
         // Prepare name label.
         String name = process.getInfo().getName();
         if (name.length() > 0) {
         	String firstLetter = name.substring(0, 1).toUpperCase();
-        	name = firstLetter + name.substring(1);
+        	name = " " + firstLetter + name.substring(1);
         }
         if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
         JLabel nameLabel = new JLabel(name, JLabel.CENTER);
-        add(nameLabel);
+        namePane.add(nameLabel);
 
         if (showBuilding) {
         	// Prepare building name label.

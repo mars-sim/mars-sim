@@ -100,7 +100,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         // Create process panels
         processCache = new ArrayList<ManufactureProcess>(workshop.getProcesses());
         Iterator<ManufactureProcess> i = processCache.iterator();
-        while (i.hasNext()) processListPane.add(new ManufacturePanel(i.next(), false, 25));
+        while (i.hasNext()) processListPane.add(new ManufacturePanel(i.next(), false, 23));
         
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -150,7 +150,7 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
 				if (!processCache.contains(process)) 
-					processListPane.add(new ManufacturePanel(process, false, 25));
+					processListPane.add(new ManufacturePanel(process, false, 23));
 			}
 			
 			// Remove process panels for old processes.
