@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.83 2008-01-17
+ * @version 2.85 2008-07-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -388,7 +388,7 @@ public class BuildingConfig implements Serializable {
 				Element inputElement = (Element) inputNodes.item(y);
 				String resourceName = inputElement.getAttribute(RESOURCE).toLowerCase();
 				AmountResource resource = AmountResource.findAmountResource(resourceName);
-				double rate = Double.parseDouble(inputElement.getAttribute(RATE));
+				double rate = Double.parseDouble(inputElement.getAttribute(RATE)) / 1000D;
 				boolean ambient = Boolean.valueOf(inputElement.getAttribute(AMBIENT)).booleanValue();
 				process.addMaxInputResourceRate(resource, rate, ambient);
 			}
@@ -399,7 +399,7 @@ public class BuildingConfig implements Serializable {
 				Element outputElement = (Element) outputNodes.item(y);
 				String resourceName = outputElement.getAttribute(RESOURCE).toLowerCase();
 				AmountResource resource = AmountResource.findAmountResource(resourceName);
-				double rate = Double.parseDouble(outputElement.getAttribute(RATE));
+				double rate = Double.parseDouble(outputElement.getAttribute(RATE)) / 1000D;
 				boolean ambient = Boolean.valueOf(outputElement.getAttribute(AMBIENT)).booleanValue();
 				process.addMaxOutputResourceRate(resource, rate, ambient);
 			}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 2.85 2008-07-11
+ * @version 2.85 2008-07-12
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -160,6 +162,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		private JButton toggleButton;
 		private ImageIcon greenDot;
 		private ImageIcon redDot;
+		private DecimalFormat decFormatter = new DecimalFormat("0.00");
 		
 		/**
 		 * Constructor
@@ -183,37 +186,59 @@ public class ResourceProcessesTabPanel extends TabPanel {
 	        		update();
 	        	}
 	        });
+	        toggleButton.setToolTipText("Toggle process on/off");
 	        add(toggleButton);
 	        
 	        label = new JLabel(" " + building.getName() + ": " + process.getProcessName());
 	        add(label);
 			
 			// Load green and red dots.
-	        greenDot = new ImageIcon("images/GreenDot.gif", "Process is running.");
-	        redDot = new ImageIcon("images/RedDot.gif", "Process is not running");
+	        greenDot = new ImageIcon("images/GreenDot.gif");
+	        redDot = new ImageIcon("images/RedDot.gif");
 	        
-			if (process.isProcessRunning()) {
-				toggleButton.setIcon(greenDot);
-				setToolTipText(label.getText() + " process is running.");
+			if (process.isProcessRunning()) toggleButton.setIcon(greenDot);
+			else toggleButton.setIcon(redDot);
+			
+			setToolTipText(getToolTipString(building));
+		}
+		
+		private String getToolTipString(Building building) {
+			StringBuffer result = new StringBuffer("<html>");
+			
+			result.append("Resource Process: " + process.getProcessName() + "<br>");
+			result.append("Building: " + building.getName() + "<br>");
+			
+			result.append("Process Inputs:<br>");
+			Iterator<AmountResource> i = process.getInputResources().iterator();
+			while (i.hasNext()) {
+				AmountResource resource = i.next();
+				double rate = process.getMaxInputResourceRate(resource) * 1000D;
+				String rateString = decFormatter.format(rate);
+				result.append("&nbsp;&nbsp;");
+				if (process.isAmbientInputResource(resource)) result.append("* ");
+				result.append(resource.getName() + ": " + rateString + " kg/sol<br>");
 			}
-			else {
-				toggleButton.setIcon(redDot);
-				setToolTipText(label.getText() + " process is not running.");
+			
+			result.append("Process Outputs:<br>");
+			Iterator<AmountResource> j = process.getOutputResources().iterator();
+			while (j.hasNext()) {
+				AmountResource resource = j.next();
+				double rate = process.getMaxOutputResourceRate(resource) * 1000D;
+				String rateString = decFormatter.format(rate);
+				result.append("&nbsp;&nbsp;" + resource.getName() + ": " + rateString + " kg/sol<br>");
 			}
+			
+			result.append("</html>");
+			
+			return result.toString();
 		}
 		
 		/**
 		 * Update the label.
 		 */
 		void update() {
-			if (process.isProcessRunning()) {
-				toggleButton.setIcon(greenDot);
-				setToolTipText(label.getText() + " process is running.");
-			}
-			else {
-				toggleButton.setIcon(redDot);
-				setToolTipText(label.getText() + " process is not running.");
-			}
+			if (process.isProcessRunning()) toggleButton.setIcon(greenDot);
+			else toggleButton.setIcon(redDot);
 		}
 		
 		private ResourceProcess getProcess() {

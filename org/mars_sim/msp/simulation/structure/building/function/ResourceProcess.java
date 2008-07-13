@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 2.85 2008-07-11
+ * @version 2.85 2008-07-12
  * @author Scott Davis
  */
  
@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
-import org.mars_sim.msp.simulation.time.*;
  
 /**
  * The ResourceProcess class represents a process of
@@ -64,7 +63,7 @@ public class ResourceProcess implements Serializable {
     /**
      * Adds a maximum input resource rate if it doesn't already exist.
      * @param resource the amount resource.
-     * @param rate max input resource rate (kg/sec)
+     * @param rate max input resource rate (kg/millisol)
      * @param ambient is resource from available from surroundings? (air)
      */
     public void addMaxInputResourceRate(AmountResource resource, double rate, boolean ambient) {
@@ -81,7 +80,7 @@ public class ResourceProcess implements Serializable {
     /**
      * Adds a maximum output resource rate if it doesn't already exist.
      * @param resource the amount resource.
-     * @param rate max output resource rate (kg/sec)
+     * @param rate max output resource rate (kg/millisol)
      * @param waste is resource waste material not to be stored?
      */
     public void addMaxOutputResourceRate(AmountResource resource, double rate, boolean waste) {
@@ -146,7 +145,7 @@ public class ResourceProcess implements Serializable {
     
     /**
      * Gets the max input resource rate for a given resource.
-     * @return rate in kg/sec.
+     * @return rate in kg/millisol.
      */
     public double getMaxInputResourceRate(AmountResource resource) {
         double result = 0D;
@@ -179,7 +178,7 @@ public class ResourceProcess implements Serializable {
     
     /**
      * Gets the max output resource rate for a given resource.
-     * @return rate in kg/sec.
+     * @return rate in kg/millisol.
      */
     public double getMaxOutputResourceRate(AmountResource resource) {
         double result = 0D;
@@ -215,7 +214,7 @@ public class ResourceProcess implements Serializable {
      
         if (runningProcess) {       
             // Convert time from millisols to seconds.
-            double timeSec = MarsClock.convertMillisolsToSeconds(time);
+            // double timeSec = MarsClock.convertMillisolsToSeconds(time);
             
             // Get resource bottleneck
             double bottleneck = getInputBottleneck(time, inventory);
@@ -229,7 +228,7 @@ public class ResourceProcess implements Serializable {
                 AmountResource resource = (AmountResource) inputI.next();
                 double maxRate = maxInputResourceRates.get(resource).doubleValue();
                 double resourceRate = maxRate * productionLevel;
-                double resourceAmount = resourceRate * timeSec;
+                double resourceAmount = resourceRate * time;
                 double remainingAmount = inventory.getAmountResourceStored(resource);
                 if (resourceAmount > remainingAmount) resourceAmount = remainingAmount;
                 try {
@@ -245,7 +244,7 @@ public class ResourceProcess implements Serializable {
             	AmountResource resource = (AmountResource) outputI.next();
                 double maxRate = maxOutputResourceRates.get(resource).doubleValue();
                 double resourceRate = maxRate * productionLevel;
-                double resourceAmount = resourceRate * timeSec;
+                double resourceAmount = resourceRate * time;
                 double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false);
                 if (resourceAmount > remainingCapacity) resourceAmount = remainingCapacity;
                 try {
@@ -276,13 +275,13 @@ public class ResourceProcess implements Serializable {
         double bottleneck = 1D;
         
         // Convert time from millisols to seconds.
-        double timeSec = MarsClock.convertMillisolsToSeconds(time);
+        // double timeSec = MarsClock.convertMillisolsToSeconds(time);
         
         Iterator inputI = maxInputResourceRates.keySet().iterator();
         while (inputI.hasNext()) {
         	AmountResource resource = (AmountResource) inputI.next();
             double maxRate = maxInputResourceRates.get(resource).doubleValue();
-            double desiredResourceAmount = maxRate * timeSec;
+            double desiredResourceAmount = maxRate * time;
             double inventoryResourceAmount = inventory.getAmountResourceStored(resource);
             double proportionAvailable = 1D;
             if (desiredResourceAmount > 0D) 
