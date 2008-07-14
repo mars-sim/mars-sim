@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 2.85 2008-07-10
+ * @version 2.85 2008-07-13
  * @author Scott Davis
  */
 
@@ -31,6 +31,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
@@ -120,6 +121,10 @@ public class Manufacture extends Function implements Serializable {
 				}
 				else throw new BuildingException("Manufacture process input: " + 
 						item.getType() + " not a valid type.");
+				
+				// Recalculate settlement good value for input item.
+				GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+				goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
 			}
 		}
 		catch (Exception e) {
@@ -253,6 +258,10 @@ public class Manufacture extends Function implements Serializable {
 					}
 					else throw new BuildingException("Manufacture.addProcess(): output: " + 
 							item.getType() + " not a valid type.");
+					
+					// Recalculate settlement good value for output item.
+					GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+					goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
 				}
 			}
 		}

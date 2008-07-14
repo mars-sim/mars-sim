@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeTableModel.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2008-07-13
  * @author Scott Davis
  */
 
@@ -46,8 +46,20 @@ public class TradeTableModel extends AbstractTableModel implements
 	}
 	
 	public void unitUpdate(UnitEvent event) {
-		if (event.getType().equals(GoodsManager.GOODS_VALUE_EVENT)) 
-			fireTableDataChanged();
+		if (event.getType().equals(GoodsManager.GOODS_VALUE_EVENT)) {
+			if (event.getTarget() == null) fireTableDataChanged();
+			else {
+				Good good = (Good) event.getTarget();
+				int rowIndex = goodsList.indexOf(good);
+				Settlement settlement = (Settlement) event.getSource();
+				Settlement[] settlementArray = settlements.toArray(new Settlement[settlements.size()]);
+				int columnIndex = -1;
+				for (int x = 0; x < settlementArray.length; x++) {
+					if (settlementArray[x] == settlement) columnIndex = x + 2;
+				}
+				fireTableCellUpdated(rowIndex, columnIndex);
+			}
+		}
 	}
 
 	public void destroy() {

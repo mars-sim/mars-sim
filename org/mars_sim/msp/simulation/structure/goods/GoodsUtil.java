@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsUtil.java
- * @version 2.84 2008-06-04
+ * @version 2.85 2008-07-13
  * @author Scott Davis
  */
 
@@ -23,6 +23,7 @@ import org.mars_sim.msp.simulation.equipment.SpecimenContainer;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Resource;
+import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 
@@ -95,8 +96,12 @@ public class GoodsUtil {
 	 * @return good for the vehicle type.
 	 */
 	public static Good getVehicleGood(String vehicleType) {
-		if ((vehicleType != null) && !vehicleType.trim().equals("")) 
-			return new Good(vehicleType, Rover.class, Good.VEHICLE);
+		if ((vehicleType != null) && !vehicleType.trim().equals("")) {
+			Class vehicleClass = Rover.class;
+			if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) 
+				vehicleClass = LightUtilityVehicle.class;
+			return new Good(vehicleType, vehicleClass, Good.VEHICLE);
+		}
 		else throw new IllegalArgumentException("vehicleType cannot be blank or null.");
 	}
 	

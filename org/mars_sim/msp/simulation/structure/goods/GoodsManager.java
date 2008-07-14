@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-07-13
  * @author Scott Davis
  */
 
@@ -176,17 +176,21 @@ public class GoodsManager implements Serializable {
 		partsDemandCache.clear();
 		
 		Iterator<Good> i = goodsValues.keySet().iterator();
-		while (i.hasNext()) updateGoodValue(i.next());
+		while (i.hasNext()) updateGoodValue(i.next(), true);
 		settlement.fireUnitUpdate(GOODS_VALUE_EVENT);
 	}
 
 	/**
 	 * Updates the value of a good at the settlement.
 	 * @param good the good to update.
+	 * @param collectiveUpdate true if this update is part of a collective good value update.
 	 * @throws Exception if error updating good value.
 	 */
-	private void updateGoodValue(Good good) throws Exception {
-		if (good != null) goodsValues.put(good, determineGoodValue(good, getAmountOfGoodForSettlement(good), false));
+	public void updateGoodValue(Good good, boolean collectiveUpdate) throws Exception {
+		if (good != null) {
+			goodsValues.put(good, determineGoodValue(good, getAmountOfGoodForSettlement(good), false));
+			if (!collectiveUpdate) settlement.fireUnitUpdate(GOODS_VALUE_EVENT, good);
+		}
 		else throw new IllegalArgumentException("Good is null.");
 	}
 	

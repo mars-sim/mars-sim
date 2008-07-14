@@ -282,4 +282,31 @@ public final class ManufactureUtil {
 		
 		return highestTechLevel;
 	}
+
+	/**
+	 * Gets a good for a manufacture process item.
+	 * @param item the manufacture process item.
+	 * @return good
+	 * @throws Exception if error determining good.
+	 */
+	public static Good getGood(ManufactureProcessItem item) throws Exception {
+		Good result = null;
+		if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+			AmountResource resource = AmountResource.findAmountResource(item.getName());
+			result = GoodsUtil.getResourceGood(resource);
+		}
+		else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+			Part part = (Part) ItemResource.findItemResource(item.getName());
+			result = GoodsUtil.getResourceGood(part);
+		}
+		else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
+			Class equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
+			result = GoodsUtil.getEquipmentGood(equipmentClass);
+		}
+		else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
+			result = GoodsUtil.getVehicleGood(item.getName());
+		}
+		
+		return result;
+	}
 }
