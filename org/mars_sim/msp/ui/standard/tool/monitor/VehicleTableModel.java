@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-07-17
  * @author Barry Evans
  */
 
@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
@@ -339,7 +341,10 @@ public class VehicleTableModel extends UnitTableModel {
 			}
 		}
 			
-		if (columnNum > -1) fireTableCellUpdated(unitIndex, columnNum);
+		if (columnNum > -1) {
+			// fireTableCellUpdated(unitIndex, columnNum);
+			SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
+		}
 	}
     
 	/**
@@ -487,7 +492,8 @@ public class VehicleTableModel extends UnitTableModel {
     			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
     			if (vehicle != null) {
     				int unitIndex = getUnitIndex(vehicle);
-    				fireTableCellUpdated(unitIndex, MISSION);
+    				// fireTableCellUpdated(unitIndex, MISSION);
+    				SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, MISSION));
     			}
     		}
     	}
@@ -500,6 +506,24 @@ public class VehicleTableModel extends UnitTableModel {
     		while (i.hasNext()) removeMission(i.next());
     		missions = null;
     		missionListener = null;
+    	}
+    }
+    
+    /**
+     * Inner class for updating a cell in the vehicle table.
+     */
+    private class VehicleTableCellUpdater implements Runnable {
+    	
+    	private int row;
+    	private int column;
+    	
+    	private VehicleTableCellUpdater(int row, int column) {
+    		this.row = row;
+    		this.column = column;
+    	}
+    	
+    	public void run() {
+    		fireTableCellUpdated(row, column);
     	}
     }
     
@@ -525,7 +549,8 @@ public class VehicleTableModel extends UnitTableModel {
     			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
     			if (vehicle != null) {
     				int unitIndex = getUnitIndex(vehicle);
-    				fireTableCellUpdated(unitIndex, columnNum);
+    				// fireTableCellUpdated(unitIndex, columnNum);
+    				SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
     			}
     		}
     	}

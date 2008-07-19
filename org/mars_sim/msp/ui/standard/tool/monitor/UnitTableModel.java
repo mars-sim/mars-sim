@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTableModel.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2008-07-16
  * @author Barry Evans
  */
 
@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Unit;
@@ -59,7 +60,11 @@ abstract public class UnitTableModel extends AbstractTableModel
             newUnit.addUnitListener(this);
             
             // Inform listeners of new row
-            fireTableRowsInserted(units.size() - 1, units.size() - 1);
+            SwingUtilities.invokeLater(new Runnable() {
+            	public void run() {
+            		fireTableRowsInserted(units.size() - 1, units.size() - 1);
+            	}
+            });
         }
     }
 
@@ -75,25 +80,30 @@ abstract public class UnitTableModel extends AbstractTableModel
             oldUnit.removeUnitListener(this);
 
             // Inform listeners of new row
-            fireTableRowsDeleted(index, index);
+            SwingUtilities.invokeLater(new RemoveUnitTableUpdater(index));
         }
     }
     
+    /**
+     * Gets the index value of a given unit.
+     * @param unit the unit
+     * @return the index value.
+     */
     private int getIndex(Unit unit) {
-	Object[] array = units.toArray();
-	int size = array.length;
-	int result = 0;
+    	Object[] array = units.toArray();
+    	int size = array.length;
+    	int result = 0;
 	
-	for(int i = 0; i < size; i++) {
-	    Unit temp = (Unit) array[i];
+    	for(int i = 0; i < size; i++) {
+    		Unit temp = (Unit) array[i];
 	    
-	    if(temp.equals(unit)) {
-		result = i;
-		break;
-	    }
-	}
+    		if(temp.equals(unit)) {
+    			result = i;
+    			break;
+    		}
+    	}
 	
-	return result;
+    	return result;
     }
     
     /**
@@ -218,7 +228,7 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return Unit at specified position.
      */
     public Object getObject(int row) {
-	Object array[] = units.toArray();
+    	Object array[] = units.toArray();
         return array[row];
     }
     
@@ -237,6 +247,7 @@ abstract public class UnitTableModel extends AbstractTableModel
     	units = null;
     }
     
+    @Override
     public boolean equals(Object o) {
     	boolean result = true;
     	
@@ -252,5 +263,21 @@ abstract public class UnitTableModel extends AbstractTableModel
     	else result = false;
     	
     	return result;
+    }
+    
+    /**
+     * Inner class for updating table after removing units.
+     */
+    private class RemoveUnitTableUpdater implements Runnable {
+    	
+    	private int index;
+    	
+    	private RemoveUnitTableUpdater(int index) {
+    		this.index = index;
+    	}
+    	
+    	public void run() {
+    		fireTableRowsDeleted(index, index);
+    	}
     }
 }

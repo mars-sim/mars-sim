@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.85 2008-06-26
+ * @version 2.85 2008-07-16
  * @author Barry Evans
  */
 
@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Simulation;
@@ -185,6 +187,8 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
+		SwingUtilities.invokeLater(new PersonTableUpdater(event));
+		/*
 		Unit unit = (Unit) event.getSource();
 		String eventType = event.getType();
 
@@ -202,6 +206,7 @@ public class PersonTableModel extends UnitTableModel {
 				eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
 			
 		if (columnNum > -1) fireTableCellUpdated(getUnitIndex(unit), columnNum);
+		*/
 	}
 
     /**
@@ -327,6 +332,7 @@ public class PersonTableModel extends UnitTableModel {
     	}
     }
     
+    @Override
     public boolean equals(Object o) {
     	boolean result = super.equals(o);
     	
@@ -336,6 +342,38 @@ public class PersonTableModel extends UnitTableModel {
     	}
     	
     	return result;
+    }
+    
+    /**
+     * Inner class for updating the person table.
+     */
+    private class PersonTableUpdater implements Runnable {
+    	
+    	private UnitEvent event;
+    	
+    	private PersonTableUpdater(UnitEvent event) {
+    		this.event = event;
+    	}
+    	
+    	public void run() {
+    		Unit unit = (Unit) event.getSource();
+    		String eventType = event.getType();
+
+    		int columnNum = -1;
+    		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
+    		else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
+    		else if (eventType.equals(PhysicalCondition.HUNGER_EVENT)) columnNum = HUNGER;
+    		else if (eventType.equals(PhysicalCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
+    		else if (eventType.equals(PhysicalCondition.STRESS_EVENT)) columnNum = STRESS;
+    		else if (eventType.equals(PhysicalCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
+    		else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
+    		else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
+    		else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
+    		else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) || 
+    				eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
+    			
+    		if (columnNum > -1) fireTableCellUpdated(getUnitIndex(unit), columnNum);
+    	}
     }
     
     /**

@@ -1,12 +1,15 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-07-17
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.util.*;
+
+import javax.swing.SwingUtilities;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
@@ -281,7 +284,10 @@ public class SettlementTableModel extends UnitTableModel {
 			catch (Exception e) {}
 		}
 			
-		if (columnNum > -1) fireTableCellUpdated(unitIndex, columnNum);
+		if (columnNum > -1) {
+			// fireTableCellUpdated(unitIndex, columnNum);
+			SwingUtilities.invokeLater(new SettlementTableCellUpdater(unitIndex, columnNum));
+		}
 	}
     
 	/**
@@ -370,6 +376,21 @@ public class SettlementTableModel extends UnitTableModel {
     	
     	resourceCache.clear();
     	resourceCache = null;
+    }
+    
+    private class SettlementTableCellUpdater implements Runnable {
+    	
+    	private int row;
+    	private int column;
+    	
+    	private SettlementTableCellUpdater(int row, int column) {
+    		this.row = row;
+    		this.column = column;
+    	}
+    	
+    	public void run() {
+    		fireTableCellUpdated(row, column);
+    	}
     }
 	
     /**

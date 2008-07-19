@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 2.81 2007-08-27
+ * @version 2.85 2008-07-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Simulation;
@@ -89,7 +91,12 @@ public class MissionTableModel extends AbstractTableModel implements
 			mission.addMissionListener(this);
 			
 			// Inform listeners of new row
-            fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
+				}
+			});
+            // fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
 		}
 	}
 	
@@ -104,7 +111,8 @@ public class MissionTableModel extends AbstractTableModel implements
 			mission.removeMissionListener(this);
 			
 			// Inform listeners of new row
-            fireTableRowsDeleted(index, index);
+			SwingUtilities.invokeLater(new MissionTableRowDeleter(index));
+            // fireTableRowsDeleted(index, index);
 		}
 	}
 	
@@ -181,8 +189,8 @@ public class MissionTableModel extends AbstractTableModel implements
 				column2 = REMAINING_DISTANCE;
 			}
 			
-			if (column1 > -1) fireTableCellUpdated(index, column1);
-			if (column2 > -1) fireTableCellUpdated(index, column2);
+			if (column1 > -1) SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
+			if (column2 > -1) SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column2));
 		}
 	}
 
@@ -286,5 +294,36 @@ public class MissionTableModel extends AbstractTableModel implements
     	}
     	missionCache = null;
     	Simulation.instance().getMissionManager().removeListener(this);
+    }
+    
+    /**
+     * Inner class for updating mission table cell.
+     */
+    private class MissionTableCellUpdater implements Runnable {
+    	
+    	private int row;
+    	private int column;
+    	
+    	private MissionTableCellUpdater(int row, int column) {
+    		this.row = row;
+    		this.column = column;
+    	}
+    	
+    	public void run() {
+    		fireTableCellUpdated(row, column);
+    	}
+    }
+    
+    private class MissionTableRowDeleter implements Runnable {
+    	
+    	private int row;
+    	
+    	private MissionTableRowDeleter(int row) {
+    		this.row = row;
+    	}
+    	
+    	public void run() {
+    		fireTableRowsDeleted(row, row);
+    	}
     }
 }
