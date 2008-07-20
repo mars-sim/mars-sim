@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BarChartTab.java
- * @version 2.84 2008-04-09
+ * @version 2.85 2008-07-20
  * @author Barry Evans
  */
 
@@ -37,6 +37,10 @@ class BarChartTab extends MonitorTab {
     private final static int COLUMNWIDTH = 4;
     private final static int LABELWIDTH = 8;
     private final static int SCROLLTHRESHOLD = 400; // Large non-scroll chart
+    
+    // Minimum time (milliseconds) between chart updates based on table
+    // update events.
+    private static final long MIN_TIME_BETWEEN_UPDATES = 1000L;
 
     /**
      *  Basic Bar Dataset to map a table model onto a Category Data set for
@@ -50,6 +54,7 @@ class BarChartTab extends MonitorTab {
         private TableModel model;
         private int[] columns;
         private List<String> categories;
+        private long lastUpdateTime;
 
         public TableBarDataset(TableModel model, int columns[]) {
             setModel(model);
@@ -234,7 +239,13 @@ class BarChartTab extends MonitorTab {
             	for (int x=0; x < columns.length; x++) {
             		if (columns[x] == e.getColumn()) dataChanged = true;
             	}
-            	if (dataChanged) fireDatasetChanged();
+            	if (dataChanged) {
+            		long time = System.nanoTime() / 1000000L;
+                	if ((time - lastUpdateTime) > MIN_TIME_BETWEEN_UPDATES) {
+                		lastUpdateTime = time;
+                		fireDatasetChanged();
+                	}
+            	}
             }
         }
     }

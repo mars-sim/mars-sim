@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * PieChartView.java
- * @version 2.84 2008-04-09
+ * @version 2.85 2008-07-20
  * @author Barry Evans
  */
 
@@ -35,6 +35,10 @@ import org.jfree.data.PieDataset;
 class PieChartTab extends MonitorTab {
 
     public final static Icon PIEICON = ImageLoader.getIcon("PieChart");
+    
+    // Minimum time (milliseconds) between chart updates based on table
+    // update events.
+    private static final long MIN_TIME_BETWEEN_UPDATES = 1000L;
 
     /**
      * The category name for unknwown
@@ -50,6 +54,7 @@ class PieChartTab extends MonitorTab {
         private TableModel model;
         private int column;
         private Map<Comparable, Integer> dataMap;
+        private long lastUpdateTime;
 
         public TablePieDataset(TableModel model, int column) {
             this.column = column;
@@ -63,37 +68,42 @@ class PieChartTab extends MonitorTab {
          */
         void calculate() {
             
-            int rows = model.getRowCount();
+        	long time = System.nanoTime() / 1000000L;
+        	if ((time - lastUpdateTime) > MIN_TIME_BETWEEN_UPDATES) {
+        		lastUpdateTime = time;
+        		
+        		int rows = model.getRowCount();
 
-            Map<Comparable, Integer> tempMap = Collections.synchronizedMap(new LinkedHashMap<Comparable, Integer>(dataMap));
+        		Map<Comparable, Integer> tempMap = Collections.synchronizedMap(new LinkedHashMap<Comparable, Integer>(dataMap));
             
-            // Clear the temp map.
-            Iterator<Comparable> iter = tempMap.keySet().iterator();
-            while (iter.hasNext()) tempMap.put(iter.next(), 0);
+        		// Clear the temp map.
+        		Iterator<Comparable> iter = tempMap.keySet().iterator();
+        		while (iter.hasNext()) tempMap.put(iter.next(), 0);
                 
 
-            // Add category values and categories.
-            for(int i = 0; i < rows; i++) {
+        		// Add category values and categories.
+        		for(int i = 0; i < rows; i++) {
                 
-                Comparable category = (Comparable) model.getValueAt(i, column);
-                if (category == null) category = NONECAT;
-                else if (!(category instanceof String)) category = category.toString();
-                if (((String) category).trim().equals("")) category = "None";
+        			Comparable category = (Comparable) model.getValueAt(i, column);
+        			if (category == null) category = NONECAT;
+        			else if (!(category instanceof String)) category = category.toString();
+        			if (((String) category).trim().equals("")) category = "None";
 
-                Integer value = tempMap.get(category);
-                int count = 1;
-                if (value != null) count = value.intValue() + 1;
+        			Integer value = tempMap.get(category);
+        			int count = 1;
+        			if (value != null) count = value.intValue() + 1;
 
-                // Put updated value in data map.
-                tempMap.put(category, count);
-            }    
+        			// Put updated value in data map.
+        			tempMap.put(category, count);
+        		}    
             
-            if (!dataMap.equals(tempMap)) {
-            	dataMap.clear();
-            	dataMap = tempMap;
-            	fireDatasetChanged();
-            }
-            else tempMap.clear();
+        		if (!dataMap.equals(tempMap)) {
+        			dataMap.clear();
+        			dataMap = tempMap;
+        			fireDatasetChanged();
+        		}
+        		else tempMap.clear();
+        	}
         }
         
 
