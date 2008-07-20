@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 2.85 2008-07-17
+ * @version 2.85 2008-07-19
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -285,7 +285,6 @@ public class SettlementTableModel extends UnitTableModel {
 		}
 			
 		if (columnNum > -1) {
-			// fireTableCellUpdated(unitIndex, columnNum);
 			SwingUtilities.invokeLater(new SettlementTableCellUpdater(unitIndex, columnNum));
 		}
 	}

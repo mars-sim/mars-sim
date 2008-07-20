@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InfoDialog.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2008-07-19
  * @author Scott Davis
  */
 
@@ -262,13 +262,17 @@ public class InfoPanel extends JPanel {
 			Rover rover = ((RoverMission) mission).getRover();
 			String phase = mission.getPhase();
 			Collection<Person> peopleAtLocation = null;
-			if (phase.equals(RoverMission.EMBARKING) || phase.equals(RoverMission.DISEMBARKING)) {
-				// Add available people at the local settlement.
-				peopleAtLocation = rover.getSettlement().getInhabitants();
-			}
-			else {
-				// Add available people in the rover.
-				peopleAtLocation = rover.getCrew();
+			if (rover != null) {
+				if (phase.equals(RoverMission.EMBARKING) || 
+						phase.equals(RoverMission.DISEMBARKING)) {
+					// Add available people at the local settlement.
+					Settlement settlement = rover.getSettlement();
+					if (settlement != null) peopleAtLocation = settlement.getInhabitants();
+				}
+				else {
+					// Add available people in the rover.
+					peopleAtLocation = rover.getCrew();
+				}
 			}
 			
 			// Add people.

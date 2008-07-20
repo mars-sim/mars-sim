@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 2.85 2008-07-17
+ * @version 2.85 2008-07-19
  * @author Barry Evans
  */
 
@@ -342,7 +342,6 @@ public class VehicleTableModel extends UnitTableModel {
 		}
 			
 		if (columnNum > -1) {
-			// fireTableCellUpdated(unitIndex, columnNum);
 			SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
 		}
 	}
@@ -492,7 +491,6 @@ public class VehicleTableModel extends UnitTableModel {
     			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
     			if (vehicle != null) {
     				int unitIndex = getUnitIndex(vehicle);
-    				// fireTableCellUpdated(unitIndex, MISSION);
     				SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, MISSION));
     			}
     		}
@@ -549,7 +547,6 @@ public class VehicleTableModel extends UnitTableModel {
     			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
     			if (vehicle != null) {
     				int unitIndex = getUnitIndex(vehicle);
-    				// fireTableCellUpdated(unitIndex, columnNum);
     				SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
     			}
     		}

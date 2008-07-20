@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.84 2008-05-10
+ * @version 2.85 2008-07-19
  * @author Scott Davis
  */
 
@@ -197,13 +197,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 * param time the amount of time changed. (millisols)
 	 */
 	public void clockPulse(double time) {
-		martianTimeLabel.setText(marsTime.getTimeStamp());
-        earthTimeLabel.setText(earthTime.getTimeStamp());
-        uptimeLabel.setText(uptimer.getUptime());
-        martianMonthLabel.setText(marsTime.getMonthName());
-        northernSeasonLabel.setText("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE));
-        southernSeasonLabel.setText("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)); 
-        calendarDisplay.update();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				martianTimeLabel.setText(marsTime.getTimeStamp());
+		        earthTimeLabel.setText(earthTime.getTimeStamp());
+		        uptimeLabel.setText(uptimer.getUptime());
+		        martianMonthLabel.setText(marsTime.getMonthName());
+		        northernSeasonLabel.setText("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE));
+		        southernSeasonLabel.setText("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)); 
+		        calendarDisplay.update();
+			}
+		});
 	}
     
     /**

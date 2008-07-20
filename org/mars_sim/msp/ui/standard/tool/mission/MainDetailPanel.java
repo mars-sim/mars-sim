@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 2.84 2008-05-30
+ * @version 2.85 2008-07-19
  * @author Scott Davis
  */
 
@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -365,58 +366,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	 * Mission event update.
 	 */
 	public void missionUpdate(MissionEvent e) {
-		Mission mission = (Mission) e.getSource();
-		String type = e.getType();
-		
-		// Update UI based on mission event type.
-		if (type.equals(Mission.NAME_EVENT)) 
-			typeLabel.setText("Type: " + mission.getName());
-		else if (type.equals(Mission.DESCRIPTION_EVENT)) 
-			descriptionLabel.setText("Description: " + mission.getDescription());
-		else if (type.equals(Mission.PHASE_DESCRIPTION_EVENT))
-			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
-		else if (type.equals(Mission.ADD_MEMBER_EVENT) || type.equals(Mission.REMOVE_MEMBER_EVENT) || 
-				type.equals(Mission.MIN_PEOPLE_EVENT) || type.equals(Mission.CAPACITY_EVENT)) {
-			int memberNum = mission.getPeopleNumber();
-			int minMembers = mission.getMinPeople();
-			int maxMembers = mission.getMissionCapacity();
-			memberNumLabel.setText("Mission Members: " + memberNum + " (Min: " + minMembers + 
-					" - Max: " + maxMembers + ")");
-			memberTableModel.updateMembers();
-		}
-		else if (type.equals(VehicleMission.VEHICLE_EVENT)) {
-			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-			if (vehicle != null) {
-				vehicleButton.setText(vehicle.getName());
-				vehicleButton.setVisible(true);
-				vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
-				speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
-				vehicle.addUnitListener(this);
-				currentVehicle = vehicle;
-			}
-			else {
-				vehicleButton.setVisible(false);
-				vehicleStatusLabel.setText("Vehicle Status:");
-				speedLabel.setText("Vehicle Speed:");
-				if (currentVehicle != null) currentVehicle.removeUnitListener(this);
-				currentVehicle = null;
-			}
-		}
-		else if (type.equals(TravelMission.DISTANCE_EVENT)) {
-			VehicleMission vehicleMission = (VehicleMission) mission;
-			try {
-				int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
-				distanceNextNavLabel.setText("Distance to Next Navpoint: " + distanceNextNav + " km");
-			}
-			catch (Exception e2) {}
-			int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
-			int totalDistance = (int) vehicleMission.getTotalDistance();
-			travelledLabel.setText("Travelled Distance: " + travelledDistance + 
-					" km of " + totalDistance + " km");
-		}
-		
-		// Update custom mission panel.
-		updateCustomPanelMissionEvent(e);
+		SwingUtilities.invokeLater(new MissionEventUpdater(e, this));
 	}
 	
 	/**
@@ -435,13 +385,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		// Update vehicle info in UI based on event type.
-		String type = event.getType();
-		Vehicle vehicle = (Vehicle) event.getSource();
-		if (type.equals(Vehicle.STATUS_EVENT)) 
-			vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
-		else if (type.equals(Vehicle.SPEED_EVENT)) 
-			speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
+		SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
 	}
 	
     /**
@@ -450,6 +394,94 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
      */
     private MainDesktopPane getDesktop() {
     	return desktop;
+    }
+    
+    private class MissionEventUpdater implements Runnable {
+    	
+    	private MissionEvent event;
+    	private MainDetailPanel panel;
+    	
+    	private MissionEventUpdater(MissionEvent event, MainDetailPanel panel) {
+    		this.event = event;
+    		this.panel = panel;
+    	}
+    	
+    	public void run() {
+    		Mission mission = (Mission) event.getSource();
+    		String type = event.getType();
+    		
+    		// Update UI based on mission event type.
+    		if (type.equals(Mission.NAME_EVENT)) 
+    			typeLabel.setText("Type: " + mission.getName());
+    		else if (type.equals(Mission.DESCRIPTION_EVENT)) 
+    			descriptionLabel.setText("Description: " + mission.getDescription());
+    		else if (type.equals(Mission.PHASE_DESCRIPTION_EVENT))
+    			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
+    		else if (type.equals(Mission.ADD_MEMBER_EVENT) || type.equals(Mission.REMOVE_MEMBER_EVENT) || 
+    				type.equals(Mission.MIN_PEOPLE_EVENT) || type.equals(Mission.CAPACITY_EVENT)) {
+    			int memberNum = mission.getPeopleNumber();
+    			int minMembers = mission.getMinPeople();
+    			int maxMembers = mission.getMissionCapacity();
+    			memberNumLabel.setText("Mission Members: " + memberNum + " (Min: " + minMembers + 
+    					" - Max: " + maxMembers + ")");
+    			memberTableModel.updateMembers();
+    		}
+    		else if (type.equals(VehicleMission.VEHICLE_EVENT)) {
+    			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+    			if (vehicle != null) {
+    				vehicleButton.setText(vehicle.getName());
+    				vehicleButton.setVisible(true);
+    				vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
+    				speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
+    				vehicle.addUnitListener(panel);
+    				currentVehicle = vehicle;
+    			}
+    			else {
+    				vehicleButton.setVisible(false);
+    				vehicleStatusLabel.setText("Vehicle Status:");
+    				speedLabel.setText("Vehicle Speed:");
+    				if (currentVehicle != null) currentVehicle.removeUnitListener(panel);
+    				currentVehicle = null;
+    			}
+    		}
+    		else if (type.equals(TravelMission.DISTANCE_EVENT)) {
+    			VehicleMission vehicleMission = (VehicleMission) mission;
+    			try {
+    				int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
+    				distanceNextNavLabel.setText("Distance to Next Navpoint: " + distanceNextNav + " km");
+    			}
+    			catch (Exception e2) {}
+    			int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
+    			int totalDistance = (int) vehicleMission.getTotalDistance();
+    			travelledLabel.setText("Travelled Distance: " + travelledDistance + 
+    					" km of " + totalDistance + " km");
+    		}
+    		
+    		// Update custom mission panel.
+    		updateCustomPanelMissionEvent(event);
+    	}
+    }
+    
+    /**
+     * Inner class for updating vehicle info.
+     */
+    private class VehicleInfoUpdater implements Runnable {
+    	
+    	private UnitEvent event;
+    	
+    	private VehicleInfoUpdater(UnitEvent event) {
+    		this.event = event;
+    	}
+    	
+    	public void run() {
+    		// Update vehicle info in UI based on event type.
+    		String type = event.getType();
+    		Vehicle vehicle = (Vehicle) event.getSource();
+    		if (type.equals(Vehicle.STATUS_EVENT)) 
+    			vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
+    		else if (type.equals(Vehicle.SPEED_EVENT)) 
+    			speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
+    	}
     }
     
     /**
@@ -553,9 +585,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     		String type = event.getType();
     		Person person = (Person) event.getSource();
     		int index = getIndex(members,person);
-    		if (type.equals(Unit.NAME_EVENT)) fireTableCellUpdated(index, 0);
+    		if (type.equals(Unit.NAME_EVENT)) 
+    			SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
     		else if (type.equals(Task.TASK_DESC_EVENT) || type.equals(TaskManager.TASK_EVENT)) 
-    			fireTableCellUpdated(index, 1);
+    			SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
     	}
     	
     	private int getIndex(Collection col, Object obj) {
@@ -582,12 +615,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     			members = new ConcurrentLinkedQueue<Person>(mission.getPeople());
     			Iterator<Person> i = members.iterator();
     			while (i.hasNext()) i.next().addUnitListener(this);
-    			fireTableDataChanged();
+    			SwingUtilities.invokeLater(new MemberTableUpdater());
     		}
     		else {
     			if (members.size() > 0) {
     				clearMembers();
-    				fireTableDataChanged();
+    				SwingUtilities.invokeLater(new MemberTableUpdater());
     			}
     		}
     	}
@@ -614,6 +647,31 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     		} 
     		else {
     		    return null;
+    		}
+    	}
+    	
+    	/**
+    	 * Inner class for updating member table.
+    	 */
+    	private class MemberTableUpdater implements Runnable {
+    		
+    		private int row;
+    		private int column;
+    		private boolean entireData;
+    		
+    		private MemberTableUpdater(int row, int column) {
+    			this.row = row;
+    			this.column = column;
+    			entireData = false;
+    		}
+    		
+    		private MemberTableUpdater() {
+    			entireData = true;
+    		}
+    		
+    		public void run() {
+    			if (entireData) fireTableDataChanged();
+    			else fireTableCellUpdated(row, column);
     		}
     	}
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionListModel.java
- * @version 2.81 2007-08-27
+ * @version 2.85 2008-07-19
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.AbstractListModel;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
@@ -51,7 +52,8 @@ public class MissionListModel extends AbstractListModel implements
 		if (!missions.contains(mission)) {
 			missions.add(mission);
 			mission.addMissionListener(this);
-			fireIntervalAdded(this, missions.size() - 1, missions.size() - 1);
+			SwingUtilities.invokeLater(new MissionListUpdater(
+					MissionListUpdater.ADD, this, missions.size() - 1));
 		}
 	}
 
@@ -64,7 +66,8 @@ public class MissionListModel extends AbstractListModel implements
 			int index = missions.indexOf(mission);
 			missions.remove(mission);
 			mission.removeMissionListener(this);
-			fireIntervalRemoved(this, index, index);
+			SwingUtilities.invokeLater(new MissionListUpdater(
+					MissionListUpdater.REMOVE, this, index));
 		}
 	}
 	
@@ -75,7 +78,10 @@ public class MissionListModel extends AbstractListModel implements
 	public void missionUpdate(MissionEvent event) {
 		if (event.getType().equals(Mission.DESCRIPTION_EVENT)) {
 			int index = missions.indexOf(event.getSource());
-			if ((index > -1) && (index < missions.size())) fireContentsChanged(this, index, index);
+			if ((index > -1) && (index < missions.size())) {
+				SwingUtilities.invokeLater(new MissionListUpdater(
+						MissionListUpdater.CHANGE, this, index));
+			}
 		}
 	}
 
@@ -128,5 +134,39 @@ public class MissionListModel extends AbstractListModel implements
 		missions.clear();
 		missions = null;
 		Simulation.instance().getMissionManager().removeListener(this);
+	}
+	
+	/**
+	 * Inner class for updating the mission list.
+	 */
+	private class MissionListUpdater implements Runnable {
+		
+		private static final int ADD = 0;
+		private static final int REMOVE = 1;
+		private static final int CHANGE = 2;
+		
+		private int mode;
+		private MissionListModel model;
+		private int row;
+		
+		private MissionListUpdater(int mode, MissionListModel model, int row) {
+			this.mode = mode;
+			this.model = model;
+			this.row = row;
+		}
+		
+		public void run() {
+			switch (mode) {
+				case ADD : {
+					fireIntervalAdded(model, row, row);
+				} break;
+				case REMOVE : {
+					fireIntervalRemoved(model, row, row);
+				} break;
+				case CHANGE : {
+					fireContentsChanged(model, row, row);
+				} break;
+			}
+		}
 	}
 }

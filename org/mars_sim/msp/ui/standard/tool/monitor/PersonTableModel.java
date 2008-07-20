@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 2.85 2008-07-16
+ * @version 2.85 2008-07-19
  * @author Barry Evans
  */
 
@@ -188,25 +188,6 @@ public class PersonTableModel extends UnitTableModel {
 	 */
 	public void unitUpdate(UnitEvent event) {
 		SwingUtilities.invokeLater(new PersonTableUpdater(event));
-		/*
-		Unit unit = (Unit) event.getSource();
-		String eventType = event.getType();
-
-		int columnNum = -1;
-		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
-		else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
-		else if (eventType.equals(PhysicalCondition.HUNGER_EVENT)) columnNum = HUNGER;
-		else if (eventType.equals(PhysicalCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
-		else if (eventType.equals(PhysicalCondition.STRESS_EVENT)) columnNum = STRESS;
-		else if (eventType.equals(PhysicalCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
-		else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
-		else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
-		else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
-		else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) || 
-				eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
-			
-		if (columnNum > -1) fireTableCellUpdated(getUnitIndex(unit), columnNum);
-		*/
 	}
 
     /**

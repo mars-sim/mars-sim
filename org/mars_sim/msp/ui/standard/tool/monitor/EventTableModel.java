@@ -1,12 +1,14 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 2.81 2007-08-27
+ * @version 2.85 2008-07-19
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
 
 import java.util.*;
+
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.events.*;
@@ -97,7 +99,11 @@ public class EventTableModel extends AbstractTableModel
 		}
 		
 		// Update all table listeners.
-		fireTableDataChanged();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				fireTableDataChanged();
+			}
+		});
 	}
 
     /**

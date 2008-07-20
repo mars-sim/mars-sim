@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 2.81 2007-08-27
+ * @version 2.85 2008-07-19
  * @author Scott Davis
  */
 
@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -237,7 +238,11 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		String type = event.getType();
 		if (TravelMission.NAVPOINTS_EVENT.equals(type)) {
 			// Update mission navpoints.
-			navpointTableModel.updateNavpoints();
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					navpointTableModel.updateNavpoints();
+				}
+			});
 		}
 	}
 	

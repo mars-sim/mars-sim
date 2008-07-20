@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditTabPanel.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2008-07-19
  * @author Scott Davis
  */
 
@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.CollectionUtils;
@@ -164,8 +165,13 @@ public class CreditTabPanel extends TabPanel {
     	 * @param event the credit event.
     	 */
     	public void creditUpdate(CreditEvent event) {
-    		if ((thisSettlement == event.getSettlement1()) || (thisSettlement == event.getSettlement2())) 
-    			fireTableDataChanged();
+    		if ((thisSettlement == event.getSettlement1()) || 
+    				(thisSettlement == event.getSettlement2())) 
+    			SwingUtilities.invokeLater(new Runnable() {
+    				public void run() {
+    					fireTableDataChanged();
+    				}
+    			});
     	}
     	
         /**

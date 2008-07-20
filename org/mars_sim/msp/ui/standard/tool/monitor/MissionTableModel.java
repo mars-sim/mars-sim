@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 2.85 2008-07-17
+ * @version 2.85 2008-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -96,7 +96,6 @@ public class MissionTableModel extends AbstractTableModel implements
 					fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
 				}
 			});
-            // fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
 		}
 	}
 	
@@ -112,7 +111,6 @@ public class MissionTableModel extends AbstractTableModel implements
 			
 			// Inform listeners of new row
 			SwingUtilities.invokeLater(new MissionTableRowDeleter(index));
-            // fireTableRowsDeleted(index, index);
 		}
 	}
 	
