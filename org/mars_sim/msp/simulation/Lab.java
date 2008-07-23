@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Lab.java
- * @version 2.74 2003-04-14
+ * @version 2.85 2008-07-23
  * @author Scott Davis
  */
 
@@ -21,7 +21,7 @@ public interface Lab {
     public int getLaboratorySize(); 
 
     /** 
-     * Gets the technology level of laboratory
+     * Gets the technology level of laboratory.
      * (units defined later) 
      * @return the technology level of the laboratory 
      * (units defined later)
@@ -29,7 +29,7 @@ public interface Lab {
     public int getTechnologyLevel();
 
     /** 
-     * Gets the lab's science specialities as an array of Strings 
+     * Gets the lab's science specialities as an array of Strings. 
      * @return the lab's science specialities as an array of Strings
      */
     public String[] getTechSpecialities(); 

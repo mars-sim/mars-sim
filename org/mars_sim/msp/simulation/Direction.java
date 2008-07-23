@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Direction.java
- * @version 2.72 2001-02-18
+ * @version 2.85 2008-07-23
  * @author Scott Davis
  */
 
@@ -29,13 +29,13 @@ public class Direction implements Cloneable, Serializable {
     }
     
     /** 
-     * Clones this Direction object
+     * Clones this Direction object.
      */
     public Object clone() {
         return new Direction(direction);
     }
     
-    /** Returns true if object is an equal direction
+    /** Returns true if object is an equal direction.
      *  @param obj an Object instance
      *  @return true if obj is an equal direction
      */
@@ -62,7 +62,7 @@ public class Direction implements Cloneable, Serializable {
     	return "" + direction;
     }
     
-    /** Returns direction in radians
+    /** Returns direction in radians.
      *  0 = North, clockwise
      *  @return direction in radians
      */
@@ -70,7 +70,7 @@ public class Direction implements Cloneable, Serializable {
         return direction;
     }
     
-    /** Sets the direction
+    /** Sets the direction.
      *  0 = North, clockwise
      *  @param direction new direction
      */
@@ -78,21 +78,21 @@ public class Direction implements Cloneable, Serializable {
         this.direction = cleanDirection(direction);
     }
     
-    /** Returns the sine of the direction
+    /** Returns the sine of the direction.
      *  @return the sine of the direction
      */
     public double getSinDirection() {
         return Math.sin(direction); 
     }
     
-    /** Returns the cosine of the direction
+    /** Returns the cosine of the direction.
      *  @return the cosine of the direction
      */
     public double getCosDirection() {
         return Math.cos(direction);
     }
     
-    /** Makes sure a direction isn't above 2PI or less than zero 
+    /** Makes sure a direction isn't above 2PI or less than zero. 
      *  @param raw direction
      *  @return cleaned direction
      */

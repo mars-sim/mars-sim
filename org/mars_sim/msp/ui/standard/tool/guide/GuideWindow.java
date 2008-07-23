@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 2.84 2008-06-24
+ * @version 2.85 2008-07-23
  * @author Lars Naesbye Christensen
  */
 
@@ -123,14 +123,18 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     setVisible(true);
 
 }
-
+    /** Handles a click on a link
+     *  @param event the HyperlinkEvent
+     */
   public void hyperlinkUpdate(HyperlinkEvent event) {
     if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
         htmlPane.goToURL(event.getURL());
         updateButtons();
     }
   }
-
+    /**
+     *  Updates navigation buttons.
+     */
   public void updateButtons() {
     homeButton.setEnabled(true);
     backButton.setEnabled(!htmlPane.isFirst());
