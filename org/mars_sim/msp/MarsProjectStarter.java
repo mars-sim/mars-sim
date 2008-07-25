@@ -20,10 +20,11 @@ public class MarsProjectStarter {
 	 */
 	public static void main(String[] args) {
 		
-		String[] newArgs = { "-Xms256m", "-Xmx256m", "-Djava.util.logging.config.file=logging.properties" };
-		
 		try {
-			Runtime.getRuntime().exec("java -cp MarsProject.jar org.mars_sim.msp.MarsProject", newArgs);
+			String commandStr = "java -Xms256m -Xmx256m -Djava.util.logging.config.file=logging.properties" + 
+			" -cp MarsProject.jar org.mars_sim.msp.MarsProject";
+			System.out.println("Command: " + commandStr);
+			Runtime.getRuntime().exec(commandStr);
 		}
 		catch(IOException e) {
 			System.out.println("Error starting MarsProject");
