@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 2.85 2008-07-18
+ * @version 2.85 2008-07-25
  * @author Dima Stepanchuk
  */
 package org.mars_sim.msp.ui.standard.sound;
@@ -22,6 +22,9 @@ public interface SoundConstants {
     
     // Unit window sound for settlements.
     public final static String SND_SETTLEMENT = "settlement.wav";
+
+    // Sound for splash.
+    public final static String SND_SPLASH = "splash.wav";
 
     // Unit window sounds for people.
     // TODO: Add additional sounds for people based on activity.
