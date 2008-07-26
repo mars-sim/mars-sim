@@ -16,14 +16,19 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     private static final long serialVersionUID = 1L;
     private final static String TYPE = "Fuel Power Source";
     private boolean toggle = false;
-    
+    private double fuelCapacity; 
+    private double consumptionSpeed;
+    private double currentFuelLevel;
 
     /**
      * @param type
      * @param maxPower
      */
-    public FuelPowerSource(double maxPower) {
-	super(TYPE, maxPower);
+    public FuelPowerSource(double _maxPower, double _capacity, double _consumptionSpeed) {
+	super(TYPE, _maxPower);
+	fuelCapacity = _capacity;
+	currentFuelLevel= _capacity;
+	consumptionSpeed = _consumptionSpeed;
     }
 
     /* 
@@ -31,7 +36,17 @@ public class FuelPowerSource extends PowerSource implements Serializable {
      */
     @Override
     public double getCurrentPower(Building building) {
-	return 0;
+	if(isToggleON()) {
+	    currentFuelLevel = currentFuelLevel- consumptionSpeed;
+	    
+	    if(currentFuelLevel > 0) {
+		return getMaxPower();
+	    } else {
+		return 0;
+	    }
+	} else {
+	    return 0;
+	}
     }
     
     public void toggleON() {
@@ -45,5 +60,14 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     public boolean isToggleON() {
 	return toggle;
     }
-
+    
+    public void addFuel(double amount) {
+	double temp = currentFuelLevel + amount;
+	
+	if(temp > fuelCapacity) {
+	    currentFuelLevel = fuelCapacity;
+	} else {
+	    currentFuelLevel = temp;
+	}
+    }
 }
