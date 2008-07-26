@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * MarsProjectStarter.java
- * @version 2.85 2008-07-24
+ * @version 2.85 2008-07-26
  * @author Scott Davis
  */
 
 package org.mars_sim.msp;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -21,8 +22,19 @@ public class MarsProjectStarter {
 	public static void main(String[] args) {
 		
 		try {
-			String commandStr = "java -Xms256m -Xmx256m -Djava.util.logging.config.file=logging.properties" + 
-			" -cp MarsProject.jar org.mars_sim.msp.MarsProject";
+			StringBuffer command = new StringBuffer();
+			
+			String javaHome = System.getenv("JAVA_HOME");
+			if (javaHome != null) command.append(javaHome + File.separator + "bin" + File.separator + "Sjava ");
+			else command.append("java ");
+			
+			command.append("-Xms256m ");
+			command.append("-Xmx256m ");
+			command.append("-Djava.util.logging.config.file=logging.properties ");
+			command.append("-cp MarsProject.jar ");
+			command.append("org.mars_sim.msp.MarsProject");
+			
+			String commandStr = command.toString();
 			System.out.println("Command: " + commandStr);
 			Runtime.getRuntime().exec(commandStr);
 		}
