@@ -25,7 +25,10 @@ public class MarsProjectStarter {
 			StringBuffer command = new StringBuffer();
 			
 			String javaHome = System.getenv("JAVA_HOME");
-			if (javaHome != null) command.append("\"" + javaHome + File.separator + "bin" + File.separator + "java\" ");
+			if (javaHome != null) {
+				if (javaHome.contains(" ")) javaHome = "\"" + javaHome + "\"";
+				command.append(javaHome + File.separator + "bin" + File.separator + "java ");
+			}
 			else command.append("java ");
 			
 			command.append("-Xms256m ");
