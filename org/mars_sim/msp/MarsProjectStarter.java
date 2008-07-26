@@ -26,16 +26,17 @@ public class MarsProjectStarter {
 			
 			String javaHome = System.getenv("JAVA_HOME");
 			if (javaHome != null) {
-				if (javaHome.contains(" ")) javaHome = "\"" + javaHome + "\"";
-				command.append(javaHome + File.separator + "bin" + File.separator + "java ");
+				if (javaHome.contains(" ")) javaHome = "\"" + javaHome;
+				command.append(javaHome + File.separator + "bin" + File.separator + "java");
+				if (javaHome.contains(" ")) command.append("\"");
 			}
-			else command.append("java ");
+			else command.append("java");
 			
-			command.append("-Xms256m ");
-			command.append("-Xmx256m ");
-			command.append("-Djava.util.logging.config.file=logging.properties ");
-			command.append("-cp MarsProject.jar ");
-			command.append("org.mars_sim.msp.MarsProject");
+			command.append(" -Xms256m");
+			command.append(" -Xmx256m");
+			command.append(" -Djava.util.logging.config.file=logging.properties");
+			command.append(" -cp MarsProject.jar");
+			command.append(" org.mars_sim.msp.MarsProject");
 			
 			String commandStr = command.toString();
 			System.out.println("Command: " + commandStr);
