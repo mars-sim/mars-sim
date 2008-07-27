@@ -18,7 +18,7 @@ public class PowerGeneration extends Function implements Serializable {
     
     public static final String NAME = "Power Generation";
     
-    private List powerSources;
+    private List<PowerSource> powerSources;
     
     /**
      * Constructor
@@ -57,7 +57,16 @@ public class PowerGeneration extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {}
+	public void timePassing(double time) throws BuildingException {
+	    for(PowerSource source : powerSources ) {
+		if(source instanceof FuelPowerSource) {
+		    FuelPowerSource fuelSource = (FuelPowerSource)source;
+		    if(fuelSource.isToggleON()) {
+			fuelSource.consumeFuel(time,getBuilding().getInventory());
+		    }
+		}
+	    }
+	}
 	
 	/**
 	 * Gets the amount of power required when function is at full power.
