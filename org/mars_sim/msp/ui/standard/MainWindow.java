@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.82 2007-11-26
+ * @version 2.85 2008-07-27
  * @author Scott Davis
  */
 
@@ -214,10 +214,10 @@ public class MainWindow extends JFrame {
     }
 
     /**
-     * Save the current simulation. This display a FileChooser to select the
+     * Save the current simulation. This displays a FileChooser to select the
      * location to save the simulation if the default is not to be used.
      *
-     * @param useDefault Should the user be allowed to override location.
+     * @param useDefault Should the user be allowed to override location?
      */
     public void saveSimulation(final boolean useDefault) {
 	    if ((saveSimThread == null) || !saveSimThread.isAlive()) {
