@@ -8,6 +8,8 @@ package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.Building;
 
 
@@ -17,6 +19,10 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     private final static String TYPE = "Fuel Power Source";
     private boolean toggle = false;
     private double fuelCapacity; 
+    
+    //A fuelpower source works only with one kind of fuel
+    //similar to cars
+    private AmountResource resource;
     private double consumptionSpeed;
     private double currentFuelLevel;
 
@@ -24,11 +30,13 @@ public class FuelPowerSource extends PowerSource implements Serializable {
      * @param type
      * @param maxPower
      */
-    public FuelPowerSource(double _maxPower, double _capacity, double _consumptionSpeed) {
+    public FuelPowerSource(double _maxPower, double _capacity, 
+	    AmountResource _resource, double _consumptionSpeed) {
 	super(TYPE, _maxPower);
 	fuelCapacity = _capacity;
 	currentFuelLevel= _capacity;
 	consumptionSpeed = _consumptionSpeed;
+	resource = _resource;
     }
 
     /* 
@@ -69,5 +77,9 @@ public class FuelPowerSource extends PowerSource implements Serializable {
 	} else {
 	    currentFuelLevel = temp;
 	}
+    }
+    
+    public void consumeFuel(double time, Inventory inv) {
+	
     }
 }
