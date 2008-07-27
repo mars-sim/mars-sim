@@ -72,6 +72,7 @@ public class BuildingConfig implements Serializable {
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
 	private static final String SOLAR_POWER_SOURCE = "Solar Power Source";
+	private static final String FUEL_POWER_SOURCE = "Fuel Power Source";
 	
 	private Document buildingDoc;
 	
@@ -501,6 +502,8 @@ public class BuildingConfig implements Serializable {
 			PowerSource powerSource = null;
 			if (type.equals(STANDARD_POWER_SOURCE)) powerSource = new StandardPowerSource(power);
 			else if (type.equals(SOLAR_POWER_SOURCE)) powerSource = new SolarPowerSource(power);
+			else if (type.equals(FUEL_POWER_SOURCE)) 
+			    powerSource = new FuelPowerSource(power, 1000, null, 0.5);
 			else throw new Exception("Power source: " + type + " not a valid power source.");
 			powerSourceList.add(powerSource); 
 		}
