@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGrid.java
- * @version 2.84 2008-05-06
+ * @version 2.85 2008-07-28
  * @author Scott Davis
  */
  
@@ -29,6 +29,7 @@ public class PowerGrid implements Serializable {
 	public static final String POWER_MODE_EVENT = "power mode";
 	public static final String GENERATED_POWER_EVENT = "generated power";
 	public static final String REQUIRED_POWER_EVENT = "required power";
+	public static final String POWER_VALUE_EVENT = "power value";
 	
     // Statc data members
     public static final String POWER_UP_MODE = "Power up";
@@ -40,6 +41,7 @@ public class PowerGrid implements Serializable {
     private double powerRequired;
     private boolean sufficientPower;
     private Settlement settlement;
+    private double powerValue;
     
     /**
      * Constructor
@@ -240,6 +242,9 @@ public class PowerGrid implements Serializable {
                 }
             }
         }
+        
+        // Update power value.
+        determinePowerValue();
     }  
     
     /**
@@ -265,5 +270,28 @@ public class PowerGrid implements Serializable {
         
         if (generated > used) return true;
         else return false;
+    }
+    
+    /**
+     * Gets the value of electrical power at the settlement.
+     * @return value of power (VP per kw h).
+     */
+    public double getPowerValue() {
+    	return powerValue;
+    }
+    
+    /**
+     * Determines the value of electrical power at the settlement.
+     */
+    private void determinePowerValue() {
+    	double demand = powerRequired;
+    	double supply = powerGenerated;
+    	
+    	double newPowerValue = demand / (supply + 1.0);
+    	
+    	if (newPowerValue != powerValue) {
+    		powerValue = newPowerValue;
+    		settlement.fireUnitUpdate(POWER_VALUE_EVENT);
+    	}
     }
 }
