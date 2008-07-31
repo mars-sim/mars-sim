@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+
+<construction>
+	<foundation-list>
+
+		<foundation name="surface foundation 5m x 5m" work-time="2.0" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+	
+		<foundation name="surface foundation 10m x 5m" work-time="4.0" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+
+	</foundation-list>
+
+	<frame-list>
+	
+		<frame name="steel frame tower" work-time="20.0" skill-required="2" foundation="surface foundation 5m x 5m" >
+			<part name="steel truss" number="20" />
+			<part name="steel cable" number="6" />
+			<resource name="concrete" amount="50.0" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+	
+		<frame name="array frame" work-time="20.0" skill-required="2" foundation="surface foundation 10m x 5m" >
+			<part name="steel truss" number="20" />
+			<resource name="concrete" amount="50.0" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+
+	</frame-list>
+
+	<building-list>
+
+		<building name="wind turbine" work-time="10.0" skill-required="3" frame="steel frame tower" >
+			<part name="wind turbine blade" number="4" />
+			<part name="turbine generator" number="1" />
+			<part name="power cable" number="6" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+	
+		<building name="solar photovoltaic array" work-time="10.0" skill-required="2" frame="array frame" >
+			<part name="solar panel" number="6" />
+			<part name="power cable" number="2" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<building name="solar thermal array" work-time="15.0" skill-required="3" frame="array frame" >
+			<part name="solar parabolic mirror" number="3" />
+			<part name="glass tube" number="6" />
+			<part name="steel pipe" number="10" />
+			<part name="turbine generator" number="1" />
+			<part name="power cable" number="2" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<resource name="water" amount="200.0" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+
+	</building-list>
+	
+</construction>
