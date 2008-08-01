@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.resource.ResourceException;
 import org.mars_sim.msp.simulation.structure.building.Building;
 
 
@@ -41,12 +42,18 @@ public class FuelPowerSource extends PowerSource implements Serializable {
      * @param maxPower
      */
     public FuelPowerSource(double _maxPower, double _capacity, 
-	    AmountResource _resource, double _consumptionSpeed) {
+	    String fuelType, double _consumptionSpeed) {
 	super(TYPE, _maxPower);
 	fuelCapacity = _capacity;
 	currentFuelLevel= _capacity;
 	consumptionSpeed = _consumptionSpeed;
-	resource = _resource;
+	
+	
+	try {
+	    resource = AmountResource.findAmountResource(fuelType);
+	} catch (ResourceException e) {
+	    logger.log(Level.SEVERE, "Could not get fuel resource", e);
+	}
     }
 
     /* 
