@@ -454,7 +454,7 @@
  <building name="FuelPowerTest" >
    <functions>
        <power-generation>
-           <power-source type="Fuel Power Source" capacity="1000.0" power="50.0" fuel-type="methane" consumption-rate="20.0" />
+           <power-source type="Fuel Power Source" toggle="true" power="50.0" fuel-type="methane" consumption-rate="20.0" />
        </power-generation>
    </functions>
  </building>
