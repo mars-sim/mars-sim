@@ -29,24 +29,23 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     
     private final static String TYPE = "Fuel Power Source";
     private boolean toggle = false;
-    private double fuelCapacity; 
+
     
     //A fuelpower source works only with one kind of fuel
     //similar to cars
     private AmountResource resource;
     private double consumptionSpeed;
-    private double currentFuelLevel;
+  
 
     /**
      * @param type
      * @param maxPower
      */
-    public FuelPowerSource(double _maxPower, double _capacity, 
+    public FuelPowerSource(double _maxPower, boolean _toggle, 
 	    String fuelType, double _consumptionSpeed) {
 	super(TYPE, _maxPower);
-	fuelCapacity = _capacity;
-	currentFuelLevel= _capacity;
 	consumptionSpeed = _consumptionSpeed;
+	toggle = _toggle;
 	
 	
 	try {
@@ -61,13 +60,19 @@ public class FuelPowerSource extends PowerSource implements Serializable {
      */
     @Override
     public double getCurrentPower(Building building) {
-	if(isToggleON()) {	    
-	    if(currentFuelLevel > 0) {
-		return getMaxPower();
+	try {
+	    if(isToggleON()) {
+	        double fuelStored = building.getInventory().getAmountResourceStored(resource);
+	        if(fuelStored > 0) {
+	    	return getMaxPower();
+	        } else {
+	    	return 0;
+	        }
 	    } else {
-		return 0;
+	        return 0;
 	    }
-	} else {
+	} catch (InventoryException e) {
+	    logger.log(Level.SEVERE, "Issues when getting power frong fuel source", e);
 	    return 0;
 	}
     }
@@ -84,35 +89,20 @@ public class FuelPowerSource extends PowerSource implements Serializable {
 	return toggle;
     }
     
-    public void addFuel(double amount) {
-	double temp = currentFuelLevel + amount;
-	
-	if(temp > fuelCapacity) {
-	    currentFuelLevel = fuelCapacity;
-	} else {
-	    currentFuelLevel = temp;
-	}
-    }
     
     public void consumeFuel(double time, Inventory inv) {
-	double consumedFuel = time  * consumptionSpeed;
-	 currentFuelLevel = currentFuelLevel - consumedFuel;
-	 
 	try {
-	    Set<AmountResource> resources = inv.getAllAmountResourcesStored();
+	    double consumptionRateMillisol = consumptionSpeed / 1000D;
+	    double consumedFuel = time  * consumptionRateMillisol; 
+	    double fuelStored = inv.getAmountResourceStored(resource);
 	    
-	    for(AmountResource res : resources) {
-		if(res == resource ) {
-		    Set<AmountResource> resAmounts = res.getAmountResources();
-		    for(AmountResource amountRes : resAmounts ) {
-			 double remainingAmount = inv.getAmountResourceStored(amountRes);
-			 if (consumedFuel > remainingAmount) consumedFuel = remainingAmount;
-			 inv.retrieveAmountResource(amountRes, consumedFuel);
-		    }   
-		}
+	    if (fuelStored < consumedFuel) {
+		consumedFuel = fuelStored;
 	    }
+	    
+	    inv.retrieveAmountResource(resource, consumedFuel);
 	} catch (InventoryException e) {
-          logger.log(Level.SEVERE, "Issues when consuming fuel", e);
+	   logger.log(Level.SEVERE, "Issues when consuming fuel", e);
 	}
 	
     }
