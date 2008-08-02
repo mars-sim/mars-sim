@@ -70,7 +70,7 @@ public class BuildingConfig implements Serializable {
 	private static final String CONCURRENT_PROCESSES = "concurrent-processes";
 	private static final String FUEL_TYPE = "fuel-type";
 	private static final String COMSUMPTION_RATE = "consumption-rate";
-	private static final String MAX_CAPACITY = "capacity";
+	private static final String TOGGLE = "toggle";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -506,10 +506,10 @@ public class BuildingConfig implements Serializable {
 			if (type.equals(STANDARD_POWER_SOURCE)) powerSource = new StandardPowerSource(power);
 			else if (type.equals(SOLAR_POWER_SOURCE)) powerSource = new SolarPowerSource(power);
 			else if (type.equals(FUEL_POWER_SOURCE)) {
-			    double capacity = Double.parseDouble(powerSourceElement.getAttribute(MAX_CAPACITY));
+			    boolean toggleStafe = Boolean.parseBoolean(powerSourceElement.getAttribute(TOGGLE));
 			    String fuelType = powerSourceElement.getAttribute(FUEL_TYPE);
 			    double consumptionSpeed = Double.parseDouble(powerSourceElement.getAttribute(COMSUMPTION_RATE));
-			    powerSource = new FuelPowerSource(power, capacity, fuelType, consumptionSpeed);
+			    powerSource = new FuelPowerSource(power ,toggleStafe, fuelType, consumptionSpeed);
 			}
 			    
 			else throw new Exception("Power source: " + type + " not a valid power source.");
