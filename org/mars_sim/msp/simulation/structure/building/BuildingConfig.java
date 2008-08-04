@@ -117,9 +117,14 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public double getBasePowerRequirement(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element powerElement = (Element) buildingElement.getElementsByTagName(POWER_REQUIRED).item(0);
-		return Double.parseDouble(powerElement.getAttribute(BASE_POWER));
+        try {
+            Element buildingElement = getBuildingElement(buildingName);
+            Element powerElement = (Element) buildingElement.getElementsByTagName(POWER_REQUIRED).item(0);
+            return Double.parseDouble(powerElement.getAttribute(BASE_POWER));
+        }
+        catch (Exception e) {
+            throw new Exception("power-required: base-power attribute not found for building: " + buildingName);
+        }
 	}
 	
 	/**
@@ -129,9 +134,14 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public double getBasePowerDownPowerRequirement(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element powerElement = (Element) buildingElement.getElementsByTagName(POWER_REQUIRED).item(0);
-		return Double.parseDouble(powerElement.getAttribute(BASE_POWER_DOWN_POWER));
+        try {
+            Element buildingElement = getBuildingElement(buildingName);
+            Element powerElement = (Element) buildingElement.getElementsByTagName(POWER_REQUIRED).item(0);
+            return Double.parseDouble(powerElement.getAttribute(BASE_POWER_DOWN_POWER));
+        }
+        catch (Exception e) {
+            throw new Exception("power-required: base-power-down-power attribute not found for building: " + buildingName);
+        }
 	}
 	
 	/**

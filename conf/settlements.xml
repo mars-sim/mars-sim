@@ -27,6 +27,8 @@
 			     hydrogen and carbon dioxide into methane, water and oxygen.  -->
 			<building type="ERV Base" number="1" />
 			
+			<building type="FuelPowerTest" number="1" />
+			
 			<!-- A rover for collecting rock samples from remote sites
 			     and ice prospecting. -->
 			<vehicle type="Explorer Rover" number="1" />

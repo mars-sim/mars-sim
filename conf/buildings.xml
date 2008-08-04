@@ -452,6 +452,7 @@
 	
 	
  <building name="FuelPowerTest" >
+   <power-required base-power="0.0" base-power-down-power="0.0" />
    <functions>
        <power-generation>
            <power-source type="Fuel Power Source" toggle="true" power="50.0" fuel-type="methane" consumption-rate="20.0" />
