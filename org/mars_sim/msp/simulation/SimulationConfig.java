@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.84 2008-05-25
+ * @version 2.85 2008-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -23,6 +23,7 @@ import org.mars_sim.msp.simulation.structure.ResupplyConfig;
 import org.mars_sim.msp.simulation.structure.SettlementConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -54,6 +55,7 @@ public class SimulationConfig implements Serializable {
 	private static final String PART_PACKAGE_FILE = "part_packages";
 	private static final String RESOURCE_FILE = "resources";
 	private static final String MANUFACTURE_FILE = "manufacturing";
+    private static final String CONSTRUCTION_FILE = "construction";
 	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -82,6 +84,7 @@ public class SimulationConfig implements Serializable {
 	private SettlementConfig settlementConfig;
 	private ManufactureConfig manufactureConfig;
 	private ResupplyConfig resupplyConfig;
+    private ConstructionConfig constructionConfig;
 
 	/**
 	 * Constructor
@@ -107,6 +110,7 @@ public class SimulationConfig implements Serializable {
 			resupplyConfig = new ResupplyConfig(parseXMLFile(RESUPPLY_FILE), partPackageConfig);
 			settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE), partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFile(MANUFACTURE_FILE));
+            constructionConfig = new ConstructionConfig(parseXMLFile(CONSTRUCTION_FILE));
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
@@ -334,4 +338,12 @@ public class SimulationConfig implements Serializable {
 	public ManufactureConfig getManufactureConfiguration() {
 		return manufactureConfig;
 	}
+    
+    /**
+     * Gets the construction config subset.
+     * @return construction config
+     */
+    public ConstructionConfig getConstructionConfiguration() {
+        return constructionConfig;
+    }
 }

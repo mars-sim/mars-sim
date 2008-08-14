@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResource.java
- * @version 2.83 2008-02-20
+ * @version 2.85 2008-08-07
  * @author Scott Davis
  */
 
@@ -38,7 +38,7 @@ public final class AmountResource implements Resource, Serializable {
 	 * @param phase the material phase of the resource.
 	 * @param lifeSupport true if life support resource.
 	 */
-	protected AmountResource(String name, Phase phase, boolean lifeSupport) {
+	public AmountResource(String name, Phase phase, boolean lifeSupport) {
 		this.name = name;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;

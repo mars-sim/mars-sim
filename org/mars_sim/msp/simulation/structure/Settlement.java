@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.85 2008-07-09
+ * @version 2.85 2008-08-12
  * @author Scott Davis
  */
 
@@ -33,6 +33,7 @@ import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.EVA;
 import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionManager;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
@@ -59,6 +60,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     protected BuildingManager buildingManager; // The settlement's building manager.
     protected ResupplyManager resupplyManager; // The settlement's resupply manager.
     protected GoodsManager goodsManager; // The settlement's goods manager.
+    protected ConstructionManager constructionManager; // The settlement's construction manager.
     protected PowerGrid powerGrid; // The settlement's building power grid.
     private String template; // The settlement template name.
     private boolean missionCreationOverride; // Override flag for mission creation at settlement.
@@ -99,6 +101,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
         
         // Initialize goods manager.
         goodsManager = new GoodsManager(this);
+        
+        // Initialize construction manager.
+        constructionManager = new ConstructionManager(this);
        
         // Initialize power grid
         powerGrid = new PowerGrid(this);
@@ -528,4 +533,12 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
 	public boolean getResourceProcessOverride() {
 		return resourceProcessOverride;
 	}
+    
+    /**
+     * Gets the settlement's construction manager.
+     * @return construction manager.
+     */
+    public ConstructionManager getConstructionManager() {
+        return constructionManager;
+    }
 }
