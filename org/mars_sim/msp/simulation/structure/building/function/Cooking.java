@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-08-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -16,6 +16,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.task.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.time.MarsClock;
 
@@ -60,7 +61,20 @@ public class Cooking extends Function implements Serializable {
 		catch (Exception e) {
 			throw new BuildingException("Cooking.constructor: " + e.getMessage());
 		}		
-	}	
+	}
+    
+    /**
+     * Gets the value of the function for a named building.
+     * @param buildingName the building name.
+     * @param newBuilding true if adding a new building.
+     * @param settlement the settlement.
+     * @return value (VP) of building function.
+     */
+    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
+            Settlement settlement) {
+        // TODO: Implement later as needed.
+        return 0D;
+    }
 	
 	/**
 	 * Get the maximum number of cooks supported by this facility.

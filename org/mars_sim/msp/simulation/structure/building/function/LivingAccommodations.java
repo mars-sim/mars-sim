@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-08-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -43,6 +43,19 @@ public class LivingAccommodations extends Function implements Serializable {
 			throw new BuildingException("LivingAccommodations.constructor: " + e.getMessage());
 		}
 	}
+    
+    /**
+     * Gets the value of the function for a named building.
+     * @param buildingName the building name.
+     * @param newBuilding true if adding a new building.
+     * @param settlement the settlement.
+     * @return value (VP) of building function.
+     */
+    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
+            Settlement settlement) {
+        // TODO: Implement later as needed.
+        return 0D;
+    }
  
  	/**
  	 * Gets the number of beds in the living accommodations.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionConfig.java
- * @version 2.85 2008-08-10
+ * @version 2.85 2008-08-15
  * @author Scott Davis
  */
 
@@ -54,42 +54,33 @@ public class ConstructionConfig implements Serializable {
     }
     
     /**
-     * Gets a list of foundation construction stage infos.
+     * Gets a list of construction stage infos.
+     * @param stageType the type of stage.
      * @return list of construction stage infos.
      * @throws Exception if error parsing list.
      */
-    List<ConstructionStageInfo> getFoundationConstructionStageInfoList() throws Exception {
+    List<ConstructionStageInfo> getConstructionStageInfoList(String stageType) throws Exception {
         
-        if (foundationStageInfoList != null)
-            createConstructionStageInfoList(ConstructionSite.FOUNDATION);
+        List<ConstructionStageInfo> stageInfo = null;
         
-        return new ArrayList<ConstructionStageInfo>(foundationStageInfoList);
-    }
-    
-    /**
-     * Gets a list of frame construction stage infos.
-     * @return list of construction stage infos.
-     * @throws Exception if error parsing list.
-     */
-    List<ConstructionStageInfo> getFrameConstructionStageInfoList() throws Exception {
+        if (ConstructionStageInfo.FOUNDATION.equals(stageType)) {
+            if (foundationStageInfoList == null)
+                createConstructionStageInfoList(ConstructionStageInfo.FOUNDATION);
+            stageInfo = foundationStageInfoList;
+        }
+        else if (ConstructionStageInfo.FRAME.equals(stageType)) {
+            if (frameStageInfoList == null)
+                createConstructionStageInfoList(ConstructionStageInfo.FRAME);
+            stageInfo = frameStageInfoList;
+        }
+        else if (ConstructionStageInfo.BUILDING.equals(stageType)) {
+            if (buildingStageInfoList == null)
+                createConstructionStageInfoList(ConstructionStageInfo.BUILDING);
+            stageInfo = buildingStageInfoList;
+        }
+        else throw new Exception("stageType: " + stageType + " is invalid.");
         
-        if (frameStageInfoList != null)
-            createConstructionStageInfoList(ConstructionSite.FRAME);
-        
-        return new ArrayList<ConstructionStageInfo>(frameStageInfoList);
-    }
-    
-    /**
-     * Gets a list of building construction stage infos.
-     * @return list of construction stage infos.
-     * @throws Exception if error parsing list.
-     */
-    List<ConstructionStageInfo> getBuildingConstructionStageInfoList() throws Exception {
-        
-        if (buildingStageInfoList != null)
-            createConstructionStageInfoList(ConstructionSite.BUILDING);
-        
-        return new ArrayList<ConstructionStageInfo>(buildingStageInfoList);
+        return new ArrayList<ConstructionStageInfo>(stageInfo);
     }
     
     /**
@@ -102,15 +93,15 @@ public class ConstructionConfig implements Serializable {
             throws Exception {
         
         List<ConstructionStageInfo> stageInfoList = null;
-        if (ConstructionSite.FOUNDATION.equals(stageType)) {
+        if (ConstructionStageInfo.FOUNDATION.equals(stageType)) {
             foundationStageInfoList = new ArrayList<ConstructionStageInfo>();
             stageInfoList = foundationStageInfoList;
         }
-        else if (ConstructionSite.FRAME.equals(stageType)) {
+        else if (ConstructionStageInfo.FRAME.equals(stageType)) {
             frameStageInfoList = new ArrayList<ConstructionStageInfo>();
             stageInfoList = frameStageInfoList;
         }
-        else if (ConstructionSite.BUILDING.equals(stageType)) {
+        else if (ConstructionStageInfo.BUILDING.equals(stageType)) {
             buildingStageInfoList = new ArrayList<ConstructionStageInfo>();
             stageInfoList = buildingStageInfoList;
         }
@@ -134,10 +125,10 @@ public class ConstructionConfig implements Serializable {
                     
                 String prerequisiteStage = null;
                 String prerequisiteStageType = null;
-                if (ConstructionSite.FRAME.equals(stageType)) 
-                    prerequisiteStageType = ConstructionSite.FOUNDATION;
-                else if (ConstructionSite.BUILDING.equals(stageType)) 
-                    prerequisiteStageType = ConstructionSite.FRAME;
+                if (ConstructionStageInfo.FRAME.equals(stageType)) 
+                    prerequisiteStageType = ConstructionStageInfo.FOUNDATION;
+                else if (ConstructionStageInfo.BUILDING.equals(stageType)) 
+                    prerequisiteStageType = ConstructionStageInfo.FRAME;
                 if (prerequisiteStageType != null) 
                     prerequisiteStage = stageInfoElement.getAttribute(prerequisiteStageType);
                     

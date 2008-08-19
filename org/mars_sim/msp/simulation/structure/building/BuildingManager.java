@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.79 2006-03-25
+ * @version 2.85 2008-08-17
  * @author Scott Davis
  */
  
@@ -19,6 +19,7 @@ import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.*;
 import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.*;
 
 /**
@@ -400,5 +401,62 @@ public class BuildingManager implements Serializable {
 			}
 		}
 		else throw new BuildingException("Building is null");
+    }
+    
+    /**
+     * Gets the value of a named building at the settlement.
+     * @param buildingName the building name.
+     * @param newBuilding true if adding a new building.
+     * @return building value (VP).
+     * @throws Exception if error getting building value.
+     */
+    public double getBuildingValue(String buildingName, boolean newBuilding) throws Exception {
+        double result = 0D;
+        
+        // Determine value of all building functions.
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        if (config.hasCommunication(buildingName))
+            result += Communication.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasCooking(buildingName))
+            result += Cooking.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasDining(buildingName))
+            result += Dining.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasEVA(buildingName))
+            result += EVA.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasExercise(buildingName))
+            result += Exercise.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasFarming(buildingName))
+            result += Farming.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasGroundVehicleMaintenance(buildingName))
+            result += GroundVehicleMaintenance.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasLifeSupport(buildingName))
+            result += LifeSupport.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasLivingAccommodations(buildingName))
+            result += LivingAccommodations.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasManufacture(buildingName))
+            result += Manufacture.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasMedicalCare(buildingName))
+            result += MedicalCare.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasPowerGeneration(buildingName)) 
+            result += PowerGeneration.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasRecreation(buildingName))
+            result += Recreation.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasResearchLab(buildingName))
+            result += Research.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasResourceProcessing(buildingName))
+            result += ResourceProcessing.getFunctionValue(buildingName, newBuilding, settlement);
+        if (config.hasStorage(buildingName))
+            result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
+        
+        // Subtract power costs per Sol.
+        double power = config.getBasePowerRequirement(buildingName);
+        double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+        double powerPerSol = power * hoursInSol;
+        double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
+        result -= powerValue;
+        
+        if (result < 0D) result = 0D;
+        
+        return result;
     }
 }

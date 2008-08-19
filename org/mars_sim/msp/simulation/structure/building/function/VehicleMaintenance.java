@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2008-08-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;

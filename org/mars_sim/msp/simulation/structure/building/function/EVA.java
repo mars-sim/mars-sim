@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVA.java
- * @version 2.76 2004-06-02
+ * @version 2.85 2008-08-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.simulation.structure.building.function;
 import java.io.Serializable;
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
  
 /**
@@ -40,6 +41,19 @@ public class EVA extends Function implements Serializable {
 			throw new BuildingException("EVA.constructor: " + e.getMessage());
 		}
 	}
+    
+    /**
+     * Gets the value of the function for a named building.
+     * @param buildingName the building name.
+     * @param newBuilding true if adding a new building.
+     * @param settlement the settlement.
+     * @return value (VP) of building function.
+     */
+    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
+            Settlement settlement) {
+        // TODO: Implement later as needed.
+        return 0D;
+    }
         
     /**
      * Gets the building's airlock.

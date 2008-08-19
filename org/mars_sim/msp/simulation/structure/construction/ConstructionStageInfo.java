@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageInfo.java
- * @version 2.85 2008-08-10
+ * @version 2.85 2008-08-15
  * @author Scott Davis
  */
 
@@ -18,6 +18,11 @@ import org.mars_sim.msp.simulation.resource.Part;
  * Information about a construction stage.
  */
 public class ConstructionStageInfo implements Serializable {
+    
+    // Stage types
+    public static final String FOUNDATION = "foundation";
+    public static final String FRAME = "frame";
+    public static final String BUILDING = "building";
     
     // Data members
     private String name;

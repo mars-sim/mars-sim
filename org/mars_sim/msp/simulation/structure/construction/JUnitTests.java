@@ -16,7 +16,6 @@ public class JUnitTests extends TestCase {
         suite.addTestSuite(ConstructionSiteTest.class);
         suite.addTestSuite(ConstructionStageInfoTest.class);
         suite.addTestSuite(ConstructionStageTest.class);
-        suite.addTestSuite(ConstructionValuesTest.class);
         suite.addTestSuite(ConstructionVehicleTypeTest.class);
         
         return suite;

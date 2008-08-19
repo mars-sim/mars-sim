@@ -53,15 +53,15 @@ public class ConstructionSiteTest extends TestCase {
                 attachments));
         
         ConstructionStageInfo foundationInfo = new ConstructionStageInfo("test foundation info", 
-                ConstructionSite.FOUNDATION, 10D, 0, null, parts, resources, vehicles);
+                ConstructionStageInfo.FOUNDATION, 10D, 0, null, parts, resources, vehicles);
         foundationStage = new ConstructionStage(foundationInfo);
         
         ConstructionStageInfo frameInfo = new ConstructionStageInfo("test frame info", 
-                ConstructionSite.FRAME, 10D, 0, null, parts, resources, vehicles);
+                ConstructionStageInfo.FRAME, 10D, 0, null, parts, resources, vehicles);
         frameStage = new ConstructionStage(frameInfo);
         
         ConstructionStageInfo buildingInfo = new ConstructionStageInfo("Workshop", 
-                ConstructionSite.BUILDING, 10D, 0, null, parts, resources, vehicles);
+                ConstructionStageInfo.BUILDING, 10D, 0, null, parts, resources, vehicles);
         buildingStage = new ConstructionStage(buildingInfo);
     }
     
@@ -132,14 +132,14 @@ public class ConstructionSiteTest extends TestCase {
      * ConstructionSite.getNextStageType()'
      */
     public void testGetNextStageType() {
-        assertEquals(ConstructionSite.FOUNDATION, site.getNextStageType());
+        assertEquals(ConstructionStageInfo.FOUNDATION, site.getNextStageType());
         
         try {
             site.addNewStage(foundationStage);
-            assertEquals(ConstructionSite.FRAME, site.getNextStageType());
+            assertEquals(ConstructionStageInfo.FRAME, site.getNextStageType());
             
             site.addNewStage(frameStage);
-            assertEquals(ConstructionSite.BUILDING, site.getNextStageType());
+            assertEquals(ConstructionStageInfo.BUILDING, site.getNextStageType());
             
             site.addNewStage(buildingStage);
             assertNull(site.getNextStageType());

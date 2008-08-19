@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 2.85 2008-08-12
+ * @version 2.85 2008-08-15
  * @author Scott Davis
  */
 
@@ -16,11 +16,6 @@ import org.mars_sim.msp.simulation.structure.building.BuildingManager;
  * A building construction site.
  */
 public class ConstructionSite implements Serializable {
-
-    // Stage types
-    public static final String FOUNDATION = "foundation";
-    public static final String FRAME = "frame";
-    public static final String BUILDING = "building";
     
     // Data members
     private ConstructionStage foundationStage;
@@ -85,9 +80,9 @@ public class ConstructionSite implements Serializable {
         String result = null;
         
         if (buildingStage != null) result = null;
-        else if (frameStage != null) result = BUILDING;
-        else if (foundationStage != null) result = FRAME;
-        else result = FOUNDATION;
+        else if (frameStage != null) result = ConstructionStageInfo.BUILDING;
+        else if (foundationStage != null) result = ConstructionStageInfo.FRAME;
+        else result = ConstructionStageInfo.FOUNDATION;
         
         return result;
     }
@@ -98,16 +93,16 @@ public class ConstructionSite implements Serializable {
      * @throws Exception if error adding construction stage.
      */
     public void addNewStage(ConstructionStage stage) throws Exception {
-        if (FOUNDATION.equals(stage.getInfo().getType())) {
+        if (ConstructionStageInfo.FOUNDATION.equals(stage.getInfo().getType())) {
             if (foundationStage != null) throw new Exception("Foundation stage already exists.");
             foundationStage = stage;
         }
-        else if (FRAME.equals(stage.getInfo().getType())) {
+        else if (ConstructionStageInfo.FRAME.equals(stage.getInfo().getType())) {
             if (frameStage != null) throw new Exception("Frame stage already exists");
             if (foundationStage == null) throw new Exception("Foundation stage hasn't been added yet.");
             frameStage = stage;
         }
-        else if (BUILDING.equals(stage.getInfo().getType())) {
+        else if (ConstructionStageInfo.BUILDING.equals(stage.getInfo().getType())) {
             if (buildingStage != null) throw new Exception("Building stage already exists");
             if (frameStage == null) throw new Exception("Frame stage hasn't been added yet.");
             buildingStage = stage;
@@ -126,5 +121,14 @@ public class ConstructionSite implements Serializable {
         Building newBuilding = new Building(buildingStage.getInfo().getName(), manager);
         manager.addBuilding(newBuilding);
         return newBuilding;
+    }
+    
+    /**
+     * Gets the building name the site will construct.
+     * @return building name or null if undetermined.
+     */
+    public String getBuildingName() {
+        if (buildingStage != null) return buildingStage.getInfo().getName();
+        else return null;
     }
 }

@@ -45,7 +45,7 @@ public class ConstructionStageInfoTest extends TestCase {
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class, 
                 attachments));
         
-        info = new ConstructionStageInfo("test stage", ConstructionSite.FOUNDATION, 10D, 
+        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 
                 1, null, parts, resources, vehicles);
     }
     
@@ -112,7 +112,7 @@ public class ConstructionStageInfoTest extends TestCase {
      * construction.ConstructionStageInfo.getType()'
      */
     public void testGetType() {
-        assertEquals(ConstructionSite.FOUNDATION, info.getType());
+        assertEquals(ConstructionStageInfo.FOUNDATION, info.getType());
     }
 
     /*

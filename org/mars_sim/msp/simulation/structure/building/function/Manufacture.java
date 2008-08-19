@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 2.85 2008-07-13
+ * @version 2.85 2008-08-18
  * @author Scott Davis
  */
 
@@ -71,6 +71,19 @@ public class Manufacture extends Function implements Serializable {
 		
 		processes = new ArrayList<ManufactureProcess>();
 	}
+    
+    /**
+     * Gets the value of the function for a named building.
+     * @param buildingName the building name.
+     * @param newBuilding true if adding a new building.
+     * @param settlement the settlement.
+     * @return value (VP) of building function.
+     */
+    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
+            Settlement settlement) {
+        // TODO: Implement later as needed.
+        return 0D;
+    }
 	
 	/**
 	 * Gets the manufacturing tech level of the building.

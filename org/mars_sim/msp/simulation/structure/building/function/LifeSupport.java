@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 2.79 2006-03-27
+ * @version 2.85 2008-08-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 
 /**
@@ -74,6 +75,19 @@ public class LifeSupport extends Function implements Serializable {
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
 	}
+    
+    /**
+     * Gets the value of the function for a named building.
+     * @param buildingName the building name.
+     * @param newBuilding true if adding a new building.
+     * @param settlement the settlement.
+     * @return value (VP) of building function.
+     */
+    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
+            Settlement settlement) {
+        // TODO: Implement later as needed.
+        return 0D;
+    }
 	
 	/**
 	 * Gets the building's capacity for supporting occupants.
