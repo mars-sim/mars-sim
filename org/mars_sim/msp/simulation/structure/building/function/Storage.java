@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 2.85 2008-08-18
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -12,6 +12,8 @@ import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.goods.Good;
+import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 
 /**
  * The storage class is a building function for storing resources and units.
@@ -69,11 +71,32 @@ public class Storage extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        double result = 0D;
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        
+        Map<String, Double> storageMap = config.getStorageCapacities(buildingName);
+        Iterator<String> i = storageMap.keySet().iterator();
+        while (i.hasNext()) {
+            String resourceString = i.next();
+            double storageAmount = storageMap.get(resourceString);
+            AmountResource resource = AmountResource.findAmountResource(resourceString);
+            double existingStorage = settlement.getInventory().getAmountResourceRemainingCapacity(resource, false);
+            if (!newBuilding) existingStorage -= storageAmount;
+            
+            if (storageAmount > existingStorage) {
+                Good resourceGood = GoodsUtil.getResourceGood(resource);
+                double resourceValue = settlement.getGoodsManager().getGoodValuePerMass(resourceGood);
+                result += (storageAmount - existingStorage) * resourceValue;
+            }
+        }
+        
+        return result;
     }
 	
     /** 

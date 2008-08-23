@@ -33,11 +33,21 @@ public class Communication extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Settlements need one communication building.
+        // Note: Might want to update this when we do more with simulating communication.
+        double demand = 1D;
+        double supply = settlement.getBuildingManager().getBuildings(NAME).size();
+        if (!newBuilding) {
+            supply -= 1D;
+            if (supply < 0D) supply = 0D;
+        }
+        
+        return demand / (supply + 1D);
     }
     
 	/**

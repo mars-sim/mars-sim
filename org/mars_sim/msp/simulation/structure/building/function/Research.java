@@ -1,14 +1,16 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 2.85 2008-08-18
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
  
@@ -21,7 +23,7 @@ public class Research extends Function implements Lab, Serializable {
 
 	private int techLevel;
 	private int researcherCapacity;
-	private List researchSpecialities;
+	private List<String> researchSpecialities;
 	private int researcherNum;
 	
 	/**
@@ -51,11 +53,49 @@ public class Research extends Function implements Lab, Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        List<String> specialities = config.getResearchSpecialities(buildingName);
+        
+        double researchDemand = 0D;
+        Iterator<String> i = specialities.iterator();
+        while (i.hasNext()) {
+            String speciality = i.next();
+            Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
+            while (j.hasNext()) 
+                researchDemand += j.next().getMind().getSkillManager().getSkillLevel(speciality);
+        }
+        
+        double researchSupply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> k = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (k.hasNext()) {
+            Building building = k.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                Research researchFunction = (Research) building.getFunction(NAME);
+                int techLevel = researchFunction.getTechnologyLevel();
+                int labSize = researchFunction.getLaboratorySize();
+                for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
+                    String speciality = researchFunction.getTechSpecialities()[x];
+                    if (specialities.contains(speciality)) researchSupply += techLevel * labSize;
+                }
+            }
+        }
+        
+        double existingResearchValue = researchDemand / (researchSupply + 1D);
+        
+        int techLevel = config.getResearchTechLevel(buildingName);
+        int labSize = config.getResearchCapacity(buildingName);
+        double buildingResearchSupply = specialities.size() * techLevel * labSize;
+        
+        return buildingResearchSupply * existingResearchValue;
     }
 	
 	/**
@@ -91,9 +131,9 @@ public class Research extends Function implements Lab, Serializable {
 	 */
 	public boolean hasSpeciality(String speciality) {
 		boolean result = false;
-		Iterator i = researchSpecialities.iterator();
+		Iterator<String> i = researchSpecialities.iterator();
 		while (i.hasNext()) {
-			if (((String) i.next()).equalsIgnoreCase(speciality)) result = true;
+			if (i.next().equalsIgnoreCase(speciality)) result = true;
 		}
 		return result;
 	}

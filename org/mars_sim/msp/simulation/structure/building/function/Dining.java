@@ -33,11 +33,20 @@ public class Dining extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Settlements need one dining building.
+        double demand = 1D;
+        double supply = settlement.getBuildingManager().getBuildings(NAME).size();
+        if (!newBuilding) {
+            supply -= 1D;
+            if (supply < 0D) supply = 0D;
+        }
+        
+        return demand / (supply + 1D);
     }
 	
 	/**

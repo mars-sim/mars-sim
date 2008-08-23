@@ -21,6 +21,8 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.goods.Good;
+import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 import org.mars_sim.msp.simulation.time.MarsClock;
  
 /**
@@ -87,11 +89,43 @@ public class Farming extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Demand is value of estimated food needed by population per orbit.
+        AmountResource foodResource = AmountResource.findAmountResource("food");
+        Good foodGood = GoodsUtil.getResourceGood(foodResource);
+        double foodValue = settlement.getGoodsManager().getGoodValuePerMass(foodGood);
+        double personFoodConsumption = 
+            SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
+        int personNum = settlement.getAllAssociatedPeople().size();
+        double foodConsumptionOrbit = personNum * personFoodConsumption * 
+                MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        double demand = foodValue * foodConsumptionOrbit;
+        
+        // Supply is total estimate harvest per orbit.
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                Farming farmingFunction = (Farming) building.getFunction(NAME);
+                supply += farmingFunction.getEstimatedHarvestPerOrbit();
+            }
+        }
+        
+        double growingAreaValue = demand / (supply + 1D);
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double growingArea = config.getCropGrowingArea(buildingName);
+        
+        return growingArea * growingAreaValue;
     }
     
     /**

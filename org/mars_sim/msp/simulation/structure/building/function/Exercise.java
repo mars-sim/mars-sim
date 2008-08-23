@@ -7,6 +7,8 @@
 package org.mars_sim.msp.simulation.structure.building.function;
  
 import java.io.Serializable;
+import java.util.Iterator;
+
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -47,11 +49,34 @@ public class Exercise extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Demand is one exerciser capacity for every four inhabitants.
+        double demand = settlement.getAllAssociatedPeople().size() / 4D;
+        
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                Exercise exerciseFunction = (Exercise) building.getFunction(NAME);
+                supply += exerciseFunction.getExerciserCapacity();
+            }
+        }
+        
+        double valueExerciser = demand / (supply + 1D);
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double exerciserCapacity = config.getExerciseCapacity(buildingName);
+        
+        return exerciserCapacity * valueExerciser;
     }
 	
 	/**

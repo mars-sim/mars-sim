@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 2.85 2008-08-18
+ * @version 2.85 2008-08-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /**
  * The LifeSupport class is a building function for life support and managing inhabitants.
@@ -82,11 +83,43 @@ public class LifeSupport extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Demand is one and a half occupant capacity for every inhabitant. 
+        double demand = settlement.getAllAssociatedPeople().size() * 1.5D;
+        
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                LifeSupport lsFunction = (LifeSupport) building.getFunction(NAME);
+                supply += lsFunction.getOccupantCapacity();
+            }
+        }
+        
+        double occupantCapacityValue = demand / (supply + 1D);
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double occupantCapacity = config.getLifeSupportCapacity(buildingName);
+        
+        double result = occupantCapacity * occupantCapacityValue;
+        
+        // Subtract power usage cost per sol.
+        double power = config.getLifeSupportPowerRequirement(buildingName);
+        double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+        double powerPerSol = power * hoursInSol;
+        double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
+        result -= powerValue;
+        
+        return result;
     }
 	
 	/**

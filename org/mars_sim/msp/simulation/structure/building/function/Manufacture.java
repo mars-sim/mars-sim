@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 2.85 2008-08-18
+ * @version 2.85 2008-08-20
  * @author Scott Davis
  */
 
@@ -22,6 +22,7 @@ import org.mars_sim.msp.simulation.UnitManager;
 import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcess;
+import org.mars_sim.msp.simulation.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.simulation.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.simulation.manufacture.ManufactureUtil;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -78,11 +79,43 @@ public class Manufacture extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Determine demand as highest manufacturing process value for settlement.
+        double demand = 0D;
+        Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
+        while (i.hasNext()) {
+            double value = ManufactureUtil.getManufactureProcessValue(i.next(), settlement);
+            if (value > demand) demand = value;
+        }
+        
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> j = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (j.hasNext()) {
+            Building building = j.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                Manufacture manFunction = (Manufacture) building.getFunction(NAME);
+                double tech = manFunction.getTechLevel();
+                double processes = manFunction.getConcurrentProcesses();
+                supply += (tech * tech) * processes;
+            }
+        }
+        
+        double baseManufactureValue = demand / (supply + 1D);
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double tech = config.getManufactureTechLevel(buildingName);
+        double processes = config.getManufactureConcurrentProcesses(buildingName);
+        double manufactureValue = (tech * tech) * processes;
+        
+        return manufactureValue * baseManufactureValue;
     }
 	
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 2.85 2008-08-18
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -10,8 +10,11 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.goods.Good;
+import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 
 /**
  * The ResourceProcessing class is a building function indicating 
@@ -50,11 +53,47 @@ public class ResourceProcessing extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        
+        double result = 0D;
+        List<ResourceProcess> processes = config.getResourceProcesses(buildingName);
+        Iterator<ResourceProcess> i = processes.iterator();
+        while (i.hasNext()) {
+            ResourceProcess process = i.next();
+            double processValue = 0D;
+            
+            Iterator<AmountResource> j = process.getOutputResources().iterator();
+            while (j.hasNext()) {
+                AmountResource resource = j.next();
+                if (!process.isWasteOutputResource(resource)) {
+                    Good resourceGood = GoodsUtil.getResourceGood(resource);
+                    double rate = process.getMaxOutputResourceRate(resource);
+                    processValue += settlement.getGoodsManager().getGoodValuePerMass(resourceGood) * rate;
+                }
+            }
+            
+            Iterator<AmountResource> k = process.getInputResources().iterator();
+            while (k.hasNext()) {
+                AmountResource resource = k.next();
+                if (!process.isAmbientInputResource(resource)) {
+                    Good resourceGood = GoodsUtil.getResourceGood(resource);
+                    double rate = process.getMaxInputResourceRate(resource);
+                    processValue -= settlement.getGoodsManager().getGoodValuePerMass(resourceGood) * rate;
+                }
+            }
+            
+            // TODO: Subtract power used per Sol when we implement that.
+            
+            if (processValue < 0D) processValue = 0D;
+            result += processValue;
+        }
+        
+        return result;
     }
 	
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.85 2008-08-17
+ * @version 2.85 2008-08-18
  * @author Scott Davis
  */
  
@@ -45,7 +45,7 @@ public class BuildingManager implements Serializable {
      */
     public BuildingManager(Settlement settlement) throws Exception {
         this(settlement, SimulationConfig.instance().getSettlementConfiguration()
-        		.getTemplateBuildingTypes(settlement.getTemplate()));
+        	.getTemplateBuildingTypes(settlement.getTemplate()));
     }
     
     /**
@@ -447,6 +447,9 @@ public class BuildingManager implements Serializable {
             result += ResourceProcessing.getFunctionValue(buildingName, newBuilding, settlement);
         if (config.hasStorage(buildingName))
             result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
+        
+        // Multiply times one thousand.
+        result *= 1000D;
         
         // Subtract power costs per Sol.
         double power = config.getBasePowerRequirement(buildingName);

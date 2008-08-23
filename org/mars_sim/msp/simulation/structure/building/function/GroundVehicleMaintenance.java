@@ -1,12 +1,14 @@
 /**
  * Mars Simulation Project
  * GroundVehicleMaintenance.java
- * @version 2.85 2008-08-18
+ * @version 2.85 2008-08-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
  
 import java.io.Serializable;
+import java.util.Iterator;
+
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
@@ -44,10 +46,34 @@ public class GroundVehicleMaintenance extends VehicleMaintenance implements Seri
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Demand is one ground vehicle capacity for every four ground vehicles.
+        double demand = settlement.getAllAssociatedVehicles().size() / 4D;
+        
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                GroundVehicleMaintenance maintFunction = 
+                    (GroundVehicleMaintenance) building.getFunction(NAME);
+                supply += maintFunction.getVehicleCapacity();
+            }
+        }
+        
+        double vehicleCapacityValue = demand / (supply + 1D);
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double vehicleCapacity = config.getVehicleCapacity(buildingName);
+        
+        return vehicleCapacity * vehicleCapacityValue;
     }
 }

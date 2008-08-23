@@ -7,6 +7,8 @@
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
+import java.util.Iterator;
+
 import org.mars_sim.msp.simulation.Airlock;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -48,11 +50,34 @@ public class EVA extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Demand is one airlock capacity for every four inhabitants.
+        double demand = settlement.getAllAssociatedPeople().size() / 4D;
+        
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                EVA evaFunction = (EVA) building.getFunction(NAME);
+                supply += evaFunction.getAirlock().getCapacity();
+            }
+        }
+        
+        double airlockCapacityValue = demand / (supply + 1D);
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double airlockCapacity = config.getAirlockCapacity(buildingName);
+        
+        return airlockCapacity * airlockCapacityValue;
     }
         
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Recreation.java
- * @version 2.85 2008-08-18
+ * @version 2.85 2008-08-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -36,8 +36,16 @@ public class Recreation extends Function implements Serializable {
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
             Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+        
+        // Settlements need one recreation building.
+        double demand = 1D;
+        double supply = settlement.getBuildingManager().getBuildings(NAME).size();
+        if (!newBuilding) {
+            supply -= 1D;
+            if (supply < 0D) supply = 0D;
+        }
+        
+        return demand / (supply + 1D);
     }
 	
 	/**

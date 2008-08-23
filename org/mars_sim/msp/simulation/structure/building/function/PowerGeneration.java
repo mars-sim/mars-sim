@@ -1,16 +1,20 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 2.85 2008-08-18
+ * @version 2.85 2008-08-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
  
 import java.io.Serializable;
 import java.util.*;
+
 import org.mars_sim.msp.simulation.*;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
+import org.mars_sim.msp.simulation.structure.goods.Good;
+import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
  
 /**
  * The PowerGeneration class is a building function for generating power.
@@ -47,11 +51,68 @@ public class PowerGeneration extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        double demand = settlement.getPowerGrid().getRequiredPower();
+        
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                PowerGeneration powerFunction = (PowerGeneration) building.getFunction(NAME);
+                supply += getPowerSourceSupply(powerFunction.powerSources, settlement);
+            }
+        }
+        
+        double existingPowerValue = demand / (supply + 1D);
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double powerSupply = getPowerSourceSupply(config.getPowerSources(buildingName), settlement);
+        
+        return powerSupply * existingPowerValue;
+    }
+    
+    /**
+     * Gets the supply value of a list of power sources.
+     * @param powerSources list of power sources.
+     * @param settlement the settlement.
+     * @return supply value.
+     * @throws Exception if error determining supply value.
+     */
+    private static double getPowerSourceSupply(List<PowerSource> powerSources, Settlement settlement) 
+            throws Exception {
+        double result = 0D;
+        
+        Iterator<PowerSource> j = powerSources.iterator();
+        while (j.hasNext()) {
+            PowerSource source = j.next();
+            if (source instanceof StandardPowerSource) result += source.getMaxPower();
+            else if (source instanceof FuelPowerSource) {
+                FuelPowerSource fuelSource = (FuelPowerSource) source;
+                double fuelPower = source.getMaxPower();
+                AmountResource fuelResource = fuelSource.getFuelResource();
+                Good fuelGood = GoodsUtil.getResourceGood(fuelResource);
+                double fuelValue = settlement.getGoodsManager().getGoodValuePerMass(fuelGood);
+                fuelValue *= fuelSource.getFuelConsumptionRate();
+                fuelPower -= fuelValue;
+                if (fuelPower < 0D) fuelPower = 0D;
+                result += fuelPower;
+            }
+            else if (source instanceof SolarPowerSource) {
+                result += source.getMaxPower() / 2D;
+                // TODO: modify solar thermal supply by settlement latitude.
+            }
+        }
+        
+        return result;
     }
     
     /**

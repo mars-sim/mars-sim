@@ -69,11 +69,34 @@ public class Cooking extends Function implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
      */
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) {
-        // TODO: Implement later as needed.
-        return 0D;
+            Settlement settlement) throws Exception {
+        
+        // Demand is 1 cooking capacity for every five inhabitants.
+        double demand = settlement.getAllAssociatedPeople().size() / 5D;
+        
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                Cooking cookingFunction = (Cooking) building.getFunction(NAME);
+                supply += cookingFunction.getCookCapacity();
+            }
+        }
+        
+        double cookingCapacityValue = demand / (supply + 1D);
+        
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double cookingCapacity = config.getCookCapacity(buildingName);
+        
+        return cookingCapacity * cookingCapacityValue;
     }
 	
 	/**
