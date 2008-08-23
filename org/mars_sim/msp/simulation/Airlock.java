@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2008-08-18
  * @author Scott Davis
  */
 
@@ -207,6 +207,14 @@ public abstract class Airlock implements Serializable {
      */
     public boolean inAirlock(Person person) {
         return occupants.contains(person);
+    }
+    
+    /**
+     * Gets the airlock capacity.
+     * @return capacity.
+     */
+    public int getCapacity() {
+        return capacity;
     }
     
     /**
