@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 2.83 2008-01-25
+ * @version 2.85 2008-08-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -82,9 +82,9 @@ public class Engineer extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		// Add (tech level * process number) for all maintenance buildings.
-		List maintenanceBuildings = settlement.getBuildingManager().getBuildings(Manufacture.NAME);
-		Iterator i = maintenanceBuildings.iterator();
+		// Add (tech level * process number) for all manufacture buildings.
+		List manufactureBuildings = settlement.getBuildingManager().getBuildings(Manufacture.NAME);
+		Iterator i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = (Building) i.next();
 			try {
