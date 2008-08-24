@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 2.85 2008-08-15
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -130,5 +130,14 @@ public class ConstructionSite implements Serializable {
     public String getBuildingName() {
         if (buildingStage != null) return buildingStage.getInfo().getName();
         else return null;
+    }
+    
+    /**
+     * Checks if the site's current stage is unfinished.
+     * @return true if stage unfinished.
+     */
+    public boolean hasUnfinishedStage() {
+        ConstructionStage currentStage = getCurrentConstructionStage();
+        return (currentStage != null) && !currentStage.isComplete();
     }
 }

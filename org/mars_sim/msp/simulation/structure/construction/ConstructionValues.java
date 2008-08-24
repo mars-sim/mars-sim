@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 2.85 2008-08-17
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -121,26 +121,27 @@ public class ConstructionValues implements Serializable {
         
         double result = 0D;
         
-        boolean activeSite = site.isUndergoingConstruction();
-        
-        boolean unfinishedStage = false;
-        ConstructionStage stage = site.getCurrentConstructionStage();
-        if (stage != null) unfinishedStage = !stage.isComplete();
-        
-        if (!activeSite && !unfinishedStage) {
-            if (site.getNextStageType() != null) {
-                Map<ConstructionStageInfo, Double> stageValues = getConstructionStageValues(
-                        site.getNextStageType(), constructionSkill);
-                Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
-                while (i.hasNext()) {
-                    double value = stageValues.get(i.next());
-                    if (value > result) result = value;
-                }
+        if (!site.isUndergoingConstruction()) {
+            if (site.hasUnfinishedStage()) {
+                ConstructionStage stage = site.getCurrentConstructionStage();
+                if (stage.getInfo().getArchitectConstructionSkill() <= constructionSkill)
+                    result = getConstructionStageValue(stage.getInfo());
             }
             else {
-                String buildingName = site.getBuildingName();
-                if (buildingName != null) 
-                    result = getBuildingConstructionValue(site.getBuildingName());
+                if (site.getNextStageType() != null) {
+                    Map<ConstructionStageInfo, Double> stageValues = getConstructionStageValues(
+                            site.getNextStageType(), constructionSkill);
+                    Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
+                    while (i.hasNext()) {
+                        double value = stageValues.get(i.next());
+                        if (value > result) result = value;
+                    }
+                }
+                else {
+                    String buildingName = site.getBuildingName();
+                    if (buildingName != null) 
+                        result = getBuildingConstructionValue(site.getBuildingName());
+                }
             }
         }
         

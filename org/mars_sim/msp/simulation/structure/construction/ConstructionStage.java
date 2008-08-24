@@ -22,7 +22,7 @@ public class ConstructionStage implements Serializable {
      * Constructor
      * @param info the stage information.
      */
-    ConstructionStage(ConstructionStageInfo info) {
+    public ConstructionStage(ConstructionStageInfo info) {
         this.info = info;
         completedWorkTime = 0D;
     }
@@ -59,5 +59,10 @@ public class ConstructionStage implements Serializable {
      */
     public boolean isComplete() {
         return (completedWorkTime == info.getWorkTime());
+    }
+    
+    @Override
+    public String toString() {
+        return info.getName();
     }
 }

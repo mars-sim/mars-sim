@@ -115,4 +115,9 @@ public class ConstructionStageInfo implements Serializable {
     public double getWorkTime() {
         return workTime;
     }
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

@@ -56,4 +56,9 @@ public class ConstructionVehicleType implements Serializable {
     public String getVehicleType() {
         return vehicleType;
     }
+    
+    @Override
+    public String toString() {
+        return getVehicleType();
+    }
 }
