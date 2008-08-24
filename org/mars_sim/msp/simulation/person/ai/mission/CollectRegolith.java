@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-08-23
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -105,7 +105,7 @@ public class CollectRegolith  extends CollectResourcesMission {
 			}
 			
 			// Check if min number of EVA suits at settlement.
-			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
+			if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
 		}
 		
 		return result;

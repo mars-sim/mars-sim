@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -84,7 +84,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			
         	// Set mission capacity.
         	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
-        	int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+        	int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
         	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
 		
 			// Initialize data members.
@@ -158,7 +158,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		
 		// Set mission capacity.
 		setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
+		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
     	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
     	
 		this.resourceType = resourceType;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.84 2008-04-14
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -92,7 +92,7 @@ public class Trade extends RoverMission implements Serializable {
 		
 		// Set the mission capacity.
 		setMissionCapacity(MAX_MEMBERS);
-		int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
     	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
 		
 		outbound = true;
@@ -178,7 +178,7 @@ public class Trade extends RoverMission implements Serializable {
     	
     	// Sets the mission capacity.
     	setMissionCapacity(MAX_MEMBERS);
-    	int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
+    	int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
     	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
     	
     	// Set mission destination.
@@ -240,7 +240,7 @@ public class Trade extends RoverMission implements Serializable {
 			if (!minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_PEOPLE)) missionPossible = false;
 	    	
 			// Check if min number of EVA suits at settlement.
-			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE) 
+			if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE) 
 				missionPossible = false;
 			
 	    	// Check for the best trade settlement within range.

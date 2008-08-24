@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -82,7 +82,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         			int capacity = getRover().getCrewCapacity();
         			if (capacity < MISSION_MAX_MEMBERS) setMissionCapacity(capacity);
         			
-        			int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+        			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
                 	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
         		}
         	}
@@ -189,7 +189,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	    	if (!areVehiclesAvailable(settlement)) missionPossible = false;
 	    	
 			// Check if min number of EVA suits at settlement.
-			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(settlement) < MISSION_MIN_MEMBERS) 
+			if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < MISSION_MIN_MEMBERS) 
 				missionPossible = false;
 	    	
 	    	// Check if there are any beacon vehicles within range that need help.

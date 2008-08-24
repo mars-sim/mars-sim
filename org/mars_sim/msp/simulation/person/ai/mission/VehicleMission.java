@@ -763,22 +763,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 	
 	/**
-	 * Gets the number of available EVA suits for a mission at a settlement.
-	 * @param settlement the settlement to check.
-	 * @return number of available suits.
-	 */
-	static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
-		int result = 0;
-		
-		result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
-		
-		// Leave one suit for settlement use.
-		if (result > 0) result--;
-		
-		return result;
-	}
-	
-	/**
 	 * Gets the resources needed for loading the vehicle.
 	 * @return resources and their number.
 	 * @throws MissionException if error determining resources.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -92,7 +92,7 @@ public class Exploration extends RoverMission {
 			
         	// Set mission capacity.
         	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
-        	int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+        	int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
         	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
 		
 			// Initialize data members.
@@ -147,7 +147,7 @@ public class Exploration extends RoverMission {
 		
 		// Set mission capacity.
 		setMissionCapacity(getRover().getCrewCapacity());
-		int availableSuitNum = VehicleMission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
+		int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
     	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
     	
     	// Initialize explored sites.
@@ -225,7 +225,7 @@ public class Exploration extends RoverMission {
 		
 		if (result > 0D) {
 			// Check if min number of EVA suits at settlement.
-			if (VehicleMission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) 
+			if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) 
 				result = 0D;
 		}
 		

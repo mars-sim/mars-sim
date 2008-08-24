@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.84 2008-04-14
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
@@ -355,14 +356,6 @@ public abstract class Mission implements Serializable {
      */
     protected abstract void performPhase(Person person) throws MissionException;
 
-    /** Gets the weighted probability that a given person would start this mission.
-     *  @param person the given person
-     *  @return the weighted probability
-     */
-    public static double getNewMissionProbability(Person person) {
-        return 0D;
-    }
-
     /** Gets the mission capacity for participating people.
      *  @return mission capacity
      */
@@ -655,4 +648,20 @@ public abstract class Mission implements Serializable {
 		if (getPeopleNumber() > 0) return ((Person) people.toArray()[0]).getCoordinates();
 		throw new MissionException(getPhase(), "No people in the mission.");
 	}
+    
+    /**
+     * Gets the number of available EVA suits for a mission at a settlement.
+     * @param settlement the settlement to check.
+     * @return number of available suits.
+     */
+    static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
+        int result = 0;
+        
+        result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
+        
+        // Leave one suit for settlement use.
+        if (result > 0) result--;
+        
+        return result;
+    }
 }
