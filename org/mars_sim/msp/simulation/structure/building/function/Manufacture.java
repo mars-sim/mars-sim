@@ -97,7 +97,7 @@ public class Manufacture extends Function implements Serializable {
         Iterator<Building> j = settlement.getBuildingManager().getBuildings(NAME).iterator();
         while (j.hasNext()) {
             Building building = j.next();
-            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
             else {

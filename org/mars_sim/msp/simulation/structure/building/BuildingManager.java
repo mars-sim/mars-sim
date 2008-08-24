@@ -35,8 +35,12 @@ public class BuildingManager implements Serializable {
 	// Unit update events.
 	public static final String ADD_BUILDING_EVENT = "add building";
 	
+    // Data members
     private Settlement settlement; // The manager's settlement.
     private List<Building> buildings; // The settlement's buildings.
+    private Map<String, Double> buildingValuesNewCache;
+    private Map<String, Double> buildingValuesOldCache;
+    private MarsClock lastBuildingValuesUpdateTime;
     
     /**
      * Constructor to construct buildings from settlement config template.
@@ -67,6 +71,10 @@ public class BuildingManager implements Serializable {
     			addBuilding(buildingType);
     		}
         }
+        
+        // Initialize building value caches.
+        buildingValuesNewCache = new HashMap<String, Double>();
+        buildingValuesOldCache = new HashMap<String, Double>();
     }
     
     /**
@@ -411,55 +419,74 @@ public class BuildingManager implements Serializable {
      * @throws Exception if error getting building value.
      */
     public double getBuildingValue(String buildingName, boolean newBuilding) throws Exception {
-        double result = 0D;
         
-        // Determine value of all building functions.
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        if (config.hasCommunication(buildingName))
-            result += Communication.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasCooking(buildingName))
-            result += Cooking.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasDining(buildingName))
-            result += Dining.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasEVA(buildingName))
-            result += EVA.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasExercise(buildingName))
-            result += Exercise.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasFarming(buildingName))
-            result += Farming.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasGroundVehicleMaintenance(buildingName))
-            result += GroundVehicleMaintenance.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasLifeSupport(buildingName))
-            result += LifeSupport.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasLivingAccommodations(buildingName))
-            result += LivingAccommodations.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasManufacture(buildingName))
-            result += Manufacture.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasMedicalCare(buildingName))
-            result += MedicalCare.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasPowerGeneration(buildingName)) 
-            result += PowerGeneration.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasRecreation(buildingName))
-            result += Recreation.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasResearchLab(buildingName))
-            result += Research.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasResourceProcessing(buildingName))
-            result += ResourceProcessing.getFunctionValue(buildingName, newBuilding, settlement);
-        if (config.hasStorage(buildingName))
-            result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
+        // Update building values cache once per Sol.
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        if ((lastBuildingValuesUpdateTime == null) || 
+                (MarsClock.getTimeDiff(lastBuildingValuesUpdateTime, currentTime) > 1000D)) {
+            buildingValuesNewCache.clear();
+            buildingValuesOldCache.clear();
+            lastBuildingValuesUpdateTime = (MarsClock) currentTime.clone();
+        }
         
-        // Multiply times one thousand.
-        result *= 1000D;
+        if (newBuilding && buildingValuesNewCache.containsKey(buildingName)) 
+            return buildingValuesNewCache.get(buildingName);
+        else if (!newBuilding && buildingValuesOldCache.containsKey(buildingName))
+            return buildingValuesOldCache.get(buildingName);
+        else {
+            double result = 0D;
         
-        // Subtract power costs per Sol.
-        double power = config.getBasePowerRequirement(buildingName);
-        double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-        double powerPerSol = power * hoursInSol;
-        double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
-        result -= powerValue;
+            // Determine value of all building functions.
+            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+            if (config.hasCommunication(buildingName))
+                result += Communication.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasCooking(buildingName))
+                result += Cooking.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasDining(buildingName))
+                result += Dining.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasEVA(buildingName))
+                result += EVA.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasExercise(buildingName))
+                result += Exercise.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasFarming(buildingName))
+                result += Farming.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasGroundVehicleMaintenance(buildingName))
+                result += GroundVehicleMaintenance.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasLifeSupport(buildingName))
+                result += LifeSupport.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasLivingAccommodations(buildingName))
+                result += LivingAccommodations.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasManufacture(buildingName))
+                result += Manufacture.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasMedicalCare(buildingName))
+                result += MedicalCare.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasPowerGeneration(buildingName)) 
+                result += PowerGeneration.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasRecreation(buildingName))
+                result += Recreation.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasResearchLab(buildingName))
+                result += Research.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasResourceProcessing(buildingName))
+                result += ResourceProcessing.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasStorage(buildingName))
+                result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
         
-        if (result < 0D) result = 0D;
+            // Multiply times one thousand.
+            result *= 1000D;
         
-        return result;
+            // Subtract power costs per Sol.
+            double power = config.getBasePowerRequirement(buildingName);
+            double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+            double powerPerSol = power * hoursInSol;
+            double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
+            result -= powerValue;
+        
+            if (result < 0D) result = 0D;
+        
+            if (newBuilding) buildingValuesNewCache.put(buildingName, result);
+            else buildingValuesOldCache.put(buildingName, result);
+            
+            return result;
+        }
     }
 }

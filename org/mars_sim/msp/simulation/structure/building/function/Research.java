@@ -75,7 +75,7 @@ public class Research extends Function implements Lab, Serializable {
         Iterator<Building> k = settlement.getBuildingManager().getBuildings(NAME).iterator();
         while (k.hasNext()) {
             Building building = k.next();
-            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
             else {

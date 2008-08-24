@@ -63,7 +63,7 @@ public class PowerGeneration extends Function implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
             else {
@@ -108,7 +108,13 @@ public class PowerGeneration extends Function implements Serializable {
             }
             else if (source instanceof SolarPowerSource) {
                 result += source.getMaxPower() / 2D;
-                // TODO: modify solar thermal supply by settlement latitude.
+            }
+            else if (source instanceof SolarThermalPowerSource) {
+                result += source.getMaxPower() / 2.5D;
+            }
+            else if (source instanceof WindPowerSource) {
+                // TODO: Base on current wind speed at settlement.
+                result += source.getMaxPower() / 3D;
             }
         }
         
@@ -132,16 +138,16 @@ public class PowerGeneration extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {
-	    for(PowerSource source : powerSources ) {
-		if(source instanceof FuelPowerSource) {
-		    FuelPowerSource fuelSource = (FuelPowerSource)source;
-		    if(fuelSource.isToggleON()) {
-			fuelSource.consumeFuel(time,getBuilding().getInventory());
-		    }
-		}
-	    }
-	}
+    public void timePassing(double time) throws BuildingException {
+        for(PowerSource source : powerSources ) {
+            if (source instanceof FuelPowerSource) {
+                FuelPowerSource fuelSource = (FuelPowerSource)source;
+                if (fuelSource.isToggleON()) {
+                    fuelSource.consumeFuel(time,getBuilding().getInventory());
+                }
+            }
+        }
+    }
 	
 	/**
 	 * Gets the amount of power required when function is at full power.
@@ -158,4 +164,16 @@ public class PowerGeneration extends Function implements Serializable {
 	public double getPowerDownPowerRequired() {
 		return 0D;
 	}
+    
+    @Override
+    public String[] getMalfunctionScopeStrings() {
+        String[] result = new String[powerSources.size() + 1];
+        
+        result[0] = getName();
+        
+        for (int x = 0; x < powerSources.size(); x++)
+            result[x + 1] = powerSources.get(x).getType();
+        
+        return result;
+    }
 }

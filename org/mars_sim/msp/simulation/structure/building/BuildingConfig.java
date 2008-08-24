@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.85 2008-07-12
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -75,7 +75,9 @@ public class BuildingConfig implements Serializable {
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
 	private static final String SOLAR_POWER_SOURCE = "Solar Power Source";
+    private static final String SOLAR_THERMAL_POWER_SOURCE = "Solar Thermal Power Source";
 	private static final String FUEL_POWER_SOURCE = "Fuel Power Source";
+    private static final String WIND_POWER_SOURCE = "Wind Power Source";
 	
 	private Document buildingDoc;
 	
@@ -101,7 +103,7 @@ public class BuildingConfig implements Serializable {
 		for (int x=0; x < buildingNodes.getLength(); x++) {
 			Element buildingElement = (Element) buildingNodes.item(x);
 			String name = buildingElement.getAttribute(NAME);
-			if (buildingName.equals(name)) result = buildingElement;
+			if (buildingName.equalsIgnoreCase(name)) result = buildingElement;
 		}
 		
 		if (result == null) throw new Exception("Building type: " + buildingName + 
@@ -513,14 +515,16 @@ public class BuildingConfig implements Serializable {
 			String type = powerSourceElement.getAttribute(TYPE);
 			double power = Double.parseDouble(powerSourceElement.getAttribute(POWER));
 			PowerSource powerSource = null;
-			if (type.equals(STANDARD_POWER_SOURCE)) powerSource = new StandardPowerSource(power);
-			else if (type.equals(SOLAR_POWER_SOURCE)) powerSource = new SolarPowerSource(power);
-			else if (type.equals(FUEL_POWER_SOURCE)) {
+			if (type.equalsIgnoreCase(STANDARD_POWER_SOURCE)) powerSource = new StandardPowerSource(power);
+			else if (type.equalsIgnoreCase(SOLAR_POWER_SOURCE)) powerSource = new SolarPowerSource(power);
+            else if (type.equalsIgnoreCase(SOLAR_THERMAL_POWER_SOURCE)) powerSource = new SolarThermalPowerSource(power);
+			else if (type.equalsIgnoreCase(FUEL_POWER_SOURCE)) {
 			    boolean toggleStafe = Boolean.parseBoolean(powerSourceElement.getAttribute(TOGGLE));
 			    String fuelType = powerSourceElement.getAttribute(FUEL_TYPE);
 			    double consumptionSpeed = Double.parseDouble(powerSourceElement.getAttribute(COMSUMPTION_RATE));
 			    powerSource = new FuelPowerSource(power ,toggleStafe, fuelType, consumptionSpeed);
 			}
+            else if (type.equalsIgnoreCase(WIND_POWER_SOURCE)) powerSource = new WindPowerSource(power);
 			    
 			else throw new Exception("Power source: " + type + " not a valid power source.");
 			powerSourceList.add(powerSource); 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
  
@@ -69,7 +69,12 @@ public class Building implements Malfunctionable, Serializable {
 		
 		// Add each function to the malfunction scope.
 		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) malfunctionManager.addScopeString(i.next().getName());
+		while (i.hasNext()) {
+            Function function = i.next();
+            for (int x = 0; x < function.getMalfunctionScopeStrings().length; x++) {
+                malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
+            }
+        }
     }
     
     /**

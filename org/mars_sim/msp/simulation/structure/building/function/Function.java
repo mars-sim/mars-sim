@@ -41,6 +41,15 @@ public abstract class Function implements Serializable {
 	public Building getBuilding() {
 		return building;
 	}
+    
+    /**
+     * Gets the function's malfunction scope strings.
+     * @return array of scope strings.
+     */
+    public String[] getMalfunctionScopeStrings() {
+        String[] result = { getName() };
+        return result;
+    }
 	
 	/**
 	 * Time passing for the building.

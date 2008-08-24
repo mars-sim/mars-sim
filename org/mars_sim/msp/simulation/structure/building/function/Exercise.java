@@ -62,7 +62,7 @@ public class Exercise extends Function implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (!newBuilding && building.getName().equals(buildingName) && !removedBuilding) {
+            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
             else {

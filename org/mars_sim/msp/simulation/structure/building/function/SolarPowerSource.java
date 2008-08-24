@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SolarPowerSource.java
- * @version 2.76 2004-06-02
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -19,6 +19,10 @@ public class SolarPowerSource extends PowerSource implements Serializable {
 
 	private final static String TYPE = "Solar Power Source";
 
+    /**
+     * Constructor
+     * @param maxPower the maximum generated power.
+     */
 	public SolarPowerSource(double maxPower) {
 		// Call PowerSource constructor.
 		super(TYPE, maxPower);
