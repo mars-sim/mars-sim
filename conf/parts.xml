@@ -410,6 +410,12 @@
 	<!-- Attachment part for light utility vehicle. -->
 	<part name="bulldozer blade" mass="40.0" />
 	
+	<!-- Attachment part for light utility vehicle. -->
+	<part name="soil compactor" mass="100.0" />
+	
+	<!-- Attachment part for light utility vehicle. -->
+	<part name="crane boom" mass="75.0" />
+	
 	<part name="small electric motor" mass="10.0" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="1" max-number="1" />
@@ -427,6 +433,45 @@
 	<part name="utility vehicle control panel" mass="10" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<!-- Large steel bar used for construction. -->
+	<part name="steel truss" mass="50" />
+	
+	<!-- Blade for a wind turbine. -->
+	<part name="wind turbine blade" mass="2.0" >
+		<maintenance-entity-list>
+			<entity name="wind power source" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<!-- Turbine power generator. -->
+	<part name="turbine generator" mass="50.0" >
+		<maintenance-entity-list>
+			<entity name="wind power source" probability="5" max-number="1" />
+			<entity name="solar thermal power source" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<!-- Solar photovoltaic panel. -->
+	<part name="solar panel" mass="10.0" >
+		<maintenance-entity-list>
+			<entity name="solar power source" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<!-- Mirror for solar thermal power source. -->
+	<part name="solar parabolic mirror" mass="50.0" >
+		<maintenance-entity-list>
+			<entity name="solar thermal power source" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<!-- Long glass tube. -->
+	<part name="glass tube" mass="5.0" >
+		<maintenance-entity-list>
+			<entity name="solar thermal power source" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	

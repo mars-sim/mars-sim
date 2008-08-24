@@ -69,6 +69,7 @@
 			<part name="solar parabolic mirror" number="3" />
 			<part name="glass tube" number="6" />
 			<part name="steel pipe" number="10" />
+			<part name="small electric motor" number="1" />
 			<part name="turbine generator" number="1" />
 			<part name="power cable" number="2" />
 			<part name="electrical wire" number="20" />

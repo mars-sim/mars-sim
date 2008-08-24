@@ -46,6 +46,7 @@
 	<!-- Polyethylene pellets or flakes. -->
 	<resource name="polyethylene" phase="solid" life-support="false" />
 	
+	<!-- Mineral concentrations. -->
 	<resource name="gypsum" phase="solid" life-support="false" />
 	<resource name="calcium carbonate" phase="solid" life-support="false" />
 	<resource name="lime" phase="solid" life-support="false" />
@@ -60,10 +61,13 @@
 	<resource name="taenite" phase="solid" life-support="false" />
 	<resource name="chalcopyrite" phase="solid" life-support="false" />
 	<resource name="malachite" phase="solid" life-support="false" />
+
 	<resource name="nickel" phase="solid" life-support="false" />
 	<resource name="sulfur" phase="solid" life-support="false" />
 	<resource name="magnesium" phase="solid" life-support="false" />
 	<resource name="silicon" phase="solid" life-support="false" />
 	<resource name="copper" phase="solid" life-support="false" />
+
+	<resource name="concrete" phase="liquid" life-support="false" />
 
 </resource-list>

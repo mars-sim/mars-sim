@@ -65,7 +65,7 @@
 				
 					<!-- Waste water influx. -->
 					<!-- resource: the resource added to the process. -->
-					<!-- See resources.txt -->
+					<!-- See resources.xml -->
 					<!-- rate: the rate (kg/sol) the resource is being added to the process. -->
 					<!-- ambient: true if resource is being drown from the external environment, -->
 					<!-- false if resource is being drawn from the settlement's inventory. -->
@@ -73,7 +73,7 @@
 					
 					<!-- Clean water outflux. -->
 					<!-- resource: the resource resulting from the process. -->
-					<!-- See resources.txt -->
+					<!-- See resources.xml -->
 					<!-- rate: the rate (kg/sol) the resource is being produced by the process. -->
 					<!-- ambient: true if resource is being released into the external environment, -->
 					<!-- false if resource is stored in the settlement's inventory. -->
@@ -112,7 +112,7 @@
 				
 				<!-- The initial resources in the building. -->
 				<!-- resource: the resource initially in the building. -->
-				<!-- See resources.txt -->
+				<!-- See resources.xml -->
 				<!-- amount: the amount (kg) of the resource. -->
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
@@ -134,7 +134,8 @@
 			
 			<!-- The building has manufacturing capacity. -->
 			<!-- tech-level: the technology level in manufacturing. (see tech_level.txt) -->
-			<!-- concurrent-processes: the number of concurrent manufacturing processes the building can support -->
+			<!-- concurrent-processes: the number of concurrent manufacturing processes the building 
+			     can support -->
 			<manufacture tech-level="1" concurrent-processes="1" />
 		</functions>
 		
@@ -152,7 +153,8 @@
 			<!-- The building is capable of growing plant crops. -->
 			<!-- crops: the number of different crops grown in the building. -->
 			<!-- power-growing-crop: the power (kW) required for each crop to grow an flourish. -->
-			<!-- power-sustaining-crop: the minimum power (kW) required for each crop just to keep it alive. -->
+			<!-- power-sustaining-crop: the minimum power (kW) required for each crop just to keep it 
+			     alive. -->
 			<!-- growing-area: the total area (square meters) for growing crops. -->
 			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="75.0" />
 			
@@ -219,7 +221,8 @@
 	</building>
 	
 	<!-- A ERV (Earth Return Vehicle) base building with Sabatier chemical reactor. -->
-	<!-- The ERV base has already converted its initial load of hydrogen into carbon dioxide, water and oxygen. -->
+	<!-- The ERV base has already converted its initial load of hydrogen into carbon dioxide, 
+	     water and oxygen. -->
 	<building name="ERV Base" >
 		<power-required base-power="10.0" base-power-down-power="5.0" />
 		<functions>
@@ -450,15 +453,45 @@
 		</functions>
 	</building>
 	
-	
- <building name="FuelPowerTest" >
-   <power-required base-power="0.0" base-power-down-power="0.0" />
-   <functions>
-       <power-generation>
-           <power-source type="Fuel Power Source" toggle="true" power="50.0" fuel-type="methane" consumption-rate="20.0" />
-       </power-generation>
-   </functions>
- </building>
+	<!-- Methane-powered backup generator. -->
+	<building name="Methane Backup Generator" >
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Fuel Power Source" toggle="true" power="50.0" fuel-type="methane" 
+				consumption-rate="20.0" />
+			</power-generation>
+		</functions>
+	</building>
 
+	<!-- Wind turbine power generator. -->
+	<building name="Wind Turbine" >
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Wind Power Source" power="5.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- Array of solar photovoltaic panels. -->
+	<building name="Solar Photovoltaic Array" >
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- Array of solar thermal mirrors with steam power generator. -->
+	<building name="Solar Thermal Array" >
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Solar Thermal Power Source" power="10.0" />
+			</power-generation>
+		</functions>
+	</building>
 
 </building-list>
