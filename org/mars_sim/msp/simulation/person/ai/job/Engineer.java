@@ -25,13 +25,13 @@ import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
 
 /** 
- * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and vehicles.
+ * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and 
+ * vehicles.
  */
 public class Engineer extends Job implements Serializable {
     
-    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Engineer";
-	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Engineer";
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	/**
 	 * Constructor
