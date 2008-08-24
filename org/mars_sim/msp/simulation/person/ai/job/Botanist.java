@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Botanist.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.person.ai.task.ResearchBotany;
@@ -52,6 +53,7 @@ public class Botanist extends Job implements Serializable {
 		jobMissionJoins.add(TravelToSettlement.class);	
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
+        jobMissionJoins.add(BuildingConstructionMission.class);
 	}
 
 	/**

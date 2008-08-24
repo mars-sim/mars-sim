@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Technician.java
- * @version 2.83 2008-01-25
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.person.ai.task.EnterAirlock;
@@ -49,6 +50,7 @@ public class Technician extends Job implements Serializable {
 		jobMissionJoins.add(TravelToSettlement.class);	
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
+        jobMissionJoins.add(BuildingConstructionMission.class);
 	}
 
 	/**

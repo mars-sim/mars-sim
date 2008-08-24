@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 2.85 2008-08-20
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.person.ai.task.ManufactureGood;
@@ -48,6 +49,7 @@ public class Engineer extends Job implements Serializable {
 		jobMissionJoins.add(TravelToSettlement.class);	
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
+        jobMissionJoins.add(BuildingConstructionMission.class);
 	}
 
 	/**

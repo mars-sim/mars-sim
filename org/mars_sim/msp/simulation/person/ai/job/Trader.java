@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 2.81 2007-06-12
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
@@ -35,6 +36,7 @@ public class Trader extends Job implements Serializable {
 		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
+        jobMissionJoins.add(BuildingConstructionMission.class);
 	}
 	
 	/**
