@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Skill.java
- * @version 2.83 2008-01-19
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ public class Skill implements Serializable {
 	public static final String COOKING = "Cooking";
 	public static final String TRADING = "Trading";
 	public static final String MATERIALS_SCIENCE = "Materials Science";
+    public static final String CONSTRUCTION = "Construction";
 
     // Data members
     private int level; // The skill level (0 to infinity)

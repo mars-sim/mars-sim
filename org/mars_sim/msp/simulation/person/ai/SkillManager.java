@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.83 2008-02-29
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -30,7 +30,8 @@ public class SkillManager implements Serializable {
         // Add starting skills randomly for person.
         String[] startingSkills = { Skill.DRIVING, Skill.BOTANY, Skill.MECHANICS,
                                     Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL, 
-                                    Skill.COOKING, Skill.TRADING, Skill.MATERIALS_SCIENCE };
+                                    Skill.COOKING, Skill.TRADING, Skill.MATERIALS_SCIENCE, 
+                                    Skill.CONSTRUCTION };
 
         for (int x = 0; x < startingSkills.length; x++) {
             int skillLevel = getInitialSkillLevel(0, 50);
