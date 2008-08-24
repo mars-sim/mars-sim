@@ -13,12 +13,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /**
  * Provides value information for construction.
@@ -27,6 +29,8 @@ public class ConstructionValues implements Serializable {
 
     // Data members
     private Settlement settlement;
+    private double settlementConstructionValueCache;
+    private MarsClock settlementConstructionValueCacheTime;
     
     /**
      * Constructor
@@ -54,15 +58,23 @@ public class ConstructionValues implements Serializable {
     public double getSettlementConstructionValue(int constructionSkill) 
             throws Exception {
         
-        double result = 0D;
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        if ((settlementConstructionValueCacheTime == null) || 
+                (MarsClock.getTimeDiff(settlementConstructionValueCacheTime, currentTime) > 1000D)) {
+            settlementConstructionValueCache = 0D;
+            
+            double existingSitesValue = getAllConstructionSitesValue(constructionSkill);
+            if (existingSitesValue > settlementConstructionValueCache) 
+                settlementConstructionValueCache = existingSitesValue;
+            
+            double newSiteValue = getNewConstructionSiteValue(constructionSkill);
+            if (newSiteValue > settlementConstructionValueCache) 
+                settlementConstructionValueCache = newSiteValue;
+            
+            settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
+        }
         
-        double existingSitesValue = getAllConstructionSitesValue(constructionSkill);
-        if (existingSitesValue > result) result = existingSitesValue;
-        
-        double newSiteValue = getNewConstructionSiteValue(constructionSkill);
-        if (newSiteValue > result) result = newSiteValue;
-        
-        return result;
+        return settlementConstructionValueCache;
     }
     
     /**
@@ -216,7 +228,10 @@ public class ConstructionValues implements Serializable {
         else {
             Iterator<ConstructionStageInfo> i = 
                 ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
-            while (i.hasNext()) result = getConstructionStageValue(i.next()) / 2D;
+            while (i.hasNext()) {
+                double stageValue = getConstructionStageValue(i.next()) / 2D;
+                if (stageValue > result) result = stageValue;
+            }
         }
         
         GoodsManager manager = settlement.getGoodsManager();
