@@ -104,6 +104,7 @@ public class Inventory implements Serializable {
      * @return true if storage capacity.
      */
     public boolean hasAmountResourceCapacity(AmountResource resource) throws InventoryException {
+        if (resource == null) throw new IllegalArgumentException("resource cannot be null.");
     	try {
     		boolean result = false;
     		if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
@@ -170,6 +171,7 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error determining capacity.
      */
     public synchronized double getAmountResourceCapacity(AmountResource resource) throws InventoryException {
+        if (resource == null) throw new IllegalArgumentException("resource cannot be null.");
     	try {
     		double result = 0D;
     		if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) 
