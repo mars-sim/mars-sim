@@ -25,8 +25,8 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  */
 public class Mind implements Serializable {
     
-    	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.person.ai.Mind";
+    private static String CLASS_NAME = 
+        "org.mars_sim.msp.simulation.person.ai.Mind";
 	
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
@@ -112,6 +112,7 @@ public class Mind implements Serializable {
             			mission.performMission(person);
             		}
             		catch (MissionException e) {
+                        logger.log(Level.SEVERE, "Error performing mission.", e);
             			mission.endMission(e.getMessage());
             		}
             	}
@@ -259,9 +260,9 @@ public class Mind implements Serializable {
         if (missions) {
             if (rand < missionWeights) {
         	
-        	if(logger.isLoggable(Level.FINE)){
-                 logger.fine(person.getName() + " starting a new mission.");
-        	}
+                if(logger.isLoggable(Level.FINE)){
+                    logger.fine(person.getName() + " starting a new mission.");
+                }
                 Mission newMission = missionManager.getNewMission(person);
                 if (newMission != null) {
                 	missionManager.addMission(newMission);
