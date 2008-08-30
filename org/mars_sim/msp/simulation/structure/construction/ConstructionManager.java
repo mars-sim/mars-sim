@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 2.85 2008-08-12
+ * @version 2.85 2008-08-24
  * @author Scott Davis
  */
 
@@ -69,6 +69,16 @@ public class ConstructionManager implements Serializable {
         ConstructionSite result = new ConstructionSite();
         sites.add(result);
         return result;
+    }
+    
+    /**
+     * Removes a construction site.
+     * @param site the construction site to remove.
+     * @throws Exception if site doesn't exist.
+     */
+    public void removeConstructionSite(ConstructionSite site) throws Exception {
+        if (sites.contains(site)) sites.remove(site);
+        else throw new Exception("Construction site doesn't exist.");
     }
     
     /**

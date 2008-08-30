@@ -188,7 +188,6 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 			endTask();
 		}
     	
-        
         if (exitedAirlock) setPhase(MAINTAIN_VEHICLE);
         return time;
     }

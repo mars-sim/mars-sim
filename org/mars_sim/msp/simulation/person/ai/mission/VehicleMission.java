@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.84 2008-04-14
+ * @version 2.85 2008-08-24
  * @author Scott Davis
  */
 
@@ -22,7 +22,6 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.UnitEvent;
 import org.mars_sim.msp.simulation.UnitListener;
-import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.events.HistoricalEvent;
 import org.mars_sim.msp.simulation.malfunction.Malfunction;
 import org.mars_sim.msp.simulation.person.Person;

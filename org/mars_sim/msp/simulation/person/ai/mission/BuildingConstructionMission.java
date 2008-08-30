@@ -8,6 +8,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
+import org.mars_sim.msp.simulation.equipment.EVASuit;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.task.ConstructBuilding;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.Resource;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -27,6 +34,7 @@ import org.mars_sim.msp.simulation.structure.construction.ConstructionStage;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionValues;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
 import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
@@ -58,10 +66,17 @@ public class BuildingConstructionMission extends Mission implements Serializable
     public static final String BULLDOZER_BLADE = "bulldozer blade";
     public static final String CRANE_BOOM = "crane boom";
     
+    // Time (millisols) required to prepare construction site for stage.
+    private static final double SITE_PREPARE_TIME = 500D;
+    
     private Settlement settlement;
     private ConstructionSite constructionSite;
     private ConstructionStage constructionStage;
     private List<GroundVehicle> constructionVehicles;
+    private boolean constructionSuppliesAdded;
+    private MarsClock sitePreparationStartTime;
+    private boolean finishingExistingStage;
+    private boolean constructionSuppliesLoaded;
     
     /**
      * Constructor
@@ -116,6 +131,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     // Determine new stage to work on.
                     if (constructionSite.hasUnfinishedStage()) {
                         constructionStage = constructionSite.getCurrentConstructionStage(); 
+                        finishingExistingStage = true;
                     }
                     else {
                         ConstructionStageInfo stageInfo = null;
@@ -279,34 +295,152 @@ public class BuildingConstructionMission extends Mission implements Serializable
     
     @Override
     protected void determineNewPhase() throws MissionException {
-        // TODO Auto-generated method stub
-
+        if (PREPARE_SITE_PHASE.equals(getPhase())) {
+            setPhase(CONSTRUCTION_PHASE);
+            setPhaseDescription("Constructing Site Stage: " + constructionStage.getInfo().getName());
+        }
+        else if (CONSTRUCTION_PHASE.equals(getPhase())) endMission("Successfully ended construction");
     }
 
     @Override
     protected void performPhase(Person person) throws MissionException {
-        // TODO Auto-generated method stub
+        if (PREPARE_SITE_PHASE.equals(getPhase())) prepareSitePhase(person);
+        else if (CONSTRUCTION_PHASE.equals(getPhase())) constructionPhase(person);
+    }
+    
+    /**
+     * Performs the prepare site phase.
+     * @param person the person performing the phase.
+     * @throws MissionException if error performing the phase.
+     */
+    private void prepareSitePhase(Person person) throws MissionException {
+        
+        if (finishingExistingStage) {
+            // If finishing uncompleted existing construction stage, skip resource loading.
+            setPhaseEnded(true);
+        }
+        else if (!constructionSuppliesLoaded){
+            // Load all resources needed for construction.
+            Inventory inv = settlement.getInventory();
+            
+            try {
+                // Load amount resources.
+                Iterator<AmountResource> i = constructionStage.getInfo().getResources().keySet().iterator();
+                while (i.hasNext()) {
+                    AmountResource resource = i.next();
+                    double amount = constructionStage.getInfo().getResources().get(resource);
+                    if (inv.getAmountResourceStored(resource) >= amount)
+                        inv.retrieveAmountResource(resource, amount);
+                }
+                
+                // Load parts.
+                Iterator<Part> j = constructionStage.getInfo().getParts().keySet().iterator();
+                while (j.hasNext()) {
+                    Part part = j.next();
+                    int number = constructionStage.getInfo().getParts().get(part);
+                    if (inv.getItemResourceNum(part) >= number)
+                        inv.retrieveItemResources(part, number);
+                }
+            }
+            catch (InventoryException e) {
+                logger.log(Level.SEVERE, "Error in getting construction resources.");
+                throw new MissionException("Error in getting construction resources.", e);
+            }
+            
+            constructionSuppliesLoaded = true;
+        }
+        
+        // Check if site preparation time has expired.
+        MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock();
+        if (sitePreparationStartTime == null) sitePreparationStartTime = (MarsClock) currentTime.clone();
+        if (MarsClock.getTimeDiff(sitePreparationStartTime, currentTime) >= SITE_PREPARE_TIME) 
+            setPhaseEnded(true);
+    }
+    
+    /**
+     * Performs the construction phase.
+     * @param person the person performing the phase.
+     * @throws MissionException if error performing the phase.
+     */
+    private void constructionPhase(Person person) throws MissionException {
 
+        // Anyone in the crew or a single person at the home settlement has a 
+        // dangerous illness, end phase.
+        if (hasEmergency()) setPhaseEnded(true);
+        
+        if (!getPhaseEnded()) {
+            
+            // 75% chance of assigning task, otherwise allow break.
+            if (RandomUtil.lessThanRandPercent(75D)) {
+                try {
+                    // Assign construction task to person.
+                    if (ConstructBuilding.canConstruct(person)) {
+                        assignTask(person, new ConstructBuilding(person, constructionStage, 
+                                constructionVehicles));
+                    }
+                }
+                catch(Exception e) {
+                    logger.log(Level.SEVERE, "Error during construction.", e);
+                    throw new MissionException(getPhase(), e);
+                }
+            }
+        }
+        
+        if (constructionStage.isComplete()) {
+            setPhaseEnded(true);
+            
+            // Construct building if all site construction complete.
+            if (constructionSite.isAllConstructionComplete()) {
+                try {
+                    constructionSite.createBuilding(settlement.getBuildingManager());
+                    settlement.getConstructionManager().removeConstructionSite(constructionSite);
+                }
+                catch (Exception e) {
+                    throw new MissionException("Error constructing new building.", e);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void endMission(String reason) {
+        super.endMission(reason);
+        
+        if (constructionSite != null) constructionSite.setUndergoingConstruction(false);
     }
 
     @Override
     public Settlement getAssociatedSettlement() {
-        // TODO Auto-generated method stub
-        return null;
+        return settlement;
     }
 
     @Override
     public Map<Resource, Number> getResourcesNeededForRemainingMission(
             boolean useBuffer, boolean parts) throws MissionException {
-        // TODO Auto-generated method stub
-        return null;
+        
+        Map<Resource, Number> resources = new HashMap<Resource, Number>();
+        
+        if (!constructionSuppliesAdded) {
+            // Add construction amount resources.
+            resources.putAll(constructionStage.getInfo().getResources());
+            
+            // Add construction parts.
+            resources.putAll(constructionStage.getInfo().getParts());
+            
+            // TODO: add vehicle attachment parts?
+        }
+
+        return resources;
     }
 
     @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) throws MissionException {
-        // TODO Auto-generated method stub
-        return null;
+        
+        Map<Class, Integer> equipment = new HashMap<Class, Integer>(1);
+        equipment.put(EVASuit.class, getPeopleNumber());
+        
+        return equipment;
     }
     
     /**
