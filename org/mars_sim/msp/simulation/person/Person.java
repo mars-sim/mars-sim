@@ -299,7 +299,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	    }
 
 	    // Get all contained units.
-          Iterator<Unit> i = getInventory().getContainedUnits().iterator();
+	    Iterator<Unit> i = getInventory().getContainedUnits().iterator();
 	    while (i.hasNext()) {
 	        Unit contained = i.next();
 	        if (contained instanceof LifeSupport) lifeSupportUnits.add(contained);
