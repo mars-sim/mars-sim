@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-08-31
  * @author Barry Evans
  */
 
@@ -22,10 +22,9 @@ import org.mars_sim.msp.simulation.resource.AmountResource;
  */
 public class PhysicalCondition implements Serializable {
     
-    	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.person.PhysicalCondition";
-	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static String CLASS_NAME = 
+        "org.mars_sim.msp.simulation.person.PhysicalCondition";
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Unit events
 	public static final String FATIGUE_EVENT = "fatigue event";
@@ -172,10 +171,14 @@ public class PhysicalCondition implements Serializable {
 
         // Consume necessary oxygen and water.
         try {
-        	consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D));
-        	consumeWater(support, getWaterConsumptionRate() * (time / 1000D));
-        	requireAirPressure(support, config.getMinAirPressure());
-        	requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature());
+        	if (consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D))) 
+                logger.log(Level.SEVERE, person.getName() + " has insufficient oxygen.");
+        	if (consumeWater(support, getWaterConsumptionRate() * (time / 1000D)))
+                logger.log(Level.SEVERE, person.getName() + " has insufficient water.");
+        	if (requireAirPressure(support, config.getMinAirPressure()))
+                logger.log(Level.SEVERE, person.getName() + " has insufficient air pressure.");
+        	if (requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature()))
+                logger.log(Level.SEVERE, person.getName() + " has insufficient temperature.");
         }
         catch (Exception e) {
         	logger.log(Level.SEVERE,person.getName() + " - Error in lifesupport needs: " + e.getMessage());
