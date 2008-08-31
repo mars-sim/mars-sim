@@ -63,6 +63,8 @@
 		<part type="pneumatic drill" number="1" />
 		<part type="backhoe" number="1" />
 		<part type="bulldozer blade" number="1" />
+		<part type="soil compactor" number="1" />
+		<part type="crane boom" number="1" />
 		<part type="small wheel" number="4" />
 		<part type="utility vehicle control panel" number="1" />
 		
@@ -121,6 +123,8 @@
 		<part type="pneumatic drill" number="1" />
 		<part type="backhoe" number="1" />
 		<part type="bulldozer blade" number="1" />
+		<part type="soil compactor" number="1" />
+		<part type="crane boom" number="1" />
 		<part type="small wheel" number="4" />
 		<part type="utility vehicle control panel" number="1" />
 	
@@ -179,6 +183,8 @@
 		<part type="pneumatic drill" number="2" />
 		<part type="backhoe" number="2" />
 		<part type="bulldozer blade" number="2" />
+		<part type="soil compactor" number="2" />
+		<part type="crane boom" number="2" />
 		<part type="small wheel" number="8" />
 		<part type="utility vehicle control panel" number="2" />
 		
@@ -237,6 +243,8 @@
 		<part type="pneumatic drill" number="3" />
 		<part type="backhoe" number="3" />
 		<part type="bulldozer blade" number="3" />
+		<part type="soil compactor" number="3" />
+		<part type="crane boom" number="3" />
 		<part type="small wheel" number="12" />
 		<part type="utility vehicle control panel" number="3" />
 	
