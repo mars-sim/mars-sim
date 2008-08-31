@@ -423,7 +423,7 @@ public class BuildingManager implements Serializable {
         // Update building values cache once per Sol.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((lastBuildingValuesUpdateTime == null) || 
-                (MarsClock.getTimeDiff(lastBuildingValuesUpdateTime, currentTime) > 1000D)) {
+                (MarsClock.getTimeDiff(currentTime, lastBuildingValuesUpdateTime) > 1000D)) {
             buildingValuesNewCache.clear();
             buildingValuesOldCache.clear();
             lastBuildingValuesUpdateTime = (MarsClock) currentTime.clone();

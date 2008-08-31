@@ -444,7 +444,7 @@ public class Trade extends RoverMission implements Serializable {
     				}
     				else {
     					MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-    					double timeDiff = MarsClock.getTimeDiff(startNegotiationTime, currentTime);
+    					double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
     					if (timeDiff > 1000D) {
     						buyLoad = new HashMap<Good, Integer>(0);
     						profit = 0D;

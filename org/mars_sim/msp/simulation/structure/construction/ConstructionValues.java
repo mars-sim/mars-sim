@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-08-30
  * @author Scott Davis
  */
 
@@ -29,7 +29,7 @@ public class ConstructionValues implements Serializable {
 
     // Data members
     private Settlement settlement;
-    private double settlementConstructionValueCache;
+    private Map<Integer, Double> settlementConstructionValueCache;
     private MarsClock settlementConstructionValueCacheTime;
     
     /**
@@ -60,21 +60,28 @@ public class ConstructionValues implements Serializable {
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((settlementConstructionValueCacheTime == null) || 
-                (MarsClock.getTimeDiff(settlementConstructionValueCacheTime, currentTime) > 1000D)) {
-            settlementConstructionValueCache = 0D;
-            
-            double existingSitesValue = getAllConstructionSitesValue(constructionSkill);
-            if (existingSitesValue > settlementConstructionValueCache) 
-                settlementConstructionValueCache = existingSitesValue;
-            
-            double newSiteValue = getNewConstructionSiteValue(constructionSkill);
-            if (newSiteValue > settlementConstructionValueCache) 
-                settlementConstructionValueCache = newSiteValue;
-            
-            settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
+                (MarsClock.getTimeDiff(currentTime, settlementConstructionValueCacheTime) > 1000D)) {
+        	if (settlementConstructionValueCache == null) 
+        		settlementConstructionValueCache = new HashMap<Integer, Double>();
+        	settlementConstructionValueCache.clear();
+        	settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
         }
         
-        return settlementConstructionValueCache;
+        if (!settlementConstructionValueCache.containsKey(constructionSkill)) {
+            double value = 0D;
+            
+            double existingSitesValue = getAllConstructionSitesValue(constructionSkill);
+            if (existingSitesValue > value) value = existingSitesValue;
+            
+            double newSiteValue = getNewConstructionSiteValue(constructionSkill);
+            if (newSiteValue > value) value = newSiteValue;
+            
+            settlementConstructionValueCache.put(constructionSkill, value);
+            System.out.println(settlement.getName() + " construction value: " + value + 
+            		" for skill: " + constructionSkill);
+        }
+        
+        return settlementConstructionValueCache.get(constructionSkill);
     }
     
     /**
