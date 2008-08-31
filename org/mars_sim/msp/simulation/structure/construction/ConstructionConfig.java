@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionConfig.java
- * @version 2.85 2008-08-15
+ * @version 2.85 2008-08-31
  * @author Scott Davis
  */
 
@@ -120,6 +120,8 @@ public class ConstructionConfig implements Serializable {
                 name = stageInfoElement.getAttribute(NAME);
                     
                 double workTime = Double.parseDouble(stageInfoElement.getAttribute(WORK_TIME));
+                // convert work time from Sols to millisols.
+                workTime *= 1000D;
                     
                 int skillRequired = Integer.parseInt(stageInfoElement.getAttribute(SKILL_REQUIRED));
                     

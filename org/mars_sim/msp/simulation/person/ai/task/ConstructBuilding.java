@@ -185,12 +185,14 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             GroundVehicle vehicle = i.next();
             if (vehicle instanceof LightUtilityVehicle) {
                 LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
-                if (settlement.getInventory().containsUnit(tempLuv))
-                    settlement.getInventory().retrieveUnit(tempLuv);
-                tempLuv.getInventory().storeUnit(person);
-                tempLuv.setOperator(person);
-                luv = tempLuv;
-                operatingLUV = true;
+                if (tempLuv.getOperator() == null) {
+                    if (settlement.getInventory().containsUnit(tempLuv))
+                        settlement.getInventory().retrieveUnit(tempLuv);
+                    tempLuv.getInventory().storeUnit(person);
+                    tempLuv.setOperator(person);
+                    luv = tempLuv;
+                    operatingLUV = true;
+                }
             }
         }
     }

@@ -190,7 +190,7 @@ public class ConstructionValues implements Serializable {
         Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>();
         
         String nextStageType = site.getNextStageType();
-        if (nextStageType == null) 
+        if (nextStageType != null) 
             result = getConstructionStageValues(nextStageType, constructionSkill);
         
         return result;

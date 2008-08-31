@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.84 2008-06-03
+ * @version 2.85 2008-08-31
  * @author Scott Davis
  */
 
@@ -52,7 +52,7 @@ public class MissionManager implements Serializable {
     // Array of potential new missions
     Class[] potentialMissions = { TravelToSettlement.class, Exploration.class,
     		CollectIce.class, RescueSalvageVehicle.class, Trade.class, 
-    		CollectRegolith.class, Mining.class };
+    		CollectRegolith.class, Mining.class, BuildingConstructionMission.class };
     
     /** 
      * Constructor

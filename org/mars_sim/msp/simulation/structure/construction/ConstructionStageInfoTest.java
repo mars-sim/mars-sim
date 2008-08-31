@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageInfoTest.java
- * @version 2.85 2008-08-10
+ * @version 2.85 2008-08-31
  * @author Scott Davis
  */
 
@@ -45,7 +45,7 @@ public class ConstructionStageInfoTest extends TestCase {
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class, 
                 attachments));
         
-        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 
+        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10000D, 
                 1, null, parts, resources, vehicles);
     }
     
@@ -135,6 +135,6 @@ public class ConstructionStageInfoTest extends TestCase {
      * construction.ConstructionStageInfo.getWorkTime()'
      */
     public void testGetWorkTime() {
-        assertEquals(10D, info.getWorkTime());
+        assertEquals(10000D, info.getWorkTime());
     }
 }

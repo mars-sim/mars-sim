@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageTest.java
- * @version 2.85 2008-08-07
+ * @version 2.85 2008-08-31
  * @author Scott Davis
  */
 
@@ -45,7 +45,7 @@ public class ConstructionStageTest extends TestCase {
                 attachments));
         
         foundationInfo = new ConstructionStageInfo("test foundation info", 
-                ConstructionStageInfo.FOUNDATION, 10D, 0, null, parts, resources, vehicles);
+                ConstructionStageInfo.FOUNDATION, 10000D, 0, null, parts, resources, vehicles);
     }
     
     /*
@@ -81,12 +81,12 @@ public class ConstructionStageTest extends TestCase {
      */
     public void testAddWorkTime() {
         ConstructionStage stage = new ConstructionStage(foundationInfo);
-        stage.addWorkTime(5D);
-        assertEquals(5D, stage.getCompletedWorkTime());
-        stage.addWorkTime(5D);
-        assertEquals(10D, stage.getCompletedWorkTime());
-        stage.addWorkTime(5D);
-        assertEquals(10D, stage.getCompletedWorkTime());
+        stage.addWorkTime(5000D);
+        assertEquals(5000D, stage.getCompletedWorkTime());
+        stage.addWorkTime(5000D);
+        assertEquals(10000D, stage.getCompletedWorkTime());
+        stage.addWorkTime(5000D);
+        assertEquals(10000D, stage.getCompletedWorkTime());
     }
 
     /*
@@ -95,9 +95,9 @@ public class ConstructionStageTest extends TestCase {
      */
     public void testIsComplete() {
         ConstructionStage stage = new ConstructionStage(foundationInfo);
-        stage.addWorkTime(5D);
+        stage.addWorkTime(5000D);
         assertFalse(stage.isComplete());
-        stage.addWorkTime(10D);
+        stage.addWorkTime(10000D);
         assertTrue(stage.isComplete());
     }
 }

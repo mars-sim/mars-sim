@@ -157,7 +157,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
                         }
                     }
                     
-                    constructionSite.setUndergoingConstruction(true);
+                    // Mark site as undergoing construction.
+                    if (constructionStage != null) constructionSite.setUndergoingConstruction(true);
                 }
                 else {
                     endMission("Construction site could not be found or created.");
@@ -406,7 +407,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
     public void endMission(String reason) {
         super.endMission(reason);
         
+        // Mark site as not undergoing construction.
         if (constructionSite != null) constructionSite.setUndergoingConstruction(false);
+        
+        // Unreserve all mission construction vehicles.
+        unreserveConstructionVehicles();
     }
 
     @Override
@@ -465,5 +470,15 @@ public class BuildingConstructionMission extends Mission implements Serializable
         }
         
         return result;
+    }
+    
+    /**
+     * Unreserves all construction vehicles used in mission.
+     */
+    private void unreserveConstructionVehicles() {
+        if (constructionVehicles != null) {
+            Iterator<GroundVehicle> i = constructionVehicles.iterator();
+            while (i.hasNext()) i.next().setReservedForMission(false);
+        }
     }
 }

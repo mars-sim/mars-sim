@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSiteTest.java
- * @version 2.85 2008-08-12
+ * @version 2.85 2008-08-31
  * @author Scott Davis
  */
 
@@ -73,15 +73,15 @@ public class ConstructionSiteTest extends TestCase {
         
         try {
             site.addNewStage(foundationStage);
-            foundationStage.addWorkTime(10D);
+            foundationStage.addWorkTime(10000D);
             assertTrue(foundationStage.isComplete());
             
             site.addNewStage(frameStage);
-            frameStage.addWorkTime(10D);
+            frameStage.addWorkTime(10000D);
             assertTrue(frameStage.isComplete());
             
             site.addNewStage(buildingStage);
-            buildingStage.addWorkTime(10D);
+            buildingStage.addWorkTime(10000D);
             assertTrue(buildingStage.isComplete());
             
             assertTrue(site.isAllConstructionComplete());
