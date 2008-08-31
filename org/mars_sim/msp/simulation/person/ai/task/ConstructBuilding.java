@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 2.85 2008-08-24
+ * @version 2.85 2008-08-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -144,7 +144,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
         
-        if (shouldEndEVAOperation()) {
+        if (shouldEndEVAOperation() || stage.isComplete()) {
             // End operating light utility vehicle.
             if ((luv != null) && luv.getInventory().containsUnit(person))  
                 returnVehicle();
@@ -164,7 +164,6 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         
         // Work on construction.
         stage.addWorkTime(workTime);
-        if (stage.isComplete()) setPhase(EVAOperation.ENTER_AIRLOCK);
         
         // Add experience points
         addExperience(time);
