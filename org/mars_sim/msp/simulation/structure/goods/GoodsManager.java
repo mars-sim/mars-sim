@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.85 2008-08-31
+ * @version 2.85 2008-09-01
  * @author Scott Davis
  */
 
@@ -538,7 +538,7 @@ public class GoodsManager implements Serializable {
             if (stage.getResources().containsKey(resource)) {
                 double stageValue = stageValues.get(stage);
                 double amount = stage.getResources().get(resource);
-                double constructionDemand = (stageValue / 1000D) * amount;
+                double constructionDemand = (stageValue / 1000D) / amount;
                 if (constructionDemand > demand) demand = constructionDemand;
             }
         }
@@ -888,7 +888,7 @@ public class GoodsManager implements Serializable {
             if (stage.getParts().containsKey(part)) {
                 double stageValue = stageValues.get(stage);
                 int number = stage.getParts().get(part);
-                double constructionDemand = (stageValue / 1000D) * number;
+                double constructionDemand = (stageValue / 1000D) / (double) number;
                 if (constructionDemand > demand) demand = constructionDemand;
             }
         }
