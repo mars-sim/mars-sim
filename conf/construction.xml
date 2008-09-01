@@ -27,6 +27,7 @@
 			<part name="steel truss" number="20" />
 			<part name="steel cable" number="6" />
 			<resource name="concrete" amount="50.0" />
+			<resource name="water" amount="20.0" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -35,6 +36,7 @@
 		<frame name="array frame" work-time="20.0" skill-required="2" foundation="surface foundation 10m x 5m" >
 			<part name="steel truss" number="20" />
 			<resource name="concrete" amount="50.0" />
+			<resource name="water" amount="20.0" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>

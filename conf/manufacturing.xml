@@ -913,6 +913,20 @@
 		</outputs>
 	</process>
 	
+	<process name="turbine generator manufacturing" tech="3" skill="3" work-time="300" process-time="300">
+		<inputs>
+			<part name="iron sheet" number="1" />
+			<part name="iron ingot" number="2" />
+			<part name="copper wire" number="15" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="8" />
+			<part name="wire connector" number="8" />
+		</inputs>
+		<outputs>
+			<part name="turbine generator" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="small electric motor manufacturing" tech="3" skill="3" work-time="200" process-time="200">
 		<inputs>
 			<part name="iron sheet" number="1" />
@@ -1337,9 +1351,33 @@
 	<process name="bulldozer blade manufacturing" tech="2" skill="3" work-time="300" process-time="300">
 		<inputs>
 			<part name="steel sheet" number="2" />
+			<part name="steel ingot" number="2" />
 		</inputs>
 		<outputs>
 			<part name="bulldozer blade" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="crane boom manufacturing" tech="3" skill="4" work-time="400" process-time="400">
+		<inputs>
+			<part name="steel sheet" number="4" />
+			<part name="electrical wire" number="2" />
+			<part name="wire connector" number="2" />
+			<part name="small electric motor" number="1" />
+			<part name="steel wire" number="5" />
+		</inputs>
+		<outputs>
+			<part name="crane boom" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="soil compactor manufacturing" tech="2" skill="3" work-time="300" process-time="300">
+		<inputs>
+			<part name="steel sheet" number="2" />
+			<part name="steel ingot" number="14" />
+		</inputs>
+		<outputs>
+			<part name="soil compactor" number="1" />
 		</outputs>
 	</process>
 	
@@ -1393,6 +1431,94 @@
 		</inputs>
 		<outputs>
 			<vehicle name="light utility vehicle" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="steel truss manufacturing" tech="2" skill="2" work-time="200" process-time="300">
+		<inputs>
+			<part name="steel ingot" number="10" />
+		</inputs>
+		<outputs>
+			<part name="steel truss" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="turbine blade forming" tech="2" skill="3" work-time="200" process-time="200">
+		<inputs>
+			<part name="fiberglass" number="1" />
+			<resource name="polyester resin" amount=".5" />
+			<resource name="styrene" amount=".5" />
+		</inputs>
+		<outputs>
+			<part name="wind turbine blade" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="solar panel fabrication" tech="4" skill="4" work-time="200" process-time="200">
+		<inputs>
+			<resource name="silicon" amount="25.0" />
+			<part name="aluminum sheet" number="1" />
+			<part name="electrical wire" number="9" />
+			<part name="wire connector" number="9" />
+		</inputs>
+		<outputs>
+			<part name="solar panel" number="3" />
+		</outputs>
+	</process>
+	
+	<process name="solar parabolic mirror manufacturing" tech="3" skill="4" work-time="300" process-time="300">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="aluminum sheet" number="2" />
+			<part name="glass sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="solar parabolic mirror" number="" />
+		</outputs>
+	</process>
+	
+	<process name="glass tube forming" tech="2" skill="2" work-time="100" process-time="200" >
+		<inputs>
+			<resource name="sand" amount="10.0" />
+		</inputs>
+		<outputs>
+			<part name="glass tube" number="2" />
+		</outputs>
+	</process>
+	
+	<process name="cement manufacturing" tech="1" skill="1" work-time="50" process-time="50" >
+		<inputs>
+			<resource name="calcium carbonate" amount="40.0" />
+			<resource name="gypsum" amount="8.0" />
+			<resource name="aluminum oxide" amount="1.0" />
+			<resource name="iron oxide" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="cement" amount="50.0" />
+		</outputs>
+	</process>
+	
+	<!-- Makes dry concrete using cement with sand and regolith as aggregates. -->
+	<process name="concrete mixing" tech="1" skill="1" work-time="50" process-time="50" >
+		<inputs>
+			<resource name="cement" amount="10" />
+			<resource name="sand" amount="15" />
+			<resource name="regolith" amount="25" />
+		</inputs>
+		<outputs>
+			<resource name="concrete" amount="50.0" />
+		</outputs>
+	</process>
+	
+	<!-- Same as concrete mixing but using lime in place of cement. -->
+	<process name="limecrete mixing" tech="1" skill="1" work-time="50" process-time="50" >
+		<inputs>
+			<resource name="lime" amount="10" />
+			<resource name="sand" amount="15" />
+			<resource name="regolith" amount="25" />
+		</inputs>
+		<outputs>
+			<resource name="concrete" amount="50.0" />
 		</outputs>
 	</process>
 
