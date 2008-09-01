@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.85 2008-07-13
+ * @version 2.85 2008-08-31
  * @author Scott Davis
  */
 
@@ -34,6 +34,7 @@ import org.mars_sim.msp.simulation.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.simulation.manufacture.ManufactureUtil;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonConfig;
+import org.mars_sim.msp.simulation.person.ai.job.Architect;
 import org.mars_sim.msp.simulation.person.ai.job.Areologist;
 import org.mars_sim.msp.simulation.person.ai.job.Driver;
 import org.mars_sim.msp.simulation.person.ai.job.Trader;
@@ -53,6 +54,8 @@ import org.mars_sim.msp.simulation.structure.building.function.Crop;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionValues;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
@@ -73,6 +76,7 @@ public class GoodsManager implements Serializable {
 	private static final String TRADE_MISSION = "trade";
 	private static final String COLLECT_REGOLITH_MISSION = "collect regolith";
 	private static final String MINING_MISSION = "mining";
+    private static final String CONSTRUCTION_MISSION = "construction";
 	
 	// Number modifiers for outstanding repair and maintenance parts.
 	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 100;
@@ -260,6 +264,9 @@ public class GoodsManager implements Serializable {
 			// Add manufacturing demand.
 			demand += getResourceManufacturingDemand(resource);
 			
+			// Add construction demand.
+            demand += getResourceConstructionDemand(resource);
+            
 			// Add trade value.
 			demand += determineTradeValue(resourceGood, useCache);
 			
@@ -513,6 +520,31 @@ public class GoodsManager implements Serializable {
 		
 		return demand;
 	}
+    
+    /**
+     * Gets the demand for an amount resource as an input in building construction.
+     * @param resource the amount resource.
+     * @return demand (kg)
+     * @throws Exception if error determining demand for resource.
+     */
+    private double getResourceConstructionDemand(AmountResource resource) throws Exception {
+        double demand = 0D;
+
+        ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
+        Map<ConstructionStageInfo, Double> stageValues = values.getAllConstructionStageValues();
+        Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
+        while (i.hasNext()) {
+            ConstructionStageInfo stage = i.next();
+            if (stage.getResources().containsKey(resource)) {
+                double stageValue = stageValues.get(stage);
+                double amount = stage.getResources().get(resource);
+                double constructionDemand = (stageValue / 1000D) * amount;
+                if (constructionDemand > demand) demand = constructionDemand;
+            }
+        }
+        
+        return demand;
+    }
 	
 	/**
 	 * Gets the number of a good at the settlement.
@@ -612,6 +644,9 @@ public class GoodsManager implements Serializable {
 				
 				// Add manufacturing demand.
 				demand += getPartManufacturingDemand(part);
+                
+                // Add construction demand.
+                demand += getPartConstructionDemand(part);
 			}
 			
 			// Add trade value.
@@ -835,6 +870,31 @@ public class GoodsManager implements Serializable {
 		
 		return demand;
 	}
+    
+    /**
+     * Gets the construction demand for a part.
+     * @param part the part.
+     * @return demand (kg)
+     * @throws Exception if error getting part construction demand.
+     */
+    private double getPartConstructionDemand(Part part) throws Exception {
+        double demand = 0D;
+        
+        ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
+        Map<ConstructionStageInfo, Double> stageValues = values.getAllConstructionStageValues();
+        Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
+        while (i.hasNext()) {
+            ConstructionStageInfo stage = i.next();
+            if (stage.getParts().containsKey(part)) {
+                double stageValue = stageValues.get(stage);
+                int number = stage.getParts().get(part);
+                double constructionDemand = (stageValue / 1000D) * number;
+                if (constructionDemand > demand) demand = constructionDemand;
+            }
+        }
+        
+        return demand;
+    }
 	
 	/**
 	 * Gets the number of an item resource for a settlement.
@@ -991,6 +1051,15 @@ public class GoodsManager implements Serializable {
 		}
 		return result;
 	}
+    
+    private int getArchitectNum() {
+        int result = 0;
+        Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+        while (i.hasNext()) {
+            if (i.next().getMind().getJob() instanceof Architect) result ++;
+        }
+        return result;
+    }
 	
 	/**
 	 * Gets the number of drivers associated with the settlement.
@@ -1105,6 +1174,9 @@ public class GoodsManager implements Serializable {
 			
 			double miningMissionValue = determineMissionVehicleValue(MINING_MISSION, vehicleType, buy);
 			if (miningMissionValue > value) value = miningMissionValue;
+            
+            double constructionMissionValue = determineMissionVehicleValue(CONSTRUCTION_MISSION, vehicleType, buy);
+            if (constructionMissionValue > value) value = constructionMissionValue;
 			
 			// Add trade value.
 			value += determineTradeValue(vehicleGood, useCache);
@@ -1164,6 +1236,9 @@ public class GoodsManager implements Serializable {
 		else if (MINING_MISSION.equals(missionType)) {
 			demand = getAreologistNum() / 2D;
 		}
+        else if (CONSTRUCTION_MISSION.equals(missionType)) {
+            demand = getArchitectNum();
+        }
 		
 		return demand;
 	}
@@ -1244,6 +1319,12 @@ public class GoodsManager implements Serializable {
 				if (range == 0D) capacity = 0D;
 			}
 		}
+        else if (CONSTRUCTION_MISSION.equals(missionType)) {
+            // Assume one light utility vehicle for now.
+            if (vehicleType.equalsIgnoreCase("light utility vehicle")) { 
+                capacity = 1D;
+            }
+        }
 		
 		return capacity;
 	}

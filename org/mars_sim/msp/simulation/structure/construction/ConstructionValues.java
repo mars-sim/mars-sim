@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 2.85 2008-08-30
+ * @version 2.85 2008-08-31
  * @author Scott Davis
  */
 
@@ -31,6 +31,10 @@ public class ConstructionValues implements Serializable {
     private Settlement settlement;
     private Map<Integer, Double> settlementConstructionValueCache;
     private MarsClock settlementConstructionValueCacheTime;
+    private Map<ConstructionStageInfo, Double> stageInfoValueCache;
+    private MarsClock stageInfoValueCacheTime;
+    private Map<ConstructionStageInfo, Double> allStageInfoValueCache;
+    private MarsClock allStageInfoValueCacheTime;
     
     /**
      * Constructor
@@ -221,6 +225,34 @@ public class ConstructionValues implements Serializable {
     }
     
     /**
+     * Gets a map of all construction stage infos and their values.
+     * @param stageType the construction stage type.
+     * @return map of construction stage infos and their values (VP).
+     * @throws Exception if error determining value.
+     */
+    public Map<ConstructionStageInfo, Double> getAllConstructionStageValues() throws Exception {
+        
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        if ((allStageInfoValueCacheTime == null) || 
+                (MarsClock.getTimeDiff(currentTime, allStageInfoValueCacheTime) > 1000D)) {
+            if (allStageInfoValueCache == null) 
+                allStageInfoValueCache = new HashMap<ConstructionStageInfo, Double>();
+            allStageInfoValueCache.clear();
+            
+            Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList()
+                    .iterator();
+            while (i.hasNext()) {
+                ConstructionStageInfo stageInfo = i.next();
+                allStageInfoValueCache.put(stageInfo, getConstructionStageValue(stageInfo));
+            }
+            
+            allStageInfoValueCacheTime = (MarsClock) currentTime.clone();
+        }
+        
+        return allStageInfoValueCache;
+    }
+    
+    /**
      * Gets the value of a construction stage.
      * @param stageInfo the construction stage info.
      * @return value (VP).
@@ -228,47 +260,60 @@ public class ConstructionValues implements Serializable {
      */
     private double getConstructionStageValue(ConstructionStageInfo stageInfo) throws Exception {
         
-        double result = 0D;
-        
-        if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType())) {
-            result = getBuildingConstructionValue(stageInfo.getName()) / 2D;
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        if ((stageInfoValueCacheTime == null) || 
+                (MarsClock.getTimeDiff(currentTime, stageInfoValueCacheTime) > 1000D)) {
+            if (stageInfoValueCache == null) 
+                stageInfoValueCache = new HashMap<ConstructionStageInfo, Double>();
+            stageInfoValueCache.clear();
+            stageInfoValueCacheTime = (MarsClock) currentTime.clone();
         }
-        else {
-            Iterator<ConstructionStageInfo> i = 
-                ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
-            while (i.hasNext()) {
-                double stageValue = getConstructionStageValue(i.next()) / 2D;
-                if (stageValue > result) result = stageValue;
+        
+        if (!stageInfoValueCache.containsKey(stageInfo)) {
+            double result = 0D;
+        
+            if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType())) {
+                result = getBuildingConstructionValue(stageInfo.getName()) / 2D;
             }
+            else {
+                Iterator<ConstructionStageInfo> i = 
+                        ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
+                while (i.hasNext()) {
+                    double stageValue = getConstructionStageValue(i.next()) / 2D;
+                    if (stageValue > result) result = stageValue;
+                }
+            }
+        
+            GoodsManager manager = settlement.getGoodsManager();
+        
+            // Subtract value of construction resources.
+            Map<AmountResource, Double> resources = stageInfo.getResources();
+            Iterator<AmountResource> j = resources.keySet().iterator();
+            while (j.hasNext()) {
+                AmountResource resource = j.next();
+                Good resourceGood = GoodsUtil.getResourceGood(resource);
+                double amount = resources.get(resource);
+                double value = manager.getGoodValuePerMass(resourceGood) * amount;
+                result -= value;
+            }
+        
+            // Subtract value of construction parts.
+            Map<Part, Integer> parts = stageInfo.getParts();
+            Iterator<Part> k = parts.keySet().iterator();
+            while (k.hasNext()) {
+                Part part = k.next();
+                Good partGood = GoodsUtil.getResourceGood(part);
+                int number = parts.get(part);
+                double value = manager.getGoodValuePerItem(partGood) * number;
+                result -= value;
+            }
+        
+            if (result < 0D) result = 0D;
+        
+            stageInfoValueCache.put(stageInfo, result);
         }
         
-        GoodsManager manager = settlement.getGoodsManager();
-        
-        // Subtract value of construction resources.
-        Map<AmountResource, Double> resources = stageInfo.getResources();
-        Iterator<AmountResource> j = resources.keySet().iterator();
-        while (j.hasNext()) {
-            AmountResource resource = j.next();
-            Good resourceGood = GoodsUtil.getResourceGood(resource);
-            double amount = resources.get(resource);
-            double value = manager.getGoodValuePerMass(resourceGood) * amount;
-            result -= value;
-        }
-        
-        // Subtract value of construction parts.
-        Map<Part, Integer> parts = stageInfo.getParts();
-        Iterator<Part> k = parts.keySet().iterator();
-        while (k.hasNext()) {
-            Part part = k.next();
-            Good partGood = GoodsUtil.getResourceGood(part);
-            int number = parts.get(part);
-            double value = manager.getGoodValuePerItem(partGood) * number;
-            result -= value;
-        }
-        
-        if (result < 0D) result = 0D;
-        
-        return result;
+        return stageInfoValueCache.get(stageInfo);
     }
     
     /**
