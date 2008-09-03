@@ -1473,7 +1473,7 @@
 			<part name="glass sheet" number="1" />
 		</inputs>
 		<outputs>
-			<part name="solar parabolic mirror" number="" />
+			<part name="solar parabolic mirror" number="1" />
 		</outputs>
 	</process>
 	
