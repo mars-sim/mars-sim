@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.85 2008-09-01
+ * @version 2.85 2008-09-03
  * @author Scott Davis
  */
 
@@ -535,12 +535,51 @@ public class GoodsManager implements Serializable {
         Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
-            if (stage.getResources().containsKey(resource)) {
-                double stageValue = stageValues.get(stage);
-                double amount = stage.getResources().get(resource);
-                double constructionDemand = (stageValue / 1000D) / amount;
-                if (constructionDemand > demand) demand = constructionDemand;
+            double stageValue = stageValues.get(stage);
+            double constructionDemand = getResourceConstructionStageDemand(resource, stage, stageValue);
+            if (constructionDemand > demand) demand = constructionDemand;
+        }
+        
+        return demand;
+    }
+    
+    /**
+     * Gets the demand for an amount resources as an input for a particular building construction stage.
+     * @param resource the amount resource.
+     * @param stage the building construction stage.
+     * @param stageValue the building construction stage value (VP).
+     * @return demand (kg)
+     * @throws Exception if error determining demand for resource.
+     */
+    private double getResourceConstructionStageDemand(AmountResource resource, ConstructionStageInfo stage, 
+            double stageValue) throws Exception {
+        double demand = 0D;
+        
+        Map<AmountResource, Double> resources = stage.getResources();
+        Map<Part, Integer> parts = stage.getParts();
+        
+        if (resources.containsKey(resource)) {
+            double inputsValue = 0D;
+            
+            Iterator<AmountResource> i = resources.keySet().iterator();
+            while (i.hasNext()) {
+                AmountResource inputResource = i.next();
+                if (!inputResource.equals(resource)) {
+                    double amount = resources.get(inputResource);
+                    Good good = GoodsUtil.getResourceGood(inputResource);
+                    inputsValue += getGoodValuePerMass(good) * amount;
+                }
             }
+            
+            Iterator<Part> j = parts.keySet().iterator();
+            while (j.hasNext()) {
+                Part inputPart = j.next();
+                int number = parts.get(inputPart);
+                Good good = GoodsUtil.getResourceGood(inputPart);
+                inputsValue += getGoodValuePerItem(good) * number;
+            }
+            
+            demand = (stageValue - inputsValue) / resources.get(resource) / 2D;
         }
         
         return demand;
@@ -885,12 +924,51 @@ public class GoodsManager implements Serializable {
         Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
-            if (stage.getParts().containsKey(part)) {
-                double stageValue = stageValues.get(stage);
-                int number = stage.getParts().get(part);
-                double constructionDemand = (stageValue / 1000D) / (double) number;
-                if (constructionDemand > demand) demand = constructionDemand;
+            double stageValue = stageValues.get(stage);
+            double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
+            if (constructionStageDemand > demand) demand = constructionStageDemand;
+        }
+        
+        return demand;
+    }
+    
+    /**
+     * Gets the demand for a part as an input for a particular building construction stage.
+     * @param part the part.
+     * @param stage the building construction stage.
+     * @param stageValue the building construction stage value (VP).
+     * @return demand (kg)
+     * @throws Exception if error determining demand for part.
+     */
+    private double getPartConstructionStageDemand(Part part, ConstructionStageInfo stage, 
+            double stageValue) throws Exception {
+        double demand = 0D;
+        
+        Map<AmountResource, Double> resources = stage.getResources();
+        Map<Part, Integer> parts = stage.getParts();
+        
+        if (parts.containsKey(part)) {
+            double inputsValue = 0D;
+            
+            Iterator<AmountResource> i = resources.keySet().iterator();
+            while (i.hasNext()) {
+                AmountResource inputResource = i.next();
+                double amount = resources.get(inputResource);
+                Good good = GoodsUtil.getResourceGood(inputResource);
+                inputsValue += getGoodValuePerMass(good) * amount;
             }
+            
+            Iterator<Part> j = parts.keySet().iterator();
+            while (j.hasNext()) {
+                Part inputPart = j.next();
+                if (!inputPart.equals(part)) {
+                    int number = parts.get(inputPart);
+                    Good good = GoodsUtil.getResourceGood(inputPart);
+                    inputsValue += getGoodValuePerItem(good) * number;
+                }
+            }
+            
+            demand = (stageValue - inputsValue) / (double) parts.get(part) / 2D;
         }
         
         return demand;
