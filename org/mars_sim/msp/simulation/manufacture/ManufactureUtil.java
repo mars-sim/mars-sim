@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
+import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 
 /**
  * Utility class for getting manufacturing processes.
@@ -309,4 +311,34 @@ public final class ManufactureUtil {
 		
 		return result;
 	}
+    
+    /**
+     * Gets the mass for a manufacturing process item.
+     * @param item the manufacturing process item.
+     * @return mass (kg).
+     * @throws Exception if error determining the mass.
+     */
+    public static double getMass(ManufactureProcessItem item) throws Exception {
+        double mass = 0D;
+        
+        if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+            mass = item.getAmount();
+        }
+        else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+            Part part = (Part) ItemResource.findItemResource(item.getName());
+            mass = item.getAmount() * part.getMassPerItem();
+        }
+        else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
+            Class equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
+            double equipmentMass = EquipmentFactory.getEquipment(
+                    equipmentClass, new Coordinates(0, 0), true).getMass();
+            mass = item.getAmount() * equipmentMass;
+        }
+        else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
+            VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+            mass = item.getAmount() * config.getEmptyMass(item.getName());
+        }
+        
+        return mass;
+    }
 }

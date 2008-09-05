@@ -105,19 +105,19 @@ public class BuildingConstructionMission extends Mission implements Serializable
                         Skill.CONSTRUCTION);
                 ConstructionManager manager = settlement.getConstructionManager();
                 ConstructionValues values = manager.getConstructionValues();
-                double existingSitesValue = values.getAllConstructionSitesValue(constructionSkill);
-                double newSiteValue = values.getNewConstructionSiteValue(constructionSkill);
+                double existingSitesProfit = values.getAllConstructionSitesProfit(constructionSkill);
+                double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
                 
-                if (existingSitesValue > newSiteValue) {
+                if (existingSitesProfit > newSiteProfit) {
                     // Determine which existing construction site to work on.
-                    double topSiteValue = 0D;
+                    double topSiteProfit = 0D;
                     Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingMission().iterator();
                     while (i.hasNext()) {
                         ConstructionSite site = i.next();
-                        double siteValue = values.getConstructionSiteValue(site, constructionSkill);
-                        if (siteValue > topSiteValue) {
+                        double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
+                        if (siteProfit > topSiteProfit) {
                             constructionSite = site;
-                            topSiteValue = siteValue;
+                            topSiteProfit = siteProfit;
                         }
                     }
                 }
@@ -135,16 +135,16 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     }
                     else {
                         ConstructionStageInfo stageInfo = null;
-                        double topStageInfoValue = 0D;
-                        Map<ConstructionStageInfo, Double> stageValues = 
-                            values.getNewConstructionStageValues(constructionSite, constructionSkill);
-                        Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
+                        double topStageInfoProfit = 0D;
+                        Map<ConstructionStageInfo, Double> stageProfits = 
+                            values.getNewConstructionStageProfits(constructionSite, constructionSkill);
+                        Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
                         while (i.hasNext()) {
                             ConstructionStageInfo info = i.next();
-                            double infoValue = stageValues.get(info);
-                            if (infoValue > topStageInfoValue) {
+                            double infoProfit = stageProfits.get(info);
+                            if (infoProfit > topStageInfoProfit) {
                                 stageInfo = info;
-                                topStageInfoValue = infoValue;
+                                topStageInfoProfit = infoProfit;
                             }
                         }
                         
@@ -227,8 +227,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
                             Skill.CONSTRUCTION);
                     ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
-                    double constructionValue = values.getSettlementConstructionValue(constructionSkill);
-                    result = constructionValue / 1000D;
+                    double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
+                    result = constructionProfit / 1000D;
                 }
                 catch (Exception e) {
                     logger.log(Level.SEVERE, "Error getting mining site.", e);

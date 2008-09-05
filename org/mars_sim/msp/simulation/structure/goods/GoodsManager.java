@@ -410,35 +410,35 @@ public class GoodsManager implements Serializable {
 	private double getResourceProcessValue(ResourceProcess process, AmountResource resource) {
 		double value = 0D;
 		
-		Set inputResources = process.getInputResources();
-		Set outputResources = process.getOutputResources();
+		Set<AmountResource> inputResources = process.getInputResources();
+		Set<AmountResource> outputResources = process.getOutputResources();
 		
 		if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
 			double outputValue = 0D;
-			Iterator i = outputResources.iterator();
+			Iterator<AmountResource> i = outputResources.iterator();
 			while (i.hasNext()) {
-				AmountResource output = (AmountResource) i.next();
+				AmountResource output = i.next();
 				double outputRate = process.getMaxOutputResourceRate(output); 
 				if (!process.isWasteOutputResource(resource))
 					outputValue += (getGoodValuePerMass(GoodsUtil.getResourceGood(output)) * outputRate);
 			}
-			
-			double otherInputValue = 0D;
-			Iterator j = inputResources.iterator();
-			while (j.hasNext()) {
-				AmountResource input = (AmountResource) j.next();
-				double inputRate = process.getMaxInputResourceRate(input);
-				if (!input.equals(resource) && !process.isAmbientInputResource(input)) 
-					otherInputValue += (getGoodValuePerMass(GoodsUtil.getResourceGood(input)) * inputRate);
-			}
-			
-			double totalValue = outputValue - otherInputValue;
-			double resourceInputRate = process.getMaxInputResourceRate(resource);
-			
-			if (resourceInputRate > 0D) value = totalValue / resourceInputRate;
+            
+            double totalInputRate = 0D;
+            Iterator<AmountResource> j = process.getInputResources().iterator();
+            while (j.hasNext()) {
+                AmountResource inputResource = j.next();
+                if (!process.isAmbientInputResource(inputResource))
+                    totalInputRate += process.getMaxInputResourceRate(inputResource);
+            }
+            
+            double resourceRate = process.getMaxInputResourceRate(resource);
+            
+            double totalInputsValue = outputValue / 2D;
+            
+            value = (resourceRate / totalInputRate) * totalInputsValue;
 		}
 		
-		return value / 2D;
+		return value;
 	}
 	
 	/**
@@ -504,18 +504,18 @@ public class GoodsManager implements Serializable {
 		if (resourceInput != null) {
 			double outputsValue = 0D;
 			Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-			while (j.hasNext()) outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
-			
-			double inputsValue = 0D;
-			Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
-			while (k.hasNext()) {
-				ManufactureProcessItem item = k.next();
-				if (!ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType()) || 
-						!resource.getName().equalsIgnoreCase(item.getName()))
-					inputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement);
-			}
-			
-			demand = (outputsValue - inputsValue) / resourceInput.getAmount() / 2D;
+			while (j.hasNext()) 
+                outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
+            
+            double totalMass = 0D;
+            Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
+            while (k.hasNext()) totalMass += ManufactureUtil.getMass(k.next());
+            
+            double resourceMass = ManufactureUtil.getMass(resourceInput);
+            
+            double totalInputsValue = outputsValue / 2D;
+            
+            demand = (resourceMass / totalMass) * totalInputsValue;
 		}
 		
 		return demand;
@@ -559,27 +559,23 @@ public class GoodsManager implements Serializable {
         Map<Part, Integer> parts = stage.getParts();
         
         if (resources.containsKey(resource)) {
-            double inputsValue = 0D;
+            double totalMass = 0D;
             
             Iterator<AmountResource> i = resources.keySet().iterator();
-            while (i.hasNext()) {
-                AmountResource inputResource = i.next();
-                if (!inputResource.equals(resource)) {
-                    double amount = resources.get(inputResource);
-                    Good good = GoodsUtil.getResourceGood(inputResource);
-                    inputsValue += getGoodValuePerMass(good) * amount;
-                }
-            }
+            while (i.hasNext()) totalMass += resources.get(i.next());
             
             Iterator<Part> j = parts.keySet().iterator();
             while (j.hasNext()) {
                 Part inputPart = j.next();
                 int number = parts.get(inputPart);
-                Good good = GoodsUtil.getResourceGood(inputPart);
-                inputsValue += getGoodValuePerItem(good) * number;
+                totalMass += number * inputPart.getMassPerItem();
             }
             
-            demand = (stageValue - inputsValue) / resources.get(resource) / 2D;
+            double resourceMass = resources.get(resource);
+            
+            double totalInputsValue = stageValue / 2D;
+            
+            demand = (resourceMass / totalMass) * totalInputsValue;
         }
         
         return demand;
@@ -893,18 +889,19 @@ public class GoodsManager implements Serializable {
 		if (partInput != null) {
 			double outputsValue = 0D;
 			Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-			while (j.hasNext()) outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
-			
-			double inputsValue = 0D;
-			Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
-			while (k.hasNext()) {
-				ManufactureProcessItem item = k.next();
-				if (!ManufactureProcessItem.PART.equalsIgnoreCase(item.getType()) || 
-						!part.getName().equalsIgnoreCase(item.getName()))
-					inputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement);
-			}
-			
-			demand = (outputsValue - inputsValue) / (partInput.getAmount() * part.getMassPerItem() * part.getMassPerItem()) / 2D;
+			while (j.hasNext()) 
+                outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
+            
+            double totalMass = 0D;
+            Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
+            while (k.hasNext()) totalMass += ManufactureUtil.getMass(k.next());
+            
+            double partMass = ManufactureUtil.getMass(partInput);
+            
+            double totalInputsValue = outputsValue / 2D;
+            
+            double demandAmount = (partMass / totalMass) * totalInputsValue;
+            demand = demandAmount / part.getMassPerItem();
 		}
 		
 		return demand;
@@ -913,7 +910,7 @@ public class GoodsManager implements Serializable {
     /**
      * Gets the construction demand for a part.
      * @param part the part.
-     * @return demand (kg)
+     * @return demand
      * @throws Exception if error getting part construction demand.
      */
     private double getPartConstructionDemand(Part part) throws Exception {
@@ -937,7 +934,7 @@ public class GoodsManager implements Serializable {
      * @param part the part.
      * @param stage the building construction stage.
      * @param stageValue the building construction stage value (VP).
-     * @return demand (kg)
+     * @return demand
      * @throws Exception if error determining demand for part.
      */
     private double getPartConstructionStageDemand(Part part, ConstructionStageInfo stage, 
@@ -948,27 +945,25 @@ public class GoodsManager implements Serializable {
         Map<Part, Integer> parts = stage.getParts();
         
         if (parts.containsKey(part)) {
-            double inputsValue = 0D;
+            double totalMass = 0D;
             
             Iterator<AmountResource> i = resources.keySet().iterator();
-            while (i.hasNext()) {
-                AmountResource inputResource = i.next();
-                double amount = resources.get(inputResource);
-                Good good = GoodsUtil.getResourceGood(inputResource);
-                inputsValue += getGoodValuePerMass(good) * amount;
-            }
+            while (i.hasNext()) totalMass += resources.get(i.next());
             
             Iterator<Part> j = parts.keySet().iterator();
             while (j.hasNext()) {
                 Part inputPart = j.next();
-                if (!inputPart.equals(part)) {
-                    int number = parts.get(inputPart);
-                    Good good = GoodsUtil.getResourceGood(inputPart);
-                    inputsValue += getGoodValuePerItem(good) * number;
-                }
+                int number = parts.get(inputPart);
+                totalMass += number * inputPart.getMassPerItem();
             }
             
-            demand = (stageValue - inputsValue) / (double) parts.get(part) / 2D;
+            double partNumber = parts.get(part);
+            double partMass = partNumber * part.getMassPerItem();
+            
+            double totalInputsValue = stageValue / 2D;
+            
+            double demandAmount = (partMass / totalMass) * totalInputsValue;
+            demand = demandAmount / part.getMassPerItem();
         }
         
         return demand;
