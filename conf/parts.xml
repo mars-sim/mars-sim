@@ -342,6 +342,7 @@
 	<part name="rover generator" mass="500.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
+			<entity name="fuel power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	

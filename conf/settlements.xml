@@ -28,7 +28,7 @@
 			<building type="ERV Base" number="1" />
 			
 			<!-- Methane-powered backup generator. -->
-			<building type="Methane Backup Generator" number="1" />
+			<building type="Methane Power Generator" number="1" />
 			
 			<!-- A rover for collecting rock samples from remote sites
 			     and ice prospecting. -->
@@ -71,7 +71,7 @@
 			<building type="MD1 Nuclear Reactor" number="3" />
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="2" />
-			<building type="Methane Backup Generator" number="1" />
+			<building type="Methane Power Generator" number="1" />
 			<building type="Small Workshop" number="1" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
@@ -95,7 +95,7 @@
 			<building type="MD1 Nuclear Reactor" number="4" />
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="3" />
-			<building type="Methane Backup Generator" number="1" />
+			<building type="Methane Power Generator" number="1" />
 			<building type="Small Workshop" number="1" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
@@ -131,7 +131,7 @@
 			<building type="MD4 Nuclear Reactor" number="2" />
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="3" />
-			<building type="Methane Backup Generator" number="1" />
+			<building type="Methane Power Generator" number="1" />
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />
 			<vehicle type="Cargo Rover" number="2" />
