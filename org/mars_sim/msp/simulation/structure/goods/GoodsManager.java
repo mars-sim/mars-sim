@@ -673,6 +673,7 @@ public class GoodsManager implements Serializable {
 		else {
 			// Get demand for part.
 			if (resource instanceof Part) {
+                
 				Part part = (Part) resource;
 				if (partsDemandCache.size() == 0) determinePartsDemand();
 				if (partsDemandCache.containsKey(part)) demand = partsDemandCache.get(part);
@@ -682,12 +683,12 @@ public class GoodsManager implements Serializable {
                 
                 // Add construction demand.
                 demand += getPartConstructionDemand(part);
-			}
-			
-			// Add trade value.
-			demand += determineTradeValue(resourceGood, useCache) / resource.getMassPerItem();
-			
-			demand *= resource.getMassPerItem(); 
+            }
+            
+            // Add trade value.
+            double tradeDemand = determineTradeValue(resourceGood, useCache);
+            if (tradeDemand > demand) demand = tradeDemand;
+            
 			goodsDemandCache.put(resourceGood, new Double(demand));
 		}
 		
@@ -1252,9 +1253,9 @@ public class GoodsManager implements Serializable {
             if (constructionMissionValue > value) value = constructionMissionValue;
 			
 			// Add trade value.
-			value += determineTradeValue(vehicleGood, useCache);
-			// double tradeValue = determineTradeValue(vehicleGood, useCache);
-			// if (tradeValue > value) value = tradeValue;
+			//value += determineTradeValue(vehicleGood, useCache);
+			double tradeValue = determineTradeValue(vehicleGood, useCache);
+			if (tradeValue > value) value = tradeValue;
 			
 			if (buy) vehicleBuyValueCache.put(vehicleType, value);
 			else vehicleSellValueCache.put(vehicleType, value);
