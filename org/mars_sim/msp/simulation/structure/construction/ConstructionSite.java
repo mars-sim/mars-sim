@@ -140,4 +140,19 @@ public class ConstructionSite implements Serializable {
         ConstructionStage currentStage = getCurrentConstructionStage();
         return (currentStage != null) && !currentStage.isComplete();
     }
+    
+    /**
+     * Checks if this site contains a given stage.
+     * @param stage the stage info.
+     * @return true if contains stage.
+     */
+    public boolean hasStage(ConstructionStageInfo stage) {
+        if (stage == null) throw new IllegalArgumentException("stage cannot be null");
+        
+        boolean result = false;
+        if (stage.equals(foundationStage)) result = true;
+        else if (stage.equals(frameStage)) result = true;
+        else if (stage.equals(buildingStage)) result = true;
+        return result;
+    }
 }

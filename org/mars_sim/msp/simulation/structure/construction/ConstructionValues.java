@@ -173,7 +173,18 @@ public class ConstructionValues implements Serializable {
                 ConstructionStageInfo.FOUNDATION, constructionSkill);
         Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
         while (i.hasNext()) {
-            double profit = stageProfits.get(i.next());
+            ConstructionStageInfo foundationStage = i.next();
+            double profit = stageProfits.get(foundationStage);
+            
+            // Divide by number of existing construction sites with this foundation.
+            int numSites = 0;
+            ConstructionManager manager = settlement.getConstructionManager();
+            Iterator<ConstructionSite> j = manager.getConstructionSitesNeedingMission().iterator();
+            while (j.hasNext()) {
+                if (j.next().hasStage(foundationStage)) numSites++;
+            }
+            profit/= (numSites + 1);
+            
             if (profit > result) result = profit;
         }
         
@@ -279,7 +290,7 @@ public class ConstructionValues implements Serializable {
                 Iterator<ConstructionStageInfo> i = 
                         ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
                 while (i.hasNext()) {
-                    double stageValue = getConstructionStageValue(i.next()) / 2D;
+                    double stageValue = getConstructionStageProfit(i.next()) / 2D;
                     if (stageValue > result) result = stageValue;
                 }
             }
