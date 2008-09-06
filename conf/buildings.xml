@@ -166,8 +166,8 @@
 			</storage>
 			<resource-processing power-down-level=".5">
 				<process name="Carbon Dioxide Pump" default="on">
-					<input resource="Carbon Dioxide" rate="18.0" ambient="true" />
-					<output resource="Carbon Dioxide" rate="18.0" ambient="false" />
+					<input resource="Carbon Dioxide" rate="20.0" ambient="true" />
+					<output resource="Carbon Dioxide" rate="20.0" ambient="false" />
 				</process>
 			</resource-processing>
 		</functions>
@@ -373,8 +373,8 @@
 			</storage>	
 			<resource-processing power-down-level=".5">
 				<process name="Carbon Dioxide Pump" default="on">
-					<input resource="Carbon Dioxide" rate="45.0" ambient="true" />
-					<output resource="Carbon Dioxide" rate="45.0" ambient="false" />
+					<input resource="Carbon Dioxide" rate="50.0" ambient="true" />
+					<output resource="Carbon Dioxide" rate="50.0" ambient="false" />
 				</process>
 			</resource-processing>					
 		</functions>
