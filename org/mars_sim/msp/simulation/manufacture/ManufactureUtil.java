@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 2.83 2008-01-22
+ * @version 2.85 2008-09-13
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.EquipmentFactory;
@@ -329,9 +328,7 @@ public final class ManufactureUtil {
             mass = item.getAmount() * part.getMassPerItem();
         }
         else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
-            Class equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-            double equipmentMass = EquipmentFactory.getEquipment(
-                    equipmentClass, new Coordinates(0, 0), true).getMass();
+            double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
             mass = item.getAmount() * equipmentMass;
         }
         else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
