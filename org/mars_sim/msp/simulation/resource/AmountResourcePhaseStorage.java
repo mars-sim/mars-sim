@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourcePhaseStorage.java
- * @version 2.83 2008-02-04
+ * @version 2.85 2008-09-13
  * @author Scott Davis 
  */
 
@@ -142,9 +142,12 @@ class AmountResourcePhaseStorage implements Serializable {
     		}
     		if (storable) {
     			double totalAmount = getAmountResourcePhaseStored(resourcePhase) + amount;
-    			if (amountResourcePhaseStored == null) amountResourcePhaseStored = new HashMap<Phase, StoredPhase>();
-    			amountResourcePhaseStored.put(resourcePhase, new StoredPhase(resource, totalAmount));
-    			updateTotalAmountResourcePhasesStored();
+                // Check for trace amount storage.
+                if (totalAmount > .00000001D) { 
+                    if (amountResourcePhaseStored == null) amountResourcePhaseStored = new HashMap<Phase, StoredPhase>();
+                    amountResourcePhaseStored.put(resourcePhase, new StoredPhase(resource, totalAmount));
+                    updateTotalAmountResourcePhasesStored();
+                }
     		}
     		else throw new ResourceException("Amount resource could not be added in phase storage.");
     	}
@@ -163,6 +166,8 @@ class AmountResourcePhaseStorage implements Serializable {
     		StoredPhase stored = amountResourcePhaseStored.get(phase);
     		if (stored != null) {
     			stored.amount -= amount;
+                // check for trace amount remaining.
+                if (stored.amount <= .00000001D) stored.amount = 0D;
     			retrievable = true;
     			if (stored.amount <= 0D) amountResourcePhaseStored.remove(phase);
     			updateTotalAmountResourcePhasesStored();
