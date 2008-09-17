@@ -205,6 +205,7 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error getting amount stored.
      */
     public synchronized double getAmountResourceStored(AmountResource resource) throws InventoryException {
+        if (resource == null) throw new IllegalArgumentException("resource is null");
     	try {
     		double result = 0D;
     		if ((amountResourceStoredCache != null) && amountResourceStoredCache.containsKey(resource)) 
@@ -212,7 +213,7 @@ public class Inventory implements Serializable {
     		else {
     			if (resourceStorage != null) result += resourceStorage.getAmountResourceStored(resource);
     			if (containedUnits != null) {
-    			    	Iterator<Unit> i = containedUnits.iterator();
+    			    Iterator<Unit> i = containedUnits.iterator();
     				while (i.hasNext()) result += i.next().getInventory().getAmountResourceStored(resource);
     			}
     			if (amountResourceStoredCache == null) 
