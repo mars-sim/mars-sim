@@ -84,13 +84,20 @@ public class Manufacture extends Function implements Serializable {
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
             Settlement settlement) throws Exception {
         
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double buildingTech = config.getManufactureTechLevel(buildingName);
+        
         // Determine demand as highest manufacturing process value for settlement.
         double demand = 0D;
         Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
         while (i.hasNext()) {
-            double value = ManufactureUtil.getManufactureProcessValue(i.next(), settlement);
-            if (value > demand) demand = value;
+            ManufactureProcessInfo process = i.next();
+            if (process.getTechLevelRequired() <= buildingTech) {
+                double value = ManufactureUtil.getManufactureProcessValue(process, settlement);
+                if (value > demand) demand = value;
+            }
         }
+        if (demand > 1000D) demand = 1000D;
         
         double supply = 0D;
         boolean removedBuilding = false;
@@ -110,12 +117,10 @@ public class Manufacture extends Function implements Serializable {
         
         double baseManufactureValue = demand / (supply + 1D);
         
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double tech = config.getManufactureTechLevel(buildingName);
         double processes = config.getManufactureConcurrentProcesses(buildingName);
-        double manufactureValue = (tech * tech) * processes;
+        double manufactureValue = (buildingTech * buildingTech) * processes;
         
-        return manufactureValue * baseManufactureValue;
+        return manufactureValue * baseManufactureValue / 1000D;
     }
 	
 	/**

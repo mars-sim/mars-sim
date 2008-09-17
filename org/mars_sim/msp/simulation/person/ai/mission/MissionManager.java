@@ -217,7 +217,7 @@ public class MissionManager implements Serializable {
         // Construct the mission
         if (selectedMission != null) {
         	try {
-        		Constructor construct = (selectedMission.getConstructor(parametersForFindingConstructor));
+        		Constructor construct = selectedMission.getConstructor(parametersForFindingConstructor);
         		return (Mission) construct.newInstance(parametersForInvokingConstructor);
         	}
         	catch (Exception e) {

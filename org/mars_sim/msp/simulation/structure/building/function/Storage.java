@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -22,7 +22,7 @@ public class Storage extends Function implements Serializable {
         
 	public static final String NAME = "Storage";
 	
-	private Map storageCapacity;
+	private Map<AmountResource, Double> storageCapacity;
 	
 	/**
 	 * Constructor
@@ -39,22 +39,20 @@ public class Storage extends Function implements Serializable {
 			
 			// Get building resource capacity.
 			storageCapacity = config.getStorageCapacities(building.getName());
-			Iterator i1 = storageCapacity.keySet().iterator();
+			Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
 			while (i1.hasNext()) {
-				String resourceName = (String) i1.next();
-				AmountResource resource = AmountResource.findAmountResource(resourceName);
+                AmountResource resource = i1.next();
 				double currentCapacity = inventory.getAmountResourceCapacity(resource);
-				double buildingCapacity = ((Double) storageCapacity.get(resourceName)).doubleValue();
+				double buildingCapacity = ((Double) storageCapacity.get(resource)).doubleValue();
 				inventory.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
 			}
 		
 			// Get initial resources in building.
-			Map initialResources = config.getInitialStorage(building.getName());
-			Iterator i2 = initialResources.keySet().iterator();
+			Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getName());
+			Iterator<AmountResource> i2 = initialResources.keySet().iterator();
 			while (i2.hasNext()) {
-				String resourceName = (String) i2.next();
-				AmountResource resource = AmountResource.findAmountResource(resourceName);
-				double initialResource = ((Double) initialResources.get(resourceName)).doubleValue();
+                AmountResource resource = i2.next();
+				double initialResource = ((Double) initialResources.get(resource)).doubleValue();
 				double resourceCapacity = inventory.getAmountResourceRemainingCapacity(resource, true);
 				if (initialResource > resourceCapacity) initialResource = resourceCapacity;
 				inventory.storeAmountResource(resource, initialResource, true);
@@ -80,20 +78,32 @@ public class Storage extends Function implements Serializable {
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         
-        Map<String, Double> storageMap = config.getStorageCapacities(buildingName);
-        Iterator<String> i = storageMap.keySet().iterator();
+        Map<AmountResource, Double> storageMap = config.getStorageCapacities(buildingName);
+        Iterator<AmountResource> i = storageMap.keySet().iterator();
         while (i.hasNext()) {
-            String resourceString = i.next();
-            double storageAmount = storageMap.get(resourceString);
-            AmountResource resource = AmountResource.findAmountResource(resourceString);
-            double existingStorage = settlement.getInventory().getAmountResourceRemainingCapacity(resource, false);
+            AmountResource resource = i.next();
+            
+            double existingStorage = 0D;
+            Iterator<Building> j = settlement.getBuildingManager().getBuildings(NAME).iterator();
+            while (j.hasNext()) {
+                Storage storageFunction = (Storage) j.next().getFunction(NAME);
+                if (storageFunction.getResourceStorageCapacity().containsKey(resource))
+                    existingStorage += storageFunction.getResourceStorageCapacity().get(resource);
+            }
+            
+            double storageAmount = storageMap.get(resource);
+            
             if (!newBuilding) existingStorage -= storageAmount;
             
-            if (storageAmount > existingStorage) {
-                Good resourceGood = GoodsUtil.getResourceGood(resource);
-                double resourceValue = settlement.getGoodsManager().getGoodValuePerMass(resourceGood);
-                result += (storageAmount - existingStorage) * resourceValue;
-            }
+            Good resourceGood = GoodsUtil.getResourceGood(resource);
+            double resourceValue = settlement.getGoodsManager().getGoodValuePerMass(resourceGood);
+            double resourceStored = settlement.getInventory().getAmountResourceStored(resource);
+            double resourceDemand = resourceValue * (resourceStored + 1D);
+            
+            double existingStorageValue = resourceDemand / (existingStorage + 1D);
+            double totalStorageValue = resourceDemand / (existingStorage + storageAmount + 1D);
+            
+            result += existingStorageValue - totalStorageValue;
         }
         
         return result;
@@ -104,7 +114,7 @@ public class Storage extends Function implements Serializable {
      * storing and their amounts in kg.
      * @return Map of resource keys and amount Double values.
      */
-    public Map getResourceStorageCapacity() {
+    public Map<AmountResource, Double> getResourceStorageCapacity() {
     	return storageCapacity;
     }
     

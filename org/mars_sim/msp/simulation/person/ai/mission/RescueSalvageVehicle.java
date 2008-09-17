@@ -209,7 +209,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	    	if (vehicleTarget != null) {
 	    		rescue = (getRescuePeopleNum(vehicleTarget) > 0);
 	    		if (rescue) {
-	    			if (!atLeastOnePersonRemainingAtSettlement(settlement, person)) missionPossible = false;
+	    			// if (!atLeastOnePersonRemainingAtSettlement(settlement, person)) missionPossible = false;
 	    		}
 		    	else {
 					// Check if minimum number of people are available at the settlement.

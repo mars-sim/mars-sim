@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 2.85 2008-08-24
+ * @version 2.85 2008-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -32,6 +32,7 @@ import org.mars_sim.msp.simulation.structure.construction.ConstructionManager;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionSite;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionStage;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionValues;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.simulation.time.MarsClock;
@@ -69,6 +70,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
     // Time (millisols) required to prepare construction site for stage.
     private static final double SITE_PREPARE_TIME = 500D;
     
+    // Data members
     private Settlement settlement;
     private ConstructionSite constructionSite;
     private ConstructionStage constructionStage;
@@ -115,15 +117,17 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     while (i.hasNext()) {
                         ConstructionSite site = i.next();
                         double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
-                        if (siteProfit > topSiteProfit) {
+                        if ((siteProfit > topSiteProfit) && 
+                                hasExistingSiteConstructionMaterials(site, constructionSkill)) {
                             constructionSite = site;
                             topSiteProfit = siteProfit;
                         }
                     }
                 }
-                else {
+                else if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
                     // Create new site.
                     constructionSite = manager.createNewConstructionSite();
+                    logger.log(Level.INFO, "New construction site added at " + settlement.getName());
                 }
                 
                 if (constructionSite != null) {
@@ -151,6 +155,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                         if (stageInfo != null) {
                             constructionStage = new ConstructionStage(stageInfo);
                             constructionSite.addNewStage(constructionStage);
+                            values.clearCache();
                         }
                         else {
                             endMission("New construction stage could not be determined.");
@@ -226,12 +231,14 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
                             Skill.CONSTRUCTION);
-                    ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
-                    double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
-                    result = constructionProfit / 1000D;
+                    if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
+                        ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
+                        double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
+                        result = constructionProfit / 1000D;
+                    }
                 }
                 catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error getting mining site.", e);
+                    logger.log(Level.SEVERE, "Error getting construction site.", e);
                 }
             }       
             
@@ -389,6 +396,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
         
         if (constructionStage.isComplete()) {
             setPhaseEnded(true);
+            settlement.getConstructionManager().getConstructionValues().clearCache();
             
             // Construct building if all site construction complete.
             if (constructionSite.isAllConstructionComplete()) {
@@ -480,5 +488,64 @@ public class BuildingConstructionMission extends Mission implements Serializable
             Iterator<GroundVehicle> i = constructionVehicles.iterator();
             while (i.hasNext()) i.next().setReservedForMission(false);
         }
+    }
+    
+    /**
+     * Checks if the construction materials required for a stage are available at the settlement.
+     * @param stage the construction stage information.
+     * @param settlement the settlement to construct at.
+     * @return true if construction materials are available.
+     * @throws Exception if error checking construction materials.
+     */
+    private static boolean hasStageConstructionMaterials(ConstructionStageInfo stage, Settlement settlement) 
+            throws Exception {
+        boolean result = true;
+        
+        Iterator<AmountResource> i = stage.getResources().keySet().iterator();
+        while (i.hasNext()) {
+            AmountResource resource = i.next();
+            double amount = stage.getResources().get(resource);
+            if (settlement.getInventory().getAmountResourceStored(resource) < amount) result = false;
+        }
+        
+        Iterator<Part> j = stage.getParts().keySet().iterator();
+        while (j.hasNext()) {
+            Part part = j.next();
+            int number = stage.getParts().get(part);
+            if (settlement.getInventory().getItemResourceNum(part) < number) result = false;
+        }
+        
+        return result;
+    }
+    
+    // TODO: add comments
+    private static boolean hasAnyNewSiteConstructionMaterials(int skill, Settlement settlement) 
+            throws Exception {
+        boolean result = false;
+        
+        Iterator<ConstructionStageInfo> i = ConstructionUtil.getConstructionStageInfoList(
+                ConstructionStageInfo.FOUNDATION, skill).iterator();
+        while (i.hasNext()) {
+            if (hasStageConstructionMaterials(i.next(), settlement)) result = true;
+        }
+        
+        return result;
+    }
+    
+    // TODO: add comments
+    private boolean hasExistingSiteConstructionMaterials(ConstructionSite site, int skill) throws Exception {
+        boolean result = true;
+        
+        if (!site.hasUnfinishedStage()) {
+            result = false;
+            String stageType = site.getNextStageType();
+            Iterator<ConstructionStageInfo> i = ConstructionUtil.getConstructionStageInfoList(
+                    stageType, skill).iterator();
+            while (i.hasNext()) {
+                if (hasStageConstructionMaterials(i.next(), settlement)) result = true;
+            }
+        }
+        
+        return result;
     }
 }

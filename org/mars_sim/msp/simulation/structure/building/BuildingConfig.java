@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -447,15 +447,16 @@ public class BuildingConfig implements Serializable {
 	 * @return list of storage capacities
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
-	public Map<String, Double> getStorageCapacities(String buildingName) throws Exception {
-		Map<String, Double> capacities = new HashMap<String, Double>();
+	public Map<AmountResource, Double> getStorageCapacities(String buildingName) throws Exception {
+		Map<AmountResource, Double> capacities = new HashMap<AmountResource, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element storageElement = (Element) functionsElement.getElementsByTagName(STORAGE).item(0);
 		NodeList resourceStorageNodes = storageElement.getElementsByTagName(RESOURCE_STORAGE);
 		for (int x=0; x < resourceStorageNodes.getLength(); x++) {
 			Element resourceStorageElement = (Element) resourceStorageNodes.item(x);
-			String resource = resourceStorageElement.getAttribute(RESOURCE).toLowerCase();
+			String resourceName = resourceStorageElement.getAttribute(RESOURCE).toLowerCase();
+            AmountResource resource = AmountResource.findAmountResource(resourceName);
 			Double capacity = new Double(resourceStorageElement.getAttribute(CAPACITY));
 			capacities.put(resource, capacity);
 		}
@@ -468,15 +469,16 @@ public class BuildingConfig implements Serializable {
 	 * @return map of initial resources
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
-	public Map<String, Double> getInitialStorage(String buildingName) throws Exception {
-		Map<String, Double> resourceMap = new HashMap<String, Double>();
+	public Map<AmountResource, Double> getInitialStorage(String buildingName) throws Exception {
+		Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
 		Element storageElement = (Element) functionsElement.getElementsByTagName(STORAGE).item(0);
 		NodeList resourceInitialNodes = storageElement.getElementsByTagName(RESOURCE_INITIAL);
 		for (int x=0; x < resourceInitialNodes.getLength(); x++) {
 			Element resourceInitialElement = (Element) resourceInitialNodes.item(x);
-			String resource = resourceInitialElement.getAttribute(RESOURCE).toLowerCase();
+			String resourceName = resourceInitialElement.getAttribute(RESOURCE).toLowerCase();
+            AmountResource resource = AmountResource.findAmountResource(resourceName);
 			Double amount = new Double(resourceInitialElement.getAttribute(AMOUNT));
 			resourceMap.put(resource, amount);
 		}

@@ -120,6 +120,10 @@ public class ConstructionSite implements Serializable {
         if (buildingStage == null) throw new Exception("Building stage doesn't exist");
         Building newBuilding = new Building(buildingStage.getInfo().getName(), manager);
         manager.addBuilding(newBuilding);
+        
+        // Clear construction value cache.
+        manager.getSettlement().getConstructionManager().getConstructionValues().clearCache();
+        
         return newBuilding;
     }
     

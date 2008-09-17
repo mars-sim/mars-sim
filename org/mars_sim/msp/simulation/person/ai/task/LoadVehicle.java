@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-09-13
  * @author Scott Davis
  */
 
@@ -235,12 +235,23 @@ public class LoadVehicle extends Task implements Serializable {
         Building garage = BuildingManager.getBuilding(vehicle);
         if (garage == null) amountLoading /= 4D;
         
+        // Temporarily remove rover from settlement so that inventory doesn't get mixed in.
+        Inventory sInv = settlement.getInventory();
+        boolean roverInSettlement = false;
+        if (sInv.containsUnit(vehicle)) {
+            roverInSettlement = true;
+            sInv.retrieveUnit(vehicle);
+        }
+        
         // Load equipment
         if (amountLoading > 0D) amountLoading = loadEquipment(amountLoading);
         
         // Load resources
         amountLoading = loadResources(amountLoading);
 
+        // Put rover back into settlement.
+        if (roverInSettlement) sInv.storeUnit(vehicle);
+        
         if (isFullyLoaded(resources, equipment, vehicle)) endTask();
         
         return 0D;
@@ -282,20 +293,24 @@ public class LoadVehicle extends Task implements Serializable {
     	
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
-        
+        /*
         boolean roverInSettlement = false;
         if (sInv.containsUnit(vehicle)) {
         	roverInSettlement = true;
         	sInv.retrieveUnit(vehicle);
         }
-        
+        */
     	double amountNeededTotal = ((Double) resources.get(resource)).doubleValue();
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource);
 		if (amountAlreadyLoaded < amountNeededTotal) {
 			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
 			if (sInv.getAmountResourceStored(resource) >= amountNeeded) {
 				double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource, true);
-				if (remainingCapacity < amountNeeded) amountNeeded = remainingCapacity;
+				if (remainingCapacity < amountNeeded) {
+                    endTask();
+                    throw new Exception("Not enough capacity in vehicle for loading resource " + resource + 
+                            ": " + amountNeeded + ", remaining capacity: " + remainingCapacity);
+                }
 				double resourceAmount = amountNeeded;
 				if (amountNeeded > amountLoading) resourceAmount = amountLoading;
 				try {
@@ -319,7 +334,7 @@ public class LoadVehicle extends Task implements Serializable {
 			catch (Exception e) {}
 		}
 		
-		if (roverInSettlement) sInv.storeUnit(vehicle);
+		// if (roverInSettlement) sInv.storeUnit(vehicle);
 		
 		//  Return remaining amount that can be loaded by person this time period.
 		return amountLoading;
@@ -337,12 +352,13 @@ public class LoadVehicle extends Task implements Serializable {
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
         
+        /*
         boolean roverInSettlement = false;
         if (sInv.containsUnit(vehicle)) {
         	roverInSettlement = true;
         	sInv.retrieveUnit(vehicle);
         }
-        
+        */
         int numNeededTotal = ((Integer) resources.get(resource)).intValue();
 		ItemResource itemResource = (ItemResource) resource;
 		int numAlreadyLoaded = vInv.getItemResourceNum(itemResource);
@@ -370,7 +386,7 @@ public class LoadVehicle extends Task implements Serializable {
 			catch (Exception e) {}
 		}
 		
-		if (roverInSettlement) sInv.storeUnit(vehicle);
+		// if (roverInSettlement) sInv.storeUnit(vehicle);
 		
 		// Return remaining amount that can be loaded by person this time period.
 		return amountLoading;
@@ -386,13 +402,13 @@ public class LoadVehicle extends Task implements Serializable {
     	
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
-        
+        /*
         boolean roverInSettlement = false;
         if (sInv.containsUnit(vehicle)) {
         	roverInSettlement = true;
         	sInv.retrieveUnit(vehicle);
         }
-        
+        */
         Iterator<Class> iE = equipment.keySet().iterator();
         while (iE.hasNext() && (amountLoading > 0D)) {
         	Class equipmentType = iE.next();
@@ -446,7 +462,7 @@ public class LoadVehicle extends Task implements Serializable {
     		}
         }
         
-        if (roverInSettlement) sInv.storeUnit(vehicle);
+        // if (roverInSettlement) sInv.storeUnit(vehicle);
         
 		// Return remaining amount that can be loaded by person this time period.
 		return amountLoading;

@@ -119,6 +119,8 @@ public class LifeSupport extends Function implements Serializable {
         double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
         result -= powerValue;
         
+        if (result < 0D) result = 0D;
+        
         return result;
     }
 	

@@ -141,7 +141,7 @@ public class ConstructionValues implements Serializable {
             else {
                 if (site.getNextStageType() != null) {
                     Map<ConstructionStageInfo, Double> stageValues = getConstructionStageProfit(
-                            site.getNextStageType(), constructionSkill);
+                            site.getNextStageType(), constructionSkill, true);
                     Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
                     while (i.hasNext()) {
                         double profit = stageValues.get(i.next());
@@ -170,20 +170,20 @@ public class ConstructionValues implements Serializable {
         
         double result = 0D;
         Map<ConstructionStageInfo, Double> stageProfits = getConstructionStageProfit(
-                ConstructionStageInfo.FOUNDATION, constructionSkill);
+                ConstructionStageInfo.FOUNDATION, constructionSkill, true);
         Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo foundationStage = i.next();
             double profit = stageProfits.get(foundationStage);
             
-            // Divide by number of existing construction sites with this foundation.
+            // Divide by number of existing construction sites (x 10) with this foundation.
             int numSites = 0;
             ConstructionManager manager = settlement.getConstructionManager();
             Iterator<ConstructionSite> j = manager.getConstructionSitesNeedingMission().iterator();
             while (j.hasNext()) {
                 if (j.next().hasStage(foundationStage)) numSites++;
             }
-            profit/= (numSites + 1);
+            profit/= ((numSites * 10D) + 1D);
             
             if (profit > result) result = profit;
         }
@@ -206,7 +206,7 @@ public class ConstructionValues implements Serializable {
         
         String nextStageType = site.getNextStageType();
         if (nextStageType != null) 
-            result = getConstructionStageProfit(nextStageType, constructionSkill);
+            result = getConstructionStageProfit(nextStageType, constructionSkill, true);
         
         return result;
     }
@@ -215,11 +215,12 @@ public class ConstructionValues implements Serializable {
      * Gets a map of construction stage infos and their profits for a given stage type.
      * @param stageType the construction stage type.
      * @param constructionSkill the architect's construction skill.
+     * @param checkMaterials should check if settlement has enough construction materials?
      * @return map of construction stage infos and their profits (VP).
      * @throws Exception if error determining profit.
      */
     public Map<ConstructionStageInfo, Double> getConstructionStageProfit(String stageType, 
-            int constructionSkill) throws Exception {
+            int constructionSkill, boolean checkMaterials) throws Exception {
         
         Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>();
         
@@ -229,6 +230,9 @@ public class ConstructionValues implements Serializable {
         while (i.hasNext()) {
             ConstructionStageInfo stageInfo = i.next();
             double profit = getConstructionStageProfit(stageInfo);
+            
+            if (!hasConstructionMaterials(stageInfo)) profit = 0D;
+            
             result.put(stageInfo, profit);
         }
         
@@ -284,7 +288,7 @@ public class ConstructionValues implements Serializable {
             double result = 0D;
         
             if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType())) {
-                result = getBuildingConstructionValue(stageInfo.getName()) / 2D;
+                result = getBuildingConstructionValue(stageInfo.getName());
             }
             else {
                 Iterator<ConstructionStageInfo> i = 
@@ -355,5 +359,53 @@ public class ConstructionValues implements Serializable {
      */
     private double getBuildingConstructionValue(String buildingName) throws Exception {
         return settlement.getBuildingManager().getBuildingValue(buildingName, true);
+    }
+    
+    // TODO: add comments
+    private boolean hasConstructionMaterials(ConstructionStageInfo stageInfo) throws Exception {
+        boolean result = true;
+        
+        // Check resources.
+        Map<AmountResource, Double> resources = stageInfo.getResources();
+        Iterator<AmountResource> j = resources.keySet().iterator();
+        while (j.hasNext()) {
+            AmountResource resource = j.next();
+            double amount = resources.get(resource);
+            double stored = settlement.getInventory().getAmountResourceStored(resource);
+            if (stored < amount) result = false;
+        }
+    
+        // Check parts.
+        Map<Part, Integer> parts = stageInfo.getParts();
+        Iterator<Part> k = parts.keySet().iterator();
+        while (k.hasNext()) {
+            Part part = k.next();
+            int number = parts.get(part);
+            int stored = settlement.getInventory().getItemResourceNum(part);
+            if (stored < number) result = false;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Clears the value caches.
+     */
+    public void clearCache() {
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        
+        if (settlementConstructionValueCache == null) 
+            settlementConstructionValueCache = new HashMap<Integer, Double>();
+        settlementConstructionValueCache.clear();
+        settlementConstructionValueCacheTime = (MarsClock) currentTime.clone();
+        
+        if (stageInfoValueCache == null) 
+            stageInfoValueCache = new HashMap<ConstructionStageInfo, Double>();
+        stageInfoValueCache.clear();
+        stageInfoValueCacheTime = (MarsClock) currentTime.clone();
+        
+        if (allStageInfoValueCache == null) 
+            allStageInfoValueCache = new HashMap<ConstructionStageInfo, Double>();
+        allStageInfoValueCache.clear();
     }
 }

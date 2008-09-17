@@ -333,12 +333,14 @@ public abstract class RoverMission extends VehicleMission {
             // Add the person to the rover's garage if it's in one.
             // Otherwise add person to another building in the settlement.
             try {
-            	garageBuilding = BuildingManager.getBuilding(getVehicle());
-                if (isRoverInAGarage() && garageBuilding.hasFunction(LifeSupport.NAME)) {
-                	LifeSupport lifeSupport = (LifeSupport) garageBuilding.getFunction(LifeSupport.NAME);
-                	lifeSupport.addPerson(person);
+                if (getVehicle() != null) {
+                    garageBuilding = BuildingManager.getBuilding(getVehicle());
+                    if (isRoverInAGarage() && garageBuilding.hasFunction(LifeSupport.NAME)) {
+                        LifeSupport lifeSupport = (LifeSupport) garageBuilding.getFunction(LifeSupport.NAME);
+                        lifeSupport.addPerson(person);
+                    }
+                    else BuildingManager.addToRandomBuilding(person, disembarkSettlement);
                 }
-                else BuildingManager.addToRandomBuilding(person, disembarkSettlement);
             }
             catch (BuildingException e) {
             	throw new MissionException(getPhase(), e);
